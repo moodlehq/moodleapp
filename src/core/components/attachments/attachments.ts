@@ -42,6 +42,7 @@ import { CoreUtils } from '@services/utils/utils';
 @Component({
     selector: 'core-attachments',
     templateUrl: 'core-attachments.html',
+    styleUrls: ['attachments.scss'],
 })
 export class CoreAttachmentsComponent implements OnInit {
 
@@ -59,16 +60,17 @@ export class CoreAttachmentsComponent implements OnInit {
     maxSubmissionsReadable?: string;
     unlimitedFiles?: boolean;
     fileTypes?: CoreFileUploaderTypeList;
+    loaded = false;
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         this.files = this.files || [];
         this.maxSize = this.maxSize !== null ? Number(this.maxSize) : NaN;
 
         if (this.maxSize === 0) {
-            this.getMaxSizeOfArea();
+            await this.getMaxSizeOfArea();
         } else if (this.maxSize > 0) {
             this.maxSizeReadable = CoreTextUtils.bytesToSize(this.maxSize, 2);
         } else if (this.maxSize === -1) {
@@ -90,6 +92,8 @@ export class CoreAttachmentsComponent implements OnInit {
         if (this.acceptedTypes && this.acceptedTypes != '*') {
             this.fileTypes = CoreFileUploader.prepareFiletypeList(this.acceptedTypes);
         }
+
+        this.loaded = true;
     }
 
     /**

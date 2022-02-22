@@ -204,16 +204,12 @@ export class CoreFileUploaderHelperProvider {
 
         // Check that size isn't too large.
         if (maxSize !== undefined && maxSize != -1) {
-            try {
-                const fileEntry = await CoreFile.getExternalFile(path);
+            const fileEntry = await CoreFile.getExternalFile(path);
 
-                const fileData = await CoreFile.getFileObjectFromFileEntry(fileEntry);
+            const fileData = await CoreFile.getFileObjectFromFileEntry(fileEntry);
 
-                if (fileData.size > maxSize) {
-                    throw this.createMaxBytesError(maxSize, fileEntry.name);
-                }
-            } catch (error) {
-                // Ignore failures.
+            if (fileData.size > maxSize) {
+                throw this.createMaxBytesError(maxSize, fileEntry.name);
             }
         }
 
