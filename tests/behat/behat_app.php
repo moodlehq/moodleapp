@@ -154,18 +154,22 @@ class behat_app extends behat_base {
     /**
      * Finds elements in the app.
      *
-     * @Then /^I should( not)? find (".+")( inside the split-view content)? in the app$/
+     * @Then /^I should( not)? find (".+")( inside the .+)? in the app$/
      * @param bool $not
      * @param string $locator
-     * @param bool $insidesplitview
+     * @param string $containerName
      */
-    public function i_find_in_the_app(bool $not, string $locator, bool $insidesplitview = false) {
+    public function i_find_in_the_app(bool $not, string $locator, string $containerName = '') {
         $locator = $this->parse_element_locator($locator);
         $locatorjson = json_encode($locator);
-        $insidesplitviewjson = json_encode($insidesplitview);
+        if (!empty($containerName)) {
+            preg_match('/^ inside the (.+)$/', $containerName, $matches);
+            $containerName = $matches[1];
+        }
+        $containerName = json_encode($containerName);
 
-        $this->spin(function() use ($not, $locatorjson, $insidesplitviewjson) {
-            $result = $this->evaluate_script("return window.behat.find($locatorjson, $insidesplitviewjson);");
+        $this->spin(function() use ($not, $locatorjson, $containerName) {
+            $result = $this->evaluate_script("return window.behat.find($locatorjson, $containerName);");
 
             if ($not && $result === 'OK') {
                 throw new DriverException('Error, found an item that should not be found');

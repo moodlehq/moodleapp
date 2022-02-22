@@ -224,13 +224,13 @@
     };
 
     /**
-     * Finds elements within a given container.
+     * Finds elements within a given container with exact info.
      *
      * @param {HTMLElement} container Parent element to search the element within
      * @param {string} text Text to look for
-     * @return {HTMLElement} Elements containing the given text
+     * @return {Array} Elements containing the given text with exact boolean.
      */
-    const findElementsBasedOnTextWithin = (container, text) => {
+    const findElementsBasedOnTextWithinWithExact = (container, text) => {
         const elements = [];
         const attributesSelector = `[aria-label*="${text}"], a[title*="${text}"], img[alt*="${text}"]`;
 
@@ -238,7 +238,8 @@
             if (!isElementVisible(foundByAttributes, container))
                 continue;
 
-            elements.push(foundByAttributes);
+            const exact = foundByAttributes.title == text || foundByAttributes.alt == text || foundByAttributes.ariaLabel == text;
+            elements.push({ element: foundByAttributes, exact: exact });
         }
 
         const treeWalker = document.createTreeWalker(
@@ -269,7 +270,7 @@
         while (currentNode = treeWalker.nextNode()) {
             if (currentNode instanceof Text) {
                 if (currentNode.textContent.includes(text)) {
-                    elements.push(currentNode.parentElement);
+                    elements.push({ element: currentNode.parentElement, exact: currentNode.textContent.trim() == text });
                 }
 
                 continue;
@@ -278,7 +279,7 @@
             const labelledBy = currentNode.getAttribute('aria-labelledby');
             const labelElement = labelledBy && container.querySelector(`#${labelledBy}`);
             if (labelElement && labelElement.innerText && labelElement.innerText.includes(text)) {
-                elements.push(currentNode);
+                elements.push({ element: currentNode, exact: labelElement.innerText.trim() == text });
 
                 continue;
             }
@@ -296,17 +297,36 @@
                     }
 
                     if (childNode.matches(attributesSelector)) {
-                        elements.push(childNode);
+                        const exact = childNode.title == text || childNode.alt == text || childNode.ariaLabel == text;
+                        elements.push({ element: childNode, exact: exact});
 
                         continue;
                     }
 
-                    elements.push(...findElementsBasedOnTextWithin(childNode, text));
+                    elements.push(...findElementsBasedOnTextWithinWithExact(childNode, text));
                 }
             }
         }
 
         return elements;
+    };
+
+    /**
+     * Finds elements within a given container.
+     *
+     * @param {HTMLElement} container Parent element to search the element within.
+     * @param {string} text Text to look for.
+     * @return {HTMLElement[]} Elements containing the given text.
+     */
+     const findElementsBasedOnTextWithin = (container, text) => {
+        const elements = findElementsBasedOnTextWithinWithExact(container, text);
+
+        // Give more relevance to exact matches.
+        elements.sort((a, b) => {
+            return b.exact - a.exact;
+        });
+
+        return elements.map(element => element.element);
     };
 
     /**
@@ -366,18 +386,77 @@
     };
 
     /**
+     * Function to find top container element.
+     *
+     * @param {string} containerName Whether to search inside the a container name.
+     * @return {HTMLElement} Found top container element.
+     */
+    const getCurrentTopContainerElement = function (containerName) {
+        let topContainer;
+        let containers;
+
+        switch (containerName) {
+            case 'html':
+                containers = document.querySelectorAll('html');
+                break;
+            case 'toast':
+                containers = document.querySelectorAll('ion-app ion-toast.hydrated');
+                containers = Array.from(containers).map(container => container.shadowRoot.querySelector('.toast-container'));
+                break;
+            case 'alert':
+                containers = document.querySelectorAll('ion-app ion-alert.hydrated');
+                break;
+            case 'action-sheet':
+                containers = document.querySelectorAll('ion-app ion-action-sheet.hydrated');
+                break;
+            case 'modal':
+                containers = document.querySelectorAll('ion-app ion-modal.hydrated');
+                break;
+            case 'popover':
+                containers = document.querySelectorAll('ion-app ion-popover.hydrated');
+                break;
+            default:
+                // Other containerName or not implemented.
+                const containerSelector = 'ion-alert, ion-popover, ion-action-sheet, ion-modal, page-core-mainmenu, ion-app';
+                containers = document.querySelectorAll(containerSelector);
+        }
+
+        if (containers.length > 0) {
+            // Get the one with more zIndex.
+            topContainer =  Array.from(containers).reduce((a, b) => {
+                return  getComputedStyle(a).zIndex > getComputedStyle(b).zIndex ? a : b;
+            }, containers[0]);
+        }
+
+        if (containerName == 'page' || containerName == 'split-view content') {
+            // Find non hidden pages inside the container.
+            let pageContainers = topContainer.querySelectorAll('.ion-page:not(.ion-page-hidden)');
+            pageContainers = Array.from(pageContainers).filter((page) => {
+                return !page.closest('.ion-page.ion-page-hidden');
+            });
+
+            if (pageContainers.length > 0) {
+                // Get the more general one to avoid failing.
+                topContainer = pageContainers[0];
+            }
+
+            if (containerName == 'split-view content') {
+                topContainer = topContainer.querySelector('core-split-view ion-router-outlet');
+            }
+        }
+
+        return topContainer;
+    }
+
+    /**
      * Function to find elements based on their text or Aria label.
      *
      * @param {object} locator Element locator.
-     * @param {boolean} insideSplitView Whether to search only inside the split view contents.
+     * @param {string} containerName Whether to search only inside a specific container.
      * @return {HTMLElement} Found elements
      */
-    const findElementsBasedOnText = function(locator, insideSplitView) {
-        let topContainer = document.querySelector('ion-alert, ion-popover, ion-action-sheet, core-ion-tab.show-tab ion-page.show-page, ion-page.show-page, html');
-
-        if (insideSplitView) {
-            topContainer = topContainer.querySelector('core-split-view ion-router-outlet');
-        }
+    const findElementsBasedOnText = function(locator, containerName) {
+        let topContainer = getCurrentTopContainerElement(containerName);
 
         let container = topContainer;
 
@@ -544,20 +623,20 @@
      * Function to find an arbitrary element based on its text or aria label.
      *
      * @param {object} locator Element locator.
-     * @param {boolean} insideSplitView Whether to search only inside the split view contents.
+     * @param {string} containerName Whether to search only inside a specific container content.
      * @return {string} OK if successful, or ERROR: followed by message
      */
-    const behatFind = function(locator, insideSplitView) {
-        log('Action - Find', { locator, insideSplitView });
+    const behatFind = function(locator, containerName) {
+        log('Action - Find', { locator, containerName });
 
         try {
-            const element = findElementsBasedOnText(locator, insideSplitView)[0];
+            const element = findElementsBasedOnText(locator, containerName)[0];
 
             if (!element) {
                 return 'ERROR: No matches for text';
             }
 
-            log('Action - Found', { locator, insideSplitView, element });
+            log('Action - Found', { locator, containerName, element });
             return 'OK';
         } catch (error) {
             return 'ERROR: ' + error.message;
