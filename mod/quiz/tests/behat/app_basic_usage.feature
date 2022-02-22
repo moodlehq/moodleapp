@@ -156,7 +156,7 @@ Feature: Attempt a quiz in app
 
     When I enter the course "Course 1" as "teacher1" in the app
     And I press "Quiz 1" in the app
-    And I press "Display options" in the app
+    And I press "Information" in the app
     And I press "Open in browser" in the app
     And I switch to the browser tab opened by the app
     And I log in as "teacher1"
