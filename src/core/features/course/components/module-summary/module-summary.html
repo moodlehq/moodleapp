@@ -37,7 +37,7 @@
                     {{ 'core.course' | translate}}
                 </p>
                 <p>
-                    <core-format-text [text]="course.displayname || course.fullname" contextLevel="course" [contextInstanceId]="courseId">
+                    <core-format-text [text]="course.fullname" contextLevel="course" [contextInstanceId]="courseId">
                     </core-format-text>
                 </p>
             </ion-label>
