@@ -25,7 +25,7 @@ import { CoreNativeToAngularHttpResponse } from '@classes/native-to-angular-http
 import { CoreApp } from '@services/app';
 import { CoreFile, CoreFileFormat } from '@services/file';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreTextErrorObject, CoreTextUtils } from '@services/utils/text';
 import { CoreUtils, PromiseDefer } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
@@ -38,6 +38,7 @@ import { CoreAjaxError } from '@classes/errors/ajaxerror';
 import { CoreAjaxWSError } from '@classes/errors/ajaxwserror';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreSite } from '@classes/site';
+import { CoreHttpError } from '@classes/errors/httperror';
 
 /**
  * This service allows performing WS calls and download/upload files.
@@ -693,6 +694,8 @@ export class CoreWSProvider {
                 return retryPromise;
             } else if (error.status === -2) {
                 throw new CoreError(this.getCertificateErrorMessage(error.error));
+            } else if (error.status > 0) {
+                throw this.createHttpError(error, error.status);
             }
 
             throw new CoreError(Translate.instant('core.serverconnection'));
@@ -892,10 +895,7 @@ export class CoreWSProvider {
         } catch (error) {
             this.logger.error('Error while uploading file', filePath, error);
 
-            throw new CoreError(CoreTextUtils.buildSeveralParagraphsMessage([
-                Translate.instant('core.cannotconnecttrouble'),
-                CoreTextUtils.getHTMLBodyContent(CoreTextUtils.getErrorMessageFromError(error) || ''),
-            ]));
+            throw this.createHttpError(error, error.http_status ?? 0);
         }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -935,6 +935,22 @@ export class CoreWSProvider {
         this.logger.debug('Successfully uploaded file', filePath);
 
         return data[0];
+    }
+
+    /**
+     * Create a CoreHttpError based on a certain error.
+     *
+     * @param error Original error.
+     * @param status Status code (if any).
+     * @return CoreHttpError.
+     */
+    protected createHttpError(error: CoreTextErrorObject, status: number): CoreHttpError {
+        const message = CoreTextUtils.buildSeveralParagraphsMessage([
+            Translate.instant('core.cannotconnecttrouble'),
+            CoreTextUtils.getHTMLBodyContent(CoreTextUtils.getErrorMessageFromError(error) || ''),
+        ]);
+
+        return new CoreHttpError(message, status);
     }
 
     /**

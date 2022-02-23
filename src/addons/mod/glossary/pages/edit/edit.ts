@@ -25,6 +25,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
+import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreForms } from '@singletons/form';
@@ -392,7 +393,11 @@ export class AddonModGlossaryEditPage implements OnInit, OnDestroy, CanLeave {
                 saveOffline: false,
                 attachmentsResult,
             };
-        } catch {
+        } catch (error) {
+            if (CoreUtils.isWebServiceError(error)) {
+                throw error;
+            }
+
             // Cannot upload them in online, save them in offline.
             const attachmentsResult = await AddonModGlossaryHelper.storeFiles(
                 this.glossary.id,

@@ -36,6 +36,7 @@ import {
 import { AddonModAssignHelper } from '../../services/assign-helper';
 import { AddonModAssignOffline } from '../../services/assign-offline';
 import { AddonModAssignSync } from '../../services/assign-sync';
+import { CoreUtils } from '@services/utils/utils';
 
 /**
  * Page that allows adding or editing an assigment submission.
@@ -255,7 +256,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
                 this.hasOffline,
             );
         } catch (error) {
-            if (this.allowOffline && !this.saveOffline) {
+            if (this.allowOffline && !this.saveOffline && !CoreUtils.isWebServiceError(error)) {
                 // Cannot submit in online, prepare for offline usage.
                 this.saveOffline = true;
 

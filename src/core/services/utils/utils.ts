@@ -858,12 +858,17 @@ export class CoreUtilsProvider {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     isWebServiceError(error: any): boolean {
-        return error && (error.warningcode !== undefined || (error.errorcode !== undefined &&
-                error.errorcode != 'userdeleted' && error.errorcode != 'upgraderunning' &&
+        return error && (
+            error.warningcode !== undefined ||
+            (
+                error.errorcode !== undefined && error.errorcode != 'userdeleted' && error.errorcode != 'upgraderunning' &&
                 error.errorcode != 'forcepasswordchangenotice' && error.errorcode != 'usernotfullysetup' &&
                 error.errorcode != 'sitepolicynotagreed' && error.errorcode != 'sitemaintenance' &&
                 error.errorcode != 'wsaccessusersuspended' && error.errorcode != 'wsaccessuserdeleted' &&
-                !this.isExpiredTokenError(error)));
+                !this.isExpiredTokenError(error)
+            ) ||
+            error.status && error.status >= 400 // CoreHttpError, assume status 400 and above are like WebService errors.
+        );
     }
 
     /**
