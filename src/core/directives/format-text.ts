@@ -279,23 +279,28 @@ export class CoreFormatTextDirective implements OnChanges {
      */
     protected setExpandButtonEnabled(enable: boolean): void {
         this.toggleExpandEnabled = enable;
-        this.element.classList.toggle('core-text-formatted', enable);
+        this.element.classList.toggle('collapsible-enabled', enable);
 
-        if (!enable || this.element.querySelector('ion-button.core-format-text-toggle'))  {
+        if (!enable || this.element.querySelector('ion-button.collapsible-toggle'))  {
+            this.element.style.maxHeight = !enable || this.expanded
+                ? ''
+                : this.maxHeight + 'px';
+
             return;
         }
 
         // Add expand/collapse buttons
         const toggleButton = document.createElement('ion-button');
-        toggleButton.classList.add('core-format-text-toggle');
+        toggleButton.classList.add('collapsible-toggle');
         toggleButton.setAttribute('fill', 'clear');
 
         const toggleText = document.createElement('span');
-        toggleText.classList.add('core-format-text-toggle-text');
+        toggleText.classList.add('collapsible-toggle-text');
+        toggleText.classList.add('sr-only');
         toggleButton.appendChild(toggleText);
 
         const expandArrow = document.createElement('span');
-        expandArrow.classList.add('core-format-text-arrow');
+        expandArrow.classList.add('collapsible-toggle-arrow');
         toggleButton.appendChild(expandArrow);
 
         this.element.appendChild(toggleButton);
@@ -313,12 +318,12 @@ export class CoreFormatTextDirective implements OnChanges {
             expand = !this.expanded;
         }
         this.expanded = expand;
-        this.element.classList.toggle('core-text-format-expanded', expand);
-        this.element.classList.toggle('core-text-format-collapsed', !expand);
+        this.element.classList.toggle('collapsible-expanded', expand);
+        this.element.classList.toggle('collapsible-collapsed', !expand);
         this.element.style.maxHeight = expand ? '' : this.maxHeight + 'px';
 
-        const toggleButton = this.element.querySelector('ion-button.core-format-text-toggle');
-        const toggleText = toggleButton?.querySelector('.core-format-text-toggle-text');
+        const toggleButton = this.element.querySelector('ion-button.collapsible-toggle');
+        const toggleText = toggleButton?.querySelector('.collapsible-toggle-text');
         if (!toggleButton || !toggleText) {
             return;
         }
@@ -396,8 +401,7 @@ export class CoreFormatTextDirective implements OnChanges {
         this.element.classList.add('core-disable-media-adapt');
 
         this.contentSpan.innerHTML = ''; // Remove current contents.
-        if (this.maxHeight && result.div.innerHTML != '' &&
-                (window.innerWidth < 576 || window.innerHeight < 576)) { // Don't collapse in big screens.
+        if (this.maxHeight && result.div.innerHTML != '') {
 
             // Move the children to the current element to be able to calculate the height.
             CoreDomUtils.moveChildren(result.div, this.contentSpan);

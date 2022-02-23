@@ -97,6 +97,10 @@
     --core-combobox-color: var(--text-color);
     --core-combobox-border-color: var(--core-input-stroke);
 
+    --collapsible-toggle-background: var(--light);
+
+    --background-gradient-rgb: #{$ion-item-background-dark-rgb};
+
     --core-login-background: var(--gray-900);
     --core-login-text-color: var(--white);
     --core-login-input-background: var(--core-login-background);

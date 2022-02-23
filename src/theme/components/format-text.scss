@@ -4,13 +4,11 @@
 
 core-format-text {
     --core-format-text-background: var(--background, var(--ion-item-background));
-    --core-format-text-background-gradient-rgb: var(--background-rgb, #{$ion-item-background-rgb});
     --core-format-text-viewer-icon-background: rgba(255, 255, 255, .5);
     --core-format-text-loader-shine: 251,251,251;
 }
 
 body.dark core-format-text {
-    --core-format-text-background-gradient-rgb: var(--background-rgb, #{$ion-item-background-dark-rgb});
     --core-format-text-viewer-icon-background: rgba(0, 0, 0, .5);
     --core-format-text-loader-shine: 90,90,90;
 }
@@ -51,12 +49,12 @@ core-format-text {
             display: inline;
         }
 
-        .core-format-text-toggle {
+        .collapsible-toggle {
             display: none !important;
         }
     }
 
-    .core-format-text-toggle {
+    .collapsible-toggle {
         display: none;
     }
 
@@ -84,81 +82,21 @@ core-format-text {
         }
 
         // This is to allow clicks in radio/checkbox content.
-        &.core-text-formatted {
+        &.collapsible-enabled {
             cursor: pointer;
             pointer-events: auto;
 
-            .core-format-text-toggle {
-                display: block;
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                text-align: center;
-                z-index: 7;
-                text-transform: none;
-                text-align: end;
-                font-size: 14px;
-                background-color: var(--core-format-text-background);
-                color: var(--text-color);
-                margin: 0;
-
-
-                .core-format-text-arrow {
-                    width: var(--a11y-min-target-size);
-                    height: var(--a11y-min-target-size);
-
-                    background-position: center;
-                    background-repeat: no-repeat;
-                    background-size: 14px 14px;
-                    @include core-transition(transform, 500ms);
-
-                    @include push-arrow-color(626262, true);
-
-                    @include darkmode() {
-                        @include push-arrow-color(ffffff, true);
-                    }
-                }
-            }
-
-            &.core-text-format-collapsed {
-                overflow: hidden;
-                min-height: 50px;
-
-                .core-format-text-arrow {
-                    transform: rotate(90deg);
-                }
-
-                &:before {
-                    content: '';
-                    height: 100%;
-                    position: absolute;
-                    @include position(null, 0, 0, 0);
-                    background: -webkit-linear-gradient(top, rgba(var(--core-format-text-background-gradient-rgb), 0) calc(100% - 60px), rgba(var(--core-format-text-background-gradient-rgb), 1) calc(100% - 40px));
-                    background: linear-gradient(to bottom, rgba(var(--core-format-text-background-gradient-rgb), 0) calc(100% - 60px), rgba(var(--core-format-text-background-gradient-rgb), 1) calc(100% - 40px));
-                    z-index: 6;
-                }
-            }
-
-            &.core-text-format-expanded {
-                max-height: none !important;
-
-                padding-bottom: 50px; // So the Show less button can fit.
-
-                .core-format-text-arrow {
-                    transform: rotate(-90deg);
-                }
-            }
+            @include collapsible-item();
         }
     }
 
     @if ($core-format-text-never-shorten) {
         &[maxHeight],
         &[ng-reflect-max-height] {
-            &.core-text-formatted.core-text-format-expanded {
+            &.collapsible-enabled.collapsible-expanded {
                 max-height: none !important;
 
-                .core-format-text-toggle {
+                .collapsible-toggle {
                     display: none !important;
                 }
 
