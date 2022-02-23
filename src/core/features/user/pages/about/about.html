@@ -15,7 +15,7 @@
     <core-loading [hideUntil]="userLoaded">
         <ion-list *ngIf="user">
             <ion-item class="ion-text-center core-user-profile-maininfo ion-text-wrap" lines="full">
-                <core-user-avatar [user]="user" [userId]="user.id" [linkProfile]="false" [checkOnline]="true">
+                <core-user-avatar [user]="user" [userId]="user.id" [linkProfile]="false" [checkOnline]="!canChangeProfilePicture">
                     <ion-button class="edit-avatar" *ngIf="canChangeProfilePicture" (click)="changeProfilePicture()"
                         [attr.aria-label]="'core.user.newpicture' | translate" fill="clear" color="dark">
                         <ion-icon slot="icon-only" name="fas-pen" aria-hidden="true"></ion-icon>
