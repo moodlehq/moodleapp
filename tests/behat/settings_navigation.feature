@@ -44,7 +44,7 @@ Feature: It navigates properly within settings.
 
     When I press the back button in the app
     And I press "Manage downloads" in the app
-    Then I should find "Total space usage" in the app
+    Then I should find "Total space used" in the app
 
   Scenario: Tablet navigation
     Given I enter the app
@@ -79,4 +79,4 @@ Feature: It navigates properly within settings.
 
     When I press "Manage downloads" in the app
     Then "Manage downloads" should be selected in the app
-    And I should find "Total space usage" in the app
+    And I should find "Total space used" in the app

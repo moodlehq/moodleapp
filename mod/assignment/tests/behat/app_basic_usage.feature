@@ -120,7 +120,7 @@ Feature: Test basic usage of assignment activity in app
     When I switch offline mode to "false"
     And I press the back button in the app
     And I press "assignment1" in the app
-    And I press "Display options" in the app
+    And I press "Information" in the app
     And I press "Refresh" in the app
     Then I should find "Submitted for grading" in the app
     But I should not find "This Assignment has offline data to be synchronised." in the app

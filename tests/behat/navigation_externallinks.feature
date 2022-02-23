@@ -32,11 +32,12 @@ Feature: It opens external links properly.
 
     When I close the browser tab opened by the app
     And I press the back button in the app
-    And I press the page menu button in the app
+    And I press "Information" in the app
     And I press "Open in browser" in the app
     Then the app should have opened a browser tab
 
     When I close the browser tab opened by the app
+    When I close the popup in the app
     And I press "Forum topic" in the app
     And I press "moodle.org" in the app
     And I select "Don't show again." in the app

@@ -402,7 +402,6 @@ Feature: Test basic usage of one course in app
 
   Scenario: Self enrol
     Given I enter the course "Course 1" as "teacher1" in the app
-    And I press "Display options" in the app
     And I press "Course summary" in the app
     And I press "Open in browser" in the app
     And I switch to the browser tab opened by the app
@@ -437,7 +436,6 @@ Feature: Test basic usage of one course in app
 
   Scenario: Guest access
     Given I enter the course "Course 1" as "teacher1" in the app
-    And I press "Display options" in the app
     And I press "Course summary" in the app
     And I press "Open in browser" in the app
     And I switch to the browser tab opened by the app
@@ -451,7 +449,7 @@ Feature: Test basic usage of one course in app
     And I press "Site home" in the app
     And I press "Available courses" in the app
     And I press "Course 1" in the app
-    Then I should find "Download course" in the app
+    Then I should find "Course downloads" in the app
     And I should find "Course" in the app
 
     When I press "Course" "ion-button" in the app

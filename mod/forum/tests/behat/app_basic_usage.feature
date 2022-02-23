@@ -182,7 +182,7 @@ Feature: Test basic usage of forum activity in app
     Then I should find "Auto-test" in the app
 
     When I press the back button in the app
-    And I press "Display options" in the app
+    And I press "Course summary" in the app
     And I press "Course downloads" in the app
     And I press "Download" within "Test forum name" "ion-item" in the app
     And I press the back button in the app
@@ -209,7 +209,7 @@ Feature: Test basic usage of forum activity in app
     Then I should find "Auto-test" in the app
 
     When I press the back button in the app
-    And I press "Display options" in the app
+    And I press "Course summary" in the app
     And I press "Course downloads" in the app
     And I press "Download" within "Test forum name" "ion-item" in the app
     And I press the back button in the app
@@ -256,7 +256,7 @@ Feature: Test basic usage of forum activity in app
     And I switch offline mode to "true"
     And I press "None" near "test2" in the app
     And I press "0" near "Cancel" in the app
-    Then I should find "Data stored in the device because it couldn't be sent. It will be sent automatically later." in the app
+    Then I should find "Data stored in the device because it couldn't be sent. It will be sent automatically later." inside the toast in the app
     And I should find "Average of ratings: -" in the app
     And I should find "Average of ratings: 1" in the app
 
@@ -264,7 +264,7 @@ Feature: Test basic usage of forum activity in app
     And I press the back button in the app
     Then I should find "This Forum has offline data to be synchronised." in the app
 
-    When I press "Display options" near "Test forum name" in the app
+    When I press "Information" near "Test forum name" in the app
     And I press "Synchronise now" in the app
     Then I should not find "This Forum has offline data to be synchronised." in the app
 
@@ -288,7 +288,7 @@ Feature: Test basic usage of forum activity in app
     And I set the field "Message" to "DiscussionMessage" in the app
     And I press "Post to forum" in the app
     And I press the back button in the app
-    And I press "Display options" in the app
+    And I press "Course summary" in the app
     And I press "Course downloads" in the app
     And I press "Download" within "Test forum name" "ion-item" in the app
     And I press the back button in the app
@@ -326,8 +326,8 @@ Feature: Test basic usage of forum activity in app
     When I switch offline mode to "false"
     And I press the back button in the app
     And I press "Test forum name" in the app
-    And I press "Display options" near "Test forum name" in the app
-    And I press "Refresh discussions" in the app
+    And I press "Information" near "Test forum name" in the app
+    And I press "Refresh" in the app
     And I press "DiscussionSubject" near "Sort by last post creation date in descending order" in the app
     Then I should find "DiscussionSubject" in the app
     And I should find "DiscussionMessage" in the app
@@ -367,7 +367,7 @@ Feature: Test basic usage of forum activity in app
     Then I should find "DiscussionSubject 1" in the app
 
     When I press the back button in the app
-    And I press "Display options" in the app
+    And I press "Course summary" in the app
     And I press "Course downloads" in the app
     And I press "Download" within "Test forum name" "ion-item" in the app
     Then I should find "Downloaded" within "Test forum name" "ion-item" in the app
