@@ -109,7 +109,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             AddonModAssignProvider.SUBMISSION_SAVED_EVENT,
             (data) => {
                 if (this.assign && data.assignmentId == this.assign.id && data.userId == this.currentUserId) {
-                // Assignment submission saved, refresh data.
+                    // Assignment submission saved, refresh data.
                     this.showLoadingAndRefresh(true, false);
                 }
             },
@@ -326,6 +326,8 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         const promises: Promise<void>[] = [];
 
         promises.push(AddonModAssign.invalidateAssignmentData(this.courseId));
+        // Invalidate before component becomes null.
+        promises.push(this.submissionComponent?.invalidateAndRefresh(true) || Promise.resolve());
 
         if (this.assign) {
             promises.push(AddonModAssign.invalidateAllSubmissionData(this.assign.id));
@@ -335,9 +337,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             }
         }
 
-        await Promise.all(promises).finally(() => {
-            this.submissionComponent?.invalidateAndRefresh(true);
-        });
+        await Promise.all(promises);
     }
 
     /**

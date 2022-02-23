@@ -483,6 +483,16 @@ ion-loading {
     }
 }
 
+// Toasts.
+ion-toast {
+    --button-color: var(--primary-tint);
+    @include media-breakpoint-down(sm) {
+        &::part(container) {
+            flex-direction: column;
+        }
+    }
+}
+
 // Ionic list.
 ion-list {
     padding: 0 !important;
@@ -740,7 +750,7 @@ body.core-iframe-fullscreen ion-router-outlet {
         ion-label {
             white-space: normal !important;
         }
-        ion-icon {
+        ion-item > ion-icon {
             color: var(--color-shade);
             @include margin-horizontal(null, 16px);
         }
