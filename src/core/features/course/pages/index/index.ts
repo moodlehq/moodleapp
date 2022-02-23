@@ -238,7 +238,6 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
 
         // Get the title to display initially.
         this.title = CoreCourseFormatDelegate.getCourseTitle(this.course);
-        this.category = 'categoryname' in this.course ? this.course.categoryname : '';
 
         if ('overviewfiles' in this.course) {
             this.imageThumb = this.course.overviewfiles?.[0]?.fileurl;

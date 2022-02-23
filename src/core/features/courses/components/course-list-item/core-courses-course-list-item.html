@@ -70,7 +70,8 @@
                     class="core-course-category core-course-additional-info ion-text-nowrap">
                     <span class="sr-only">{{ 'core.courses.aria:coursecategory' | translate }}</span>
                     <ion-label>
-                        <core-format-text [text]="course.categoryname"></core-format-text>
+                        <core-format-text [text]="course.categoryname" contextLevel="coursecat" [contextInstanceId]="course.categoryid">
+                        </core-format-text>
                     </ion-label>
                 </ion-chip>
             </div>

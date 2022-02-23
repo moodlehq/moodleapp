@@ -26,14 +26,23 @@
         <ng-container *ngIf="course">
             <ion-item class="ion-text-wrap">
                 <ion-label>
-                    <p *ngIf="course.categoryname">
-                        <core-format-text [text]="course.categoryname" contextLevel="coursecat" [contextInstanceId]="course.categoryid">
+                    <p *ngIf="course.displayname && course.shortname && course.fullname != course.displayname"
+                        class="core-course-shortname">
+                        <core-format-text [text]="course.shortname" contextLevel="course" [contextInstanceId]="course.id">
                         </core-format-text>
                     </p>
                     <h2>
+                        <span class="sr-only">{{ 'core.courses.aria:coursename' | translate }}</span>
                         <core-format-text [text]="course.fullname" contextLevel="course" [contextInstanceId]="course.id">
                         </core-format-text>
                     </h2>
+                    <ion-chip color="brand" *ngIf="course.categoryname" class="core-course-category ion-text-nowrap">
+                        <span class="sr-only">{{ 'core.courses.aria:coursecategory' | translate }}</span>
+                        <ion-label>
+                            <core-format-text [text]="course.categoryname" contextLevel="coursecat" [contextInstanceId]="course.categoryid">
+                            </core-format-text>
+                        </ion-label>
+                    </ion-chip>
 
                     <div class="core-course-progress" *ngIf="progress !== undefined">
                         <core-progress-bar [progress]="progress" a11yText="core.course.aria:sectionprogress">
