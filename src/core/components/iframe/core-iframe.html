@@ -1,6 +1,6 @@
 <div [class.core-loading-container]="loading || !safeUrl" [ngStyle]="{'width': iframeWidth, 'height': iframeHeight}">
 
-    <core-navbar-buttons slot="end" append *ngIf="initialized && showFullscreenOnToolbar">
+    <core-navbar-buttons slot="end" prepend *ngIf="initialized && showFullscreenOnToolbar">
         <ion-button fill="clear" (click)="toggleFullscreen()"
             [attr.aria-label]="(fullscreen ? 'core.disablefullscreen' : 'core.fullscreen') | translate">
             <ion-icon *ngIf="!fullscreen" name="fas-expand" slot="icon-only" aria-hidden="true"></ion-icon>
