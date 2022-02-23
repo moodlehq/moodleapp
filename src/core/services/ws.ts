@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { HttpResponse, HttpParams } from '@angular/common/http';
 
 import { FileEntry } from '@ionic-native/file/ngx';
-import { FileUploadOptions } from '@ionic-native/file-transfer/ngx';
+import { FileUploadOptions, FileUploadResult } from '@ionic-native/file-transfer/ngx';
 import { Md5 } from 'ts-md5/dist/md5';
 import { Observable } from 'rxjs';
 import { timeout } from 'rxjs/operators';
@@ -885,51 +885,56 @@ export class CoreWSProvider {
         options.headers = {};
         options['Connection'] = 'close';
 
+        let success: FileUploadResult;
+
         try {
-            const success = await transfer.upload(filePath, uploadUrl, options, true);
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const data = CoreTextUtils.parseJSON<any>(
-                success.response,
-                null,
-                this.logger.error.bind(this.logger, 'Error parsing response from upload', success.response),
-            );
-
-            if (data === null) {
-                throw new CoreError(Translate.instant('core.errorinvalidresponse'));
-            }
-
-            if (!data) {
-                throw new CoreError(Translate.instant('core.serverconnection'));
-            } else if (typeof data != 'object') {
-                this.logger.warn('Upload file: Response of type "' + typeof data + '" received, expecting "object"');
-
-                throw new CoreError(Translate.instant('core.errorinvalidresponse'));
-            }
-
-            if (data.exception !== undefined) {
-                throw new CoreWSError(data);
-            } else if (data.error !== undefined) {
-                throw new CoreWSError({
-                    errorcode: data.errortype,
-                    message: data.error,
-                });
-            } else if (data[0] && data[0].error !== undefined) {
-                throw new CoreWSError({
-                    errorcode: data[0].errortype,
-                    message: data[0].error,
-                });
-            }
-
-            // We uploaded only 1 file, so we only return the first file returned.
-            this.logger.debug('Successfully uploaded file', filePath);
-
-            return data[0];
+            success = await transfer.upload(filePath, uploadUrl, options, true);
         } catch (error) {
             this.logger.error('Error while uploading file', filePath, error);
 
+            throw new CoreError(CoreTextUtils.buildSeveralParagraphsMessage([
+                Translate.instant('core.cannotconnecttrouble'),
+                CoreTextUtils.getHTMLBodyContent(CoreTextUtils.getErrorMessageFromError(error) || ''),
+            ]));
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const data = CoreTextUtils.parseJSON<any>(
+            success.response,
+            null,
+            this.logger.error.bind(this.logger, 'Error parsing response from upload', success.response),
+        );
+
+        if (data === null) {
             throw new CoreError(Translate.instant('core.errorinvalidresponse'));
         }
+
+        if (!data) {
+            throw new CoreError(Translate.instant('core.serverconnection'));
+        } else if (typeof data != 'object') {
+            this.logger.warn('Upload file: Response of type "' + typeof data + '" received, expecting "object"');
+
+            throw new CoreError(Translate.instant('core.errorinvalidresponse'));
+        }
+
+        if (data.exception !== undefined) {
+            throw new CoreWSError(data);
+        } else if (data.error !== undefined) {
+            throw new CoreWSError({
+                errorcode: data.errortype,
+                message: data.error,
+            });
+        } else if (data[0] && data[0].error !== undefined) {
+            throw new CoreWSError({
+                errorcode: data[0].errortype,
+                message: data[0].error,
+            });
+        }
+
+        // We uploaded only 1 file, so we only return the first file returned.
+        this.logger.debug('Successfully uploaded file', filePath);
+
+        return data[0];
     }
 
     /**
