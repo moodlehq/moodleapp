@@ -164,6 +164,9 @@ ion-header {
             --ion-toolbar-color: var(--core-header-toolbar-color);
             --border-radius: var(--huge-radius);
         }
+        ion-back-button::part(text) {
+            display: none;
+        }
 
         .button.button-clear,
         .button.button-solid {
