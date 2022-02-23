@@ -20,6 +20,7 @@ import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreFileHelper } from '@services/file-helper';
+import { CoreSites } from '@services/sites';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
@@ -95,7 +96,14 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
 
         this.getResourceData(module, courseId, handlerData).then((extra) => {
             handlerData.extraBadge = extra;
-            handlerData.extraBadgeColor = '';
+
+            return;
+        }).catch(() => {
+            // Ignore errors.
+        });
+
+        this.getIconSrc(module).then((icon) => {
+            handlerData.icon = icon;
 
             return;
         }).catch(() => {
@@ -212,6 +220,36 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
         }
 
         return extra.join(' ');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async getIconSrc(module?: CoreCourseModuleData): Promise<string | undefined> {
+        if (!module) {
+            return;
+        }
+
+        if (CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.0')) {
+            return await CoreCourse.getModuleIconSrc(module.modname, module.modicon);
+        }
+        let mimetypeIcon = '';
+
+        if (module.contentsinfo) {
+            // No need to use the list of files.
+            const mimetype = module.contentsinfo.mimetypes[0];
+            if (mimetype) {
+                mimetypeIcon = CoreMimetypeUtils.getMimetypeIcon(mimetype);
+            }
+
+        } else if (module.contents && module.contents[0]) {
+            const files = module.contents;
+            const file = files[0];
+
+            mimetypeIcon = CoreMimetypeUtils.getFileIcon(file.filename || '');
+        }
+
+        return await CoreCourse.getModuleIconSrc(module.modname, module.modicon, mimetypeIcon);
     }
 
     /**

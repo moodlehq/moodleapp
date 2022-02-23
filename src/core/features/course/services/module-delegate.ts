@@ -25,6 +25,7 @@ import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 import { CoreCourseModuleData } from './course-helper';
 import { CoreNavigationOptions } from '@services/navigator';
+import { CoreIonicColorNames } from '@singletons/colors';
 
 /**
  * Interface that all course module handlers must implement.
@@ -146,7 +147,7 @@ export interface CoreCourseModuleHandlerData {
     /**
      * The color of the extra badge. Default: primary.
      */
-    extraBadgeColor?: string;
+    extraBadgeColor?: CoreIonicColorNames;
 
     /**
      * Whether to display a button to download/refresh the module if it's downloadable.
