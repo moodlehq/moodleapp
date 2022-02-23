@@ -983,6 +983,12 @@ ion-chip {
     min-height: 24px;
     height: auto;
 
+    // Chips are not currently clickable.
+    &.ion-activatable {
+        cursor: auto;
+        pointer-events: none;
+    }
+
     &.ion-color {
         background: var(--ion-color-tint);
         &.chip-outline {
