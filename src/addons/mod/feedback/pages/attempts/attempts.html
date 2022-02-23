@@ -15,7 +15,8 @@
         </ion-refresher>
         <core-loading [hideUntil]="attempts && attempts.loaded">
             <ion-list class="ion-no-margin">
-                <ion-item class="ion-text-wrap" *ngIf="groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)">
+                <ion-item class="ion-text-wrap core-group-selector"
+                    *ngIf="groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)">
                     <ion-label id="addon-feedback-groupslabel">
                         <ng-container *ngIf="groupInfo.separateGroups">{{'core.groupsseparate' | translate }}</ng-container>
                         <ng-container *ngIf="groupInfo.visibleGroups">{{'core.groupsvisible' | translate }}</ng-container>

@@ -25,7 +25,7 @@
             </ion-item>
         </ion-card>
 
-        <ion-item class="ion-text-wrap" *ngIf="groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)">
+        <ion-item class="ion-text-wrap core-group-selector" *ngIf="groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)">
             <ion-label id="addon-data-groupslabel">
                 <ng-container *ngIf="groupInfo.separateGroups">{{ 'core.groupsvisible' | translate }}</ng-container>
                 <ng-container *ngIf="groupInfo.visibleGroups">{{ 'core.groupsseparate' | translate }}</ng-container>

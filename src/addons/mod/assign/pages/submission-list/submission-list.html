@@ -25,7 +25,7 @@
             </core-empty-box>
 
             <ion-list>
-                <ion-item class="ion-text-wrap" *ngIf="(groupInfo.separateGroups || groupInfo.visibleGroups)">
+                <ion-item class="ion-text-wrap core-group-selector" *ngIf="(groupInfo.separateGroups || groupInfo.visibleGroups)">
                     <ion-label id="addon-assign-groupslabel-list">
                         <ng-container *ngIf="groupInfo.separateGroups">{{'core.groupsseparate' | translate }}</ng-container>
                         <ng-container *ngIf="groupInfo.visibleGroups">{{'core.groupsvisible' | translate }}</ng-container>
@@ -48,7 +48,9 @@
                                 {{ 'addon.mod_assign.hiddenuser' | translate }}{{submission.blindid}}
                             </p>
                             <p *ngIf="assign && assign!.teamsubmission">
-                                <span *ngIf="submission.groupname">{{submission.groupname}}</span>
+                                <span *ngIf="submission.groupname" class="core-groupname">
+                                    {{submission.groupname}}
+                                </span>
                                 <span *ngIf="assign!.preventsubmissionnotingroup && !submission.groupname && submission.noGroups
                                     && !submission.blindid" class="text-danger">
                                     {{ 'addon.mod_assign.noteam' | translate }}

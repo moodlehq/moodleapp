@@ -45,7 +45,7 @@
                     <ion-label>{{ 'addon.mod_forum.posttomygroups' | translate }}</ion-label>
                     <ion-toggle [(ngModel)]="newDiscussion.postToAllGroups" name="postallgroups"></ion-toggle>
                 </ion-item>
-                <ion-item *ngIf="showGroups">
+                <ion-item *ngIf="showGroups" class="core-edit-set-group">
                     <ion-label id="addon-mod-forum-groupslabel">{{ 'addon.mod_forum.group' | translate }}</ion-label>
                     <ion-select [(ngModel)]="newDiscussion.groupId" [disabled]="newDiscussion.postToAllGroups"
                         aria-labelledby="addon-mod-forum-groupslabel" interface="action-sheet" name="groupid"
