@@ -88,6 +88,8 @@
     --subdued-text-color: var(--gray-700);
 
     --ion-card-color: var(--text-color);
+    --ion-card-vertical-margin: 10px;
+    --ion-card-horizontal-margin: 10px;
     ion-card {
         --border-width: 1px;
         --border-style: solid;

@@ -2,10 +2,10 @@
 
 :host {
     --horizontal-margin: 10px;
+    --vertical-margin: 10px;
 
     ion-card {
-        margin-left: var(--horizontal-margin);
-        margin-right: var(--horizontal-margin);
+        margin: var(--vertical-margin) var(--horizontal-margin);
     }
 
     ion-item {

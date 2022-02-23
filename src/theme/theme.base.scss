@@ -813,6 +813,7 @@ ion-card {
     border-color: var(--border-color);
     box-shadow: var(--box-shadow);
     border-radius: var(--border-radius);
+    margin: var(--ion-card-vertical-margin) var(--ion-card-horizontal-margin);
 
     ion-item:only-child {
         --inner-border-width: 0px;
@@ -1149,6 +1150,10 @@ ion-item.item-lines-full {
 ion-item.item-lines-inset {
     --inner-border-width: 1px;
     --border-width: 0px;
+}
+
+ion-item.item-input.ios {
+    --inner-border-width: 0 0 1px 0;
 }
 
 // Fake item.
