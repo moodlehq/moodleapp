@@ -28,6 +28,7 @@ import { CoreNavigator } from '@services/navigator';
 @Component({
     selector: 'addon-block-activitymodules',
     templateUrl: 'addon-block-activitymodules.html',
+    styleUrls: ['activitymodules.scss'],
 })
 export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent implements OnInit {
 
@@ -96,16 +97,13 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
         // Sort the modnames alphabetically.
         modFullNames = CoreUtils.sortValues(modFullNames);
         for (const modName in modFullNames) {
-            let icon: string;
+            const iconModName = modName === 'resources' ? 'page' : modName;
 
-            if (modName === 'resources') {
-                icon = await CoreCourse.getModuleIconSrc('page', modIcons['page']);
-            } else {
-                icon = await CoreCourseModuleDelegate.getModuleIconSrc(modName, modIcons[modName]);
-            }
+            const icon = await CoreCourseModuleDelegate.getModuleIconSrc(iconModName, modIcons[iconModName]);
 
             this.entries.push({
-                icon: icon,
+                icon,
+                iconModName,
                 name: modFullNames[modName],
                 modName,
             });
@@ -145,4 +143,5 @@ type AddonBlockActivityModuleEntry = {
     icon: string;
     name: string;
     modName: string;
+    iconModName: string;
 };
