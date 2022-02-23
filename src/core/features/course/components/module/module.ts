@@ -20,7 +20,7 @@ import {
     CoreCourseModuleCompletionData,
     CoreCourseSection,
 } from '@features/course/services/course-helper';
-import { CoreCourse } from '@features/course/services/course';
+import { CoreCourse, CoreCourseModuleCompletionStatus, CoreCourseModuleCompletionTracking } from '@features/course/services/course';
 import { CoreCourseModuleDelegate, CoreCourseModuleHandlerButton } from '@features/course/services/module-delegate';
 import {
     CoreCourseModulePrefetchDelegate,
@@ -55,6 +55,8 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     showManualCompletion = false; // Whether to show manual completion when completion conditions are disabled.
     prefetchStatusIcon = ''; // Module prefetch status icon.
     prefetchStatusText = ''; // Module prefetch status text.
+    autoCompletionTodo = false;
+
     protected prefetchHandler?: CoreCourseModulePrefetchHandler;
 
     protected moduleStatusObserver?: CoreEventObserver;
@@ -73,10 +75,18 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
 
         this.module.handlerData.a11yTitle = this.module.handlerData.a11yTitle ?? this.module.handlerData.title;
 
+        const completionStatus = this.showCompletionConditions && this.module.completiondata?.isautomatic &&
+            this.module.completiondata.tracking == CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_AUTOMATIC
+            ? this.module.completiondata.state
+            : undefined;
+
+        this.autoCompletionTodo = completionStatus == CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE ||
+            completionStatus == CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE_FAIL;
+
         this.hasInfo = !!(
             this.module.description ||
             (this.showActivityDates && this.module.dates && this.module.dates.length) ||
-            (this.module.completiondata && this.showCompletionConditions && this.module.completiondata.isautomatic) ||
+            (this.autoCompletionTodo) ||
             (this.module.visible === 0 && (!this.section || this.section.visible)) ||
             (this.module.visible !== 0 && this.module.isStealth) ||
             (this.module.availabilityinfo)
