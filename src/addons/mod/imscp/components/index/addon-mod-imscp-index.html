@@ -1,6 +1,6 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
-    <ion-button *ngIf="loaded" (click)="showToc()" aria-haspopup="true" [attr.aria-label]="'addon.mod_imscp.toc' | translate">
+    <ion-button *ngIf="!showLoading" (click)="showToc()" aria-haspopup="true" [attr.aria-label]="'addon.mod_imscp.toc' | translate">
         <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
 
@@ -10,7 +10,7 @@
 </core-navbar-buttons>
 
 <!-- Content. -->
-<core-loading [hideUntil]="loaded" class="safe-area-padding">
+<core-loading [hideUntil]="!showLoading" class="safe-area-padding">
 
     <!-- Activity info. -->
     <core-course-module-info [module]="module">
@@ -26,9 +26,10 @@
     <div class="addon-mod-imscp-container">
         <core-navigation-bar [items]="navigationItems" (action)="loadItem($event)">
         </core-navigation-bar>
-        <core-iframe *ngIf="loaded" [src]="src" [showFullscreenOnToolbar]="true" [autoFullscreenOnRotate]="true"></core-iframe>
+        <core-iframe *ngIf="!showLoading" [src]="src" [showFullscreenOnToolbar]="true" [autoFullscreenOnRotate]="true"></core-iframe>
     </div>
 </core-loading>
 
-<core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModule]="module" (completionChanged)="onCompletionChange()">
+<core-course-module-navigation [hidden]="showLoading" [courseId]="courseId" [currentModule]="module"
+    (completionChanged)="onCompletionChange()">
 </core-course-module-navigation>

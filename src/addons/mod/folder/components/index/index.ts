@@ -55,7 +55,7 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
             this.description = this.folderInstance ? this.folderInstance.intro : this.module.description;
             this.contents = this.subfolder;
 
-            this.loaded = true;
+            this.showLoading = false;
 
             return;
         }
@@ -70,7 +70,7 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
                 // Ignore errors.
             }
         } finally {
-            this.loaded = true;
+            this.showLoading = false;
         }
     }
 

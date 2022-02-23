@@ -16,7 +16,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <ion-refresher slot="fixed" [disabled]="subfolder || !activityComponent?.loaded"
+    <ion-refresher slot="fixed" [disabled]="subfolder || activityComponent?.showLoading"
         (ionRefresh)="activityComponent?.doRefresh($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>

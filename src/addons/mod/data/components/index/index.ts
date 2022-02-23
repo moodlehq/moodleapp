@@ -133,7 +133,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         // Refresh entries on change.
         this.entryChangedObserver = CoreEvents.on(AddonModDataProvider.ENTRY_CHANGED, (eventData) => {
             if (this.database?.id == eventData.dataId) {
-                this.loaded = false;
+                this.showLoading = true;
 
                 return this.loadContent(true);
             }
@@ -191,7 +191,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      */
     protected isRefreshSyncNeeded(syncEventData: AddonModDataAutoSyncData): boolean {
         if (this.database && syncEventData.dataId == this.database.id && syncEventData.entryId === undefined) {
-            this.loaded = false;
+            this.showLoading = true;
             // Refresh the data.
             this.content?.scrollToTop();
 
@@ -404,7 +404,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      * @return Resolved when done.
      */
     async searchEntries(page: number): Promise<void> {
-        this.loaded = false;
+        this.showLoading = true;
         this.search.page = page;
 
         try {
@@ -414,7 +414,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
         } finally {
-            this.loaded = true;
+            this.showLoading = false;
         }
     }
 

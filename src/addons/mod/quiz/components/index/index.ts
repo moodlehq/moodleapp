@@ -455,13 +455,13 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         }
 
         // Refresh data.
-        this.loaded = false;
+        this.showLoading = true;
         this.content?.scrollToTop();
 
         await promise;
         await CoreUtils.ignoreErrors(this.refreshContent(true));
 
-        this.loaded = true;
+        this.showLoading = false;
     }
 
     /**
@@ -547,8 +547,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
 
         if (status == CoreConstants.DOWNLOADED && previousStatus == CoreConstants.DOWNLOADING) {
             // Quiz downloaded now, maybe a new attempt was created. Load content again.
-            this.loaded = false;
-            this.loadContent();
+            this.showLoadingAndFetch();
         }
     }
 

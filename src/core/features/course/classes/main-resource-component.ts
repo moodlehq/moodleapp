@@ -52,7 +52,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     @Input() courseId!: number; // Course ID the component belongs to.
     @Output() dataRetrieved = new EventEmitter<unknown>(); // Called to notify changes the index page from the main component.
 
-    loaded = false; // If the component has been loaded.
+    showLoading = true; // Whether to show loading.
     component?: string; // Component name.
     componentId?: number; // Component ID.
     hasOffline = false; // Resources don't have any data to sync.
@@ -199,7 +199,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
 
             CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError, true);
         } finally {
-            this.loaded = true;
+            this.showLoading = false;
         }
     }
 
@@ -416,12 +416,12 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         });
 
         if (data) {
-            if (this.loaded && (data.action == 'refresh' || data.action == 'sync')) {
-                this.loaded = false;
+            if (!this.showLoading && (data.action == 'refresh' || data.action == 'sync')) {
+                this.showLoading = true;
                 try {
                     await this.doRefresh(undefined, data.action == 'sync');
                 } finally {
-                    this.loaded = true;
+                    this.showLoading = false;
                 }
             }
         }

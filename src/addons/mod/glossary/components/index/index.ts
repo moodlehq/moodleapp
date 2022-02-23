@@ -393,7 +393,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
         this.loadingMessage = Translate.instant('core.loading');
         this.content?.scrollToTop();
         this.switchMode(mode);
-        this.loaded = false;
+        this.showLoading = true;
         this.loadContent();
     }
 
@@ -411,7 +411,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
      */
     search(query: string): void {
         this.loadingMessage = Translate.instant('core.searching');
-        this.loaded = false;
+        this.showLoading = true;
 
         this.entries?.getSource().search(query);
         this.loadContent();
