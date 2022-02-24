@@ -638,14 +638,6 @@ export class CoreAppProvider {
             color = CoreColors.getToolbarBackgroundColor();
         }
 
-        // Make darker on Android, except white.
-        if (this.isAndroid()) {
-            const rgb = CoreColors.hexToRGB(color);
-            if (rgb.red != 255 || rgb.green != 255 || rgb.blue != 255) {
-                color = CoreColors.darker(color, 10);
-            }
-        }
-
         this.logger.debug(`Set status bar color ${color}`);
 
         const useLightText = CoreColors.isWhiteContrastingBetter(color);
