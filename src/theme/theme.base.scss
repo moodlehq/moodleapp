@@ -1540,9 +1540,19 @@ body.core-iframe-fullscreen ion-content {
 .core-swipe-slides-container {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    flex-grow: 1;
+    min-height: 100%;
 
     core-swipe-slides {
+        display: flex;
+        flex-direction: column;
         flex-grow: 1;
+
+        ion-slides {
+            flex-grow: 1;
+            max-width: 100%;
+        }
     }
+
+
 }

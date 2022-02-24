@@ -20,5 +20,9 @@
         margin-top: var(--button-vertical-margin);
         margin-bottom: var(--button-vertical-margin);
     }
+}
 
+:host-context(.core-iframe-fullscreen) {
+    opacity: 0 !important;
+    height: 0 !important;
 }
