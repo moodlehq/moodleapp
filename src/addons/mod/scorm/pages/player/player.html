@@ -28,6 +28,7 @@
         <p *ngIf="!src && errorMessage">{{ errorMessage | translate }}</p>
     </core-loading>
 
-    <core-navigation-bar *ngIf="loaded && navigationItems.length > 1" [items]="navigationItems" (action)="loadSco($event)" slot="fixed">
+    <core-navigation-bar collapsible-footer *ngIf="loaded && navigationItems.length > 1" [items]="navigationItems"
+        (action)="loadSco($event)" slot="fixed">
     </core-navigation-bar>
 </ion-content>

@@ -17,13 +17,11 @@ import { CoreCourse, CoreCourseProvider, CoreCourseWSSection } from '@features/c
 import { CoreCourseModuleCompletionData, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { IonContent } from '@ionic/angular';
-import { ScrollDetail } from '@ionic/core';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreMath } from '@singletons/math';
 
 /**
  * Component to show a button to go to the next resource/activity.
@@ -51,20 +49,10 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
     loaded = false;
     showCompletion = false; // Whether to show completion.
 
-    protected element: HTMLElement;
-    protected initialHeight = 0;
-    protected initialPaddingBottom = 0;
-    protected previousTop = 0;
-    protected previousHeight = 0;
-    protected stickTimeout?: number;
-    protected content?: HTMLIonContentElement | null;
     protected completionObserver: CoreEventObserver;
 
     constructor(el: ElementRef, protected ionContent: IonContent) {
         const siteId = CoreSites.getCurrentSiteId();
-
-        this.element = el.nativeElement;
-        this.element.setAttribute('slot', 'fixed');
 
         this.completionObserver = CoreEvents.on(CoreEvents.COMPLETION_MODULE_VIEWED, async (data) => {
             if (data && data.courseId == this.courseId) {
@@ -88,68 +76,7 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
             await this.setNextAndPreviousModules(CoreSitesReadingStrategy.PREFER_CACHE);
         } finally {
             this.loaded = true;
-
-            await CoreUtils.nextTicks(50);
-            this.listenScrollEvents();
         }
-    }
-
-    /**
-     * Setup scroll event listener.
-     *
-     * @param retries Number of retries left.
-     */
-    protected async listenScrollEvents(retries = 3): Promise<void> {
-        this.initialHeight = this.element.getBoundingClientRect().height;
-
-        if (this.initialHeight == 0 && retries > 0) {
-            await CoreUtils.nextTicks(50);
-
-            this.listenScrollEvents(retries - 1);
-
-            return;
-        }
-        // Set a minimum height value.
-        this.initialHeight = this.initialHeight || 48;
-        this.previousHeight = this.initialHeight;
-
-        this.content = this.element.closest('ion-content');
-
-        if (!this.content) {
-            return;
-        }
-
-        // Special case where there's no navigation.
-        const courseFormat = this.element.closest('core-course-format.core-course-format-singleactivity');
-        if (courseFormat) {
-            this.element.remove();
-            this.ngOnDestroy();
-
-            return;
-        }
-
-        this.content.classList.add('has-core-navigation');
-
-        // Move element to the nearest ion-content if it's not the parent.
-        if (this.element.parentElement?.nodeName != 'ION-CONTENT') {
-            this.content.appendChild(this.element);
-        }
-
-        // Set a padding to not overlap elements.
-        this.initialPaddingBottom = parseFloat(this.content.style.getPropertyValue('--padding-bottom') || '0');
-        this.content.style.setProperty('--padding-bottom', this.initialPaddingBottom + this.initialHeight + 'px');
-        const scroll = await this.content.getScrollElement();
-        this.content.scrollEvents = true;
-
-        this.setBarHeight(this.initialHeight);
-        this.content.addEventListener('ionScroll', (e: CustomEvent<ScrollDetail>): void => {
-            if (!this.content) {
-                return;
-            }
-
-            this.onScroll(e.detail, scroll);
-        });
-
     }
 
     /**
@@ -157,7 +84,6 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
      */
     async ngOnDestroy(): Promise<void> {
         this.completionObserver.off();
-        this.content?.style.setProperty('--padding-bottom', this.initialPaddingBottom + 'px');
     }
 
     /**
@@ -313,48 +239,6 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
             CoreNavigator.navigateToSitePath('course/' + this.courseId + '/' + module.id +'/module-preview', options);
         } else {
             CoreCourseModuleDelegate.openActivityPage(module.modname, module, this.courseId, options);
-        }
-    }
-
-    /**
-     * On scroll function.
-     *
-     * @param scrollDetail Scroll detail object.
-     * @param scrollElement Scroll element to calculate maxScroll.
-     */
-    protected onScroll(scrollDetail: ScrollDetail, scrollElement: HTMLElement): void {
-        const maxScroll = scrollElement.scrollHeight - scrollElement.offsetHeight;
-        if (scrollDetail.scrollTop <= 0 || scrollDetail.scrollTop >= maxScroll) {
-            // Reset.
-            this.setBarHeight(this.initialHeight);
-        } else {
-            let newHeight = this.previousHeight - (scrollDetail.scrollTop - this.previousTop);
-            newHeight = CoreMath.clamp(newHeight, 0, this.initialHeight);
-
-            this.setBarHeight(newHeight);
-        }
-        this.previousTop = scrollDetail.scrollTop;
-    }
-
-    /**
-     * Sets the bar height.
-     *
-     * @param height The new bar height.
-     */
-    protected setBarHeight(height: number): void {
-        if (this.stickTimeout) {
-            clearTimeout(this.stickTimeout);
-        }
-
-        this.element.style.opacity = height <= 0 ? '0' : '1';
-        this.content?.style.setProperty('--core-navigation-height', height + 'px');
-        this.previousHeight = height;
-
-        if (height > 0 && height < this.initialHeight) {
-            // Finish opening or closing the bar.
-            const newHeight = height < this.initialHeight / 2 ? 0 : this.initialHeight;
-
-            this.stickTimeout = window.setTimeout(() => this.setBarHeight(newHeight), 500);
         }
     }
 
