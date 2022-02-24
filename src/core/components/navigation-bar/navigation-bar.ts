@@ -16,10 +16,10 @@ import { Component, EventEmitter, Input, OnChanges, Output, SimpleChange } from 
 import { Translate } from '@singletons';
 
 /**
- * Component to show a "bar" with arrows to navigate forward/backward and an slider to move around.
+ * Component to show a "bar" with arrows to navigate forward/backward and an progressbar to see the status.
  *
  * This directive will show two arrows at the left and right of the screen to navigate to previous/next item when clicked.
- * If no previous/next item is defined, that arrow won't be shown.
+ * If no previous/next item is defined, that arrow will be disabled.
  *
  * Example usage:
  * <core-navigation-bar [items]="items" (action)="goTo($event)"></core-navigation-bar>
@@ -32,7 +32,6 @@ import { Translate } from '@singletons';
 export class CoreNavigationBarComponent implements OnChanges {
 
     @Input() items: CoreNavigationBarItem[] = []; // List of items.
-    @Input() showTitles = false; // Display titles on buttons.
     @Input() previousTranslate = 'core.previous'; // Previous translatable text, can admit $a variable.
     @Input() nextTranslate = 'core.next'; // Next translatable text, can admit $a variable.
     @Input() component?: string; // Component the bar belongs to.
@@ -46,6 +45,8 @@ export class CoreNavigationBarComponent implements OnChanges {
     previousIndex = -1; // Previous item index. If -1, the previous arrow won't be shown.
     nextIndex = -1; // Next item index. If -1, the next arrow won't be shown.
     currentIndex = 0;
+    progress = 0;
+    progressText = '';
 
     // Function to call when arrow is clicked. Will receive as a param the item to load.
     @Output() action: EventEmitter<unknown> = new EventEmitter<unknown>();
@@ -62,6 +63,9 @@ export class CoreNavigationBarComponent implements OnChanges {
         if (this.currentIndex < 0) {
             return;
         }
+
+        this.progress = ((this.currentIndex + 1) / this.items.length) * 100;
+        this.progressText = `${this.currentIndex + 1} / ${this.items.length}`;
 
         this.nextIndex = this.items[this.currentIndex + 1]?.enabled ? this.currentIndex + 1 : -1;
         if (this.nextIndex >= 0) {
@@ -86,22 +90,6 @@ export class CoreNavigationBarComponent implements OnChanges {
 
         this.currentIndex = itemIndex;
         this.action.emit(this.items[itemIndex].item);
-    }
-
-    /**
-     * Navigate to an item with the range component.
-     *
-     * @param target: Element changed.
-     */
-    navigateOnRange(target: HTMLIonRangeElement): void {
-        const selectedIndex = target.value as number; // Single value, use number.
-        if (!this.items[selectedIndex].enabled) {
-            target.value = this.currentIndex;
-
-            return;
-        }
-
-        this.navigate(selectedIndex);
     }
 
 }

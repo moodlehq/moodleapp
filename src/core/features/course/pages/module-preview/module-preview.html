@@ -44,6 +44,6 @@
         <core-course-unsupported-module *ngIf="unsupported" [module]="module"></core-course-unsupported-module>
     </core-loading>
 
-    <core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModule]="module"
+    <core-course-module-navigation collapsible-footer [hidden]="!loaded" [courseId]="courseId" [currentModule]="module"
         (completionChanged)="onCompletionChange()" [showManualCompletion]="showManualCompletion"></core-course-module-navigation>
 </ion-content>

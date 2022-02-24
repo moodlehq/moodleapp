@@ -86,7 +86,7 @@ export class CoreProgressBarComponent implements OnInit, OnChanges {
                 this.progress = Math.floor(this.progress);
 
                 if (!this.textSupplied) {
-                    this.text = String(this.progress);
+                    this.text = Translate.instant('core.percentagenumber', { $a: this.progress });
                 }
 
                 this.width = DomSanitizer.bypassSecurityTrustStyle(this.progress + '%');
@@ -94,8 +94,7 @@ export class CoreProgressBarComponent implements OnInit, OnChanges {
         }
 
         if (changes.text || changes.progress || changes.a11yText) {
-            this.progressBarValueText = (this.a11yText ? Translate.instant(this.a11yText) + ' ' : '') +
-                Translate.instant('core.percentagenumber', { $a: this.text });
+            this.progressBarValueText = (this.a11yText ? Translate.instant(this.a11yText) + ' ' : '') + this.text;
         }
     }
 

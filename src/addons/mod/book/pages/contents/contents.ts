@@ -62,7 +62,6 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
     warning = '';
     displayNavBar = true;
     navigationItems: CoreNavigationBarItem<AddonModBookTocChapter>[] = [];
-    displayTitlesInNavBar = false;
     slidesOpts: CoreSwipeSlidesOptions = {
         autoHeight: true,
         scrollOnChange: 'top',
@@ -135,7 +134,6 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
             const downloadResult = await this.downloadResourceIfNeeded(module, refresh);
 
             this.displayNavBar = book.navstyle != AddonModBookNavStyle.TOC_ONLY;
-            this.displayTitlesInNavBar = book.navstyle == AddonModBookNavStyle.TEXT;
             this.title = book.name;
 
             // Get contents. No need to refresh, it has been done in downloadResourceIfNeeded.

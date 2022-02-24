@@ -21,20 +21,14 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 
-    <core-loading [hideUntil]="loaded" class="core-loading-full-height">
+    <core-loading [hideUntil]="loaded">
         <div class="safe-area-padding-horizontal core-swipe-slides-container">
-
             <ion-card class="core-warning-card" *ngIf="warning">
                 <ion-item>
                     <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
                     <ion-label><span [innerHTML]="warning"></span></ion-label>
                 </ion-item>
             </ion-card>
-
-            <core-navigation-bar *ngIf="displayNavBar" [items]="navigationItems" [showTitles]="displayTitlesInNavBar"
-                previousTranslate="addon.mod_book.navprevtitle" nextTranslate="addon.mod_book.navnexttitle"
-                (action)="changeChapter($event.id)">
-            </core-navigation-bar>
 
             <core-swipe-slides [manager]="manager" [options]="slidesOpts">
                 <ng-template let-chapter="item">
@@ -50,4 +44,9 @@
             </core-swipe-slides>
         </div>
     </core-loading>
+
+    <core-navigation-bar collapsible-footer *ngIf="loaded && displayNavBar && navigationItems.length > 1" [items]="navigationItems"
+        previousTranslate="addon.mod_book.navprevtitle" nextTranslate="addon.mod_book.navnexttitle" (action)="changeChapter($event.id)"
+        slot="fixed">
+    </core-navigation-bar>
 </ion-content>

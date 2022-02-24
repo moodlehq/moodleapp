@@ -85,7 +85,8 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
     protected firstSelectedTab?: string; // ID of the first selected tab to control history.
     protected backButtonFunction: (event: BackButtonEvent) => void;
     protected languageChangedSubscription?: Subscription;
-    protected isInTransition = false; // Weather Slides is in transition.
+    // Swiper 6 documentation: https://swiper6.vercel.app/
+    protected isInTransition = false; // Wether Slides is in transition.
     protected slidesSwiper: any; // eslint-disable-line @typescript-eslint/no-explicit-any
     protected slidesSwiperLoaded = false;
     protected scrollElements: Record<string | number, HTMLElement> = {}; // Scroll elements for each loaded tab.
