@@ -25,12 +25,17 @@
     // border: var(--a11y-focus-width) solid var(--a11y-focus-color);
 }
 
-@mixin core-transition($property: all, $duration: 500ms, $timing-function: ease-in-out) {
-    -webkit-transition: $property $duration $timing-function;
-    -moz-transition: $property $duration $timing-function;
-    -ms-transition: $property $duration $timing-function;
-    -o-transition: $property $duration $timing-function;
-    transition: $property $duration $timing-function;
+@mixin core-transition($properties: all, $duration: 500ms, $timing-function: ease-in-out) {
+    $transitions: ();
+    @each $property in $properties {
+      $transitions: append($transitions, $property $duration $timing-function, comma);
+    }
+
+    -webkit-transition: $transitions;
+    -moz-transition: $transitions;
+    -ms-transition: $transitions;
+    -o-transition: $transitions;
+    transition: $transitions;
 }
 
 @mixin push-arrow-color($color: dedede, $flip-rtl: false) {

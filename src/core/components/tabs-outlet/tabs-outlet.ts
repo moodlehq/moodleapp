@@ -23,7 +23,7 @@ import {
     ElementRef,
     SimpleChange,
 } from '@angular/core';
-import { IonTabs, ViewDidEnter, ViewDidLeave } from '@ionic/angular';
+import { IonRouterOutlet, IonTabs, ViewDidEnter, ViewDidLeave } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
 import { CoreUtils } from '@services/utils/utils';
@@ -32,6 +32,7 @@ import { CoreNavBarButtonsComponent } from '../navbar-buttons/navbar-buttons';
 import { StackEvent } from '@ionic/angular/directives/navigation/stack-utils';
 import { CoreNavigator } from '@services/navigator';
 import { CoreTabBase, CoreTabsBaseComponent } from '@classes/tabs';
+import { CoreComponentsRegistry } from '@singletons/components-registry';
 
 /**
  * This component displays some top scrollable tabs that will autohide on vertical scroll.
@@ -70,6 +71,8 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
 
     constructor(element: ElementRef) {
         super(element);
+
+        CoreComponentsRegistry.register(element.nativeElement, this);
     }
 
     /**
@@ -163,6 +166,15 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
         // The `ionViewDidLeave` method is not called on nested outlets unless the active view changes, that's why
         // we need to call it manually if the page is leaving and the last active component was not notified.
         this.lastActiveComponent?.ionViewDidLeave?.();
+    }
+
+    /**
+     * Get router outlet.
+     *
+     * @returns Router outlet
+     */
+    getOutlet(): IonRouterOutlet {
+        return this.ionTabs.outlet;
     }
 
     /**
