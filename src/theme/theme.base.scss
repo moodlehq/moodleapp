@@ -1124,8 +1124,8 @@ ion-fab[core-fab] {
     }
 }
 
-ion-content.has-core-course-module-navigation ion-fab {
-    bottom: calc(var(--core-course-module-navigation-height, 0px) + 10px);
+ion-content.has-core-navigation ion-fab {
+    bottom: calc(var(--core-navigation-height, 0px) + 10px);
     @include core-transition(all, 200ms);
 }
 

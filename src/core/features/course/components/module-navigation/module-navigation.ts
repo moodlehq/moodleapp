@@ -128,7 +128,7 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
             return;
         }
 
-        this.content.classList.add('has-core-course-module-navigation');
+        this.content.classList.add('has-core-navigation');
 
         // Move element to the nearest ion-content if it's not the parent.
         if (this.element.parentElement?.nodeName != 'ION-CONTENT') {
@@ -347,7 +347,7 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
         }
 
         this.element.style.opacity = height <= 0 ? '0' : '1';
-        this.content?.style.setProperty('--core-course-module-navigation-height', height + 'px');
+        this.content?.style.setProperty('--core-navigation-height', height + 'px');
         this.previousHeight = height;
 
         if (height > 0 && height < this.initialHeight) {

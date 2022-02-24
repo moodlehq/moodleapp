@@ -31,9 +31,8 @@
                 </ion-item>
             </ion-card>
 
-            <core-navigation-bar *ngIf="displayNavBar" [items]="navigationItems" [showTitles]="displayTitlesInNavBar"
-                previousTranslate="addon.mod_book.navprevtitle" nextTranslate="addon.mod_book.navnexttitle"
-                (action)="changeChapter($event.id)">
+            <core-navigation-bar *ngIf="displayNavBar" [items]="navigationItems" previousTranslate="addon.mod_book.navprevtitle"
+                nextTranslate="addon.mod_book.navnexttitle" (action)="changeChapter($event.id)">
             </core-navigation-bar>
 
             <core-swipe-slides [manager]="manager" [options]="slidesOpts">
