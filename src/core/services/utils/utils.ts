@@ -49,6 +49,7 @@ export class CoreUtilsProvider {
     protected iabInstance?: InAppBrowserObject;
     protected uniqueIds: {[name: string]: number} = {};
     protected qrScanData?: {deferred: PromiseDefer<string>; observable: Subscription};
+    protected initialColorSchemeContent = 'light dark';
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreUtilsProvider');
@@ -1646,6 +1647,13 @@ export class CoreUtilsProvider {
 
                 document.body.classList.add('core-scanning-qr');
 
+                // Set color-scheme to 'normal', otherwise the camera isn't seen in Android.
+                const colorSchemeMeta = document.querySelector('meta[name="color-scheme"]');
+                if (colorSchemeMeta) {
+                    this.initialColorSchemeContent = colorSchemeMeta.getAttribute('content') || this.initialColorSchemeContent;
+                    colorSchemeMeta.setAttribute('content', 'normal');
+                }
+
                 return this.qrScanData.deferred.promise;
             } catch (e) {
                 this.stopScanQR(e, true);
@@ -1674,6 +1682,10 @@ export class CoreUtilsProvider {
 
         // Hide camera preview.
         document.body.classList.remove('core-scanning-qr');
+
+        // Set color-scheme to the initial value.
+        document.querySelector('meta[name="color-scheme"]')?.setAttribute('content', this.initialColorSchemeContent);
+
         QRScanner.hide();
         QRScanner.destroy();
 
