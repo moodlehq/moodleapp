@@ -1970,7 +1970,6 @@
   "core.login.recaptchaexpired": "local_moodlemobileapp",
   "core.login.recaptchaincorrect": "local_moodlemobileapp",
   "core.login.reconnect": "local_moodlemobileapp",
-  "core.login.reconnectdescription": "local_moodlemobileapp",
   "core.login.reconnectssodescription": "local_moodlemobileapp",
   "core.login.removeaccount": "local_moodlemobileapp",
   "core.login.resendemail": "moodle",

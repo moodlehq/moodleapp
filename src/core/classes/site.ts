@@ -45,6 +45,7 @@ import { CoreSites } from '@services/sites';
 import { asyncInstance, AsyncInstance } from '../utils/async-instance';
 import { CoreDatabaseTable } from './database/database-table';
 import { CoreDatabaseCachingStrategy } from './database/database-table-proxy';
+import { CoreSilentError } from './errors/silenterror';
 
 /**
  * QR Code type enumeration.
@@ -520,7 +521,8 @@ export class CoreSite {
             // Site is logged out, it cannot call WebServices.
             CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, {}, this.id);
 
-            throw new CoreError(Translate.instant('core.lostconnection'));
+            // Use a silent error, the SESSION_EXPIRED event will display a message if needed.
+            throw new CoreSilentError(Translate.instant('core.lostconnection'));
         }
 
         const initialToken = this.token || '';
@@ -610,6 +612,8 @@ export class CoreSite {
 
                 return response;
             } catch (error) {
+                let useSilentError = false;
+
                 if (CoreUtils.isExpiredTokenError(error)) {
                     if (initialToken !== this.token && !retrying) {
                         // Token has changed, retry with the new token.
@@ -627,6 +631,7 @@ export class CoreSite {
                     CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, {}, this.id);
                     // Change error message. Try to get data from cache, the event will handle the error.
                     error.message = Translate.instant('core.lostconnection');
+                    useSilentError = true; // Use a silent error, the SESSION_EXPIRED event will display a message if needed.
                 } else if (error.errorcode === 'userdeleted' || error.errorcode === 'wsaccessuserdeleted') {
                     // User deleted, trigger event.
                     CoreEvents.trigger(CoreEvents.USER_DELETED, { params: data }, this.id);
@@ -707,7 +712,11 @@ export class CoreSite {
 
                 try {
                     return await this.getFromCache<T>(method, data, preSets, true);
-                } catch (e) {
+                } catch {
+                    if (useSilentError) {
+                        throw new CoreSilentError(error.message);
+                    }
+
                     throw new CoreWSError(error);
                 }
             }
