@@ -266,9 +266,10 @@ export class AddonModDataEditPage implements OnInit {
                         this.offline,
                     );
                 } catch (error) {
-                    if (this.offline) {
+                    if (this.offline || CoreUtils.isWebServiceError(error)) {
                         throw error;
                     }
+
                     // Cannot submit in online, prepare for offline usage.
                     this.offline = true;
 

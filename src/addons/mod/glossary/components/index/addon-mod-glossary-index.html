@@ -16,7 +16,7 @@
 
 <!-- Content. -->
 <core-split-view>
-    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="doRefresh($event.target)">
+    <ion-refresher slot="fixed" [disabled]="showLoading" (ionRefresh)="doRefresh($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 
@@ -24,7 +24,7 @@
         [autoFocus]="true" [lengthCheck]="2" (onClear)="toggleSearch()" searchArea="AddonModGlossary-{{module.id}}">
     </core-search-box>
 
-    <core-loading [hideUntil]="loaded">
+    <core-loading [hideUntil]="!showLoading">
         <!-- Activity info. -->
         <core-course-module-info *ngIf="!isSearch" [module]="module" [description]="description" [component]="component"
             [componentId]="componentId" [courseId]="courseId" [hasDataToSync]="hasOffline || hasOfflineRatings">
@@ -72,7 +72,7 @@
         </core-infinite-loading>
     </core-loading>
 
-    <core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModule]="module"
+    <core-course-module-navigation [hidden]="showLoading" [courseId]="courseId" [currentModule]="module"
         (completionChanged)="onCompletionChange()">
     </core-course-module-navigation>
 

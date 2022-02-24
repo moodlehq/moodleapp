@@ -6,7 +6,7 @@
 </core-navbar-buttons>
 
 <!-- Content. -->
-<core-loading [hideUntil]="loaded">
+<core-loading [hideUntil]="!showLoading">
 
     <!-- Activity info. -->
     <core-course-module-info [module]="module" [description]="displayDescription && description" [component]="component"
@@ -46,5 +46,6 @@
     </ion-list>
 </core-loading>
 
-<core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModule]="module" (completionChanged)="onCompletionChange()">
+<core-course-module-navigation [hidden]="showLoading" [courseId]="courseId" [currentModule]="module"
+    (completionChanged)="onCompletionChange()">
 </core-course-module-navigation>

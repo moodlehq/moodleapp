@@ -6,8 +6,8 @@
 </core-navbar-buttons>
 
 <!-- Content. -->
-<core-loading [hideUntil]="loaded">
-    <core-tabs [hideUntil]="loaded" [selectedIndex]="selectedTab">
+<core-loading [hideUntil]="!showLoading">
+    <core-tabs [hideUntil]="!showLoading" [selectedIndex]="selectedTab">
         <!-- Index/Preview tab. -->
         <core-tab [title]="'addon.mod_lesson.preview' | translate" (ionSelect)="indexSelected()">
             <ng-template>
@@ -279,5 +279,6 @@
     </core-tabs>
 </core-loading>
 
-<core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModule]="module" (completionChanged)="onCompletionChange()">
+<core-course-module-navigation [hidden]="showLoading" [courseId]="courseId" [currentModule]="module"
+    (completionChanged)="onCompletionChange()">
 </core-course-module-navigation>

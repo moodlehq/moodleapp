@@ -531,6 +531,18 @@ export class CoreTextUtilsProvider {
     }
 
     /**
+     * Given some HTML code, return the HTML code inside <body> tags. If there are no body tags, return the whole HTML.
+     *
+     * @param html HTML text.
+     * @return Body HTML.
+     */
+    getHTMLBodyContent(html: string): string {
+        const matches = html.match(/<body>([\s\S]*)<\/body>/im);
+
+        return matches?.[1] ?? html;
+    }
+
+    /**
      * Get the pluginfile URL to replace @@PLUGINFILE@@ wildcards.
      *
      * @param files Files to extract the URL from. They need to have the URL in a 'url' or 'fileurl' attribute.

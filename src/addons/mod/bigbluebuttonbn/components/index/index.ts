@@ -115,14 +115,14 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
             return;
         }
 
-        this.loaded = false;
+        this.showLoading = true;
 
         try {
             await AddonModBBB.invalidateAllGroupsMeetingInfo(this.bbb.id);
 
             await this.fetchMeetingInfo();
         } finally {
-            this.loaded = true;
+            this.showLoading = false;
         }
     }
 
@@ -148,14 +148,14 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
      * @return Promise resolved when done.
      */
     async groupChanged(): Promise<void> {
-        this.loaded = false;
+        this.showLoading = true;
 
         try {
             await this.fetchMeetingInfo();
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
         } finally {
-            this.loaded = true;
+            this.showLoading = false;
         }
     }
 

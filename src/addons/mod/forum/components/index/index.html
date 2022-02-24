@@ -7,11 +7,11 @@
 
 <!-- Content. -->
 <core-split-view>
-    <ion-refresher slot="fixed" [disabled]="discussions && !discussions.loaded" (ionRefresh)="doRefresh($event.target)">
+    <ion-refresher slot="fixed" [disabled]="showLoading || (discussions && !discussions.loaded)" (ionRefresh)="doRefresh($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 
-    <core-loading [hideUntil]="discussions && discussions.loaded">
+    <core-loading [hideUntil]="!showLoading && discussions && discussions.loaded">
         <!-- Activity info. -->
         <core-course-module-info [module]="module" [description]="forum && forum.type != 'single' && description" [component]="component"
             [componentId]="componentId" [courseId]="courseId" [hasDataToSync]="hasOffline || hasOfflineRatings">
@@ -114,7 +114,7 @@
         </ng-container>
     </core-loading>
 
-    <core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModule]="module"
+    <core-course-module-navigation [hidden]="showLoading" [courseId]="courseId" [currentModule]="module"
         (completionChanged)="onCompletionChange()">
     </core-course-module-navigation>
 

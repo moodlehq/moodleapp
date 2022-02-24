@@ -618,7 +618,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             return;
         }
 
-        this.loaded = false;
+        this.showLoading = true;
 
         try {
             await this.validatePassword(<string> password);
@@ -635,7 +635,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
         } finally {
-            this.loaded = true;
+            this.showLoading = false;
 
             CoreForms.triggerFormSubmittedEvent(this.formElement, true, this.siteId);
         }

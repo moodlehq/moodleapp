@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { FileEntry } from '@ionic-native/file/ngx';
+import { FileEntry, DirectoryEntry } from '@ionic-native/file/ngx';
 import {
     AddonModAssignProvider,
     AddonModAssignAssign,

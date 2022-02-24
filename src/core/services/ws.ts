@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { HttpResponse, HttpParams } from '@angular/common/http';
 
 import { FileEntry } from '@ionic-native/file/ngx';
-import { FileUploadOptions } from '@ionic-native/file-transfer/ngx';
+import { FileUploadOptions, FileUploadResult } from '@ionic-native/file-transfer/ngx';
 import { Md5 } from 'ts-md5/dist/md5';
 import { Observable } from 'rxjs';
 import { timeout } from 'rxjs/operators';
@@ -25,7 +25,7 @@ import { CoreNativeToAngularHttpResponse } from '@classes/native-to-angular-http
 import { CoreApp } from '@services/app';
 import { CoreFile, CoreFileFormat } from '@services/file';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreTextErrorObject, CoreTextUtils } from '@services/utils/text';
 import { CoreUtils, PromiseDefer } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
@@ -38,6 +38,7 @@ import { CoreAjaxError } from '@classes/errors/ajaxerror';
 import { CoreAjaxWSError } from '@classes/errors/ajaxwserror';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreSite } from '@classes/site';
+import { CoreHttpError } from '@classes/errors/httperror';
 
 /**
  * This service allows performing WS calls and download/upload files.
@@ -693,6 +694,8 @@ export class CoreWSProvider {
                 return retryPromise;
             } else if (error.status === -2) {
                 throw new CoreError(this.getCertificateErrorMessage(error.error));
+            } else if (error.status > 0) {
+                throw this.createHttpError(error, error.status);
             }
 
             throw new CoreError(Translate.instant('core.serverconnection'));
@@ -885,51 +888,69 @@ export class CoreWSProvider {
         options.headers = {};
         options['Connection'] = 'close';
 
+        let success: FileUploadResult;
+
         try {
-            const success = await transfer.upload(filePath, uploadUrl, options, true);
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const data = CoreTextUtils.parseJSON<any>(
-                success.response,
-                null,
-                this.logger.error.bind(this.logger, 'Error parsing response from upload', success.response),
-            );
-
-            if (data === null) {
-                throw new CoreError(Translate.instant('core.errorinvalidresponse'));
-            }
-
-            if (!data) {
-                throw new CoreError(Translate.instant('core.serverconnection'));
-            } else if (typeof data != 'object') {
-                this.logger.warn('Upload file: Response of type "' + typeof data + '" received, expecting "object"');
-
-                throw new CoreError(Translate.instant('core.errorinvalidresponse'));
-            }
-
-            if (data.exception !== undefined) {
-                throw new CoreWSError(data);
-            } else if (data.error !== undefined) {
-                throw new CoreWSError({
-                    errorcode: data.errortype,
-                    message: data.error,
-                });
-            } else if (data[0] && data[0].error !== undefined) {
-                throw new CoreWSError({
-                    errorcode: data[0].errortype,
-                    message: data[0].error,
-                });
-            }
-
-            // We uploaded only 1 file, so we only return the first file returned.
-            this.logger.debug('Successfully uploaded file', filePath);
-
-            return data[0];
+            success = await transfer.upload(filePath, uploadUrl, options, true);
         } catch (error) {
             this.logger.error('Error while uploading file', filePath, error);
 
+            throw this.createHttpError(error, error.http_status ?? 0);
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const data = CoreTextUtils.parseJSON<any>(
+            success.response,
+            null,
+            this.logger.error.bind(this.logger, 'Error parsing response from upload', success.response),
+        );
+
+        if (data === null) {
             throw new CoreError(Translate.instant('core.errorinvalidresponse'));
         }
+
+        if (!data) {
+            throw new CoreError(Translate.instant('core.serverconnection'));
+        } else if (typeof data != 'object') {
+            this.logger.warn('Upload file: Response of type "' + typeof data + '" received, expecting "object"');
+
+            throw new CoreError(Translate.instant('core.errorinvalidresponse'));
+        }
+
+        if (data.exception !== undefined) {
+            throw new CoreWSError(data);
+        } else if (data.error !== undefined) {
+            throw new CoreWSError({
+                errorcode: data.errortype,
+                message: data.error,
+            });
+        } else if (data[0] && data[0].error !== undefined) {
+            throw new CoreWSError({
+                errorcode: data[0].errortype,
+                message: data[0].error,
+            });
+        }
+
+        // We uploaded only 1 file, so we only return the first file returned.
+        this.logger.debug('Successfully uploaded file', filePath);
+
+        return data[0];
+    }
+
+    /**
+     * Create a CoreHttpError based on a certain error.
+     *
+     * @param error Original error.
+     * @param status Status code (if any).
+     * @return CoreHttpError.
+     */
+    protected createHttpError(error: CoreTextErrorObject, status: number): CoreHttpError {
+        const message = CoreTextUtils.buildSeveralParagraphsMessage([
+            Translate.instant('core.cannotconnecttrouble'),
+            CoreTextUtils.getHTMLBodyContent(CoreTextUtils.getErrorMessageFromError(error) || ''),
+        ]);
+
+        return new CoreHttpError(message, status);
     }
 
     /**

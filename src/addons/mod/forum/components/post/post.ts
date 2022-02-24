@@ -364,7 +364,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
                     );
                 } catch (error) {
                     // Cannot upload them in online, save them in offline.
-                    if (!this.forum.id || isEditOnline) {
+                    if (!this.forum.id || isEditOnline || CoreUtils.isWebServiceError(error)) {
                         // Cannot store them in offline. Reject.
                         throw error;
                     }

@@ -25,6 +25,7 @@ import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
+import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreForms } from '@singletons/form';
@@ -349,7 +350,11 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
                     inputData.attachmentfiles,
                     false,
                 );
-            } catch {
+            } catch (error) {
+                if (CoreUtils.isWebServiceError(error)) {
+                    throw error;
+                }
+
                 // Cannot upload them in online, save them in offline.
                 saveOffline = true;
                 allowOffline = true;

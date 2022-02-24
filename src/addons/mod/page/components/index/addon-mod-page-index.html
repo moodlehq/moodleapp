@@ -6,7 +6,7 @@
 </core-navbar-buttons>
 
 <!-- Content. -->
-<core-loading [hideUntil]="loaded" class="safe-area-padding">
+<core-loading [hideUntil]="!showLoading" class="safe-area-padding">
 
     <!-- Activity info. -->
     <core-course-module-info [module]="module" [description]="displayDescription && description" [component]="component"
@@ -32,5 +32,6 @@
 
 </core-loading>
 
-<core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModule]="module" (completionChanged)="onCompletionChange()">
+<core-course-module-navigation [hidden]="showLoading" [courseId]="courseId" [currentModule]="module"
+    (completionChanged)="onCompletionChange()">
 </core-course-module-navigation>

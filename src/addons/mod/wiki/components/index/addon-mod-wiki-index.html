@@ -7,7 +7,7 @@
         <ion-icon *ngIf="groupWiki" name="fas-users" aria-hidden="true"></ion-icon>
     </ion-button>
 
-    <ion-button *ngIf="loaded && currentPageObj" (click)="openMap()" [attr.aria-label]="'addon.mod_wiki.map' | translate"
+    <ion-button *ngIf="!showLoading && currentPageObj" (click)="openMap()" [attr.aria-label]="'addon.mod_wiki.map' | translate"
         aria-haspopup="true">
         <ion-icon name="fas-map" aria-hidden="true"></ion-icon>
     </ion-button>
@@ -27,7 +27,7 @@
 </core-navbar-buttons>
 
 <!-- Content. -->
-<core-loading [hideUntil]="loaded">
+<core-loading [hideUntil]="!showLoading">
 
     <!-- Activity info. -->
     <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
@@ -71,7 +71,8 @@
     </div>
 </core-loading>
 
-<core-course-module-navigation [hidden]="!loaded" [courseId]="courseId" [currentModule]="module" (completionChanged)="onCompletionChange()">
+<core-course-module-navigation [hidden]="showLoading" [courseId]="courseId" [currentModule]="module"
+    (completionChanged)="onCompletionChange()">
 </core-course-module-navigation>
 
 <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="canEdit">

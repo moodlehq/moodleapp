@@ -187,7 +187,8 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
         plugin: AddonModAssignPlugin,
     ): Promise<number> {
         // Check if there's any change.
-        if (this.hasDataChanged(assign, submission, plugin)) {
+        const hasChanged = await this.hasDataChanged(assign, submission, plugin);
+        if (hasChanged) {
             const files = CoreFileSession.getFiles(AddonModAssignProvider.COMPONENT, assign.id);
 
             return CoreFileHelper.getTotalFilesSize(files);

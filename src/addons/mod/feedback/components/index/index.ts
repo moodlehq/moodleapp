@@ -97,7 +97,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
 
             this.tabsLoaded.analysis = false;
             this.tabsLoaded.overview = false;
-            this.loaded = false;
+            this.showLoading = true;
 
             // Prefetch data if needed.
             if (!data.offline && this.isPrefetched()) {

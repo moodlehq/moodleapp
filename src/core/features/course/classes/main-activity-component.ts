@@ -116,7 +116,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      * @return Resolved when done.
      */
     protected async showLoadingAndFetch(sync: boolean = false, showErrors: boolean = false): Promise<void> {
-        this.loaded = false;
+        this.showLoading = true;
         this.content?.scrollToTop();
 
         await this.loadContent(false, sync, showErrors);
@@ -130,7 +130,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      * @return Resolved when done.
      */
     protected showLoadingAndRefresh(sync: boolean = false, showErrors: boolean = false): Promise<void> {
-        this.loaded = false;
+        this.showLoading = true;
         this.content?.scrollToTop();
 
         return this.refreshContent(sync, showErrors);
@@ -177,7 +177,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
 
             CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError, true);
         } finally {
-            this.loaded = true;
+            this.showLoading = false;
         }
     }
 
