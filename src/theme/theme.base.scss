@@ -140,7 +140,7 @@ body {
 @each $color-name, $unused in $colors {
     .text-#{$color-name},
     p.text-#{$color-name} {
-        color: var(--ion-color-#{$color-name});
+        color: var(--ion-color-#{$color-name}) !important;
     }
 }
 
@@ -831,8 +831,8 @@ ion-list.core-course-module-list-wrapper,
 .list-item-limited-width,
 .core-course-module-list-wrapper {
     max-width: var(--list-item--max-width);
-    margin-left: auto;
-    margin-right: auto;
+    margin-left: auto !important;
+    margin-right: auto !important;
 }
 
 ion-toolbar h1 img.core-bar-button-image,
@@ -1451,13 +1451,19 @@ ion-grid.core-no-grid > ion-row {
         --core-collapsible-footer-height: auto;
     }
 
+    .ion-margin {
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+
+    filter: var(--scroll-shadow-top, none);
+    -webkit-filter: var(--scroll-shadow-top, none);
     width: 100%;
     bottom: 0;
     z-index: 3;
     height: var(--core-collapsible-footer-height, auto);
     background-color: var(--core-collapsible-footer-background);
     display: block;
-    border-top: 1px solid var(--stroke);
     @include core-transition(all, 200ms);
 }
 

@@ -35,17 +35,16 @@
                 <p>{{ url }}</p>
             </ion-label>
         </ion-item>
-        <ion-item class="ion-text-wrap">
-            <ion-label>
-                <ion-button expand="block" (click)="go()">
-                    <ion-icon name="fas-link" slot="start" aria-hidden="true"></ion-icon>
-                    {{ 'addon.mod_url.accessurl' | translate }}
-                </ion-button>
-            </ion-label>
-        </ion-item>
     </ion-list>
-</core-loading>
 
-<core-course-module-navigation collapsible-footer [hidden]="showLoading" [courseId]="courseId" [currentModule]="module"
-    (completionChanged)="onCompletionChange()">
-</core-course-module-navigation>
+    <div collapsible-footer *ngIf="!showLoading" slot="fixed">
+        <div class="list-item-limited-width" *ngIf="url && !shouldIframe && (!shouldEmbed || !isOther)">
+            <ion-button expand="block" (click)="go()" class="ion-margin ion-text-wrap">
+                <ion-icon name="fas-link" slot="start" aria-hidden="true"></ion-icon>
+                {{ 'addon.mod_url.accessurl' | translate }}
+            </ion-button>
+        </div>
+        <core-course-module-navigation [courseId]="courseId" [currentModule]="module" (completionChanged)="onCompletionChange()">
+        </core-course-module-navigation>
+    </div>
+</core-loading>

@@ -6,7 +6,7 @@
 </core-navbar-buttons>
 
 <!-- Content. -->
-<core-loading [hideUntil]="!showLoading" class="safe-area-padding">
+<core-loading [hideUntil]="!showLoading" class="safe-area-padding core-loading-full-height">
 
     <!-- Activity info. -->
     <core-course-module-info [module]="module" [courseId]="courseId" [description]="displayDescription && description"
@@ -76,8 +76,12 @@
                     </ion-label>
                 </ion-item>
             </ng-container>
+        </ion-list>
+    </ng-container>
 
-            <ion-button expand="block" class="ion-margin" (click)="open(openFileAction.OPEN)">
+    <div collapsible-footer *ngIf="!showLoading" slot="fixed">
+        <div class="list-item-limited-width" *ngIf="mode == 'external'">
+            <ion-button expand="block" (click)="open(openFileAction.OPEN)" class="ion-margin ion-text-wrap">
                 <ng-container *ngIf="isStreamedFile">
                     <ion-icon name="fas-play" slot="start" aria-hidden="true"></ion-icon>
                     {{ 'core.play' | translate }}
@@ -88,15 +92,13 @@
                 </ng-container>
             </ion-button>
 
-            <ion-button *ngIf="isIOS && (!shouldOpenInBrowser || !isOnline)" expand="block" class="ion-margin"
-                (click)="open(openFileAction.OPEN_WITH)">
+            <ion-button *ngIf="isIOS && (!shouldOpenInBrowser || !isOnline)" expand="block" (click)="open(openFileAction.OPEN_WITH)"
+                class="ion-margin ion-text-wrap">
                 <ion-icon name="far-share-square" slot="start" aria-hidden="true"></ion-icon>
                 {{ 'core.openwith' | translate }}
             </ion-button>
-        </ion-list>
-    </ng-container>
+        </div>
+        <core-course-module-navigation [courseId]="courseId" [currentModule]="module" (completionChanged)="onCompletionChange()">
+        </core-course-module-navigation>
+    </div>
 </core-loading>
-
-<core-course-module-navigation collapsible-footer [hidden]="showLoading" [courseId]="courseId" [currentModule]="module"
-    (completionChanged)="onCompletionChange()">
-</core-course-module-navigation>

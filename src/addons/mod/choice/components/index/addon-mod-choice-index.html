@@ -64,12 +64,6 @@
                 <ion-radio slot="end" [value]="option.id" [disabled]="option.disabled || !canEdit"></ion-radio>
             </ion-item>
         </ion-radio-group>
-        <ion-button *ngIf="canEdit" expand="block" (click)="save()" [disabled]="!canSave()" class="ion-margin">
-            {{ 'addon.mod_choice.savemychoice' | translate }}
-        </ion-button>
-        <ion-button *ngIf="canDelete" expand="block" color="light" (click)="delete()" class="ion-margin">
-            {{ 'addon.mod_choice.removemychoice' | translate }}
-        </ion-button>
     </ion-card>
 
     <!-- Choice results -->
@@ -139,11 +133,24 @@
             </ion-label>
         </ion-item>
     </ion-card>
+
+
+    <div collapsible-footer *ngIf="!showLoading" slot="fixed">
+        <div class="list-item-limited-width" *ngIf="options.length && choice && (canEdit || canDelete)">
+            <ion-button *ngIf="canDelete" expand="block" fill="outline" (click)="delete()" class="ion-margin ion-text-wrap">
+                {{ 'addon.mod_choice.removemychoice' | translate }}
+            </ion-button>
+            <ion-button *ngIf="canEdit" expand="block" (click)="save()" [disabled]="!canSave()" class="ion-margin ion-text-wrap">
+                {{ 'addon.mod_choice.savemychoice' | translate }}
+            </ion-button>
+        </div>
+
+        <core-course-module-navigation [courseId]="courseId" [currentModule]="module" (completionChanged)="onCompletionChange()">
+        </core-course-module-navigation>
+    </div>
 </core-loading>
 
-<core-course-module-navigation collapsible-footer [hidden]="showLoading" [courseId]="courseId" [currentModule]="module"
-    (completionChanged)="onCompletionChange()">
-</core-course-module-navigation>
+
 
 <!-- Template to render a choice option label. -->
 <ng-template #optionLabelTemplate let-option="option">

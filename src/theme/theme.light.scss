@@ -334,7 +334,9 @@
     --addon-forum-border-color: var(--stroke);
     --addon-forum-highlight-color: var(--light);
 
-    --drop-shadow: 0, 0, 0, 0.18;
+    --drop-shadow: 0, 0, 0, 0.5;
+    --scroll-shadow-bottom: drop-shadow(0px 3px 3px rgba(var(--drop-shadow)));
+    --scroll-shadow-top: drop-shadow(0px 3px 3px rgba(var(--drop-shadow)));
 
     --core-question-correct-color: var(--success-shade);
     --core-question-correct-color-bg: var(--success-tint);

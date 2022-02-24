@@ -26,12 +26,12 @@
     <div class="addon-mod-imscp-container">
         <core-iframe *ngIf="!showLoading" [src]="src" [showFullscreenOnToolbar]="true" [autoFullscreenOnRotate]="true"></core-iframe>
     </div>
-</core-loading>
 
-<!-- TODO Add a contents page to avoid having both bars -->
-<core-navigation-bar collapsible-footer *ngIf="!showLoading && navigationItems.length > 1 && false" [items]="navigationItems"
-    (action)="loadItem($event)">
-</core-navigation-bar>
-<core-course-module-navigation collapsible-footer [hidden]="showLoading" [courseId]="courseId" [currentModule]="module"
-    (completionChanged)="onCompletionChange()">
-</core-course-module-navigation>
+    <div collapsible-footer *ngIf="!showLoading" slot="fixed">
+        <!-- TODO Add a contents page to avoid having both bars. Please add here start/resume buttons. -->
+        <core-navigation-bar *ngIf="navigationItems.length > 1" [items]="navigationItems" (action)="loadItem($event)">
+        </core-navigation-bar>
+        <core-course-module-navigation [courseId]="courseId" [currentModule]="module" (completionChanged)="onCompletionChange()">
+        </core-course-module-navigation>
+    </div>
+</core-loading>

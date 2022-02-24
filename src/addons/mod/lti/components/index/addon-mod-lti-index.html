@@ -13,14 +13,15 @@
         [componentId]="componentId" [courseId]="courseId">
     </core-course-module-info>
 
-    <div class="ion-padding">
-        <ion-button expand="block" (click)="launch()">
-            <ion-icon name="fas-external-link-alt" slot="start" aria-hidden="true"></ion-icon>
-            {{ 'addon.mod_lti.launchactivity' | translate }}
-        </ion-button>
+    <div collapsible-footer *ngIf="!showLoading" slot="fixed">
+        <div class="list-item-limited-width">
+            <ion-button expand="block" (click)="launch()" class="ion-margin ion-text-wrap">
+                {{ 'addon.mod_lti.launchactivity' | translate }}
+                <ion-icon name="fas-external-link-alt" slot="end" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </div>
+
+        <core-course-module-navigation [courseId]="courseId" [currentModule]="module" (completionChanged)="onCompletionChange()">
+        </core-course-module-navigation>
     </div>
 </core-loading>
-
-<core-course-module-navigation collapsible-footer [hidden]="showLoading" [courseId]="courseId" [currentModule]="module"
-    (completionChanged)="onCompletionChange()">
-</core-course-module-navigation>

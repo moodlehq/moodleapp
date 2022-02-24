@@ -21,7 +21,7 @@
         </ion-item>
     </ion-card>
 
-    <ng-container *ngIf="scorm && !showLoading && !scorm.warningMessage">
+    <div *ngIf="scorm && !showLoading && !scorm.warningMessage" class="list-item-limited-width">
         <!-- Attempts status. -->
         <ion-card *ngIf="(scorm.displayattemptstatus || offlineAttempts.length) && !skip">
             <ion-card-header class="ion-text-wrap">
@@ -155,32 +155,34 @@
                 </ion-item>
             </ion-list>
         </ion-card>
+    </div>
 
-        <!-- Open in browser button. -->
-        <ion-card *ngIf="errorMessage">
-            <ion-item class="ion-text-wrap">
-                <ion-label>
-                    <p class="text-danger">{{ errorMessage | translate }}</p>
-                </ion-label>
-            </ion-item>
-            <ion-button class="ion-margin ion-text-wrap" expand="block" [href]="module.url" core-link [showBrowserWarning]="false">
-                {{ 'core.openinbrowser' | translate }}
-                <ion-icon name="fas-external-link-alt" slot="end" aria-hidden="true"></ion-icon>
-            </ion-button>
-        </ion-card>
+    <div collapsible-footer *ngIf="!showLoading" slot="fixed">
+        <div class="list-item-limited-width" *ngIf="scorm && !scorm.warningMessage">
+            <!-- Open in browser button. -->
+            <ng-container *ngIf="errorMessage">
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <p class="text-danger">{{ errorMessage | translate }}</p>
+                    </ion-label>
+                </ion-item>
+                <ion-button class="ion-margin ion-text-wrap" expand="block" [href]="module.url" core-link [showBrowserWarning]="false">
+                    {{ 'core.openinbrowser' | translate }}
+                    <ion-icon name="fas-external-link-alt" slot="end" aria-hidden="true"></ion-icon>
+                </ion-button>
+            </ng-container>
 
-        <!-- Warning that user doesn't have any more attempts. -->
-        <ion-card *ngIf="!errorMessage && attemptsLeft == 0">
-            <ion-item class="ion-text-wrap">
-                <ion-label>
-                    <p class="text-danger">{{ 'addon.mod_scorm.exceededmaxattempts' | translate }}</p>
-                </ion-label>
-            </ion-item>
-        </ion-card>
+            <!-- Warning that user doesn't have any more attempts. -->
+            <ion-card *ngIf="!errorMessage && attemptsLeft == 0" class="core-danger-card">
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <p>{{ 'addon.mod_scorm.exceededmaxattempts' | translate }}</p>
+                    </ion-label>
+                </ion-item>
+            </ion-card>
 
-        <!-- Open SCORM in app form -->
-        <ion-card *ngIf="!errorMessage && scorm && (!scorm.lastattemptlock || attemptsLeft > 0)">
-            <ion-list>
+            <ng-container *ngIf="!errorMessage && (!scorm.lastattemptlock || attemptsLeft > 0)">
+                <!-- Open SCORM in app form -->
                 <ng-container *ngIf="!downloading && !skip">
                     <!-- Create new attempt -->
                     <ion-item class="ion-text-wrap" *ngIf="!scorm.forcenewattempt && numAttempts > 0 && !incomplete && attemptsLeft > 0">
@@ -189,29 +191,21 @@
                         </ion-checkbox>
                     </ion-item>
 
-                    <ion-item class="ion-text-wrap" *ngIf="statusMessage">
-                        <ion-label>
+                    <ion-item *ngIf="statusMessage">
+                        <ion-label class="ion-text-wrap ion-no-margin ion-margin-top">
                             <p>{{ statusMessage | translate }}</p>
                         </ion-label>
                     </ion-item>
 
                     <!-- Open mode (Preview or Normal) -->
-                    <ion-grid>
-                        <ion-row class="ion-align-items-center">
-                            <ion-col *ngIf="!scorm.hidebrowse">
-                                <ion-button expand="block" fill="outline" (click)="open($event, true)" class="ion-text-wrap">
-                                    {{ 'addon.mod_scorm.browse' | translate }}
-                                    <ion-icon name="fas-search" slot="end" aria-hidden="true"></ion-icon>
-                                </ion-button>
-                            </ion-col>
-                            <ion-col>
-                                <ion-button expand="block" (click)="open($event)" class="ion-text-wrap">
-                                    {{ 'addon.mod_scorm.enter' | translate }}
-                                    <ion-icon name="fas-arrow-right" slot="end" aria-hidden="true"></ion-icon>
-                                </ion-button>
-                            </ion-col>
-                        </ion-row>
-                    </ion-grid>
+                    <ion-button *ngIf="!scorm.hidebrowse" expand="block" fill="outline" (click)="open($event, true)"
+                        class="ion-text-wrap ion-margin">
+                        <ion-icon name="fas-search" slot="start" aria-hidden="true"></ion-icon>
+                        {{ 'addon.mod_scorm.browse' | translate }}
+                    </ion-button>
+                    <ion-button expand="block" (click)="open($event)" class="ion-text-wrap ion-margin">
+                        {{ 'addon.mod_scorm.enter' | translate }}
+                    </ion-button>
                 </ng-container>
 
                 <!-- Download progress. -->
@@ -223,11 +217,9 @@
                         </core-progress-bar>
                     </ion-label>
                 </ion-item>
-            </ion-list>
-        </ion-card>
-    </ng-container>
+            </ng-container>
+        </div>
+        <core-course-module-navigation [courseId]="courseId" [currentModule]="module" (completionChanged)="onCompletionChange()">
+        </core-course-module-navigation>
+    </div>
 </core-loading>
-
-<core-course-module-navigation collapsible-footer [hidden]="showLoading" [courseId]="courseId" [currentModule]="module"
-    (completionChanged)="onCompletionChange()">
-</core-course-module-navigation>

@@ -33,11 +33,28 @@
             </ng-template>
         </core-tab>
     </core-tabs>
-</core-loading>
 
-<core-course-module-navigation collapsible-footer [hidden]="showLoading" [courseId]="courseId" [currentModule]="module"
-    (completionChanged)="onCompletionChange()">
-</core-course-module-navigation>
+    <div collapsible-footer *ngIf="!showLoading" slot="fixed">
+        <div class="list-item-limited-width" *ngIf="access && (access.canedititems || access.canviewreports || !access.isempty)">
+            <ion-button expand="block" fill="outline" (click)="gotoAnswerQuestions(true)" class="ion-margin ion-text-wrap">
+                <ion-icon name="fas-search" slot="start" aria-hidden="true"></ion-icon>
+                {{ 'addon.mod_feedback.preview' | translate }}
+            </ion-button>
+            <ion-button *ngIf="access.cancomplete && access.cansubmit && access.isopen" expand="block" (click)="gotoAnswerQuestions()"
+                class="ion-margin ion-text-wrap">
+                <ng-container *ngIf="!goPage">
+                    {{ 'addon.mod_feedback.complete_the_form' | translate }}
+                </ng-container>
+                <ng-container *ngIf="goPage">
+                    {{ 'addon.mod_feedback.continue_the_form' | translate }}
+                </ng-container>
+            </ion-button>
+        </div>
+
+        <core-course-module-navigation [courseId]="courseId" [currentModule]="module" (completionChanged)="onCompletionChange()">
+        </core-course-module-navigation>
+    </div>
+</core-loading>
 
 <ng-template #basicInfo>
     <ion-list *ngIf="access && access.canviewanalysis && !access.isempty">
@@ -133,28 +150,6 @@
                         <p *ngIf="!access.isanonymous">{{ 'addon.mod_feedback.non_anonymous' | translate }}</p>
                     </ion-label>
                 </ion-item>
-                <ion-grid>
-                    <ion-row class="ion-align-items-center">
-                        <ion-col>
-                            <ion-button expand="block" fill="outline" (click)="gotoAnswerQuestions(true)" class="ion-text-wrap">
-                                <ion-icon name="fas-search" slot="start" aria-hidden="true"></ion-icon>
-                                {{ 'addon.mod_feedback.preview' | translate }}
-                            </ion-button>
-                        </ion-col>
-                        <ion-col *ngIf="access.cancomplete && access.cansubmit && access.isopen">
-                            <ion-button expand="block" (click)="gotoAnswerQuestions()" class="ion-text-wrap">
-                                <ng-container *ngIf="!goPage">
-                                    {{ 'addon.mod_feedback.complete_the_form' | translate }}
-                                </ng-container>
-                                <ng-container *ngIf="goPage">
-                                    {{ 'addon.mod_feedback.continue_the_form' | translate }}
-                                </ng-container>
-                                <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true"></ion-icon>
-                            </ion-button>
-                        </ion-col>
-                    </ion-row>
-                </ion-grid>
-
             </ng-container>
         </ion-list>
     </core-loading>
