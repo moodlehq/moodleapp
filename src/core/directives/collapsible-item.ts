@@ -64,8 +64,8 @@ export class CoreCollapsibleItemDirective implements OnInit {
         }
         this.maxHeight = this.maxHeight < defaultMaxHeight ? defaultMaxHeight : this.maxHeight;
 
-        if (!this.maxHeight || (window.innerWidth > 576 && window.innerHeight > 576)) {
-            // Do not collapse on big screens.
+        if (!this.maxHeight) {
+            // Do not collapse.
             return;
         }
 
@@ -91,9 +91,6 @@ export class CoreCollapsibleItemDirective implements OnInit {
      */
     protected calculateHeight(): void {
         // @todo: Work on calculate this height better.
-        if (!this.maxHeight) {
-            return;
-        }
 
         // Remove max-height (if any) to calculate the real height.
         const initialMaxHeight = this.element.style.maxHeight;
@@ -117,7 +114,11 @@ export class CoreCollapsibleItemDirective implements OnInit {
         this.toggleExpandEnabled = enable;
         this.element.classList.toggle('collapsible-enabled', enable);
 
-        if (!enable || this.element.querySelector('ion-button.collapsible-toggle'))  {
+        if (!enable || this.element.querySelector('ion-button.collapsible-toggle')) {
+            this.element.style.maxHeight = !enable || this.expanded
+                ? ''
+                : this.maxHeight + 'px';
+
             return;
         }
 
@@ -128,6 +129,7 @@ export class CoreCollapsibleItemDirective implements OnInit {
 
         const toggleText = document.createElement('span');
         toggleText.classList.add('collapsible-toggle-text');
+        toggleText.classList.add('sr-only');
         toggleButton.appendChild(toggleText);
 
         const expandArrow = document.createElement('span');

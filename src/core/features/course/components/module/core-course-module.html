@@ -71,7 +71,7 @@
                 </core-format-text>
 
                 <!-- Module completion. Only auto conditions-->
-                <core-course-module-completion *ngIf="module.completiondata && module.uservisible" [completion]="module.completiondata"
+                <core-course-module-completion *ngIf="autoCompletionTodo && module.uservisible" [completion]="module.completiondata"
                     [moduleName]="module.name" [moduleId]="module.id" [showCompletionConditions]="showCompletionConditions">
                 </core-course-module-completion>
 

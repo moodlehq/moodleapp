@@ -2,10 +2,14 @@
 
 :host {
     --horizontal-margin: 10px;
+    --vertical-margin: 10px;
 
     ion-card {
-        margin-left: var(--horizontal-margin);
-        margin-right: var(--horizontal-margin);
+        margin: var(--vertical-margin) var(--horizontal-margin);
+    }
+
+    ion-item {
+        --padding-start: 12px;
     }
 
     ion-item.core-module-main-item {
@@ -84,4 +88,7 @@
         @include margin-horizontal(null, 8px);
     }
 
+    .core-course-module-info ::ng-deep core-course-module-completion .core-module-automatic-completion-conditions .completioninfo.completion_complete {
+        display: none;
+    }
 }

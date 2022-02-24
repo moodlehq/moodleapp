@@ -109,7 +109,7 @@
                         <ion-item class="ion-text-wrap addon-mod_h5pactivity-result-table-header">
                             <ion-label>
                                 <ion-row class="ion-align-items-center">
-                                    <ion-col class="ion-text-center">{{ result.optionslabel }}</ion-col>
+                                    <ion-col class="ion-text-start">{{ result.optionslabel }}</ion-col>
                                     <ion-col class="ion-text-center">{{ result.correctlabel }}</ion-col>
                                     <ion-col class="ion-text-center">{{ result.answerlabel }}</ion-col>
                                 </ion-row>
@@ -118,7 +118,7 @@
                         <ion-item *ngFor="let option of result.options" class="ion-text-wrap addon-mod_h5pactivity-result-table-row">
                             <ion-label>
                                 <ion-row class="ion-align-items-center">
-                                    <ion-col class="ion-text-center">
+                                    <ion-col class="ion-text-start">
                                         <core-format-text [text]="option.description" [component]="component" [componentId]="cmId"
                                             contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
                                         </core-format-text>

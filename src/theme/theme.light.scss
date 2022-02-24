@@ -88,6 +88,8 @@
     --subdued-text-color: var(--gray-700);
 
     --ion-card-color: var(--text-color);
+    --ion-card-vertical-margin: 10px;
+    --ion-card-horizontal-margin: 10px;
     ion-card {
         --border-width: 1px;
         --border-style: solid;
@@ -285,6 +287,12 @@
 
     --selected-item-color: var(--primary);
     --selected-item-border-width: 5px;
+
+    --collapsible-toggle-background: var(--light);
+    --collapsible-min-button-height: 44px;
+    --collapsible-toggle-text: var(--text-color);
+
+    --background-gradient-rgb: #{$ion-item-background-rgb};
 
     --core-login-background: var(--white);
     --core-login-text-color: var(--gray-900);

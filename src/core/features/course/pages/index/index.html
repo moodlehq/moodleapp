@@ -21,10 +21,6 @@
         <img [src]="imageThumb" core-external-content alt="" />
     </ion-avatar>
     <ion-label>
-        <p *ngIf="category">
-            <core-format-text [text]="category" contextLevel="coursecat" [contextInstanceId]="course!.categoryid">
-            </core-format-text>
-        </p>
         <h1>{{ title }}</h1>
         <div class="core-course-progress" *ngIf="progress !== undefined">
             <core-progress-bar [progress]="progress" a11yText="core.course.aria:sectionprogress">

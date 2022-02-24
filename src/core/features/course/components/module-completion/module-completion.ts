@@ -36,7 +36,6 @@ import { Translate } from '@singletons';
 @Component({
     selector: 'core-course-module-completion',
     templateUrl: 'core-course-module-completion.html',
-    styleUrls: ['module-completion.scss'],
 })
 export class CoreCourseModuleCompletionComponent extends CoreCourseModuleCompletionBaseComponent {
 

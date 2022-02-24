@@ -249,7 +249,13 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
      * Fetch course.
      */
     protected async fetchCourse(): Promise<void> {
-        this.course = await CoreCourses.getUserCourse(this.courseId, true);
+        // Fix that.
+        try {
+            this.course = await CoreCourses.getUserCourse(this.courseId, true);
+        } catch {
+            // The user is not enrolled in the course. Use getCourses to see if it's an admin/manager and can see the course.
+            this.course = await CoreCourses.getCourse(this.courseId);
+        }
     }
 
     /**

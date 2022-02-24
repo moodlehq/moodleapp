@@ -5,21 +5,24 @@
 
             <ng-container *ngIf="completion.istrackeduser">
                 <ng-container *ngFor="let rule of details">
-                    <ion-chip *ngIf="rule.statuscomplete" color="success" role="listitem" [attr.aria-label]="rule.accessibleDescription">
+                    <ion-chip *ngIf="rule.statuscomplete" color="success" role="listitem" [attr.aria-label]="rule.accessibleDescription"
+                        class="completioninfo completion_complete">
                         <ion-icon name="fas-check" [attr.aria-label]="'core.course.completion_automatic:done' | translate "></ion-icon>
                         <ion-label>
                             {{ rule.rulevalue.description }}
                         </ion-label>
                     </ion-chip>
 
-                    <ion-chip *ngIf="rule.statuscompletefail" color="danger" role="listitem" [attr.aria-label]="rule.accessibleDescription">
+                    <ion-chip *ngIf="rule.statuscompletefail" color="danger" role="listitem" [attr.aria-label]="rule.accessibleDescription"
+                        class="completioninfo completion_fail">
                         <ion-icon name="fas-times" [attr.aria-label]="'core.course.completion_automatic:failed' | translate "></ion-icon>
                         <ion-label>
                             {{ rule.rulevalue.description }}
                         </ion-label>
                     </ion-chip>
 
-                    <ion-chip *ngIf="rule.statusincomplete" color="dark" role="listitem" [attr.aria-label]="rule.accessibleDescription">
+                    <ion-chip *ngIf="rule.statusincomplete" color="dark" role="listitem" [attr.aria-label]="rule.accessibleDescription"
+                        class="completioninfo completion_incomplete">
                         <ion-icon name="fas-edit" [attr.aria-label]="'core.course.completion_automatic:todo' | translate "></ion-icon>
                         <ion-label>
                             {{ rule.rulevalue.description }}
@@ -29,7 +32,7 @@
             </ng-container>
 
             <ng-container *ngIf="!completion.istrackeduser">
-                <ion-chip *ngFor="let rule of details" role="listitem">
+                <ion-chip *ngFor="let rule of details" role="listitem" class="core-module-completion-todo">
                     <ion-icon name="fas-edit" [attr.aria-label]="'core.course.completion_automatic:todo' | translate "></ion-icon>
                     <ion-label>
                         {{ rule.rulevalue.description }}

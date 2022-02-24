@@ -29,7 +29,6 @@ import {
 } from '@features/course/services/course-helper';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
-import { CoreCourseOptionsMenuHandlerToDisplay } from '@features/course/services/course-options-delegate';
 import { CoreCourseSync, CoreCourseSyncProvider } from '@features/course/services/sync';
 import { CoreCourseFormatComponent } from '../../components/course-format/course-format';
 import {
@@ -54,7 +53,6 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
     sections?: CoreCourseSection[];
     sectionId?: number;
     sectionNumber?: number;
-    courseMenuHandlers: CoreCourseOptionsMenuHandlerToDisplay[] = [];
     dataLoaded = false;
     downloadCourseEnabled = false;
     moduleId?: number;
@@ -368,8 +366,16 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         }
     }
 
+    gotoCourseDownloads(): void {
+        CoreNavigator.navigateToSitePath(
+            `storage/${this.course.id}`,
+            { params: { title: this.course.fullname } },
+        );
+
+    }
+
     /**
-     * Page destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.isDestroyed = true;

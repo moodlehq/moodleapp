@@ -1,7 +1,6 @@
 @import "~theme/globals";
 
 :host {
-    --core-format-text-background-gradient-rgb: var(--background-rgb, #{$ion-item-background-rgb});
     --course-storage-max-activity-height: 120px;
 
     ion-card.section ion-card-header {
@@ -23,8 +22,8 @@
             min-height: var(--course-storage-max-activity-height);
             position: absolute;
             @include position(0, 0, null, 0);
-            background: -webkit-linear-gradient(top, rgba(var(--core-format-text-background-gradient-rgb), 0) calc(100% - 30px), rgba(var(--core-format-text-background-gradient-rgb), 1) calc(100% - 20px));
-            background: linear-gradient(to bottom, rgba(var(--core-format-text-background-gradient-rgb), 0) calc(100% - 30px), rgba(var(--core-format-text-background-gradient-rgb), 1) calc(100% - 20px));
+            background: -webkit-linear-gradient(top, rgba(var(--background-gradient-rgb), 0) calc(100% - 30px), rgba(var(--background-gradient-rgb), 1) calc(100% - 20px));
+            background: linear-gradient(to bottom, rgba(var(--background-gradient-rgb), 0) calc(100% - 30px), rgba(var(--background-gradient-rgb), 1) calc(100% - 20px));
             z-index: 6;
             pointer-events: none;
         }
