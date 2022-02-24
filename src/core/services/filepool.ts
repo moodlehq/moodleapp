@@ -2603,12 +2603,12 @@ export class CoreFilepoolProvider {
             // Success, we add links and remove from queue.
             CoreUtils.ignoreErrors(this.addFileLinks(siteId, fileId, links));
 
-            this.treatQueueDeferred(siteId, fileId, true);
-            this.notifyFileDownloaded(siteId, fileId, links);
-
             // Wait for the item to be removed from queue before resolving the promise.
             // If the item could not be removed from queue we still resolve the promise.
             await CoreUtils.ignoreErrors(this.removeFromQueue(siteId, fileId));
+
+            this.treatQueueDeferred(siteId, fileId, true);
+            this.notifyFileDownloaded(siteId, fileId, links);
         } catch (errorObject) {
             // Whoops, we have an error...
             let dropFromQueue = false;
