@@ -96,7 +96,11 @@
                 </ion-col>
                 <ion-col *ngIf="choice.publish && results" size="12" size-lg="7">
                     <ion-item-group *ngFor="let result of results">
-                        <ion-item-divider class="ion-text-wrap">
+                        <ion-item [button]="result.numberofuser > 0" class="divider ion-text-wrap" (click)="toggle(result)"
+                            [attr.aria-label]="(result.expanded ? 'core.collapse' : 'core.expand') | translate" detail="false">
+                            <ion-icon [name]="result.numberofuser > 0 ? 'fas-chevron-right' : ''" flip-rtl slot="start" aria-hidden="true"
+                                class="expandable-status-icon" [class.expandable-status-icon-expanded]="result.expanded">
+                            </ion-icon>
                             <ion-label>
                                 <h3 class="item-heading">
                                     <core-format-text [text]="result.text" contextLevel="module" [contextInstanceId]="module.id"
@@ -111,14 +115,16 @@
                                     {{ 'addon.mod_choice.limita' | translate:{$a: result.maxanswer} }}
                                 </p>
                             </ion-label>
-                        </ion-item-divider>
-                        <ion-item *ngFor="let user of result.userresponses" core-user-link [courseId]="courseId" [userId]="user.userid"
-                            [attr.aria-label]="user.fullname" class="ion-text-wrap">
-                            <core-user-avatar [user]="user" slot="start" [courseId]="courseId"></core-user-avatar>
-                            <ion-label>
-                                <p>{{user.fullname}}</p>
-                            </ion-label>
                         </ion-item>
+                        <ng-container *ngIf="result.expanded">
+                            <ion-item *ngFor="let user of result.userresponses" core-user-link [courseId]="courseId" [userId]="user.userid"
+                                [attr.aria-label]="user.fullname" class="ion-text-wrap">
+                                <core-user-avatar [user]="user" slot="start" [courseId]="courseId"></core-user-avatar>
+                                <ion-label>
+                                    <p>{{user.fullname}}</p>
+                                </ion-label>
+                            </ion-item>
+                        </ng-container>
                     </ion-item-group>
                 </ion-col>
             </ion-row>
