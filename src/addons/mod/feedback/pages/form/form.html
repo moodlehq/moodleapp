@@ -12,9 +12,9 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <core-loading [hideUntil]="feedbackLoaded">
+    <core-loading [hideUntil]="feedbackLoaded" class="has-spacer">
         <ng-container *ngIf="items && items.length">
-            <ion-list class="ion-no-margin">
+            <ion-list class="ion-no-margin has-spacer">
                 <ion-item class="ion-text-wrap">
                     <ion-label>
                         <h2>{{ 'addon.mod_feedback.mode' | translate }}</h2>
@@ -110,7 +110,7 @@
                     </ng-container>
                 </ng-container>
 
-                <ion-row class="ion-align-items-center" *ngIf="!preview">
+                <ion-row class="ion-align-items-center spacer-top" *ngIf="!preview">
                     <ion-col *ngIf="hasPrevPage">
                         <ion-button expand="block" fill="outline" (click)="gotoPage(true)" class="ion-text-wrap">
                             <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true"></ion-icon>

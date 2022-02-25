@@ -1581,3 +1581,18 @@ body.core-iframe-fullscreen ion-content {
 
 
 }
+
+.has-spacer {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    flex-grow: 1;
+
+    .spacer-top {
+        flex-grow: 1;
+        align-content: flex-end;
+    }
+    .spacer {
+        flex-grow: 1;
+    }
+}

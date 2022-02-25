@@ -22,7 +22,7 @@
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="doRefresh($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    <core-loading [hideUntil]="loaded">
+    <core-loading [hideUntil]="loaded" class="has-spacer">
         <core-course-module-info [module]="module" [courseId]="courseId" [description]="module.description" [component]="module.modname"
             [componentId]="module.id" [expandDescription]="true" [showAvailabilityInfo]="true">
             <div class="core-module-additional-info" title>

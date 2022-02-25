@@ -31,7 +31,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <core-loading [hideUntil]="loaded">
+    <core-loading [hideUntil]="loaded" class="has-spacer">
         <!-- Button to start attempting. -->
         <ion-button *ngIf="!attempt" expand="block" class="ion-margin" (click)="start()">
             {{ 'addon.mod_quiz.startattempt' | translate }}
@@ -67,7 +67,7 @@
         </form>
 
         <!-- Go to next or previous page. -->
-        <ion-row *ngIf="questions.length && !quizAborted && !showSummary">
+        <ion-row *ngIf="questions.length && !quizAborted && !showSummary" class="spacer-top">
             <ion-col *ngIf="previousPage >= 0">
                 <ion-button expand="block" fill="outline" (click)="changePage(previousPage)" class="ion-text-wrap">
                     <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true"></ion-icon>
