@@ -16,17 +16,12 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { AddonModImscpComponentsModule } from './components/components.module';
-import { AddonModImscpIndexPage } from './pages/index/index.page';
+import { AddonModImscpViewPage } from './view';
 
 const routes: Routes = [
     {
-        path: ':courseId/:cmId',
-        component: AddonModImscpIndexPage,
-    },
-    {
-        path: ':courseId/:cmId/view',
-        loadChildren: () => import('./pages/view/view.module').then(m => m.AddonModImscpViewPageModule),
+        path: '',
+        component: AddonModImscpViewPage,
     },
 ];
 
@@ -34,10 +29,10 @@ const routes: Routes = [
     imports: [
         RouterModule.forChild(routes),
         CoreSharedModule,
-        AddonModImscpComponentsModule,
     ],
     declarations: [
-        AddonModImscpIndexPage,
+        AddonModImscpViewPage,
     ],
+    exports: [RouterModule],
 })
-export class AddonModImscpLazyModule {}
+export class AddonModImscpViewPageModule {}

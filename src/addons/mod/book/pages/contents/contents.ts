@@ -53,7 +53,7 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
 
     @ViewChild(CoreSwipeSlidesComponent) slides?: CoreSwipeSlidesComponent;
 
-    title!: string;
+    title = '';
     cmId!: number;
     courseId!: number;
     initialChapterId?: number;
@@ -147,6 +147,8 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
             } else {
                 this.warning = '';
             }
+        } catch (error) {
+            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
         } finally {
             this.loaded = true;
         }
