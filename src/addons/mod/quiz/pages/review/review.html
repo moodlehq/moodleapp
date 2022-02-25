@@ -125,13 +125,13 @@
     <ion-grid>
         <ion-row class="ion-align-items-center">
             <ion-col class="ion-text-start">
-                <ion-button color="light" *ngIf="previousPage >= 0" (click)="changePage(previousPage)"
+                <ion-button fill="outline" *ngIf="previousPage >= 0" (click)="changePage(previousPage)"
                     [title]="'core.previous' | translate">
                     <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true"></ion-icon>
                 </ion-button>
             </ion-col>
             <ion-col class="ion-text-end">
-                <ion-button color="light" *ngIf="nextPage >= -1" (click)="changePage(nextPage)" [attr.aria-label]="'core.next' | translate">
+                <ion-button *ngIf="nextPage >= -1" (click)="changePage(nextPage)" [attr.aria-label]="'core.next' | translate">
                     <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true"></ion-icon>
                 </ion-button>
             </ion-col>

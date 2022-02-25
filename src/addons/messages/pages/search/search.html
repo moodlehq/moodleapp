@@ -68,7 +68,7 @@
         <!-- Load more button for contacts and non-contacts -->
         <ng-container *ngIf="item.type != 'messages'">
             <div class="ion-padding-horizontal" *ngIf="item.canLoadMore && !item.loadingMore">
-                <ion-button expand="block" color="light" (click)="search(query, item.type)">
+                <ion-button expand="block" fill="outline" (click)="search(query, item.type)">
                     {{ 'core.loadmore' | translate }}
                 </ion-button>
             </div>

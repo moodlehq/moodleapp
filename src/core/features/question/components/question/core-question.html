@@ -19,7 +19,7 @@
 </ion-item>
 
 <!-- Question behaviour buttons. -->
-<ion-button *ngFor="let button of question?.behaviourButtons" class="ion-margin ion-text-wrap" expand="block"
+<ion-button *ngFor="let button of question?.behaviourButtons" class="ion-margin-vertical ion-text-wrap" expand="block"
     (click)="buttonClicked.emit(button)" [disabled]="button.disabled">
     {{ button.value }}
 </ion-button>
