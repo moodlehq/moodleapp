@@ -10,7 +10,7 @@
 
     <!-- Activity info. -->
     <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
-        [courseId]="courseId" [hasDataToSync]="buttonText && hasOffline && !showStatusSpinner">
+        [courseId]="courseId" [hasDataToSync]="buttonText && hasOffline">
     </core-course-module-info>
 
     <!-- Access rules description messages. -->
@@ -134,22 +134,26 @@
         </ion-list>
     </ion-card>
 
-    <!-- More data and button to start/continue. -->
-    <ion-card *ngIf="quiz">
-        <ion-list>
-            <!-- Error messages. -->
-            <ion-item class="ion-text-wrap core-danger-item addon-mod_quiz-prevent-messages" *ngFor="let message of preventMessages">
+    <!-- More data. -->
+    <ng-container *ngIf="quiz">
+        <!-- Error messages. -->
+        <ion-card class="core-danger-card addon-mod_quiz-prevent-messages">
+            <ion-item class="ion-text-wrap" *ngFor="let message of preventMessages">
                 <ion-label>
                     <p>{{ message }}</p>
                 </ion-label>
             </ion-item>
-            <ion-item class="ion-text-wrap core-danger-item addon-mod_quiz-no-questions" *ngIf="quiz.hasquestions === 0">
+        </ion-card>
+        <ion-card class="core-danger-card addon-mod_quiz-no-questions" *ngIf="quiz.hasquestions === 0">
+            <ion-item class="ion-text-wrap">
                 <ion-label>
                     <p>{{ 'addon.mod_quiz.noquestions' | translate }}</p>
                 </ion-label>
             </ion-item>
-            <ion-item class="ion-text-wrap core-danger-item addon-mod_quiz-unsupported-questions"
-                *ngIf="!hasSupportedQuestions && unsupportedQuestions.length">
+        </ion-card>
+        <ion-card class="core-danger-card addon-mod_quiz-unsupported-questions"
+            *ngIf="!hasSupportedQuestions && unsupportedQuestions.length">
+            <ion-item class="ion-text-wrap">
                 <ion-label>
                     <p class="item-heading">{{ 'addon.mod_quiz.errorquestionsnotsupported' | translate }}</p>
                     <p *ngFor="let type of unsupportedQuestions"
@@ -158,7 +162,9 @@
                     </p>
                 </ion-label>
             </ion-item>
-            <ion-item class="ion-text-wrap core-danger-item addon-mod_quiz-unsupported-rules" *ngIf="unsupportedRules.length">
+        </ion-card>
+        <ion-card class="core-danger-card addon-mod_quiz-unsupported-rules" *ngIf="unsupportedRules.length">
+            <ion-item class="ion-text-wrap">
                 <ion-label>
                     <p class="item-heading">{{ 'addon.mod_quiz.errorrulesnotsupported' | translate }}</p>
                     <p *ngFor="let name of unsupportedRules"
@@ -167,24 +173,34 @@
                     </p>
                 </ion-label>
             </ion-item>
-            <ion-item class="ion-text-wrap core-danger-item addon-mod_quiz-unsupported-behaviours" *ngIf="behaviourSupported === false">
+        </ion-card>
+        <ion-card class="core-danger-card addon-mod_quiz-unsupported-behaviours" *ngIf="behaviourSupported === false">
+            <ion-item class="ion-text-wrap">
                 <ion-label>
                     <p class="item-heading">{{ 'addon.mod_quiz.errorbehaviournotsupported' | translate }}</p>
                     <p class="addon-mod_quiz-unsupported-behaviour">{{ quiz.preferredbehaviour }}</p>
                 </ion-label>
             </ion-item>
+        </ion-card>
 
-            <!-- Other warnings. -->
-            <ion-item class="core-warning-item ion-text-wrap" *ngIf="hasSupportedQuestions && unsupportedQuestions.length">
+        <!-- Other warnings. -->
+        <ion-card class="core-warning-card" *ngIf="hasSupportedQuestions && unsupportedQuestions.length">
+            <ion-item class="ion-text-wrap">
                 <ion-label>
                     <p class="item-heading">{{ 'addon.mod_quiz.canattemptbutnotsubmit' | translate }}</p>
                     <p>{{ 'addon.mod_quiz.warningquestionsnotsupported' | translate }}</p>
                     <p *ngFor="let type of unsupportedQuestions">{{ type }}</p>
                 </ion-label>
             </ion-item>
+        </ion-card>
+    </ng-container>
 
+    <div collapsible-footer *ngIf="!showLoading" slot="fixed">
+        <div class="list-item-limited-width" *ngIf="quiz">
             <!-- Button to start/continue. -->
-            <ion-button *ngIf="buttonText && !showStatusSpinner" expand="block" (click)="attemptQuiz()" class="ion-margin ion-text-wrap">
+            <ion-button *ngIf="buttonText" expand="block" (click)="attemptQuiz()" class="ion-margin ion-text-wrap"
+                [disabled]="showStatusSpinner">
+                <ion-spinner *ngIf="showStatusSpinner" slot="start" aria-hidden="true"></ion-spinner>
                 {{ buttonText | translate }}
             </ion-button>
 
@@ -195,17 +211,10 @@
                 {{ 'core.openinbrowser' | translate }}
                 <ion-icon name="fas-external-link-alt" slot="end" aria-hidden="true"></ion-icon>
             </ion-button>
+        </div>
 
-            <!-- Spinner shown while downloading or calculating. -->
-            <ion-item class="ion-text-center" *ngIf="showStatusSpinner">
-                <ion-label>
-                    <ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner>
-                </ion-label>
-            </ion-item>
-        </ion-list>
-    </ion-card>
+        <core-course-module-navigation [courseId]="courseId" [currentModule]="module" (completionChanged)="onCompletionChange()">
+        </core-course-module-navigation>
+
+    </div>
 </core-loading>
-
-<core-course-module-navigation collapsible-footer [hidden]="showLoading" [courseId]="courseId" [currentModule]="module"
-    (completionChanged)="onCompletionChange()">
-</core-course-module-navigation>
