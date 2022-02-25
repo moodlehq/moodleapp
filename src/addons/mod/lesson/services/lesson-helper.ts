@@ -557,7 +557,7 @@ export class AddonModLessonHelperProvider {
 
             // Add some HTML to the answer if needed.
             if (textarea) {
-                data[textarea.name] = CoreTextUtils.formatHtmlLines(<string> data[textarea.name]);
+                data[textarea.name] = CoreTextUtils.formatHtmlLines(<string> data[textarea.name] || '');
             }
         } else if (question.template == 'multichoice' && (<AddonModLessonMultichoiceQuestion> question).multi) {
             // Only send the options with value set to true.

@@ -602,9 +602,11 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             },
         });
 
-        if (modalData && modalData.action == AddonModQuizNavigationModalComponent.CHANGE_PAGE) {
-            this.changePage(modalData.page!, true, modalData.slot);
+        if (!modalData) {
+            return;
         }
+
+        this.changePage(modalData.page!, true, modalData.slot);
     }
 
     /**

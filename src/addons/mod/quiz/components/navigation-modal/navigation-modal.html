@@ -13,19 +13,6 @@
 <ion-content class="addon-mod_quiz-navigation-modal">
     <nav>
         <ion-list>
-            <!-- In player, show button to finish attempt. -->
-            <ion-item button class="ion-text-wrap" *ngIf="!isReview" (click)="loadPage(-1)" detail="true">
-                <ion-label>{{ 'addon.mod_quiz.finishattemptdots' | translate }}</ion-label>
-            </ion-item>
-
-            <!-- In review we can toggle between all questions in same page or one page at a time. -->
-            <ion-item button class="ion-text-wrap" *ngIf="isReview && numPages > 1" (click)="switchMode()" detail="true">
-                <ion-label>
-                    <span *ngIf="!showAll">{{ 'addon.mod_quiz.showall' | translate }}</span>
-                    <span *ngIf="showAll">{{ 'addon.mod_quiz.showeachpage' | translate }}</span>
-                </ion-label>
-            </ion-item>
-
             <ion-item button class="ion-text-wrap {{question.stateClass}}" *ngFor="let question of navigation"
                 [attr.aria-current]="!summaryShown && currentPage == question.page ? 'page' : 'false'"
                 (click)="loadPage(question.page, question.slot)" detail="false">
@@ -50,19 +37,12 @@
                     slot="end">
                 </ion-icon>
             </ion-item>
-
-            <!-- In player, show button to finish attempt. -->
-            <ion-item button class="ion-text-wrap" *ngIf="!isReview" (click)="loadPage(-1)" detail="true">
-                <ion-label>{{ 'addon.mod_quiz.finishattemptdots' | translate }}</ion-label>
-            </ion-item>
-
-            <!-- In review we can toggle between all questions in same page or one page at a time. -->
-            <ion-item button class="ion-text-wrap" *ngIf="isReview && numPages > 1" (click)="switchMode()" detail="true">
-                <ion-label>
-                    <span *ngIf="!showAll">{{ 'addon.mod_quiz.showall' | translate }}</span>
-                    <span *ngIf="showAll">{{ 'addon.mod_quiz.showeachpage' | translate }}</span>
-                </ion-label>
-            </ion-item>
         </ion-list>
     </nav>
 </ion-content>
+<ion-footer *ngIf="!isReview">
+    <!-- In player, show button to finish attempt. -->
+    <ion-button class="ion-text-wrap ion-margin" expand="block" (click)="loadPage(-1)">
+        {{ 'addon.mod_quiz.finishattemptdots' | translate }}
+    </ion-button>
+</ion-footer>

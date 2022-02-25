@@ -87,8 +87,6 @@
 
         <!-- Questions -->
         <div *ngIf="attempt && questions.length">
-            <!-- Arrows to go to next/previous. -->
-            <ng-container *ngTemplateOutlet="navArrows"></ng-container>
 
             <!-- Questions. -->
             <div *ngFor="let question of questions">
@@ -113,28 +111,30 @@
                     </core-question>
                 </ion-card>
             </div>
+        </div>
 
-            <!-- Arrows to go to next/previous. -->
-            <ng-container *ngTemplateOutlet="navArrows"></ng-container>
+        <div collapsible-footer *ngIf="loaded && numPages > 1" slot="fixed">
+            <ion-row class="ion-justify-content-between ion-align-items-center ion-no-padding ion-wrap">
+                <ion-col class="ion-text-start ion-no-padding core-navigation-arrow" size="auto" *ngIf="!showAll">
+                    <ion-button [disabled]="previousPage < 0" fill="clear" color="dark" [attr.aria-label]="'core.previous' | translate"
+                        (click)="changePage(previousPage)">
+                        <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true"></ion-icon>
+                    </ion-button>
+                </ion-col>
+                <ion-col class="ion-text-center">
+                    <!-- In review we can toggle between all questions in same page or one page at a time. -->
+                    <ion-button class="ion-text-wrap" *ngIf="numPages > 1" (click)="switchMode()" fill="outline">
+                        <span *ngIf="!showAll">{{ 'addon.mod_quiz.showall' | translate }}</span>
+                        <span *ngIf="showAll">{{ 'addon.mod_quiz.showeachpage' | translate }}</span>
+                    </ion-button>
+                </ion-col>
+                <ion-col class="ion-text-end ion-no-padding core-navigation-arrow" size="auto" *ngIf="!showAll">
+                    <ion-button [disabled]="nextPage >= numPages" fill="clear" color="dark" [attr.aria-label]="'core.next' | translate"
+                        (click)="changePage(nextPage)">
+                        <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true"></ion-icon>
+                    </ion-button>
+                </ion-col>
+            </ion-row>
         </div>
     </core-loading>
 </ion-content>
-
-<!-- Arrows to go to next/previous. -->
-<ng-template #navArrows>
-    <ion-grid>
-        <ion-row class="ion-align-items-center">
-            <ion-col class="ion-text-start">
-                <ion-button fill="outline" *ngIf="previousPage >= 0" (click)="changePage(previousPage)"
-                    [title]="'core.previous' | translate">
-                    <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true"></ion-icon>
-                </ion-button>
-            </ion-col>
-            <ion-col class="ion-text-end">
-                <ion-button *ngIf="nextPage >= -1" (click)="changePage(nextPage)" [attr.aria-label]="'core.next' | translate">
-                    <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true"></ion-icon>
-                </ion-button>
-            </ion-col>
-        </ion-row>
-    </ion-grid>
-</ng-template>

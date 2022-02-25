@@ -109,32 +109,31 @@
                         </ng-container>
                     </ng-container>
                 </ng-container>
-                <ion-grid *ngIf="!preview">
-                    <ion-row class="ion-align-items-center">
-                        <ion-col *ngIf="hasPrevPage">
-                            <ion-button expand="block" fill="outline" (click)="gotoPage(true)" class="ion-text-wrap">
-                                <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true"></ion-icon>
-                                {{ 'addon.mod_feedback.previous_page' | translate }}
-                            </ion-button>
-                        </ion-col>
-                        <ion-col *ngIf="hasNextPage">
-                            <ion-button expand="block" (click)="gotoPage(false)" class="ion-text-wrap">
-                                {{ 'addon.mod_feedback.next_page' | translate }}
-                                <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true"></ion-icon>
-                            </ion-button>
-                        </ion-col>
-                        <ion-col *ngIf="!hasNextPage">
-                            <ion-button expand="block" (click)="gotoPage(false)" class="ion-text-wrap">
-                                {{ 'addon.mod_feedback.save_entries' | translate }}
-                            </ion-button>
-                        </ion-col>
-                    </ion-row>
-                </ion-grid>
+
+                <ion-row class="ion-align-items-center" *ngIf="!preview">
+                    <ion-col *ngIf="hasPrevPage">
+                        <ion-button expand="block" fill="outline" (click)="gotoPage(true)" class="ion-text-wrap">
+                            <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true"></ion-icon>
+                            {{ 'core.previous' | translate }}
+                        </ion-button>
+                    </ion-col>
+                    <ion-col *ngIf="hasNextPage">
+                        <ion-button expand="block" (click)="gotoPage(false)" class="ion-text-wrap">
+                            {{ 'core.next' | translate }}
+                            <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true"></ion-icon>
+                        </ion-button>
+                    </ion-col>
+                    <ion-col *ngIf="!hasNextPage">
+                        <ion-button expand="block" (click)="gotoPage(false)" class="ion-text-wrap">
+                            {{ 'core.submit' | translate }}
+                        </ion-button>
+                    </ion-col>
+                </ion-row>
             </ion-list>
         </ng-container>
 
         <ion-card class="core-success-card" *ngIf="completed">
-            <ion-item>
+            <ion-item class="ion-text-wrap">
                 <ion-icon name="fas-check" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
                     <p *ngIf="!completionPageContents && !completedOffline">
@@ -143,32 +142,25 @@
                     <p *ngIf="!completionPageContents && completedOffline">
                         {{ 'addon.mod_feedback.feedback_submitted_offline' | translate }}
                     </p>
-                    <p *ngIf="completionPageContents">
-                        <core-format-text [component]="component" componentId="componentId" [text]="completionPageContents"
-                            contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
-                        </core-format-text>
-                    </p>
+                    <core-format-text *ngIf="completionPageContents" [component]="component" componentId="componentId"
+                        [text]="completionPageContents" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
+                    </core-format-text>
                 </ion-label>
             </ion-item>
         </ion-card>
 
-        <ion-card *ngIf="completed && (access!.canviewanalysis || hasNextPage)">
-            <ion-grid>
-                <ion-row class="ion-align-items-center">
-                    <ion-col *ngIf="access!.canviewanalysis">
-                        <ion-button expand="block" fill="outline" (click)="showAnalysis()" class="ion-text-wrap">
-                            <ion-icon name="fas-chart-bar" slot="start" aria-hidden="true"></ion-icon>
-                            {{ 'addon.mod_feedback.completed_feedbacks' | translate }}
-                        </ion-button>
-                    </ion-col>
-                    <ion-col *ngIf="hasNextPage">
-                        <ion-button expand="block" (click)="continue()" class="ion-text-wrap">
-                            {{ 'core.continue' | translate }}
-                            <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true"></ion-icon>
-                        </ion-button>
-                    </ion-col>
-                </ion-row>
-            </ion-grid>
-        </ion-card>
+        <div collapsible-footer *ngIf="feedbackLoaded && completed" slot="fixed">
+            <div class="list-item-limited-width">
+                <ion-button expand="block" fill="outline" (click)="showAnalysis()" class="ion-text-wrap ion-margin"
+                    *ngIf="access!.canviewanalysis">
+                    <ion-icon name="fas-chart-bar" slot="start" aria-hidden="true"></ion-icon>
+                    {{ 'addon.mod_feedback.completed_feedbacks' | translate }}
+                </ion-button>
+                <ion-button expand="block" (click)="continue()" class="ion-text-wrap ion-margin">
+                    <ng-container *ngIf="!siteAfterSubmit">{{ 'core.continue' | translate }}</ng-container>
+                    <ng-container *ngIf="siteAfterSubmit">{{ 'core.course.gotonextactivity' | translate }}</ng-container>
+                </ion-button>
+            </div>
+        </div>
     </core-loading>
 </ion-content>

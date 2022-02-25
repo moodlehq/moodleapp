@@ -16,7 +16,7 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CoreSite } from '@classes/site';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreCourse, CoreCourseCommonModWSOptions } from '@features/course/services/course';
-import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CanLeave } from '@guards/can-leave';
 import { IonContent } from '@ionic/angular';
 import { CoreApp } from '@services/app';
@@ -53,7 +53,6 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
 
     protected module?: CoreCourseModuleData;
     protected currentPage?: number;
-    protected siteAfterSubmit?: string;
     protected onlineObserver: Subscription;
     protected originalData?: Record<string, AddonModFeedbackResponseValue>;
     protected currentSite: CoreSite;
@@ -75,6 +74,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
     hasNextPage = false;
     completed = false;
     completedOffline = false;
+    siteAfterSubmit?: string;
 
     constructor() {
         this.currentSite = CoreSites.getRequiredCurrentSite();
@@ -409,7 +409,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
      */
     async continue(): Promise<void> {
         if (!this.siteAfterSubmit) {
-            return CoreCourseHelper.getAndOpenCourse(this.courseId, {}, this.currentSite.getId());
+            return CoreNavigator.back();
         }
 
         const modal = await CoreDomUtils.showModalLoading();
