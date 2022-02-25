@@ -7,65 +7,66 @@
 
 <!-- Content. -->
 <core-loading [hideUntil]="!showLoading">
+    <div class="list-item-limited-width">
+        <!-- Activity info. -->
+        <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
+            [courseId]="courseId" [hasDataToSync]="hasOffline">
+        </core-course-module-info>
 
-    <!-- Activity info. -->
-    <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
-        [courseId]="courseId" [hasDataToSync]="hasOffline">
-    </core-course-module-info>
-
-    <!-- Activity availability messages -->
-    <ion-card class="core-info-card" *ngIf="choiceNotOpenYet">
-        <ion-item>
-            <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
-            <ion-label>
-                <p *ngIf="options.length">{{ 'addon.mod_choice.previewonly' | translate:{$a: openTimeReadable} }}</p>
-                <p *ngIf="!options.length">{{ 'addon.mod_choice.notopenyet' | translate:{$a: openTimeReadable} }}</p>
-            </ion-label>
-        </ion-item>
-    </ion-card>
-
-    <ion-card class="core-info-card" *ngIf="choiceClosed">
-        <ion-item>
-            <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
-            <ion-label>
-                <p *ngIf="options.length">
-                    {{ 'addon.mod_choice.yourselection' | translate }}
-                    <core-format-text [text]="options[0].text" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
-                    </core-format-text>
-                </p>
-                <p>{{ 'addon.mod_choice.expired' | translate:{$a: closeTimeReadable} }}</p>
-            </ion-label>
-        </ion-item>
-    </ion-card>
-
-    <!-- Inform what will happen with the choices. -->
-    <ion-card class="core-info-card" *ngIf="canEdit && publishInfo && options.length">
-        <ion-item>
-            <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
-            <ion-label>{{ publishInfo | translate }}</ion-label>
-        </ion-item>
-    </ion-card>
-
-    <!-- Choice options -->
-    <ion-card *ngIf="options.length && choice">
-        <ng-container *ngIf="choice.allowmultiple">
-            <ion-item class="ion-text-wrap" *ngFor="let option of options">
+        <!-- Activity availability messages -->
+        <ion-card class="core-info-card" *ngIf="choiceNotOpenYet">
+            <ion-item>
+                <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
-                    <ng-container *ngTemplateOutlet="optionLabelTemplate; context: {option: option}"></ng-container>
+                    <p *ngIf="options.length">{{ 'addon.mod_choice.previewonly' | translate:{$a: openTimeReadable} }}</p>
+                    <p *ngIf="!options.length">{{ 'addon.mod_choice.notopenyet' | translate:{$a: openTimeReadable} }}</p>
                 </ion-label>
-                <ion-checkbox slot="end" [(ngModel)]="option.checked" [disabled]="option.disabled || !canEdit"></ion-checkbox>
             </ion-item>
-        </ng-container>
-        <ion-radio-group *ngIf="!choice.allowmultiple" [(ngModel)]="selectedOption.id">
-            <ion-item class="ion-text-wrap" *ngFor="let option of options">
-                <ion-label>
-                    <ng-container *ngTemplateOutlet="optionLabelTemplate; context: {option: option}"></ng-container>
-                </ion-label>
-                <ion-radio slot="end" [value]="option.id" [disabled]="option.disabled || !canEdit"></ion-radio>
-            </ion-item>
-        </ion-radio-group>
-    </ion-card>
+        </ion-card>
 
+        <ion-card class="core-info-card" *ngIf="choiceClosed">
+            <ion-item>
+                <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
+                <ion-label>
+                    <p *ngIf="options.length">
+                        {{ 'addon.mod_choice.yourselection' | translate }}
+                        <core-format-text [text]="options[0].text" contextLevel="module" [contextInstanceId]="module.id"
+                            [courseId]="courseId">
+                        </core-format-text>
+                    </p>
+                    <p>{{ 'addon.mod_choice.expired' | translate:{$a: closeTimeReadable} }}</p>
+                </ion-label>
+            </ion-item>
+        </ion-card>
+
+        <!-- Inform what will happen with the choices. -->
+        <ion-card class="core-info-card" *ngIf="canEdit && publishInfo && options.length">
+            <ion-item>
+                <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
+                <ion-label>{{ publishInfo | translate }}</ion-label>
+            </ion-item>
+        </ion-card>
+
+        <!-- Choice options -->
+        <ion-card *ngIf="options.length && choice">
+            <ng-container *ngIf="choice.allowmultiple">
+                <ion-item class="ion-text-wrap" *ngFor="let option of options">
+                    <ion-label>
+                        <ng-container *ngTemplateOutlet="optionLabelTemplate; context: {option: option}"></ng-container>
+                    </ion-label>
+                    <ion-checkbox slot="end" [(ngModel)]="option.checked" [disabled]="option.disabled || !canEdit"></ion-checkbox>
+                </ion-item>
+            </ng-container>
+            <ion-radio-group *ngIf="!choice.allowmultiple" [(ngModel)]="selectedOption.id">
+                <ion-item class="ion-text-wrap" *ngFor="let option of options">
+                    <ion-label>
+                        <ng-container *ngTemplateOutlet="optionLabelTemplate; context: {option: option}"></ng-container>
+                    </ion-label>
+                    <ion-radio slot="end" [value]="option.id" [disabled]="option.disabled || !canEdit"></ion-radio>
+                </ion-item>
+            </ion-radio-group>
+        </ion-card>
+    </div>
     <!-- Choice results -->
     <div *ngIf="canSeeResults && choice">
         <ion-item-divider>

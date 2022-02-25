@@ -20,7 +20,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <core-loading [hideUntil]="loaded">
+    <core-loading [hideUntil]="loaded" class="list-item-limited-width">
         <ion-list class="core-sitelist">
             <ion-card *ngFor="let sites of accountsList.otherSites">
                 <ion-item-divider sticky="true" *ngIf="sites[0]" class="core-sitelist-sitename">

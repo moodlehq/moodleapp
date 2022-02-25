@@ -15,7 +15,7 @@
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refresh($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    <core-loading [hideUntil]="loaded">
+    <core-loading [hideUntil]="loaded" class="list-item-limited-width">
         <ion-item *ngIf="showMyEntriesToggle">
             <ion-label>{{ 'addon.blog.showonlyyourentries' | translate }}</ion-label>
             <ion-toggle [(ngModel)]="onlyMyEntries" (ionChange)="onlyMyEntriesToggleChanged(onlyMyEntries)"></ion-toggle>
@@ -68,7 +68,8 @@
                 </ion-card-content>
                 <div class="ion-text-center ion-margin-bottom" *ngIf="entry.lastmodified > entry.created">
                     <ion-note>
-                        <ion-icon name="fas-clock" [attr.aria-label]="'core.lastmodified' | translate"></ion-icon> {{entry.lastmodified |
+                        <ion-icon name="fas-clock" [attr.aria-label]="'core.lastmodified' | translate"></ion-icon> {{entry.lastmodified
+                        |
                         coreTimeAgo}}
                     </ion-note>
                 </div>
