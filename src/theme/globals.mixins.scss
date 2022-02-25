@@ -270,6 +270,7 @@
             &.collapsible-collapsed {
                 overflow: hidden;
                 min-height: calc(var(--collapsible-min-button-height) + 12px);
+                max-height: calc(var(--max-height), auto);
 
                 .collapsible-toggle-arrow {
                     transform: rotate(90deg);
