@@ -81,6 +81,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
     attemptsLeft = -1; // Number of attempts left.
     onlineAttempts: AttemptGrade[] = []; // Grades for online attempts.
     offlineAttempts: AttemptGrade[] = []; // Grades for offline attempts.
+    gradesExpanded = false;
 
     protected fetchContentDefaultError = 'addon.mod_scorm.errorgetscorm'; // Default error to show when loading contents.
     protected syncEventName = AddonModScormSyncProvider.AUTO_SYNCED;
@@ -521,6 +522,13 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
                 );
             }
         }
+    }
+
+    /**
+     * Toggle list of grades.
+     */
+    toggleGrades(): void {
+        this.gradesExpanded = !this.gradesExpanded;
     }
 
     /**
