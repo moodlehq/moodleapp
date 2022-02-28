@@ -119,7 +119,7 @@
             (onSubmit)="sendMessage($event)" [placeholder]="'addon.messages.newmessage' | translate">
         </core-send-message-form>
 
-        <ion-button *ngIf="isOnline && !polling && loaded" (click)="reconnect()" expand="block" color="light">
+        <ion-button *ngIf="isOnline && !polling && loaded" (click)="reconnect()" expand="block" fill="outline">
             {{ 'core.login.reconnect' | translate }}
         </ion-button>
     </ion-toolbar>

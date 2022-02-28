@@ -135,13 +135,13 @@
         <ion-grid>
             <ion-row>
                 <ion-col>
+                    <ion-button expand="block" fill="outline" (click)="cancel()">{{ 'core.cancel' | translate }}</ion-button>
+                </ion-col>
+                <ion-col>
                     <ion-button expand="block" (click)="send()" [disabled]="formData.subject == '' || formData.message == null">
                         <span *ngIf="formData.isEditing">{{ 'core.savechanges' | translate }}</span>
                         <span *ngIf="!formData.isEditing">{{ 'addon.mod_forum.posttoforum' | translate }}</span>
                     </ion-button>
-                </ion-col>
-                <ion-col>
-                    <ion-button expand="block" color="light" (click)="cancel()">{{ 'core.cancel' | translate }}</ion-button>
                 </ion-col>
             </ion-row>
         </ion-grid>

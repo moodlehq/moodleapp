@@ -20,7 +20,7 @@
     </ion-card>
 </ion-content>
 <ion-footer *ngIf="displayCopyButton">
-    <ion-button expand="block" color="light" (click)="copyText()">
+    <ion-button expand="block" fill="outline" (click)="copyText()">
         <ion-icon name="fas-copy" aria-hidden="true" slot="start"></ion-icon>
         {{ 'core.copytoclipboard' | translate }}
     </ion-button>

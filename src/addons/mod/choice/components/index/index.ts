@@ -447,6 +447,15 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     }
 
     /**
+     * Toggle list of users in a result visible.
+     *
+     * @param result Result to expand.
+     */
+    toggle(result: AddonModChoiceResultFormatted): void {
+        result.expanded = !result.expanded;
+    }
+
+    /**
      * Performs the sync of the activity.
      *
      * @return Promise resolved when done.
@@ -472,4 +481,5 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
  */
 export type AddonModChoiceResultFormatted = AddonModChoiceResult & {
     percentageamountfixed: string; // Percentage of users answers with fixed decimals.
+    expanded?: boolean;
 };

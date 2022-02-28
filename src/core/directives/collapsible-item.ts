@@ -153,7 +153,11 @@ export class CoreCollapsibleItemDirective implements OnInit {
         this.expanded = expand;
         this.element.classList.toggle('collapsible-expanded', expand);
         this.element.classList.toggle('collapsible-collapsed', !expand);
-        this.element.style.maxHeight = expand ? '' : (this.maxHeight + buttonHeight) + 'px';
+        if (expand) {
+            this.element.style.setProperty('--max-height', this.maxHeight + buttonHeight + 'px');
+        } else {
+            this.element.style.removeProperty('--max-height');
+        }
 
         const toggleButton = this.element.querySelector('ion-button.collapsible-toggle');
         const toggleText = toggleButton?.querySelector('.collapsible-toggle-text');

@@ -53,15 +53,21 @@
                     </p>
                 </ion-label>
             </ion-item>
-            <ion-button *ngIf="showReviewColumn && attempt.finished" class="ion-margin" expand="block" (click)="reviewAttempt()">
-                <ion-icon name="fas-search" slot="start" aria-hidden="true"></ion-icon>
-                {{ 'addon.mod_quiz.review' | translate }}
-            </ion-button>
+
             <ion-item class="ion-text-wrap core-danger-item" *ngIf="!showReviewColumn">
                 <ion-label>
                     <p>{{ 'addon.mod_quiz.noreviewattempt' | translate }}</p>
                 </ion-label>
             </ion-item>
         </ion-list>
+
+        <div collapsible-footer *ngIf="loaded && attempt && showReviewColumn && attempt.finished" slot="fixed">
+            <div class="list-item-limited-width">
+                <ion-button class="ion-margin ion-text-wrap" expand="block" (click)="reviewAttempt()">
+                    <ion-icon name="fas-search" slot="start" aria-hidden="true"></ion-icon>
+                    {{ 'addon.mod_quiz.review' | translate }}
+                </ion-button>
+            </div>
+        </div>
     </core-loading>
 </ion-content>

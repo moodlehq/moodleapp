@@ -26,15 +26,10 @@ import { ModalController } from '@singletons';
 })
 export class AddonModQuizNavigationModalComponent {
 
-    static readonly CHANGE_PAGE = 1;
-    static readonly SWITCH_MODE = 2;
-
     @Input() navigation?: AddonModQuizNavigationQuestion[]; // Whether the user is reviewing the attempt.
     @Input() summaryShown?: boolean; // Whether summary is currently being shown.
     @Input() currentPage?: number; // Current page.
     @Input() isReview?: boolean; // Whether the user is reviewing the attempt.
-    @Input() numPages = 0; // Num of pages for review mode.
-    @Input() showAll?: boolean; // Whether to show all questions in same page or not for review mode.
 
     /**
      * Close modal.
@@ -51,18 +46,8 @@ export class AddonModQuizNavigationModalComponent {
      */
     loadPage(page: number, slot?: number): void {
         ModalController.dismiss(<AddonModQuizNavigationModalReturn>{
-            action: AddonModQuizNavigationModalComponent.CHANGE_PAGE,
             page,
             slot,
-        });
-    }
-
-    /**
-     * Switch mode in review.
-     */
-    switchMode(): void {
-        ModalController.dismiss(<AddonModQuizNavigationModalReturn>{
-            action: AddonModQuizNavigationModalComponent.SWITCH_MODE,
         });
     }
 
@@ -76,7 +61,6 @@ export type AddonModQuizNavigationQuestion = CoreQuestionQuestionParsed & {
 };
 
 export type AddonModQuizNavigationModalReturn = {
-    action: number;
     page?: number;
     slot?: number;
 };

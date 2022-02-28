@@ -94,15 +94,6 @@
             </ion-item>
         </ng-container>
 
-        <ion-button *ngIf="meetingInfo.canjoin" class="ion-margin" expand="block" (click)="joinRoom()">
-            {{ 'addon.mod_bigbluebuttonbn.view_conference_action_join' | translate }}
-        </ion-button>
-
-        <ion-button *ngIf="meetingInfo.statusrunning && meetingInfo.ismoderator" color="light" class="ion-margin" expand="block"
-            (click)="endMeeting()">
-            {{ 'addon.mod_bigbluebuttonbn.view_conference_action_end' | translate }}
-        </ion-button>
-
         <ion-card *ngIf="!meetingInfo.canjoin" class="core-warning-card">
             <ion-item class="ion-text-wrap">
                 <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
@@ -110,8 +101,20 @@
             </ion-item>
         </ion-card>
     </ng-container>
-</core-loading>
 
-<core-course-module-navigation collapsible-footer [hidden]="showLoading" [courseId]="courseId" [currentModule]="module"
-    (completionChanged)="onCompletionChange()">
-</core-course-module-navigation>
+    <div collapsible-footer *ngIf="!showLoading" slot="fixed">
+        <div class="list-item-limited-width adaptable-buttons-row"
+            *ngIf="meetingInfo && (meetingInfo.canjoin || meetingInfo.statusrunning && meetingInfo.ismoderator)">
+            <ion-button *ngIf="meetingInfo.statusrunning && meetingInfo.ismoderator" fill="outline" class="ion-margin ion-text-wrap"
+                expand="block" (click)="endMeeting()">
+                {{ 'addon.mod_bigbluebuttonbn.view_conference_action_end' | translate }}
+            </ion-button>
+            <ion-button *ngIf="meetingInfo.canjoin" class="ion-margin ion-text-wrap" expand="block" (click)="joinRoom()">
+                {{ 'addon.mod_bigbluebuttonbn.view_conference_action_join' | translate }}
+            </ion-button>
+        </div>
+
+        <core-course-module-navigation [courseId]="courseId" [currentModule]="module" (completionChanged)="onCompletionChange()">
+        </core-course-module-navigation>
+    </div>
+</core-loading>

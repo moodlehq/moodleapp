@@ -75,6 +75,12 @@
         height: 100%;
     }
 
+    &.has-spacer .core-loading-content {
+        min-height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
     &.safe-area-padding:not(.core-loading-inline) .core-loading-content,
     &.safe-area-padding-horizontal:not(.core-loading-inline) .core-loading-content {
         @include safe-area-padding-horizontal(0px, 0px);

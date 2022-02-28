@@ -17,7 +17,7 @@
     </ion-refresher>
     <core-loading [hideUntil]="notificationsLoaded">
         <div class="ion-padding" *ngIf="canMarkAllNotificationsAsRead">
-            <ion-button [disabled]="loadingMarkAllNotificationsAsRead" expand="block" (click)="markAllNotificationsAsRead()" color="light">
+            <ion-button [disabled]="loadingMarkAllNotificationsAsRead" expand="block" (click)="markAllNotificationsAsRead()" fill="outline">
                 <ion-icon slot="start" name="fas-check" aria-hidden="true" *ngIf="!loadingMarkAllNotificationsAsRead"></ion-icon>
                 <ion-spinner slot="start" [attr.aria-label]="'core.loading' | translate" *ngIf="loadingMarkAllNotificationsAsRead">
                 </ion-spinner>

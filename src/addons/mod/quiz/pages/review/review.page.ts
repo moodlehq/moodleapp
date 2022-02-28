@@ -53,7 +53,7 @@ export class AddonModQuizReviewPage implements OnInit {
     attempt?: AddonModQuizAttemptWSData; // The attempt being reviewed.
     component = AddonModQuizProvider.COMPONENT; // Component to link the files to.
     showAll = false; // Whether to view all questions in the same page.
-    numPages?: number; // Number of pages.
+    numPages = 1; // Number of pages.
     showCompleted = false; // Whether to show completed time.
     additionalData?: AddonModQuizWSAdditionalData[]; // Additional data to display for the attempt.
     loaded = false; // Whether data has been loaded.
@@ -112,10 +112,9 @@ export class AddonModQuizReviewPage implements OnInit {
      * Change the current page. If slot is supplied, try to scroll to that question.
      *
      * @param page Page to load. -1 means all questions in same page.
-     * @param fromModal Whether the page was selected using the navigation modal.
      * @param slot Slot of the question to scroll to.
      */
-    async changePage(page: number, fromModal?: boolean, slot?: number): Promise<void> {
+    async changePage(page: number, slot?: number): Promise<void> {
         if (slot !== undefined && (this.attempt!.currentpage == -1 || page == this.currentPage)) {
             // Scrol to a certain question in the current page.
             this.scrollToQuestion(slot);
@@ -183,7 +182,7 @@ export class AddonModQuizReviewPage implements OnInit {
         this.setSummaryCalculatedData(data);
 
         this.questions = data.questions;
-        this.nextPage = page == -1 ? -2 : page + 1;
+        this.nextPage = page + 1;
         this.previousPage = page - 1;
 
         this.questions.forEach((question) => {
@@ -341,8 +340,6 @@ export class AddonModQuizReviewPage implements OnInit {
                 summaryShown: false,
                 currentPage: this.attempt?.currentpage,
                 isReview: true,
-                numPages: this.numPages,
-                showAll: this.showAll,
             },
         });
 
@@ -350,11 +347,7 @@ export class AddonModQuizReviewPage implements OnInit {
             return;
         }
 
-        if (modalData.action == AddonModQuizNavigationModalComponent.CHANGE_PAGE) {
-            this.changePage(modalData.page!, true, modalData.slot);
-        } else if (modalData.action == AddonModQuizNavigationModalComponent.SWITCH_MODE) {
-            this.switchMode();
-        }
+        this.changePage(modalData.page!, modalData.slot);
     }
 
 }

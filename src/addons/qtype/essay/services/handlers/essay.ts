@@ -516,7 +516,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
 
         if (!isPlainText) {
             // Add some HTML to the text if needed.
-            answers[textarea.name] = CoreTextUtils.formatHtmlLines(<string> answers[textarea.name]);
+            answers[textarea.name] = CoreTextUtils.formatHtmlLines(<string> answers[textarea.name] || '');
         }
     }
 

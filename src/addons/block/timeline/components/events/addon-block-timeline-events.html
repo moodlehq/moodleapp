@@ -68,7 +68,7 @@
 
 <div class="ion-padding ion-text-center" *ngIf="canLoadMore && !empty">
     <!-- Button and spinner to show more attempts. -->
-    <ion-button expand="block" (click)="loadMoreEvents()" color="light" *ngIf="!loadingMore">
+    <ion-button expand="block" (click)="loadMoreEvents()" fill="outline" *ngIf="!loadingMore">
         {{ 'core.loadmore' | translate }}
     </ion-button>
     <ion-spinner *ngIf="loadingMore" [attr.aria-label]="'core.loading' | translate"></ion-spinner>

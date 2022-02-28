@@ -140,7 +140,7 @@ body {
 @each $color-name, $unused in $colors {
     .text-#{$color-name},
     p.text-#{$color-name} {
-        color: var(--ion-color-#{$color-name});
+        color: var(--ion-color-#{$color-name}) !important;
     }
 }
 
@@ -831,8 +831,8 @@ ion-list.core-course-module-list-wrapper,
 .list-item-limited-width,
 .core-course-module-list-wrapper {
     max-width: var(--list-item--max-width);
-    margin-left: auto;
-    margin-right: auto;
+    margin-left: auto !important;
+    margin-right: auto !important;
 }
 
 ion-toolbar h1 img.core-bar-button-image,
@@ -1257,11 +1257,6 @@ ion-datetime.datetime-disabled {
     opacity: .8 !important;
 }
 
-// Hide details on items to align badges.
-ion-item.hide-detail {
-    --detail-icon-opacity: 0;
-}
-
 // Make links clickable when inside radio or checkbox items. Style part.
 @media (hover: hover) {
     ion-item.item-multiple-inputs:hover::part(native) {
@@ -1451,19 +1446,35 @@ ion-grid.core-no-grid > ion-row {
         --core-collapsible-footer-height: auto;
     }
 
+    .ion-margin {
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+
+    filter: var(--scroll-shadow-top, none);
+    -webkit-filter: var(--scroll-shadow-top, none);
     width: 100%;
     bottom: 0;
     z-index: 3;
     height: var(--core-collapsible-footer-height, auto);
     background-color: var(--core-collapsible-footer-background);
     display: block;
-    border-top: 1px solid var(--stroke);
     @include core-transition(all, 200ms);
 }
 
 .core-iframe-fullscreen [collapsible-footer] {
     opacity: 0 !important;
     height: 0 !important;
+}
+
+@include media-breakpoint-up(md) {
+    .adaptable-buttons-row {
+        display: flex;
+        flex-direction: row;
+        ion-button {
+            flex: 1;
+        }
+    }
 }
 
 ion-header.no-title {
@@ -1579,4 +1590,19 @@ body.core-iframe-fullscreen ion-content {
     }
 
 
+}
+
+.has-spacer {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    flex-grow: 1;
+
+    .spacer-top {
+        flex-grow: 1;
+        align-content: flex-end;
+    }
+    .spacer {
+        flex-grow: 1;
+    }
 }

@@ -60,21 +60,23 @@
             (onLoading)="setLoadingComments($event)" [showItem]="true">
         </core-comments>
 
-        <ion-grid *ngIf="hasPrevious || hasNext">
-            <ion-row class="ion-align-items-center">
-                <ion-col *ngIf="hasPrevious">
-                    <ion-button expand="block" fill="outline" (click)="gotoEntry(offset! -1)">
-                        <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true"></ion-icon>
-                        {{ 'core.previous' | translate }}
+        <div collapsible-footer *ngIf="entryLoaded && hasPrevious || hasNext" slot="fixed">
+            <ion-row class="ion-justify-content-between ion-align-items-center ion-no-padding ion-wrap">
+                <ion-col class="ion-text-start ion-no-padding core-navigation-arrow" size="auto">
+                    <ion-button [disabled]="!hasPrevious" fill="clear" color="dark" [attr.aria-label]="'core.previous' | translate"
+                        (click)="gotoEntry(offset! -1)">
+                        <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true"></ion-icon>
                     </ion-button>
                 </ion-col>
-                <ion-col *ngIf="hasNext">
-                    <ion-button expand="block" (click)="gotoEntry(offset! + 1)">
-                        {{ 'core.next' | translate }}
-                        <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true"></ion-icon>
+                <ion-col class="ion-text-center">
+                </ion-col>
+                <ion-col class="ion-text-end ion-no-padding core-navigation-arrow" size="auto">
+                    <ion-button [disabled]="!hasNext" fill="clear" color="dark" [attr.aria-label]=" 'core.next' | translate"
+                        (click)="gotoEntry(offset! + 1)">
+                        <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true"></ion-icon>
                     </ion-button>
                 </ion-col>
             </ion-row>
-        </ion-grid>
+        </div>
     </core-loading>
 </ion-content>

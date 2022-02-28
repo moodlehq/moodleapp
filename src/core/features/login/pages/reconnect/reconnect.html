@@ -53,7 +53,7 @@
         <ion-grid class="ion-padding">
             <ion-row>
                 <ion-col>
-                    <ion-button expand="block" color="light" (click)="cancel($event)">
+                    <ion-button expand="block" fill="outline" (click)="cancel($event)">
                         {{ 'core.login.cancel' | translate }}
                     </ion-button>
                 </ion-col>
@@ -67,7 +67,7 @@
 
         <ng-container *ngIf="showScanQR">
             <div class="ion-text-center ion-padding">{{ 'core.login.or' | translate }}</div>
-            <ion-button expand="block" color="light" class="ion-margin" (click)="showInstructionsAndScanQR()">
+            <ion-button expand="block" fill="outline" class="ion-margin" (click)="showInstructionsAndScanQR()">
                 <ion-icon slot="start" name="fas-qrcode" aria-hidden="true"></ion-icon>
                 {{ 'core.scanqr' | translate }}
             </ion-button>
@@ -96,7 +96,7 @@
 
     <!-- If OAuth, display cancel button since the form isn't displayed. -->
     <ion-list *ngIf="isOAuth">
-        <ion-button expand="block" class="ion-margin" color="light" (click)="cancel($event)">
+        <ion-button expand="block" class="ion-margin" fill="outline" (click)="cancel($event)">
             {{ 'core.login.cancel' | translate }}
         </ion-button>
     </ion-list>

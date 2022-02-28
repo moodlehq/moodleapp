@@ -69,14 +69,14 @@
             <ion-item>
                 <ion-label>
                     <ion-row>
+                        <ion-col *ngIf="hasOffline">
+                            <ion-button expand="block" fill="outline" (click)="discard()">{{ 'core.discard' | translate }}</ion-button>
+                        </ion-col>
                         <ion-col>
                             <ion-button expand="block" [disabled]="newDiscussion.subject == '' || newDiscussion.message == null"
                                 (click)="add()">
                                 {{ 'addon.mod_forum.posttoforum' | translate }}
                             </ion-button>
-                        </ion-col>
-                        <ion-col *ngIf="hasOffline">
-                            <ion-button expand="block" color="light" (click)="discard()">{{ 'core.discard' | translate }}</ion-button>
                         </ion-col>
                     </ion-row>
                 </ion-label>

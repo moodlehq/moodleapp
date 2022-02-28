@@ -64,12 +64,6 @@
                 <ion-radio slot="end" [value]="option.id" [disabled]="option.disabled || !canEdit"></ion-radio>
             </ion-item>
         </ion-radio-group>
-        <ion-button *ngIf="canEdit" expand="block" (click)="save()" [disabled]="!canSave()" class="ion-margin">
-            {{ 'addon.mod_choice.savemychoice' | translate }}
-        </ion-button>
-        <ion-button *ngIf="canDelete" expand="block" color="light" (click)="delete()" class="ion-margin">
-            {{ 'addon.mod_choice.removemychoice' | translate }}
-        </ion-button>
     </ion-card>
 
     <!-- Choice results -->
@@ -96,7 +90,11 @@
                 </ion-col>
                 <ion-col *ngIf="choice.publish && results" size="12" size-lg="7">
                     <ion-item-group *ngFor="let result of results">
-                        <ion-item-divider class="ion-text-wrap">
+                        <ion-item [button]="result.numberofuser > 0" class="divider ion-text-wrap" (click)="toggle(result)"
+                            [attr.aria-label]="(result.expanded ? 'core.collapse' : 'core.expand') | translate" detail="false">
+                            <ion-icon [name]="result.numberofuser > 0 ? 'fas-chevron-right' : ''" flip-rtl slot="start" aria-hidden="true"
+                                class="expandable-status-icon" [class.expandable-status-icon-expanded]="result.expanded">
+                            </ion-icon>
                             <ion-label>
                                 <h3 class="item-heading">
                                     <core-format-text [text]="result.text" contextLevel="module" [contextInstanceId]="module.id"
@@ -111,14 +109,16 @@
                                     {{ 'addon.mod_choice.limita' | translate:{$a: result.maxanswer} }}
                                 </p>
                             </ion-label>
-                        </ion-item-divider>
-                        <ion-item *ngFor="let user of result.userresponses" core-user-link [courseId]="courseId" [userId]="user.userid"
-                            [attr.aria-label]="user.fullname" class="ion-text-wrap">
-                            <core-user-avatar [user]="user" slot="start" [courseId]="courseId"></core-user-avatar>
-                            <ion-label>
-                                <p>{{user.fullname}}</p>
-                            </ion-label>
                         </ion-item>
+                        <ng-container *ngIf="result.expanded">
+                            <ion-item *ngFor="let user of result.userresponses" core-user-link [courseId]="courseId" [userId]="user.userid"
+                                [attr.aria-label]="user.fullname" class="ion-text-wrap">
+                                <core-user-avatar [user]="user" slot="start" [courseId]="courseId"></core-user-avatar>
+                                <ion-label>
+                                    <p>{{user.fullname}}</p>
+                                </ion-label>
+                            </ion-item>
+                        </ng-container>
                     </ion-item-group>
                 </ion-col>
             </ion-row>
@@ -133,11 +133,24 @@
             </ion-label>
         </ion-item>
     </ion-card>
+
+
+    <div collapsible-footer *ngIf="!showLoading" slot="fixed">
+        <div class="list-item-limited-width adaptable-buttons-row" *ngIf="options.length && choice && (canEdit || canDelete)">
+            <ion-button *ngIf="canDelete" expand="block" fill="outline" (click)="delete()" class="ion-margin ion-text-wrap">
+                {{ 'addon.mod_choice.removemychoice' | translate }}
+            </ion-button>
+            <ion-button *ngIf="canEdit" expand="block" (click)="save()" [disabled]="!canSave()" class="ion-margin ion-text-wrap">
+                {{ 'addon.mod_choice.savemychoice' | translate }}
+            </ion-button>
+        </div>
+
+        <core-course-module-navigation [courseId]="courseId" [currentModule]="module" (completionChanged)="onCompletionChange()">
+        </core-course-module-navigation>
+    </div>
 </core-loading>
 
-<core-course-module-navigation collapsible-footer [hidden]="showLoading" [courseId]="courseId" [currentModule]="module"
-    (completionChanged)="onCompletionChange()">
-</core-course-module-navigation>
+
 
 <!-- Template to render a choice option label. -->
 <ng-template #optionLabelTemplate let-option="option">

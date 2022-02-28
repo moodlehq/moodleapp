@@ -20,16 +20,18 @@
         </ion-item>
     </ion-card>
 
-    <ng-container *ngIf="chat">
-        <ion-button class="ion-margin ion-text-wrap" expand="block" color="primary" (click)="enterChat()">
-            {{ 'addon.mod_chat.enterchat' | translate }}
-        </ion-button>
-        <ion-button class="ion-margin ion-text-wrap" expand="block" color="light" (click)="viewSessions()">
-            {{ 'addon.mod_chat.viewreport' | translate }}
-        </ion-button>
-    </ng-container>
-</core-loading>
+    <ion-button *ngIf="chat" class="ion-margin ion-text-wrap" expand="block" fill="outline" (click)="viewSessions()">
+        {{ 'addon.mod_chat.viewreport' | translate }}
+    </ion-button>
 
-<core-course-module-navigation collapsible-footer [hidden]="showLoading" [courseId]="courseId" [currentModule]="module"
-    (completionChanged)="onCompletionChange()">
-</core-course-module-navigation>
+    <div collapsible-footer *ngIf="!showLoading" slot="fixed">
+        <div class="list-item-limited-width" *ngIf="chat">
+            <ion-button class="ion-margin ion-text-wrap" expand="block" color="primary" (click)="enterChat()">
+                {{ 'addon.mod_chat.enterchat' | translate }}
+            </ion-button>
+        </div>
+
+        <core-course-module-navigation [courseId]="courseId" [currentModule]="module" (completionChanged)="onCompletionChange()">
+        </core-course-module-navigation>
+    </div>
+</core-loading>

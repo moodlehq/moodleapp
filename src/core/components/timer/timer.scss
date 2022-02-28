@@ -6,6 +6,7 @@ $core-timer-iterations: 15 !default;
 :host {
     .core-timer {
         --background: transparent !important;
+        border-radius: var(--big-radius);
 
         .core-timer-time-left, .core-timesup {
             font-weight: bold;
