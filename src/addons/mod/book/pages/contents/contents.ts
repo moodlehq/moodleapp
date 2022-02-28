@@ -281,7 +281,7 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
         }
 
         if (this.book) {
-            AddonModBook.storeLastChapterViewed(this.book.id, chapterId);
+            AddonModBook.storeLastChapterViewed(this.book.id, chapterId, this.courseId);
         }
 
         if (!this.module) {

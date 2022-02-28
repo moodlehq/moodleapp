@@ -168,29 +168,21 @@ export class AddonModImscpProvider {
      * Get src of a imscp item.
      *
      * @param module The module object.
-     * @param itemHref Href of item to get. If not defined, gets src of main item.
+     * @param itemHref Href of item to get.
      * @return Promise resolved with the item src.
      */
-    async getIframeSrc(module: CoreCourseModuleData, itemHref?: string): Promise<string> {
-        const contents = await CoreCourse.getModuleContents(module);
-
-        if (!itemHref) {
-            const toc = this.getToc(contents);
-            if (!toc.length) {
-                throw new CoreError('Empty TOC');
-            }
-            itemHref = toc[0].href;
-        }
-
+    async getIframeSrc(module: CoreCourseModuleData, itemHref: string): Promise<string> {
         const siteId = CoreSites.getCurrentSiteId();
 
         try {
-            const dirPath = await CoreFilepool.getPackageDirUrlByUrl(siteId, module.url!);
+            const dirPath = await CoreFilepool.getPackageDirUrlByUrl(siteId, module.url || '');
 
             return CoreTextUtils.concatenatePaths(dirPath, itemHref);
         } catch (error) {
             // Error getting directory, there was an error downloading or we're in browser. Return online URL if connected.
             if (CoreApp.isOnline()) {
+                const contents = await CoreCourse.getModuleContents(module);
+
                 const indexUrl = this.getFileUrlFromContents(contents, itemHref);
 
                 if (indexUrl) {
@@ -202,6 +194,20 @@ export class AddonModImscpProvider {
 
             throw error;
         }
+    }
+
+    /**
+     * Get last item viewed's href in the app for a IMSCP.
+     *
+     * @param id IMSCP instance ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with last item viewed's href, undefined if none.
+     */
+    async getLastItemViewed(id: number, siteId?: string): Promise<string | undefined> {
+        const site = await CoreSites.getSite(siteId);
+        const entry = await site.getLastViewed(AddonModImscpProvider.COMPONENT, id);
+
+        return entry?.value;
     }
 
     /**
@@ -283,6 +289,21 @@ export class AddonModImscpProvider {
             {},
             siteId,
         );
+    }
+
+    /**
+     * Store last item viewed in the app for a IMSCP.
+     *
+     * @param id IMSCP instance ID.
+     * @param href Item href.
+     * @param courseId Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with last item viewed, undefined if none.
+     */
+    async storeLastItemViewed(id: number, href: string, courseId: number, siteId?: string): Promise<void> {
+        const site = await CoreSites.getSite(siteId);
+
+        await site.storeLastViewed(AddonModImscpProvider.COMPONENT, id, href, String(courseId));
     }
 
 }

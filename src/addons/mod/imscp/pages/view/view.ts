@@ -14,6 +14,7 @@
 
 import { CoreConstants } from '@/core/constants';
 import { Component, OnInit } from '@angular/core';
+import { CoreError } from '@classes/errors/error';
 import { CoreNavigationBarItem } from '@components/navigation-bar/navigation-bar';
 import { CoreCourseResourceDownloadResult } from '@features/course/classes/main-resource-component';
 import { CoreCourse } from '@features/course/services/course';
@@ -99,9 +100,20 @@ export class AddonModImscpViewPage implements OnInit {
                 }
 
                 if (this.currentHref === undefined) {
-                    // @todo: Use last item viewed.
-                    this.currentHref = this.items[0].href;
+                    // Get last viewed.
+                    const lastViewedHref = await AddonModImscp.getLastItemViewed(imscp.id);
+
+                    if (lastViewedHref !== undefined) {
+                        this.currentHref = lastViewedHref;
+                    } else {
+                        // Use first one.
+                        this.currentHref = this.items[0].href;
+                    }
                 }
+            }
+
+            if (this.currentHref === undefined) {
+                throw new CoreError('Empty TOC');
             }
 
             try {
@@ -218,7 +230,7 @@ export class AddonModImscpViewPage implements OnInit {
      * @param itemHref Item Href.
      * @return Promise resolved when done.
      */
-    async loadItemHref(itemHref?: string): Promise<void> {
+    async loadItemHref(itemHref: string): Promise<void> {
         if (!this.module) {
             return;
         }
@@ -241,6 +253,10 @@ export class AddonModImscpViewPage implements OnInit {
         } else {
             this.src = src;
         }
+
+        if (this.imscp) {
+            AddonModImscp.storeLastItemViewed(this.imscp.id, itemHref, this.courseId);
+        }
     }
 
     /**
@@ -257,7 +273,7 @@ export class AddonModImscpViewPage implements OnInit {
      */
     async showToc(): Promise<void> {
         // Create the toc modal.
-        const modalData = await CoreDomUtils.openSideModal<string>({
+        const itemHref = await CoreDomUtils.openSideModal<string>({
             component: AddonModImscpTocComponent,
             componentProps: {
                 items: this.items,
@@ -265,8 +281,8 @@ export class AddonModImscpViewPage implements OnInit {
             },
         });
 
-        if (modalData) {
-            this.loadItemHref(modalData);
+        if (itemHref) {
+            this.loadItemHref(itemHref);
         }
     }
 

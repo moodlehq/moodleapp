@@ -82,6 +82,7 @@ export class CoreSite {
     // Variables for the database.
     static readonly WS_CACHE_TABLE = 'wscache_2';
     static readonly CONFIG_TABLE = 'core_site_config';
+    static readonly LAST_VIEWED_TABLE = 'core_site_last_viewed';
 
     static readonly MINIMUM_MOODLE_VERSION = '3.5';
 
@@ -110,6 +111,7 @@ export class CoreSite {
     protected db?: SQLiteDB;
     protected cacheTable: AsyncInstance<CoreDatabaseTable<CoreSiteWSCacheRecord>>;
     protected configTable: AsyncInstance<CoreDatabaseTable<CoreSiteConfigDBRecord, 'name'>>;
+    protected lastViewedTable: AsyncInstance<CoreDatabaseTable<CoreSiteLastViewedDBRecord, 'component' | 'id'>>;
     protected cleanUnicode = false;
     protected lastAutoLogin = 0;
     protected offlineDisabled = false;
@@ -153,6 +155,12 @@ export class CoreSite {
             database: this.getDb(),
             config: { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
             primaryKeyColumns: ['name'],
+        }));
+        this.lastViewedTable = asyncInstance(() => CoreSites.getSiteTable(CoreSite.LAST_VIEWED_TABLE, {
+            siteId: this.getId(),
+            database: this.getDb(),
+            config: { cachingStrategy: CoreDatabaseCachingStrategy.None },
+            primaryKeyColumns: ['component', 'id'],
         }));
         this.setInfo(infos);
         this.calculateOfflineDisabled();
@@ -1955,6 +1963,49 @@ export class CoreSite {
         return this.containsUrl(url);
     }
 
+    /**
+     * Deletes last viewed records based on some conditions.
+     *
+     * @param conditions Conditions.
+     * @return Promise resolved when done.
+     */
+    async deleteLastViewed(conditions?: Partial<CoreSiteLastViewedDBRecord>): Promise<void> {
+        await this.lastViewedTable.delete(conditions);
+    }
+
+    /**
+     * Get a last viewed record for a component+id.
+     *
+     * @param component The component.
+     * @param id ID.
+     * @return Resolves with last viewed record, undefined if not found.
+     */
+    async getLastViewed(component: string, id: number): Promise<CoreSiteLastViewedDBRecord | undefined> {
+        try {
+            return await this.lastViewedTable.getOneByPrimaryKey({ component, id });
+        } catch (error) {
+            // Not found.
+        }
+    }
+
+    /**
+     * Store a last viewed record.
+     *
+     * @param component The component.
+     * @param id ID.
+     * @param value Last viewed item value.
+     * @param data Other data.
+     * @return Promise resolved when done.
+     */
+    async storeLastViewed(component: string, id: number, value: string | number, data?: string): Promise<void> {
+        await this.lastViewedTable.insert({
+            component,
+            id,
+            value: String(value),
+            data,
+        });
+    }
+
 }
 
 /**
@@ -2280,4 +2331,11 @@ export type CoreSiteWSCacheRecord = {
     key?: string;
     component?: string;
     componentId?: number;
+};
+
+export type CoreSiteLastViewedDBRecord = {
+    component: string;
+    id: number;
+    value: string;
+    data?: string;
 };

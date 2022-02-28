@@ -87,7 +87,8 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
 
         this.description = imscp.intro;
 
-        // @todo: Check if user already started the IMSCP.
+        const lastViewed = await AddonModImscp.getLastItemViewed(imscp.id);
+        this.hasStarted = lastViewed !== undefined;
     }
 
     /**

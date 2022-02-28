@@ -78,7 +78,7 @@ export const APP_SCHEMA: CoreAppSchema = {
 // Schema to register for Site DB.
 export const SITE_SCHEMA: CoreSiteSchema = {
     name: 'CoreSitesProvider',
-    version: 2,
+    version: 3,
     canBeCleared: [CoreSite.WS_CACHE_TABLE],
     tables: [
         {
@@ -124,6 +124,29 @@ export const SITE_SCHEMA: CoreSiteSchema = {
                     name: 'value',
                 },
             ],
+        },
+        {
+            name: CoreSite.LAST_VIEWED_TABLE,
+            columns: [
+                {
+                    name: 'component',
+                    type: 'TEXT',
+                },
+                {
+                    name: 'id',
+                    type: 'INTEGER',
+                },
+                {
+                    name: 'value',
+                    type: 'TEXT',
+                    notNull: true,
+                },
+                {
+                    name: 'data',
+                    type: 'TEXT',
+                },
+            ],
+            primaryKeys: ['component', 'id'],
         },
     ],
     async migrate(db: SQLiteDB, oldVersion: number): Promise<void> {
