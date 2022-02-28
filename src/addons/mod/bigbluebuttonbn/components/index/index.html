@@ -103,7 +103,7 @@
     </ng-container>
 
     <div collapsible-footer *ngIf="!showLoading" slot="fixed">
-        <div class="list-item-limited-width"
+        <div class="list-item-limited-width adaptable-buttons-row"
             *ngIf="meetingInfo && (meetingInfo.canjoin || meetingInfo.statusrunning && meetingInfo.ismoderator)">
             <ion-button *ngIf="meetingInfo.statusrunning && meetingInfo.ismoderator" fill="outline" class="ion-margin ion-text-wrap"
                 expand="block" (click)="endMeeting()">

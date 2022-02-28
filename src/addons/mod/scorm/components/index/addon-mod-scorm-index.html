@@ -197,15 +197,17 @@
                         </ion-label>
                     </ion-item>
 
-                    <!-- Open mode (Preview or Normal) -->
-                    <ion-button *ngIf="!scorm.hidebrowse" expand="block" fill="outline" (click)="open($event, true)"
-                        class="ion-text-wrap ion-margin">
-                        <ion-icon name="fas-search" slot="start" aria-hidden="true"></ion-icon>
-                        {{ 'addon.mod_scorm.browse' | translate }}
-                    </ion-button>
-                    <ion-button expand="block" (click)="open($event)" class="ion-text-wrap ion-margin">
-                        {{ 'addon.mod_scorm.enter' | translate }}
-                    </ion-button>
+                    <div class="adaptable-buttons-row">
+                        <!-- Open mode (Preview or Normal) -->
+                        <ion-button *ngIf="!scorm.hidebrowse" expand="block" fill="outline" (click)="open($event, true)"
+                            class="ion-text-wrap ion-margin">
+                            <ion-icon name="fas-search" slot="start" aria-hidden="true"></ion-icon>
+                            {{ 'addon.mod_scorm.browse' | translate }}
+                        </ion-button>
+                        <ion-button expand="block" (click)="open($event)" class="ion-text-wrap ion-margin">
+                            {{ 'addon.mod_scorm.enter' | translate }}
+                        </ion-button>
+                    </div>
                 </ng-container>
 
                 <!-- Download progress. -->

@@ -136,7 +136,7 @@
 
 
     <div collapsible-footer *ngIf="!showLoading" slot="fixed">
-        <div class="list-item-limited-width" *ngIf="options.length && choice && (canEdit || canDelete)">
+        <div class="list-item-limited-width adaptable-buttons-row" *ngIf="options.length && choice && (canEdit || canDelete)">
             <ion-button *ngIf="canDelete" expand="block" fill="outline" (click)="delete()" class="ion-margin ion-text-wrap">
                 {{ 'addon.mod_choice.removemychoice' | translate }}
             </ion-button>
