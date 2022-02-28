@@ -92,7 +92,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
     /**
      * Open the book in a certain chapter.
      *
-     * @param chapterId Chapter to open, undefined for first chapter.
+     * @param chapterId Chapter to open, undefined for last chapter viewed.
      */
     openBook(chapterId?: number): void {
         CoreNavigator.navigate('contents', {

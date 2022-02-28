@@ -13,14 +13,11 @@
 // limitations under the License.
 
 import { Component, OnInit, Optional } from '@angular/core';
-import { CoreSilentError } from '@classes/errors/silenterror';
-import { CoreNavigationBarItem } from '@components/navigation-bar/navigation-bar';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreNavigator } from '@services/navigator';
 import { AddonModImscpProvider, AddonModImscp, AddonModImscpTocItem } from '../../services/imscp';
-import { AddonModImscpTocComponent } from '../toc/toc';
 
 /**
  * Component that displays a IMSCP.
@@ -33,13 +30,9 @@ import { AddonModImscpTocComponent } from '../toc/toc';
 export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit {
 
     component = AddonModImscpProvider.COMPONENT;
-    src = '';
-    warning = '';
-    navigationItems: CoreNavigationBarItem<AddonModImscpTocItem>[] = [];
 
-    protected items: AddonModImscpTocItem[] = [];
-    protected currentHref?: string;
-    protected displayDescription = false;
+    items: AddonModImscpTocItem[] = [];
+    hasStarted = false;
 
     constructor(@Optional() courseContentsPage?: CoreCourseContentsPage) {
         super('AddonModImscpIndexComponent', courseContentsPage);
@@ -73,85 +66,68 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
     /**
      * @inheritdoc
      */
-    protected async fetchContent(refresh = false): Promise<void> {
-        const downloadResult = await this.downloadResourceIfNeeded(refresh);
-
-        const imscp = await AddonModImscp.getImscp(this.courseId, this.module.id);
-        this.description = imscp.intro;
-        this.dataRetrieved.emit(imscp);
-
-        // Get contents. No need to refresh, it has been done in downloadResourceIfNeeded.
-        const contents = await CoreCourse.getModuleContents(this.module);
-
-        this.items = AddonModImscp.createItemList(contents);
-
-        if (this.items.length && this.currentHref === undefined) {
-            this.currentHref = this.items[0].href;
-        }
-
-        try {
-            await this.loadItemHref(this.currentHref);
-        } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_imscp.deploymenterror', true);
-
-            throw new CoreSilentError(error);
-        }
-
-        this.warning = downloadResult.failed ? this.getErrorDownloadingSomeFilesMessage(downloadResult.error!) : '';
+    protected async fetchContent(): Promise<void> {
+        await Promise.all([
+            this.loadImscp(),
+            this.loadTOC(),
+        ]);
     }
 
     /**
-     * Loads an item.
+     * Load IMSCP data.
      *
-     * @param itemHref Item Href.
      * @return Promise resolved when done.
      */
-    async loadItemHref(itemHref?: string): Promise<void> {
-        const src = await AddonModImscp.getIframeSrc(this.module, itemHref);
-        this.currentHref = itemHref;
+    protected async loadImscp(): Promise<void> {
+        const imscp = await AddonModImscp.getImscp(this.courseId, this.module.id);
 
-        this.navigationItems = this.items.map((item) => ({
-            item: item,
-            current: item.href == this.currentHref,
-            enabled: !!item.href,
-        }));
+        this.dataRetrieved.emit(imscp);
 
-        if (this.src && src == this.src) {
-            // Re-loading same page. Set it to empty and then re-set the src in the next digest so it detects it has changed.
-            this.src = '';
-            setTimeout(() => {
-                this.src = src;
-            });
-        } else {
-            this.src = src;
-        }
+        this.dataRetrieved.emit(imscp);
+
+        this.description = imscp.intro;
+
+        const lastViewed = await AddonModImscp.getLastItemViewed(imscp.id);
+        this.hasStarted = lastViewed !== undefined;
     }
 
     /**
-     * Loads an item.
+     * Load book TOC.
      *
-     * @param item Item.
+     * @return Promise resolved when done.
      */
-    loadItem(item: AddonModImscpTocItem): void {
-        this.loadItemHref(item.href);
+    protected async loadTOC(): Promise<void> {
+        // Get contents. No need to refresh, it has been done in downloadResourceIfNeeded.
+        const contents = await CoreCourse.getModuleContents(this.module, this.courseId);
+
+        this.items = AddonModImscp.createItemList(contents);
     }
 
     /**
-     * Show the TOC.
+     * Open IMSCP book with a certain item.
+     *
+     * @param href Item href to open, undefined for last item seen.
      */
-    async showToc(): Promise<void> {
-        // Create the toc modal.
-        const modalData = await CoreDomUtils.openSideModal<string>({
-            component: AddonModImscpTocComponent,
-            componentProps: {
-                items: this.items,
-                selected: this.currentHref,
+    openImscp(href?: string): void {
+        CoreNavigator.navigate('view', {
+            params: {
+                cmId: this.module.id,
+                courseId: this.courseId,
+                initialHref: href,
             },
         });
 
-        if (modalData) {
-            this.loadItemHref(modalData);
-        }
+        this.hasStarted = true;
+    }
+
+    /**
+     * Get dummy array for padding.
+     *
+     * @param n Array length.
+     * @return Dummy array with n elements.
+     */
+    getNumberForPadding(n: number): number[] {
+        return new Array(n);
     }
 
 }
