@@ -38,7 +38,7 @@
         <core-infinite-loading [enabled]="canLoadMore" position="top" (action)="loadPrevious($event)" [error]="loadMoreError">
         </core-infinite-loading>
 
-        <ion-list class="addon-messages-discussion-container">
+        <ion-list class="addon-messages-discussion-container  list-item-limited-width">
             <ng-container *ngFor="let comment of comments; index as index; last as last">
 
                 <p class="ion-text-center addon-messages-date" *ngIf="comment.showDate">

@@ -16,7 +16,8 @@
         (ionRefresh)="refreshDatabase($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    <core-loading [hideUntil]="entryLoaded && (isPullingToRefresh || !renderingEntry && !loadingRating && !loadingComments)">
+    <core-loading [hideUntil]="entryLoaded && (isPullingToRefresh || !renderingEntry && !loadingRating && !loadingComments)"
+        class="list-item-limited-width">
         <!-- Database entries found to be synchronized -->
         <ion-card class="core-warning-card" *ngIf="entry && entry.hasOffline">
             <ion-item>

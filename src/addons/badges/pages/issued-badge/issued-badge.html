@@ -13,7 +13,7 @@
     <ion-refresher slot="fixed" [disabled]="!badgeLoaded" (ionRefresh)="refreshBadges($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    <core-loading [hideUntil]="badgeLoaded">
+    <core-loading [hideUntil]="badgeLoaded" class="list-item-limited-width">
         <ion-item-group *ngIf="badge">
             <ion-item class="ion-text-wrap ion-text-center">
                 <ion-label>

@@ -29,7 +29,7 @@ import { CoreEnrolledCourseData } from '@features/courses/services/courses';
 import { ActivatedRoute, Params } from '@angular/router';
 import { AddonCalendarCalendarComponent } from '../../components/calendar/calendar';
 import { AddonCalendarUpcomingEventsComponent } from '../../components/upcoming-events/upcoming-events';
-import { AddonCalendarFilterPopoverComponent } from '../../components/filter/filter';
+import { AddonCalendarFilterComponent } from '../../components/filter/filter';
 import { CoreNavigator } from '@services/navigator';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreConstants } from '@/core/constants';
@@ -328,18 +328,15 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Show the context menu.
-     *
-     * @param event Event.
+     * Show the filter menu.
      */
-    async openFilter(event: MouseEvent): Promise<void> {
-        await CoreDomUtils.openPopover({
-            component: AddonCalendarFilterPopoverComponent,
+    async openFilter(): Promise<void> {
+        await CoreDomUtils.openSideModal({
+            component: AddonCalendarFilterComponent,
             componentProps: {
                 courses: this.courses,
                 filter: this.filter,
             },
-            event,
         });
     }
 

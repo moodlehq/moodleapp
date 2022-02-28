@@ -7,7 +7,7 @@
             <h1>{{ (showCalendar ? 'addon.calendar.calendarevents' : 'addon.calendar.upcomingevents') | translate }}</h1>
         </ion-title>
         <ion-buttons slot="end">
-            <ion-button fill="clear" (click)="openFilter($event)" [attr.aria-label]="'core.filter' | translate">
+            <ion-button fill="clear" (click)="openFilter()" [attr.aria-label]="'core.filter' | translate">
                 <ion-icon slot="icon-only" name="fas-filter" aria-hidden="true"></ion-icon>
             </ion-button>
             <core-context-menu>
