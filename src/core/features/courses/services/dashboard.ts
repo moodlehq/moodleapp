@@ -76,6 +76,14 @@ export class CoreCoursesDashboardProvider {
         }
         const result = await site.read<CoreBlockGetDashboardBlocksWSResponse>('core_block_get_dashboard_blocks', params, preSets);
 
+        if (site.isVersionGreaterEqualThan('4.0')) {
+            // Temporary hack to have course overview on 3.9.5 but not on 4.0 onwards.
+            // To be removed in a near future.
+            // Remove myoverview when is forced. See MDL-72092.
+            result.blocks = result.blocks.filter((block) =>
+                block.instanceid != 0 || block.name != 'myoverview' || block.region != 'forced');
+        }
+
         return result.blocks || [];
     }
 
