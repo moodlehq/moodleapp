@@ -95,7 +95,9 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
             return;
         }
 
-        this.meetingInfo = await AddonModBBB.getMeetingInfo(this.bbb.id, this.groupId);
+        this.meetingInfo = await AddonModBBB.getMeetingInfo(this.bbb.id, this.groupId, {
+            cmId: this.module.id,
+        });
 
         if (this.meetingInfo.statusrunning && this.meetingInfo.userlimit > 0) {
             const count = (this.meetingInfo.participantcount || 0) + (this.meetingInfo.moderatorcount || 0);
