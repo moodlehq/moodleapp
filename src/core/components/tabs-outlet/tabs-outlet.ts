@@ -23,16 +23,16 @@ import {
     ElementRef,
     SimpleChange,
 } from '@angular/core';
-import { IonTabs, ViewDidEnter, ViewDidLeave } from '@ionic/angular';
+import { IonRouterOutlet, IonTabs, ViewDidEnter, ViewDidLeave } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
 import { CoreUtils } from '@services/utils/utils';
 import { Params } from '@angular/router';
 import { CoreNavBarButtonsComponent } from '../navbar-buttons/navbar-buttons';
-import { CoreDomUtils } from '@services/utils/dom';
 import { StackEvent } from '@ionic/angular/directives/navigation/stack-utils';
 import { CoreNavigator } from '@services/navigator';
 import { CoreTabBase, CoreTabsBaseComponent } from '@classes/tabs';
+import { CoreComponentsRegistry } from '@singletons/components-registry';
 
 /**
  * This component displays some top scrollable tabs that will autohide on vertical scroll.
@@ -71,6 +71,8 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
 
     constructor(element: ElementRef) {
         super(element);
+
+        CoreComponentsRegistry.register(element.nativeElement, this);
     }
 
     /**
@@ -167,6 +169,15 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
     }
 
     /**
+     * Get router outlet.
+     *
+     * @returns Router outlet
+     */
+    getOutlet(): IonRouterOutlet {
+        return this.ionTabs.outlet;
+    }
+
+    /**
      * Load the tab.
      *
      * @param tabToSelect Tab to load.
@@ -188,7 +199,7 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
     protected showHideNavBarButtons(activatedPageName: string): void {
         const elements = this.ionTabs.outlet.nativeEl.querySelectorAll('core-navbar-buttons');
         elements.forEach((element) => {
-            const instance = CoreDomUtils.getInstanceByElement<CoreNavBarButtonsComponent>(element);
+            const instance = CoreComponentsRegistry.resolve(element, CoreNavBarButtonsComponent);
 
             if (instance) {
                 const pagetagName = element.closest('.ion-page')?.tagName;

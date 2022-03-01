@@ -171,9 +171,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
     /**
      * A tab was selected.
      */
-    tabSelected(tabToSelect: CoreTabsOutletTab): void {
-        this.ionCollapsibleHeader?.setupContent(tabToSelect.id);
-
+    tabSelected(): void {
         if (!this.module || !this.course) {
             return;
         }

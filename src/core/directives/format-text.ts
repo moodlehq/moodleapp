@@ -39,6 +39,7 @@ import { CoreFilter, CoreFilterFilter, CoreFilterFormatTextOptions } from '@feat
 import { CoreFilterDelegate } from '@features/filter/services/filter-delegate';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { CoreSubscriptions } from '@singletons/subscriptions';
+import { CoreComponentsRegistry } from '@singletons/components-registry';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -95,6 +96,8 @@ export class CoreFormatTextDirective implements OnChanges {
         @Optional() protected content: IonContent,
         protected viewContainerRef: ViewContainerRef,
     ) {
+        CoreComponentsRegistry.register(element.nativeElement, this);
+
         this.element = element.nativeElement;
         this.element.classList.add('core-format-text-loading'); // Hide contents until they're treated.
 
@@ -123,6 +126,22 @@ export class CoreFormatTextDirective implements OnChanges {
 
             this.formatAndRenderContents();
         }
+    }
+
+    /**
+     * Wait until the text is fully rendered.
+     */
+    async rendered(): Promise<void> {
+        if (!this.element.classList.contains('core-format-text-loading')) {
+            return;
+        }
+
+        await new Promise<void>(resolve => {
+            const subscription = this.afterRender.subscribe(() => {
+                subscription.unsubscribe();
+                resolve();
+            });
+        });
     }
 
     /**

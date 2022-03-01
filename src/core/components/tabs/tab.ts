@@ -15,8 +15,8 @@
 import { Component, Input, Output, OnInit, OnDestroy, ElementRef, EventEmitter, ContentChild, TemplateRef } from '@angular/core';
 import { CoreTabBase } from '@classes/tabs';
 
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreNavBarButtonsComponent } from '../navbar-buttons/navbar-buttons';
 import { CoreTabsComponent } from './tabs';
 
@@ -144,7 +144,7 @@ export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
     protected showHideNavBarButtons(show: boolean): void {
         const elements = this.element.querySelectorAll('core-navbar-buttons');
         elements.forEach((element) => {
-            const instance = CoreDomUtils.getInstanceByElement<CoreNavBarButtonsComponent>(element);
+            const instance = CoreComponentsRegistry.resolve(element, CoreNavBarButtonsComponent);
 
             if (instance) {
                 instance.forceHide(!show);

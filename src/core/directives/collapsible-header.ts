@@ -12,336 +12,331 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, OnDestroy } from '@angular/core';
+import { Directive, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { CoreTabsOutletComponent } from '@components/tabs-outlet/tabs-outlet';
 import { ScrollDetail } from '@ionic/core';
 import { CoreUtils } from '@services/utils/utils';
-import { Platform } from '@singletons';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreMath } from '@singletons/math';
+import { Subscription } from 'rxjs';
+import { CoreFormatTextDirective } from './format-text';
 
 /**
- * Directive to make ion-header collapsible.
- * Ion content should have h1 tag inside.
+ * Directive to make <ion-header> collapsible.
+ *
+ * This directive expects h1 titles to be duplicated in a header and an item inside the page, and it will transition
+ * from one state to another listening to the scroll in the page content. The item to be used as the expanded form
+ * should also have the [collapsed] attribute.
  *
  * Example usage:
  *
  * <ion-header collapsible>
+ *     <ion-toolbar>
+ *         <ion-title>
+ *             <h1>Title</h1>
+ *         </ion-title>
+ *     </ion-toolbar>
+ * </ion-header>
+ *
+ * <ion-content>
+ *     <ion-item collapsible>
+ *         <ion-label>
+ *             <h1>Title</h1>
+ *         </ion-label>
+ *     </ion-item>
+ *     ...
+ * </ion-content>
  */
 @Directive({
     selector: 'ion-header[collapsible]',
 })
-export class CoreCollapsibleHeaderDirective implements OnDestroy {
+export class CoreCollapsibleHeaderDirective implements OnInit, OnDestroy {
 
-    protected loadingObserver: CoreEventObserver;
-    protected content?: HTMLIonContentElement | null;
-    protected contentScroll?: HTMLElement;
-    protected header: HTMLIonHeaderElement;
-    protected titleTopDifference = 1;
-    protected h1StartDifference = 0;
-    protected headerH1FontSize = 0;
-    protected contentH1FontSize = 0;
-    protected headerSubHeadingFontSize = 0;
-    protected contentSubHeadingFontSize = 0;
-    protected subHeadingStartDifference = 0;
-    protected inContent = true;
-    protected title?: HTMLElement | null;
-    protected titleHeight = 0;
-    protected contentH1?: HTMLElement | null;
-    protected debouncedUpdateCollapseProgress: () => void;
+    protected page?: HTMLElement;
+    protected collapsedHeader?: Element;
+    protected collapsedFontStyles?: Partial<CSSStyleDeclaration>;
+    protected expandedHeader?: Element;
+    protected expandedHeaderHeight?: number;
+    protected expandedFontStyles?: Partial<CSSStyleDeclaration>;
+    protected content?: HTMLIonContentElement;
+    protected contentScrollListener?: EventListener;
+    protected floatingTitle?: HTMLElement;
+    protected scrollingHeight?: number;
+    protected subscriptions: Subscription[] = [];
 
-    constructor(el: ElementRef<HTMLIonHeaderElement>) {
-        this.header = el.nativeElement;
-        this.debouncedUpdateCollapseProgress = CoreUtils.debounce(() => this.updateCollapseProgress(), 50);
-
-        this.loadingObserver = CoreEvents.on(CoreEvents.CORE_LOADING_CHANGED, async (data) => {
-            if (!data.loaded) {
-                return;
-            }
-
-            const loadingId = await this.getLoadingId();
-            if (loadingId && data.uniqueId == loadingId) {
-                // Remove event when loading is done.
-                this.loadingObserver.off();
-
-                // Wait to render.
-                await CoreUtils.nextTick();
-                this.setupRealTitle();
-            }
-        });
-    }
+    constructor(protected el: ElementRef) {}
 
     /**
-     * Set content element.
-     *
-     * @param content Content element.
+     * @inheritdoc
      */
-    protected async setContent(content?: HTMLIonContentElement | null): Promise<void> {
-        this.content = content;
+    async ngOnInit(): Promise<void> {
+        this.collapsedHeader = this.el.nativeElement;
 
-        if (content) {
-            this.contentScroll = await content.getScrollElement();
-        } else {
-            delete this.contentScroll;
-        }
-    }
+        await Promise.all([
+            this.initializePage(),
+            this.initializeCollapsedHeader(),
+            this.initializeExpandedHeader(),
+        ]);
 
-    /**
-     * Gets the loading content id to wait for the loading to finish.
-     *
-     * @return Promise resolved with Loading Id, if any.
-     */
-    protected async getLoadingId(): Promise<string | undefined> {
-        if (!this.content) {
-            this.setContent(this.header.parentElement?.querySelector('ion-content:not(.disable-scroll-y)'));
-
-            if (!this.content) {
-                this.cannotCollapse();
-
-                return;
-            }
-
-            const title = this.header.parentElement?.querySelector('.collapsible-title') || null;
-
-            if (title) {
-                // Title already found, no need to wait for loading.
-                this.loadingObserver.off();
-                this.setupRealTitle();
-
-                return;
-            }
-
-        }
-
-        return this.content.querySelector('core-loading.core-loading-loaded:not(.core-loading-inline) .core-loading-content')?.id;
-    }
-
-    /**
-     * Call this function when header is not collapsible.
-     */
-    protected cannotCollapse(): void {
-        this.setContent();
-        this.loadingObserver.off();
-        this.header.classList.add('core-header-collapsed');
-    }
-
-    /**
-     * Gets the real title on ion content to watch scroll.
-     *
-     * @return Promise resolved when done.
-     */
-    protected async setupRealTitle(): Promise<void> {
-        if (!this.content) {
-            this.cannotCollapse();
-
-            return;
-        }
-
-        // Wait animations to finish.
-        const animations = (this.content.getAnimations && this.content.getAnimations()) || [];
-        await Promise.all(animations.map(async (animation) => {
-            await animation.finished;
-        }));
-
-        let title = this.content.querySelector<HTMLElement>('.collapsible-title');
-        if (!title) {
-            // Title is outside the ion-content.
-            title = this.header.parentElement?.querySelector('.collapsible-title') || null;
-            this.inContent = false;
-        }
-        this.contentH1 = title?.querySelector<HTMLElement>('h1');
-        const headerH1 = this.header.querySelector<HTMLElement>('h1');
-        if (!title || !this.contentH1 || !headerH1 || !this.contentH1.parentElement) {
-            this.cannotCollapse();
-
-            return;
-        }
-
-        this.title = title;
-        this.titleHeight = title.getBoundingClientRect().height;
-        this.titleTopDifference = this.contentH1.getBoundingClientRect().top - headerH1.getBoundingClientRect().top;
-
-        if (this.titleTopDifference <= 0) {
-            this.cannotCollapse();
-
-            return;
-        }
-
-        // Split view part.
-        const contentAux = this.header.parentElement?.querySelector<HTMLElement>('ion-content.disable-scroll-y');
-        if (contentAux) {
-            if (contentAux.querySelector('core-split-view.menu-and-content')) {
-                this.cannotCollapse();
-                title.remove();
-
-                return;
-            }
-            contentAux.style.setProperty('--offset-top', this.header.clientHeight + 'px');
-        }
-
-        const headerH1Styles = getComputedStyle(headerH1);
-        const contentH1Styles = getComputedStyle(this.contentH1);
-
-        if (Platform.isRTL) {
-            // Checking position over parent because transition may not be finished.
-            const contentH1Position = this.contentH1.getBoundingClientRect().right - this.content.getBoundingClientRect().right;
-            const headerH1Position = headerH1.getBoundingClientRect().right - this.header.getBoundingClientRect().right;
-
-            this.h1StartDifference = Math.round(contentH1Position - (headerH1Position - parseFloat(headerH1Styles.paddingRight)));
-        } else {
-            // Checking position over parent because transition may not be finished.
-            const contentH1Position = this.contentH1.getBoundingClientRect().left - this.content.getBoundingClientRect().left;
-            const headerH1Position = headerH1.getBoundingClientRect().left - this.header.getBoundingClientRect().left;
-
-            this.h1StartDifference = Math.round(contentH1Position - (headerH1Position + parseFloat(headerH1Styles.paddingLeft)));
-        }
-
-        this.headerH1FontSize = parseFloat(headerH1Styles.fontSize);
-        this.contentH1FontSize = parseFloat(contentH1Styles.fontSize);
-
-        // Transfer font styles.
-        Array.from(headerH1Styles).forEach((styleName) => {
-            if (styleName != 'font-size' &&
-                styleName != 'font-family' &&
-                (styleName.startsWith('font-') || styleName.startsWith('letter-'))) {
-                this.contentH1?.style.setProperty(styleName, headerH1Styles.getPropertyValue(styleName));
-            }
-        });
-        this.contentH1.style.setProperty(
-            '--max-width',
-            (parseFloat(headerH1Styles.width)
-                -parseFloat(headerH1Styles.paddingLeft)
-                -parseFloat(headerH1Styles.paddingRight)
-                +'px'),
-        );
-
-        this.contentH1.setAttribute('aria-hidden', 'true');
-
-        // Clone element to let the other elements be static.
-        const contentH1Clone = this.contentH1.cloneNode(true) as HTMLElement;
-        contentH1Clone.classList.add('cloned');
-        this.contentH1.parentElement.insertBefore(contentH1Clone, this.contentH1);
-        this.contentH1.style.setProperty(
-            'top',
-            (contentH1Clone.getBoundingClientRect().top -
-            this.contentH1.parentElement.getBoundingClientRect().top +
-            parseInt(getComputedStyle(this.contentH1.parentElement).marginTop || '0', 10)) + 'px',
-        );
-        this.contentH1.style.setProperty('position', 'absolute');
-        this.contentH1.parentElement.style.setProperty('position', 'relative');
-
-        this.setupContent();
-    }
-
-    /**
-     * Setup content scroll.
-     *
-     * @param parentId Parent id to recalculate content
-     * @param retries  Retries to find content in case it's loading.
-     */
-    async setupContent(parentId?: string, retries = 5): Promise<void> {
-        if (parentId) {
-            this.setContent(this.header.parentElement?.querySelector(`#${parentId} ion-content:not(.disable-scroll-y)`));
-            this.inContent = false;
-            if (!this.content && retries > 0) {
-                await CoreUtils.nextTick();
-                await this.setupContent(parentId, --retries);
-
-                return;
-            }
-
-            this.updateCollapseProgress();
-        }
-
-        if (!this.title || !this.content) {
-            return;
-        }
-
-        // Add something under the hood to change the page background.
-        let color = getComputedStyle(this.title).getPropertyValue('backgroundColor').trim();
-        if (color == '') {
-            color = getComputedStyle(this.title).getPropertyValue('--background').trim();
-        }
-
-        const underHeader = document.createElement('div');
-        underHeader.classList.add('core-underheader');
-        underHeader.style.setProperty('height', this.header.clientHeight + 'px');
-        underHeader.style.setProperty('background', color);
-        if (this.inContent) {
-            this.content.shadowRoot?.querySelector('#background-content')?.prepend(underHeader);
-            this.content.style.setProperty('--offset-top', this.header.clientHeight + 'px');
-        } else {
-            if (!this.header.closest('.ion-page')?.querySelector('.core-underheader')) {
-                this.header.closest('.ion-page')?.insertBefore(underHeader, this.header);
-            }
-        }
-
-        this.content.scrollEvents = true;
-        this.content.addEventListener('ionScroll', ({ target }: CustomEvent<ScrollDetail>): void => {
-            if (target !== this.content) {
-                return;
-            }
-
-            this.updateCollapseProgress();
-            this.debouncedUpdateCollapseProgress();
-        });
-    }
-
-    /**
-     * Update collapse progress according to the current scroll position.
-     */
-    protected updateCollapseProgress(): void {
-        if (!this.contentScroll || !this.title || !this.contentH1) {
-            return;
-        }
-
-        const collapsibleHeaderHeight = this.title.shadowRoot?.children[0].clientHeight ?? this.title.clientHeight;
-        const scrollableHeight = this.contentScroll.scrollHeight - this.contentScroll.clientHeight;
-        const collapsedHeight = collapsibleHeaderHeight - this.title.clientHeight;
-        let progress = 0;
-        if (scrollableHeight !== 0) {
-            progress = CoreMath.clamp(
-                scrollableHeight + collapsedHeight <= 2 * collapsibleHeaderHeight
-                    ? this.contentScroll.scrollTop / scrollableHeight
-                    : this.contentScroll.scrollTop / collapsibleHeaderHeight,
-                0,
-                1,
-            );
-        }
-        const collapsed = progress === 1;
-
-        if (!this.inContent) {
-            this.title.style.transform = `translateY(-${this.titleTopDifference * progress}px)`;
-            this.title.style.height = `${collapsibleHeaderHeight * (1 - progress)}px`;
-        }
-
-        // Check total collapse.
-        this.header.classList.toggle('core-header-collapsed', collapsed);
-        this.title.classList.toggle('collapsible-title-collapsed', collapsed);
-        this.title.classList.toggle('collapsible-title-collapse-started', progress > 0);
-        this.title.classList.toggle('collapsible-title-collapse-nowrap', progress > 0.5);
-        this.title.style.setProperty('--collapse-opacity', `${1 - progress}`);
-
-        if (collapsed) {
-            this.contentH1.style.transform = `translateX(-${this.h1StartDifference}px)`;
-            this.contentH1.style.setProperty('font-size', `${this.headerH1FontSize}px`);
-
-            return;
-        }
-
-        // Zoom font-size out.
-        const newFontSize = this.contentH1FontSize - ((this.contentH1FontSize - this.headerH1FontSize) * progress);
-        this.contentH1.style.setProperty('font-size', `${newFontSize}px`);
-
-        // Move.
-        const newStart = -this.h1StartDifference * progress;
-        this.contentH1.style.transform = `translateX(${newStart}px)`;
+        this.initializeFloatingTitle();
+        this.initializeContent();
     }
 
     /**
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.loadingObserver.off();
+        this.subscriptions.forEach(subscription => subscription.unsubscribe());
+
+        if (this.content && this.contentScrollListener) {
+            this.content.removeEventListener('ionScroll', this.contentScrollListener);
+        }
+    }
+
+    /**
+     * Search the page element, initialize it, and wait until it's ready for the transition to trigger on scroll.
+     */
+    protected async initializePage(): Promise<void> {
+        if (!this.collapsedHeader?.parentElement) {
+            throw new Error('[collapsible-header] Couldn\'t get page');
+        }
+
+        // Find element and prepare classes.
+        this.page = this.collapsedHeader.parentElement;
+
+        this.page.classList.add('collapsible-header-page');
+    }
+
+    /**
+     * Search the collapsed header element, initialize it, and wait until it's ready for the transition to trigger on scroll.
+     */
+    protected async initializeCollapsedHeader(): Promise<void> {
+        if (!this.collapsedHeader) {
+            throw new Error('[collapsible-header] Couldn\'t initialize collapsed header');
+        }
+
+        this.collapsedHeader.classList.add('collapsible-header-collapsed');
+
+        await this.waitFormatTextsRendered(this.collapsedHeader);
+    }
+
+    /**
+     * Search the expanded header element, initialize it, and wait until it's ready for the transition to trigger on scroll.
+     */
+    protected async initializeExpandedHeader(): Promise<void> {
+        do {
+            await CoreUtils.wait(50);
+
+            this.expandedHeader = this.page?.querySelector('ion-item[collapsible]') ?? undefined;
+
+            if (!this.expandedHeader) {
+                continue;
+            }
+
+            await this.waitFormatTextsRendered(this.expandedHeader);
+        } while (
+            !this.expandedHeader ||
+            this.expandedHeader.clientHeight === 0 ||
+            this.expandedHeader.closest('ion-content.animating')
+        );
+
+        this.expandedHeader.classList.add('collapsible-header-expanded');
+    }
+
+    /**
+     * Search the page content, initialize it, and wait until it's ready for the transition to trigger on scroll.
+     */
+    protected async initializeContent(): Promise<void> {
+        // Initialize from tabs.
+        const tabs = CoreComponentsRegistry.resolve(this.page?.querySelector('core-tabs-outlet'), CoreTabsOutletComponent);
+
+        if (tabs) {
+            const outlet = tabs.getOutlet();
+            const onOutletUpdated = () => {
+                const activePage = outlet.nativeEl.querySelector('.ion-page:not(.ion-page-hidden)');
+
+                this.updateContent(activePage?.querySelector('ion-content:not(.disable-scroll-y)') as HTMLIonContentElement);
+            };
+
+            this.subscriptions.push(outlet.activateEvents.subscribe(onOutletUpdated));
+            this.subscriptions.push(outlet.deactivateEvents.subscribe(onOutletUpdated));
+
+            onOutletUpdated();
+
+            return;
+        }
+
+        // Initialize from page content.
+        const content = this.page?.querySelector('ion-content:not(.disable-scroll-y)');
+
+        if (!content) {
+            throw new Error('[collapsible-header] Couldn\'t get content');
+        }
+
+        this.trackContentScroll(content as HTMLIonContentElement);
+    }
+
+    /**
+     * Initialize a floating title to mimic transitioning the title from one state to the other.
+     */
+    protected initializeFloatingTitle(): void {
+        if (!this.page || !this.collapsedHeader || !this.expandedHeader) {
+            throw new Error('[collapsible-header] Couldn\'t create floating title');
+        }
+
+        // Add floating title and measure initial position.
+        const collapsedHeaderTitle = this.collapsedHeader.querySelector('h1') as HTMLElement;
+        const originalTitle = this.expandedHeader.querySelector('h1') as HTMLElement;
+        const floatingTitleWrapper = originalTitle.parentElement as HTMLElement;
+        const floatingTitle = originalTitle.cloneNode(true) as HTMLElement;
+
+        originalTitle.classList.add('collapsible-header-original-title');
+        floatingTitle.classList.add('collapsible-header-floating-title');
+        floatingTitleWrapper.classList.add('collapsible-header-floating-title-wrapper');
+        floatingTitleWrapper.insertBefore(floatingTitle, originalTitle);
+
+        const floatingTitleBoundingBox = floatingTitle.getBoundingClientRect();
+
+        // Prepare styles variables.
+        const collapsedHeaderTitleBoundingBox = collapsedHeaderTitle.getBoundingClientRect();
+        const collapsedTitleStyles = getComputedStyle(collapsedHeaderTitle);
+        const expandedHeaderHeight = this.expandedHeader.clientHeight;
+        const expandedTitleStyles = getComputedStyle(originalTitle);
+        const originalTitleBoundingBox = originalTitle.getBoundingClientRect();
+        const textProperties = ['overflow', 'white-space', 'text-overflow', 'color'];
+        const [collapsedFontStyles, expandedFontStyles] = Array
+            .from(collapsedTitleStyles)
+            .filter(
+                property =>
+                    property.startsWith('font-') ||
+                    property.startsWith('letter-') ||
+                    textProperties.includes(property),
+            )
+            .reduce((styles, property) => {
+                styles[0][property] = collapsedTitleStyles.getPropertyValue(property);
+                styles[1][property] = expandedTitleStyles.getPropertyValue(property);
+
+                return styles;
+            }, [{}, {}]);
+        const cssVariables = {
+            '--collapsible-header-collapsed-height': `${this.collapsedHeader.clientHeight}px`,
+            '--collapsible-header-expanded-y-delta': `-${this.collapsedHeader.clientHeight}px`,
+            '--collapsible-header-expanded-height': `${expandedHeaderHeight}px`,
+            '--collapsible-header-floating-title-top': `${originalTitleBoundingBox.top - floatingTitleBoundingBox.top}px`,
+            '--collapsible-header-floating-title-left': `${originalTitleBoundingBox.left - floatingTitleBoundingBox.left}px`,
+            '--collapsible-header-floating-title-width': `${originalTitle.clientWidth}px`,
+            '--collapsible-header-floating-title-x-delta':
+                `${collapsedHeaderTitleBoundingBox.left - originalTitleBoundingBox.left}px`,
+            '--collapsible-header-floating-title-width-delta': `${collapsedHeaderTitle.clientWidth - originalTitle.clientWidth}px`,
+        };
+
+        Object
+            .entries(cssVariables)
+            .forEach(([property, value]) => this.page?.style.setProperty(property, value));
+
+        Object
+            .entries(expandedFontStyles)
+            .forEach(([property, value]) => floatingTitle.style.setProperty(property, value as string));
+
+        // Activate styles.
+        this.page.classList.add('is-active');
+
+        this.floatingTitle = floatingTitle;
+        this.scrollingHeight = originalTitleBoundingBox.top - collapsedHeaderTitleBoundingBox.top;
+        this.collapsedFontStyles = collapsedFontStyles;
+        this.expandedFontStyles = expandedFontStyles;
+        this.expandedHeaderHeight = expandedHeaderHeight;
+    }
+
+    /**
+     * Wait until all <core-format-text> children inside the element are done rendering.
+     *
+     * @param element Element.
+     */
+    protected async waitFormatTextsRendered(element: Element): Promise<void> {
+        const formatTexts = Array
+            .from(element.querySelectorAll('core-format-text'))
+            .map(element => CoreComponentsRegistry.resolve(element, CoreFormatTextDirective));
+
+        await Promise.all(formatTexts.map(formatText => formatText?.rendered()));
+    }
+
+    /**
+     * Update content element whos scroll is being tracked.
+     *
+     * @param content Content element.
+     */
+    protected updateContent(content?: HTMLIonContentElement | null): void {
+        if (this.content && this.contentScrollListener) {
+            this.content.removeEventListener('ionScroll', this.contentScrollListener);
+
+            delete this.content;
+            delete this.contentScrollListener;
+        }
+
+        content && this.trackContentScroll(content);
+    }
+
+    /**
+     * Listen to a content element for scroll events that will control the header state transition.
+     *
+     * @param content Content element.
+     */
+    protected async trackContentScroll(content: HTMLIonContentElement): Promise<void> {
+        if (content === this.content) {
+            return;
+        }
+
+        const page = this.page;
+        const scrollingHeight = this.scrollingHeight;
+        const expandedHeader = this.expandedHeader;
+        const expandedHeaderHeight = this.expandedHeaderHeight;
+        const expandedFontStyles = this.expandedFontStyles;
+        const collapsedFontStyles = this.collapsedFontStyles;
+        const floatingTitle = this.floatingTitle;
+        const contentScroll = await content.getScrollElement();
+
+        if (
+            !page ||
+            !scrollingHeight ||
+            !expandedHeader ||
+            !expandedHeaderHeight ||
+            !expandedFontStyles ||
+            !collapsedFontStyles ||
+            !floatingTitle
+        ) {
+            throw new Error('[collapsible-header] Couldn\'t set up scrolling');
+        }
+
+        page.style.setProperty('--collapsible-header-progress', '0');
+        page.classList.toggle('is-within-content', content.contains(expandedHeader));
+        page.classList.toggle('is-collapsed', false);
+
+        Object
+            .entries(expandedFontStyles)
+            .forEach(([property, value]) => floatingTitle.style.setProperty(property, value as string));
+
+        this.content = content;
+        this.content.addEventListener('ionScroll', this.contentScrollListener = ({ target }: CustomEvent<ScrollDetail>): void => {
+            if (target !== this.content) {
+                return;
+            }
+
+            const scrollableHeight = contentScroll.scrollHeight - contentScroll.clientHeight;
+            const collapsedHeight = expandedHeaderHeight - (expandedHeader.clientHeight ?? 0);
+            const frozen = scrollableHeight + collapsedHeight <= 2 * expandedHeaderHeight;
+            const progress = frozen
+                ? 0
+                :  CoreMath.clamp(contentScroll.scrollTop / scrollingHeight, 0, 1);
+
+            page.style.setProperty('--collapsible-header-progress', `${progress}`);
+            page.classList.toggle('is-frozen', frozen);
+            page.classList.toggle('is-collapsed', progress === 1);
+
+            Object
+                .entries(progress > .5 ? collapsedFontStyles : expandedFontStyles)
+                .forEach(([property, value]) => floatingTitle.style.setProperty(property, value as string));
+        });
     }
 
 }

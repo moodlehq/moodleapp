@@ -16,7 +16,7 @@
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
-<ion-item class="core-format-progress-list ion-text-wrap collapsible-title list-item-limited-width">
+<ion-item class="core-format-progress-list ion-text-wrap list-item-limited-width" collapsible>
     <ion-avatar slot="start" class="core-course-thumb" *ngIf="imageThumb">
         <img [src]="imageThumb" core-external-content alt="" />
     </ion-avatar>
@@ -29,4 +29,4 @@
     </ion-label>
 
 </ion-item>
-<core-tabs-outlet [tabs]="tabs" [hideUntil]="loaded" (ionChange)="tabSelected($event)"></core-tabs-outlet>
+<core-tabs-outlet [tabs]="tabs" [hideUntil]="loaded" (ionChange)="tabSelected()"></core-tabs-outlet>

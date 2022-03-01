@@ -40,8 +40,7 @@
         </ion-card>
 
         <ion-list *ngIf="event">
-            <ion-item class="collapsible-title ion-text-wrap addon-calendar-event"
-                [ngClass]="['addon-calendar-eventtype-'+event.eventtype]">
+            <ion-item class="ion-text-wrap addon-calendar-event" collapsible [ngClass]="['addon-calendar-eventtype-'+event.eventtype]">
                 <core-mod-icon *ngIf="event.moduleIcon" [modicon]="event.moduleIcon" [showAlt]="false" [modname]="event.modulename"
                     [componentId]="event.instance" slot="start"></core-mod-icon>
                 <ion-icon *ngIf=" event.eventIcon && !event.moduleIcon" [name]="event.eventIcon" aria-hidden="true" slot="start">
