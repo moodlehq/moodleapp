@@ -172,7 +172,9 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
         try {
             const joinUrl = await AddonModBBB.getJoinUrl(this.module.id, this.groupId);
 
-            CoreUtils.openInBrowser(joinUrl);
+            CoreUtils.openInBrowser(joinUrl, {
+                showBrowserWarning: false,
+            });
 
             this.updateMeetingInfo();
         } catch (error) {
