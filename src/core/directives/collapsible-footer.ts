@@ -17,6 +17,10 @@ import { ScrollDetail } from '@ionic/core';
 import { IonContent } from '@ionic/angular';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreMath } from '@singletons/math';
+import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreFormatTextDirective } from './format-text';
+import { CoreDomUtils } from '@services/utils/dom';
+import { CoreEventLoadingChangedData, CoreEventObserver, CoreEvents } from '@singletons/events';
 
 /**
  * Directive to make an element fixed at the bottom collapsible when scrolling.
@@ -32,11 +36,12 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
 
     protected element: HTMLElement;
     protected initialHeight = 0;
-    protected initialPaddingBottom = 0;
+    protected initialPaddingBottom = '0px';
     protected previousTop = 0;
     protected previousHeight = 0;
     protected stickTimeout?: number;
     protected content?: HTMLIonContentElement | null;
+    protected loadingChangedListener?: CoreEventObserver;
 
     constructor(el: ElementRef, protected ionContent: IonContent) {
         this.element = el.nativeElement;
@@ -44,29 +49,27 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
     }
 
     /**
-     * Setup scroll event listener.
-     *
-     * @param retries Number of retries left.
+     * Calculate the height of the footer.
      */
-    protected async listenScrollEvents(retries = 5): Promise<void> {
-        // Already initialized.
-        if (this.initialHeight > 0) {
-            return;
-        }
+    protected async calculateHeight(): Promise<void> {
+        await this.waitFormatTextsRendered(this.element);
 
-        this.initialHeight = this.element.getBoundingClientRect().height;
-
-        if (this.initialHeight == 0 && retries > 0) {
-            await CoreUtils.nextTicks(50);
-
-            this.listenScrollEvents(retries - 1);
-
-            return;
-        }
+        await CoreUtils.nextTick();
 
         // Set a minimum height value.
-        this.initialHeight = this.initialHeight || 48;
+        this.initialHeight = this.element.getBoundingClientRect().height || 48;
         this.previousHeight = this.initialHeight;
+
+        this.setBarHeight(this.initialHeight);
+    }
+
+    /**
+     * Setup scroll event listener.
+     */
+    protected async listenScrollEvents(): Promise<void> {
+        if (this.content) {
+            return;
+        }
 
         this.content = this.element.closest('ion-content');
 
@@ -82,12 +85,15 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
         }
 
         // Set a padding to not overlap elements.
-        this.initialPaddingBottom = parseFloat(this.content.style.getPropertyValue('--padding-bottom') || '0');
-        this.content.style.setProperty('--padding-bottom', this.initialPaddingBottom + this.initialHeight + 'px');
+        this.initialPaddingBottom = this.content.style.getPropertyValue('--padding-bottom') || this.initialPaddingBottom;
+        this.content.style.setProperty(
+            '--padding-bottom',
+            `calc(${this.initialPaddingBottom} + var(--core-collapsible-footer-height, 0px))`,
+        );
+
         const scroll = await this.content.getScrollElement();
         this.content.scrollEvents = true;
 
-        this.setBarHeight(this.initialHeight);
         this.content.addEventListener('ionScroll', (e: CustomEvent<ScrollDetail>): void => {
             if (!this.content) {
                 return;
@@ -96,6 +102,19 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
             this.onScroll(e.detail, scroll);
         });
 
+    }
+
+    /**
+     * Wait until all <core-format-text> children inside the element are done rendering.
+     *
+     * @param element Element.
+     */
+    protected async waitFormatTextsRendered(element: Element): Promise<void> {
+        const formatTexts = Array
+            .from(element.querySelectorAll('core-format-text'))
+            .map(element => CoreComponentsRegistry.resolve(element, CoreFormatTextDirective));
+
+        await Promise.all(formatTexts.map(formatText => formatText?.rendered()));
     }
 
     /**
@@ -144,15 +163,29 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
+        // Calculate the height now.
+        await this.calculateHeight();
+        setTimeout(() => this.calculateHeight(), 200); // Try again, sometimes the first calculation is wrong.
+
         this.listenScrollEvents();
+
+        // Recalculate the height if a parent core-loading displays the content.
+        this.loadingChangedListener =
+            CoreEvents.on(CoreEvents.CORE_LOADING_CHANGED, async (data: CoreEventLoadingChangedData) => {
+                if (data.loaded && CoreDomUtils.closest(this.element.parentElement, '#' + data.uniqueId)) {
+                    // The format-text is inside the loading, re-calculate the height.
+                    await this.calculateHeight();
+                    setTimeout(() => this.calculateHeight(), 200);
+                }
+            });
     }
 
     /**
      * @inheritdoc
      */
     async ngOnDestroy(): Promise<void> {
-        this.content?.style.setProperty('--padding-bottom', this.initialPaddingBottom + 'px');
+        this.content?.style.setProperty('--padding-bottom', this.initialPaddingBottom);
     }
 
 }
