@@ -12,7 +12,7 @@
     <ion-refresher slot="fixed" [disabled]="!competencies.loaded" (ionRefresh)="refreshLearningPlan($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    <core-loading [hideUntil]="competencies.loaded">
+    <core-loading [hideUntil]="competencies.loaded" class="list-item-limited-width">
         <ion-card *ngIf="user">
             <ion-item class="ion-text-wrap">
                 <ion-label>

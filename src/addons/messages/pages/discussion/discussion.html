@@ -69,7 +69,8 @@
 
         <h2 class="sr-only">{{ title }}</h2>
 
-        <ion-list class="addon-messages-discussion-container" [class.addon-messages-discussion-group]="isGroup" [attr.aria-live]="'polite'">
+        <ion-list class="addon-messages-discussion-container list-item-limited-width" [class.addon-messages-discussion-group]="isGroup"
+            [attr.aria-live]="'polite'">
             <ng-container *ngFor="let message of messages; index as index; last as last">
                 <h3 class="ion-text-center addon-messages-date" *ngIf="message.showDate">
                     {{ message.timecreated | coreFormatDate: "strftimedayshort" }}
@@ -157,7 +158,7 @@
             <ion-button expand="block" class="ion-text-wrap ion-margin-bottom" (click)="confirmContactRequest()">
                 {{ 'addon.messages.acceptandaddcontact' | translate }}
             </ion-button>
-            <ion-button expand="block" class="ion-text-wrap ion-margin-bottom" fill="outline" (click)="declineContactRequest()">
+            <ion-button expand="block" class="ion-text-wrap ion-margin-bottom" color="light" (click)="declineContactRequest()">
                 {{ 'addon.messages.decline' | translate }}
             </ion-button>
         </div>

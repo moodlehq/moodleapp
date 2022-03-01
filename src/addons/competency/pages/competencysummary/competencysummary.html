@@ -14,7 +14,7 @@
     <ion-refresher slot="fixed" [disabled]="!competencyLoaded" (ionRefresh)="refreshCompetency($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    <core-loading [hideUntil]="competencyLoaded">
+    <core-loading [hideUntil]="competencyLoaded" class="list-item-limited-width">
         <ion-card *ngIf="competency">
             <ion-item class="ion-text-wrap" *ngIf="competency.competency.description">
                 <ion-label>

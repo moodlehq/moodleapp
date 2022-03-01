@@ -30,7 +30,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 
-    <core-loading [hideUntil]="notesLoaded">
+    <core-loading [hideUntil]="notesLoaded" class="list-item-limited-width">
         <ion-item class="ion-text-wrap" *ngIf="user">
             <core-user-avatar [user]="user" [courseId]="courseId" slot="start" [linkProfile]="false"></core-user-avatar>
             <ion-label>

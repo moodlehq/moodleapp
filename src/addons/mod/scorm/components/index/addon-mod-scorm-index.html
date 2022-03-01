@@ -6,7 +6,7 @@
 </core-navbar-buttons>
 
 <!-- Content. -->
-<core-loading [hideUntil]="!showLoading" class="safe-area-padding">
+<core-loading [hideUntil]="!showLoading" class="safe-area-padding list-item-limited-width">
 
     <!-- Activity info. -->
     <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
@@ -21,7 +21,7 @@
         </ion-item>
     </ion-card>
 
-    <div *ngIf="scorm && !showLoading && !scorm.warningMessage" class="list-item-limited-width">
+    <div *ngIf="scorm && !showLoading && !scorm.warningMessage">
         <!-- Attempts status. -->
         <ion-card *ngIf="(scorm.displayattemptstatus || offlineAttempts.length) && !skip">
             <ion-card-header class="ion-text-wrap">

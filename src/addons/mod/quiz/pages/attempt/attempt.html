@@ -16,7 +16,7 @@
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="doRefresh($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    <core-loading [hideUntil]="loaded">
+    <core-loading [hideUntil]="loaded" class="list-item-limited-width">
         <ion-list *ngIf="attempt">
             <ion-item class="ion-text-wrap">
                 <ion-label>

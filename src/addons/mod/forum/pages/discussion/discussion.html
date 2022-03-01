@@ -60,7 +60,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 
-    <core-loading [hideUntil]="discussionLoaded">
+    <core-loading [hideUntil]="discussionLoaded" class="list-item-limited-width">
         <!-- Discussion replies found to be synchronized -->
         <ion-card class="core-warning-card" *ngIf="postHasOffline || hasOfflineRatings">
             <ion-item>

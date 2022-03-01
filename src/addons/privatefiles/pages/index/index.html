@@ -14,7 +14,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 
-    <core-loading [hideUntil]="filesLoaded" *ngIf="showPrivateFiles || showSiteFiles">
+    <core-loading [hideUntil]="filesLoaded" *ngIf="showPrivateFiles || showSiteFiles" class="list-item-limited-width">
         <!-- Allow selecting the files to see: private or site. -->
         <core-combobox [selection]="root" (onChange)="rootChanged($event)" *ngIf="showPrivateFiles && showSiteFiles && !path">
             <ion-select-option class="ion-text-wrap" value="my">

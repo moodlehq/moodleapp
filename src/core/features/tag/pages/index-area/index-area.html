@@ -14,7 +14,7 @@
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshData($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    <core-loading [hideUntil]="loaded">
+    <core-loading [hideUntil]="loaded" class="list-item-limited-width">
         <ng-container *ngIf="loaded">
             <core-dynamic-component [component]="areaComponent" [data]="{items: items}"></core-dynamic-component>
         </ng-container>

@@ -15,6 +15,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CoreEnrolledCourseData } from '@features/courses/services/courses';
 import { CoreUtils } from '@services/utils/utils';
+import { ModalController } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonCalendarEventType, AddonCalendarProvider } from '../../services/calendar';
 import { AddonCalendarFilter, AddonCalendarEventIcons } from '../../services/calendar-helper';
@@ -23,11 +24,11 @@ import { AddonCalendarFilter, AddonCalendarEventIcons } from '../../services/cal
  * Component to display the events filter that includes events types and a list of courses.
  */
 @Component({
-    selector: 'addon-calendar-filter-popover',
-    templateUrl: 'addon-calendar-filter-popover.html',
-    styleUrls: ['../../calendar-common.scss', 'filter-popover.scss'],
+    selector: 'addon-calendar-filter',
+    templateUrl: 'filter.html',
+    styleUrls: ['../../calendar-common.scss', 'filter.scss'],
 })
-export class AddonCalendarFilterPopoverComponent implements OnInit {
+export class AddonCalendarFilterComponent implements OnInit {
 
     @Input() filter: AddonCalendarFilter = {
         filtered: false,
@@ -56,7 +57,7 @@ export class AddonCalendarFilterPopoverComponent implements OnInit {
     }
 
     /**
-     * Init the component.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.courseId = this.filter.courseId || -1;
@@ -78,6 +79,13 @@ export class AddonCalendarFilterPopoverComponent implements OnInit {
         this.filter.filtered = !!this.filter.courseId || this.types.some((name) => !this.filter[name]);
 
         CoreEvents.trigger(AddonCalendarProvider.FILTER_CHANGED_EVENT, this.filter);
+    }
+
+    /**
+     * Close modal.
+     */
+    closeModal(): void {
+        ModalController.dismiss();
     }
 
 }

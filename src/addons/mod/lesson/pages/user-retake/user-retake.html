@@ -13,7 +13,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 
-    <core-loading [hideUntil]="loaded">
+    <core-loading [hideUntil]="loaded" class="list-item-limited-width">
         <div *ngIf="student">
             <!-- Student data. -->
             <ion-item class="ion-text-wrap" core-user-link [userId]="student.id" [courseId]="courseId" [attr.aria-label]="student.fullname">
