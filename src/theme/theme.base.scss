@@ -628,55 +628,31 @@ body.core-iframe-fullscreen ion-router-outlet {
     z-index: 100000 !important;
 }
 
-.core-modal-lateral .modal-wrapper {
-    @include margin-horizontal(16px, null);
-}
+.core-modal-lateral {
+    --ion-safe-area-left: 0px;
+    --ion-safe-area-right: 0px;
 
-@media only screen and (min-height: 400px) and (min-width: #{$modal-lateral-width}) {
-    .core-modal-lateral {
-        --ion-safe-area-left: 0px;
-        --ion-safe-area-right: 0px;
+    .modal-wrapper {
+        @include margin-horizontal(var(--modal-lateral-margin), null);
 
-        .modal-wrapper {
-            position: absolute;
-            @include position(0 !important, 0 !important, 0 !important, unset !important);
-            display: block;
-            height: 100% !important;
-            width: auto;
-            min-width: calc(#{$modal-lateral-width} - 16px);
-            box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
-        }
-        ion-backdrop {
-            visibility: visible;
-        }
+        position: absolute;
+        @include position(0 !important, 0 !important, 0 !important, unset !important);
+        display: block;
+        height: 100% !important;
+        width: calc(100% - var(--modal-lateral-margin));
+        max-width: calc(var(--modal-lateral-max-width));
+        box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+    }
+
+    ion-backdrop {
+        visibility: visible;
     }
 }
 
 @each $breakpoint, $width in $screen-breakpoints {
-    .core-modal-lateral-#{$breakpoint} .modal-wrapper {
-        @include margin-horizontal(16px, null);
+    .core-modal-lateral-#{$breakpoint} {
+        --modal-lateral-max-width: #{$width};
     }
-
-    @media only screen and (min-height: 400px) and (min-width: #{$width}) {
-        .core-modal-lateral-#{$breakpoint} {
-            --ion-safe-area-left: 0px;
-            --ion-safe-area-right: 0px;
-
-            .modal-wrapper {
-                position: absolute;
-                @include position(0 !important, 0 !important, 0 !important, unset !important);
-                display: block;
-                height: 100% !important;
-                width: auto;
-                min-width: #{$width};
-                box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
-            }
-            ion-backdrop {
-                visibility: visible;
-            }
-        }
-    }
-
 }
 
 // Hidden submit button.
