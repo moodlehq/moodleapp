@@ -46,6 +46,7 @@ import { asyncInstance, AsyncInstance } from '../utils/async-instance';
 import { CoreDatabaseTable } from './database/database-table';
 import { CoreDatabaseCachingStrategy } from './database/database-table-proxy';
 import { CoreSilentError } from './errors/silenterror';
+import { CoreWindow } from '@singletons/window';
 
 /**
  * QR Code type enumeration.
@@ -1509,7 +1510,7 @@ export class CoreSite {
         alertMessage?: string,
     ): Promise<InAppBrowserObject | void> {
         // Get the URL to open.
-        url = await this.getAutoLoginUrl(url);
+        const autoLoginUrl = await this.getAutoLoginUrl(url);
 
         if (alertMessage) {
             // Show an alert first.
@@ -1526,9 +1527,20 @@ export class CoreSite {
 
         // Open the URL.
         if (inApp) {
-            return CoreUtils.openInApp(url, options);
+            return CoreUtils.openInApp(autoLoginUrl, options);
         } else {
-            return CoreUtils.openInBrowser(url, options);
+            if ((options.showBrowserWarning || options.showBrowserWarning === undefined) && autoLoginUrl !== url) {
+                // Don't display the autologin URL in the warning.
+                try {
+                    await CoreWindow.confirmOpenBrowserIfNeeded(url);
+
+                    options.showBrowserWarning = false;
+                } catch (error) {
+                    return; // Cancelled, stop.
+                }
+            }
+
+            return CoreUtils.openInBrowser(autoLoginUrl, options);
         }
     }
 
