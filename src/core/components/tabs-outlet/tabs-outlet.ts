@@ -29,7 +29,6 @@ import { Subscription } from 'rxjs';
 import { CoreUtils } from '@services/utils/utils';
 import { Params } from '@angular/router';
 import { CoreNavBarButtonsComponent } from '../navbar-buttons/navbar-buttons';
-import { CoreDomUtils } from '@services/utils/dom';
 import { StackEvent } from '@ionic/angular/directives/navigation/stack-utils';
 import { CoreNavigator } from '@services/navigator';
 import { CoreTabBase, CoreTabsBaseComponent } from '@classes/tabs';
@@ -188,7 +187,7 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
     protected showHideNavBarButtons(activatedPageName: string): void {
         const elements = this.ionTabs.outlet.nativeEl.querySelectorAll('core-navbar-buttons');
         elements.forEach((element) => {
-            const instance = CoreDomUtils.getInstanceByElement<CoreNavBarButtonsComponent>(element);
+            const instance = CoreComponentsRegistry.resolve(element, CoreNavBarButtonsComponent);
 
             if (instance) {
                 const pagetagName = element.closest('.ion-page')?.tagName;

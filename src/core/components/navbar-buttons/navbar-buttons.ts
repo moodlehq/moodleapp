@@ -25,6 +25,7 @@ import {
 import { CoreLogger } from '@singletons/logger';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreContextMenuComponent } from '../context-menu/context-menu';
+import { CoreComponentsRegistry } from '@singletons/components-registry';
 
 const BUTTON_HIDDEN_CLASS = 'core-navbar-button-hidden';
 
@@ -80,7 +81,7 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
         this.element = element.nativeElement;
         this.logger = CoreLogger.getInstance('CoreNavBarButtonsComponent');
 
-        CoreDomUtils.storeInstanceByElement(this.element, this);
+        CoreComponentsRegistry.register(this.element, this);
     }
 
     /**
@@ -154,11 +155,11 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
         }
 
         const mainContextMenu = buttonsContainer.querySelector('core-context-menu');
-        const secondaryContextMenuInstance = CoreDomUtils.getInstanceByElement<CoreContextMenuComponent>(secondaryContextMenu);
-        let mainContextMenuInstance: CoreContextMenuComponent | undefined;
+        const secondaryContextMenuInstance = CoreComponentsRegistry.resolve(secondaryContextMenu, CoreContextMenuComponent);
+        let mainContextMenuInstance: CoreContextMenuComponent | null;
         if (mainContextMenu) {
             // Both containers have a context menu. Merge them to prevent having 2 menus at the same time.
-            mainContextMenuInstance = CoreDomUtils.getInstanceByElement<CoreContextMenuComponent>(mainContextMenu);
+            mainContextMenuInstance = CoreComponentsRegistry.resolve(mainContextMenu, CoreContextMenuComponent);
         } else {
             // There is a context-menu in these buttons, but there is no main context menu in the header.
             // Create one main context menu dynamically.

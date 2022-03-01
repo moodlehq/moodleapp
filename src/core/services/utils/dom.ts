@@ -52,6 +52,7 @@ import { CoreSites } from '@services/sites';
 import { NavigationStart } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
+import { CoreComponentsRegistry } from '@singletons/components-registry';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -68,7 +69,6 @@ export class CoreDomUtilsProvider {
     protected template: HTMLTemplateElement = document.createElement('template'); // A template element to convert HTML to element.
 
     protected matchesFunctionName?: string; // Name of the "matches" function to use when simulating a closest call.
-    protected instances: WeakMap<Element, unknown> = new WeakMap(); // Store component/directive instances indexed by element.
     protected debugDisplay = false; // Whether to display debug messages. Store it in a variable to make it synchronous.
     protected displayedAlerts: Record<string, HTMLIonAlertElement> = {}; // To prevent duplicated alerts.
     protected displayedModals: Record<string, HTMLIonModalElement> = {}; // To prevent duplicated modals.
@@ -671,9 +671,10 @@ export class CoreDomUtilsProvider {
      *
      * @param element The root element of the component/directive.
      * @return The instance, undefined if not found.
+     * @deprecated since 4.0.0. Use CoreComponentsRegistry instead.
      */
     getInstanceByElement<T = unknown>(element: Element): T | undefined {
-        return this.instances.get(element) as T;
+        return CoreComponentsRegistry.resolve<T>(element) ?? undefined;
     }
 
     /**
@@ -892,19 +893,22 @@ export class CoreDomUtilsProvider {
      * Remove a component/directive instance using the DOM Element.
      *
      * @param element The root element of the component/directive.
+     * @deprecated since 4.0.0. It's no longer necessary to remove instances.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     removeInstanceByElement(element: Element): void {
-        const id = element.getAttribute(this.INSTANCE_ID_ATTR_NAME);
-        id && delete this.instances[id];
+        //
     }
 
     /**
      * Remove a component/directive instance using the ID.
      *
      * @param id The ID to remove.
+     * @deprecated since 4.0.0. It's no longer necessary to remove instances.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     removeInstanceById(id: string): void {
-        delete this.instances[id];
+        //
     }
 
     /**
@@ -1664,9 +1668,10 @@ export class CoreDomUtilsProvider {
      *
      * @param element The root element of the component/directive.
      * @param instance The instance to store.
+     * @deprecated since 4.0.0. Use CoreComponentsRegistry instead.
      */
     storeInstanceByElement(element: Element, instance: unknown): void {
-        this.instances.set(element, instance);
+        CoreComponentsRegistry.register(element, instance);
     }
 
     /**

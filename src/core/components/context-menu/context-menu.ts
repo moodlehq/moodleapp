@@ -20,6 +20,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreContextMenuItemComponent } from './context-menu-item';
 import { CoreContextMenuPopoverComponent } from './context-menu-popover';
+import { CoreComponentsRegistry } from '@singletons/components-registry';
 
 /**
  * This component adds a button (usually in the navigation bar) that displays a context menu popover.
@@ -60,7 +61,7 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
         // Calculate the unique ID.
         this.uniqueId = 'core-context-menu-' + CoreUtils.getUniqueId('CoreContextMenuComponent');
 
-        CoreDomUtils.storeInstanceByElement(elementRef.nativeElement, this);
+        CoreComponentsRegistry.register(elementRef.nativeElement, this);
     }
 
     /**

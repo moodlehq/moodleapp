@@ -51,9 +51,11 @@ import { CoreUpdateManagerProvider } from '@services/update-manager';
 import { CoreUrlUtilsProvider } from '@services/utils/url';
 import { CoreUtilsProvider } from '@services/utils/utils';
 import { CoreWSProvider } from '@services/ws';
+import { CoreComponentsRegistry } from '@singletons/components-registry';
 
 export const CORE_SERVICES: Type<unknown>[] = [
     CoreAppProvider,
+    CoreComponentsRegistry,
     CoreConfigProvider,
     CoreCronDelegateService,
     CoreCustomURLSchemesProvider,
