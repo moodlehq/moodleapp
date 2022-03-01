@@ -1217,7 +1217,7 @@ export class CoreSite {
 
         await this.cacheTable.updateWhere({ expirationTime: 0 }, {
             sql: 'key LIKE ?',
-            sqlParams: [key],
+            sqlParams: [key + '%'],
             js: record => !!record.key?.startsWith(key),
         });
     }
