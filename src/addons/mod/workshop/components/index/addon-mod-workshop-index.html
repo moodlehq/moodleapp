@@ -9,7 +9,7 @@
 <core-loading [hideUntil]="!showLoading" class="list-item-limited-width">
 
     <!-- Activity info. -->
-    <core-course-module-info [module]="module" [hasDataToSync]="hasOffline">
+    <core-course-module-info [module]="module" [hasDataToSync]="hasOffline" (completionChanged)="onCompletionChange()">
     </core-course-module-info>
 
     <ion-card *ngIf="phases">
@@ -235,7 +235,7 @@
             </ion-button>
         </div>
 
-        <core-course-module-navigation [courseId]="courseId" [currentModule]="module" (completionChanged)="onCompletionChange()">
+        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id">
         </core-course-module-navigation>
     </div>
 </core-loading>

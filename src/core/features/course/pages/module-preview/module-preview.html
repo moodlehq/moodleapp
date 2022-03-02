@@ -24,7 +24,8 @@
     </ion-refresher>
     <core-loading [hideUntil]="loaded" class="has-spacer list-item-limited-width">
         <core-course-module-info [module]="module" [courseId]="courseId" [description]="module.description" [component]="module.modname"
-            [componentId]="module.id" [expandDescription]="true" [showAvailabilityInfo]="true">
+            [componentId]="module.id" [expandDescription]="true" [showAvailabilityInfo]="true" (completionChanged)="onCompletionChange()"
+            [showManualCompletion]="showManualCompletion">
             <div class="core-module-additional-info" title>
                 <ion-chip *ngIf="module.handlerData?.extraBadge" [color]="module.handlerData?.extraBadgeColor"
                     class="ion-text-wrap ion-text-start" [outline]="true">
@@ -44,6 +45,6 @@
         <core-course-unsupported-module *ngIf="unsupported" [module]="module"></core-course-unsupported-module>
     </core-loading>
 
-    <core-course-module-navigation collapsible-footer [hidden]="!loaded" [courseId]="courseId" [currentModule]="module"
-        (completionChanged)="onCompletionChange()" [showManualCompletion]="showManualCompletion"></core-course-module-navigation>
+    <core-course-module-navigation collapsible-footer [hidden]="!loaded" [courseId]="courseId" [currentModuleId]="module.id">
+    </core-course-module-navigation>
 </ion-content>

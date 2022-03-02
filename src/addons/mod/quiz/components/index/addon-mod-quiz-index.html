@@ -10,7 +10,7 @@
 
     <!-- Activity info. -->
     <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
-        [courseId]="courseId" [hasDataToSync]="buttonText && hasOffline">
+        [courseId]="courseId" [hasDataToSync]="buttonText && hasOffline" (completionChanged)="onCompletionChange()">
     </core-course-module-info>
 
     <!-- Access rules description messages. -->
@@ -213,7 +213,7 @@
             </ion-button>
         </div>
 
-        <core-course-module-navigation [courseId]="courseId" [currentModule]="module" (completionChanged)="onCompletionChange()">
+        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id">
         </core-course-module-navigation>
 
     </div>

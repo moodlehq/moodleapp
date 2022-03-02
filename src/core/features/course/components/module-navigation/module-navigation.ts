@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { CoreCourse, CoreCourseProvider, CoreCourseWSSection } from '@features/course/services/course';
-import { CoreCourseModuleCompletionData, CoreCourseModuleData } from '@features/course/services/course-helper';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { IonContent } from '@ionic/angular';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
@@ -27,7 +27,7 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
  * Component to show a button to go to the next resource/activity.
  *
  * Example usage:
- * <core-course-module-navigation [courseId]="courseId" [currentModule]="module"></core-course-module-navigation>
+ * <core-course-module-navigation [courseId]="courseId" [currentModuleId]="moduleId"></core-course-module-navigation>
  */
 @Component({
     selector: 'core-course-module-navigation',
@@ -37,21 +37,17 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
 
     @Input() courseId!: number; // Course ID.
-    @Input() currentModule!: CoreCourseModuleData; // Current module.
-    @Input() showManualCompletion = true; // Whether to show manual completion, true by default.
-
-    @Output() completionChanged = new EventEmitter<CoreCourseModuleCompletionData>(); // Notify when completion changes.
+    @Input() currentModuleId!: number; // Current module Id.
 
     nextModule?: CoreCourseModuleData;
     previousModule?: CoreCourseModuleData;
     nextModuleSection?: CoreCourseWSSection;
     previousModuleSection?: CoreCourseWSSection;
     loaded = false;
-    showCompletion = false; // Whether to show completion.
 
     protected completionObserver: CoreEventObserver;
 
-    constructor(el: ElementRef, protected ionContent: IonContent) {
+    constructor(protected ionContent: IonContent) {
         const siteId = CoreSites.getCurrentSiteId();
 
         this.completionObserver = CoreEvents.on(CoreEvents.COMPLETION_MODULE_VIEWED, async (data) => {
@@ -70,8 +66,6 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.showCompletion = CoreSites.getRequiredCurrentSite().isVersionGreaterEqualThan('3.11');
-
         try {
             await this.setNextAndPreviousModules(CoreSitesReadingStrategy.PREFER_CACHE);
         } finally {
@@ -104,7 +98,6 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
         }
 
         const preSets = CoreSites.getReadingStrategyPreSets(readingStrategy);
-        const currentModuleId = this.currentModule.id;
 
         const sections = await CoreCourse.getSections(this.courseId, false, true, preSets);
 
@@ -117,7 +110,7 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
                 return false;
             }
 
-            currentModuleIndex = section.modules.findIndex((module: CoreCourseModuleData) => module.id == currentModuleId);
+            currentModuleIndex = section.modules.findIndex((module: CoreCourseModuleData) => module.id == this.currentModuleId);
 
             return currentModuleIndex >= 0;
         });

@@ -10,7 +10,7 @@
 
     <!-- Activity info. -->
     <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
-        [courseId]="courseId">
+        [courseId]="courseId" (completionChanged)="onCompletionChange()">
     </core-course-module-info>
 
     <ion-list>
@@ -38,7 +38,7 @@
             </ion-button>
         </div>
 
-        <core-course-module-navigation [courseId]="courseId" [currentModule]="module" (completionChanged)="onCompletionChange()">
+        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id">
         </core-course-module-navigation>
     </div>
 </core-loading>

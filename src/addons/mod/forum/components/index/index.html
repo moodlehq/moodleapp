@@ -14,7 +14,8 @@
     <core-loading [hideUntil]="!showLoading && discussions && discussions.loaded">
         <!-- Activity info. -->
         <core-course-module-info [module]="module" [description]="forum && forum.type != 'single' && description" [component]="component"
-            [componentId]="componentId" [courseId]="courseId" [hasDataToSync]="hasOffline || hasOfflineRatings">
+            [componentId]="componentId" [courseId]="courseId" [hasDataToSync]="hasOffline || hasOfflineRatings"
+            (completionChanged)="onCompletionChange()">
             <ion-item class="ion-text-wrap">
                 <ion-label>
                     {{descriptionNote}}
@@ -114,8 +115,7 @@
         </ng-container>
     </core-loading>
 
-    <core-course-module-navigation collapsible-footer [hidden]="showLoading" [courseId]="courseId" [currentModule]="module"
-        (completionChanged)="onCompletionChange()">
+    <core-course-module-navigation collapsible-footer [hidden]="showLoading" [courseId]="courseId" [currentModuleId]="module.id">
     </core-course-module-navigation>
 
     <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="forum && canAddDiscussion">
