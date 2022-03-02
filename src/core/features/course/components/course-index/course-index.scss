@@ -30,8 +30,7 @@ ion-item.core-course-index-all::part(native) {
 }
 
 ion-item.item.item-current {
-    --background: var(--primary);
-    --color: var(--primary-contrast);
+    --background: var(--primary-tint);
     border: 0;
 }
 
