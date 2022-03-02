@@ -72,8 +72,8 @@
 
     <!-- Reset search. -->
     <ng-container *ngIf="search.searching && !isEmpty">
-        <ion-item (click)="searchReset()" button detail="false">
-            <ion-label color="primary">
+        <ion-item (click)="searchReset()" button detail="false" *ngIf="!foundRecordsTranslationData">
+            <ion-label color="info">
                 {{ 'addon.mod_data.resetsettings' | translate}}
             </ion-label>
         </ion-item>

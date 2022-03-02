@@ -1,7 +1,6 @@
 <ion-row class="ion-justify-content-between ion-align-items-center ion-no-padding ion-wrap" *ngIf="items.length > 1">
     <ion-col class="ion-text-start ion-no-padding core-navigation-arrow" size="auto">
-        <ion-button [disabled]="previousIndex < 0" fill="clear" color="dark" [attr.aria-label]="previousTitle"
-            (click)="navigate(previousIndex)">
+        <ion-button [disabled]="previousIndex < 0" fill="clear" [attr.aria-label]="previousTitle" (click)="navigate(previousIndex)">
             <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true"></ion-icon>
         </ion-button>
     </ion-col>
@@ -10,7 +9,7 @@
         </core-progress-bar>
     </ion-col>
     <ion-col class="ion-text-end ion-no-padding core-navigation-arrow" size="auto">
-        <ion-button [disabled]="nextIndex < 0" fill="clear" color="dark" [attr.aria-label]="nextTitle" (click)="navigate(nextIndex)">
+        <ion-button [disabled]="nextIndex < 0" fill="clear" [attr.aria-label]="nextTitle" (click)="navigate(nextIndex)">
             <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true"></ion-icon>
         </ion-button>
     </ion-col>

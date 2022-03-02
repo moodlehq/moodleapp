@@ -26,7 +26,7 @@
 
     <div collapsible-footer *ngIf="!showLoading" slot="fixed">
         <div class="list-item-limited-width" *ngIf="chat">
-            <ion-button class="ion-margin ion-text-wrap" expand="block" color="primary" (click)="enterChat()">
+            <ion-button class="ion-margin ion-text-wrap" expand="block" (click)="enterChat()">
                 {{ 'addon.mod_chat.enterchat' | translate }}
             </ion-button>
         </div>

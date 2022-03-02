@@ -10,7 +10,7 @@
     </ion-label>
     <div slot="end">
         <div class="ion-text-end">
-            <ion-button fill="clear" *ngIf="canEdit" (click)="editComment()" color="dark" [attr.aria-label]="'core.edit' | translate">
+            <ion-button fill="clear" *ngIf="canEdit" (click)="editComment()" [attr.aria-label]="'core.edit' | translate">
                 <ion-icon name="fas-pen" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
         </div>

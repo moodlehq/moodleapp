@@ -24,7 +24,7 @@
 
             <ng-container *ngIf="manage">
                 <ion-button *ngIf="!editMode" fill="clear" [core-suppress-events] (onClick)="activateEdit($event)"
-                    [attr.aria-label]="'core.edit' | translate" color="dark">
+                    [attr.aria-label]="'core.edit' | translate">
                     <ion-icon name="fas-pen" slot="icon-only" aria-hidden="true"></ion-icon>
                 </ion-button>
 

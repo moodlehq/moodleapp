@@ -25,7 +25,6 @@ interface ColorComponents {
  * Ionic color names.
  */
 export enum CoreIonicColorNames {
-    BRAND = 'brand',
     PRIMARY = 'primary',
     SECONDARY = 'secondary',
     SUCCESS = 'success',

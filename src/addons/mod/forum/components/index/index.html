@@ -57,7 +57,7 @@
                                 [courseId]="courseId">
                             </core-format-text>
                         </p>
-                        <ion-button *ngIf="canPin || discussion.canlock || discussion.canfavourite" fill="clear" color="dark"
+                        <ion-button *ngIf="canPin || discussion.canlock || discussion.canfavourite" fill="clear"
                             [attr.aria-label]="('core.displayoptions' | translate)" (click)="showOptionsMenu($event, discussion)">
                             <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true">
                             </ion-icon>

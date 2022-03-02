@@ -17,7 +17,7 @@
 
         <div class="core-button-spinner" *ngIf="courseOptionMenuEnabled">
             <!-- Options menu. -->
-            <ion-button fill="clear" color="dark" (click)="showCourseOptionsMenu($event)" *ngIf="!showSpinner"
+            <ion-button fill="clear" (click)="showCourseOptionsMenu($event)" *ngIf="!showSpinner"
                 [attr.aria-label]="('core.displayoptions' | translate)">
                 <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
@@ -66,7 +66,7 @@
                         color="success" role="status" [attr.aria-label]="'core.downloaded' | translate"></ion-icon>
                 </p>
 
-                <ion-chip color="brand" *ngIf="course.categoryname"
+                <ion-chip color="primary" *ngIf="course.categoryname"
                     class="core-course-category core-course-additional-info ion-text-nowrap">
                     <span class="sr-only">{{ 'core.courses.aria:coursecategory' | translate }}</span>
                     <ion-label>

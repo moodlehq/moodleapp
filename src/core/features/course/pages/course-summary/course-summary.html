@@ -36,7 +36,7 @@
                         <core-format-text [text]="course.fullname" contextLevel="course" [contextInstanceId]="course.id">
                         </core-format-text>
                     </h2>
-                    <ion-chip color="brand" *ngIf="course.categoryname" class="core-course-category ion-text-nowrap">
+                    <ion-chip color="primary" *ngIf="course.categoryname" class="core-course-category ion-text-nowrap">
                         <span class="sr-only">{{ 'core.courses.aria:coursecategory' | translate }}</span>
                         <ion-label>
                             <core-format-text [text]="course.categoryname" contextLevel="coursecat" [contextInstanceId]="course.categoryid">
@@ -61,7 +61,7 @@
                         </p>
                     </div>
                 </ion-label>
-                <ion-button fill="clear" [href]="courseUrl" core-link [showBrowserWarning]="false" color="dark"
+                <ion-button fill="clear" [href]="courseUrl" core-link [showBrowserWarning]="false"
                     [attr.aria-label]="'core.openinbrowser' | translate" slot="end">
                     <ion-icon name="fas-external-link-alt" slot="icon-only" aria-hidden="true"></ion-icon>
                 </ion-button>

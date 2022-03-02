@@ -1,14 +1,13 @@
 <ng-container *ngIf="enabled && !loading">
     <!-- Download button. -->
-    <ion-button *ngIf="status == statusNotDownloaded" fill="clear" (click)="download($event, false)" color="dark" @coreShowHideAnimation
+    <ion-button *ngIf="status == statusNotDownloaded" fill="clear" (click)="download($event, false)" @coreShowHideAnimation
         [attr.aria-label]="(statusTranslatable || 'core.download') | translate">
         <ion-icon slot="icon-only" name="fas-cloud-download-alt" aria-hidden="true"></ion-icon>
     </ion-button>
 
     <!-- Refresh button. -->
     <ion-button *ngIf="status == statusOutdated || (status == statusDownloaded && !canTrustDownload)" fill="clear"
-        (click)="download($event, true)" color="primary" @coreShowHideAnimation
-        [attr.aria-label]="(statusTranslatable || 'core.refresh') | translate">
+        (click)="download($event, true)" @coreShowHideAnimation [attr.aria-label]="(statusTranslatable || 'core.refresh') | translate">
         <ion-icon slot="icon-only" name="fam-cloud-refresh" aria-hidden="true"></ion-icon>
     </ion-button>
 

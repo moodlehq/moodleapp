@@ -27,13 +27,13 @@
 
         <ion-buttons class="ion-padding core-course-section-nav-buttons safe-area-padding-horizontal list-item-limited-width"
             *ngIf="displayCourseIndex && (previousSection || nextSection)">
-            <ion-button *ngIf="previousSection" (click)="sectionChanged(previousSection)" color="primary" fill="solid" expand="block"
+            <ion-button *ngIf="previousSection" (click)="sectionChanged(previousSection)" fill="solid" expand="block"
                 [attr.aria-label]="('core.previous' | translate) + ': ' + previousSection.name">
                 <ion-icon name="fas-arrow-left" slot="start" aria-hidden="true"></ion-icon>
                 <core-format-text [text]="previousSection.name" contextLevel="course" [contextInstanceId]="course.id">
                 </core-format-text>
             </ion-button>
-            <ion-button *ngIf="nextSection" (click)="sectionChanged(nextSection)" color="primary" fill="solid" expand="block"
+            <ion-button *ngIf="nextSection" (click)="sectionChanged(nextSection)" fill="solid" expand="block"
                 [attr.aria-label]="('core.next' | translate) + ': ' + nextSection.name">
                 <core-format-text [text]="nextSection.name" contextLevel="course" [contextInstanceId]="course.id">
                 </core-format-text>
@@ -49,7 +49,7 @@
 
 <!-- Course Index button. -->
 <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="loaded && displayCourseIndex">
-    <ion-fab-button (click)="openCourseIndex()" [attr.aria-label]="'core.course.courseindex' | translate">
+    <ion-fab-button (click)="openCourseIndex()" [attr.aria-label]="'core.course.courseindex' | translate" color="secondary">
         <ion-icon name="fas-list-ul" aria-hidden="true"></ion-icon>
         <span class="sr-only">{{'core.course.courseindex' | translate }}</span>
     </ion-fab-button>
