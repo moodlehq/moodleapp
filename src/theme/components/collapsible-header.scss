@@ -9,7 +9,12 @@
     --collapsible-header-floating-title-x-delta: 0px;
     --collapsible-header-floating-title-width-delta: 0px;
 
-    .collapsible-header-expanded .collapsible-header-floating-title {
+    .collapsible-header-expanded {
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .collapsible-header-floating-title {
         position: absolute;
         top: var(--collapsible-header-floating-title-top);
         left: var(--collapsible-header-floating-title-left);
