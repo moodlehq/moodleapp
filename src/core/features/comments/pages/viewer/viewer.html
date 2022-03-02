@@ -38,7 +38,7 @@
         <core-infinite-loading [enabled]="canLoadMore" position="top" (action)="loadPrevious($event)" [error]="loadMoreError">
         </core-infinite-loading>
 
-        <ion-list class="addon-messages-discussion-container  list-item-limited-width">
+        <ion-list class="addon-messages-discussion-container">
             <ng-container *ngFor="let comment of comments; index as index; last as last">
 
                 <p class="ion-text-center addon-messages-date" *ngIf="comment.showDate">
@@ -56,13 +56,13 @@
                             <div>{{ comment.fullname }}</div>
                         </h2>
 
-                        <p class="addon-message-text">
+                        <div class="addon-message-text">
                             <core-format-text [text]="comment.content" [contextLevel]="contextLevel" [contextInstanceId]="instanceId"
                                 [courseId]="courseId">
                             </core-format-text>
-                        </p>
+                        </div>
                     </ion-label>
-                    <ion-note>
+                    <ion-note slot="end">
                         <ng-container *ngIf="!comment.deleted">
                             {{ comment.timecreated * 1000 | coreFormatDate: 'strftimetime' }}
                         </ng-container>
@@ -94,11 +94,11 @@
                         {{ 'core.thereisdatatosync' | translate:{$a: 'core.comments.comments' | translate | lowercase } }}
                     </p>
 
-                    <p class="addon-message-text">
+                    <div class="addon-message-text">
                         <core-format-text [text]="offlineComment.content" [contextLevel]="contextLevel" [contextInstanceId]="instanceId"
                             [courseId]="courseId">
                         </core-format-text>
-                    </p>
+                    </div>
                 </ion-label>
                 <ion-note>
                     <ion-icon name="fas-clock" aria-hidden="true"></ion-icon> {{ 'core.notsent' | translate }}

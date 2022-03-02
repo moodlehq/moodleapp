@@ -272,15 +272,19 @@ export class CoreFormatTextDirective implements OnChanges {
     /**
      * Calculate the height and check if we need to display show more or not.
      */
-    protected calculateHeight(): void {
+    protected async calculateHeight(): Promise<void> {
         // @todo: Work on calculate this height better.
         if (!this.maxHeight) {
             return;
         }
 
+        await this.rendered();
+
         // Remove max-height (if any) to calculate the real height.
         const initialMaxHeight = this.element.style.maxHeight;
-        this.element.style.maxHeight = '';
+        this.element.style.maxHeight = 'none';
+
+        await CoreUtils.nextTick();
 
         const height = this.getElementHeight(this.element);
 
@@ -288,7 +292,20 @@ export class CoreFormatTextDirective implements OnChanges {
         this.element.style.maxHeight = initialMaxHeight;
 
         // If cannot calculate height, shorten always.
-        this.setExpandButtonEnabled(!height || height > this.maxHeight);
+        this.setExpandButtonEnabled(!height || height >= this.maxHeight);
+    }
+
+    /**
+     * Set max height to element.
+     *
+     * @param maxHeight Max height if collapsed or undefined if expanded.
+     */
+    protected setMaxHeight(maxHeight?: number): void {
+        if (maxHeight) {
+            this.element.style.setProperty('--max-height', maxHeight + 'px');
+        } else {
+            this.element.style.removeProperty('--max-height');
+        }
     }
 
     /**
@@ -301,9 +318,7 @@ export class CoreFormatTextDirective implements OnChanges {
         this.element.classList.toggle('collapsible-enabled', enable);
 
         if (!enable || this.element.querySelector('ion-button.collapsible-toggle'))  {
-            this.element.style.maxHeight = !enable || this.expanded
-                ? ''
-                : this.maxHeight + 'px';
+            this.setMaxHeight(!enable || this.expanded? undefined : this.maxHeight);
 
             return;
         }
@@ -337,13 +352,9 @@ export class CoreFormatTextDirective implements OnChanges {
             expand = !this.expanded;
         }
         this.expanded = expand;
-        this.element.classList.toggle('collapsible-expanded', expand);
         this.element.classList.toggle('collapsible-collapsed', !expand);
-        if (expand) {
-            this.element.style.setProperty('--max-height', this.maxHeight + 'px');
-        } else {
-            this.element.style.removeProperty('--max-height');
-        }
+        this.setMaxHeight(!expand? this.maxHeight: undefined);
+
         const toggleButton = this.element.querySelector('ion-button.collapsible-toggle');
         const toggleText = toggleButton?.querySelector('.collapsible-toggle-text');
         if (!toggleButton || !toggleText) {

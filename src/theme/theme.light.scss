@@ -81,6 +81,9 @@
 
     --list-item-max-width: 768px;
 
+    --modal-lateral-max-width: 320px;
+    --modal-lateral-margin: 56px;
+
     --contrast-background: white;
 
     --ion-text-color: var(--text-color);
@@ -104,7 +107,7 @@
 
     ion-content {
         --background: var(--ion-background-color);
-        --background-alternative: var(--light);
+        --background-alternative: var(--gray-200);
     }
 
     --core-bottom-tabs-background: var(--white);
@@ -324,8 +327,8 @@
     --addon-messages-message-activated-bg: var(--gray-200);
     --addon-messages-message-note-text: var(--gray-500);
     --addon-messages-message-note-font-size: 75%;
-    --addon-messages-message-mine-bg: var(--gray-200);
-    --addon-messages-message-mine-activated-bg: var(--gray-300);
+    --addon-messages-message-mine-bg: var(--gray-300);
+    --addon-messages-message-mine-activated-bg: var(--gray-400);
     --addon-messages-avatar-size: 30px;
     --addon-messages-discussion-badge: var(--primary);
     --addon-messages-discussion-badge-text: var(--white);

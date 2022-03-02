@@ -14,8 +14,11 @@
 
 import { Directive, ElementRef, Input, OnInit } from '@angular/core';
 import { CoreDomUtils } from '@services/utils/dom';
+import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
+import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreEventLoadingChangedData, CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreFormatTextDirective } from './format-text';
 
 const defaultMaxHeight = 56;
 const buttonHeight = 44;
@@ -54,7 +57,7 @@ export class CoreCollapsibleItemDirective implements OnInit {
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         if (typeof this.height === 'string') {
             this.maxHeight = this.height === ''
                 ? defaultMaxHeight
@@ -70,31 +73,44 @@ export class CoreCollapsibleItemDirective implements OnInit {
         }
 
         // Calculate the height now.
-        this.calculateHeight();
+        await this.calculateHeight();
         setTimeout(() => this.calculateHeight(), 200); // Try again, sometimes the first calculation is wrong.
-
-        this.setExpandButtonEnabled(false);
 
         // Recalculate the height if a parent core-loading displays the content.
         this.loadingChangedListener =
-            CoreEvents.on(CoreEvents.CORE_LOADING_CHANGED, (data: CoreEventLoadingChangedData) => {
+            CoreEvents.on(CoreEvents.CORE_LOADING_CHANGED, async (data: CoreEventLoadingChangedData) => {
                 if (data.loaded && CoreDomUtils.closest(this.element.parentElement, '#' + data.uniqueId)) {
-                    // The format-text is inside the loading, re-calculate the height.
-                    this.calculateHeight();
+                    // The element is inside the loading, re-calculate the height.
+                    await this.calculateHeight();
                     setTimeout(() => this.calculateHeight(), 200);
                 }
             });
     }
 
     /**
+     * Wait until all <core-format-text> children inside the element are done rendering.
+     *
+     * @param element Element.
+     */
+    protected async waitFormatTextsRendered(element: Element): Promise<void> {
+        const formatTexts = Array
+            .from(element.querySelectorAll('core-format-text'))
+            .map(element => CoreComponentsRegistry.resolve(element, CoreFormatTextDirective));
+
+        await Promise.all(formatTexts.map(formatText => formatText?.rendered()));
+    }
+
+    /**
      * Calculate the height and check if we need to display show more or not.
      */
-    protected calculateHeight(): void {
-        // @todo: Work on calculate this height better.
+    protected async calculateHeight(): Promise<void> {
+        await this.waitFormatTextsRendered(this.element);
 
         // Remove max-height (if any) to calculate the real height.
         const initialMaxHeight = this.element.style.maxHeight;
-        this.element.style.maxHeight = '';
+        this.element.style.maxHeight = 'none';
+
+        await CoreUtils.nextTick();
 
         const height = CoreDomUtils.getElementHeight(this.element) || 0;
 
@@ -102,7 +118,7 @@ export class CoreCollapsibleItemDirective implements OnInit {
         this.element.style.maxHeight = initialMaxHeight;
 
         // If cannot calculate height, shorten always.
-        this.setExpandButtonEnabled(!height || height > this.maxHeight);
+        this.setExpandButtonEnabled(!height || height >= this.maxHeight);
     }
 
     /**
@@ -115,9 +131,7 @@ export class CoreCollapsibleItemDirective implements OnInit {
         this.element.classList.toggle('collapsible-enabled', enable);
 
         if (!enable || this.element.querySelector('ion-button.collapsible-toggle')) {
-            this.element.style.maxHeight = !enable || this.expanded
-                ? ''
-                : this.maxHeight + 'px';
+            this.setMaxHeight(!enable || this.expanded? undefined : this.maxHeight);
 
             return;
         }
@@ -142,6 +156,19 @@ export class CoreCollapsibleItemDirective implements OnInit {
     }
 
     /**
+     * Set max height to element.
+     *
+     * @param maxHeight Max height if collapsed or undefined if expanded.
+     */
+    protected setMaxHeight(maxHeight?: number): void {
+        if (maxHeight) {
+            this.element.style.setProperty('--max-height', maxHeight + buttonHeight + 'px');
+        } else {
+            this.element.style.removeProperty('--max-height');
+        }
+    }
+
+    /**
      * Expand or collapse text.
      *
      * @param expand Wether expand or collapse text. If undefined, will toggle.
@@ -151,13 +178,8 @@ export class CoreCollapsibleItemDirective implements OnInit {
             expand = !this.expanded;
         }
         this.expanded = expand;
-        this.element.classList.toggle('collapsible-expanded', expand);
         this.element.classList.toggle('collapsible-collapsed', !expand);
-        if (expand) {
-            this.element.style.setProperty('--max-height', this.maxHeight + buttonHeight + 'px');
-        } else {
-            this.element.style.removeProperty('--max-height');
-        }
+        this.setMaxHeight(!expand? this.maxHeight: undefined);
 
         const toggleButton = this.element.querySelector('ion-button.collapsible-toggle');
         const toggleText = toggleButton?.querySelector('.collapsible-toggle-text');

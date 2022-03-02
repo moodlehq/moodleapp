@@ -93,13 +93,13 @@
                             <div>{{ message.userfullname }}</div>
                         </h2>
 
-                        <p class="addon-message-text">
+                        <div class="addon-message-text">
                             <core-format-text [text]="message.message" contextLevel="module" [contextInstanceId]="cmId"
                                 [courseId]="courseId" (afterRender)="last && scrollToBottom()">
                             </core-format-text>
-                        </p>
+                        </div>
                     </ion-label>
-                    <ion-note>{{ message.timestamp * 1000 | coreFormatDate: "strftimetime" }}</ion-note>
+                    <ion-note slot="end">{{ message.timestamp * 1000 | coreFormatDate: "strftimetime" }}</ion-note>
                     <div class="tail" *ngIf="message.showTail"></div>
                 </ion-item>
             </ng-container>

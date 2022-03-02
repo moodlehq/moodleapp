@@ -69,8 +69,7 @@
 
         <h2 class="sr-only">{{ title }}</h2>
 
-        <ion-list class="addon-messages-discussion-container list-item-limited-width" [class.addon-messages-discussion-group]="isGroup"
-            [attr.aria-live]="'polite'">
+        <ion-list class="addon-messages-discussion-container" [class.addon-messages-discussion-group]="isGroup" [attr.aria-live]="'polite'">
             <ng-container *ngFor="let message of messages; index as index; last as last">
                 <h3 class="ion-text-center addon-messages-date" *ngIf="message.showDate">
                     {{ message.timecreated | coreFormatDate: "strftimedayshort" }}
@@ -100,10 +99,10 @@
                         </div>
 
                         <!-- Some messages have <p> and some others don't. Add a <p> so they all have same styles. -->
-                        <p class="addon-message-text">
+                        <div class="addon-message-text">
                             <core-format-text (afterRender)="last && scrollToBottom()" [text]="message.text" contextLevel="system"
                                 [contextInstanceId]="0"></core-format-text>
-                        </p>
+                        </div>
                     </ion-label>
                     <ion-note *ngIf="!message.pending" slot="end">{{ message.timecreated | coreFormatDate: "strftimetime" }}</ion-note>
                     <ion-note *ngIf="message.pending" slot="end">

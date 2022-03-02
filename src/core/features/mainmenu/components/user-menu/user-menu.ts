@@ -207,7 +207,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
         const closeAll = await CoreDomUtils.openSideModal<boolean>({
             component: CoreLoginSitesComponent,
-            cssClass: 'core-modal-lateral-sm',
+            cssClass: 'core-modal-lateral core-modal-lateral-sm',
         });
 
         if (closeAll) {
