@@ -143,7 +143,7 @@
     </ion-card>
 
     <ng-container *ngIf="canAccessCourse">
-        <ion-button class="ion-margin" *ngFor="let item of courseMenuHandlers" (click)="openMenuItem(item)" [class]="item.data.class"
+        <ion-button *ngFor="let item of courseMenuHandlers" (click)="openMenuItem(item)" [class]="'ion-margin' + item.data.class"
             expand="block">
             <ion-icon *ngIf="item.data.icon" [name]="item.data.icon" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>{{item.data.title | translate }}</ion-label>

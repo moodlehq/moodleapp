@@ -146,9 +146,11 @@
 <!-- Template to render a list of conversations. -->
 <ng-template #conversationsTemplate let-conversations="conversations">
     <ion-item class="ion-text-wrap addon-message-discussion" *ngFor="let conversation of conversations" button detail="false"
-        [attr.aria-label]="conversation.name" (click)="gotoConversation(conversation.id, conversation.userid)" [attr.aria-current]="((conversation.id && conversation.id == selectedConversationId) ||
-            (conversation.userid && conversation.userid == selectedUserId)) ? 'page': 'false'"
-        id="addon-message-conversation-{{ conversation.id ? conversation.id : 'user-' + conversation.userid }}">
+        (click)="gotoConversation(conversation.id, conversation.userid)"
+        [attr.aria-current]="((conversation.id &&
+            conversation.id == selectedConversationId) || (conversation.userid && conversation.userid == selectedUserId)) ? 'page': 'false'"
+        id="addon-message-conversation-{{ conversation.id ? conversation.id : 'user-' + conversation.userid }}"
+        [attr.aria-label]="conversation.name">
         <!-- Group conversation image. -->
         <ion-avatar slot="start" *ngIf="conversation.type == typeGroup">
             <img [src]="conversation.imageurl" [alt]="conversation.name" core-external-content
