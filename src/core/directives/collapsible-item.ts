@@ -20,7 +20,7 @@ import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreEventLoadingChangedData, CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreFormatTextDirective } from './format-text';
 
-const defaultMaxHeight = 56;
+const defaultMaxHeight = 64;
 const buttonHeight = 44;
 
 /**

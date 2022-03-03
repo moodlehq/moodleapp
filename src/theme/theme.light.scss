@@ -47,9 +47,6 @@
         @include generate-color($color-name, $colors);
     }
 
-    --brand-color: var(--primary);
-    --brand-contrast: var(--primary-contrast);
-
     // Accessibility vars.
     --a11y-min-target-size: 44px;
     --a11y-focus-color: var(--primary);
@@ -94,12 +91,15 @@
     --ion-card-color: var(--text-color);
     --ion-card-vertical-margin: 10px;
     --ion-card-horizontal-margin: 10px;
+    --ion-card-radius: var(--medium-radius);
+    --ion-card-border-width: 1px;
+    --ion-card-border-color: var(--stroke);
     ion-card {
-        --border-width: 1px;
+        --border-width: var(--ion-card-border-width);
         --border-style: solid;
-        --border-color: var(--stroke);
+        --border-color: var(--ion-card-border-color);
         --box-shadow: none;
-        --border-radius: var(--medium-radius);
+        --border-radius: var(--ion-card-radius);
     }
 
     --text-hightlight-background-color: #{$core-text-hightlight-background-color};
@@ -113,10 +113,10 @@
 
     --core-bottom-tabs-background: var(--white);
     --core-bottom-tabs-color: var(--gray-700);
-    --core-bottom-tabs-color-selected: var(--brand-color);
+    --core-bottom-tabs-color-selected: var(--primary);
     --core-bottom-tabs-background-selected: transparent;
-    --core-bottom-tabs-badge-color: var(--brand-color);
-    --core-bottom-tabs-badge-text-color: var(--brand-contrast);
+    --core-bottom-tabs-badge-color: var(--primary);
+    --core-bottom-tabs-badge-text-color: var(--primary-contrast);
     --bottom-tabs-size: 48px;
     --side-tabs-size: 56px;
     ion-tab-bar.mainmenu-tabs {
@@ -203,7 +203,7 @@
     ion-action-sheet {
         --button-color: var(--ion-text-color);
         --button-color-selected: var(--ion-text-color);
-        --title-border-color: var(--brand-color);
+        --title-border-color: var(--primary);
 
         .action-sheet-title {
             --color: var(--ion-text-color);
@@ -225,7 +225,7 @@
     --core-tab-color: var(--subdued-text-color);
     --core-tab-border-color: var(--stroke);
     --core-tab-color-active: var(--dark);
-    --core-tab-border-color-active: var(--brand-color);
+    --core-tab-border-color-active: var(--primary);
     --core-tab-font-weight-active: normal;
     --core-tabs-height: 48px;
     core-tabs, core-tabs-outlet {
@@ -239,7 +239,7 @@
         }
     }
 
-    --core-loading-spinner: var(--brand-color);
+    --core-loading-spinner: var(--primary);
     ion-loading {
         --spinner-color: var(--core-loading-spinner);
     }
@@ -250,9 +250,9 @@
     }
 
     --core-progressbar-height: 8px;
-    --core-progressbar-color: var(--brand-color);
+    --core-progressbar-color: var(--primary);
     --core-progressbar-text-color: var(--medium);
-    --core-progressbar-background: var(--brand-tint);
+    --core-progressbar-background: var(--primary-tint);
 
     --ion-item-background:        #{$ion-item-background};
     --ion-item-detail-icon-color: var(--medium);
@@ -304,7 +304,7 @@
     --core-login-input-background: var(--white);
     --core-login-input-color: var(--gray-900);
 
-    --core-star-color: var(--brand-color);
+    --core-star-color: var(--primary);
 
     --core-large-avatar-size: 90px;
     --core-avatar-size: var(--a11y-min-target-size);
