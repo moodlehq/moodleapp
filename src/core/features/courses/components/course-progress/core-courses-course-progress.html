@@ -47,7 +47,7 @@
                 name="fam-cloud-done" color="success" role="status" [attr.aria-label]="'core.downloaded' | translate"></ion-icon>
 
             <!-- Options menu. -->
-            <ion-button fill="clear" color="dark" (click)="showCourseOptionsMenu($event)" *ngIf="!showSpinner"
+            <ion-button fill="clear" (click)="showCourseOptionsMenu($event)" *ngIf="!showSpinner"
                 [attr.aria-label]="('core.displayoptions' | translate)">
                 <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>

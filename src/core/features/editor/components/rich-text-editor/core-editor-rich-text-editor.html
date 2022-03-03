@@ -80,8 +80,7 @@
         </ion-slide>
         <ion-slide>
             <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.ul" [title]="'core.editor.unorderedlist' | translate"
-                (click)="buttonAction($event, 'insertUnorderedList')" (click)="buttonAction($event, 'insertUnorderedList')"
-                (mousedown)="downAction($event)" (keydown)="downAction($event)">
+                (click)="buttonAction($event, 'insertUnorderedList')" (mousedown)="downAction($event)" (keydown)="downAction($event)">
                 <ion-icon name="fas-list-ul" aria-hidden="true"></ion-icon>
             </button>
         </ion-slide>

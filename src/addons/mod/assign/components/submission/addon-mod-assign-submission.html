@@ -103,27 +103,26 @@
                     <ion-label>
                         <div *ngIf="!unsupportedEditPlugins.length && !showErrorStatementEdit">
                             <!-- If has offline data, show edit. -->
-                            <ion-button expand="block" class="ion-text-wrap" color="primary" *ngIf="hasOffline" (click)="goToEdit()">
+                            <ion-button expand="block" class="ion-text-wrap" *ngIf="hasOffline" (click)="goToEdit()">
                                 {{ 'addon.mod_assign.editsubmission' | translate }}
                             </ion-button>
                             <!-- If no submission or is new, show add submission. -->
-                            <ion-button expand="block" class="ion-text-wrap" color="primary" *ngIf="!hasOffline &&
-                                    (!userSubmission || !userSubmission!.status || userSubmission!.status == statusNew)"
-                                (click)="goToEdit()">
+                            <ion-button expand="block" class="ion-text-wrap" (click)="goToEdit()" *ngIf="!hasOffline &&
+                                    (!userSubmission || !userSubmission!.status || userSubmission!.status == statusNew)">
                                 {{ 'addon.mod_assign.addsubmission' | translate }}
                             </ion-button>
                             <!-- If reopened, show addfromprevious and addnewattempt. -->
                             <ng-container *ngIf="!hasOffline && userSubmission?.status == statusReopened">
-                                <ion-button *ngIf="!isPreviousAttemptEmpty" expand="block" class="ion-text-wrap" color="primary"
-                                    (click)="copyPrevious()">
+                                <ion-button *ngIf="!isPreviousAttemptEmpty" expand="block" class="ion-text-wrap" (click)="copyPrevious()">
                                     {{ 'addon.mod_assign.addnewattemptfromprevious' | translate }}
                                 </ion-button>
-                                <ion-button expand="block" class="ion-text-wrap" color="primary" (click)="goToEdit()">
+                                <ion-button expand="block" class="ion-text-wrap" (click)="goToEdit()">
                                     {{ 'addon.mod_assign.addnewattempt' | translate }}
                                 </ion-button>
                             </ng-container>
                             <!-- Else show editsubmission. -->
-                            <ion-button expand="block" class="ion-text-wrap" color="primary" *ngIf="!hasOffline && userSubmission && userSubmission!.status &&
+                            <ion-button expand="block" class="ion-text-wrap" *ngIf="!hasOffline &&
+                                    userSubmission && userSubmission!.status &&
                                     userSubmission!.status != statusNew &&
                                     userSubmission!.status != statusReopened" (click)="goToEdit()">
                                 {{ 'addon.mod_assign.editsubmission' | translate }}

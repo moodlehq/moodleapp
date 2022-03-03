@@ -10,7 +10,7 @@
 
     <!-- Activity info. -->
     <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
-        [courseId]="courseId">
+        [courseId]="courseId" (completionChanged)="onCompletionChange()">
     </core-course-module-info>
 
     <ion-card *ngIf="chatInfo" class="core-info-card">
@@ -26,12 +26,12 @@
 
     <div collapsible-footer *ngIf="!showLoading" slot="fixed">
         <div class="list-item-limited-width" *ngIf="chat">
-            <ion-button class="ion-margin ion-text-wrap" expand="block" color="primary" (click)="enterChat()">
+            <ion-button class="ion-margin ion-text-wrap" expand="block" (click)="enterChat()">
                 {{ 'addon.mod_chat.enterchat' | translate }}
             </ion-button>
         </div>
 
-        <core-course-module-navigation [courseId]="courseId" [currentModule]="module" (completionChanged)="onCompletionChange()">
+        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id">
         </core-course-module-navigation>
     </div>
 </core-loading>

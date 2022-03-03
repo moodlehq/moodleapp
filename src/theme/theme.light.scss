@@ -47,7 +47,8 @@
         @include generate-color($color-name, $colors);
     }
 
-    --brand-color: var(--brand);
+    --brand-color: var(--primary);
+    --brand-contrast: var(--primary-contrast);
 
     // Accessibility vars.
     --a11y-min-target-size: 44px;
@@ -112,11 +113,12 @@
 
     --core-bottom-tabs-background: var(--white);
     --core-bottom-tabs-color: var(--gray-700);
-    --core-bottom-tabs-color-selected: var(--brand);
+    --core-bottom-tabs-color-selected: var(--brand-color);
     --core-bottom-tabs-background-selected: transparent;
-    --core-bottom-tabs-badge-color: var(--brand);
+    --core-bottom-tabs-badge-color: var(--brand-color);
     --core-bottom-tabs-badge-text-color: var(--brand-contrast);
     --bottom-tabs-size: 48px;
+    --side-tabs-size: 56px;
     ion-tab-bar.mainmenu-tabs {
         --background: var(--core-bottom-tabs-background);
         --color: var(--core-bottom-tabs-color);
@@ -124,7 +126,7 @@
         --background-selected: var(--core-bottom-tabs-background-selected);
     }
 
-    --core-link-color: var(--primary);
+    --core-link-color: var(--info);
     a {
         color: var(--core-link-color);
     }
@@ -201,7 +203,7 @@
     ion-action-sheet {
         --button-color: var(--ion-text-color);
         --button-color-selected: var(--ion-text-color);
-        --title-border-color: var(--brand);
+        --title-border-color: var(--brand-color);
 
         .action-sheet-title {
             --color: var(--ion-text-color);
@@ -223,7 +225,7 @@
     --core-tab-color: var(--subdued-text-color);
     --core-tab-border-color: var(--stroke);
     --core-tab-color-active: var(--dark);
-    --core-tab-border-color-active: var(--brand);
+    --core-tab-border-color-active: var(--brand-color);
     --core-tab-font-weight-active: normal;
     --core-tabs-height: 48px;
     core-tabs, core-tabs-outlet {
@@ -237,7 +239,7 @@
         }
     }
 
-    --core-loading-spinner: var(--brand);
+    --core-loading-spinner: var(--brand-color);
     ion-loading {
         --spinner-color: var(--core-loading-spinner);
     }
@@ -248,7 +250,7 @@
     }
 
     --core-progressbar-height: 8px;
-    --core-progressbar-color: var(--brand);
+    --core-progressbar-color: var(--brand-color);
     --core-progressbar-text-color: var(--medium);
     --core-progressbar-background: var(--brand-tint);
 
@@ -302,7 +304,7 @@
     --core-login-input-background: var(--white);
     --core-login-input-color: var(--gray-900);
 
-    --core-star-color: var(--brand);
+    --core-star-color: var(--brand-color);
 
     --core-large-avatar-size: 90px;
     --core-avatar-size: var(--a11y-min-target-size);

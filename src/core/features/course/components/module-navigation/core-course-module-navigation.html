@@ -6,13 +6,6 @@
                 <ion-icon name="fas-arrow-left" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-col>
-        <ion-col class="ion-no-padding"
-            *ngIf="showCompletion && (currentModule.completiondata && showManualCompletion && currentModule.uservisible)">
-            <!-- Module completion. -->
-            <core-course-module-completion [completion]="currentModule.completiondata" [moduleName]="currentModule.name"
-                [moduleId]="currentModule.id" [showManualCompletion]="true" (completionChanged)="completionChanged.emit($event)">
-            </core-course-module-completion>
-        </ion-col>
         <ion-col size="auto" class="ion-no-padding core-course-module-navigation-arrow">
             <ion-button fill="clear" class="core-course-next-module" [disabled]="!nextModule" (click)="goToActivity(true)"
                 [attr.aria-label]="'core.course.gotonextactivity' | translate">

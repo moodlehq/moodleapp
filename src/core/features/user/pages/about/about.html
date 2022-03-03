@@ -17,7 +17,7 @@
             <ion-item class="ion-text-center core-user-profile-maininfo ion-text-wrap" lines="full">
                 <core-user-avatar [user]="user" [userId]="user.id" [linkProfile]="false" [checkOnline]="!canChangeProfilePicture">
                     <ion-button class="edit-avatar" *ngIf="canChangeProfilePicture" (click)="changeProfilePicture()"
-                        [attr.aria-label]="'core.user.newpicture' | translate" fill="clear" color="dark">
+                        [attr.aria-label]="'core.user.newpicture' | translate" fill="clear">
                         <ion-icon slot="icon-only" name="fas-pen" aria-hidden="true"></ion-icon>
                     </ion-button>
                 </core-user-avatar>
@@ -94,7 +94,7 @@
                             </a></p>
                     </ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="interests" class="core-user-profile-interests">
+                <ion-item class="ion-text-wrap core-user-profile-interests" *ngIf="interests">
                     <ion-label>
                         <h2>{{ 'core.user.interests' | translate}}</h2>
                         <ion-badge *ngFor="let interest of interests" role="link" (click)="openInterest(interest)">

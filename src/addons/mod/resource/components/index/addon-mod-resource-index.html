@@ -10,7 +10,7 @@
 
     <!-- Activity info. -->
     <core-course-module-info [module]="module" [courseId]="courseId" [description]="displayDescription && description"
-        [component]="component" [componentId]="componentId">
+        [component]="component" [componentId]="componentId" (completionChanged)="onCompletionChange()">
     </core-course-module-info>
 
     <ion-card class="core-warning-card" *ngIf="warning">
@@ -98,7 +98,7 @@
                 {{ 'core.openwith' | translate }}
             </ion-button>
         </div>
-        <core-course-module-navigation [courseId]="courseId" [currentModule]="module" (completionChanged)="onCompletionChange()">
+        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id">
         </core-course-module-navigation>
     </div>
 </core-loading>

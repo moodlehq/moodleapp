@@ -370,6 +370,10 @@ ion-button.button.button-clear.button-has-icon-only {
     --border-radius: var(--huge-radius);
 }
 
+ion-button.button.button-clear {
+    --color: var(--dark);
+}
+
 ion-button.button.button-solid,
 ion-button.button.button-outline {
     --border-radius: var(--core-input-radius);

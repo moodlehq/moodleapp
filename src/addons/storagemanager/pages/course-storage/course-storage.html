@@ -19,7 +19,7 @@
                         <p class="item-heading ion-text-wrap">{{ 'addon.storagemanager.totaldownloads' | translate }}</p>
                         <ion-badge color="light">{{ totalSize | coreBytesToSize }}</ion-badge>
                     </ion-label>
-                    <ion-button slot="end" (click)="deleteForCourse()" [disabled]="totalSize == 0" color="danger" fill="outline">
+                    <ion-button slot="end" (click)="deleteForCourse()" [disabled]="totalSize == 0" color="danger" fill="clear">
                         <ion-icon name="fas-trash" slot="icon-only" [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate:
                         { name: title }">
                         </ion-icon>
@@ -48,7 +48,7 @@
                             </p>
                         </ion-label>
                         <div class="storage-buttons" slot="end" *ngIf="section.totalSize > 0 || downloadEnabled">
-                            <ion-button (click)="deleteForSection(section)" *ngIf="section.totalSize > 0" color="danger" fill="outline">
+                            <ion-button (click)="deleteForSection(section)" *ngIf="section.totalSize > 0" color="danger" fill="clear">
                                 <ion-icon name="fas-trash" slot="icon-only"
                                     [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate: { name: section.name }">
                                 </ion-icon>

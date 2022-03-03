@@ -23,10 +23,12 @@
 <ng-content select="[description]"></ng-content>
 
 <!-- Module completion. -->
-<ion-item class="ion-text-wrap" *ngIf="showCompletion && module.completiondata && module.completiondata.isautomatic">
+<ion-item class="ion-text-wrap"
+    *ngIf="showCompletion && module.completiondata && (module.completiondata.isautomatic || (showManualCompletion && module.uservisible))">
     <ion-label>
         <core-course-module-completion [completion]="module.completiondata" [moduleName]="module.name" [moduleId]="module.id"
-            [showCompletionConditions]="true">
+            [showCompletionConditions]="true" [showManualCompletion]="showManualCompletion && module.uservisible"
+            (completionChanged)="completionChanged.emit($event)">
         </core-course-module-completion>
     </ion-label>
 </ion-item>

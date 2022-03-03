@@ -13,8 +13,8 @@
         [src]="safeUrl" [attr.allowfullscreen]="allowFullscreen ? 'allowfullscreen' : null">
     </iframe>
 
-    <ion-button *ngIf="!loading && displayHelp" color="dark" expand="block" fill="clear" (click)="openIframeHelpModal()"
-        aria-haspopup="dialog" class="core-button-as-link core-iframe-help">
+    <ion-button *ngIf="!loading && displayHelp" expand="block" fill="clear" (click)="openIframeHelpModal()" aria-haspopup="dialog"
+        class="core-button-as-link core-iframe-help">
         {{ 'core.iframehelp' | translate }}
     </ion-button>
 

@@ -120,7 +120,7 @@
             </ion-item>
             <ion-item *ngIf="moduleUrl">
                 <ion-label>
-                    <ion-button expand="block" color="primary" [href]="moduleUrl" core-link capture="true">
+                    <ion-button expand="block" [href]="moduleUrl" core-link capture="true">
                         {{ 'addon.calendar.gotoactivity' | translate }}
                     </ion-button>
                 </ion-label>
@@ -148,7 +148,7 @@
             <ng-container *ngIf="event.timestart > currentTime">
                 <ion-item>
                     <ion-label>
-                        <ion-button expand="block" color="primary" (click)="addReminder()">
+                        <ion-button expand="block" (click)="addReminder()">
                             {{ 'addon.calendar.setnewreminder' | translate }}
                         </ion-button>
                     </ion-label>
