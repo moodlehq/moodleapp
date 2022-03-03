@@ -33,7 +33,7 @@
         </div>
     </core-loading>
 
-    <core-navigation-bar collapsible-footer *ngIf="loaded && navigationItems.length > 1 && false" [items]="navigationItems"
+    <core-navigation-bar collapsible-footer *ngIf="loaded && navigationItems.length > 1" [items]="navigationItems"
         (action)="loadItem($event)">
     </core-navigation-bar>
 </ion-content>
