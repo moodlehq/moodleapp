@@ -29,7 +29,7 @@
             </ion-label>
             <div slot="end" class="flex-row">
                 <!-- Download all courses. -->
-                <div *ngIf="downloadCoursesEnabled && myOverviewBlock && myOverviewBlock.filteredCourses.length > 1"
+                <div *ngIf="downloadCoursesEnabled && myOverviewBlock && myOverviewBlock.filteredCourses.length > 0"
                     class="core-button-spinner">
                     <ion-button *ngIf="!myOverviewBlock.prefetchCoursesData.loading" fill="clear"
                         (click)="myOverviewBlock.prefetchCourses()"

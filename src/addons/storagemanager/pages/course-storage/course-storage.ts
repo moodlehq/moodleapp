@@ -59,6 +59,8 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
         loading: true,
     };
 
+    statusDownloaded = CoreConstants.DOWNLOADED;
+
     protected siteUpdatedObserver?: CoreEventObserver;
     protected courseStatusObserver?: CoreEventObserver;
     protected sectionStatusObserver?: CoreEventObserver;

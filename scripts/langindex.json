@@ -1106,6 +1106,7 @@
   "addon.storagemanager.confirmdeletedatafrom": "local_moodlemobileapp",
   "addon.storagemanager.coursedownloads": "local_moodlemobileapp",
   "addon.storagemanager.courseinfo": "local_moodlemobileapp",
+  "addon.storagemanager.deleteall": "moodle",
   "addon.storagemanager.deleteallsitedata": "local_moodlemobileapp",
   "addon.storagemanager.deleteallsitedatainfo": "local_moodlemobileapp",
   "addon.storagemanager.deletecourses": "local_moodlemobileapp",

@@ -30,6 +30,20 @@
     }
 }
 
+ion-badge {
+    margin-top: 8px;
+    ion-icon {
+        @include margin-horizontal(null, 8px);
+    }
+}
+
+ion-item core-mod-icon {
+    --size: 18px;
+    padding: 9px;
+    --margin-vertical: 8px;
+    --margin-end: 8px;
+}
+
 .storage-buttons {
     display: flex;
     align-items: center;

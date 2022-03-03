@@ -10,36 +10,51 @@
 </ion-header>
 <ion-content>
     <core-loading [hideUntil]="loaded" class="list-item-limited-width">
+        <ion-item class="ion-text-wrap">
+            <ion-label>
+                <p>{{ 'addon.storagemanager.courseinfo' | translate }}</p>
+            </ion-label>
+        </ion-item>
+
+
         <ion-card class="wholecourse">
             <ion-card-header>
-                <p class="ion-text-wrap ion-no-margin">{{ 'addon.storagemanager.courseinfo' | translate }}</p>
                 <ion-card-title>{{ title }}</ion-card-title>
                 <ion-item class="size ion-text-wrap ion-no-padding">
                     <ion-label>
                         <p class="item-heading ion-text-wrap">{{ 'addon.storagemanager.totaldownloads' | translate }}</p>
-                        <ion-badge color="light">{{ totalSize | coreBytesToSize }}</ion-badge>
                     </ion-label>
-                    <ion-button slot="end" (click)="deleteForCourse()" [disabled]="totalSize == 0" color="danger" fill="clear">
-                        <ion-icon name="fas-trash" slot="icon-only" [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate:
-                        { name: title }">
-                        </ion-icon>
-                    </ion-button>
+                    <ion-badge color="light" slot="end">{{ totalSize | coreBytesToSize }}
+                    </ion-badge>
                 </ion-item>
-                <ion-button *ngIf="downloadCourseEnabled" (click)="prefetchCourse()" expand="block" fill="outline">
+                <ion-button *ngIf="downloadCourseEnabled" (click)="prefetchCourse()" expand="block" fill="outline" class="ion-no-margin">
                     <ion-icon *ngIf="!prefetchCourseData.loading" [name]="prefetchCourseData.icon" slot="start"></ion-icon>
                     <ion-spinner *ngIf="prefetchCourseData.loading" slot="start"></ion-spinner>
                     {{ prefetchCourseData.statusTranslatable | translate }}
+                </ion-button>
+                <ion-button *ngIf="totalSize > 0" (click)="deleteForCourse()" expand="block" color="danger"
+                    class="ion-no-margin ion-margin-top">
+                    <ion-icon name="fas-trash" slot="start" [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate:
+                        { name: title }">
+                    </ion-icon>
+                    {{ 'addon.storagemanager.deleteall' | translate }}
                 </ion-button>
             </ion-card-header>
         </ion-card>
         <ng-container *ngFor="let section of sections">
             <ion-card class="section" *ngIf="section.modules.length > 0">
                 <ion-card-header>
-                    <ion-item class="ion-no-padding">
+                    <ion-item class="ion-no-padding" lines="full">
                         <ion-label>
-                            <p class="item-heading ion-text-wrap">{{ section.name }}</p>
-                            <ion-badge color="light" *ngIf="section.totalSize > 0">
-                                {{ section.totalSize | coreBytesToSize }}
+                            <p class="item-heading ion-text-wrap">
+                                <core-format-text [text]="section.name" contextLevel="course" [contextInstanceId]="section.course"
+                                    [adaptImg]="false">
+                                </core-format-text>
+                            </p>
+                            <ion-badge [color]="section.downloadStatus == statusDownloaded ? 'success' : 'light'"
+                                *ngIf="section.totalSize > 0">
+                                <ion-icon aria-hidden="true" name="fam-cloud-done" *ngIf="section.downloadStatus == statusDownloaded">
+                                </ion-icon>{{ section.totalSize | coreBytesToSize }}
                             </ion-badge>
                             <!-- Download progress. -->
                             <p *ngIf="downloadEnabled && section.isDownloading">
@@ -48,15 +63,10 @@
                             </p>
                         </ion-label>
                         <div class="storage-buttons" slot="end" *ngIf="section.totalSize > 0 || downloadEnabled">
-                            <ion-button (click)="deleteForSection(section)" *ngIf="section.totalSize > 0" color="danger" fill="clear">
-                                <ion-icon name="fas-trash" slot="icon-only"
-                                    [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate: { name: section.name }">
-                                </ion-icon>
-                            </ion-button>
                             <div *ngIf="downloadEnabled" slot="end" class="core-button-spinner">
-                                <core-download-refresh *ngIf="!section.isDownloading" [status]="section.downloadStatus" [enabled]="true"
-                                    (action)="prefecthSection(section)" [loading]="section.isDownloading || section.isCalculating"
-                                    [canTrustDownload]="true">
+                                <core-download-refresh *ngIf="!section.isDownloading && section.downloadStatus != statusDownloaded"
+                                    [status]="section.downloadStatus" [enabled]="true" (action)="prefecthSection(section)"
+                                    [loading]="section.isDownloading || section.isCalculating" [canTrustDownload]="true">
                                 </core-download-refresh>
 
                                 <ion-badge class="core-course-download-section-progress"
@@ -66,6 +76,11 @@
                                     {{section.count}} / {{section.total}}
                                 </ion-badge>
                             </div>
+                            <ion-button (click)="deleteForSection(section)" *ngIf="section.totalSize > 0" color="danger" fill="clear">
+                                <ion-icon name="fas-trash" slot="icon-only"
+                                    [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate: { name: section.name }">
+                                </ion-icon>
+                            </ion-button>
                         </div>
                     </ion-item>
                 </ion-card-header>
@@ -81,22 +96,25 @@
                                         [contextInstanceId]="module.id" [adaptImg]="false">
                                     </core-format-text>
                                 </h3>
-                                <ion-badge color="light" *ngIf="module.totalSize > 0">
-                                    {{ module.totalSize | coreBytesToSize }}
+                                <ion-badge [color]="module.downloadStatus == statusDownloaded ? 'success' : 'light'"
+                                    *ngIf="module.totalSize > 0">
+                                    <ion-icon aria-hidden="true" name="fam-cloud-done" *ngIf="module.downloadStatus == statusDownloaded">
+                                    </ion-icon>{{ module.totalSize | coreBytesToSize }}
                                 </ion-badge>
                             </ion-label>
 
                             <div class="storage-buttons" slot="end">
+                                <core-download-refresh *ngIf="downloadEnabled && module.handlerData?.showDownloadButton &&
+                                    module.downloadStatus != statusDownloaded" [status]="module.downloadStatus" [enabled]="true"
+                                    [canTrustDownload]="true" [loading]="module.spinner || module.handlerData.spinner"
+                                    (action)="prefetchModule(module, section)">
+                                </core-download-refresh>
                                 <ion-button fill="clear" (click)="deleteForModule(module, section)" *ngIf="module.totalSize > 0"
                                     color="danger">
                                     <ion-icon name="fas-trash" slot="icon-only"
                                         [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate: { name: module.name }">
                                     </ion-icon>
                                 </ion-button>
-                                <core-download-refresh *ngIf="downloadEnabled && module.handlerData?.showDownloadButton"
-                                    [status]="module.downloadStatus" [enabled]="true" [canTrustDownload]="true"
-                                    [loading]="module.spinner || module.handlerData.spinner" (action)="prefetchModule(module, section)">
-                                </core-download-refresh>
                             </div>
                         </ion-item>
                     </ng-container>
