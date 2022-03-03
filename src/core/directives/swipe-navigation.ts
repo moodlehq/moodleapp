@@ -56,7 +56,9 @@ export class CoreSwipeNavigationDirective implements AfterViewInit, OnDestroy {
             el: this.element,
             gestureName: 'swipe',
             threshold: 10,
+            direction: 'x',
             gesturePriority: 10,
+            maxAngle: 20,
             canStart: () => this.enabled,
             onStart: () => {
                 style.transition = '';
