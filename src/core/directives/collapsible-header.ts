@@ -175,9 +175,6 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
             };
 
             this.subscriptions.push(outlet.activateEvents.subscribe(onOutletUpdated));
-            this.subscriptions.push(outlet.deactivateEvents.subscribe(onOutletUpdated));
-
-            onOutletUpdated();
 
             return;
         }
