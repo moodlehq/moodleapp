@@ -321,7 +321,8 @@ ion-button.button-outline {
     --border-width: var(--core-input-border-width);
     --border-color: var(--core-input-stroke);
     --background: var(--core-input-background);
-    --color: var(--text-color);
+    --color: var(--core-input-text);
+    --ion-color-primary: var(--core-input-text);
 }
 
 ion-button.button-solid {
@@ -371,7 +372,8 @@ ion-button.button.button-clear.button-has-icon-only {
 }
 
 ion-button.button.button-clear {
-    --color: var(--dark);
+    --color: var(--core-input-text);
+    --ion-color-primary: var(--core-input-text);
 }
 
 ion-button.button.button-solid,
