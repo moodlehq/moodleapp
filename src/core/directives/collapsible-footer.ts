@@ -39,7 +39,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
     protected initialPaddingBottom = '0px';
     protected previousTop = 0;
     protected previousHeight = 0;
-    protected stickTimeout?: number;
+    protected endAnimationTimeout?: number;
     protected content?: HTMLIonContentElement | null;
     protected loadingChangedListener?: CoreEventObserver;
 
@@ -59,6 +59,8 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
         // Set a minimum height value.
         this.initialHeight = this.element.getBoundingClientRect().height || 48;
         this.previousHeight = this.initialHeight;
+
+        this.content?.style.setProperty('--core-collapsible-footer-max-height', this.initialHeight + 'px');
 
         this.setBarHeight(this.initialHeight);
     }
@@ -88,7 +90,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
         this.initialPaddingBottom = this.content.style.getPropertyValue('--padding-bottom') || this.initialPaddingBottom;
         this.content.style.setProperty(
             '--padding-bottom',
-            `calc(${this.initialPaddingBottom} + var(--core-collapsible-footer-height, 0px))`,
+            `calc(${this.initialPaddingBottom} + var(--core-collapsible-footer-max-height, 0px))`,
         );
 
         const scroll = await this.content.getScrollElement();
@@ -143,8 +145,8 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
      * @param height The new bar height.
      */
     protected setBarHeight(height: number): void {
-        if (this.stickTimeout) {
-            clearTimeout(this.stickTimeout);
+        if (this.endAnimationTimeout) {
+            clearTimeout(this.endAnimationTimeout);
         }
 
         this.element.classList.toggle('footer-collapsed', height <= 0);
@@ -154,10 +156,19 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
 
         if (height > 0 && height < this.initialHeight) {
             // Finish opening or closing the bar.
-            const newHeight = height < this.initialHeight / 2 ? 0 : this.initialHeight;
-
-            this.stickTimeout = window.setTimeout(() => this.setBarHeight(newHeight), 500);
+            this.endAnimationTimeout = window.setTimeout(() => this.endAnimation(height), 500);
         }
+    }
+
+    /**
+     * End of animation when not scrolling.
+     *
+     * @param height Last height used.
+     */
+    protected endAnimation(height: number): void {
+        const newHeight = height < this.initialHeight / 2 ? 0 : this.initialHeight;
+
+        this.setBarHeight(newHeight);
     }
 
     /**

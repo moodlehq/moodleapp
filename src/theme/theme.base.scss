@@ -1111,7 +1111,7 @@ ion-fab[core-fab] {
 }
 
 ion-content.has-collapsible-footer ion-fab {
-    bottom: calc(var(--core-navigation-height, 0px) + 10px);
+    bottom: calc(var(--core-collapsible-footer-height, 0px) + 10px);
     @include core-transition(all, 200ms);
 }
 
