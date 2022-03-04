@@ -66,6 +66,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
     protected scrollingHeight?: number;
     protected subscriptions: Subscription[] = [];
     protected enabled = true;
+    protected endAnimationTimeout?: number;
 
     constructor(protected el: ElementRef) {}
 
@@ -360,6 +361,10 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
                 return;
             }
 
+            if (this.endAnimationTimeout) {
+                clearTimeout(this.endAnimationTimeout);
+            }
+
             const scrollableHeight = contentScroll.scrollHeight - contentScroll.clientHeight;
             const collapsedHeight = expandedHeaderHeight - (expandedHeader.clientHeight ?? 0);
             const frozen = scrollableHeight + collapsedHeight <= 2 * expandedHeaderHeight;
@@ -374,7 +379,28 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
             Object
                 .entries(progress > .5 ? collapsedFontStyles : expandedFontStyles)
                 .forEach(([property, value]) => floatingTitle.style.setProperty(property, value as string));
+
+            if (progress > 0 || progress < 1) {
+                // Finish opening or closing the bar.
+                this.endAnimationTimeout = window.setTimeout(() => this.endAnimation(progress), 500);
+            }
         });
+    }
+
+    /**
+     * End of animation when stop scrolling.
+     *
+     * @param progress Progress.
+     */
+    protected endAnimation(progress: number): void {
+        if(!this.page) {
+            return;
+        }
+
+        const collapse = progress > 0.5;
+
+        this.page.style.setProperty('--collapsible-header-progress', collapse ? '1' : '0');
+        this.page.classList.toggle('is-collapsed', collapse);
     }
 
 }
