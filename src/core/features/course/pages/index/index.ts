@@ -27,7 +27,6 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CONTENTS_PAGE_NAME } from '@features/course/course.module';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreCollapsibleHeaderDirective } from '@directives/collapsible-header';
 import { CoreCourseSummaryPage } from '../course-summary/course-summary';
 
 /**
@@ -41,7 +40,6 @@ import { CoreCourseSummaryPage } from '../course-summary/course-summary';
 export class CoreCourseIndexPage implements OnInit, OnDestroy {
 
     @ViewChild(CoreTabsOutletComponent) tabsComponent?: CoreTabsOutletComponent;
-    @ViewChild(CoreCollapsibleHeaderDirective) ionCollapsibleHeader?: CoreCollapsibleHeaderDirective;
 
     title = '';
     category = '';

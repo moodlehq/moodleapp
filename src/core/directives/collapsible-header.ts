@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { Directive, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChange } from '@angular/core';
 import { CoreTabsOutletComponent } from '@components/tabs-outlet/tabs-outlet';
 import { ScrollDetail } from '@ionic/core';
 import { CoreUtils } from '@services/utils/utils';
@@ -50,7 +50,9 @@ import { CoreFormatTextDirective } from './format-text';
 @Directive({
     selector: 'ion-header[collapsible]',
 })
-export class CoreCollapsibleHeaderDirective implements OnInit, OnDestroy {
+export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDestroy {
+
+    @Input() collapsible = true;
 
     protected page?: HTMLElement;
     protected collapsedHeader?: Element;
@@ -63,6 +65,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnDestroy {
     protected floatingTitle?: HTMLElement;
     protected scrollingHeight?: number;
     protected subscriptions: Subscription[] = [];
+    protected enabled = true;
 
     constructor(protected el: ElementRef) {}
 
@@ -80,6 +83,18 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnDestroy {
 
         this.initializeFloatingTitle();
         this.initializeContent();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnChanges(changes: {[name: string]: SimpleChange}): void {
+        if (changes.collapsible) {
+            this.enabled = !CoreUtils.isFalseOrZero(changes.collapsible.currentValue);
+            setTimeout(() => {
+                this.setEnabled(this.enabled);
+            }, 200);
+        }
     }
 
     /**
@@ -278,6 +293,29 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnDestroy {
     }
 
     /**
+     * Set collapsed/expanded based on properties.
+     *
+     * @param enable True to enable, false otherwise
+     */
+    async setEnabled(enable: boolean): Promise<void> {
+        if (!this.page || !this.content) {
+            return;
+        }
+
+        if (enable) {
+            const contentScroll = await this.content.getScrollElement();
+
+            // Do nothing, since scroll has already started on the page.
+            if (contentScroll.scrollTop > 0) {
+                return;
+            }
+        }
+
+        this.page.style.setProperty('--collapsible-header-progress', enable ? '0' : '1');
+        this.page.classList.toggle('is-collapsed', !enable);
+    }
+
+    /**
      * Listen to a content element for scroll events that will control the header state transition.
      *
      * @param content Content element.
@@ -287,6 +325,8 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnDestroy {
             return;
         }
 
+        this.content = content;
+
         const page = this.page;
         const scrollingHeight = this.scrollingHeight;
         const expandedHeader = this.expandedHeader;
@@ -294,7 +334,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnDestroy {
         const expandedFontStyles = this.expandedFontStyles;
         const collapsedFontStyles = this.collapsedFontStyles;
         const floatingTitle = this.floatingTitle;
-        const contentScroll = await content.getScrollElement();
+        const contentScroll = await this.content.getScrollElement();
 
         if (
             !page ||
@@ -308,17 +348,15 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnDestroy {
             throw new Error('[collapsible-header] Couldn\'t set up scrolling');
         }
 
-        page.style.setProperty('--collapsible-header-progress', '0');
         page.classList.toggle('is-within-content', content.contains(expandedHeader));
-        page.classList.toggle('is-collapsed', false);
+        this.setEnabled(this.enabled);
 
         Object
             .entries(expandedFontStyles)
             .forEach(([property, value]) => floatingTitle.style.setProperty(property, value as string));
 
-        this.content = content;
         this.content.addEventListener('ionScroll', this.contentScrollListener = ({ target }: CustomEvent<ScrollDetail>): void => {
-            if (target !== this.content) {
+            if (target !== this.content || !this.enabled) {
                 return;
             }
 
