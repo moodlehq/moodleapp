@@ -106,6 +106,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
     submissionPlugins: AddonModAssignPlugin[] = []; // List of submission plugins.
     timeRemaining = ''; // Message about time remaining.
     timeRemainingClass = ''; // Class to apply to time remaining message.
+    timeLimitEndTime = 0; // If time limit is enabled and submission is ongoing, the end time for the timer.
     statusTranslated?: string; // Status.
     statusColor = ''; // Color to apply to the status.
     unsupportedEditPlugins: string[] = []; // List of submission plugins that don't support edit.
@@ -126,6 +127,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
     gradeUrl?: string; // URL to grade in browser.
     isPreviousAttemptEmpty = true; // Whether the previous attempt contains an empty submission.
     showDates = false; // Whether to show some dates.
+    timeLimitFinished = false; // Whether there is a time limit and it finished, so the user will submit late.
 
     // Some constants.
     statusNew = AddonModAssignSubmissionStatusValues.NEW;
@@ -200,7 +202,12 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
             return;
         }
 
-        if (this.assign.duedate <= 0) {
+        const submissionStarted = !!this.userSubmission?.timestarted;
+        this.timeLimitEndTime = 0;
+        this.timeLimitFinished = false;
+
+        if (this.assign.duedate <= 0 && !submissionStarted) {
+            // No due date and no countdown.
             this.timeRemaining = '';
             this.timeRemainingClass = '';
 
@@ -208,53 +215,53 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
         }
 
         const time = CoreTimeUtils.timestamp();
-        const dueDate = response.lastattempt?.extensionduedate
-            ? response.lastattempt.extensionduedate
-            : this.assign.duedate;
-        const timeRemaining = dueDate - time;
+        const timeLimitEnabled = this.assign.timelimit && submissionStarted;
+        const dueDateReached = this.assign.duedate > 0 && this.assign.duedate - time <= 0;
+        const timeLimitEnabledBeforeDueDate = timeLimitEnabled && !dueDateReached;
 
-        if (timeRemaining > 0) {
-            this.timeRemaining = CoreTimeUtils.formatDuration(timeRemaining, 3);
-            this.timeRemainingClass = '';
+        if (this.userSubmission && this.userSubmission.status === AddonModAssignSubmissionStatusValues.SUBMITTED) {
+            // Submitted, display the relevant early/late message.
+            const lateCalculation = this.userSubmission.timemodified -
+                (timeLimitEnabledBeforeDueDate ? this.userSubmission.timecreated : 0);
+            const lateThreshold = timeLimitEnabledBeforeDueDate ? this.assign.timelimit || 0 : this.assign.duedate;
+            const earlyString = timeLimitEnabledBeforeDueDate ? 'submittedundertime' : 'submittedearly';
+            const lateString = timeLimitEnabledBeforeDueDate ? 'submittedovertime' : 'submittedlate';
+            const onTime = lateCalculation <= lateThreshold;
 
-            return;
-        }
-
-        // Not submitted.
-        if (!this.userSubmission || this.userSubmission.status != AddonModAssignSubmissionStatusValues.SUBMITTED) {
-
-            if (response.lastattempt?.submissionsenabled || response.gradingsummary?.submissionsenabled) {
-                this.timeRemaining = Translate.instant(
-                    'addon.mod_assign.overdue',
-                    { $a: CoreTimeUtils.formatDuration(-timeRemaining, 3) },
-                );
-                this.timeRemainingClass = 'overdue';
-
-                return;
-            }
-
-            this.timeRemaining = Translate.instant('addon.mod_assign.duedatereached');
-            this.timeRemainingClass = '';
-
-            return;
-        }
-
-        const timeSubmittedDiff = this.userSubmission.timemodified - dueDate;
-        if (timeSubmittedDiff > 0) {
             this.timeRemaining = Translate.instant(
-                'addon.mod_assign.submittedlate',
-                { $a: CoreTimeUtils.formatDuration(timeSubmittedDiff, 2) },
+                'addon.mod_assign.' + (onTime ? earlyString : lateString),
+                { $a: CoreTimeUtils.formatTime(Math.abs(lateCalculation - lateThreshold)) },
             );
-            this.timeRemainingClass = 'latesubmission';
+            this.timeRemainingClass = onTime ? 'earlysubmission' : 'latesubmission';
 
             return;
         }
 
-        this.timeRemaining = Translate.instant(
-            'addon.mod_assign.submittedearly',
-            { $a: CoreTimeUtils.formatDuration(-timeSubmittedDiff, 2) },
-        );
-        this.timeRemainingClass = 'earlysubmission';
+        if (dueDateReached) {
+            // There is no submission, due date has passed, show assignment is overdue.
+            const submissionsEnabled = response.lastattempt?.submissionsenabled || response.gradingsummary?.submissionsenabled;
+            this.timeRemaining = Translate.instant(
+                'addon.mod_assign.' + (submissionsEnabled ? 'overdue' : 'duedatereached'),
+                { $a: CoreTimeUtils.formatTime(time - this.assign.duedate) },
+            );
+            this.timeRemainingClass = 'overdue';
+            this.timeLimitFinished = true;
+
+            return;
+        }
+
+        if (timeLimitEnabled && submissionStarted) {
+            // An attempt has started and there is a time limit, display the time limit.
+            this.timeRemaining = '';
+            this.timeRemainingClass = 'timeremaining';
+            this.timeLimitEndTime = AddonModAssignHelper.calculateEndTime(this.assign, this.userSubmission);
+
+            return;
+        }
+
+        // Assignment is not overdue, and no submission has been made. Just display the due date.
+        this.timeRemaining = CoreTimeUtils.formatTime(this.assign.duedate - time);
+        this.timeRemainingClass = 'timeremaining';
     }
 
     /**
@@ -292,7 +299,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
 
         if (!this.previousAttempt?.submission) {
             // Cannot access previous attempts, just go to edit.
-            return this.goToEdit();
+            return this.goToEdit(true);
         }
 
         const previousSubmission = this.previousAttempt.submission;
@@ -319,7 +326,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
         try {
             await AddonModAssignHelper.copyPreviousAttempt(this.assign, previousSubmission);
             // Now go to edit.
-            this.goToEdit();
+            this.goToEdit(true);
 
             if (!this.assign.submissiondrafts && this.userSubmission) {
                 // No drafts allowed, so it was submitted. Trigger event.
@@ -352,8 +359,24 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
 
     /**
      * Go to the page to add or edit submission.
+     *
+     * @param afterCopyPrevious Whether the user has just copied the previous submission.
      */
-    goToEdit(): void {
+    async goToEdit(afterCopyPrevious = false): Promise<void> {
+        if (!afterCopyPrevious && this.assign?.timelimit && (!this.userSubmission || !this.userSubmission.timestarted)) {
+            try {
+                await CoreDomUtils.showConfirm(
+                    Translate.instant('addon.mod_assign.confirmstart', {
+                        $a: CoreTimeUtils.formatTime(this.assign.timelimit),
+                    }),
+                    undefined,
+                    Translate.instant('addon.mod_assign.beginassignment'),
+                );
+            } catch {
+                return; // User canceled.
+            }
+        }
+
         CoreNavigator.navigateToSitePath(
             AddonModAssignModuleHandlerService.PAGE_NAME + '/' + this.courseId + '/' + this.moduleId + '/edit',
             {
@@ -1173,6 +1196,13 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
     tabSelected(tab: CoreTabComponent): void {
         // Block sync when selecting grade tab, unblock when leaving it.
         this.setGradeSyncBlocked(tab.id === 'grade');
+    }
+
+    /**
+     * Function called when the time is up.
+     */
+    timeUp(): void {
+        this.timeLimitFinished = true;
     }
 
     /**

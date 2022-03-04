@@ -32,6 +32,7 @@ import {
     AddonModAssignSubmissionStatusOptions,
     AddonModAssignGetSubmissionStatusWSResponse,
     AddonModAssignSavePluginData,
+    AddonModAssignSubmissionStatusValues,
 } from '../../services/assign';
 import { AddonModAssignHelper } from '../../services/assign-helper';
 import { AddonModAssignOffline } from '../../services/assign-offline';
@@ -44,6 +45,7 @@ import { CoreUtils } from '@services/utils/utils';
 @Component({
     selector: 'page-addon-mod-assign-edit',
     templateUrl: 'edit.html',
+    styleUrls: ['edit.scss'],
 })
 export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
 
@@ -58,6 +60,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
     submissionStatement?: string; // The submission statement.
     submissionStatementAccepted = false; // Whether submission statement is accepted.
     loaded = false; // Whether data has been loaded.
+    timeLimitEndTime = 0; // If time limit is enabled, the end time for the timer.
 
     protected userId: number; // User doing the submission.
     protected isBlind = false; // Whether blind is used.
@@ -179,12 +182,20 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
                 throw new CoreError(Translate.instant('core.nopermissions', { $a: this.editText }));
             }
 
+            submissionStatus = await this.startSubmissionIfNeeded(submissionStatus, options);
+
             this.allowOffline = true; // If offline isn't allowed we shouldn't have reached this point.
             // Only show submission statement if we are editing our own submission.
             if (this.assign.requiresubmissionstatement && !this.assign.submissiondrafts && this.userId == currentUserId) {
                 this.submissionStatement = this.assign.submissionstatement;
             } else {
                 this.submissionStatement = undefined;
+            }
+
+            if (this.assign.timelimit && this.userSubmission?.timestarted) {
+                this.timeLimitEndTime = AddonModAssignHelper.calculateEndTime(this.assign, this.userSubmission);
+            } else {
+                this.timeLimitEndTime = 0;
             }
 
             try {
@@ -202,6 +213,45 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
             // Leave the player.
             this.leaveWithoutCheck();
         }
+    }
+
+    /**
+     * Start the submission if needed.
+     *
+     * @param submissionStatus Current submission status.
+     * @param options Options.
+     * @return Promise resolved with the new submission status if it changed, original submission status otherwise.
+     */
+    protected async startSubmissionIfNeeded(
+        submissionStatus: AddonModAssignGetSubmissionStatusWSResponse,
+        options: AddonModAssignSubmissionStatusOptions,
+    ): Promise<AddonModAssignGetSubmissionStatusWSResponse> {
+        if (!this.assign || !this.assign.timelimit) {
+            // Submission only needs to be started if there's a timelimit.
+            return submissionStatus;
+        }
+
+        if (this.userSubmission && this.userSubmission.status !== AddonModAssignSubmissionStatusValues.NEW &&
+            this.userSubmission.status !== AddonModAssignSubmissionStatusValues.REOPENED) {
+            // There is an ongoing submission, no need to start it.
+            return submissionStatus;
+        }
+
+        await AddonModAssign.startSubmission(this.assign.id);
+
+        CoreEvents.trigger(AddonModAssignProvider.STARTED_EVENT, {
+            assignmentId: this.assign.id,
+        }, CoreSites.getCurrentSiteId());
+
+        // Submission started, update the submission status.
+        const newSubmissionStatus = await AddonModAssign.getSubmissionStatus(this.assign.id, {
+            ...options,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK, // Make sure not to use cache.
+        });
+
+        this.userSubmission = AddonModAssign.getSubmissionObjectFromAttempt(this.assign, newSubmissionStatus.lastattempt);
+
+        return newSubmissionStatus;
     }
 
     /**
@@ -390,6 +440,18 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
         } finally {
             modal.dismiss();
         }
+    }
+
+    /**
+     * Function called when the time is up.
+     */
+    timeUp(): void {
+        CoreDomUtils.showToastWithOptions({
+            message: Translate.instant('addon.mod_assign.caneditsubmission'),
+            duration: 0,
+            buttons: [Translate.instant('core.dismiss')],
+            cssClass: 'core-danger-toast',
+        });
     }
 
     /**

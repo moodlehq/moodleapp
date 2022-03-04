@@ -86,6 +86,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     protected savedObserver?: CoreEventObserver;
     protected submittedObserver?: CoreEventObserver;
     protected gradedObserver?: CoreEventObserver;
+    protected startedObserver?: CoreEventObserver;
 
     constructor(
         protected content?: IonContent,
@@ -136,6 +137,13 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             }
         }, this.siteId);
 
+        this.startedObserver = CoreEvents.on(AddonModAssignProvider.STARTED_EVENT, (data) => {
+            if (this.assign && data.assignmentId == this.assign.id) {
+                // Assignment submission started, refresh data.
+                this.showLoadingAndRefresh(false, false);
+            }
+        }, this.siteId);
+
         await this.loadContent(false, true);
     }
 
@@ -167,12 +175,17 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         if (submissions.canviewsubmissions) {
 
             // Calculate the messages to display about time remaining and late submissions.
+            this.timeRemaining = '';
+            this.lateSubmissions = '';
+
             if (this.assign.duedate > 0) {
                 if (this.assign.duedate - time <= 0) {
                     this.timeRemaining = Translate.instant('addon.mod_assign.assignmentisdue');
                 } else {
-                    this.timeRemaining = CoreTimeUtils.formatDuration(this.assign.duedate - time, 3);
+                    this.timeRemaining = CoreTimeUtils.formatTime(this.assign.duedate - time);
+                }
 
+                if (this.assign.duedate < time) {
                     if (this.assign.cutoffdate) {
                         if (this.assign.cutoffdate > time) {
                             this.lateSubmissions = Translate.instant(
@@ -182,13 +195,8 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
                         } else {
                             this.lateSubmissions = Translate.instant('addon.mod_assign.nomoresubmissionsaccepted');
                         }
-                    } else {
-                        this.lateSubmissions = '';
                     }
                 }
-            } else {
-                this.timeRemaining = '';
-                this.lateSubmissions = '';
             }
 
             // Check if groupmode is enabled to avoid showing wrong numbers.
@@ -398,6 +406,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         this.savedObserver?.off();
         this.submittedObserver?.off();
         this.gradedObserver?.off();
+        this.startedObserver?.off();
     }
 
 }

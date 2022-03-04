@@ -504,7 +504,16 @@ ion-toast {
     @include media-breakpoint-down(sm) {
         &::part(container) {
             flex-direction: column;
+            align-items: flex-end;
         }
+    }
+}
+
+@each $color-name, $unused in $colors {
+    ion-toast.core-#{$color-name}-toast {
+        --background: var(--ion-color-#{$color-name}-tint);
+        --color: var(--ion-color-#{$color-name}-shade);
+        --button-color: var(--ion-color-#{$color-name}-shade);
     }
 }
 

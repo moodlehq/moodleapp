@@ -87,9 +87,10 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
 
         try {
             const assign = await AddonModAssign.getAssignment(courseId, module.id, { siteId });
-            // Get intro files and attachments.
+            // Get intro files, attachments and activity files.
             let files: CoreWSFile[] = assign.introattachments || [];
             files = files.concat(this.getIntroFilesFromInstance(module, assign));
+            files = files.concat(assign.activityattachments || []);
 
             // Now get the files in the submissions.
             const submissionData = await AddonModAssign.getSubmissions(assign.id, { cmId: module.id, siteId });

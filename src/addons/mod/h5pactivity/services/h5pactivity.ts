@@ -90,8 +90,8 @@ export class AddonModH5PActivityProvider {
             formattedAttempt.durationReadable = '-';
             formattedAttempt.durationCompact = '-';
         } else {
-            formattedAttempt.durationReadable = CoreTimeUtils.formatTime(attempt.duration);
-            formattedAttempt.durationCompact = CoreTimeUtils.formatDurationShort(attempt.duration);
+            formattedAttempt.durationReadable = CoreTimeUtils.formatTime(attempt.duration, 3);
+            formattedAttempt.durationCompact = CoreTimeUtils.formatTimeShort(attempt.duration);
         }
 
         return formattedAttempt;

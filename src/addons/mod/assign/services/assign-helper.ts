@@ -45,6 +45,25 @@ import { CoreFileEntry } from '@services/file-helper';
 export class AddonModAssignHelperProvider {
 
     /**
+     * Calculate the end time (timestamp) for an assign and submission.
+     *
+     * @param assign Assign instance.
+     * @param submission Submission.
+     * @return End time.
+     */
+    calculateEndTime(assign: AddonModAssignAssign, submission?: AddonModAssignSubmissionFormatted): number {
+        const timeDue = (submission?.timestarted || 0) + (assign.timelimit || 0);
+
+        if (assign.duedate) {
+            return Math.min(timeDue, assign.duedate);
+        } else if (assign.cutoffdate) {
+            return Math.min(timeDue, assign.cutoffdate);
+        }
+
+        return timeDue;
+    }
+
+    /**
      * Check if a submission can be edited in offline.
      *
      * @param assign Assignment.

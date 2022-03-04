@@ -33,6 +33,14 @@
                 </ion-select>
             </ion-item>
 
+            <ion-item class="ion-text-wrap">
+                <ion-label>
+                    <h2>{{ 'core.course.hiddenfromstudents' | translate }}</h2>
+                    <p *ngIf="module.visible">{{ 'core.no' | translate }}</p>
+                    <p *ngIf="!module.visible">{{ 'core.yes' | translate }}</p>
+                </ion-label>
+            </ion-item>
+
             <ion-item class="ion-text-wrap" *ngIf="timeRemaining">
                 <ion-label>
                     <h2>{{ 'addon.mod_assign.timeremaining' | translate }}</h2>

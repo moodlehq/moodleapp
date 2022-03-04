@@ -1,5 +1,15 @@
 <core-loading [hideUntil]="loaded">
     <div class="list-item-limited-width">
+        <!-- Time limit is over. -->
+        <ion-card *ngIf="timeLimitFinished" class="core-danger-card">
+            <ion-item class="ion-text-wrap">
+                <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+                <ion-label>
+                    <p>{{ 'addon.mod_assign.caneditsubmission' | translate }}</p>
+                </ion-label>
+            </ion-item>
+        </ion-card>
+
         <!-- User and status of the submission. -->
         <ion-item class="ion-text-wrap" *ngIf="!blindMarking && user" core-user-link [userId]="submitId" [courseId]="courseId"
             [attr.aria-label]="user!.fullname">
@@ -31,33 +41,36 @@
             <!-- View the submission tab. -->
             <core-tab [title]="'addon.mod_assign.submission' | translate" id="submission">
                 <ng-template>
-                    <addon-mod-assign-submission-plugin *ngFor="let plugin of submissionPlugins" [assign]="assign"
-                        [submission]="userSubmission" [plugin]="plugin">
-                    </addon-mod-assign-submission-plugin>
-
                     <!-- Render some data about the submission. -->
-                    <ion-item class="ion-text-wrap"
-                        *ngIf="userSubmission && userSubmission!.status != statusNew && userSubmission!.timemodified">
+                    <ion-item class="ion-text-wrap" *ngIf="currentAttempt && !isGrading">
                         <ion-label>
-                            <h2>{{ 'addon.mod_assign.timemodified' | translate }}</h2>
-                            <p>{{ userSubmission!.timemodified * 1000 | coreFormatDate }}</p>
+                            <h2>{{ 'addon.mod_assign.attemptnumber' | translate }}</h2>
+                            <p *ngIf="assign!.maxattempts == unlimitedAttempts">
+                                {{ 'addon.mod_assign.outof' | translate :
+                                {'$a': {'current': currentAttempt, 'total': maxAttemptsText} } }}
+                            </p>
+                            <p *ngIf="assign!.maxattempts != unlimitedAttempts">
+                                {{ 'addon.mod_assign.outof' | translate :
+                                {'$a': {'current': currentAttempt, 'total': assign!.maxattempts} } }}
+                            </p>
                         </ion-label>
                     </ion-item>
 
-                    <ion-item class="ion-text-wrap" *ngIf="timeRemaining" [ngClass]="[timeRemainingClass]">
+                    <!-- Submission is locked. -->
+                    <ion-item class="ion-text-wrap" *ngIf="lastAttempt?.locked">
                         <ion-label>
-                            <h2>{{ 'addon.mod_assign.timeremaining' | translate }}</h2>
-                            <p [innerHTML]="timeRemaining"></p>
+                            <h2>{{ 'addon.mod_assign.submissionslocked' | translate }}</h2>
                         </ion-label>
                     </ion-item>
 
+                    <!-- Dates. -->
                     <ion-item class="ion-text-wrap" *ngIf="showDates && fromDate && !isSubmittedForGrading">
                         <ion-label>
                             <p *ngIf="assign!.intro"
                                 [innerHTML]="'addon.mod_assign.allowsubmissionsfromdatesummary' | translate: {'$a': fromDate}">
                             </p>
                             <p *ngIf="!assign!.intro" [innerHTML]="'addon.mod_assign.allowsubmissionsanddescriptionfromdatesummary' | translate:
-                                {'$a': fromDate}">
+                                    {'$a': fromDate}">
                             </p>
                         </ion-label>
                     </ion-item>
@@ -84,19 +97,47 @@
                         </ion-label>
                     </ion-item>
 
-                    <ion-item class="ion-text-wrap" *ngIf="currentAttempt && !isGrading">
+                    <!-- Time remaining. -->
+                    <ion-item class="ion-text-wrap" *ngIf="timeRemaining || timeLimitEndTime > 0" [ngClass]="[timeRemainingClass]">
                         <ion-label>
-                            <h2>{{ 'addon.mod_assign.attemptnumber' | translate }}</h2>
-                            <p *ngIf="assign!.maxattempts == unlimitedAttempts">
-                                {{ 'addon.mod_assign.outof' | translate :
-                                {'$a': {'current': currentAttempt, 'total': maxAttemptsText} } }}
-                            </p>
-                            <p *ngIf="assign!.maxattempts != unlimitedAttempts">
-                                {{ 'addon.mod_assign.outof' | translate :
-                                {'$a': {'current': currentAttempt, 'total': assign!.maxattempts} } }}
-                            </p>
+                            <h2>{{ 'addon.mod_assign.timeremaining' | translate }}</h2>
+                            <p *ngIf="!timeLimitEndTime" [innerHTML]="timeRemaining"></p>
+                            <core-timer *ngIf="timeLimitEndTime > 0" [endTime]="timeLimitEndTime" mode="basic" timeUpText="00:00:00"
+                                [timeLeftClassThreshold]="-1" [underTimeClassThresholds]="[300, 900]" (finished)="timeUp()">
+                            </core-timer>
                         </ion-label>
                     </ion-item>
+
+                    <!-- Time limit. -->
+                    <ion-item class="ion-text-wrap" *ngIf="assign && assign.timelimit">
+                        <ion-label>
+                            <h2>{{ 'addon.mod_assign.timelimit' | translate }}</h2>
+                            <p>{{ assign.timelimit | coreDuration }}</p>
+                        </ion-label>
+                    </ion-item>
+
+                    <!-- Editing status. -->
+                    <ion-item class="ion-text-wrap" *ngIf="lastAttempt && isSubmittedForGrading && lastAttempt!.caneditowner !== undefined"
+                        [ngClass]="{submissioneditable: lastAttempt!.caneditowner, submissionnoteditable: !lastAttempt!.caneditowner}">
+                        <ion-label>
+                            <h2>{{ 'addon.mod_assign.editingstatus' | translate }}</h2>
+                            <p *ngIf="lastAttempt!.caneditowner">{{ 'addon.mod_assign.submissioneditable' | translate }}</p>
+                            <p *ngIf="!lastAttempt!.caneditowner">{{ 'addon.mod_assign.submissionnoteditable' | translate }}</p>
+                        </ion-label>
+                    </ion-item>
+
+                    <!-- Last modified. -->
+                    <ion-item class="ion-text-wrap"
+                        *ngIf="userSubmission && userSubmission!.status != statusNew && userSubmission!.timemodified">
+                        <ion-label>
+                            <h2>{{ 'addon.mod_assign.timemodified' | translate }}</h2>
+                            <p>{{ userSubmission!.timemodified * 1000 | coreFormatDate }}</p>
+                        </ion-label>
+                    </ion-item>
+
+                    <addon-mod-assign-submission-plugin *ngFor="let plugin of submissionPlugins" [assign]="assign"
+                        [submission]="userSubmission" [plugin]="plugin">
+                    </addon-mod-assign-submission-plugin>
 
                     <!-- Add or edit submission. -->
                     <ion-item class="ion-text-wrap" *ngIf="canEdit">
@@ -109,7 +150,12 @@
                                 <!-- If no submission or is new, show add submission. -->
                                 <ion-button expand="block" class="ion-text-wrap" (click)="goToEdit()" *ngIf="!hasOffline &&
                                     (!userSubmission || !userSubmission!.status || userSubmission!.status == statusNew)">
-                                    {{ 'addon.mod_assign.addsubmission' | translate }}
+                                    <ng-container *ngIf="!assign?.timelimit || userSubmission?.timestarted">
+                                        {{ 'addon.mod_assign.addsubmission' | translate }}
+                                    </ng-container>
+                                    <ng-container *ngIf="assign?.timelimit && (!userSubmission || !userSubmission.timestarted)">
+                                        {{ 'addon.mod_assign.beginassignment' | translate }}
+                                    </ng-container>
                                 </ion-button>
                                 <!-- If reopened, show addfromprevious and addnewattempt. -->
                                 <ng-container *ngIf="!hasOffline && userSubmission?.status == statusReopened">
@@ -122,9 +168,8 @@
                                     </ion-button>
                                 </ng-container>
                                 <!-- Else show editsubmission. -->
-                                <ion-button expand="block" class="ion-text-wrap" *ngIf="!hasOffline &&
-                                    userSubmission && userSubmission!.status &&
-                                    userSubmission!.status != statusNew &&
+                                <ion-button expand="block" class="ion-text-wrap" *ngIf="!hasOffline && userSubmission &&
+                                    userSubmission!.status && userSubmission!.status != statusNew &&
                                     userSubmission!.status != statusReopened" (click)="goToEdit()">
                                     {{ 'addon.mod_assign.editsubmission' | translate }}
                                 </ion-button>
@@ -191,23 +236,6 @@
                             </ion-item>
                         </ng-container>
                     </ng-container>
-
-                    <!-- Submission is locked. -->
-                    <ion-item class="ion-text-wrap" *ngIf="lastAttempt?.locked">
-                        <ion-label>
-                            <h2>{{ 'addon.mod_assign.submissionslocked' | translate }}</h2>
-                        </ion-label>
-                    </ion-item>
-
-                    <!-- Editing status. -->
-                    <ion-item class="ion-text-wrap" *ngIf="lastAttempt && isSubmittedForGrading && lastAttempt!.caneditowner !== undefined"
-                        [ngClass]="{submissioneditable: lastAttempt!.caneditowner, submissionnoteditable: !lastAttempt!.caneditowner}">
-                        <ion-label>
-                            <h2>{{ 'addon.mod_assign.editingstatus' | translate }}</h2>
-                            <p *ngIf="lastAttempt!.caneditowner">{{ 'addon.mod_assign.submissioneditable' | translate }}</p>
-                            <p *ngIf="!lastAttempt!.caneditowner">{{ 'addon.mod_assign.submissionnoteditable' | translate }}</p>
-                        </ion-label>
-                    </ion-item>
                 </ng-template>
             </core-tab>
 
