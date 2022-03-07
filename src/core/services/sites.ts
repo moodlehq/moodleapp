@@ -338,12 +338,15 @@ export class CoreSitesProvider {
         }
 
         // Service supported but an error happened. Return error.
+        let critical = true;
+
         if (error.errorcode === 'codingerror') {
             // This could be caused by a redirect. Check if it's the case.
             const redirect = await CoreUtils.checkRedirect(siteUrl);
 
             if (redirect) {
                 error.message = Translate.instant('core.login.sitehasredirect');
+                critical = false; // Keep checking fallback URLs.
             } else {
                 // We can't be sure if there is a redirect or not. Display cannot connect error.
                 error.message = Translate.instant('core.cannotconnecttrouble');
@@ -351,12 +354,14 @@ export class CoreSitesProvider {
         } else if (error.errorcode === 'invalidrecord') {
             // WebService not found, site not supported.
             error.message = Translate.instant('core.login.invalidmoodleversion', { $a: CoreSite.MINIMUM_MOODLE_VERSION });
+        } else if (error.errorcode === 'redirecterrordetected') {
+            critical = false; // Keep checking fallback URLs.
         }
 
         return new CoreSiteError({
             message: error.message,
             errorcode: error.errorcode,
-            critical: true,
+            critical,
         });
     }
 
