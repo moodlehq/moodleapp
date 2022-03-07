@@ -797,10 +797,21 @@ export class CoreFormatTextDirective implements OnChanges {
 
         if (site && src) {
             // Check if it's a Vimeo video. If it is, use the wsplayer script instead to make restricted videos work.
-            const matches = iframe.src.match(/https?:\/\/player\.vimeo\.com\/video\/([0-9]+)/);
+            const matches = src.match(/https?:\/\/player\.vimeo\.com\/video\/([0-9]+)([?&]+h=([a-zA-Z0-9]*))?/);
             if (matches && matches[1]) {
                 let newUrl = CoreTextUtils.concatenatePaths(site.getURL(), '/media/player/vimeo/wsplayer.php?video=') +
                     matches[1] + '&token=' + site.getToken();
+
+                let privacyHash: string | undefined | null = matches[3];
+                if (!privacyHash) {
+                    // No privacy hash using the new format. Check the legacy format.
+                    const matches = src.match(/https?:\/\/player\.vimeo\.com\/video\/([0-9]+)(\/([a-zA-Z0-9]+))?/);
+                    privacyHash = matches && matches[3];
+                }
+
+                if (privacyHash) {
+                    newUrl += `&h=${privacyHash}`;
+                }
 
                 // Width and height are mandatory, we need to calculate them.
                 let width: string | number;
@@ -829,7 +840,7 @@ export class CoreFormatTextDirective implements OnChanges {
                     newUrl += '&width=' + width + '&height=' + height;
                 }
 
-                await CoreIframeUtils.fixIframeCookies(src);
+                await CoreIframeUtils.fixIframeCookies(newUrl);
 
                 iframe.src = newUrl;
 
