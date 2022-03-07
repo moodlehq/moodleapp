@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { Directive, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
 import { ScrollDetail } from '@ionic/core';
 import { IonContent } from '@ionic/angular';
 import { CoreUtils } from '@services/utils/utils';
@@ -33,6 +33,8 @@ import { CoreEventLoadingChangedData, CoreEventObserver, CoreEvents } from '@sin
     selector: '[collapsible-footer]',
 })
 export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
+
+    @Input() appearOnBottom = false;
 
     protected element: HTMLElement;
     protected initialHeight = 0;
@@ -127,7 +129,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
      */
     protected onScroll(scrollDetail: ScrollDetail, scrollElement: HTMLElement): void {
         const maxScroll = scrollElement.scrollHeight - scrollElement.offsetHeight;
-        if (scrollDetail.scrollTop <= 0 || scrollDetail.scrollTop >= maxScroll) {
+        if (scrollDetail.scrollTop <= 0 || (this.appearOnBottom && scrollDetail.scrollTop >= maxScroll)) {
             // Reset.
             this.setBarHeight(this.initialHeight);
         } else {
@@ -180,6 +182,9 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
         setTimeout(() => this.calculateHeight(), 200); // Try again, sometimes the first calculation is wrong.
 
         this.listenScrollEvents();
+
+        // Only if not present or explicitly falsy it will be false.
+        this.appearOnBottom = !CoreUtils.isFalseOrZero(this.appearOnBottom);
 
         // Recalculate the height if a parent core-loading displays the content.
         this.loadingChangedListener =

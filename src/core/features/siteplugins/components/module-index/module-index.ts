@@ -85,6 +85,8 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
      */
     size?: string;
 
+    collapsibleFooterAppearOnBottom = true;
+
     displayOpenInBrowser = true;
     displayDescription = true;
     displayRefresh = true;
@@ -133,6 +135,8 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
             this.displaySize = !CoreUtils.isFalseOrZero(handlerSchema.displaysize);
             this.displayGrades = CoreUtils.isTrueOrOne(handlerSchema.displaygrades); // False by default.
             this.ptrEnabled = !CoreUtils.isFalseOrZero(handlerSchema.ptrenabled);
+
+            this.collapsibleFooterAppearOnBottom = !CoreUtils.isFalseOrZero(handlerSchema.isresource);
         }
 
         // Get the data for the context menu.

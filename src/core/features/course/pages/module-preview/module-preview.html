@@ -45,6 +45,6 @@
         <core-course-unsupported-module *ngIf="unsupported" [module]="module"></core-course-unsupported-module>
     </core-loading>
 
-    <core-course-module-navigation collapsible-footer [hidden]="!loaded" [courseId]="courseId" [currentModuleId]="module.id">
+    <core-course-module-navigation collapsible-footer appearOnBottom [hidden]="!loaded" [courseId]="courseId" [currentModuleId]="module.id">
     </core-course-module-navigation>
 </ion-content>
