@@ -38,6 +38,7 @@ import { AddonModAssignHelper } from '../../services/assign-helper';
 import { AddonModAssignOffline } from '../../services/assign-offline';
 import { AddonModAssignSync } from '../../services/assign-sync';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreWSExternalFile } from '@services/ws';
 
 /**
  * Page that allows adding or editing an assigment submission.
@@ -61,6 +62,9 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
     submissionStatementAccepted = false; // Whether submission statement is accepted.
     loaded = false; // Whether data has been loaded.
     timeLimitEndTime = 0; // If time limit is enabled, the end time for the timer.
+    activityInstructions?: string; // Activity instructions.
+    introAttachments?: CoreWSExternalFile[]; // Intro attachments.
+    component = AddonModAssignProvider.COMPONENT;
 
     protected userId: number; // User doing the submission.
     protected isBlind = false; // Whether blind is used.
@@ -183,6 +187,20 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
             }
 
             submissionStatus = await this.startSubmissionIfNeeded(submissionStatus, options);
+
+            if (submissionStatus.assignmentdata?.activity) {
+                // There are activity instructions. Make sure to display it with filters applied.
+                const filteredSubmissionStatus = options.filter ?
+                    submissionStatus :
+                    await AddonModAssign.getSubmissionStatus(this.assign.id, {
+                        ...options,
+                        filter: true,
+                    });
+
+                this.activityInstructions = filteredSubmissionStatus.assignmentdata?.activity;
+            }
+
+            this.introAttachments = submissionStatus.assignmentdata?.attachments?.intro ?? this.assign.introattachments;
 
             this.allowOffline = true; // If offline isn't allowed we shouldn't have reached this point.
             // Only show submission statement if we are editing our own submission.

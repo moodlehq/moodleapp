@@ -101,19 +101,26 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
                     await AddonModAssignHelper.getSubmissionsUserData(assign, submissionData.submissions, 0, { siteId });
 
                 // Get all the files in the submissions.
-                const promises = submissions.map((submission) =>
-                    this.getSubmissionFiles(assign, submission.submitid!, !!submission.blindid, siteId).then((submissionFiles) => {
-                        files = files.concat(submissionFiles);
+                const promises = submissions.map(async (submission) => {
+                    try {
+                        const submissionFiles = await this.getSubmissionFiles(
+                            assign,
+                            submission.submitid!,
+                            !!submission.blindid,
+                            true,
+                            siteId,
+                        );
 
-                        return;
-                    }).catch((error) => {
+                        files = files.concat(submissionFiles);
+                    } catch (error) {
                         if (error && error.errorcode == 'nopermission') {
                             // The user does not have persmission to view this submission, ignore it.
                             return;
                         }
 
                         throw error;
-                    }));
+                    }
+                });
 
                 await Promise.all(promises);
             } else {
@@ -121,7 +128,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
                 const userId = CoreSites.getCurrentSiteUserId();
                 const blindMarking = !!assign.blindmarking && !assign.revealidentities;
 
-                const submissionFiles = await this.getSubmissionFiles(assign, userId, blindMarking, siteId);
+                const submissionFiles = await this.getSubmissionFiles(assign, userId, blindMarking, false, siteId);
                 files = files.concat(submissionFiles);
             }
 
@@ -138,6 +145,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
      * @param assign Assign.
      * @param submitId User ID of the submission to get.
      * @param blindMarking True if blind marking, false otherwise.
+     * @param canViewAllSubmissions Whether the user can view all submissions.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with array of files.
      */
@@ -145,6 +153,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
         assign: AddonModAssignAssign,
         submitId: number,
         blindMarking: boolean,
+        canViewAllSubmissions: boolean,
         siteId?: string,
     ): Promise<CoreWSFile[]> {
 
@@ -155,8 +164,15 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
         });
         const userSubmission = AddonModAssign.getSubmissionObjectFromAttempt(assign, submissionStatus.lastattempt);
 
+        // Get intro and activity files from the submission status if it's a student.
+        // It's ok if they were already obtained from the assignment instance, they won't be downloaded twice.
+        const files = canViewAllSubmissions ?
+            [] :
+            (submissionStatus.assignmentdata?.attachments?.intro || [])
+                .concat(submissionStatus.assignmentdata?.attachments?.activity || []);
+
         if (!submissionStatus.lastattempt || !userSubmission) {
-            return [];
+            return files;
         }
 
         const promises: Promise<CoreWSFile[]>[] = [];
@@ -177,7 +193,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
 
         const filesLists = await Promise.all(promises);
 
-        return [].concat.apply([], filesLists);
+        return files.concat.apply(files, filesLists);
     }
 
     /**
