@@ -65,4 +65,5 @@ export interface EnvironmentConfig {
     wsrequestqueuedelay: number; // Maximum number of miliseconds to wait before processing the queue.
     calendarreminderdefaultvalue: number; // Initial value for default reminders (in seconds). User can change it later.
     removeaccountonlogout?: boolean; // True to remove the account when the user clicks logout. Doesn't affect switch account.
+    uselegacycompletion?: boolean; // Whether to use legacy completion by default in all course formats.
 }

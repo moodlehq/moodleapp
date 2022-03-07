@@ -66,7 +66,9 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
      */
     async ngOnInit(): Promise<void> {
         this.modNameTranslated = CoreCourse.translateModuleName(this.module.modname) || '';
-        this.showLegacyCompletion = this.showLegacyCompletion ?? !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.11');
+        this.showLegacyCompletion = this.showLegacyCompletion ??
+            CoreConstants.CONFIG.uselegacycompletion ??
+            !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.11');
         this.checkShowManualCompletion();
 
         if (!this.module.handlerData) {
