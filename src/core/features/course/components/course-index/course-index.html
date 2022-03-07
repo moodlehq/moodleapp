@@ -24,8 +24,8 @@
             </ion-item>
             <ng-container *ngIf="allSectionId != section.id">
                 <ion-item class="divider section" (click)="selectSectionOrModule($event, section.id)" button
-                    [class.item-current]="selectedId === section.id" [class.item-dimmed]="section.visible === 0" detail="false"
-                    sticky="true">
+                    [class.item-current]="selectedId === section.id" [class.item-dimmed]="section.visible === 0"
+                    [class.item-hightlighted]="section.highlighted" detail="false" sticky="true">
                     <ion-icon *ngIf="section.hasVisibleModules" name="fas-chevron-right" flip-rtl slot="start"
                         class="expandable-status-icon" (click)="toggleExpand($event, section)"
                         [attr.aria-label]="(section.expanded ? 'core.collapse' : 'core.expand') | translate"
@@ -46,7 +46,7 @@
                 </ion-item>
                 <ng-container *ngIf="section.expanded">
                     <ng-container *ngFor="let module of section.modules">
-                        <ion-item class="module" [class.item-dimmed]="!module.visible"
+                        <ion-item class="module" [class.item-dimmed]="!module.visible" [class.item-hightlighted]="section.highlighted"
                             (click)="selectSectionOrModule($event, section.id, module.id)" button>
                             <ion-icon class="completioninfo completion_none" name="" *ngIf="module.completionStatus === undefined"
                                 slot="start" aria-hidden="true"></ion-icon>

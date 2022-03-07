@@ -11,56 +11,68 @@ core-progress-bar {
     }
 }
 
-ion-icon.completioninfo {
-    font-size: 10px;
-    width: 18px;
-}
-
-ion-item.module::part(native) {
-    --padding-start: 0;
-}
-
-ion-item.module ion-icon {
-    margin: 0;
-    @include padding(12px, 16px, 12px, 16px);
-}
-
-ion-item.core-course-index-all::part(native) {
-    --padding-start: 16px;
-}
-
-ion-item.item.item-current {
-    --background: var(--primary-tint);
-    border: 0;
-}
-
-ion-icon.restricted {
-    font-size: 14px;
-}
-
-ion-item.item.divider.section {
-    --padding-start: 0px;
+ion-item.item {
+    &.core-course-index-all::part(native) {
+        --padding-start: 16px;
+    }
 
     &.item-current {
-        ion-badge {
-            border: 1px solid var(--primary-contrast);
+        --background: var(--primary-tint);
+        border: 0;
+    }
+
+    &.item-hightlighted {
+        @include safe-area-border-start(var(--selected-item-border-width), solid,  var(--selected-item-color));
+    }
+
+    &.divider.section {
+        --padding-start: 0px;
+
+        &.item-current {
+            ion-icon.expandable-status-icon {
+                color: var(--primary-contrast);
+
+                &:hover {
+                    background: var(--primary-shade);
+                }
+            }
         }
 
         ion-icon.expandable-status-icon {
-            color: var(--primary-contrast);
-
+            padding: 13px;
+            margin: 3px;
+            border-radius: 50%;
             &:hover {
-                background: var(--primary-shade);
+                background: var(--gray-300);
             }
+        }
+
+        &.item-hightlighted ion-icon.expandable-status-icon {
+            @include margin-horizontal(-2px, null);
         }
     }
 
-    ion-icon.expandable-status-icon {
-        padding: 13px;
-        margin: 3px;
-        border-radius: 50%;
-        &:hover {
-            background: var(--gray-300);
+    &.module {
+        &::part(native) {
+            --padding-start: 0;
+        }
+
+        &.item-hightlighted ion-icon.completioninfo {
+            @include padding-horizontal(11px, null);
+        }
+    }
+
+    ion-icon {
+        margin: 0;
+        padding: 12px 16px;
+
+        &.completioninfo {
+            font-size: 10px;
+            width: 18px;
+        }
+
+        &.restricted {
+            font-size: 14px;
         }
     }
 }

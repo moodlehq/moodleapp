@@ -69,7 +69,8 @@
     --ion-background-color-rgb: #{$background-color-rgb};
     --ion-border-color: var(--stroke);
 
-    --core-input-stroke: var(--gray-400);
+    --core-input-stroke: var(--gray-500);
+    --core-input-text: var(--dark);
     --core-input-background: var(--ion-background-color);
     --core-input-radius: var(--small-radius);
     --core-input-border-width: 1px;
@@ -86,7 +87,7 @@
 
     --ion-text-color: var(--text-color);
     --ion-text-color-rgb: #{$text-color-rgb};
-    --subdued-text-color: var(--gray-700);
+    --subdued-text-color: var(--medium);
 
     --ion-card-color: var(--text-color);
     --ion-card-vertical-margin: 10px;
@@ -112,7 +113,7 @@
     }
 
     --core-bottom-tabs-background: var(--white);
-    --core-bottom-tabs-color: var(--gray-700);
+    --core-bottom-tabs-color: var(--dark);
     --core-bottom-tabs-color-selected: var(--primary);
     --core-bottom-tabs-background-selected: transparent;
     --core-bottom-tabs-badge-color: var(--primary);
@@ -135,7 +136,7 @@
     --core-header-toolbar-background: var(--white);
     --core-header-toolbar-border-width: 0px;
     --core-header-toolbar-border-color: var(--stroke);
-    --core-header-toolbar-color: var(--gray-900);
+    --core-header-toolbar-color: var(--text-color);
     --core-header-toolbar-height: 48px;
     html.ios {
         --core-header-toolbar-height: 48px;
@@ -191,10 +192,10 @@
     --core-search-box-background: var(--ion-background-color);
     --core-search-box-border-color: var(--core-input-stroke);
     --core-search-box-border-radius: var(--core-input-radius);
-    --core-search-box-color: var(--text-color);
+    --core-search-box-color: var(--core-input-text);
 
     --core-combobox-background: var(--core-input-background);
-    --core-combobox-color: var(--text-color);
+    --core-combobox-color: var(--core-input-text);
     --core-combobox-border-color: var(--core-input-stroke);
     --core-combobox-border-width: var(--core-input-border-width);
     --core-combobox-radius: var(--core-input-radius);
@@ -255,13 +256,19 @@
     --core-progressbar-background: var(--primary-tint);
 
     --ion-item-background:        #{$ion-item-background};
-    --ion-item-detail-icon-color: var(--medium);
+    --ion-item-icon-color: var(--medium);
+    --ion-item-detail-icon-color: var(--dark);
     --ion-item-detail-icon-font-size: 20px;
     --ion-item-detail-icon-opacity: 1;
+    --core-more-icon: var(--ion-item-icon-color);
     ion-item {
         --detail-icon-color: var(--ion-item-detail-icon-color);
         --detail-icon-font-size: var(--ion-item-detail-icon-font-size);
         --detail-icon-opacity: var(--ion-item-detail-icon-opacity);
+
+        > ion-icon[slot] {
+            color: var(--ion-item-icon-color);
+        }
     }
 
     --item-divider-min-height: calc(var(--a11y-min-target-size) + 8px);
@@ -309,13 +316,10 @@
     --core-large-avatar-size: 90px;
     --core-avatar-size: var(--a11y-min-target-size);
 
-    --core-send-message-input-background: var(--gray-200);
-    --core-send-message-input-color: var(--gray-900);
-
     --core-courseimage-on-course-size: 72px;
     --core-courseimage-radius: var(--medium-radius);
 
-    --core-navigation-height: 48px;
+    --core-collapsible-footer-height: 48px;
     --core-navigation-background: var(--contrast-background);
 
     --core-collapsible-footer-background: var(--contrast-background);

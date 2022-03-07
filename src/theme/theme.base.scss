@@ -298,6 +298,10 @@ button,
     min-width: var(--a11y-min-target-size);
 }
 
+ion-fab-button {
+    --box-shadow: 0 3px 5px -1px rgba(0, 0, 0, .2), 0 6px 10px 0 rgba(0, 0, 0, .14), 0 1px 18px 0 rgba(0, 0, 0, .12);
+}
+
 ion-button {
     margin: 4px 8px;
 
@@ -321,7 +325,8 @@ ion-button.button-outline {
     --border-width: var(--core-input-border-width);
     --border-color: var(--core-input-stroke);
     --background: var(--core-input-background);
-    --color: var(--text-color);
+    --color: var(--core-input-text);
+    --ion-color-primary: var(--core-input-text);
 }
 
 ion-button.button-solid {
@@ -371,7 +376,8 @@ ion-button.button.button-clear.button-has-icon-only {
 }
 
 ion-button.button.button-clear {
-    --color: var(--dark);
+    --color: var(--core-input-text);
+    --ion-color-primary: var(--core-input-text);
 }
 
 ion-button.button.button-solid,
@@ -936,7 +942,7 @@ ion-select-popover ion-item.core-select-option-title {
 
 ion-badge {
     line-height: 1.1;
-    padding: 4px 8px;
+    padding: 2px 8px;
     border-radius: var(--big-radius);
 }
 
@@ -1105,7 +1111,7 @@ ion-fab[core-fab] {
 }
 
 ion-content.has-collapsible-footer ion-fab {
-    bottom: calc(var(--core-navigation-height, 0px) + 10px);
+    bottom: calc(var(--core-collapsible-footer-height, 0px) + 10px);
     @include core-transition(all, 200ms);
 }
 

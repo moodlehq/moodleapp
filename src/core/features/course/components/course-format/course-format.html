@@ -24,21 +24,21 @@
 
             <core-infinite-loading [enabled]="canLoadMore" (action)="showMoreActivities($event)"></core-infinite-loading>
         </div>
-
-        <div class="ion-padding core-course-section-nav-buttons safe-area-padding-horizontal list-item-limited-width"
-            *ngIf="displayCourseIndex && (previousSection || nextSection)">
-            <ion-button *ngIf="previousSection" (click)="sectionChanged(previousSection)" expand="block"
-                [attr.aria-label]="('core.previous' | translate) + ': ' + previousSection.name">
-                <ion-icon name="fas-arrow-left" slot="start" aria-hidden="true"></ion-icon>
-                <core-format-text [text]="previousSection.name" contextLevel="course" [contextInstanceId]="course.id">
-                </core-format-text>
-            </ion-button>
-            <ion-button *ngIf="nextSection" (click)="sectionChanged(nextSection)" expand="block"
-                [attr.aria-label]="('core.next' | translate) + ': ' + nextSection.name">
-                <core-format-text [text]="nextSection.name" contextLevel="course" [contextInstanceId]="course.id">
-                </core-format-text>
-                <ion-icon name="fas-arrow-right" slot="end" aria-hidden="true"></ion-icon>
-            </ion-button>
+        <div collapsible-footer *ngIf="displayCourseIndex && (previousSection || nextSection)" slot="fixed">
+            <div class="core-course-section-nav-buttons safe-area-padding-horizontal list-item-limited-width">
+                <ion-button *ngIf="previousSection" (click)="sectionChanged(previousSection)" expand="block"
+                    [attr.aria-label]="('core.previous' | translate) + ': ' + previousSection.name">
+                    <ion-icon name="fas-arrow-left" slot="start" aria-hidden="true"></ion-icon>
+                    <core-format-text [text]="previousSection.name" contextLevel="course" [contextInstanceId]="course.id">
+                    </core-format-text>
+                </ion-button>
+                <ion-button *ngIf="nextSection" (click)="sectionChanged(nextSection)" expand="block"
+                    [attr.aria-label]="('core.next' | translate) + ': ' + nextSection.name">
+                    <core-format-text [text]="nextSection.name" contextLevel="course" [contextInstanceId]="course.id">
+                    </core-format-text>
+                    <ion-icon name="fas-arrow-right" slot="end" aria-hidden="true"></ion-icon>
+                </ion-button>
+            </div>
         </div>
     </core-loading>
 </core-dynamic-component>

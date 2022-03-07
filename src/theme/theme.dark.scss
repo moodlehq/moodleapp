@@ -36,18 +36,20 @@
     --text-color:               #{$text-color-dark};
     --ion-text-color:           var(--text-color);
     --ion-text-color-rgb:       #{$text-color-dark-rgb};
-    --subdued-text-color:       var(--gray-400);
+    --subdued-text-color:       var(--medium);
     --stroke:                   var(--gray-700);
 
     --contrast-background: black;
 
     --ion-card-color: var(--text-color);
     --ion-card-background: var(--ion-item-background);
+    --ion-card-border-color: var(--stroke);
 
     --ion-border-color: var(--stroke);
     --ion-item-border-color: var(--stroke);
 
-    --core-input-stroke: var(--gray-700);
+    --core-input-stroke: var(--gray-600);
+    --core-input-text: var(--dark);
     --core-input-background: var(--gray-900);
 
     ion-content {
@@ -68,7 +70,7 @@
     --core-link-color: var(--info-tint);
 
     --core-header-toolbar-background:   var(--gray-900);
-    --core-header-toolbar-color:        var(--white);
+    --core-header-toolbar-color:        var(--text-color);
     --core-header-toolbar-border-color: var(--stroke);
 
     --core-tabs-background: var(--gray-800);
@@ -80,9 +82,14 @@
     --core-progressbar-text-color: var(--gray-100);
 
     --ion-item-background: #{$ion-item-background-dark};
+    --ion-item-icon-color: var(--medium);
+    --ion-item-detail-icon-color: var(--dark);
+    --core-more-icon: var(--ion-item-icon-color);
+
     --item-divider-background: var(--ion-item-background);
     --item-divider-color: var(--text-color);
     --spacer-background: var(--gray-700);
+
 
     --ion-searchbar-background: var(--ion-background-color);
     --ion-searchbar-border-color: var(--core-input-stroke);
@@ -91,7 +98,7 @@
 
     --core-search-box-background: var(--ion-background-color);
     --core-search-box-border-color: var(--core-input-stroke);
-    --core-search-box-color: var(--text-color);
+    --core-search-box-color: var(--core-input-text);
 
     --core-combobox-background: var(--core-input-background);
     --core-combobox-color: var(--text-color);

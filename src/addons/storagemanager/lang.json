@@ -5,6 +5,7 @@
     "confirmdeletedatafrom": "Delete all downloaded data from '{{name}}'?",
     "coursedownloads": "Course downloads",
     "courseinfo": "Download course content to work offline. Your activity will sync automatically when your device is back online.",
+    "deleteall": "Delete all",
     "deleteallsitedata": "Delete all site downloaded data",
     "deleteallsitedatainfo": "This will delete all downloaded data from '{{name}}', including all downloaded courses and data that allows you to work offline.",
     "deletecourses": "Delete downloaded data from all courses",
