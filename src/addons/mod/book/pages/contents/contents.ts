@@ -69,7 +69,6 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
 
     loaded = false;
 
-    protected firstLoad = true;
     protected managerUnsubscribe?: () => void;
 
     /**
@@ -272,10 +271,6 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async onChapterViewed(chapterId: number): Promise<void> {
-        // Don't log the chapter ID when the user has just opened the book.
-        const logChapterId = this.firstLoad;
-        this.firstLoad = false;
-
         if (this.displayNavBar) {
             this.navigationItems = this.getNavigationItems(chapterId);
         }
@@ -289,11 +284,7 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
         }
 
         // Chapter loaded, log view.
-        await CoreUtils.ignoreErrors(AddonModBook.logView(
-            this.module.instance,
-            logChapterId ? chapterId : undefined,
-            this.module.name,
-        ));
+        await CoreUtils.ignoreErrors(AddonModBook.logView(this.module.instance, chapterId, this.module.name));
 
         const currentChapterIndex = this.chapters.findIndex((chapter) => chapter.id == chapterId);
         const isLastChapter = currentChapterIndex < 0 || this.chapters[currentChapterIndex + 1] === undefined;
