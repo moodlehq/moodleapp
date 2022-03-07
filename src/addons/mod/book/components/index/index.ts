@@ -18,6 +18,7 @@ import { AddonModBook, AddonModBookBookWSData, AddonModBookNumbering, AddonModBo
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
+import { CoreUtils } from '@services/utils/utils';
 
 /**
  * Component that displays a book entry page.
@@ -47,6 +48,9 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
         super.ngOnInit();
 
         this.loadContent();
+
+        // Log book viewed.
+        await CoreUtils.ignoreErrors(AddonModBook.logView(this.module.instance, undefined, this.module.name));
     }
 
     /**
