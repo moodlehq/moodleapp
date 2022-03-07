@@ -23,9 +23,10 @@
 
                 <div class="core-module-additional-info">
                     <!-- Basic module completion. -->
-                    <core-course-module-completion *ngIf="module.completiondata && module.uservisible" [completion]="module.completiondata"
-                        [moduleName]="module.name" [moduleId]="module.id" [showCompletionConditions]="showCompletionConditions"
-                        [showManualCompletion]="showManualCompletion" (completionChanged)="completionChanged.emit($event)" mode="basic">
+                    <core-course-module-completion *ngIf="module.completiondata && module.uservisible && !showLegacyCompletion"
+                        [completion]="module.completiondata" [moduleName]="module.name" [moduleId]="module.id"
+                        [showCompletionConditions]="showCompletionConditions" [showManualCompletion]="showManualCompletion"
+                        (completionChanged)="completionChanged.emit($event)" mode="basic">
                     </core-course-module-completion>
 
                     <ion-chip *ngIf="module.handlerData.extraBadge" [color]="module.handlerData.extraBadgeColor"
@@ -71,8 +72,9 @@
                 </core-format-text>
 
                 <!-- Module completion. Only auto conditions-->
-                <core-course-module-completion *ngIf="autoCompletionTodo && module.uservisible" [completion]="module.completiondata"
-                    [moduleName]="module.name" [moduleId]="module.id" [showCompletionConditions]="showCompletionConditions">
+                <core-course-module-completion *ngIf="autoCompletionTodo && module.uservisible && !showLegacyCompletion"
+                    [completion]="module.completiondata" [moduleName]="module.name" [moduleId]="module.id"
+                    [showCompletionConditions]="showCompletionConditions">
                 </core-course-module-completion>
 
                 <div class="core-module-dates-availabilityinfo"
