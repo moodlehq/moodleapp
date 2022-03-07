@@ -13,14 +13,6 @@
         <ng-content select="[title]"></ng-content>
     </ion-label>
 </ion-item>
-<ion-item class="ion-text-wrap" *ngIf="description">
-    <ion-label>
-        <core-format-text [text]="description" [component]="component" [componentId]="componentId" contextLevel="module"
-            [contextInstanceId]="module.id" [courseId]="courseId" [maxHeight]="expandDescription ? null : 120">
-        </core-format-text>
-    </ion-label>
-</ion-item>
-<ng-content select="[description]"></ng-content>
 
 <!-- Module completion. -->
 <ion-item class="ion-text-wrap"
@@ -50,6 +42,15 @@
         </core-format-text>
     </div>
 </div>
+
+<ion-item class="ion-text-wrap" *ngIf="description">
+    <ion-label>
+        <core-format-text [text]="description" [component]="component" [componentId]="componentId" contextLevel="module"
+            [contextInstanceId]="module.id" [courseId]="courseId" [maxHeight]="expandDescription ? null : 120">
+        </core-format-text>
+    </ion-label>
+</ion-item>
+<ng-content select="[description]"></ng-content>
 
 <ng-content></ng-content>
 
