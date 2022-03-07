@@ -1428,6 +1428,16 @@ ion-grid.core-no-grid > ion-row {
         --core-collapsible-footer-height: 0;
         opacity: 0;
     }
+    &.has-module-nav.footer-collapsed {
+        --core-collapsible-footer-height: auto;
+        opacity: 1;
+        core-course-module-navigation {
+            height: 0;
+            opacity: 0;
+            @include core-transition(all, 200ms);
+        }
+
+    }
     &.footer-expanded {
         --core-collapsible-footer-height: auto;
     }

@@ -38,6 +38,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
 
     protected element: HTMLElement;
     protected initialHeight = 0;
+    protected finalHeight = 0;
     protected initialPaddingBottom = '0px';
     protected previousTop = 0;
     protected previousHeight = 0;
@@ -60,6 +61,12 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
 
         // Set a minimum height value.
         this.initialHeight = this.element.getBoundingClientRect().height || 48;
+        const moduleNav = this.element.querySelector('core-course-module-navigation');
+        if (moduleNav) {
+            this.element.classList.add('has-module-nav');
+            this.finalHeight = this.initialHeight - (moduleNav.getBoundingClientRect().height);
+        }
+
         this.previousHeight = this.initialHeight;
 
         this.content?.style.setProperty('--core-collapsible-footer-max-height', this.initialHeight + 'px');
@@ -134,7 +141,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
             this.setBarHeight(this.initialHeight);
         } else {
             let newHeight = this.previousHeight - (scrollDetail.scrollTop - this.previousTop);
-            newHeight = CoreMath.clamp(newHeight, 0, this.initialHeight);
+            newHeight = CoreMath.clamp(newHeight, this.finalHeight, this.initialHeight);
 
             this.setBarHeight(newHeight);
         }
@@ -151,12 +158,14 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
             clearTimeout(this.endAnimationTimeout);
         }
 
-        this.element.classList.toggle('footer-collapsed', height <= 0);
-        this.element.classList.toggle('footer-expanded', height >= this.initialHeight);
+        const collapsed = height <= this.finalHeight;
+        const expanded = height >= this.initialHeight;
+        this.element.classList.toggle('footer-collapsed', collapsed);
+        this.element.classList.toggle('footer-expanded', expanded);
         this.content?.style.setProperty('--core-collapsible-footer-height', height + 'px');
         this.previousHeight = height;
 
-        if (height > 0 && height < this.initialHeight) {
+        if (!collapsed && !expanded) {
             // Finish opening or closing the bar.
             this.endAnimationTimeout = window.setTimeout(() => this.endAnimation(height), 500);
         }
@@ -168,7 +177,9 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
      * @param height Last height used.
      */
     protected endAnimation(height: number): void {
-        const newHeight = height < this.initialHeight / 2 ? 0 : this.initialHeight;
+        const newHeight = (height - this.finalHeight) < (this.initialHeight - this.finalHeight) / 2
+            ? this.finalHeight
+            : this.initialHeight;
 
         this.setBarHeight(newHeight);
     }
