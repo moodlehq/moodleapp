@@ -47,11 +47,11 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     @Input() section?: CoreCourseSection; // The section the module belongs to.
     @Input() showActivityDates = false; // Whether to show activity dates.
     @Input() showCompletionConditions = false; // Whether to show activity completion conditions.
+    @Input() showLegacyCompletion?: boolean; // Whether to show module completion in the old format.
     @Output() completionChanged = new EventEmitter<CoreCourseModuleCompletionData>(); // Notify when module completion changes.
 
     modNameTranslated = '';
     hasInfo = false;
-    showLegacyCompletion = false; // Whether to show module completion in the old format.
     showManualCompletion = false; // Whether to show manual completion when completion conditions are disabled.
     prefetchStatusIcon = ''; // Module prefetch status icon.
     prefetchStatusText = ''; // Module prefetch status text.
@@ -66,7 +66,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
      */
     async ngOnInit(): Promise<void> {
         this.modNameTranslated = CoreCourse.translateModuleName(this.module.modname) || '';
-        this.showLegacyCompletion = !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.11');
+        this.showLegacyCompletion = this.showLegacyCompletion ?? !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.11');
         this.checkShowManualCompletion();
 
         if (!this.module.handlerData) {
