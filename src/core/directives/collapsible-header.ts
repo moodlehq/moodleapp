@@ -378,7 +378,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
 
             if (progress > 0 && progress < 1) {
                 // Finish opening or closing the bar.
-                this.endAnimationTimeout = window.setTimeout(() => this.endAnimation(progress), 500);
+                this.endAnimationTimeout = window.setTimeout(() => this.endAnimation(progress, contentScroll.scrollTop), 500);
             }
         });
     }
@@ -387,8 +387,9 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
      * End of animation when stop scrolling.
      *
      * @param progress Progress.
+     * @param scrollTop Current ScrollTop position.
      */
-    protected endAnimation(progress: number): void {
+    protected endAnimation(progress: number, scrollTop: number): void {
         if(!this.page) {
             return;
         }
@@ -397,6 +398,14 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
 
         this.page.style.setProperty('--collapsible-header-progress', collapse ? '1' : '0');
         this.page.classList.toggle('is-collapsed', collapse);
+
+        if (collapse && this.scrollingHeight && this.scrollingHeight > 0 && scrollTop < this.scrollingHeight) {
+            this.content?.scrollToPoint(null, this.scrollingHeight);
+        }
+
+        if (!collapse && this.scrollingHeight && this.scrollingHeight > 0 && scrollTop > 0) {
+            this.content?.scrollToPoint(null, 0);
+        }
     }
 
 }
