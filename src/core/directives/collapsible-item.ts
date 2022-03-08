@@ -46,6 +46,7 @@ export class CoreCollapsibleItemDirective implements OnInit {
     protected toggleExpandEnabled = false;
     protected expanded = false;
     protected maxHeight = defaultMaxHeight;
+    protected expandedHeight = 0;
     protected loadingChangedListener?: CoreEventObserver;
 
     constructor(el: ElementRef<HTMLElement>) {
@@ -72,9 +73,10 @@ export class CoreCollapsibleItemDirective implements OnInit {
             return;
         }
 
+        this.element.classList.add('collapsible-item');
+
         // Calculate the height now.
         await this.calculateHeight();
-        setTimeout(() => this.calculateHeight(), 200); // Try again, sometimes the first calculation is wrong.
 
         // Recalculate the height if a parent core-loading displays the content.
         this.loadingChangedListener =
@@ -82,7 +84,6 @@ export class CoreCollapsibleItemDirective implements OnInit {
                 if (data.loaded && CoreDomUtils.closest(this.element.parentElement, '#' + data.uniqueId)) {
                     // The element is inside the loading, re-calculate the height.
                     await this.calculateHeight();
-                    setTimeout(() => this.calculateHeight(), 200);
                 }
             });
     }
@@ -93,9 +94,15 @@ export class CoreCollapsibleItemDirective implements OnInit {
      * @param element Element.
      */
     protected async waitFormatTextsRendered(element: Element): Promise<void> {
-        const formatTexts = Array
-            .from(element.querySelectorAll('core-format-text'))
-            .map(element => CoreComponentsRegistry.resolve(element, CoreFormatTextDirective));
+        let formatTextElements: HTMLElement[] = [];
+
+        if (this.element.tagName == 'CORE-FORMAT-TEXT') {
+            formatTextElements = [this.element];
+        } else {
+            formatTextElements = Array.from(element.querySelectorAll('core-format-text'));
+        }
+
+        const formatTexts = formatTextElements.map(element => CoreComponentsRegistry.resolve(element, CoreFormatTextDirective));
 
         await Promise.all(formatTexts.map(formatText => formatText?.rendered()));
     }
@@ -103,22 +110,25 @@ export class CoreCollapsibleItemDirective implements OnInit {
     /**
      * Calculate the height and check if we need to display show more or not.
      */
-    protected async calculateHeight(): Promise<void> {
-        await this.waitFormatTextsRendered(this.element);
-
+    protected async calculateHeight(retries = 3): Promise<void> {
         // Remove max-height (if any) to calculate the real height.
-        const initialMaxHeight = this.element.style.maxHeight;
-        this.element.style.maxHeight = 'none';
+        this.element.classList.add('collapsible-loading-height');
+
+        await this.waitFormatTextsRendered(this.element);
 
         await CoreUtils.nextTick();
 
-        const height = CoreDomUtils.getElementHeight(this.element) || 0;
+        this.expandedHeight = CoreDomUtils.getElementHeight(this.element) || 0;
 
         // Restore the max height now.
-        this.element.style.maxHeight = initialMaxHeight;
+        this.element.classList.remove('collapsible-loading-height');
 
         // If cannot calculate height, shorten always.
-        this.setExpandButtonEnabled(!height || height >= this.maxHeight);
+        this.setExpandButtonEnabled(!this.expandedHeight || this.expandedHeight >= this.maxHeight);
+
+        if (this.expandedHeight == 0 && retries > 0) {
+            setTimeout(() => this.calculateHeight(retries - 1), 200);
+        }
     }
 
     /**
@@ -163,8 +173,11 @@ export class CoreCollapsibleItemDirective implements OnInit {
     protected setMaxHeight(maxHeight?: number): void {
         if (maxHeight) {
             this.element.style.setProperty('--max-height', maxHeight + buttonHeight + 'px');
+        } else if (this.expandedHeight) {
+            this.element.style.setProperty('--max-height', this.expandedHeight + 'px');
         } else {
             this.element.style.removeProperty('--max-height');
+
         }
     }
 
@@ -195,7 +208,7 @@ export class CoreCollapsibleItemDirective implements OnInit {
      *
      * @param e Click event.
      */
-    protected elementClicked(e: MouseEvent): void {
+    elementClicked(e: MouseEvent): void {
         if (e.defaultPrevented) {
             // Ignore it if the event was prevented by some other listener.
             return;

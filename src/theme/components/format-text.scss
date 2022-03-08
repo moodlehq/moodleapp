@@ -48,14 +48,6 @@ core-format-text {
             opacity: 0;
             display: inline;
         }
-
-        .collapsible-toggle {
-            display: none !important;
-        }
-    }
-
-    .collapsible-toggle {
-        display: none;
     }
 
     .core-format-text-content {
@@ -68,33 +60,20 @@ core-format-text {
         word-wrap: break-word;
     }
 
-    &[maxHeight],
-    &[ng-reflect-max-height] {
+    &.collapsible-item {
         display: block;
-        position: relative;
-        width: 100%;
-        overflow: hidden;
-
-        /* Force display inline */
-        &.inline {
-            display: inline-block;
-            width: auto;
-        }
-
         // This is to allow clicks in radio/checkbox content.
-        &.collapsible-enabled {
-            cursor: pointer;
-            pointer-events: auto;
+        cursor: pointer;
+        pointer-events: auto;
 
-            @include collapsible-item();
+        .core-format-text-content {
+            display: block;
         }
-    }
 
-    @if ($core-format-text-never-shorten) {
-        &[maxHeight],
-        &[ng-reflect-max-height] {
-            &.collapsible-enabled.collapsible-expanded {
-                max-height: none !important;
+        @if ($core-format-text-never-shorten) {
+            &.collapsible-enabled {
+                --display-toggle: none !important;
+                --max-height: none !important;
 
                 .collapsible-toggle {
                     display: none !important;

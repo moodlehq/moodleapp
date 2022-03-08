@@ -87,7 +87,7 @@
                         <ion-label>
                             <h3 class="item-heading">{{ 'addon.mod_lesson.question' | translate }}</h3>
                             <p>
-                                <core-format-text [component]="component" [componentId]="lesson?.coursemodule" [maxHeight]="50"
+                                <core-format-text [component]="component" [componentId]="lesson?.coursemodule" [collapsible-item]="50"
                                     [text]="page.contents" contextLevel="module" [contextInstanceId]="lesson?.coursemodule"
                                     [courseId]="courseId">
                                 </core-format-text>

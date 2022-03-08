@@ -1419,10 +1419,6 @@ ion-grid.core-no-grid > ion-row {
     right: 0;
 }
 
-[collapsible-item] {
-    @include collapsible-item();
-}
-
 [collapsible-footer] {
     &.footer-collapsed {
         --core-collapsible-footer-height: 0;
