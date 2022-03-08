@@ -23,14 +23,6 @@
 
         <!-- Review summary -->
         <ion-card *ngIf="attempt">
-            <ion-card-header class="ion-text-wrap">
-                <ion-card-title>
-                    <ng-container *ngIf="attempt.preview">{{ 'addon.mod_quiz.reviewofpreview' | translate }}</ng-container>
-                    <ng-container *ngIf="!attempt.preview">
-                        {{ 'addon.mod_quiz.reviewofattempt' | translate:{$a: attempt.attempt} }}
-                    </ng-container>
-                </ion-card-title>
-            </ion-card-header>
             <ion-list>
                 <ion-item class="ion-text-wrap">
                     <ion-label>

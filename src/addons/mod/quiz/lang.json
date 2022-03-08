@@ -57,8 +57,6 @@
     "requirepasswordmessage": "To attempt this quiz you need to know the quiz password",
     "returnattempt": "Return to attempt",
     "review": "Review",
-    "reviewofattempt": "Review of attempt {{$a}}",
-    "reviewofpreview": "Review of preview",
     "showall": "Show all questions on one page",
     "showeachpage": "Show one page at a time",
     "startattempt": "Start attempt",
