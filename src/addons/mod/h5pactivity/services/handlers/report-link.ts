@@ -20,6 +20,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
+import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { AddonModH5PActivity } from '../h5pactivity';
 import { AddonModH5PActivityModuleHandlerService } from './module';
@@ -60,7 +61,7 @@ export class AddonModH5PActivityReportLinkHandlerService extends CoreContentLink
                     } else {
                         const userId = params.userid ? Number(params.userid) : undefined;
 
-                        this.openUserAttempts(module.id, module.course, siteId, userId);
+                        await this.openUserAttempts(module.id, module.course, instanceId, siteId, userId);
                     }
                 } catch (error) {
                     CoreDomUtils.showErrorModalDefault(error, 'Error processing link.');
@@ -100,13 +101,35 @@ export class AddonModH5PActivityReportLinkHandlerService extends CoreContentLink
      *
      * @param cmId Module ID.
      * @param courseId Course ID.
+     * @param id Instance ID.
      * @param siteId Site ID.
      * @param userId User ID. If not defined, current user in site.
      * @return Promise resolved when done.
      */
-    protected openUserAttempts(cmId: number, courseId: number, siteId: string, userId?: number): void {
-        userId = userId || CoreSites.getCurrentSiteUserId();
-        const path = AddonModH5PActivityModuleHandlerService.PAGE_NAME + `/${courseId}/${cmId}/userattempts/${userId}`;
+    protected async openUserAttempts(cmId: number, courseId: number, id: number, siteId: string, userId?: number): Promise<void> {
+        let canViewAllAttempts = false;
+
+        if (!userId) {
+            // No user ID specified. Check if current user can view all attempts.
+            userId = CoreSites.getCurrentSiteUserId();
+            canViewAllAttempts = await AddonModH5PActivity.canGetUsersAttempts(siteId);
+
+            if (canViewAllAttempts) {
+                const accessInfo = await CoreUtils.ignoreErrors(AddonModH5PActivity.getAccessInformation(id, {
+                    cmId,
+                    siteId,
+                }));
+
+                canViewAllAttempts = !!accessInfo?.canreviewattempts;
+            }
+        }
+
+        let path: string;
+        if (canViewAllAttempts) {
+            path = `${AddonModH5PActivityModuleHandlerService.PAGE_NAME}/${courseId}/${cmId}/users`;
+        } else {
+            path = `${AddonModH5PActivityModuleHandlerService.PAGE_NAME}/${courseId}/${cmId}/userattempts/${userId}`;
+        }
 
         CoreNavigator.navigateToSitePath(path, {
             siteId,
