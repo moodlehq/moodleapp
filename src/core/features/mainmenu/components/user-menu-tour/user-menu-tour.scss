@@ -1,0 +1,26 @@
+:host {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    max-width: 85vw;
+    align-items: center;
+    flex-direction: column;
+
+    img {
+        width: calc(100vw - var(--core-avatar-size) * 2 - 16px);
+        margin-top: 12px;
+    }
+
+    p {
+        text-align: center;
+    }
+
+    ion-button {
+        width: 100%;
+    }
+
+}
+
+:host-context([dir=rtl]) img {
+    transform: scaleX(-1);
+}
