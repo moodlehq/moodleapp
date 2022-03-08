@@ -34,6 +34,8 @@ export interface EnvironmentConfig {
     languages: Record<string, string>;
     databaseOptimizations?: Partial<CoreDatabaseConfiguration>;
     databaseTableOptimizations?: Record<string, Partial<CoreDatabaseConfiguration>>;
+    disableUserTours?: boolean;
+    disabledUserTours?: string[];
     wsservice: string;
     demo_sites: Record<string, CoreSitesDemoSiteData>;
     zoomlevels: Record<CoreZoomLevel, number>;

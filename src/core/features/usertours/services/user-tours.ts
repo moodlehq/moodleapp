@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreConstants } from '@/core/constants';
 import { asyncInstance } from '@/core/utils/async-instance';
 import { Injectable } from '@angular/core';
 import { CoreDatabaseTable } from '@classes/database/database-table';
@@ -60,6 +61,10 @@ export class CoreUserToursService {
      * @returns Whether the User Tour is pending or not.
      */
     async isPending(id: string): Promise<boolean> {
+        if (CoreConstants.CONFIG.disableUserTours || CoreConstants.CONFIG.disabledUserTours?.includes(id)) {
+            return false;
+        }
+
         const isAcknowledged = await this.table.hasAnyByPrimaryKey({ id });
 
         return !isAcknowledged;
