@@ -19,28 +19,28 @@
     <ion-list class="list-item-limited-width">
         <ion-item class="ion-text-wrap">
             <ion-label>
-                <h2>{{ 'core.settings.textdirection' | translate }}</h2>
+                <h2>Text direction</h2>
                 <p>{{ direction }}</p>
             </ion-label>
             <ion-toggle [(ngModel)]="rtl" (ionChange)="RTLChanged()"></ion-toggle>
         </ion-item>
         <ion-item class="ion-text-wrap">
             <ion-label>
-                <h2>{{ 'core.settings.forcesafeareamargins' | translate }}</h2>
+                <h2>Force safe area margins</h2>
             </ion-label>
             <ion-toggle [(ngModel)]="forceSafeAreaMargins" (ionChange)="safeAreaChanged()"></ion-toggle>
         </ion-item>
         <ng-container *ngIf="siteId">
             <ion-item class="ion-text-wrap">
                 <ion-label>
-                    <h2>{{ 'core.settings.remotestyles' | translate }} <ion-badge>{{remoteStylesCount}}</ion-badge>
+                    <h2>Enable remote styles <ion-badge>{{remoteStylesCount}}</ion-badge>
                     </h2>
                 </ion-label>
                 <ion-toggle [(ngModel)]="remoteStyles" (ionChange)="remoteStylesChanged()"></ion-toggle>
             </ion-item>
             <ion-item class="ion-text-wrap">
                 <ion-label>
-                    <h2>{{ 'core.settings.pluginstyles' | translate }} <ion-badge>{{pluginStylesCount}}</ion-badge>
+                    <h2>Enable site plugin styles <ion-badge>{{pluginStylesCount}}</ion-badge>
                     </h2>
                 </ion-label>
                 <ion-toggle [(ngModel)]="pluginStyles" (ionChange)="pluginStylesChanged()"></ion-toggle>
@@ -48,7 +48,7 @@
 
             <ion-item-divider>
                 <ion-label>
-                    <h2>{{ 'core.settings.disabledfeatures' | translate }}</h2>
+                    <h2>Disabled features</h2>
                 </ion-label>
             </ion-item-divider>
             <ion-item class="ion-text-wrap" *ngFor="let feature of disabledFeatures">
@@ -59,7 +59,7 @@
 
             <ion-item-divider>
                 <ion-label>
-                    <h2>{{ 'core.settings.siteplugins' | translate }}</h2>
+                    <h2>Site plugins</h2>
                 </ion-label>
             </ion-item-divider>
             <ion-item class="ion-text-wrap" *ngFor="let plugin of sitePlugins">
