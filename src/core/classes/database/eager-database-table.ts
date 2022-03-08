@@ -137,6 +137,13 @@ export class CoreEagerDatabaseTable<
     /**
      * @inheritdoc
      */
+    async hasAnyByPrimaryKey(primaryKey: PrimaryKey): Promise<boolean> {
+        return this.serializePrimaryKey(primaryKey) in this.records;
+    }
+
+    /**
+     * @inheritdoc
+     */
     async count(conditions?: Partial<DBRecord>): Promise<number> {
         return conditions
             ? Object.values(this.records).filter(record => this.recordMatches(record, conditions)).length

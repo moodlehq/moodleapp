@@ -220,6 +220,23 @@ export class CoreDatabaseTable<
     }
 
     /**
+     * Check whether the table has any record matching the given primary key.
+     *
+     * @param primaryKey Record primary key.
+     * @returns Whether the table contains a record matching the given primary key.
+     */
+    async hasAnyByPrimaryKey(primaryKey: PrimaryKey): Promise<boolean> {
+        try {
+            await this.getOneByPrimaryKey(primaryKey);
+
+            return true;
+        } catch (error) {
+            // Couldn't get the record.
+            return false;
+        }
+    }
+
+    /**
      * Count records in table.
      *
      * @param conditions Matching conditions.

@@ -139,7 +139,6 @@ const appConfig = {
             'always',
         ],
         '@typescript-eslint/type-annotation-spacing': 'error',
-        '@typescript-eslint/unified-signatures': 'error',
         'header/header': [
             2,
             'line',

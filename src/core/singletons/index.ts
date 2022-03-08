@@ -12,13 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AbstractType, ApplicationInitStatus, ApplicationRef, Injector, NgZone as NgZoneService, Type } from '@angular/core';
+import {
+    AbstractType,
+    ApplicationInitStatus,
+    ApplicationRef,
+    ComponentFactoryResolver as ComponentFactoryResolverService,
+    Injector,
+    NgZone as NgZoneService,
+    Type,
+} from '@angular/core';
 import { Router as RouterService } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { DomSanitizer as DomSanitizerService } from '@angular/platform-browser';
 
 import {
     Platform as PlatformService,
+    AngularDelegate as AngularDelegateService,
     AlertController as AlertControllerService,
     LoadingController as LoadingControllerService,
     ModalController as ModalControllerService,
@@ -58,11 +67,13 @@ import { Zip as ZipService } from '@ionic-native/zip/ngx';
 import { TranslateService } from '@ngx-translate/core';
 
 import { CoreApplicationInitStatus } from '@classes/application-init-status';
+import { asyncInstance } from '@/core/utils/async-instance';
+import { CorePromisedValue } from '@classes/promised-value';
 
 /**
  * Injector instance used to resolve singletons.
  */
-let singletonsInjector: Injector | null = null;
+const singletonsInjector = new CorePromisedValue<Injector>();
 
 /**
  * Helper to create a method that proxies calls to the underlying singleton instance.
@@ -87,7 +98,7 @@ export type CoreSingletonProxy<Service = unknown> = Service & {
  * @param injector Module injector.
  */
 export function setSingletonsInjector(injector: Injector): void {
-    singletonsInjector = injector;
+    singletonsInjector.resolve(injector);
 }
 
 /**
@@ -127,11 +138,13 @@ export function makeSingleton<Service extends object = object>( // eslint-disabl
 
     Object.defineProperty(singleton, 'instance', {
         get: () => {
-            if (!singletonsInjector) {
+            const injector = singletonsInjector.value;
+
+            if (!injector) {
                 throw new Error('Can\'t resolve a singleton instance without an injector');
             }
 
-            const instance = singletonsInjector.get(injectionToken);
+            const instance = injector.get(injectionToken);
 
             singleton.setInstance(instance);
 
@@ -194,7 +207,9 @@ export const NgZone = makeSingleton(NgZoneService);
 export const Http = makeSingleton(HttpClient);
 export const Platform = makeSingleton(PlatformService);
 export const ActionSheetController = makeSingleton(ActionSheetControllerService);
+export const AngularDelegate = makeSingleton(AngularDelegateService);
 export const AlertController = makeSingleton(AlertControllerService);
+export const ComponentFactoryResolver = makeSingleton(ComponentFactoryResolverService);
 export const LoadingController = makeSingleton(LoadingControllerService);
 export const ModalController = makeSingleton(ModalControllerService);
 export const PopoverController = makeSingleton(PopoverControllerService);
@@ -208,3 +223,10 @@ export const DomSanitizer = makeSingleton(DomSanitizerService);
 
 // Convert external libraries injectables.
 export const Translate = makeSingleton(TranslateService);
+
+// Async singletons.
+export const AngularFrameworkDelegate = asyncInstance(async () => {
+    const injector = await singletonsInjector;
+
+    return AngularDelegate.create(ComponentFactoryResolver.instance, injector);
+});

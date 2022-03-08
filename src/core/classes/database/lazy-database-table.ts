@@ -128,6 +128,15 @@ export class CoreLazyDatabaseTable<
     /**
      * @inheritdoc
      */
+    async hasAnyByPrimaryKey(primaryKey: PrimaryKey): Promise<boolean> {
+        const record = this.records[this.serializePrimaryKey(primaryKey)] ?? null;
+
+        return record !== null;
+    }
+
+    /**
+     * @inheritdoc
+     */
     async insert(record: DBRecord): Promise<void> {
         await super.insert(record);
 
