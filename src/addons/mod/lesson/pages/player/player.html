@@ -75,12 +75,11 @@
 
                         <!-- Short answer. -->
                         <ion-item class="ion-text-wrap" *ngSwitchCase="'shortanswer'">
-                            <ion-label>
-                                <ion-input [type]="question.input!.type" placeholder="{{ 'addon.mod_lesson.youranswer' | translate }}"
-                                    [id]="question.input!.id" [formControlName]="question.input!.name" autocorrect="off"
-                                    [maxlength]="question.input!.maxlength">
-                                </ion-input>
-                            </ion-label>
+                            <ion-label class="sr-only" stacked></ion-label>
+                            <ion-input [type]="question.input!.type" placeholder="{{ 'addon.mod_lesson.youranswer' | translate }}"
+                                [id]="question.input!.id" [formControlName]="question.input!.name" autocorrect="off"
+                                [maxlength]="question.input!.maxlength">
+                            </ion-input>
                         </ion-item>
 
                         <!-- Essay. -->
