@@ -79,7 +79,7 @@
         </ion-list>
     </ng-container>
 
-    <div collapsible-footer *ngIf="!showLoading" slot="fixed">
+    <div collapsible-footer appearOnBottom *ngIf="!showLoading" slot="fixed">
         <div class="list-item-limited-width" *ngIf="mode == 'external'">
             <ion-button expand="block" (click)="open(openFileAction.OPEN)" class="ion-margin ion-text-wrap">
                 <ng-container *ngIf="isStreamedFile">

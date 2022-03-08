@@ -3,13 +3,15 @@
         <ion-col size="auto" class="ion-no-padding core-course-module-navigation-arrow">
             <ion-button fill="clear" class="core-course-previous-module" [disabled]="!previousModule" (click)="goToActivity(false)"
                 [attr.aria-label]="'core.course.gotopreviousactivity' | translate">
-                <ion-icon name="fas-arrow-left" slot="icon-only" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-arrow-left" slot="start" aria-hidden="true"></ion-icon>
+                {{ 'core.previous' | translate }}
             </ion-button>
         </ion-col>
         <ion-col size="auto" class="ion-no-padding core-course-module-navigation-arrow">
             <ion-button fill="clear" class="core-course-next-module" [disabled]="!nextModule" (click)="goToActivity(true)"
                 [attr.aria-label]="'core.course.gotonextactivity' | translate">
-                <ion-icon name="fas-arrow-right" slot="icon-only" aria-hidden="true"></ion-icon>
+                {{ 'core.next' | translate }}
+                <ion-icon name="fas-arrow-right" slot="end" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-col>
     </ion-row>

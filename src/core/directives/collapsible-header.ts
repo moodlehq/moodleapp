@@ -363,8 +363,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
             }
 
             const scrollableHeight = contentScroll.scrollHeight - contentScroll.clientHeight;
-            const collapsedHeight = expandedHeaderHeight - (expandedHeader.clientHeight ?? 0);
-            const frozen = scrollableHeight + collapsedHeight <= 2 * expandedHeaderHeight;
+            const frozen = scrollableHeight <=  scrollingHeight;
             const progress = frozen
                 ? 0
                 :  CoreMath.clamp(contentScroll.scrollTop / scrollingHeight, 0, 1);
@@ -377,9 +376,9 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
                 .entries(progress > .5 ? collapsedFontStyles : expandedFontStyles)
                 .forEach(([property, value]) => floatingTitle.style.setProperty(property, value as string));
 
-            if (progress > 0 || progress < 1) {
+            if (progress > 0 && progress < 1) {
                 // Finish opening or closing the bar.
-                this.endAnimationTimeout = window.setTimeout(() => this.endAnimation(progress), 500);
+                this.endAnimationTimeout = window.setTimeout(() => this.endAnimation(progress, contentScroll.scrollTop), 500);
             }
         });
     }
@@ -388,8 +387,9 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
      * End of animation when stop scrolling.
      *
      * @param progress Progress.
+     * @param scrollTop Current ScrollTop position.
      */
-    protected endAnimation(progress: number): void {
+    protected endAnimation(progress: number, scrollTop: number): void {
         if(!this.page) {
             return;
         }
@@ -398,6 +398,14 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
 
         this.page.style.setProperty('--collapsible-header-progress', collapse ? '1' : '0');
         this.page.classList.toggle('is-collapsed', collapse);
+
+        if (collapse && this.scrollingHeight && this.scrollingHeight > 0 && scrollTop < this.scrollingHeight) {
+            this.content?.scrollToPoint(null, this.scrollingHeight);
+        }
+
+        if (!collapse && this.scrollingHeight && this.scrollingHeight > 0 && scrollTop > 0) {
+            this.content?.scrollToPoint(null, 0);
+        }
     }
 
 }

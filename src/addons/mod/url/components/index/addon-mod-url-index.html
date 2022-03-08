@@ -37,7 +37,7 @@
         </ion-item>
     </ion-list>
 
-    <div collapsible-footer *ngIf="!showLoading" slot="fixed">
+    <div collapsible-footer appearOnBottom *ngIf="!showLoading" slot="fixed">
         <div class="list-item-limited-width" *ngIf="url && !shouldIframe && (!shouldEmbed || !isOther)">
             <ion-button expand="block" (click)="go()" class="ion-margin ion-text-wrap">
                 <ion-icon name="fas-link" slot="start" aria-hidden="true"></ion-icon>

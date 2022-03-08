@@ -22,10 +22,10 @@ import {
     SimpleChange,
     Optional,
     ViewContainerRef,
+    ViewChild,
 } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 
-import { CoreEventLoadingChangedData, CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreIframeUtils, CoreIframeUtilsProvider } from '@services/utils/iframe';
@@ -40,6 +40,7 @@ import { CoreFilterDelegate } from '@features/filter/services/filter-delegate';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { CoreSubscriptions } from '@singletons/subscriptions';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreCollapsibleItemDirective } from './collapsible-item';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -54,6 +55,8 @@ import { CoreComponentsRegistry } from '@singletons/components-registry';
     selector: 'core-format-text',
 })
 export class CoreFormatTextDirective implements OnChanges {
+
+    @ViewChild(CoreCollapsibleItemDirective) collapsible?: CoreCollapsibleItemDirective;
 
     @Input() text?: string; // The text to format.
     @Input() siteId?: string; // Site ID to use.
@@ -73,23 +76,18 @@ export class CoreFormatTextDirective implements OnChanges {
     @Input() hideIfEmpty = false; // If true, the tag will contain nothing if text is empty.
 
     @Input() fullOnClick?: boolean | string; // @deprecated on 4.0 Won't do anything.
-    @Input() fullTitle?: string; // @deprecated on 4.0 Won't do anything..
+    @Input() fullTitle?: string; // @deprecated on 4.0 Won't do anything.
     /**
      * Max height in pixels to render the content box. It should be 50 at least to make sense.
-     * Using this parameter will force display: block to calculate height better.
-     * If you want to avoid this use class="inline" at the same time to use display: inline-block.
      */
-    @Input() maxHeight?: number;
+    @Input() maxHeight?: number; // @deprecated on 4.0 Use collapsible-item directive instead.
 
     @Output() afterRender: EventEmitter<void>; // Called when the data is rendered.
     @Output() onClick: EventEmitter<void> = new EventEmitter(); // Called when clicked.
 
     protected element: HTMLElement;
-    protected expanded = false;
-    protected loadingChangedListener?: CoreEventObserver;
     protected emptyText = '';
     protected contentSpan: HTMLElement;
-    protected toggleExpandEnabled = false;
 
     constructor(
         element: ElementRef,
@@ -115,6 +113,8 @@ export class CoreFormatTextDirective implements OnChanges {
         this.afterRender = new EventEmitter<void>();
 
         this.element.addEventListener('click', this.elementClicked.bind(this));
+
+        this.siteId = this.siteId || CoreSites.getCurrentSiteId();
     }
 
     /**
@@ -122,8 +122,6 @@ export class CoreFormatTextDirective implements OnChanges {
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if (changes.text || changes.filter || changes.contextLevel || changes.contextInstanceId) {
-            this.setExpandButtonEnabled(false);
-
             this.formatAndRenderContents();
         }
     }
@@ -148,9 +146,13 @@ export class CoreFormatTextDirective implements OnChanges {
      * Apply CoreExternalContentDirective to a certain element.
      *
      * @param element Element to add the attributes to.
-     * @return External content instance.
+     * @return External content instance or undefined if siteId is not provided.
      */
-    protected addExternalContent(element: Element): CoreExternalContentDirective {
+    protected addExternalContent(element: Element): CoreExternalContentDirective | undefined {
+        if (!this.siteId) {
+            return;
+        }
+
         // Angular doesn't let adding directives dynamically. Create the CoreExternalContentDirective manually.
         const extContent = new CoreExternalContentDirective(new ElementRef(element));
 
@@ -270,101 +272,6 @@ export class CoreFormatTextDirective implements OnChanges {
     }
 
     /**
-     * Calculate the height and check if we need to display show more or not.
-     */
-    protected async calculateHeight(): Promise<void> {
-        // @todo: Work on calculate this height better.
-        if (!this.maxHeight) {
-            return;
-        }
-
-        await this.rendered();
-
-        // Remove max-height (if any) to calculate the real height.
-        const initialMaxHeight = this.element.style.maxHeight;
-        this.element.style.maxHeight = 'none';
-
-        await CoreUtils.nextTick();
-
-        const height = this.getElementHeight(this.element);
-
-        // Restore the max height now.
-        this.element.style.maxHeight = initialMaxHeight;
-
-        // If cannot calculate height, shorten always.
-        this.setExpandButtonEnabled(!height || height >= this.maxHeight);
-    }
-
-    /**
-     * Set max height to element.
-     *
-     * @param maxHeight Max height if collapsed or undefined if expanded.
-     */
-    protected setMaxHeight(maxHeight?: number): void {
-        if (maxHeight) {
-            this.element.style.setProperty('--max-height', maxHeight + 'px');
-        } else {
-            this.element.style.removeProperty('--max-height');
-        }
-    }
-
-    /**
-     * Sets if expand button is enabled or not.
-     *
-     * @param enable Wether enable or disable.
-     */
-    protected setExpandButtonEnabled(enable: boolean): void {
-        this.toggleExpandEnabled = enable;
-        this.element.classList.toggle('collapsible-enabled', enable);
-
-        if (!enable || this.element.querySelector('ion-button.collapsible-toggle'))  {
-            this.setMaxHeight(!enable || this.expanded? undefined : this.maxHeight);
-
-            return;
-        }
-
-        // Add expand/collapse buttons
-        const toggleButton = document.createElement('ion-button');
-        toggleButton.classList.add('collapsible-toggle');
-        toggleButton.setAttribute('fill', 'clear');
-
-        const toggleText = document.createElement('span');
-        toggleText.classList.add('collapsible-toggle-text');
-        toggleText.classList.add('sr-only');
-        toggleButton.appendChild(toggleText);
-
-        const expandArrow = document.createElement('span');
-        expandArrow.classList.add('collapsible-toggle-arrow');
-        toggleButton.appendChild(expandArrow);
-
-        this.element.appendChild(toggleButton);
-
-        this.toggleExpand(this.expanded);
-    }
-
-    /**
-     * Expand or collapse text.
-     *
-     * @param expand Wether expand or collapse text. If undefined, will toggle.
-     */
-    protected toggleExpand(expand?: boolean): void {
-        if (expand === undefined) {
-            expand = !this.expanded;
-        }
-        this.expanded = expand;
-        this.element.classList.toggle('collapsible-collapsed', !expand);
-        this.setMaxHeight(!expand? this.maxHeight: undefined);
-
-        const toggleButton = this.element.querySelector('ion-button.collapsible-toggle');
-        const toggleText = toggleButton?.querySelector('.collapsible-toggle-text');
-        if (!toggleButton || !toggleText) {
-            return;
-        }
-        toggleText.innerHTML = expand ? Translate.instant('core.showless') : Translate.instant('core.showmore');
-        toggleButton.setAttribute('aria-expanded', expand ? 'true' : 'false');
-    }
-
-    /**
      * Listener to call when the element is clicked.
      *
      * @param e Click event.
@@ -385,23 +292,17 @@ export class CoreFormatTextDirective implements OnChanges {
             return;
         }
 
-        if (!this.toggleExpandEnabled) {
-            // Nothing to do on click, just stop.
-            return;
-        }
-
-        e.preventDefault();
-        e.stopPropagation();
-
-        this.toggleExpand();
+        this.collapsible?.elementClicked(e);
     }
 
     /**
      * Finish the rendering, displaying the element again and calling afterRender.
      */
-    protected finishRender(): void {
+    protected async finishRender(): Promise<void> {
         // Show the element again.
         this.element.classList.remove('core-format-text-loading');
+
+        await CoreUtils.nextTick();
 
         // Emit the afterRender output.
         this.afterRender.emit();
@@ -413,15 +314,12 @@ export class CoreFormatTextDirective implements OnChanges {
     protected async formatAndRenderContents(): Promise<void> {
         if (!this.text) {
             this.contentSpan.innerHTML = this.emptyText; // Remove current contents.
-            this.finishRender();
+
+            await this.finishRender();
 
             return;
         }
 
-        // In AOT the inputs and ng-reflect aren't in the DOM sometimes. Add them so styles are applied.
-        if (this.maxHeight && !this.element.getAttribute('maxHeight')) {
-            this.element.setAttribute('maxHeight', String(this.maxHeight));
-        }
         if (!this.element.getAttribute('singleLine')) {
             this.element.setAttribute('singleLine', String(CoreUtils.isTrueOrOne(this.singleLine)));
         }
@@ -434,35 +332,21 @@ export class CoreFormatTextDirective implements OnChanges {
         this.element.classList.add('core-disable-media-adapt');
 
         this.contentSpan.innerHTML = ''; // Remove current contents.
-        if (this.maxHeight && result.div.innerHTML != '') {
 
-            // Move the children to the current element to be able to calculate the height.
-            CoreDomUtils.moveChildren(result.div, this.contentSpan);
+        // Move the children to the current element to be able to calculate the height.
+        CoreDomUtils.moveChildren(result.div, this.contentSpan);
 
-            // Calculate the height now.
-            this.calculateHeight();
-            setTimeout(() => this.calculateHeight(), 200); // Try again, sometimes the first calculation is wrong.
+        await CoreUtils.nextTick();
 
-            // Add magnifying glasses to images.
-            this.addMagnifyingGlasses();
-
-            if (!this.loadingChangedListener) {
-                // Recalculate the height if a parent core-loading displays the content.
-                this.loadingChangedListener =
-                    CoreEvents.on(CoreEvents.CORE_LOADING_CHANGED, (data: CoreEventLoadingChangedData) => {
-                        if (data.loaded && CoreDomUtils.closest(this.element.parentElement, '#' + data.uniqueId)) {
-                            // The format-text is inside the loading, re-calculate the height.
-                            this.calculateHeight();
-                            setTimeout(() => this.calculateHeight(), 200);
-                        }
-                    });
-            }
-        } else {
-            CoreDomUtils.moveChildren(result.div, this.contentSpan);
-
-            // Add magnifying glasses to images.
-            this.addMagnifyingGlasses();
+        // Use collapsible-item directive instead.
+        if (this.maxHeight && !this.collapsible) {
+            this.collapsible = new CoreCollapsibleItemDirective(new ElementRef(this.element));
+            this.collapsible.height = this.maxHeight;
+            this.collapsible.ngOnInit();
         }
+
+        // Add magnifying glasses to images.
+        this.addMagnifyingGlasses();
 
         if (result.options.filter) {
             // Let filters handle HTML. We do it here because we don't want them to block the render of the text.
@@ -479,7 +363,7 @@ export class CoreFormatTextDirective implements OnChanges {
         }
 
         this.element.classList.remove('core-disable-media-adapt');
-        this.finishRender();
+        await this.finishRender();
     }
 
     /**
@@ -581,7 +465,7 @@ export class CoreFormatTextDirective implements OnChanges {
                 this.addMediaAdaptClass(img);
 
                 const externalImage = this.addExternalContent(img);
-                if (!externalImage.invalid) {
+                if (externalImage && !externalImage.invalid) {
                     externalImages.push(externalImage);
                 }
 

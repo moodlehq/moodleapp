@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { Directive, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
 import { ScrollDetail } from '@ionic/core';
 import { IonContent } from '@ionic/angular';
 import { CoreUtils } from '@services/utils/utils';
@@ -34,8 +34,11 @@ import { CoreEventLoadingChangedData, CoreEventObserver, CoreEvents } from '@sin
 })
 export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
 
+    @Input() appearOnBottom = false;
+
     protected element: HTMLElement;
     protected initialHeight = 0;
+    protected finalHeight = 0;
     protected initialPaddingBottom = '0px';
     protected previousTop = 0;
     protected previousHeight = 0;
@@ -58,6 +61,12 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
 
         // Set a minimum height value.
         this.initialHeight = this.element.getBoundingClientRect().height || 48;
+        const moduleNav = this.element.querySelector('core-course-module-navigation');
+        if (moduleNav) {
+            this.element.classList.add('has-module-nav');
+            this.finalHeight = this.initialHeight - (moduleNav.getBoundingClientRect().height);
+        }
+
         this.previousHeight = this.initialHeight;
 
         this.content?.style.setProperty('--core-collapsible-footer-max-height', this.initialHeight + 'px');
@@ -127,12 +136,12 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
      */
     protected onScroll(scrollDetail: ScrollDetail, scrollElement: HTMLElement): void {
         const maxScroll = scrollElement.scrollHeight - scrollElement.offsetHeight;
-        if (scrollDetail.scrollTop <= 0 || scrollDetail.scrollTop >= maxScroll) {
+        if (scrollDetail.scrollTop <= 0 || (this.appearOnBottom && scrollDetail.scrollTop >= maxScroll)) {
             // Reset.
             this.setBarHeight(this.initialHeight);
         } else {
             let newHeight = this.previousHeight - (scrollDetail.scrollTop - this.previousTop);
-            newHeight = CoreMath.clamp(newHeight, 0, this.initialHeight);
+            newHeight = CoreMath.clamp(newHeight, this.finalHeight, this.initialHeight);
 
             this.setBarHeight(newHeight);
         }
@@ -149,12 +158,14 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
             clearTimeout(this.endAnimationTimeout);
         }
 
-        this.element.classList.toggle('footer-collapsed', height <= 0);
-        this.element.classList.toggle('footer-expanded', height >= this.initialHeight);
+        const collapsed = height <= this.finalHeight;
+        const expanded = height >= this.initialHeight;
+        this.element.classList.toggle('footer-collapsed', collapsed);
+        this.element.classList.toggle('footer-expanded', expanded);
         this.content?.style.setProperty('--core-collapsible-footer-height', height + 'px');
         this.previousHeight = height;
 
-        if (height > 0 && height < this.initialHeight) {
+        if (!collapsed && !expanded) {
             // Finish opening or closing the bar.
             this.endAnimationTimeout = window.setTimeout(() => this.endAnimation(height), 500);
         }
@@ -166,7 +177,9 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
      * @param height Last height used.
      */
     protected endAnimation(height: number): void {
-        const newHeight = height < this.initialHeight / 2 ? 0 : this.initialHeight;
+        const newHeight = (height - this.finalHeight) < (this.initialHeight - this.finalHeight) / 2
+            ? this.finalHeight
+            : this.initialHeight;
 
         this.setBarHeight(newHeight);
     }
@@ -180,6 +193,9 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
         setTimeout(() => this.calculateHeight(), 200); // Try again, sometimes the first calculation is wrong.
 
         this.listenScrollEvents();
+
+        // Only if not present or explicitly falsy it will be false.
+        this.appearOnBottom = !CoreUtils.isFalseOrZero(this.appearOnBottom);
 
         // Recalculate the height if a parent core-loading displays the content.
         this.loadingChangedListener =

@@ -30,7 +30,7 @@
         </ion-item>
     </ion-list>
 
-    <div collapsible-footer *ngIf="!showLoading" slot="fixed">
+    <div collapsible-footer appearOnBottom *ngIf="!showLoading" slot="fixed">
         <div class="list-item-limited-width">
             <ion-button class="ion-margin ion-text-wrap" expand="block" (click)="openImscp()">
                 <span *ngIf="!hasStarted">{{ 'core.start' | translate }}</span>
