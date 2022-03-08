@@ -23,6 +23,7 @@ import {
     QueryList,
     Type,
     ElementRef,
+    ViewChild,
 } from '@angular/core';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
@@ -44,6 +45,8 @@ import { CoreBlockHelper } from '@features/block/services/block-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseViewedModulesDBRecord } from '@features/course/services/database/course';
+import { CoreUserTours, CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/services/user-tours';
+import { CoreCourseCourseIndexTourComponent } from '../course-index-tour/course-index-tour';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
@@ -71,6 +74,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     @Input() moduleId?: number; // The module ID to scroll to. Must be inside the initial selected section.
 
     @ViewChildren(CoreDynamicComponent) dynamicComponents?: QueryList<CoreDynamicComponent>;
+    @ViewChild('courseIndexFab', { read: ElementRef }) courseIndexFab?: ElementRef<HTMLElement>;
 
     // All the possible component classes.
     courseFormatComponent?: Type<unknown>;
@@ -157,6 +161,25 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                     }
                 }
             }
+        });
+    }
+
+    /**
+     * Show Course Index User Tour.
+     */
+    async showCourseIndexTour(): Promise<void> {
+        const nativeButton = this.courseIndexFab?.nativeElement.shadowRoot?.children[0] as HTMLElement;
+
+        if (!nativeButton) {
+            return;
+        }
+
+        await CoreUserTours.showIfPending({
+            id: 'course-index',
+            component: CoreCourseCourseIndexTourComponent,
+            focus: nativeButton,
+            side: CoreUserToursSide.Top,
+            alignment: CoreUserToursAlignment.End,
         });
     }
 
