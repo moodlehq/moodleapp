@@ -1,3 +1,4 @@
-<ion-button (click)="openBlocks()" [attr.aria-label]="'core.block.opendrawerblocks' | translate" color="secondary">
+<ion-button (click)="openBlocks()" (onAppear)="showTour()" [attr.aria-label]="'core.block.opendrawerblocks' | translate" color="secondary"
+    #button>
     <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true"></ion-icon>
 </ion-button>

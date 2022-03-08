@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { CoreUserTours, CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/services/user-tours';
 import { CoreDomUtils } from '@services/utils/dom';
+import { CoreBlockSideBlocksTourComponent } from '../side-blocks-tour/side-blocks-tour';
 import { CoreBlockSideBlocksComponent } from '../side-blocks/side-blocks';
 
 /**
@@ -27,6 +29,7 @@ import { CoreBlockSideBlocksComponent } from '../side-blocks/side-blocks';
 export class CoreBlockSideBlocksButtonComponent {
 
     @Input() courseId!: number;
+    @ViewChild('button', { read: ElementRef }) button?: ElementRef<HTMLElement>;
 
     /**
      * Open side blocks.
@@ -37,6 +40,25 @@ export class CoreBlockSideBlocksButtonComponent {
             componentProps: {
                 courseId: this.courseId,
             },
+        });
+    }
+
+    /**
+     * Show User Tour.
+     */
+    async showTour(): Promise<void> {
+        const nativeButton = this.button?.nativeElement.shadowRoot?.children[0] as HTMLElement;
+
+        if (!nativeButton) {
+            return;
+        }
+
+        await CoreUserTours.showIfPending({
+            id: 'side-blocks-button',
+            component: CoreBlockSideBlocksTourComponent,
+            focus: nativeButton,
+            side: CoreUserToursSide.Start,
+            alignment: CoreUserToursAlignment.Center,
         });
     }
 

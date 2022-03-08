@@ -1450,6 +1450,8 @@
   "core.block.blocks": "moodle",
   "core.block.noblocks": "error",
   "core.block.opendrawerblocks": "moodle",
+  "core.block.tour_navigation_dashboard_content": "tool_usertours",
+  "core.block.tour_navigation_dashboard_title": "tool_usertours",
   "core.browser": "local_moodlemobileapp",
   "core.cancel": "moodle",
   "core.cannotconnect": "local_moodlemobileapp",
