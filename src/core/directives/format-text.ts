@@ -113,6 +113,8 @@ export class CoreFormatTextDirective implements OnChanges {
         this.afterRender = new EventEmitter<void>();
 
         this.element.addEventListener('click', this.elementClicked.bind(this));
+
+        this.siteId = this.siteId || CoreSites.getCurrentSiteId();
     }
 
     /**
@@ -144,9 +146,13 @@ export class CoreFormatTextDirective implements OnChanges {
      * Apply CoreExternalContentDirective to a certain element.
      *
      * @param element Element to add the attributes to.
-     * @return External content instance.
+     * @return External content instance or undefined if siteId is not provided.
      */
-    protected addExternalContent(element: Element): CoreExternalContentDirective {
+    protected addExternalContent(element: Element): CoreExternalContentDirective | undefined {
+        if (!this.siteId) {
+            return;
+        }
+
         // Angular doesn't let adding directives dynamically. Create the CoreExternalContentDirective manually.
         const extContent = new CoreExternalContentDirective(new ElementRef(element));
 
@@ -459,7 +465,7 @@ export class CoreFormatTextDirective implements OnChanges {
                 this.addMediaAdaptClass(img);
 
                 const externalImage = this.addExternalContent(img);
-                if (!externalImage.invalid) {
+                if (externalImage && !externalImage.invalid) {
                     externalImages.push(externalImage);
                 }
 
