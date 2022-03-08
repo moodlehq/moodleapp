@@ -302,6 +302,7 @@
     "submit": "Submit",
     "success": "Success",
     "summary": "Summary",
+    "swipenavigationtourdescription": "Swipe left and right to navigate around.",
     "tablet": "Tablet",
     "teachers": "Teachers",
     "thereisdatatosync": "There are offline {{$a}} to be synchronised.",

@@ -2269,6 +2269,7 @@
   "core.submit": "moodle",
   "core.success": "moodle",
   "core.summary": "moodle",
+  "core.swipenavigationtourdescription": "local_moodlemobileapp",
   "core.tablet": "local_moodlemobileapp",
   "core.tag.defautltagcoll": "tag",
   "core.tag.errorareanotsupported": "local_moodlemobileapp",
