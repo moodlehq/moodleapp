@@ -16,7 +16,6 @@ import { Component, OnInit, Optional } from '@angular/core';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { CoreCourse } from '@features/course/services/course';
 import { IonContent } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -75,13 +74,6 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
         this.currentUserId = CoreSites.getCurrentSiteUserId();
 
         await this.loadContent(false, true);
-
-        try {
-            await AddonModSurvey.logView(this.survey!.id, this.survey!.name);
-            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
-        } catch {
-            // Ignore errors. Just don't check Module completion.
-        }
     }
 
     /**
@@ -164,6 +156,17 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
                 question.optionsArray = question.optionsArray?.map((option) => CoreTextUtils.cleanTags(option));
             }
         });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected async logActivity(): Promise<void> {
+        if (!this.survey) {
+            return; // Shouldn't happen.
+        }
+
+        await AddonModSurvey.logView(this.survey.id, this.survey.name);
     }
 
     /**

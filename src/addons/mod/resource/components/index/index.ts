@@ -90,12 +90,6 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
         });
 
         await this.loadContent();
-        try {
-            await AddonModResource.logView(this.module.instance, this.module.name);
-            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
-        } catch {
-            // Ignore errors.
-        }
     }
 
     /**
@@ -187,6 +181,13 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
             this.type = CoreMimetypeUtils.getMimetypeDescription(mimetype);
             this.isStreamedFile = CoreMimetypeUtils.isStreamedMimetype(mimetype);
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected async logActivity(): Promise<void> {
+        await AddonModResource.logView(this.module.instance, this.module.name);
     }
 
     /**

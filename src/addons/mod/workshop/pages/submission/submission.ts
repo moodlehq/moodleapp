@@ -102,6 +102,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
     protected obsAssessmentSaved: CoreEventObserver;
     protected syncObserver: CoreEventObserver;
     protected isDestroyed = false;
+    protected fetchSuccess = false;
 
     constructor(
         protected fb: FormBuilder,
@@ -157,12 +158,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
 
         await this.fetchSubmissionData();
 
-        try {
-            await AddonModWorkshop.logViewSubmission(this.submissionId, this.workshopId, this.workshop.name);
-            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
-        } catch {
-            // Ignore errors.
-        }
+        this.logView();
     }
 
     /**
@@ -447,6 +443,8 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
             CoreEvents.trigger(AddonModWorkshopProvider.ASSESSMENT_INVALIDATED, null, this.siteId);
 
             await this.fetchSubmissionData();
+
+            this.logView();
         }
     }
 
@@ -594,6 +592,24 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
 
             await this.refreshAllData();
         });
+    }
+
+    /**
+     * Log submission viewed.
+     */
+    protected async logView(): Promise<void> {
+        if (this.fetchSuccess) {
+            return; // Already done.
+        }
+
+        this.fetchSuccess = true;
+
+        try {
+            await AddonModWorkshop.logViewSubmission(this.submissionId, this.workshopId, this.workshop.name);
+            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
+        } catch {
+            // Ignore errors.
+        }
     }
 
     /**

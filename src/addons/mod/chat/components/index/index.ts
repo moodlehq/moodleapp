@@ -15,7 +15,6 @@
 import { Component, OnInit, Optional } from '@angular/core';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { CoreCourse } from '@features/course/services/course';
 import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreTimeUtils } from '@services/utils/time';
@@ -53,18 +52,6 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
         super.ngOnInit();
 
         await this.loadContent();
-
-        if (!this.chat) {
-            return;
-        }
-
-        try {
-            await AddonModChat.logView(this.chat.id, this.chat.name);
-
-            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
-        } catch {
-            // Ignore errors.
-        }
     }
 
     /**
@@ -87,6 +74,17 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
         }
 
         this.dataRetrieved.emit(this.chat);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected async logActivity(): Promise<void> {
+        if (!this.chat) {
+            return; // Shouldn't happen.
+        }
+
+        await AddonModChat.logView(this.chat.id, this.chat.name);
     }
 
     /**

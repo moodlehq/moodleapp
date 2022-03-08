@@ -72,6 +72,8 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     protected showCompletion = false; // Whether to show completion inside the activity.
     protected displayDescription = true; // Wether to show Module description on module page, and not on summary or the contrary.
     protected isDestroyed = false; // Whether the component is destroyed.
+    protected fetchSuccess = false; // Whether a fetch was finished successfully.
+    protected checkCompletionAfterLog = true; // Whether to check if completion has changed after calling logActivity.
 
     constructor(
         @Optional() @Inject('') loggerName: string = 'CoreCourseModuleMainResourceComponent',
@@ -191,6 +193,8 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
 
         try {
             await this.fetchContent(refresh);
+
+            this.finishSuccessfulFetch();
         } catch (error) {
             if (!refresh && !CoreSites.getCurrentSite()?.isOfflineDisabled() && this.isNotFoundError(error)) {
                 // Module not found, retry without using cache.
@@ -425,6 +429,46 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
                 }
             }
         }
+    }
+
+    /**
+     * Finish a successful fetch.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async finishSuccessfulFetch(): Promise<void> {
+        if (this.fetchSuccess) {
+            return; // Already treated.
+        }
+
+        this.fetchSuccess = true;
+
+        // Log activity now.
+        try {
+            await this.logActivity();
+
+            if (this.checkCompletionAfterLog) {
+                this.checkCompletion();
+            }
+        } catch {
+            // Ignore errors.
+        }
+    }
+
+    /**
+     * Log activity.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async logActivity(): Promise<void> {
+        // To be overridden.
+    }
+
+    /**
+     * Check the module completion.
+     */
+    protected checkCompletion(): void {
+        CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
     }
 
     /**

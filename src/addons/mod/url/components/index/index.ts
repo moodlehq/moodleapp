@@ -47,6 +47,8 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
     mimetype?: string;
     displayDescription = true;
 
+    protected checkCompletionAfterLog = false;
+
     constructor(@Optional() courseContentsPage?: CoreCourseContentsPage) {
         super('AddonModUrlIndexComponent', courseContentsPage);
     }
@@ -58,12 +60,6 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
         super.ngOnInit();
 
         await this.loadContent();
-
-        if ((this.shouldIframe ||
-            (this.shouldEmbed && this.isOther)) ||
-            (!this.shouldIframe && (!this.shouldEmbed || !this.isOther))) {
-            this.logView();
-        }
     }
 
     /**
@@ -170,9 +166,21 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
     protected async logView(): Promise<void> {
         try {
             await AddonModUrl.logView(this.module.instance, this.module.name);
-            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
+
+            this.checkCompletion();
         } catch {
             // Ignore errors.
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected async logActivity(): Promise<void> {
+        if ((this.shouldIframe ||
+            (this.shouldEmbed && this.isOther)) ||
+            (!this.shouldIframe && (!this.shouldEmbed || !this.isOther))) {
+            this.logView();
         }
     }
 

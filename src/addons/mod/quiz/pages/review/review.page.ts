@@ -73,6 +73,7 @@ export class AddonModQuizReviewPage implements OnInit {
     protected attemptId!: number; // The attempt being reviewed.
     protected currentPage!: number; // The current page being reviewed.
     protected options?: AddonModQuizCombinedReviewOptions; // Review options.
+    protected fetchSuccess = false;
 
     constructor(
         protected elementRef: ElementRef,
@@ -99,10 +100,6 @@ export class AddonModQuizReviewPage implements OnInit {
 
         try {
             await this.fetchData();
-
-            CoreUtils.ignoreErrors(
-                AddonModQuiz.logViewAttemptReview(this.attemptId, this.quiz!.id, this.quiz!.name),
-            );
         } finally {
             this.loaded = true;
         }
@@ -160,6 +157,13 @@ export class AddonModQuizReviewPage implements OnInit {
 
             // Load questions.
             await this.loadPage(this.currentPage);
+
+            if (!this.fetchSuccess) {
+                this.fetchSuccess = true;
+                CoreUtils.ignoreErrors(
+                    AddonModQuiz.logViewAttemptReview(this.attemptId, this.quiz.id, this.quiz.name),
+                );
+            }
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.mod_quiz.errorgetquiz', true);
         }

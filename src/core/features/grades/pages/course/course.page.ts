@@ -54,6 +54,8 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     totalColumnsSpan?: number;
     withinSplitView?: boolean;
 
+    protected fetchSuccess = false;
+
     constructor(
         protected route: ActivatedRoute,
         protected element: ElementRef<HTMLElement>,
@@ -93,7 +95,6 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
 
         await this.courses?.start();
         await this.fetchInitialGrades();
-        await CoreGrades.logCourseGradesView(this.courseId, this.userId);
     }
 
     /**
@@ -198,6 +199,11 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
         this.columns = formattedTable.columns;
         this.rows = formattedTable.rows;
         this.totalColumnsSpan = formattedTable.columns.reduce((total, column) => total + column.colspan, 0);
+
+        if (!this.fetchSuccess) {
+            this.fetchSuccess = true;
+            await CoreGrades.logCourseGradesView(this.courseId, this.userId);
+        }
     }
 
 }

@@ -55,6 +55,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
     protected entryChangedObserver: CoreEventObserver; // It will observe the changed entry event.
     protected fields: Record<number, AddonModDataField> = {};
     protected fieldsArray: AddonModDataField[] = [];
+    protected logAfterFetch = true;
 
     moduleId = 0;
     courseId!: number;
@@ -149,7 +150,6 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
         this.commentsEnabled = !CoreComments.areCommentsDisabledInSite();
 
         await this.fetchEntryData();
-        this.logView();
     }
 
     /**
@@ -201,6 +201,11 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
                 title: this.title,
                 group: this.selectedGroup,
             };
+
+            if (this.logAfterFetch) {
+                this.logAfterFetch = false;
+                this.logView();
+            }
         } catch (error) {
             if (!refresh) {
                 // Some call failed, retry without using cache since it might be a new activity.
@@ -225,9 +230,9 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
         this.entryId = undefined;
         this.entry = undefined;
         this.entryLoaded = false;
+        this.logAfterFetch = true;
 
         await this.fetchEntryData();
-        this.logView();
     }
 
     /**
@@ -286,9 +291,9 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
         this.entry = undefined;
         this.entryId = undefined;
         this.entryLoaded = false;
+        this.logAfterFetch = true;
 
         await this.fetchEntryData();
-        this.logView();
     }
 
     /**

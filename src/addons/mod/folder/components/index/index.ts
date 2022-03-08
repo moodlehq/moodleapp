@@ -62,13 +62,6 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
 
         try {
             await this.loadContent();
-
-            try {
-                await AddonModFolder.logView(this.module.instance, this.module.name);
-                CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
-            } catch {
-                // Ignore errors.
-            }
         } finally {
             this.showLoading = false;
         }
@@ -95,6 +88,13 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
 
         this.description = this.folderInstance ? this.folderInstance.intro : this.module.description;
         this.contents = AddonModFolderHelper.formatContents(contents);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected async logActivity(): Promise<void> {
+        await AddonModFolder.logView(this.module.instance, this.module.name);
     }
 
     /**

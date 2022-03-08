@@ -54,6 +54,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
     currentUserId!: number;
 
     protected syncObserver!: CoreEventObserver;
+    protected logAfterFetch = true;
 
     constructor() {
         try {
@@ -91,8 +92,6 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
      */
     async ngOnInit(): Promise<void> {
         await this.fetchNotes(true);
-
-        CoreUtils.ignoreErrors(AddonNotes.logView(this.courseId, this.userId));
     }
 
     /**
@@ -127,6 +126,11 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
                 this.user = await CoreUser.getProfile(this.userId, this.courseId, true);
             } else {
                 this.notes = await AddonNotes.getNotesUserData(notesList);
+            }
+
+            if (this.logAfterFetch) {
+                this.logAfterFetch = false;
+                CoreUtils.ignoreErrors(AddonNotes.logView(this.courseId, this.userId));
             }
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
@@ -172,9 +176,9 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
         this.notesLoaded = false;
         this.refreshIcon = CoreConstants.ICON_LOADING;
         this.syncIcon = CoreConstants.ICON_LOADING;
+        this.logAfterFetch = true;
 
         await this.fetchNotes(true);
-        CoreUtils.ignoreErrors(AddonNotes.logView(this.courseId, this.userId));
     }
 
     /**

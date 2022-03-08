@@ -16,7 +16,6 @@ import { Component, Input, OnDestroy, OnInit, Optional } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { CoreCourse } from '@features/course/services/course';
 import { IonContent } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
@@ -138,16 +137,6 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
         super.ngOnInit();
 
         await this.loadContent(false, true);
-        if (!this.workshop) {
-            return;
-        }
-
-        try {
-            await AddonModWorkshop.logView(this.workshop.id, this.workshop.name);
-            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
-        } catch (error) {
-            // Ignore errors.
-        }
     }
 
     /**
@@ -164,7 +153,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
             this.showLoadingAndRefresh(true);
 
             // Check completion since it could be configured to complete once the user adds a new discussion or replies.
-            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
+            this.checkCompletion();
         }
     }
 
@@ -255,6 +244,17 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
         }
 
         await this.setPhaseInfo();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected async logActivity(): Promise<void> {
+        if (!this.workshop) {
+            return; // Shouldn't happen.
+        }
+
+        await AddonModWorkshop.logView(this.workshop.id, this.workshop.name);
     }
 
     /**

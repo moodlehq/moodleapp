@@ -54,6 +54,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     newsForumModule?: CoreCourseModuleData;
 
     protected updateSiteObserver: CoreEventObserver;
+    protected fetchSuccess = false;
 
     constructor() {
         // Refresh the enabled flags if site is updated.
@@ -137,13 +138,15 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
                 this.hasContent = result.hasContent || this.hasContent;
             }
 
-            // Add log in Moodle.
-            CoreUtils.ignoreErrors(CoreCourse.logView(
-                this.siteHomeId,
-                undefined,
-                undefined,
-                this.currentSite.getInfo()?.sitename,
-            ));
+            if (!this.fetchSuccess) {
+                this.fetchSuccess = true;
+                CoreUtils.ignoreErrors(CoreCourse.logView(
+                    this.siteHomeId,
+                    undefined,
+                    undefined,
+                    this.currentSite.getInfo()?.sitename,
+                ));
+            }
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'core.course.couldnotloadsectioncontent', true);
         }

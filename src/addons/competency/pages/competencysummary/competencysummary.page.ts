@@ -36,6 +36,8 @@ export class AddonCompetencyCompetencySummaryPage implements OnInit {
     contextLevel?: ContextLevel;
     contextInstanceId?: number;
 
+    protected fetchSuccess = false; // Whether a fetch was finished successfully.
+
     /**
      * @inheritdoc
      */
@@ -54,9 +56,6 @@ export class AddonCompetencyCompetencySummaryPage implements OnInit {
 
         try {
             await this.fetchCompetency();
-            const name = this.competency!.competency && this.competency!.competency.shortname;
-
-            CoreUtils.ignoreErrors(AddonCompetency.logCompetencyView(this.competencyId, name));
         } finally {
             this.competencyLoaded = true;
         }
@@ -73,10 +72,15 @@ export class AddonCompetencyCompetencySummaryPage implements OnInit {
             if (!this.contextLevel || this.contextInstanceId === undefined) {
                 // Context not specified, use user context.
                 this.contextLevel = ContextLevel.USER;
-                this.contextInstanceId = result.usercompetency!.userid;
+                this.contextInstanceId = result.usercompetency?.userid;
             }
 
             this.competency = result.competency;
+
+            if (!this.fetchSuccess) {
+                this.fetchSuccess = true;
+                CoreUtils.ignoreErrors(AddonCompetency.logCompetencyView(this.competencyId, this.competency.competency.shortname));
+            }
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error getting competency summary data.');
         }

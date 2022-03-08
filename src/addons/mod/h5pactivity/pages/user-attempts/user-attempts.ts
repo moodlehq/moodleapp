@@ -46,6 +46,7 @@ export class AddonModH5PActivityUserAttemptsPage implements OnInit {
     isCurrentUser = false;
 
     protected userId!: number;
+    protected fetchSuccess = false;
 
     /**
      * @inheritdoc
@@ -65,17 +66,7 @@ export class AddonModH5PActivityUserAttemptsPage implements OnInit {
 
         this.isCurrentUser = this.userId == CoreSites.getCurrentSiteUserId();
 
-        try {
-            await this.fetchData();
-
-            if (this.h5pActivity) {
-                await AddonModH5PActivity.logViewReport(this.h5pActivity.id, this.h5pActivity.name, { userId: this.userId });
-            }
-        } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading attempts.');
-        } finally {
-            this.loaded = true;
-        }
+        await this.fetchData();
     }
 
     /**
@@ -95,12 +86,27 @@ export class AddonModH5PActivityUserAttemptsPage implements OnInit {
      * @return Promise resolved when done.
      */
     protected async fetchData(): Promise<void> {
-        this.h5pActivity = await AddonModH5PActivity.getH5PActivity(this.courseId, this.cmId);
+        try {
+            this.h5pActivity = await AddonModH5PActivity.getH5PActivity(this.courseId, this.cmId);
 
-        await Promise.all([
-            this.fetchAttempts(),
-            this.fetchUserProfile(),
-        ]);
+            await Promise.all([
+                this.fetchAttempts(),
+                this.fetchUserProfile(),
+            ]);
+
+            if (!this.fetchSuccess) {
+                this.fetchSuccess = true;
+                CoreUtils.ignoreErrors(AddonModH5PActivity.logViewReport(
+                    this.h5pActivity.id,
+                    this.h5pActivity.name,
+                    { userId: this.userId },
+                ));
+            }
+        } catch (error) {
+            CoreDomUtils.showErrorModalDefault(error, 'Error loading attempts.');
+        } finally {
+            this.loaded = true;
+        }
     }
 
     /**

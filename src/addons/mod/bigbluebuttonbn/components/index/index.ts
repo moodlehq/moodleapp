@@ -15,7 +15,6 @@
 import { Component, OnInit, Optional } from '@angular/core';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { CoreCourse } from '@features/course/services/course';
 import { IonContent } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -54,18 +53,6 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
         super.ngOnInit();
 
         await this.loadContent();
-
-        if (!this.bbb) {
-            return;
-        }
-
-        try {
-            await AddonModBBB.logView(this.bbb.id, this.bbb.name);
-
-            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
-        } catch {
-            // Ignore errors.
-        }
     }
 
     /**
@@ -82,7 +69,6 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
         this.groupId = CoreGroups.validateGroupId(this.groupId, this.groupInfo);
 
         await this.fetchMeetingInfo();
-
     }
 
     /**
@@ -105,6 +91,17 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
                 this.meetingInfo.statusmessage = Translate.instant('addon.mod_bigbluebuttonbn.userlimitreached');
             }
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected async logActivity(): Promise<void> {
+        if (!this.bbb) {
+            return; // Shouldn't happen.
+        }
+
+        await AddonModBBB.logView(this.bbb.id, this.bbb.name);
     }
 
     /**

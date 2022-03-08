@@ -17,7 +17,6 @@ import { Component, OnDestroy, OnInit, Optional } from '@angular/core';
 
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { CoreCourse } from '@features/course/services/course';
 import { CoreQuestionBehaviourDelegate } from '@features/question/services/behaviour-delegate';
 import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
@@ -121,18 +120,6 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         );
 
         await this.loadContent(false, true);
-
-        if (!this.quiz) {
-            return;
-        }
-
-        try {
-            await AddonModQuiz.logViewQuiz(this.quiz.id, this.quiz.name);
-
-            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
-        } catch {
-            // Ignore errors.
-        }
     }
 
     /**
@@ -388,6 +375,17 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     }
 
     /**
+     * @inheritdoc
+     */
+    protected async logActivity(): Promise<void> {
+        if (!this.quiz) {
+            return; // Shouldn't happen.
+        }
+
+        await AddonModQuiz.logViewQuiz(this.quiz.id, this.quiz.name);
+    }
+
+    /**
      * Go to review an attempt that has just been finished.
      *
      * @return Promise resolved when done.
@@ -398,7 +396,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         }
 
         // If we go to auto review it means an attempt was finished. Check completion status.
-        CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
+        this.checkCompletion();
 
         // Verify that user can see the review.
         const attemptId = this.autoReview.attemptId;
@@ -425,7 +423,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     protected hasSyncSucceed(result: AddonModQuizSyncResult): boolean {
         if (result.attemptFinished) {
             // An attempt was finished, check completion status.
-            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
+            this.checkCompletion();
         }
 
         // If the sync call isn't rejected it means the sync was successful.
@@ -508,7 +506,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
 
         if (syncEventData.attemptFinished) {
             // An attempt was finished, check completion status.
-            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
+            this.checkCompletion();
         }
 
         if (this.quiz && syncEventData.quizId == this.quiz.id) {

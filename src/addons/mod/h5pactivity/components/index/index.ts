@@ -19,7 +19,6 @@ import { CoreConstants } from '@/core/constants';
 import { CoreSite } from '@classes/site';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { CoreCourse } from '@features/course/services/course';
 import { CoreH5PDisplayOptions } from '@features/h5p/classes/core';
 import { CoreH5PHelper } from '@features/h5p/classes/helper';
 import { CoreH5P } from '@features/h5p/services/h5p';
@@ -85,6 +84,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     protected site: CoreSite;
     protected observer?: CoreEventObserver;
     protected messageListenerFunction: (event: MessageEvent) => Promise<void>;
+    protected checkCompletionAfterLog = false; // It's called later, when the user plays the package.
 
     constructor(
         protected content?: IonContent,
@@ -390,7 +390,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         // Mark the activity as viewed.
         await AddonModH5PActivity.logView(this.h5pActivity.id, this.h5pActivity.name, this.siteId);
 
-        CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
+        this.checkCompletion();
     }
 
     /**
@@ -464,7 +464,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
                 // Check if the H5P has ended. Final statements don't include a subContentId.
                 const hasEnded = data.statements.some(statement => !statement.object.id.includes('subContentId='));
                 if (hasEnded) {
-                    CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
+                    this.checkCompletion();
                 }
             }
         } catch (error) {

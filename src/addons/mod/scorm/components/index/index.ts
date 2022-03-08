@@ -16,7 +16,6 @@ import { CoreConstants } from '@/core/constants';
 import { Component, OnInit, Optional } from '@angular/core';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { CoreCourse } from '@features/course/services/course';
 import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSync } from '@services/sync';
@@ -114,21 +113,6 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
         if (this.skip) {
             this.open();
         }
-
-        try {
-            await AddonModScorm.logView(this.scorm.id, this.scorm.name);
-
-            this.checkCompletion();
-        } catch {
-            // Ignore errors.
-        }
-    }
-
-    /**
-     * Check the completion.
-     */
-    protected checkCompletion(): void {
-        CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
     }
 
     /**
@@ -355,6 +339,17 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
         });
 
         this.gradeFormatted = AddonModScorm.formatGrade(scorm, this.grade);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected async logActivity(): Promise<void> {
+        if (!this.scorm) {
+            return; // Shouldn't happen.
+        }
+
+        await AddonModScorm.logView(this.scorm.id, this.scorm.name);
     }
 
     /**

@@ -81,12 +81,13 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     protected sourceUnsubscribe?: () => void;
     protected ratingOfflineObserver?: CoreEventObserver;
     protected ratingSyncObserver?: CoreEventObserver;
+    protected checkCompletionAfterLog = false; // Use CoreListItemsManager log system instead.
 
     getDivider?: (entry: AddonModGlossaryEntry) => string;
     showDivider: (entry: AddonModGlossaryEntry, previous?: AddonModGlossaryEntry) => boolean = () => false;
 
     constructor(
-        protected route: ActivatedRoute,
+        public route: ActivatedRoute,
         protected content?: IonContent,
         @Optional() protected courseContentsPage?: CoreCourseContentsPage,
     ) {
@@ -124,10 +125,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
             [this.courseId, this.module.id, this.courseContentsPage ? `${AddonModGlossaryModuleHandlerService.PAGE_NAME}/` : ''],
         );
 
-        this.promisedEntries.resolve(new AddonModGlossaryEntriesManager(
-            source,
-            this.route.component,
-        ));
+        this.promisedEntries.resolve(new AddonModGlossaryEntriesManager(source, this));
 
         this.sourceUnsubscribe = source.addListener({
             onItemsUpdated: items => this.hasOffline = !!items.find(item => source.isOfflineEntry(item)),
@@ -139,7 +137,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
                 this.showLoadingAndRefresh(false);
 
                 // Check completion since it could be configured to complete once the user adds a new entry.
-                CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
+                this.checkCompletion();
             }
         });
 
@@ -166,12 +164,6 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
 
         await this.loadContent(false, true);
         await entries.start(this.splitView);
-
-        try {
-            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
-        } catch (error) {
-            // Ignore errors.
-        }
     }
 
     /**
@@ -437,6 +429,14 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
  */
 class AddonModGlossaryEntriesManager extends CoreListItemsManager<AddonModGlossaryEntryItem, AddonModGlossaryEntriesSource> {
 
+    page: AddonModGlossaryIndexComponent;
+
+    constructor(source: AddonModGlossaryEntriesSource, page: AddonModGlossaryIndexComponent) {
+        super(source, page.route.component);
+
+        this.page = page;
+    }
+
     get offlineEntries(): AddonModGlossaryOfflineEntry[] {
         return this.getSource().offlineEntries;
     }
@@ -463,7 +463,13 @@ class AddonModGlossaryEntriesManager extends CoreListItemsManager<AddonModGlossa
             return;
         }
 
-        await AddonModGlossary.logView(glossary.id, viewMode, glossary.name);
+        try {
+            await AddonModGlossary.logView(glossary.id, viewMode, glossary.name);
+
+            CoreCourse.checkModuleCompletion(this.page.courseId, this.page.module.completiondata);
+        } catch (error) {
+            // Ignore errors.
+        }
     }
 
 }

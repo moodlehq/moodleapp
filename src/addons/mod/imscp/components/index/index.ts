@@ -45,13 +45,6 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
         super.ngOnInit();
 
         await this.loadContent();
-
-        try {
-            await AddonModImscp.logView(this.module.instance, this.module.name);
-            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
-        } catch {
-            // Ignore errors.
-        }
     }
 
     /**
@@ -101,6 +94,13 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
         const contents = await CoreCourse.getModuleContents(this.module, this.courseId);
 
         this.items = AddonModImscp.createItemList(contents);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected async logActivity(): Promise<void> {
+        await AddonModImscp.logView(this.module.instance, this.module.name);
     }
 
     /**
