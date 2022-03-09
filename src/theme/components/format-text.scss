@@ -70,6 +70,16 @@ core-format-text {
             display: block;
         }
 
+        &.collapsible-enabled {
+            .core-format-text-content {
+                display: block;
+                max-height: none;
+            }
+            &.collapsible-collapsed .core-format-text-content {
+                overflow: hidden;
+            }
+        }
+
         @if ($core-format-text-never-shorten) {
             &.collapsible-enabled {
                 --display-toggle: none !important;
@@ -83,6 +93,12 @@ core-format-text {
                     display: none !important;
                 }
             }
+        }
+    }
+    &.collapsible-item.inline {
+        display: inline-block;
+        &.collapsible-enabled .core-format-text-content {
+           display: inline-block;
         }
     }
 

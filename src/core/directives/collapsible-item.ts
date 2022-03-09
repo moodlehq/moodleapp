@@ -59,6 +59,10 @@ export class CoreCollapsibleItemDirective implements OnInit {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
+        if (this.height === null) {
+            return;
+        }
+
         if (typeof this.height === 'string') {
             this.maxHeight = this.height === ''
                 ? defaultMaxHeight
@@ -141,7 +145,7 @@ export class CoreCollapsibleItemDirective implements OnInit {
         this.element.classList.toggle('collapsible-enabled', enable);
 
         if (!enable || this.element.querySelector('ion-button.collapsible-toggle')) {
-            this.setMaxHeight(!enable || this.expanded? undefined : this.maxHeight);
+            this.setHeight(!enable || this.expanded ? undefined : this.maxHeight);
 
             return;
         }
@@ -168,15 +172,15 @@ export class CoreCollapsibleItemDirective implements OnInit {
     /**
      * Set max height to element.
      *
-     * @param maxHeight Max height if collapsed or undefined if expanded.
+     * @param height Max height if collapsed or undefined if expanded.
      */
-    protected setMaxHeight(maxHeight?: number): void {
-        if (maxHeight) {
-            this.element.style.setProperty('--max-height', maxHeight + buttonHeight + 'px');
+    protected setHeight(height?: number): void {
+        if (height) {
+            this.element.style.setProperty('--height', height + 'px');
         } else if (this.expandedHeight) {
-            this.element.style.setProperty('--max-height', this.expandedHeight + 'px');
+            this.element.style.setProperty('--height', this.expandedHeight + 'px');
         } else {
-            this.element.style.removeProperty('--max-height');
+            this.element.style.removeProperty('--height');
 
         }
     }
@@ -192,7 +196,7 @@ export class CoreCollapsibleItemDirective implements OnInit {
         }
         this.expanded = expand;
         this.element.classList.toggle('collapsible-collapsed', !expand);
-        this.setMaxHeight(!expand? this.maxHeight: undefined);
+        this.setHeight(!expand ? this.maxHeight: undefined);
 
         const toggleButton = this.element.querySelector('ion-button.collapsible-toggle');
         const toggleText = toggleButton?.querySelector('.collapsible-toggle-text');
