@@ -67,6 +67,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
     protected subscriptions: Subscription[] = [];
     protected enabled = true;
     protected endAnimationTimeout?: number;
+    protected isWithinContent = false;
 
     constructor(protected el: ElementRef) {}
 
@@ -346,7 +347,8 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
             throw new Error('[collapsible-header] Couldn\'t set up scrolling');
         }
 
-        page.classList.toggle('is-within-content', content.contains(expandedHeader));
+        this.isWithinContent = content.contains(expandedHeader);
+        page.classList.toggle('is-within-content', this.isWithinContent);
         this.setEnabled(this.enabled);
 
         Object
@@ -363,10 +365,17 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
             }
 
             const scrollableHeight = contentScroll.scrollHeight - contentScroll.clientHeight;
-            const frozen = scrollableHeight <=  scrollingHeight;
+
+            let frozen = false;
+            if (this.isWithinContent) {
+                frozen = scrollableHeight <= scrollingHeight;
+            } else {
+                const collapsedHeight = expandedHeaderHeight - (expandedHeader.clientHeight ?? 0);
+                frozen = scrollableHeight + collapsedHeight <= 2 * expandedHeaderHeight;
+            }
             const progress = frozen
                 ? 0
-                :  CoreMath.clamp(contentScroll.scrollTop / scrollingHeight, 0, 1);
+                : CoreMath.clamp(contentScroll.scrollTop / scrollingHeight, 0, 1);
 
             page.style.setProperty('--collapsible-header-progress', `${progress}`);
             page.classList.toggle('is-frozen', frozen);
