@@ -1765,34 +1765,6 @@ export class CoreUtilsProvider {
         return CoreApp.isIOS() && openFileAction == OpenFileAction.OPEN_WITH;
     }
 
-    /**
-     * Check whether the given cookie is set.
-     *
-     * @param name Cookie name.
-     * @returns Whether the cookie is set.
-     */
-    hasCookie(name: string): boolean {
-        return new RegExp(`(\\s|;|^)${name}=`).test(document.cookie ?? '');
-    }
-
-    /**
-     * Read a cookie.
-     *
-     * @param name Cookie name.
-     * @return Cookie value.
-     */
-    getCookie(name: string): string | null {
-        const cookies = (document.cookie ?? '').split(';').reduce((cookies, cookie) => {
-            const [name, value] = cookie.trim().split('=');
-
-            cookies[name] = value;
-
-            return cookies;
-        }, {});
-
-        return cookies[name] ?? null;
-    }
-
 }
 
 export const CoreUtils = makeSingleton(CoreUtilsProvider);
