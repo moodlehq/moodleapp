@@ -257,6 +257,7 @@ function build_lang($lang, $keys) {
             $text = str_replace('$a->', '$a.', $text);
             $text = str_replace('{$a', '{{$a', $text);
             $text = str_replace('}', '}}', $text);
+            $text = preg_replace('/@@.+?@@(<br>)?\\s*/', '', $text);
             // Prevent double.
             $text = str_replace(array('{{{', '}}}'), array('{{', '}}'), $text);
         } else {
