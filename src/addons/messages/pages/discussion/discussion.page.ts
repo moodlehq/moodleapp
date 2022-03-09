@@ -499,13 +499,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
      */
     protected setNewMessagesBadge(addMessages: number): void {
         if (this.newMessages == 0 && addMessages > 0) {
-            // Setup scrolling.
-            this.content!.scrollEvents = true;
-
             this.scrollFunction();
-        } else if (this.newMessages > 0 && addMessages == 0) {
-            // Remove scrolling.
-            this.content!.scrollEvents = false;
         }
 
         this.newMessages = addMessages;
