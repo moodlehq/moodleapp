@@ -38,7 +38,7 @@
     }
 
     &.is-active.is-collapsed.is-within-content ion-header.core-header-shadow {
-        --core-header-shadow: var(--scroll-shadow-bottom, none);
+        --core-header-shadow: var(--drop-shadow-bottom, none);
     }
 
     &.is-active {
