@@ -20,8 +20,8 @@ import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreEventLoadingChangedData, CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreFormatTextDirective } from './format-text';
 
-const defaultMaxHeight = 64;
-const buttonHeight = 44;
+const defaultMaxHeight = 80;
+const minMaxHeight = 56;
 
 /**
  * Directive to make an element collapsible.
@@ -70,7 +70,7 @@ export class CoreCollapsibleItemDirective implements OnInit {
         } else {
             this.maxHeight = this.height;
         }
-        this.maxHeight = this.maxHeight < defaultMaxHeight ? defaultMaxHeight : this.maxHeight;
+        this.maxHeight = this.maxHeight < minMaxHeight ? defaultMaxHeight : this.maxHeight;
 
         if (!this.maxHeight) {
             // Do not collapse.

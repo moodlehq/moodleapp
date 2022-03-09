@@ -72,8 +72,7 @@
                     <p class="item-heading">
                         {{'core.summary' | translate}}
                     </p>
-                    <core-format-text [text]="course.summary" [collapsible-item]="120" contextLevel="course"
-                        [contextInstanceId]="course.id">
+                    <core-format-text [text]="course.summary" collapsible-item contextLevel="course" [contextInstanceId]="course.id">
                     </core-format-text>
                 </ion-label>
             </ion-item>
@@ -105,7 +104,7 @@
                                 </core-format-text>
                             </span><span class="core-customfieldseparator">: </span>
                             <span class="core-customfieldvalue">
-                                <core-format-text [text]="field.value" [collapsible-item]="120" contextLevel="course"
+                                <core-format-text [text]="field.value" collapsible-item contextLevel="course"
                                     [contextInstanceId]="course.id">
                                 </core-format-text>
                             </span>

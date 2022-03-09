@@ -315,9 +315,8 @@
     --selected-item-color: var(--primary);
     --selected-item-border-width: 5px;
 
-    --collapsible-toggle-background: var(--light);
-    --collapsible-min-button-height: 44px;
-    --collapsible-toggle-text: var(--text-color);
+    --collapsible-toggle-background: transparent;
+    --collapsible-toggle-text: var(--medium);
 
     --background-gradient-rgb: #{$ion-item-background-rgb};
 
