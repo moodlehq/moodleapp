@@ -61,7 +61,7 @@
             (onLoading)="setLoadingComments($event)" [showItem]="true">
         </core-comments>
 
-        <div collapsible-footer *ngIf="entryLoaded && hasPrevious || hasNext" slot="fixed">
+        <div collapsible-footer *ngIf="entryLoaded && hasPrevious || hasNext" slot="fixed" appearOnBottom>
             <ion-row class="ion-justify-content-between ion-align-items-center ion-no-padding ion-wrap">
                 <ion-col class="ion-text-start ion-no-padding core-navigation-arrow" size="auto">
                     <ion-button [disabled]="!hasPrevious" fill="clear" [attr.aria-label]="'core.previous' | translate"

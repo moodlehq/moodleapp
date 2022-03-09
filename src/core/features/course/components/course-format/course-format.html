@@ -24,7 +24,7 @@
 
             <core-infinite-loading [enabled]="canLoadMore" (action)="showMoreActivities($event)"></core-infinite-loading>
         </div>
-        <div collapsible-footer *ngIf="displayCourseIndex && (previousSection || nextSection)" slot="fixed">
+        <div collapsible-footer appearOnBottom *ngIf="displayCourseIndex && (previousSection || nextSection)" slot="fixed">
             <div class="core-course-section-nav-buttons safe-area-padding-horizontal list-item-limited-width">
                 <ion-button *ngIf="previousSection" (click)="sectionChanged(previousSection)" expand="block"
                     [attr.aria-label]="('core.previous' | translate) + ': ' + previousSection.name">

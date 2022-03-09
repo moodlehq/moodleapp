@@ -105,7 +105,7 @@
             </div>
         </div>
 
-        <div collapsible-footer *ngIf="loaded && numPages > 1" slot="fixed">
+        <div collapsible-footer appearOnBottom *ngIf="loaded && numPages > 1" slot="fixed">
             <ion-row class="ion-justify-content-between ion-align-items-center ion-no-padding ion-wrap">
                 <ion-col class="ion-text-start ion-no-padding core-navigation-arrow" size="auto" *ngIf="!showAll">
                     <ion-button [disabled]="previousPage < 0" fill="clear" [attr.aria-label]="'core.previous' | translate"
