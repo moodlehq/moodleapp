@@ -24,7 +24,9 @@
 
     &:not(.is-collapsed) .collapsible-header-collapsed {
         --core-header-toolbar-border-width: 0;
-        --core-header-toolbar-background: transparent;
+        ion-toolbar {
+            --background: transparent;
+        }
 
         h1 {
             opacity: 0;

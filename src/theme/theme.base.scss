@@ -161,6 +161,7 @@ ion-header {
         ion-back-button,
         .in-toolbar.button-clear {
             --color: var(--core-header-toolbar-color);
+            --background: var(--core-header-toolbar-background);
             --ion-toolbar-color: var(--core-header-toolbar-color);
             --border-radius: var(--huge-radius);
         }
@@ -170,7 +171,7 @@ ion-header {
 
         .button.button-clear,
         .button.button-solid {
-            --background: transparent;
+            --background: var(--core-header-toolbar-background);
             --color: var(--core-header-toolbar-color);
             --primary: var(--core-header-toolbar-color);
         }
