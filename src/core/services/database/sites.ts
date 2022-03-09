@@ -145,6 +145,10 @@ export const SITE_SCHEMA: CoreSiteSchema = {
                     name: 'data',
                     type: 'TEXT',
                 },
+                {
+                    name: 'timeaccess',
+                    type: 'INTEGER',
+                },
             ],
             primaryKeys: ['component', 'id'],
         },

@@ -442,6 +442,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         }
 
         this.fetchSuccess = true;
+        CoreCourse.storeModuleViewed(this.courseId, this.module.id, { sectionId: this.module.section });
 
         // Log activity now.
         try {

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { CoreCourse } from '@features/course/services/course';
 import { CoreQuestionQuestionParsed } from '@features/question/services/question';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
 import { IonContent, IonRefresher } from '@ionic/angular';
@@ -163,6 +164,9 @@ export class AddonModQuizReviewPage implements OnInit {
                 CoreUtils.ignoreErrors(
                     AddonModQuiz.logViewAttemptReview(this.attemptId, this.quiz.id, this.quiz.name),
                 );
+
+                // Store module viewed. It's done in this page because it can be reached using a link.
+                CoreCourse.storeModuleViewed(this.courseId, this.cmId);
             }
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.mod_quiz.errorgetquiz', true);

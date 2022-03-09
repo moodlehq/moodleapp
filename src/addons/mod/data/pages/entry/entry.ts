@@ -204,7 +204,10 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
 
             if (this.logAfterFetch) {
                 this.logAfterFetch = false;
-                this.logView();
+                await CoreUtils.ignoreErrors(AddonModData.logView(this.database.id, this.database.name));
+
+                // Store module viewed. It's done in this page because it can be reached using a link.
+                CoreCourse.storeModuleViewed(this.courseId, this.moduleId);
             }
         } catch (error) {
             if (!refresh) {
@@ -400,19 +403,6 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
      */
     ratingUpdated(): void {
         AddonModData.invalidateEntryData(this.database!.id, this.entryId!);
-    }
-
-    /**
-     * Log viewing the activity.
-     *
-     * @return Promise resolved when done.
-     */
-    protected async logView(): Promise<void> {
-        if (!this.database || !this.database.id) {
-            return;
-        }
-
-        await CoreUtils.ignoreErrors(AddonModData.logView(this.database.id, this.database.name));
     }
 
     /**

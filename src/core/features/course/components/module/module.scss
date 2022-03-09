@@ -3,6 +3,7 @@
 :host {
     --horizontal-margin: 10px;
     --vertical-margin: 10px;
+    --core-course-module-not-viewed-border-color: var(--gray-500);
 
     ion-card {
         margin: var(--vertical-margin) var(--horizontal-margin);
@@ -90,5 +91,19 @@
 
     .core-course-module-info ::ng-deep core-course-module-completion .core-module-automatic-completion-conditions .completioninfo.completion_complete {
         display: none;
+    }
+
+    &.core-course-module-not-viewed {
+        --ion-card-border-color: var(--core-course-module-not-viewed-border-color);
+    }
+
+    .core-course-last-module-viewed {
+        padding: 8px 12px;
+        color: var(--subdued-text-color);
+        border-top: 1px solid var(--stroke);
+
+        ion-icon {
+            margin-right: 4px;
+        }
     }
 }

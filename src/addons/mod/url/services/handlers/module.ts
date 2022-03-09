@@ -63,7 +63,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
          * @param module The module object.
          * @param courseId The course ID.
          */
-        const openUrl = async (module: CoreCourseModuleData): Promise<void> => {
+        const openUrl = async (module: CoreCourseModuleData, courseId: number): Promise<void> => {
             try {
                 if (module.instance) {
                     await AddonModUrl.logView(module.instance, module.name);
@@ -72,6 +72,8 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
             } catch {
                 // Ignore errors.
             }
+
+            CoreCourse.storeModuleViewed(courseId, module.id);
 
             const contents = await CoreCourse.getModuleContents(module);
             AddonModUrlHelper.open(contents[0].fileurl);
@@ -89,7 +91,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
                     const shouldOpen = await this.shouldOpenLink(module);
 
                     if (shouldOpen) {
-                        openUrl(module);
+                        openUrl(module, courseId);
                     } else {
                         this.openActivityPage(module, module.course, options);
                     }
@@ -101,8 +103,8 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
                 hidden: true, // Hide it until we calculate if it should be displayed or not.
                 icon: 'fas-link',
                 label: 'core.openmodinbrowser',
-                action: (event: Event, module: CoreCourseModuleData): void => {
-                    openUrl(module);
+                action: (event: Event, module: CoreCourseModuleData, courseId: number): void => {
+                    openUrl(module, courseId);
                 },
             }],
         };

@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreCourseFormatHandler } from '@features/course/services/format-delegate';
+import { CoreCourseFormatCurrentSectionData, CoreCourseFormatHandler } from '@features/course/services/format-delegate';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreCourseWSSection } from '@features/course/services/course';
@@ -41,12 +41,18 @@ export class CoreCourseFormatWeeksHandlerService implements CoreCourseFormatHand
     /**
      * @inheritdoc
      */
-    async getCurrentSection(course: CoreCourseAnyCourseData, sections: CoreCourseSection[]): Promise<CoreCourseSection> {
+    async getCurrentSection(
+        course: CoreCourseAnyCourseData,
+        sections: CoreCourseSection[],
+    ): Promise<CoreCourseFormatCurrentSectionData<CoreCourseSection>> {
         const now = CoreTimeUtils.timestamp();
 
         if ((course.startdate && now < course.startdate) || (course.enddate && now > course.enddate)) {
             // Course hasn't started yet or it has ended already. Return all sections.
-            return sections[0];
+            return {
+                section: sections[0],
+                forceSelected: false,
+            };
         }
 
         for (let i = 0; i < sections.length; i++) {
@@ -57,12 +63,18 @@ export class CoreCourseFormatWeeksHandlerService implements CoreCourseFormatHand
 
             const dates = this.getSectionDates(section, course.startdate || 0);
             if (now >= dates.start && now < dates.end) {
-                return section;
+                return {
+                    section,
+                    forceSelected: false,
+                };
             }
         }
 
         // The section wasn't found, return all sections.
-        return sections[0];
+        return {
+            section: sections[0],
+            forceSelected: false,
+        };
     }
 
     /**

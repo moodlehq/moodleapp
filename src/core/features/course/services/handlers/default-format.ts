@@ -18,7 +18,7 @@ import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreCourseSection } from '../course-helper';
-import { CoreCourseFormatHandler } from '../format-delegate';
+import { CoreCourseFormatCurrentSectionData, CoreCourseFormatHandler } from '../format-delegate';
 
 /**
  * Default handler used when the course format doesn't have a specific implementation.
@@ -74,7 +74,10 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
     /**
      * @inheritdoc
      */
-    async getCurrentSection(course: CoreCourseAnyCourseData, sections: CoreCourseSection[]): Promise<CoreCourseSection> {
+    async getCurrentSection(
+        course: CoreCourseAnyCourseData,
+        sections: CoreCourseSection[],
+    ): Promise<CoreCourseFormatCurrentSectionData<CoreCourseSection>> {
         let marker: number | undefined;
 
         // We need the "marker" to determine the current section.
@@ -93,12 +96,18 @@ export class CoreCourseFormatDefaultHandler implements CoreCourseFormatHandler {
             const section = sections.find((sect) => sect.section == marker);
 
             if (section) {
-                return section;
+                return {
+                    section,
+                    forceSelected: true,
+                };
             }
         }
 
         // Marked section not found or we couldn't retrieve the marker. Return all sections.
-        return sections[0];
+        return {
+            section: sections[0],
+            forceSelected: false,
+        };
     }
 
     /**

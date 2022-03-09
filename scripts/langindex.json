@@ -1559,6 +1559,7 @@
   "core.course.highlighted": "moodle",
   "core.course.insufficientavailablequota": "local_moodlemobileapp",
   "core.course.insufficientavailablespace": "local_moodlemobileapp",
+  "core.course.lastaccessedactivity": "local_moodlemobileapp",
   "core.course.manualcompletionnotsynced": "local_moodlemobileapp",
   "core.course.modulenotfound": "local_moodlemobileapp",
   "core.course.nocontentavailable": "local_moodlemobileapp",

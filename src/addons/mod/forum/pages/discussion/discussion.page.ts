@@ -17,6 +17,7 @@ import { Component, OnDestroy, ViewChild, OnInit, AfterViewInit, ElementRef, Opt
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreCourse } from '@features/course/services/course';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreRatingInfo, CoreRatingProvider } from '@features/rating/services/rating';
 import { CoreRatingOffline } from '@features/rating/services/rating-offline';
@@ -118,6 +119,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
     protected ratingOfflineObserver?: CoreEventObserver;
     protected ratingSyncObserver?: CoreEventObserver;
     protected changeDiscObserver?: CoreEventObserver;
+    protected fetchSuccess = false;
 
     constructor(
         @Optional() protected splitView: CoreSplitViewComponent,
@@ -547,6 +549,12 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
 
             this.hasOfflineRatings =
                 await CoreRatingOffline.hasRatings('mod_forum', 'post', ContextLevel.MODULE, this.cmId, this.discussionId);
+
+            if (!this.fetchSuccess) {
+                this.fetchSuccess = true;
+                // Store module viewed. It's done in this page because it can be reached using a link.
+                this.courseId && this.cmId && CoreCourse.storeModuleViewed(this.courseId, this.cmId);
+            }
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
         } finally {

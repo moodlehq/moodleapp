@@ -26,6 +26,7 @@ import {
     AddonModH5PActivityData,
     AddonModH5PActivityUserAttempts,
 } from '../../services/h5pactivity';
+import { CoreCourse } from '@features/course/services/course';
 
 /**
  * Page that displays user attempts of a certain user.
@@ -101,6 +102,9 @@ export class AddonModH5PActivityUserAttemptsPage implements OnInit {
                     this.h5pActivity.name,
                     { userId: this.userId },
                 ));
+
+                // Store module viewed. It's done in this page because it can be reached using a link.
+                CoreCourse.storeModuleViewed(this.courseId, this.cmId);
             }
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error loading attempts.');

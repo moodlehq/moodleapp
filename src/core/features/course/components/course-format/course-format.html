@@ -97,7 +97,9 @@
 
         <ng-container *ngFor="let module of section.modules">
             <core-course-module *ngIf="module.visibleoncoursepage !== 0" [module]="module" [section]="section"
-                [showActivityDates]="course.showactivitydates" [showCompletionConditions]="course.showcompletionconditions">
+                [showActivityDates]="course.showactivitydates" [showCompletionConditions]="course.showcompletionconditions"
+                [isLastViewed]="lastModuleViewed && lastModuleViewed.cmId === module.id" [class.core-course-module-not-viewed]="
+                    !viewedModules[module.id] && (!module.completiondata || module.completiondata.state === completionStatusIncomplete)">
             </core-course-module>
         </ng-container>
     </section>

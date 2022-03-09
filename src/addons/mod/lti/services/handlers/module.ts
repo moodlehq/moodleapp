@@ -21,6 +21,7 @@ import { makeSingleton } from '@singletons';
 import { AddonModLtiHelper } from '../lti-helper';
 import { AddonModLtiIndexComponent } from '../../components/index';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
+import { CoreCourse } from '@features/course/services/course';
 
 /**
  * Handler to support LTI modules.
@@ -67,6 +68,8 @@ export class AddonModLtiModuleHandlerService extends CoreModuleHandlerBase imple
             action: (event: Event, module: CoreCourseModuleData, courseId: number): void => {
                 // Launch the LTI.
                 AddonModLtiHelper.getDataAndLaunch(courseId, module);
+
+                CoreCourse.storeModuleViewed(courseId, module.id);
             },
         }];
 

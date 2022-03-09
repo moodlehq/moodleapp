@@ -303,7 +303,7 @@ export class AddonModImscpProvider {
     async storeLastItemViewed(id: number, href: string, courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
-        await site.storeLastViewed(AddonModImscpProvider.COMPONENT, id, href, String(courseId));
+        await site.storeLastViewed(AddonModImscpProvider.COMPONENT, id, href, { data: String(courseId) });
     }
 
 }

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
+import { CoreCourse } from '@features/course/services/course';
 import { IonRefresher } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
@@ -34,6 +35,7 @@ export class AddonModFeedbackNonRespondentsPage implements OnInit {
     protected courseId!: number;
     protected feedback?: AddonModFeedbackWSFeedback;
     protected page = 0;
+    protected fetchSuccess = false;
 
     selectedGroup!: number;
     groupInfo?: CoreGroupInfo;
@@ -81,6 +83,12 @@ export class AddonModFeedbackNonRespondentsPage implements OnInit {
             this.selectedGroup = CoreGroups.validateGroupId(this.selectedGroup, this.groupInfo);
 
             await this.loadGroupUsers(this.selectedGroup);
+
+            if (!this.fetchSuccess) {
+                this.fetchSuccess = true;
+                // Store module viewed. It's done in this page because it can be reached using a link.
+                CoreCourse.storeModuleViewed(this.courseId, this.cmId);
+            }
         } catch (message) {
             CoreDomUtils.showErrorModalDefault(message, 'core.course.errorgetmodule', true);
 

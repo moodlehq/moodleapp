@@ -2022,6 +2022,7 @@ export type CoreCourseModuleData = Omit<CoreCourseGetContentsWSModule, 'completi
     isStealth?: boolean;
     handlerData?: CoreCourseModuleHandlerData;
     completiondata?: CoreCourseModuleCompletionData;
+    section: number;
 };
 
 /**

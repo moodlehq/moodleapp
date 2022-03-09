@@ -98,9 +98,13 @@ export interface CoreCourseFormatHandler extends CoreDelegateHandler {
      *
      * @param course The course to get the title.
      * @param sections List of sections.
-     * @return Promise resolved with current section.
+     * @return Promise resolved with current section and whether the section should be selected. If only the section is returned,
+     *         forceSelected will default to false.
      */
-    getCurrentSection?(course: CoreCourseAnyCourseData, sections: CoreCourseSection[]): Promise<CoreCourseSection>;
+    getCurrentSection?(
+        course: CoreCourseAnyCourseData,
+        sections: CoreCourseSection[],
+    ): Promise<CoreCourseFormatCurrentSectionData<CoreCourseSection> | CoreCourseSection>;
 
     /**
      * Returns the name for the highlighted section.
@@ -299,21 +303,37 @@ export class CoreCourseFormatDelegateService extends CoreDelegate<CoreCourseForm
      *
      * @param course The course to get the title.
      * @param sections List of sections.
-     * @return Promise resolved with current section.
+     * @return Promise.
      */
-    async getCurrentSection<T = CoreCourseSection>(course: CoreCourseAnyCourseData, sections: T[]): Promise<T> {
+    async getCurrentSection<T = CoreCourseSection>(
+        course: CoreCourseAnyCourseData,
+        sections: T[],
+    ): Promise<CoreCourseFormatCurrentSectionData<T>> {
         try {
-            const section = await this.executeFunctionOnEnabled<T>(
+            const sectionData = await this.executeFunctionOnEnabled<CoreCourseFormatCurrentSectionData<T> | T>(
                 course.format || '',
                 'getCurrentSection',
                 [course, sections],
             );
 
-            return section || sections[0];
+            if (sectionData && 'forceSelected' in sectionData) {
+                return sectionData;
+            } else if (sectionData) {
+                // Function just returned the section, don't force selecting it.
+                return {
+                    section: sectionData,
+                    forceSelected: false,
+                };
+            }
         } catch {
-            // This function should never fail. Just return the first section (usually, "All sections").
-            return sections[0];
+            // This function should never fail.
         }
+
+        // Return the first section (usually, "All sections").
+        return {
+            section: sections[0],
+            forceSelected: false,
+        };
     }
 
     /**
@@ -380,3 +400,8 @@ export class CoreCourseFormatDelegateService extends CoreDelegate<CoreCourseForm
 }
 
 export const CoreCourseFormatDelegate = makeSingleton(CoreCourseFormatDelegateService);
+
+export type CoreCourseFormatCurrentSectionData<T = CoreCourseSection> = {
+    section: T; // Current section.
+    forceSelected: boolean; // If true, the app will force selecting the section when opening the course.
+};

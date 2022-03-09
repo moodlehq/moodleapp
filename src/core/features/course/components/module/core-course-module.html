@@ -99,6 +99,11 @@
 
             </ion-label>
         </ion-item>
+
+        <div class="core-course-last-module-viewed" *ngIf="isLastViewed">
+            <ion-icon name="fas-eye" aria-hidden="true"></ion-icon>
+            {{ 'core.course.lastaccessedactivity' | translate }}
+        </div>
     </ng-container>
 
     <!-- Loading. -->
