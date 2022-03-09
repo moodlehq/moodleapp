@@ -62,11 +62,11 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
     protected expandedFontStyles?: Partial<CSSStyleDeclaration>;
     protected content?: HTMLIonContentElement;
     protected contentScrollListener?: EventListener;
+    protected endContentScrollListener?: EventListener;
     protected floatingTitle?: HTMLElement;
     protected scrollingHeight?: number;
     protected subscriptions: Subscription[] = [];
     protected enabled = true;
-    protected endAnimationTimeout?: number;
     protected isWithinContent = false;
 
     constructor(protected el: ElementRef) {}
@@ -107,6 +107,9 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
 
         if (this.content && this.contentScrollListener) {
             this.content.removeEventListener('ionScroll', this.contentScrollListener);
+        }
+        if (this.content && this.endContentScrollListener) {
+            this.content.removeEventListener('ionScrollEnd', this.endContentScrollListener);
         }
     }
 
@@ -281,11 +284,17 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
      * @param content Content element.
      */
     protected updateContent(content?: HTMLIonContentElement | null): void {
-        if (this.content && this.contentScrollListener) {
-            this.content.removeEventListener('ionScroll', this.contentScrollListener);
+        if (this.content) {
+            if (this.contentScrollListener) {
+                this.content.removeEventListener('ionScroll', this.contentScrollListener);
+                delete this.contentScrollListener;
+            }
 
+            if (this.endContentScrollListener) {
+                this.content.removeEventListener('ionScrollEnd', this.endContentScrollListener);
+                delete this.endContentScrollListener;
+            }
             delete this.content;
-            delete this.contentScrollListener;
         }
 
         content && this.trackContentScroll(content);
@@ -355,13 +364,10 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
             .entries(expandedFontStyles)
             .forEach(([property, value]) => floatingTitle.style.setProperty(property, value as string));
 
+        this.content.scrollEvents = true;
         this.content.addEventListener('ionScroll', this.contentScrollListener = ({ target }: CustomEvent<ScrollDetail>): void => {
             if (target !== this.content || !this.enabled) {
                 return;
-            }
-
-            if (this.endAnimationTimeout) {
-                clearTimeout(this.endAnimationTimeout);
             }
 
             const scrollableHeight = contentScroll.scrollHeight - contentScroll.clientHeight;
@@ -384,37 +390,31 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
             Object
                 .entries(progress > .5 ? collapsedFontStyles : expandedFontStyles)
                 .forEach(([property, value]) => floatingTitle.style.setProperty(property, value as string));
-
-            if (progress > 0 && progress < 1) {
-                // Finish opening or closing the bar.
-                this.endAnimationTimeout = window.setTimeout(() => this.endAnimation(progress, contentScroll.scrollTop), 500);
-            }
         });
-    }
 
-    /**
-     * End of animation when stop scrolling.
-     *
-     * @param progress Progress.
-     * @param scrollTop Current ScrollTop position.
-     */
-    protected endAnimation(progress: number, scrollTop: number): void {
-        if(!this.page) {
-            return;
-        }
+        this.content.addEventListener(
+            'ionScrollEnd',
+            this.endContentScrollListener = ({ target }: CustomEvent<ScrollDetail>): void => {
+                if (target !== this.content || !this.enabled) {
+                    return;
+                }
 
-        const collapse = progress > 0.5;
+                const progress = parseFloat(page.style.getPropertyValue('--collapsible-header-progress'));
+                const scrollTop = contentScroll.scrollTop;
+                const collapse = progress > 0.5;
 
-        this.page.style.setProperty('--collapsible-header-progress', collapse ? '1' : '0');
-        this.page.classList.toggle('is-collapsed', collapse);
+                page.style.setProperty('--collapsible-header-progress', collapse ? '1' : '0');
+                page.classList.toggle('is-collapsed', collapse);
 
-        if (collapse && this.scrollingHeight && this.scrollingHeight > 0 && scrollTop < this.scrollingHeight) {
-            this.content?.scrollToPoint(null, this.scrollingHeight);
-        }
+                if (collapse && this.scrollingHeight && this.scrollingHeight > 0 && scrollTop < this.scrollingHeight) {
+                    this.content?.scrollToPoint(null, this.scrollingHeight);
+                }
 
-        if (!collapse && this.scrollingHeight && this.scrollingHeight > 0 && scrollTop > 0) {
-            this.content?.scrollToPoint(null, 0);
-        }
+                if (!collapse && this.scrollingHeight && this.scrollingHeight > 0 && scrollTop > 0) {
+                    this.content?.scrollToPoint(null, 0);
+                }
+            },
+        );
     }
 
 }
