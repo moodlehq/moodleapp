@@ -190,6 +190,9 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
             };
 
             this.subscriptions.push(outlet.activateEvents.subscribe(onOutletUpdated));
+            this.subscriptions.push(outlet.activateEvents.subscribe(onOutletUpdated));
+
+            onOutletUpdated();
 
             onOutletUpdated();
 
@@ -311,6 +314,10 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
      * @param content Content element.
      */
     protected updateContent(content?: HTMLIonContentElement | null): void {
+        if (content === (this.content ?? null)) {
+            return;
+        }
+
         if (this.content) {
             if (this.contentScrollListener) {
                 this.content.removeEventListener('ionScroll', this.contentScrollListener);
@@ -321,6 +328,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
                 this.content.removeEventListener('ionScrollEnd', this.endContentScrollListener);
                 delete this.endContentScrollListener;
             }
+
             delete this.content;
         }
 
