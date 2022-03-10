@@ -53,7 +53,8 @@
                             </p>
                             <ion-badge [color]="section.downloadStatus == statusDownloaded ? 'success' : 'light'"
                                 *ngIf="section.totalSize > 0">
-                                <ion-icon aria-hidden="true" name="fam-cloud-done" *ngIf="section.downloadStatus == statusDownloaded">
+                                <ion-icon name="fam-cloud-done" *ngIf="section.downloadStatus == statusDownloaded"
+                                    [attr.aria-label]="'core.downloaded' | translate">
                                 </ion-icon>{{ section.totalSize | coreBytesToSize }}
                             </ion-badge>
                             <!-- Download progress. -->
@@ -98,7 +99,8 @@
                                 </h3>
                                 <ion-badge [color]="module.downloadStatus == statusDownloaded ? 'success' : 'light'"
                                     *ngIf="module.totalSize > 0">
-                                    <ion-icon aria-hidden="true" name="fam-cloud-done" *ngIf="module.downloadStatus == statusDownloaded">
+                                    <ion-icon name="fam-cloud-done" *ngIf="module.downloadStatus == statusDownloaded"
+                                        [attr.aria-label]="'core.downloaded' | translate">
                                     </ion-icon>{{ module.totalSize | coreBytesToSize }}
                                 </ion-badge>
                             </ion-label>
