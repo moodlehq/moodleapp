@@ -242,6 +242,9 @@ class behat_app extends behat_base {
         $method = 'swipe' . ucwords($direction);
 
         $this->evaluate_script("behat.getAngularInstance('ion-content', 'CoreSwipeNavigationDirective').$method()");
+
+        // Wait swipe animation to finish.
+        $this->getSession()->wait(300);
     }
 
     /**
