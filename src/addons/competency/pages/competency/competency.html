@@ -122,7 +122,7 @@
             <ion-card *ngFor="let evidence of competency.evidence">
                 <ion-item class="ion-text-wrap" *ngIf="evidence.actionuser" core-user-link [userId]="evidence.actionuser.id"
                     [courseId]="courseId">
-                    <core-user-avatar [user]="evidence.actionuser" slot="start"></core-user-avatar>
+                    <core-user-avatar [user]="evidence.actionuser" slot="start" [linkProfile]="false"></core-user-avatar>
                     <ion-label>
                         <p class="item-heading">{{ evidence.actionuser.fullname }}</p>
                         <p>{{ evidence.timemodified * 1000 | coreFormatDate }}</p>

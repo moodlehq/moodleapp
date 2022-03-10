@@ -77,8 +77,6 @@ core-format-text {
             }
             &.collapsible-collapsed .core-format-text-content {
                 overflow: hidden;
-                height: var(--collapsible-height);
-                @include core-transition(height, 300ms);
             }
         }
 

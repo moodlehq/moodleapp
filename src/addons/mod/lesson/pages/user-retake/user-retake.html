@@ -17,7 +17,7 @@
         <div *ngIf="student">
             <!-- Student data. -->
             <ion-item class="ion-text-wrap" core-user-link [userId]="student.id" [courseId]="courseId" [attr.aria-label]="student.fullname">
-                <core-user-avatar [user]="student" slot="start" [userId]="student.id" [courseId]="courseId">
+                <core-user-avatar [user]="student" slot="start" [userId]="student.id" [courseId]="courseId" [linkProfile]="false">
                 </core-user-avatar>
                 <ion-label>
                     <h2>{{student.fullname}}</h2>

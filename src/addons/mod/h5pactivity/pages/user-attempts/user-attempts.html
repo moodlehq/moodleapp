@@ -20,7 +20,7 @@
         <!-- User viewed. -->
         <ion-item class="ion-text-wrap" *ngIf="user && !isCurrentUser" core-user-link [userId]="user.id" [courseId]="courseId"
             [attr.aria-label]="user.fullname" button detail="true">
-            <core-user-avatar [user]="user" slot="start" [courseId]="courseId"></core-user-avatar>
+            <core-user-avatar [user]="user" slot="start" [courseId]="courseId" [linkProfile]="false"></core-user-avatar>
             <ion-label>
                 <h2>{{ user.fullname }}</h2>
             </ion-label>
