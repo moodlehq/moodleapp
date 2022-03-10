@@ -515,11 +515,19 @@
      *
      * @param {HTMLElement} element Element to press.
      */
-    const pressElement = function(element) {
+    const pressElement = async function(element) {
         // Scroll the item into view.
+        const initialRect = element.getBoundingClientRect();
+
         element.scrollIntoView(false);
 
+        await new Promise(resolve => requestAnimationFrame(resolve));
+
         const rect = element.getBoundingClientRect();
+
+        if (initialRect.y !== rect.y) {
+            await new Promise(resolve => setTimeout(resolve, 300));
+        }
 
         // Simulate a mouse click on the button.
         const eventOptions = {
