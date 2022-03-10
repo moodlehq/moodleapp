@@ -1567,6 +1567,7 @@
   "core.course.thisweek": "format_weeks/currentsection",
   "core.course.todo": "completion",
   "core.course.useactivityonbrowser": "local_moodlemobileapp",
+  "core.course.viewcourse": "block_timeline",
   "core.course.warningmanualcompletionmodified": "local_moodlemobileapp",
   "core.course.warningofflinemanualcompletiondeleted": "local_moodlemobileapp",
   "core.coursedetails": "moodle",

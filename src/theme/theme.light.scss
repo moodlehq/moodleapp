@@ -216,7 +216,6 @@
     ion-action-sheet {
         --button-color: var(--ion-text-color);
         --button-color-selected: var(--ion-text-color);
-        --title-border-color: var(--primary);
 
         .action-sheet-title {
             --color: var(--ion-text-color);
@@ -325,7 +324,7 @@
     --core-star-color: var(--primary);
 
     --core-large-avatar-size: 90px;
-    --core-avatar-size: 40px;
+    --core-avatar-size: var(--a11y-min-target-size);
 
     --core-courseimage-on-course-size: 72px;
     --core-courseimage-radius: var(--medium-radius);

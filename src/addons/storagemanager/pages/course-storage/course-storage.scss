@@ -3,6 +3,10 @@
 :host {
     --course-storage-max-activity-height: 120px;
 
+    ion-card ion-item {
+        --inner-padding-end: 0px;
+    }
+
     ion-card.section ion-card-header {
         margin-bottom: 8px;
         padding-top: 8px;
@@ -47,8 +51,4 @@ ion-item core-mod-icon {
 .storage-buttons {
     display: flex;
     align-items: center;
-}
-
-ion-item {
-    --inner-padding-end: 0px;
 }

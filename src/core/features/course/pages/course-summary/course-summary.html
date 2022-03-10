@@ -130,43 +130,27 @@
 
 <ion-footer *ngIf="course && dataLoaded">
     <ng-container *ngIf="canAccessCourse">
-        <ion-button *ngFor="let item of courseMenuHandlers" (click)="openMenuItem(item)" [class]="item.data.class" expand="block">
+        <ion-button *ngFor="let item of courseMenuHandlers" (click)="openMenuItem(item)" [class]="'ion-text-wrap '+ item.data.class"
+            expand="block">
             <ion-icon *ngIf="item.data.icon" [name]="item.data.icon" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>{{item.data.title | translate }}</ion-label>
         </ion-button>
     </ng-container>
 
-    <!-- Enrol -->
-    <ion-card *ngIf="!isEnrolled && (selfEnrolInstances.length > 0 || paypalEnabled)">
-        <ion-item class="ion-text-wrap" *ngFor="let instance of selfEnrolInstances">
-            <ion-label>
-                <p class="item-heading">{{ instance.name }}</p>
-                <ion-button expand="block" class="ion-margin-top" (click)="selfEnrolClicked(instance.id)">
-                    {{ 'core.courses.enrolme' | translate }}
-                </ion-button>
-            </ion-label>
-        </ion-item>
-        <ion-item class="ion-text-wrap" *ngIf="paypalEnabled">
-            <ion-label>
-                <p class="item-heading">{{ 'core.courses.otherenrolments' | translate }}</p>
-                <ion-button expand="block" class="ion-margin-top" (click)="browserEnrol()">
-                    {{ 'core.courses.completeenrolmentbrowser' | translate }}
-                </ion-button>
-            </ion-label>
-        </ion-item>
-    </ion-card>
+    <ion-button expand="block" (click)="enrolMe()" *ngIf="!isEnrolled && (selfEnrolInstances.length > 0 || otherEnrolments)"
+        class="ion-text-wrap">
+        {{ 'core.courses.enrolme' | translate }}
+    </ion-button>
 
-    <ion-card class="core-info-card" *ngIf="!isEnrolled && !selfEnrolInstances.length && !paypalEnabled">
+    <ion-card class="core-info-card ion-text-wrap" *ngIf="!isEnrolled && !selfEnrolInstances.length && !otherEnrolments">
         <ion-item>
             <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>{{ 'core.courses.notenrollable' | translate }}</ion-label>
         </ion-item>
     </ion-card>
 
-    <ion-button (click)="openCourse()" *ngIf="!isModal && canAccessCourse" expand="block">
-        <ion-icon name="fas-briefcase" slot="start" aria-hidden="true"></ion-icon>
-        <ion-label>
-            {{ 'core.course' | translate }}
-        </ion-label>
+    <ion-button (click)="openCourse()" *ngIf="!isModal && canAccessCourse" expand="block" fill="outline" class="ion-text-wrap">
+        <ion-icon name="fas-eye" slot="start" aria-hidden="true"></ion-icon>
+        {{ 'core.course.viewcourse' | translate }}
     </ion-button>
 </ion-footer>

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnDestroy, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
-import { IonRefresher } from '@ionic/angular';
+import { ActionSheetButton, IonRefresher } from '@ionic/angular';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -31,7 +31,7 @@ import {
     CoreCourseOptionsMenuHandlerToDisplay,
 } from '@features/course/services/course-options-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
-import { ModalController, NgZone, Platform, Translate } from '@singletons';
+import { ActionSheetController, ModalController, NgZone, Platform, Translate } from '@singletons';
 import { CoreCoursesSelfEnrolPasswordComponent } from '../../../courses/components/self-enrol-password/self-enrol-password';
 import { CoreNavigator } from '@services/navigator';
 import { CoreUtils } from '@services/utils/utils';
@@ -57,13 +57,15 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
     isEnrolled = false;
     canAccessCourse = true;
     selfEnrolInstances: CoreCourseEnrolmentMethod[] = [];
-    paypalEnabled = false;
+    otherEnrolments = false;
     dataLoaded = false;
     isModal = false;
     contactsExpanded = false;
 
     courseUrl = '';
     progress?: number;
+
+    protected actionSheet?: HTMLIonActionSheetElement;
 
     courseMenuHandlers: CoreCourseOptionsMenuHandlerToDisplay[] = [];
 
@@ -146,18 +148,24 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
     protected async getCourse(refresh = false): Promise<void> {
         // Get course enrolment methods.
         this.selfEnrolInstances = [];
+        this.otherEnrolments = false;
 
         try {
             const enrolmentMethods = await CoreCourses.getCourseEnrolmentMethods(this.courseId);
             this.guestInstanceId = undefined;
 
             enrolmentMethods.forEach((method) => {
+                if (!method.status) {
+                    return;
+                }
+
                 if (method.type === 'self') {
                     this.selfEnrolInstances.push(method);
                 } else if (method.type === 'guest') {
                     this.guestInstanceId = method.id;
-                } else if (method.type === 'paypal') {
-                    this.paypalEnabled = true;
+                } else {
+                    // Other enrolments that comes from that WS should need user action.
+                    this.otherEnrolments = true;
                 }
             });
         } catch (error) {
@@ -196,7 +204,10 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
                 this.course = courseByField;
             }
 
-            this.paypalEnabled = !this.isEnrolled && courseByField.enrollmentmethods?.indexOf('paypal') > -1;
+            // enrollmentmethods contains ALL enrolment methods including manual.
+            if (!this.isEnrolled && courseByField.enrollmentmethods?.some((method) => method === 'paypal')) {
+                this.otherEnrolments = true;
+            }
 
         } catch {
             // Ignore errors.
@@ -256,7 +267,7 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
         try {
             await CoreDomUtils.showConfirm(
                 Translate.instant('core.courses.browserenrolinstructions'),
-                undefined,
+                Translate.instant('core.courses.completeenrolmentbrowser'),
                 Translate.instant('core.openinbrowser'),
             );
         } catch {
@@ -276,15 +287,15 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
     }
 
     /**
-     * User clicked in a self enrol button.
+     * Confirm user to Self enrol in course.
      *
-     * @param instanceId The instance ID of the enrolment method.
+     * @param enrolMethod The enrolment method.
      */
-    async selfEnrolClicked(instanceId: number): Promise<void> {
+    async selfEnrolConfirm(enrolMethod: CoreCourseEnrolmentMethod): Promise<void> {
         try {
-            await CoreDomUtils.showConfirm(Translate.instant('core.courses.confirmselfenrol'));
+            await CoreDomUtils.showConfirm(Translate.instant('core.courses.confirmselfenrol'), enrolMethod.name);
 
-            this.selfEnrolInCourse('', instanceId);
+            this.selfEnrolInCourse(enrolMethod.id);
         } catch {
             // User cancelled.
         }
@@ -293,11 +304,11 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
     /**
      * Self enrol in a course.
      *
-     * @param password Password to use.
      * @param instanceId The instance ID.
+     * @param password Password to use.
      * @return Promise resolved when self enrolled.
      */
-    async selfEnrolInCourse(password: string, instanceId: number): Promise<void> {
+    async selfEnrolInCourse(instanceId: number, password = ''): Promise<void> {
         const modal = await CoreDomUtils.showModalLoading('core.loading', true);
 
         try {
@@ -336,7 +347,7 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
                 );
 
                 if (modalData !== undefined) {
-                    this.selfEnrolInCourse(modalData, instanceId);
+                    this.selfEnrolInCourse(instanceId, modalData);
 
                     return;
                 }
@@ -440,6 +451,51 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
         } else if(this.course.colorNumber !== undefined) {
             this.courseThumb.nativeElement.classList.add('course-color-' + this.course.colorNumber);
         }
+    }
+
+    /**
+     * Open enrol action sheet.
+     */
+    async enrolMe(): Promise<void> {
+        if (this.selfEnrolInstances.length == 1 && !this.otherEnrolments) {
+            this.selfEnrolConfirm(this.selfEnrolInstances[0]);
+
+            return;
+        }
+
+        if (this.selfEnrolInstances.length == 0 && this.otherEnrolments) {
+            this.browserEnrol();
+
+            return;
+        }
+
+        const buttons: ActionSheetButton[] = this.selfEnrolInstances.map((enrolMethod) => ({
+            text: enrolMethod.name,
+            handler: (): void => {
+                this.selfEnrolConfirm(enrolMethod);
+            },
+        }));
+
+        if (this.otherEnrolments) {
+            buttons.push({
+                text: Translate.instant('core.courses.completeenrolmentbrowser'),
+                handler: (): void => {
+                    this.browserEnrol();
+                },
+            });
+        }
+
+        buttons.push({
+            text: Translate.instant('core.cancel'),
+            role: 'cancel',
+        });
+
+        this.actionSheet = await ActionSheetController.create({
+            header:  Translate.instant('core.courses.enrolme'),
+            buttons: buttons,
+        });
+
+        await this.actionSheet.present();
     }
 
     /**
