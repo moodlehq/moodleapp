@@ -36,30 +36,39 @@ Feature: Attempt a quiz in app
     And I press "Quiz 1" in the app
     And I press "Attempt quiz now" in the app
     Then I should find "Text of the first question" in the app
-    And I should not find "Text of the second question" in the app
-    And I press "Next" near "Question 1" in the app
-    And I should find "Text of the second question" in the app
-    And I should not find "Text of the first question" in the app
-    And I press "Previous" near "Question 2" in the app
-    And I should not find "Text of the second question" in the app
-    And I should find "Text of the first question" in the app
-    And I press "Next" near "Quiz 1" in the app
-    And I should find "Text of the second question" in the app
-    And I should not find "Text of the first question" in the app
-    And I press "Previous" near "Quiz 1" in the app
-    And I should not find "Text of the second question" in the app
-    And I should find "Text of the first question" in the app
-    And I press "Next" near "Question 1" in the app
-    And I press "Next" near "Quiz 1" in the app
-    And I should find "Summary of attempt" in the app
-    And I press "Return to attempt" in the app
-    And I should find "Text of the second question" in the app
-    And I should not find "Text of the first question" in the app
-    And I press "Next" in the app
+    But I should not find "Text of the second question" in the app
+
+    When I press "Next" near "Question 1" in the app
+    Then I should find "Text of the second question" in the app
+    But I should not find "Text of the first question" in the app
+
+    When I press "Previous" near "Question 2" in the app
+    Then I should find "Text of the first question" in the app
+    But I should not find "Text of the second question" in the app
+
+    When I press "Next" near "Quiz 1" in the app
+    Then I should find "Text of the second question" in the app
+    But I should not find "Text of the first question" in the app
+
+    When I press "Previous" near "Quiz 1" in the app
+    Then I should find "Text of the first question" in the app
+    But I should not find "Text of the second question" in the app
+
+    When I press "Next" near "Question 1" in the app
+    And I press "Submit" in the app
+    Then I should find "Summary of attempt" in the app
+
+    When I press "Not yet answered" within "2" "ion-item" in the app
+    Then I should find "Text of the second question" in the app
+    But I should not find "Text of the first question" in the app
+
+    When I press "Submit" in the app
     And I press "Submit all and finish" in the app
-    And I should find "Once you submit" in the app
-    And I press "Cancel" near "Once you submit" in the app
-    And I should find "Summary of attempt" in the app
-    And I press "Submit all and finish" in the app
+    Then I should find "Once you submit" in the app
+
+    When I press "Cancel" near "Once you submit" in the app
+    Then I should find "Summary of attempt" in the app
+
+    When I press "Submit all and finish" in the app
     And I press "OK" near "Once you submit" in the app
-    And I should find "Review" in the app
+    Then I should find "Review" in the app
