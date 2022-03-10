@@ -182,7 +182,6 @@ Feature: Test basic usage of forum activity in app
     Then I should find "Auto-test" in the app
 
     When I press the back button in the app
-    And I press "Course summary" in the app
     And I press "Course downloads" in the app
     And I press "Download" within "Test forum name" "ion-item" in the app
     And I press the back button in the app
@@ -209,7 +208,6 @@ Feature: Test basic usage of forum activity in app
     Then I should find "Auto-test" in the app
 
     When I press the back button in the app
-    And I press "Course summary" in the app
     And I press "Course downloads" in the app
     And I press "Download" within "Test forum name" "ion-item" in the app
     And I press the back button in the app
@@ -264,7 +262,7 @@ Feature: Test basic usage of forum activity in app
     And I press the back button in the app
     Then I should find "This Forum has offline data to be synchronised." in the app
 
-    When I press "Information" near "Test forum name" in the app
+    When I press "Information" in the app
     And I press "Synchronise now" in the app
     Then I should not find "This Forum has offline data to be synchronised." in the app
 
@@ -288,7 +286,6 @@ Feature: Test basic usage of forum activity in app
     And I set the field "Message" to "DiscussionMessage" in the app
     And I press "Post to forum" in the app
     And I press the back button in the app
-    And I press "Course summary" in the app
     And I press "Course downloads" in the app
     And I press "Download" within "Test forum name" "ion-item" in the app
     And I press the back button in the app
@@ -326,7 +323,7 @@ Feature: Test basic usage of forum activity in app
     When I switch offline mode to "false"
     And I press the back button in the app
     And I press "Test forum name" in the app
-    And I press "Information" near "Test forum name" in the app
+    And I press "Information" in the app
     And I press "Refresh" in the app
     And I press "DiscussionSubject" near "Sort by last post creation date in descending order" in the app
     Then I should find "DiscussionSubject" in the app
@@ -367,7 +364,6 @@ Feature: Test basic usage of forum activity in app
     Then I should find "DiscussionSubject 1" in the app
 
     When I press the back button in the app
-    And I press "Course summary" in the app
     And I press "Course downloads" in the app
     And I press "Download" within "Test forum name" "ion-item" in the app
     Then I should find "Downloaded" within "Test forum name" "ion-item" in the app

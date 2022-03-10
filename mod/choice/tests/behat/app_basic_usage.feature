@@ -132,7 +132,6 @@ Feature: Test basic usage of choice activity in app
       | choice   | Test multi choice name  | Test multi choice description  | C1     | choice2  | Option 1, Option 2, Option 3 | 1             | 1           | 1           |
       | choice   | Test single choice name | Test single choice description | C1     | choice1  | Option 1, Option 2, Option 3 | 0             | 0           | 1           |
     When I enter the course "Course 1" as "student1" in the app
-    And I press "Course summary" in the app
     And I press "Course downloads" in the app
     And I press "Download" within "Test single choice name" "ion-item" in the app
     Then I should find "Downloaded" within "Test single choice name" "ion-item" in the app
