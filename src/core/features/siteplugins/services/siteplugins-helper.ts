@@ -195,6 +195,11 @@ export class CoreSitePluginsHelperProvider {
             return '';
         }
 
+        // Update the schema with the final CSS URL.
+        if (handlerSchema.styles) {
+            handlerSchema.styles.url = url;
+        }
+
         // Download the file if not downloaded or the version changed.
         const path = await CoreFilepool.downloadUrl(
             site.getId(),
