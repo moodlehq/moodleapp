@@ -149,7 +149,7 @@
             </ion-item>
         </ion-card>
 
-        <div collapsible-footer *ngIf="feedbackLoaded && completed" slot="fixed">
+        <div collapsible-footer *ngIf="feedbackLoaded && completed" slot="fixed" appearOnBottom>
             <div class="list-item-limited-width adaptable-buttons-row">
                 <ion-button expand="block" fill="outline" (click)="showAnalysis()" class="ion-text-wrap ion-margin"
                     *ngIf="access!.canviewanalysis">

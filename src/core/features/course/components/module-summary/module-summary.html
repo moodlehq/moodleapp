@@ -49,7 +49,7 @@
                     {{ 'core.description' | translate}}
                 </p>
                 <core-format-text [text]="description" [component]="component" [componentId]="componentId" contextLevel="module"
-                    [contextInstanceId]="module.id" [courseId]="courseId" [collapsible-item]="120">
+                    [contextInstanceId]="module.id" [courseId]="courseId" collapsible-item>
                 </core-format-text>
             </ion-label>
         </ion-item>
@@ -169,7 +169,7 @@
                             <ion-label>
                                 <p class="item-heading">{{ 'core.grades.feedback' | translate}}</p>
                                 <p>
-                                    <core-format-text [collapsible-item]="120" [text]="grade.feedback" contextLevel="course"
+                                    <core-format-text collapsible-item [text]="grade.feedback" contextLevel="course"
                                         [contextInstanceId]="courseId">
                                     </core-format-text>
                                 </p>

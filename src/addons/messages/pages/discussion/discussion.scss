@@ -19,19 +19,12 @@
         padding-bottom: 0;
     }
 
-    ion-fab ion-fab-button {
-        &::part(native) {
-            contain: unset;
-            overflow: visible;
-        }
-
-        .core-discussion-messages-badge {
-            position: absolute;
-            color: var(--addon-messages-discussion-badge-text);
-            background-color: var(--addon-messages-discussion-badge);
-            display: block;
-            @include position(-6px, -6px, null, null);
-        }
+    ion-fab .core-discussion-messages-badge {
+        position: absolute;
+        color: var(--addon-messages-discussion-badge-text);
+        background-color: var(--addon-messages-discussion-badge);
+        display: block;
+        @include position(0, 0, null, null);
     }
 
     ion-header ion-toolbar h1 {

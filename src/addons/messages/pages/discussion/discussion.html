@@ -129,8 +129,8 @@
             [attr.aria-label]="'addon.messages.newmessages' | translate">
             <ion-icon name="fas-arrow-down" aria-hidden="true"></ion-icon>
             <span class="sr-only">{{ 'addon.messages.newmessages' | translate }}</span>
-            <ion-badge class="core-discussion-messages-badge">{{ newMessages }}</ion-badge>
         </ion-fab-button>
+        <ion-badge class="core-discussion-messages-badge">{{ newMessages }}</ion-badge>
     </ion-fab>
 </ion-content>
 <ion-footer class="footer-adjustable" *ngIf="loaded && (!conversationId || conversation)">

@@ -8,7 +8,7 @@
                     {{ 'addon.mod_assign.feedbacknotsupported' | translate }}
                 </ion-badge>
                 <p *ngIf="text">
-                    <core-format-text [component]="component" [componentId]="assign.cmid" [collapsible-item]="120" [text]="text"
+                    <core-format-text [component]="component" [componentId]="assign.cmid" collapsible-item [text]="text"
                         contextLevel="module" [contextInstanceId]="assign.cmid" [courseId]="assign.course">
                     </core-format-text>
                 </p>

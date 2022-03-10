@@ -66,7 +66,7 @@
             class="ion-text-wrap core-course-module-handler core-course-module-info {{module.handlerData.class}}" [ngClass]="{
                 'item-dimmed': module.visible === 0 || module.uservisible === false
             }">
-            <ion-label collapsible-item>
+            <ion-label [collapsible-item]="64">
                 <core-format-text class="core-module-description" *ngIf="module.description" [text]="module.description"
                     contextLevel="module" [contextInstanceId]="module.id" [courseId]="module.course">
                 </core-format-text>

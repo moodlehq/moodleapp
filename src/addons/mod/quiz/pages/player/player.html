@@ -149,7 +149,7 @@
             </ion-button>
         </ion-card>
 
-        <div collapsible-footer *ngIf="!quizAborted && showSummary && summaryQuestions.length && loaded" slot="fixed"
+        <div collapsible-footer appearOnBottom *ngIf="!quizAborted && showSummary && summaryQuestions.length && loaded" slot="fixed"
             class="list-item-limited-width">
             <ion-button *ngIf="preventSubmitMessages.length" expand="block" class="ion-margin ion-text-wrap" [href]="moduleUrl" core-link
                 [showBrowserWarning]="false">

@@ -8,6 +8,9 @@
     --collapsible-header-floating-title-width: 0px;
     --collapsible-header-floating-title-x-delta: 0px;
     --collapsible-header-floating-title-width-delta: 0px;
+    ion-header.core-header-shadow {
+        --core-header-shadow: none;
+    }
 
     .collapsible-header-expanded {
         overflow: hidden;
@@ -24,12 +27,18 @@
 
     &:not(.is-collapsed) .collapsible-header-collapsed {
         --core-header-toolbar-border-width: 0;
-        --core-header-toolbar-background: transparent;
+        ion-toolbar {
+            --background: transparent;
+        }
 
         h1 {
             opacity: 0;
         }
 
+    }
+
+    &.is-active.is-collapsed.is-within-content ion-header.core-header-shadow {
+        --core-header-shadow: var(--drop-shadow-bottom, none);
     }
 
     &.is-active {

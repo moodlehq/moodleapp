@@ -70,10 +70,22 @@ core-format-text {
             display: block;
         }
 
+        &.collapsible-enabled {
+            .core-format-text-content {
+                display: block;
+                max-height: none;
+            }
+            &.collapsible-collapsed .core-format-text-content {
+                overflow: hidden;
+                height: var(--collapsible-height);
+                @include core-transition(height, 300ms);
+            }
+        }
+
         @if ($core-format-text-never-shorten) {
             &.collapsible-enabled {
                 --display-toggle: none !important;
-                --max-height: none !important;
+                --collapsible-height: auto !important;
 
                 .collapsible-toggle {
                     display: none !important;
@@ -83,6 +95,12 @@ core-format-text {
                     display: none !important;
                 }
             }
+        }
+    }
+    &.collapsible-item.inline {
+        display: inline-block;
+        &.collapsible-enabled .core-format-text-content {
+           display: inline-block;
         }
     }
 

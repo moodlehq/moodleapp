@@ -161,6 +161,7 @@ ion-header {
         ion-back-button,
         .in-toolbar.button-clear {
             --color: var(--core-header-toolbar-color);
+            --background: var(--core-header-toolbar-background);
             --ion-toolbar-color: var(--core-header-toolbar-color);
             --border-radius: var(--huge-radius);
         }
@@ -170,7 +171,7 @@ ion-header {
 
         .button.button-clear,
         .button.button-solid {
-            --background: transparent;
+            --background: var(--core-header-toolbar-background);
             --color: var(--core-header-toolbar-color);
             --primary: var(--core-header-toolbar-color);
         }
@@ -509,7 +510,6 @@ ion-toast {
 // Ionic list.
 ion-list {
     padding: 0 !important;
-    --ion-item-background: transparent;
 }
 
 // Safe areas
@@ -739,7 +739,7 @@ body.core-iframe-fullscreen ion-router-outlet {
         ion-label {
             white-space: normal !important;
         }
-        ion-item > ion-icon {
+        ion-item > ion-icon[slot] {
             color: var(--color-shade);
             @include margin-horizontal(null, 16px);
         }
@@ -752,7 +752,7 @@ body.core-iframe-fullscreen ion-router-outlet {
         --border-width: 0 0 3px 0;
         --border-color: var(--color-base);
         --inner-border-width: 0px;
-        ion-icon {
+        > ion-icon[slot] {
             color: var(--color-base);
         }
     }
@@ -835,8 +835,7 @@ ion-toolbar h1 .core-bar-button-image img {
 // Action sheet.
 .md ion-action-sheet {
     .action-sheet-group-cancel {
-        -webkit-filter: drop-shadow(0px 3px 6px rgba(var(--drop-shadow)));
-        filter: drop-shadow(0px 3px 6px rgba(var(--drop-shadow)));
+        box-shadow: var(--drop-shadow-top, none);
     }
 
     .action-sheet-title {
@@ -1347,7 +1346,10 @@ ion-item.item.divider {
     ion-label h2.big {
         font-size: var(--item-divider-font-size-big);
     }
+}
 
+ion-item-divider.item,
+ion-item.item {
     .expandable-status-icon {
         font-size: 18px;
         @include core-transition(transform, 200ms);
@@ -1443,8 +1445,7 @@ ion-grid.core-no-grid > ion-row {
         margin-bottom: 8px;
     }
 
-    filter: var(--scroll-shadow-top, none);
-    -webkit-filter: var(--scroll-shadow-top, none);
+    box-shadow: var(--drop-shadow-top, none);
     width: 100%;
     bottom: 0;
     z-index: 3;
@@ -1472,6 +1473,7 @@ ion-grid.core-no-grid > ion-row {
 ion-header.no-title {
     --core-header-toolbar-border-width: 0;
     --core-header-toolbar-background: transparent;
+    --core-header-shadow: none !important;
 
     ion-toolbar .button.button-clear,
     ion-toolbar .button.button-solid {

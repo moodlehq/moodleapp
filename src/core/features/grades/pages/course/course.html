@@ -55,7 +55,7 @@
                                     </td>
                                     <td *ngIf="column.name === 'feedback' && row.feedback !== undefined"
                                         class="ion-text-start core-grades-table-feedback" [class.ion-hide-md-down]="column.hiddenPhone">
-                                        <core-format-text [collapsible-item]="120" [text]="row.feedback" contextLevel="course"
+                                        <core-format-text collapsible-item [text]="row.feedback" contextLevel="course"
                                             [contextInstanceId]="courseId">
                                         </core-format-text>
                                     </td>
@@ -124,7 +124,7 @@
                                         <ion-label>
                                             <h2>{{ 'core.grades.feedback' | translate}}</h2>
                                             <p>
-                                                <core-format-text [collapsible-item]="120" [text]="row.feedback" contextLevel="course"
+                                                <core-format-text collapsible-item [text]="row.feedback" contextLevel="course"
                                                     [contextInstanceId]="courseId">
                                                 </core-format-text>
                                             </p>

@@ -1,12 +1,14 @@
 
 .collapsible-item {
     --display-toggle: none;
-    --max-height: none;
+    --collapsible-height: none;
+    --toggle-size: 24px;
+    --gradient-size: 44px;
 
     &.collapsible-loading-height {
         display: block !important;
         height: auto !important;
-        --max-height: none !important;
+        --collapsible-height: auto !important;
         --display-toggle: none !important;
     }
 
@@ -15,12 +17,12 @@
     }
 
     @include media-breakpoint-down(sm) {
-        &.collapsible-enabled {
+        &.collapsible-enabled:not(.collapsible-loading-height) {
             position: relative;
-            padding-bottom: var(--collapsible-min-button-height); // So the Show less button can fit.
+            padding-bottom: var(--toggle-size); // So the Show less button can fit.
             --display-toggle: block;
-            @include core-transition(height max-height, 500ms);
-            height: calc(var(--max-height, auto));
+            @include core-transition(height, 300ms);
+            height: calc(var(--collapsible-height, auto) + var(--toggle-size));
 
             .collapsible-toggle {
                 position: absolute;
@@ -28,12 +30,12 @@
                 text-align: center;
                 z-index: 7;
                 text-transform: none;
-                font-size: 14px;
+                font-size: 11px;
                 font-weight: normal;
                 background-color: var(--collapsible-toggle-background);
                 color: var(--collapsible-toggle-text);
-                min-height: var(--a11y-min-target-size);
-                min-width: var(--a11y-min-target-size);
+                min-height: var(--toggle-size);
+                min-width: var(--toggle-size);
                 --border-radius: var(--huge-radius);
                 border-radius: var(--border-radius);
                 --padding-start: 0px;
@@ -41,8 +43,8 @@
                 margin: 0px;
 
                 .collapsible-toggle-arrow {
-                    width: var(--a11y-min-target-size);
-                    height: var(--a11y-min-target-size);
+                    width: var(--toggle-size);
+                    height: var(--toggle-size);
 
                     background-position: center;
                     background-repeat: no-repeat;
@@ -61,7 +63,8 @@
 
             &.collapsible-collapsed {
                 overflow: hidden;
-                min-height: calc(var(--collapsible-min-button-height) + 12px);
+                min-height: calc(var(--toggle-size) + 12px);
+                height: var(--collapsible-height, auto);
 
                 .collapsible-toggle-arrow {
                     transform: rotate(90deg);
@@ -69,11 +72,11 @@
 
                 &:before {
                     content: '';
-                    height: 100%;
+                    height: 60px;
                     position: absolute;
                     @include position(null, 0, 0, 0);
-                    background: -webkit-linear-gradient(top, rgba(var(--background-gradient-rgb), 0) calc(100% - 56px), rgba(var(--background-gradient-rgb), 1) calc(100% - 5px));
-                    background: linear-gradient(to bottom, rgba(var(--background-gradient-rgb), 0) calc(100% - 56px), rgba(var(--background-gradient-rgb), 1) calc(100% - 5px));
+                    background: -webkit-linear-gradient(top, rgba(var(--background-gradient-rgb), 0) calc(100% - var(--gradient-size)), rgba(var(--background-gradient-rgb), 1) calc(100% - 4px));
+                    background: linear-gradient(to bottom, rgba(var(--background-gradient-rgb), 0) calc(100% - var(--gradient-size)), rgba(var(--background-gradient-rgb), 1) calc(100% - 4px));
                     z-index: 6;
                 }
             }

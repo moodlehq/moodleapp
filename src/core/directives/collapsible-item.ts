@@ -20,8 +20,8 @@ import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreEventLoadingChangedData, CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreFormatTextDirective } from './format-text';
 
-const defaultMaxHeight = 64;
-const buttonHeight = 44;
+const defaultMaxHeight = 80;
+const minMaxHeight = 56;
 
 /**
  * Directive to make an element collapsible.
@@ -59,6 +59,10 @@ export class CoreCollapsibleItemDirective implements OnInit {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
+        if (this.height === null) {
+            return;
+        }
+
         if (typeof this.height === 'string') {
             this.maxHeight = this.height === ''
                 ? defaultMaxHeight
@@ -66,7 +70,7 @@ export class CoreCollapsibleItemDirective implements OnInit {
         } else {
             this.maxHeight = this.height;
         }
-        this.maxHeight = this.maxHeight < defaultMaxHeight ? defaultMaxHeight : this.maxHeight;
+        this.maxHeight = this.maxHeight < minMaxHeight ? defaultMaxHeight : this.maxHeight;
 
         if (!this.maxHeight) {
             // Do not collapse.
@@ -141,7 +145,7 @@ export class CoreCollapsibleItemDirective implements OnInit {
         this.element.classList.toggle('collapsible-enabled', enable);
 
         if (!enable || this.element.querySelector('ion-button.collapsible-toggle')) {
-            this.setMaxHeight(!enable || this.expanded? undefined : this.maxHeight);
+            this.setHeight(!enable || this.expanded ? undefined : this.maxHeight);
 
             return;
         }
@@ -168,15 +172,15 @@ export class CoreCollapsibleItemDirective implements OnInit {
     /**
      * Set max height to element.
      *
-     * @param maxHeight Max height if collapsed or undefined if expanded.
+     * @param height Max height if collapsed or undefined if expanded.
      */
-    protected setMaxHeight(maxHeight?: number): void {
-        if (maxHeight) {
-            this.element.style.setProperty('--max-height', maxHeight + buttonHeight + 'px');
+    protected setHeight(height?: number): void {
+        if (height) {
+            this.element.style.setProperty('--collapsible-height', height + 'px');
         } else if (this.expandedHeight) {
-            this.element.style.setProperty('--max-height', this.expandedHeight + 'px');
+            this.element.style.setProperty('--collapsible-height', this.expandedHeight + 'px');
         } else {
-            this.element.style.removeProperty('--max-height');
+            this.element.style.removeProperty('--collapsible-height');
 
         }
     }
@@ -192,7 +196,7 @@ export class CoreCollapsibleItemDirective implements OnInit {
         }
         this.expanded = expand;
         this.element.classList.toggle('collapsible-collapsed', !expand);
-        this.setMaxHeight(!expand? this.maxHeight: undefined);
+        this.setHeight(!expand ? this.maxHeight: undefined);
 
         const toggleButton = this.element.querySelector('ion-button.collapsible-toggle');
         const toggleText = toggleButton?.querySelector('.collapsible-toggle-text');

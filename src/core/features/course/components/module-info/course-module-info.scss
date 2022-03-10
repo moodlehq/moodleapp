@@ -46,6 +46,23 @@
         padding-top: 8px;
     }
 
+    core-course-module-completion ::ng-deep ion-button {
+        min-height: 28px;
+        margin: 0;
+        font-size: 12px;
+        text-transform: none;
+        font-weight: normal;
+
+        ion-icon {
+            font-size: 16px;
+            min-width: 16px;
+            @include margin(0, 8px, 0, 0);
+        }
+
+        ion-label {
+            white-space: normal !important;
+        }
+    }
 
 
 }

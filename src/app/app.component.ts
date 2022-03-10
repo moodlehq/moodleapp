@@ -14,7 +14,7 @@
 
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { IonRouterOutlet } from '@ionic/angular';
-import { BackButtonEvent } from '@ionic/core';
+import { BackButtonEvent, ScrollDetail } from '@ionic/core';
 
 import { CoreLang } from '@services/lang';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
@@ -87,6 +87,12 @@ export class AppComponent implements OnInit, AfterViewInit {
                 // Temporary fix. Reload the page to unload all plugins.
                 window.location.reload();
             }
+        });
+
+        // Listen to scroll to add style when scroll is not 0.
+        win.addEventListener('ionScroll', ({ detail, target }: CustomEvent<ScrollDetail>) => {
+            const header = (target as HTMLElement).closest('.ion-page')?.querySelector('ion-header');
+            header?.classList.toggle('core-header-shadow', detail.scrollTop > 0);
         });
 
         // Listen for session expired events.

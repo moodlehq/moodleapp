@@ -42,9 +42,10 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
     protected initialPaddingBottom = '0px';
     protected previousTop = 0;
     protected previousHeight = 0;
-    protected endAnimationTimeout?: number;
     protected content?: HTMLIonContentElement | null;
     protected loadingChangedListener?: CoreEventObserver;
+    protected contentScrollListener?: EventListener;
+    protected endContentScrollListener?: EventListener;
 
     constructor(el: ElementRef, protected ionContent: IonContent) {
         this.element = el.nativeElement;
@@ -105,7 +106,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
         const scroll = await this.content.getScrollElement();
         this.content.scrollEvents = true;
 
-        this.content.addEventListener('ionScroll', (e: CustomEvent<ScrollDetail>): void => {
+        this.content.addEventListener('ionScroll', this.contentScrollListener = (e: CustomEvent<ScrollDetail>): void => {
             if (!this.content) {
                 return;
             }
@@ -113,6 +114,23 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
             this.onScroll(e.detail, scroll);
         });
 
+        this.content.addEventListener('ionScrollEnd', this.endContentScrollListener = (): void => {
+            if (!this.content) {
+                return;
+            }
+
+            const height = this.previousHeight;
+            const collapsed = height <= this.finalHeight;
+            const expanded = height >= this.initialHeight;
+
+            if (!collapsed && !expanded) {
+                // Finish opening or closing the bar.
+                const newHeight = (height - this.finalHeight) < (this.initialHeight - this.finalHeight) / 2
+                    ? this.finalHeight
+                    : this.initialHeight;
+
+                this.setBarHeight(newHeight);            }
+        });
     }
 
     /**
@@ -154,34 +172,12 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
      * @param height The new bar height.
      */
     protected setBarHeight(height: number): void {
-        if (this.endAnimationTimeout) {
-            clearTimeout(this.endAnimationTimeout);
-        }
-
         const collapsed = height <= this.finalHeight;
         const expanded = height >= this.initialHeight;
         this.element.classList.toggle('footer-collapsed', collapsed);
         this.element.classList.toggle('footer-expanded', expanded);
         this.content?.style.setProperty('--core-collapsible-footer-height', height + 'px');
         this.previousHeight = height;
-
-        if (!collapsed && !expanded) {
-            // Finish opening or closing the bar.
-            this.endAnimationTimeout = window.setTimeout(() => this.endAnimation(height), 500);
-        }
-    }
-
-    /**
-     * End of animation when not scrolling.
-     *
-     * @param height Last height used.
-     */
-    protected endAnimation(height: number): void {
-        const newHeight = (height - this.finalHeight) < (this.initialHeight - this.finalHeight) / 2
-            ? this.finalHeight
-            : this.initialHeight;
-
-        this.setBarHeight(newHeight);
     }
 
     /**
@@ -213,6 +209,13 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
      */
     async ngOnDestroy(): Promise<void> {
         this.content?.style.setProperty('--padding-bottom', this.initialPaddingBottom);
+
+        if (this.content && this.contentScrollListener) {
+            this.content.removeEventListener('ionScroll', this.contentScrollListener);
+        }
+        if (this.content && this.endContentScrollListener) {
+            this.content.removeEventListener('ionScrollEnd', this.endContentScrollListener);
+        }
     }
 
 }

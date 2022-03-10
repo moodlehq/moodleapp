@@ -49,7 +49,6 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     siteUrl?: string;
     handlers: CoreUserProfileHandlerData[] = [];
     handlersLoaded = false;
-    loaded = false;
     user?: CoreUserProfile;
     displaySwitchAccount = true;
     removeAccountOnLogout = false;
@@ -67,8 +66,6 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
         this.siteUrl = currentSite.getURL();
         this.displaySwitchAccount = !currentSite.isFeatureDisabled('NoDelegate_SwitchAccount');
         this.removeAccountOnLogout = !!CoreConstants.CONFIG.removeaccountonlogout;
-
-        this.loaded = true;
 
         this.loadSiteLogo(currentSite);
 

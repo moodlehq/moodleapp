@@ -31,6 +31,7 @@ import { CoreCollapsibleHeaderDirective } from './collapsible-header';
 import { CoreSwipeNavigationDirective } from './swipe-navigation';
 import { CoreCollapsibleItemDirective } from './collapsible-item';
 import { CoreCollapsibleFooterDirective } from './collapsible-footer';
+import { CoreContentDirective } from './content';
 
 @NgModule({
     declarations: [
@@ -51,6 +52,7 @@ import { CoreCollapsibleFooterDirective } from './collapsible-footer';
         CoreSwipeNavigationDirective,
         CoreCollapsibleItemDirective,
         CoreCollapsibleFooterDirective,
+        CoreContentDirective,
     ],
     exports: [
         CoreAutoFocusDirective,
@@ -70,6 +72,7 @@ import { CoreCollapsibleFooterDirective } from './collapsible-footer';
         CoreSwipeNavigationDirective,
         CoreCollapsibleItemDirective,
         CoreCollapsibleFooterDirective,
+        CoreContentDirective,
     ],
 })
 export class CoreDirectivesModule {}
