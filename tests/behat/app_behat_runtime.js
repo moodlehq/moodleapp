@@ -511,53 +511,71 @@
     };
 
     /**
-     * Press an element.
+     * Make sure that an element is visible and wait to trigger the callback.
      *
-     * @param {HTMLElement} element Element to press.
+     * @param {HTMLElement} element Element.
+     * @param {Function} callback Callback called when the element is visible, passing bounding box parameter.
      */
-    const pressElement = async function(element) {
-        // Scroll the item into view.
+    const ensureElementVisible = function(element, callback) {
         const initialRect = element.getBoundingClientRect();
 
         element.scrollIntoView(false);
 
-        await new Promise(resolve => requestAnimationFrame(resolve));
+        requestAnimationFrame(function () {
+            const rect = element.getBoundingClientRect();
 
-        const rect = element.getBoundingClientRect();
+            if (initialRect.y !== rect.y) {
+                setTimeout(function () {
+                    callback(rect);
+                }, 300);
+                addPendingDelay();
 
-        if (initialRect.y !== rect.y) {
-            await new Promise(resolve => setTimeout(resolve, 300));
-        }
+                return;
+            }
 
-        // Simulate a mouse click on the button.
-        const eventOptions = {
-            clientX: rect.left + rect.width / 2,
-            clientY: rect.top + rect.height / 2,
-            bubbles: true,
-            view: window,
-            cancelable: true,
-        };
+            callback(rect);
+        });
 
-        // Events don't bubble up across Shadow DOM boundaries, and some buttons
-        // may not work without doing this.
-        const parentElement = getParentElement(element);
-
-        if (parentElement && parentElement.matches('ion-button, ion-back-button')) {
-            element = parentElement;
-        }
-
-        // There are some buttons in the app that don't respond to click events, for example
-        // buttons using the core-supress-events directive. That's why we need to send both
-        // click and mouse events.
-        element.dispatchEvent(new MouseEvent('mousedown', eventOptions));
-
-        setTimeout(() => {
-            element.dispatchEvent(new MouseEvent('mouseup', eventOptions));
-            element.click();
-        }, 300);
-
-        // Mark busy until the button click finishes processing.
         addPendingDelay();
+    };
+
+    /**
+     * Press an element.
+     *
+     * @param {HTMLElement} element Element to press.
+     */
+    const pressElement = function(element) {
+        ensureElementVisible(element, function(rect) {
+            // Simulate a mouse click on the button.
+            const eventOptions = {
+                clientX: rect.left + rect.width / 2,
+                clientY: rect.top + rect.height / 2,
+                bubbles: true,
+                view: window,
+                cancelable: true,
+            };
+
+            // Events don't bubble up across Shadow DOM boundaries, and some buttons
+            // may not work without doing this.
+            const parentElement = getParentElement(element);
+
+            if (parentElement && parentElement.matches('ion-button, ion-back-button')) {
+                element = parentElement;
+            }
+
+            // There are some buttons in the app that don't respond to click events, for example
+            // buttons using the core-supress-events directive. That's why we need to send both
+            // click and mouse events.
+            element.dispatchEvent(new MouseEvent('mousedown', eventOptions));
+
+            setTimeout(() => {
+                element.dispatchEvent(new MouseEvent('mouseup', eventOptions));
+                element.click();
+            }, 300);
+
+            // Mark busy until the button click finishes processing.
+            addPendingDelay();
+        });
     };
 
     /**
