@@ -14,7 +14,7 @@
         <ion-list class="ion-no-margin" *ngIf="attempt || anonAttempt">
             <ion-item *ngIf="attempt" class="ion-text-wrap" core-user-link [userId]="attempt.userid"
                 [attr.aria-label]="'core.user.viewprofile' | translate" [courseId]="attempt.courseid">
-                <core-user-avatar [user]="attempt" slot="start"></core-user-avatar>
+                <core-user-avatar [user]="attempt" slot="start" [linkProfile]="false"></core-user-avatar>
                 <ion-label>
                     <h2>{{attempt.fullname}}</h2>
                     <p *ngIf="attempt.timemodified">{{attempt.timemodified * 1000 | coreFormatDate }}</p>

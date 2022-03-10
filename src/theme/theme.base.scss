@@ -152,6 +152,7 @@ ion-toolbar {
 // Header.
 ion-header {
     z-index: 12; // To hide ion-slides on scroll.
+    --core-header-buttons-background: var(--core-header-toolbar-background);
 
     ion-toolbar {
         ion-spinner {
@@ -159,33 +160,28 @@ ion-header {
         }
 
         ion-back-button,
-        .in-toolbar.button-clear {
+        .in-toolbar.button-clear,
+        .in-toolbar.button-solid,
+        .button.button-clear,
+        .button.button-solid {
             --color: var(--core-header-toolbar-color);
-            --background: var(--core-header-toolbar-background);
+            --background: var(--core-header-buttons-background);
             --ion-toolbar-color: var(--core-header-toolbar-color);
             --border-radius: var(--huge-radius);
+            --primary: var(--core-header-toolbar-color);
         }
         ion-back-button::part(text) {
             display: none;
         }
 
-        .button.button-clear,
-        .button.button-solid {
-            --background: var(--core-header-toolbar-background);
-            --color: var(--core-header-toolbar-color);
-            --primary: var(--core-header-toolbar-color);
-        }
-
         .button.button-clear.button-has-icon-only,
         .button.button-solid.button-has-icon-only {
-            --border-radius: var(--huge-radius);
             width: var(--a11y-min-target-size);
             height: var(--a11y-min-target-size);
             ion-icon {
                 font-size: 24px;
             }
         }
-
 
         .core-navbar-button-hidden {
             display: none !important;
@@ -259,6 +255,10 @@ ion-tabs.hide-header ion-header {
 }
 
 ion-footer ion-toolbar.ion-color-contrast {
+    background-color: var(--contrast-background);
+}
+
+ion-footer {
     background-color: var(--contrast-background);
 }
 
@@ -833,23 +833,22 @@ ion-toolbar h1 .core-bar-button-image img {
 }
 
 // Action sheet.
-.md ion-action-sheet {
+ion-action-sheet.md {
+    .action-sheet-title {
+        @include padding(4px, null, 4px, 16px);
+        font-size: 12px;
+        min-height: auto;
+        color: var(--medium);
+        line-height: 2em;
+        font-weight: normal;
+    }
+
+    .action-sheet-group:first-child {
+        border-radius: var(--big-radius) var(--big-radius) 0 0;
+    }
+
     .action-sheet-group-cancel {
         box-shadow: var(--drop-shadow-top, none);
-    }
-
-    .action-sheet-title {
-        border-bottom: 2px solid var(--title-border-color);
-    }
-}
-
-.ios ion-action-sheet {
-    .action-sheet-title {
-        font-size: 16px;
-    }
-
-    .action-sheet-title {
-        border-bottom: 2px solid var(--title-border-color);
     }
 }
 
@@ -1474,14 +1473,8 @@ ion-header.no-title {
     --core-header-toolbar-border-width: 0;
     --core-header-toolbar-background: transparent;
     --core-header-shadow: none !important;
-
-    ion-toolbar .button.button-clear,
-    ion-toolbar .button.button-solid {
-        --background: var(--ion-background-color);
-    }
+    --core-header-buttons-background: var(--ion-background-color);
 }
-
-
 
 // To make core-swipe-slides fill the remaining height.
 .core-swipe-slides-container {

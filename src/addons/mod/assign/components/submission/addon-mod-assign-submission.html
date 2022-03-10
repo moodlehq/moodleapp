@@ -3,7 +3,7 @@
     <!-- User and status of the submission. -->
     <ion-item class="ion-text-wrap" *ngIf="!blindMarking && user" core-user-link [userId]="submitId" [courseId]="courseId"
         [attr.aria-label]="user!.fullname">
-        <core-user-avatar [user]="user" slot="start"></core-user-avatar>
+        <core-user-avatar [user]="user" slot="start" [linkProfile]="false"></core-user-avatar>
         <ion-label>
             <h2>{{ user!.fullname }}</h2>
             <ng-container *ngTemplateOutlet="submissionStatus"></ng-container>
@@ -176,7 +176,7 @@
                     <ng-container *ngFor="let user of membersToSubmit">
                         <ion-item class="ion-text-wrap" core-user-link [userId]="user.id" [courseId]="courseId"
                             [attr.aria-label]="user.fullname">
-                            <core-user-avatar [user]="user" slot="start"></core-user-avatar>
+                            <core-user-avatar [user]="user" slot="start" [linkProfile]="false"></core-user-avatar>
                             <ion-label>
                                 <h2>{{ user.fullname }}</h2>
                             </ion-label>
@@ -334,7 +334,7 @@
                 <!-- Data about the grader (teacher who graded). -->
                 <ion-item class="ion-text-wrap" *ngIf="grader" core-user-link [userId]="grader!.id" [courseId]="courseId"
                     [attr.aria-label]="grader!.fullname" detail="true">
-                    <core-user-avatar [user]="grader" slot="start"></core-user-avatar>
+                    <core-user-avatar [user]="grader" slot="start" [linkProfile]="false"></core-user-avatar>
                     <ion-label>
                         <h2>{{ 'addon.mod_assign.gradedby' | translate }}</h2>
                         <h2>{{ grader!.fullname }}</h2>

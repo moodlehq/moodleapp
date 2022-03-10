@@ -17,9 +17,16 @@
     </ion-toolbar>
 </ion-header>
 <ion-item class="core-format-progress-list ion-text-wrap list-item-limited-width" collapsible>
-    <ion-avatar slot="start" class="core-course-thumb" *ngIf="imageThumb">
-        <img [src]="imageThumb" core-external-content alt="" />
-    </ion-avatar>
+    <ng-container *ngIf="course">
+        <div *ngIf="!course.courseImage" #courseThumb slot="start" class="core-course-thumb">
+            <ion-icon *ngIf="!course.courseImage" name="fas-graduation-cap" class="course-icon" aria-hidden="true">
+            </ion-icon>
+        </div>
+        <ion-avatar *ngIf="course.courseImage" slot="start" class="core-course-thumb">
+            <img [src]="course.courseImage" core-external-content alt="" />
+        </ion-avatar>
+    </ng-container>
+
     <ion-label>
         <h1>{{ title }}</h1>
         <div class="core-course-progress" *ngIf="progress !== undefined">

@@ -114,7 +114,7 @@
                         <ng-container *ngIf="result.expanded">
                             <ion-item *ngFor="let user of result.userresponses" core-user-link [courseId]="courseId" [userId]="user.userid"
                                 [attr.aria-label]="user.fullname" class="ion-text-wrap">
-                                <core-user-avatar [user]="user" slot="start" [courseId]="courseId"></core-user-avatar>
+                                <core-user-avatar [user]="user" slot="start" [courseId]="courseId" [linkProfile]="false"></core-user-avatar>
                                 <ion-label>
                                     <p>{{user.fullname}}</p>
                                 </ion-label>

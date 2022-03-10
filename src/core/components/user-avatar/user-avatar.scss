@@ -1,3 +1,5 @@
+@import '~theme/globals.scss';
+
 :host {
     position: relative;
     width: var(--core-avatar-size);
@@ -76,6 +78,11 @@
 }
 
 :host-context(ion-item) {
-    margin-top: 12px;
-    margin-bottom: 12px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    @include margin(6px, 8px, 6px, 0px);
+    img {
+        min-width: var(--core-avatar-size);
+        min-height: var(--core-avatar-size);
+    }
 }
