@@ -242,6 +242,9 @@ class behat_app extends behat_base {
         $method = 'swipe' . ucwords($direction);
 
         $this->evaluate_script("behat.getAngularInstance('ion-content', 'CoreSwipeNavigationDirective').$method()");
+
+        // Wait swipe animation to finish.
+        $this->getSession()->wait(300);
     }
 
     /**
@@ -504,8 +507,14 @@ class behat_app extends behat_base {
             throw new DriverException('Moodle app not found in browser');
         }, false, 60);
 
-        // Run the scripts to install Moodle 'pending' checks.
-        $this->execute_script(file_get_contents(__DIR__ . '/app_behat_runtime.js'));
+        // Inject Behat JavaScript runtime.
+        global $CFG;
+
+        $this->execute_script("
+            var script = document.createElement('script');
+            script.src = '{$CFG->behat_wwwroot}/local/moodlemobileapp/tests/behat/app_behat_runtime.js';
+            document.body.append(script);
+        ");
 
         if ($restart) {
             // Assert initial page.

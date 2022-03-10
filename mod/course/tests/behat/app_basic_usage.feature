@@ -449,7 +449,8 @@ Feature: Test basic usage of one course in app
     And I press "Site home" in the app
     And I press "Available courses" in the app
     And I press "Course 1" in the app
-    Then I should find "Course downloads" in the app
+
+    Then I should find "Course summary" in the app
     And I should find "Course" in the app
 
     When I press "Course" "ion-button" in the app
