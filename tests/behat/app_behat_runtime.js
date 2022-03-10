@@ -415,9 +415,12 @@
             case 'popover':
                 containers = document.querySelectorAll('ion-app ion-popover.hydrated');
                 break;
+            case 'user-tour':
+                containers = document.querySelectorAll('core-user-tours-user-tour.is-active');
+                break;
             default:
                 // Other containerName or not implemented.
-                const containerSelector = 'ion-alert, ion-popover, ion-action-sheet, ion-modal, page-core-mainmenu, ion-app';
+                const containerSelector = 'ion-alert, ion-popover, ion-action-sheet, ion-modal, core-user-tours-user-tour.is-active, page-core-mainmenu, ion-app';
                 containers = document.querySelectorAll(containerSelector);
         }
 
