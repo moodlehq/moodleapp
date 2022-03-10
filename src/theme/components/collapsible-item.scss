@@ -1,14 +1,14 @@
 
 .collapsible-item {
     --display-toggle: none;
-    --height: none;
+    --collapsible-height: none;
     --toggle-size: 24px;
     --gradient-size: 44px;
 
     &.collapsible-loading-height {
         display: block !important;
         height: auto !important;
-        --height: auto !important;
+        --collapsible-height: auto !important;
         --display-toggle: none !important;
     }
 
@@ -21,8 +21,8 @@
             position: relative;
             padding-bottom: var(--toggle-size); // So the Show less button can fit.
             --display-toggle: block;
-            @include core-transition(height max-height, 300ms);
-            height: calc(var(--height, auto) + var(--toggle-size));
+            @include core-transition(height, 300ms);
+            height: calc(var(--collapsible-height, auto) + var(--toggle-size));
 
             .collapsible-toggle {
                 position: absolute;
@@ -64,7 +64,7 @@
             &.collapsible-collapsed {
                 overflow: hidden;
                 min-height: calc(var(--toggle-size) + 12px);
-                height: var(--height, auto);
+                height: var(--collapsible-height, auto);
 
                 .collapsible-toggle-arrow {
                     transform: rotate(90deg);

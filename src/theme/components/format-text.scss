@@ -77,13 +77,15 @@ core-format-text {
             }
             &.collapsible-collapsed .core-format-text-content {
                 overflow: hidden;
+                height: var(--collapsible-height);
+                @include core-transition(height, 300ms);
             }
         }
 
         @if ($core-format-text-never-shorten) {
             &.collapsible-enabled {
                 --display-toggle: none !important;
-                --max-height: none !important;
+                --collapsible-height: auto !important;
 
                 .collapsible-toggle {
                     display: none !important;

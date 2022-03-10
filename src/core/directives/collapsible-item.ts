@@ -176,11 +176,11 @@ export class CoreCollapsibleItemDirective implements OnInit {
      */
     protected setHeight(height?: number): void {
         if (height) {
-            this.element.style.setProperty('--height', height + 'px');
+            this.element.style.setProperty('--collapsible-height', height + 'px');
         } else if (this.expandedHeight) {
-            this.element.style.setProperty('--height', this.expandedHeight + 'px');
+            this.element.style.setProperty('--collapsible-height', this.expandedHeight + 'px');
         } else {
-            this.element.style.removeProperty('--height');
+            this.element.style.removeProperty('--collapsible-height');
 
         }
     }
