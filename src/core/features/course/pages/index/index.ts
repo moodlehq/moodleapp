@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild, OnDestroy, OnInit } from '@angular/core';
+import { Component, ViewChild, OnDestroy, OnInit, ElementRef } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 
 import { CoreTabsOutletTab, CoreTabsOutletComponent } from '@components/tabs-outlet/tabs-outlet';
@@ -28,6 +28,8 @@ import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CONTENTS_PAGE_NAME } from '@features/course/course.module';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourseSummaryPage } from '../course-summary/course-summary';
+import { CoreCoursesHelper, CoreCourseWithImageAndColor } from '@features/courses/services/courses-helper';
+import { CoreColors } from '@singletons/colors';
 
 /**
  * Page that displays the list of courses the user is enrolled in.
@@ -40,13 +42,13 @@ import { CoreCourseSummaryPage } from '../course-summary/course-summary';
 export class CoreCourseIndexPage implements OnInit, OnDestroy {
 
     @ViewChild(CoreTabsOutletComponent) tabsComponent?: CoreTabsOutletComponent;
+    @ViewChild('courseThumb') courseThumb?: ElementRef;
 
     title = '';
     category = '';
-    course?: CoreCourseAnyCourseData;
+    course?: CoreCourseWithImageAndColor & CoreCourseAnyCourseData;
     tabs: CourseTab[] = [];
     loaded = false;
-    imageThumb?: string;
     progress?: number;
 
     protected currentPagePath = '';
@@ -235,9 +237,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
         // Get the title to display initially.
         this.title = CoreCourseFormatDelegate.getCourseTitle(this.course);
 
-        if ('overviewfiles' in this.course) {
-            this.imageThumb = this.course.overviewfiles?.[0]?.fileurl;
-        }
+        await this.setCourseColor();
 
         this.updateProgress();
 
@@ -311,6 +311,30 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
         }
 
         this.progress = this.course.progress;
+    }
+
+    /**
+     * Set course color.
+     */
+    protected async setCourseColor(): Promise<void> {
+        if (!this.course) {
+            return;
+        }
+
+        await CoreCoursesHelper.loadCourseColorAndImage(this.course);
+
+        if (!this.courseThumb) {
+            return;
+        }
+
+        if (this.course.color) {
+            this.courseThumb.nativeElement.style.setProperty('--course-color', this.course.color);
+
+            const tint = CoreColors.lighter(this.course.color, 50);
+            this.courseThumb.nativeElement.style.setProperty('--course-color-tint', tint);
+        } else if(this.course.colorNumber !== undefined) {
+            this.courseThumb.nativeElement.classList.add('course-color-' + this.course.colorNumber);
+        }
     }
 
 }
