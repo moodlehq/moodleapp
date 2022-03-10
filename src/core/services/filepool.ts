@@ -2948,7 +2948,7 @@ export class CoreFilepoolProvider {
      * and store the result in the CSS file.
      *
      * @param siteId Site ID.
-     * @param fileUrl CSS file URL.
+     * @param fileUrl CSS file URL. If a local path is supplied the app will assume it's the path where to write the file.
      * @param cssCode CSS code.
      * @param component The component to link the file to.
      * @param componentId An ID to use in conjunction with the component.
@@ -2966,29 +2966,33 @@ export class CoreFilepoolProvider {
         const urls = CoreDomUtils.extractUrlsFromCSS(cssCode);
         let updated = false;
 
-        // Get the path of the CSS file.
-        const filePath = await this.getFilePathByUrl(siteId, fileUrl);
+        // Get the path of the CSS file. If it's a local file, assume it's the path where to write the file.
+        const filePath = CoreUrlUtils.isLocalFileUrl(fileUrl) ?
+            fileUrl :
+            await this.getFilePathByUrl(siteId, fileUrl);
 
         // Download all files in the CSS.
         await Promise.all(urls.map(async (url) => {
-            // Download the file only if it's an online URL.
-            if (CoreUrlUtils.isLocalFileUrl(url)) {
-                return;
-            }
-
             try {
-                const fileUrl = await this.downloadUrl(
-                    siteId,
-                    url,
-                    false,
-                    component,
-                    componentId,
-                    0,
-                    undefined,
-                    undefined,
-                    undefined,
-                    revision,
-                );
+                let fileUrl = url;
+                if (!CoreUrlUtils.isLocalFileUrl(url)) {
+                    // Not a local file, download it.
+                    fileUrl = await this.downloadUrl(
+                        siteId,
+                        url,
+                        false,
+                        component,
+                        componentId,
+                        0,
+                        undefined,
+                        undefined,
+                        undefined,
+                        revision,
+                    );
+                }
+
+                // Convert the URL so it works in mobile devices.
+                fileUrl = CoreFile.convertFileSrc(fileUrl);
 
                 if (fileUrl != url) {
                     cssCode = cssCode.replace(new RegExp(CoreTextUtils.escapeForRegex(url), 'g'), fileUrl);

@@ -271,7 +271,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
         urls = CoreUtils.uniqueArray(urls); // Remove duplicates.
 
         const promises = urls.map(async (url) => {
-            const finalUrl = await CoreFilepool.getUrlByUrl(siteId, url, this.component, this.componentId, 0, true, true);
+            const finalUrl = await CoreFilepool.getSrcByUrl(siteId, url, this.component, this.componentId, 0, true, true);
 
             this.logger.debug('Using URL ' + finalUrl + ' for ' + url + ' in inline styles');
             inlineStyles = inlineStyles.replace(new RegExp(url, 'gi'), finalUrl);
