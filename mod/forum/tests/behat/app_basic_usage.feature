@@ -134,7 +134,7 @@ Feature: Test basic usage of forum activity in app
     When I press "Reply" in the app
     And I set the field "Message" to "not sent reply" in the app
     And I press "Post to forum" in the app
-    And I press "Display options" near "not sent reply" in the app
+    And I press "Display options" within "not sent reply" "ion-card" in the app
     Then I should find "Edit" in the app
 
     When I press "Edit" in the app
@@ -244,6 +244,8 @@ Feature: Test basic usage of forum activity in app
     When I press "Reply" in the app
     And I set the field "Message" to "test2" in the app
     And I press "Post to forum" in the app
+    Then I should find "test2" "ion-card" in the app
+
     When I enter the course "Course 1" as "teacher1" in the app
     And I press "Test forum name" in the app
     And I press "Auto-test" in the app
