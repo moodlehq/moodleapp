@@ -16,17 +16,17 @@ Feature: It opens external links properly.
       | forum      | Test forum | Test forum  | C1     | forum    |
     And the following forum discussions exist in course "Course 1":
       | forum      | user     | name        | message       |
-      | Test forum | student1 | Forum topic | See <a href="https://moodle.org/">moodle.org</a> |
+      | Test forum | student1 | Forum topic | See <a href="https://moodle.org/">moodle.org external link</a> |
 
   Scenario: Click an external link
     When I enter the course "Course 1" as "student1" in the app
     And I press "Test forum" in the app
     And I press "Forum topic" in the app
-    And I press "moodle.org" in the app
+    And I press "moodle.org external link" in the app
     Then I should find "You are about to leave the app" in the app
 
     When I press "Cancel" in the app
-    And I press "moodle.org" in the app
+    And I press "moodle.org external link" in the app
     And I press "OK" in the app
     Then the app should have opened a browser tab with url "moodle.org"
 
@@ -39,9 +39,9 @@ Feature: It opens external links properly.
     When I close the browser tab opened by the app
     When I close the popup in the app
     And I press "Forum topic" in the app
-    And I press "moodle.org" in the app
+    And I press "moodle.org external link" in the app
     And I select "Don't show again." in the app
     And I press "OK" in the app
     And I close the browser tab opened by the app
-    And I press "moodle.org" in the app
+    And I press "moodle.org external link" in the app
     Then the app should have opened a browser tab with url "moodle.org"
