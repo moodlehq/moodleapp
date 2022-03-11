@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { Component } from '@angular/core';
+import { CoreUtils } from '@services/utils/utils';
+
 /**
  * Registry to keep track of component instances.
  */
@@ -36,12 +39,45 @@ export class CoreComponentsRegistry {
      * @param componentClass Component class.
      * @returns Component instance.
      */
-    static resolve<T>(element?: Element | null, componentClass?: ComponentConstructor<T>): T | null {
+    static resolve<T = Component>(element?: Element | null, componentClass?: ComponentConstructor<T>): T | null {
         const instance = (element && this.instances.get(element) as T) ?? null;
 
         return instance && (!componentClass || instance instanceof componentClass)
             ? instance
             : null;
+    }
+
+    /**
+     * Waits all elements to be resolved.
+     *
+     * @param element Parent element where to search.
+     * @param selector Selector to search on parent.
+     * @param fnName Function that needs to get resolved.
+     * @param params Params of function that needs to get resolved.
+     * @return Promise resolved when done.
+     */
+    static async resolveAllElementsInside<T = Component>(
+        element: Element | undefined | null,
+        selector: string,
+        fnName: string,
+        params?: unknown[],
+    ): Promise<void> {
+        if (!element) {
+            return;
+        }
+
+        const components = Array
+            .from(element.querySelectorAll(selector))
+            .map(element => CoreComponentsRegistry.resolve<T>(element));
+
+        await Promise.all(components.map(component => {
+            if (!component) {
+                return;
+            }
+
+            return component[fnName].apply(component, params);
+        }));
+        await CoreUtils.nextTick();
     }
 
 }

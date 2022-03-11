@@ -18,6 +18,8 @@ import { CoreEventLoadingChangedData, CoreEvents } from '@singletons/events';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreAnimations } from '@components/animations';
 import { Translate } from '@singletons';
+import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CorePromisedValue } from '@classes/promised-value';
 
 /**
  * Component to show a loading spinner and message while data is being loaded.
@@ -56,16 +58,18 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit {
     uniqueId: string;
     protected element: HTMLElement; // Current element.
     loaded = false; // Only comes true once.
+    protected firstLoadedPromise = new CorePromisedValue<string>();
 
     constructor(element: ElementRef) {
         this.element = element.nativeElement;
+        CoreComponentsRegistry.register(this.element, this);
 
         // Calculate the unique ID.
         this.uniqueId = 'core-loading-content-' + CoreUtils.getUniqueId('CoreLoadingComponent');
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         if (!this.message) {
@@ -77,50 +81,54 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit {
     }
 
     /**
-     * View has been initialized.
+     * @inheritdoc
      */
     ngAfterViewInit(): void {
-        // Add class if loaded on init.
-        if (this.hideUntil) {
-            this.element.classList.add('core-loading-loaded');
-        }
-        this.loaded = !!this.hideUntil;
-
-        this.content?.nativeElement.classList.toggle('core-loading-content', !!this.hideUntil);
+        this.changeState(!!this.hideUntil);
     }
 
     /**
-     * Component input changed.
-     *
-     * @param changes Changes.
+     * @inheritdoc
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if (changes.hideUntil) {
-            if (!this.loaded) {
-                this.loaded = !!this.hideUntil; // Only comes true once.
-            }
-
-            if (this.hideUntil) {
-                setTimeout(() => {
-                    // Content is loaded so, center the spinner on the content itself.
-                    this.element.classList.add('core-loading-loaded');
-                    // Change CSS to force calculate height.
-                    // Removed 500ms timeout to avoid reallocating html.
-                    this.content?.nativeElement.classList.add('core-loading-content');
-                });
-            } else {
-                this.element.classList.remove('core-loading-loaded');
-                this.content?.nativeElement.classList.remove('core-loading-content');
-            }
-
-            // Trigger the event after a timeout since the elements inside ngIf haven't been added to DOM yet.
-            setTimeout(() => {
-                CoreEvents.trigger(CoreEvents.CORE_LOADING_CHANGED, <CoreEventLoadingChangedData> {
-                    loaded: !!this.hideUntil,
-                    uniqueId: this.uniqueId,
-                });
-            });
+            this.changeState(!!this.hideUntil);
         }
+    }
+
+    /**
+     * Change loaded state.
+     *
+     * @param loaded True to load, false otherwise.
+     * @return Promise resolved when done.
+     */
+    async changeState(loaded: boolean): Promise<void> {
+        await CoreUtils.nextTick();
+
+        this.element.classList.toggle('core-loading-loaded', loaded);
+        this.content?.nativeElement.classList.add('core-loading-content', loaded);
+
+        await CoreUtils.nextTick();
+
+        // Wait for next tick before triggering the event to make sure ngIf elements have been added to the DOM.
+        CoreEvents.trigger(CoreEvents.CORE_LOADING_CHANGED, <CoreEventLoadingChangedData> {
+            loaded: loaded,
+            uniqueId: this.uniqueId,
+        });
+
+        if (!this.loaded && loaded) {
+            this.loaded = true; // Only comes true once.
+            this.firstLoadedPromise.resolve(this.uniqueId);
+        }
+    }
+
+    /**
+     * Wait the loading to finish.
+     *
+     * @return Promise resolved with the uniqueId when done.
+     */
+    async whenLoaded(): Promise<string> {
+        return await this.firstLoadedPromise;
     }
 
 }
