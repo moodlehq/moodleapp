@@ -148,6 +148,14 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             this.viewedModules[data.cmId] = true;
             if (!this.lastModuleViewed || data.timeaccess > this.lastModuleViewed.timeaccess) {
                 this.lastModuleViewed = data;
+
+                if (this.selectedSection) {
+                    // Change section to display the one with the last viewed module
+                    const lastViewedSection = this.getViewedModuleSection(this.sections, data);
+                    if (lastViewedSection && lastViewedSection.id !== this.selectedSection?.id) {
+                        this.sectionChanged(lastViewedSection, data.cmId);
+                    }
+                }
             }
         });
     }
@@ -298,17 +306,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
             if (!currentSectionData.forceSelected && lastModuleViewed) {
                 // Search the section with the last module viewed.
-                let lastModuleSection: CoreCourseSection | undefined;
-
-                if (lastModuleViewed.sectionId) {
-                    lastModuleSection = sections.find(section => section.id === lastModuleViewed.sectionId);
-                }
-                if (!lastModuleSection) {
-                    // No sectionId or section not found. Search the module.
-                    lastModuleSection = sections.find(
-                        section => section.modules.some(module => module.id === lastModuleViewed.cmId),
-                    );
-                }
+                const lastModuleSection = this.getViewedModuleSection(sections, lastModuleViewed);
 
                 section = lastModuleSection || section;
                 moduleId = lastModuleSection ? lastModuleViewed?.cmId : undefined;
@@ -341,6 +339,31 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         viewedModules.forEach(entry => {
             this.viewedModules[entry.cmId] = true;
         });
+    }
+
+    /**
+     * Get the section of a viewed module.
+     *
+     * @param sections List of sections.
+     * @param viewedModule Viewed module.
+     * @return Section, undefined if not found.
+     */
+    protected getViewedModuleSection(
+        sections: CoreCourseSection[],
+        viewedModule: CoreCourseViewedModulesDBRecord,
+    ): CoreCourseSection | undefined {
+        if (viewedModule.sectionId) {
+            const lastModuleSection = sections.find(section => section.id === viewedModule.sectionId);
+
+            if (lastModuleSection) {
+                return lastModuleSection;
+            }
+        }
+
+        // No sectionId or section not found. Search the module.
+        return sections.find(
+            section => section.modules.some(module => module.id === viewedModule.cmId),
+        );
     }
 
     /**
@@ -443,14 +466,10 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         // Scroll to module if needed. Give more priority to the input.
-        moduleId = this.moduleId && previousValue === undefined ? this.moduleId : moduleId;
-        if (moduleId) {
+        const moduleIdToScroll = this.moduleId && previousValue === undefined ? this.moduleId : moduleId;
+        if (moduleIdToScroll) {
             setTimeout(() => {
-                CoreDomUtils.scrollToElementBySelector(
-                    this.elementRef.nativeElement,
-                    this.content,
-                    '#core-course-module-' + moduleId,
-                );
+                this.scrollToModule(moduleIdToScroll);
             }, 200);
         } else {
             this.content.scrollToTop(0);
@@ -464,6 +483,19 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         this.invalidateSectionButtons();
+    }
+
+    /**
+     * Scroll to a certain module.
+     *
+     * @param moduleId Module ID.
+     */
+    protected scrollToModule(moduleId: number): void {
+        CoreDomUtils.scrollToElementBySelector(
+            this.elementRef.nativeElement,
+            this.content,
+            '#core-course-module-' + moduleId,
+        );
     }
 
     /**
