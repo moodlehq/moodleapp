@@ -399,6 +399,10 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
                     return;
                 }
 
+                if (page.classList.contains('is-frozen')) {
+                    return;
+                }
+
                 const progress = parseFloat(page.style.getPropertyValue('--collapsible-header-progress'));
                 const scrollTop = contentScroll.scrollTop;
                 const collapse = progress > 0.5;
