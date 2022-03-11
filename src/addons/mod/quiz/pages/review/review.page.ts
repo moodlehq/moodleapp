@@ -18,7 +18,6 @@ import { CoreQuestionHelper } from '@features/question/services/question-helper'
 import { IonContent, IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
@@ -303,9 +302,9 @@ export class AddonModQuizReviewPage implements OnInit {
                 };
 
                 if (this.quiz.grade != 100) {
-                    gradeObject.percent = CoreTextUtils.roundToDecimals(
-                        this.attempt.sumgrades! * 100 / this.quiz.sumgrades!,
-                        0,
+                    gradeObject.percent = AddonModQuiz.formatGrade(
+                        (this.attempt.sumgrades ?? 0) * 100 / (this.quiz.sumgrades ?? 1),
+                        this.quiz.decimalpoints,
                     );
                     this.readableGrade = Translate.instant('addon.mod_quiz.outofpercent', { $a: gradeObject });
                 } else {
