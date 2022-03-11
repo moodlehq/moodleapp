@@ -53,6 +53,7 @@ import { NavigationStart } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CorePromisedValue } from '@classes/promised-value';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -89,6 +90,45 @@ export class CoreDomUtilsProvider {
         const debugDisplay = await CoreConfig.get<number>(CoreConstants.SETTINGS_DEBUG_DISPLAY, 0);
 
         this.debugDisplay = debugDisplay != 0;
+    }
+
+    /**
+     * Wait an element to be in dom of another element.
+     *
+     * @param element Element to wait.
+     * @return Promise resolved when added. It will be rejected after a timeout of 5s.
+     */
+    waitToDom(
+        element: Element,
+    ): CorePromisedValue<void> {
+        let root = element.getRootNode({ composed: true });
+        const inDomPromise = new CorePromisedValue<void>();
+
+        if (root === document) {
+            // Already in DOM.
+            inDomPromise.resolve();
+
+            return inDomPromise;
+        }
+
+        // Disconnect observer for performance reasons.
+        const timeout = window.setTimeout(() => {
+            inDomPromise.reject(new Error('Waiting for DOM timeout reached'));
+            observer.disconnect();
+        }, 5000);
+
+        const observer = new MutationObserver(() => {
+            root = element.getRootNode({ composed: true });
+            if (root === document) {
+                observer.disconnect();
+                clearTimeout(timeout);
+                inDomPromise.resolve();
+            }
+        });
+
+        observer.observe(document.body, { subtree: true, childList: true });
+
+        return inDomPromise;
     }
 
     /**

@@ -48,15 +48,15 @@ export class CoreComponentsRegistry {
     }
 
     /**
-     * Waits all elements to be resolved.
+     * Waits all elements to be rendered.
      *
      * @param element Parent element where to search.
      * @param selector Selector to search on parent.
-     * @param fnName Function that needs to get resolved.
-     * @param params Params of function that needs to get resolved.
+     * @param fnName Component function that have to be resolved when rendered.
+     * @param params Params of function that have to be resolved when rendered.
      * @return Promise resolved when done.
      */
-    static async resolveAllElementsInside<T = Component>(
+    static async finishRenderingAllElementsInside<T = Component>(
         element: Element | undefined | null,
         selector: string,
         fnName: string,
@@ -77,6 +77,8 @@ export class CoreComponentsRegistry {
 
             return component[fnName].apply(component, params);
         }));
+
+        // Wait for next tick to ensure components are completely rendered.
         await CoreUtils.nextTick();
     }
 

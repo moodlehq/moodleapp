@@ -13,11 +13,11 @@
 // limitations under the License.
 
 import { Directive, ElementRef, Input, OnInit } from '@angular/core';
+import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
-import { CoreEventLoadingChangedData, CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreFormatTextDirective } from './format-text';
 
 const defaultMaxHeight = 80;
@@ -47,7 +47,6 @@ export class CoreCollapsibleItemDirective implements OnInit {
     protected expanded = false;
     protected maxHeight = defaultMaxHeight;
     protected expandedHeight = 0;
-    protected loadingChangedListener?: CoreEventObserver;
 
     constructor(el: ElementRef<HTMLElement>) {
         this.element = el.nativeElement;
@@ -79,17 +78,22 @@ export class CoreCollapsibleItemDirective implements OnInit {
 
         this.element.classList.add('collapsible-item');
 
-        // Calculate the height now.
-        await this.calculateHeight();
+        await this.waitLoadingsDone();
 
-        // Recalculate the height if a parent core-loading displays the content.
-        this.loadingChangedListener =
-            CoreEvents.on(CoreEvents.CORE_LOADING_CHANGED, async (data: CoreEventLoadingChangedData) => {
-                if (data.loaded && CoreDomUtils.closest(this.element.parentElement, '#' + data.uniqueId)) {
-                    // The element is inside the loading, re-calculate the height.
-                    await this.calculateHeight();
-                }
-            });
+        await this.calculateHeight();
+    }
+
+    /**
+     * Wait until all <core-loading> children inside the page.
+     *
+     * @return Promise resolved when loadings are done.
+     */
+    protected async waitLoadingsDone(): Promise<void> {
+        await CoreDomUtils.waitToDom(this.element);
+
+        const page = this.element.closest('.ion-page');
+
+        await CoreComponentsRegistry.finishRenderingAllElementsInside<CoreLoadingComponent>(page, 'core-loading', 'whenLoaded');
     }
 
     /**
@@ -109,18 +113,18 @@ export class CoreCollapsibleItemDirective implements OnInit {
         const formatTexts = formatTextElements.map(element => CoreComponentsRegistry.resolve(element, CoreFormatTextDirective));
 
         await Promise.all(formatTexts.map(formatText => formatText?.rendered()));
+
+        await CoreUtils.nextTick();
     }
 
     /**
      * Calculate the height and check if we need to display show more or not.
      */
-    protected async calculateHeight(retries = 3): Promise<void> {
+    protected async calculateHeight(): Promise<void> {
         // Remove max-height (if any) to calculate the real height.
         this.element.classList.add('collapsible-loading-height');
 
         await this.waitFormatTextsRendered(this.element);
-
-        await CoreUtils.nextTick();
 
         this.expandedHeight = CoreDomUtils.getElementHeight(this.element) || 0;
 
@@ -129,10 +133,6 @@ export class CoreCollapsibleItemDirective implements OnInit {
 
         // If cannot calculate height, shorten always.
         this.setExpandButtonEnabled(!this.expandedHeight || this.expandedHeight >= this.maxHeight);
-
-        if (this.expandedHeight == 0 && retries > 0) {
-            setTimeout(() => this.calculateHeight(retries - 1), 200);
-        }
     }
 
     /**

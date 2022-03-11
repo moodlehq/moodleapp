@@ -19,8 +19,8 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreMath } from '@singletons/math';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreFormatTextDirective } from './format-text';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreEventLoadingChangedData, CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventObserver } from '@singletons/events';
+import { CoreLoadingComponent } from '@components/loading/loading';
 
 /**
  * Directive to make an element fixed at the bottom collapsible when scrolling.
@@ -139,11 +139,11 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
      * @param element Element.
      */
     protected async waitFormatTextsRendered(element: Element): Promise<void> {
-        const formatTexts = Array
-            .from(element.querySelectorAll('core-format-text'))
-            .map(element => CoreComponentsRegistry.resolve(element, CoreFormatTextDirective));
-
-        await Promise.all(formatTexts.map(formatText => formatText?.rendered()));
+        await CoreComponentsRegistry.finishRenderingAllElementsInside<CoreFormatTextDirective>(
+            element,
+            'core-format-text',
+            'rendered',
+        );
     }
 
     /**
@@ -184,24 +184,33 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        // Calculate the height now.
-        await this.calculateHeight();
-        setTimeout(() => this.calculateHeight(), 200); // Try again, sometimes the first calculation is wrong.
-
-        this.listenScrollEvents();
-
         // Only if not present or explicitly falsy it will be false.
         this.appearOnBottom = !CoreUtils.isFalseOrZero(this.appearOnBottom);
 
-        // Recalculate the height if a parent core-loading displays the content.
-        this.loadingChangedListener =
-            CoreEvents.on(CoreEvents.CORE_LOADING_CHANGED, async (data: CoreEventLoadingChangedData) => {
-                if (data.loaded && CoreDomUtils.closest(this.element.parentElement, '#' + data.uniqueId)) {
-                    // The format-text is inside the loading, re-calculate the height.
-                    await this.calculateHeight();
-                    setTimeout(() => this.calculateHeight(), 200);
-                }
-            });
+        await this.waitLoadingsDone();
+
+        await this.calculateHeight();
+
+        this.listenScrollEvents();
+    }
+
+    /**
+     * Wait until all <core-loading> children inside the page.
+     *
+     * @return Promise resolved when loadings are done.
+     */
+    protected async waitLoadingsDone(): Promise<void> {
+        const scrollElement = await this.ionContent.getScrollElement();
+
+        await Promise.all([
+            await CoreComponentsRegistry.finishRenderingAllElementsInside<CoreLoadingComponent>
+            (scrollElement, 'core-loading', 'whenLoaded'),
+            await CoreComponentsRegistry.finishRenderingAllElementsInside<CoreLoadingComponent>(
+                this.element,
+                'core-loading',
+                'whenLoaded',
+            ),
+        ]);
     }
 
     /**
