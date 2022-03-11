@@ -60,24 +60,23 @@
             [instanceId]="database.coursemodule" component="mod_data" [itemId]="entry.id" area="database_entry" [courseId]="courseId"
             (onLoading)="setLoadingComments($event)" [showItem]="true">
         </core-comments>
-
-        <div collapsible-footer *ngIf="entryLoaded && hasPrevious || hasNext" slot="fixed" appearOnBottom>
-            <ion-row class="ion-justify-content-between ion-align-items-center ion-no-padding ion-wrap">
-                <ion-col class="ion-text-start ion-no-padding core-navigation-arrow" size="auto">
-                    <ion-button [disabled]="!hasPrevious" fill="clear" [attr.aria-label]="'core.previous' | translate"
-                        (click)="gotoEntry(offset! -1)">
-                        <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true"></ion-icon>
-                    </ion-button>
-                </ion-col>
-                <ion-col class="ion-text-center">
-                </ion-col>
-                <ion-col class="ion-text-end ion-no-padding core-navigation-arrow" size="auto">
-                    <ion-button [disabled]="!hasNext" fill="clear" [attr.aria-label]=" 'core.next' | translate"
-                        (click)="gotoEntry(offset! + 1)">
-                        <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true"></ion-icon>
-                    </ion-button>
-                </ion-col>
-            </ion-row>
-        </div>
     </core-loading>
+    <div collapsible-footer *ngIf="entryLoaded && hasPrevious || hasNext" slot="fixed" appearOnBottom>
+        <ion-row class="ion-justify-content-between ion-align-items-center ion-no-padding ion-wrap">
+            <ion-col class="ion-text-start ion-no-padding core-navigation-arrow" size="auto">
+                <ion-button [disabled]="!hasPrevious" fill="clear" [attr.aria-label]="'core.previous' | translate"
+                    (click)="gotoEntry(offset! -1)">
+                    <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true"></ion-icon>
+                </ion-button>
+            </ion-col>
+            <ion-col class="ion-text-center">
+            </ion-col>
+            <ion-col class="ion-text-end ion-no-padding core-navigation-arrow" size="auto">
+                <ion-button [disabled]="!hasNext" fill="clear" [attr.aria-label]=" 'core.next' | translate"
+                    (click)="gotoEntry(offset! + 1)">
+                    <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true"></ion-icon>
+                </ion-button>
+            </ion-col>
+        </ion-row>
+    </div>
 </ion-content>
