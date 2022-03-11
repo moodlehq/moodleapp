@@ -198,7 +198,7 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
      * @return Promise resolved with the header element.
      */
     protected async searchHeader(retries: number = 0): Promise<HTMLElement> {
-        let parentPage: HTMLElement = this.element;
+        let parentPage: HTMLElement | null = this.element;
 
         while (parentPage) {
             if (!parentPage.parentElement) {
@@ -207,7 +207,7 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
             }
 
             // Get the next parent page.
-            parentPage = <HTMLElement> CoreDomUtils.closest(parentPage.parentElement, '.ion-page');
+            parentPage = parentPage.parentElement.closest('.ion-page');
             if (parentPage) {
                 // Check if the page has a header. If it doesn't, search the next parent page.
                 const header = this.searchHeaderInPage(parentPage);

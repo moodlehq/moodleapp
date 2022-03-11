@@ -99,45 +99,10 @@ export class CoreDomUtilsProvider {
      * @param element DOM Element.
      * @param selector Selector to search.
      * @return Closest ancestor.
+     * @deprecated Not needed anymore since it's supported on both Android and iOS. Use closest instead.
      */
     closest(element: Element | undefined | null, selector: string): Element | null {
-        if (!element) {
-            return null;
-        }
-
-        // Try to use closest if the browser supports it.
-        if (typeof element.closest == 'function') {
-            return element.closest(selector);
-        }
-
-        if (!this.matchesFunctionName) {
-            // Find the matches function supported by the browser.
-            ['matches', 'webkitMatchesSelector', 'mozMatchesSelector', 'msMatchesSelector', 'oMatchesSelector'].some((fn) => {
-                if (typeof document.body[fn] == 'function') {
-                    this.matchesFunctionName = fn;
-
-                    return true;
-                }
-
-                return false;
-            });
-
-            if (!this.matchesFunctionName) {
-                return null;
-            }
-        }
-
-        // Traverse parents.
-        let elementToTreat: Element | null = element;
-
-        while (elementToTreat) {
-            if (elementToTreat[this.matchesFunctionName](selector)) {
-                return elementToTreat;
-            }
-            elementToTreat = elementToTreat.parentElement;
-        }
-
-        return null;
+        return element?.closest(selector) ?? null;
     }
 
     /**

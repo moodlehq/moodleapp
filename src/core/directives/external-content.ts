@@ -27,7 +27,6 @@ import { CoreApp } from '@services/app';
 import { CoreFile } from '@services/file';
 import { CoreFilepool, CoreFilepoolFileActions, CoreFilepoolFileEventData } from '@services/filepool';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { Platform } from '@singletons';
@@ -418,13 +417,14 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
         // Set events to download big files (not downloaded automatically).
         if (targetAttr !== 'poster' && (tagName === 'VIDEO' || tagName === 'AUDIO' || tagName === 'A' || tagName === 'SOURCE')) {
             const eventName = tagName == 'A' ? 'click' : 'play';
-            let clickableEl = this.element;
+            let clickableEl: Element | null = this.element;
 
             if (tagName == 'SOURCE') {
-                clickableEl = <HTMLElement> CoreDomUtils.closest(this.element, 'video,audio');
-                if (!clickableEl) {
-                    return;
-                }
+                clickableEl = this.element.closest('video,audio');
+            }
+
+            if (!clickableEl) {
+                return;
             }
 
             clickableEl.addEventListener(eventName, () => {
