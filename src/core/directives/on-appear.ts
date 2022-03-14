@@ -14,6 +14,7 @@
 
 import { Directive, ElementRef, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { CoreDomUtils } from '@services/utils/dom';
+import { CoreSingleTimeEventObserver } from '@singletons/events';
 
 /**
  * Directive to listen when an element becomes visible.
@@ -26,7 +27,7 @@ export class CoreOnAppearDirective implements OnInit, OnDestroy {
     @Output() onAppear = new EventEmitter();
 
     private element: HTMLElement;
-    private interval?: number;
+    protected domListener?: CoreSingleTimeEventObserver;
 
     constructor(element: ElementRef) {
         this.element = element.nativeElement;
@@ -35,24 +36,18 @@ export class CoreOnAppearDirective implements OnInit, OnDestroy {
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
-        this.interval = window.setInterval(() => {
-            if (!CoreDomUtils.isElementVisible(this.element)) {
-                return;
-            }
+    async ngOnInit(): Promise<void> {
+        this.domListener = CoreDomUtils.waitToBeInDOM(this.element);
+        await this.domListener.promise;
 
-            this.onAppear.emit();
-            window.clearInterval(this.interval);
-
-            delete this.interval;
-        }, 50);
+        this.onAppear.emit();
     }
 
     /**
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.interval && window.clearInterval(this.interval);
+        this.domListener?.off();
     }
 
 }
