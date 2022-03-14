@@ -811,6 +811,8 @@ class behat_app extends behat_base {
             }
 
             // Check that it worked as expected.
+            usleep(1000000);
+
             $result = $this->evaluate_script("return window.behat.isSelected($locatorjson);");
 
             switch ($result) {
