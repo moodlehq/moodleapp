@@ -90,6 +90,8 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
                 const hide = await this.hideOpenButton(module);
                 if (!hide) {
                     AddonModResourceHelper.openModuleFile(module, courseId);
+
+                    CoreCourse.storeModuleViewed(courseId, module.id);
                 }
             },
         }];

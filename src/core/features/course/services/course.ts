@@ -26,7 +26,9 @@ import { CoreConstants } from '@/core/constants';
 import { makeSingleton, Platform, Translate } from '@singletons';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 
-import { CoreCourseStatusDBRecord, COURSE_STATUS_TABLE } from './database/course';
+import {
+    CoreCourseStatusDBRecord, CoreCourseViewedModulesDBRecord, COURSE_STATUS_TABLE, COURSE_VIEWED_MODULES_TABLE ,
+} from './database/course';
 import { CoreCourseOffline } from './course-offline';
 import { CoreError } from '@classes/errors/error';
 import {
@@ -49,6 +51,7 @@ import { lazyMap, LazyMap } from '@/core/utils/lazy-map';
 import { asyncInstance, AsyncInstance } from '@/core/utils/async-instance';
 import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CoreDatabaseCachingStrategy } from '@classes/database/database-table-proxy';
+import { SQLiteDB } from '@classes/sqlitedb';
 
 const ROOT_CACHE_KEY = 'mmCourse:';
 
@@ -140,6 +143,7 @@ export class CoreCourseProvider {
 
     protected logger: CoreLogger;
     protected statusTables: LazyMap<AsyncInstance<CoreDatabaseTable<CoreCourseStatusDBRecord>>>;
+    protected viewedModulesTables: LazyMap<AsyncInstance<CoreDatabaseTable<CoreCourseViewedModulesDBRecord, 'courseId' | 'cmId'>>>;
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreCourseProvider');
@@ -149,6 +153,17 @@ export class CoreCourseProvider {
                     siteId,
                     config: { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
                     onDestroy: () => delete this.statusTables[siteId],
+                }),
+            ),
+        );
+
+        this.viewedModulesTables = lazyMap(
+            siteId => asyncInstance(
+                () => CoreSites.getSiteTable<CoreCourseViewedModulesDBRecord, 'courseId' | 'cmId'>(COURSE_VIEWED_MODULES_TABLE, {
+                    siteId,
+                    config: { cachingStrategy: CoreDatabaseCachingStrategy.None },
+                    primaryKeyColumns: ['courseId', 'cmId'],
+                    onDestroy: () => delete this.viewedModulesTables[siteId],
                 }),
             ),
         );
@@ -341,6 +356,31 @@ export class CoreCourseProvider {
     }
 
     /**
+     * Get certain module viewed records in the app.
+     *
+     * @param ids Module IDs.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with map of last module viewed data.
+     */
+    async getCertainModulesViewed(ids: number[] = [], siteId?: string): Promise<Record<number, CoreCourseViewedModulesDBRecord>> {
+        if (!ids.length) {
+            return {};
+        }
+
+        const site = await CoreSites.getSite(siteId);
+
+        const whereAndParams = SQLiteDB.getInOrEqual(ids);
+
+        const entries = await this.viewedModulesTables[site.getId()].getManyWhere({
+            sql: 'cmId ' + whereAndParams.sql,
+            sqlParams: whereAndParams.params,
+            js: (record) => ids.includes(record.cmId),
+        });
+
+        return CoreUtils.arrayToObject(entries, 'cmId');
+    }
+
+    /**
      * Get course blocks.
      *
      * @param courseId Course ID.
@@ -423,6 +463,19 @@ export class CoreCourseProvider {
         });
 
         return entries.map((entry) => entry.id);
+    }
+
+    /**
+     * Get last module viewed in the app for a course.
+     *
+     * @param id Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with last module viewed data, undefined if none.
+     */
+    async getLastModuleViewed(id: number, siteId?: string): Promise<CoreCourseViewedModulesDBRecord | undefined> {
+        const viewedModules = await this.getViewedModules(id, siteId);
+
+        return viewedModules[0];
     }
 
     /**
@@ -548,7 +601,7 @@ export class CoreCourseProvider {
 
         let foundModule: CoreCourseGetContentsWSModule | undefined;
 
-        const foundSection = sections.some((section) => {
+        const foundSection = sections.find((section) => {
             if (section.id != CoreCourseProvider.STEALTH_MODULES_SECTION_ID &&
                 sectionId !== undefined &&
                 sectionId != section.id
@@ -562,7 +615,7 @@ export class CoreCourseProvider {
         });
 
         if (foundSection && foundModule) {
-            return this.addAdditionalModuleData(foundModule, courseId);
+            return this.addAdditionalModuleData(foundModule, courseId, foundSection.id);
         }
 
         throw new CoreError(Translate.instant('core.course.modulenotfound'));
@@ -573,11 +626,13 @@ export class CoreCourseProvider {
      *
      * @param module Module.
      * @param courseId Course ID of the module.
+     * @param sectionId Section ID of the module.
      * @return Module with additional info.
      */
-    protected  addAdditionalModuleData(
+    protected addAdditionalModuleData(
         module: CoreCourseGetContentsWSModule,
         courseId: number,
+        sectionId: number,
     ): CoreCourseModuleData {
         let completionData: CoreCourseModuleCompletionData | undefined = undefined;
 
@@ -590,13 +645,12 @@ export class CoreCourseProvider {
             };
         }
 
-        const moduleWithCourse: CoreCourseModuleData = {
+        return  {
             ...module,
             course: courseId,
+            section: sectionId,
             completiondata: completionData,
         };
-
-        return moduleWithCourse;
     }
 
     /**
@@ -873,7 +927,7 @@ export class CoreCourseProvider {
         // Add course to all modules.
         return sections.map((section) => ({
             ...section,
-            modules: section.modules.map((module) => this.addAdditionalModuleData(module, courseId)),
+            modules: section.modules.map((module) => this.addAdditionalModuleData(module, courseId, section.id)),
         }));
     }
 
@@ -899,6 +953,23 @@ export class CoreCourseProvider {
         }
 
         return sections.reduce((previous: CoreCourseModuleData[], section) => previous.concat(section.modules || []), []);
+    }
+
+    /**
+     * Get all viewed modules in a course, ordered by timeaccess in descending order.
+     *
+     * @param courseId Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with the list of viewed modules.
+     */
+    async getViewedModules(courseId: number, siteId?: string): Promise<CoreCourseViewedModulesDBRecord[]> {
+        const site = await CoreSites.getSite(siteId);
+
+        return await this.viewedModulesTables[site.getId()].getMany({ courseId }, {
+            sorting: [
+                { timeaccess: 'desc' },
+            ],
+        });
     }
 
     /**
@@ -1349,6 +1420,34 @@ export class CoreCourseProvider {
     }
 
     /**
+     * Store activity as viewed.
+     *
+     * @param courseId Chapter ID.
+     * @param cmId Module ID.
+     * @param options Other options.
+     * @return Promise resolved with last chapter viewed, undefined if none.
+     */
+    async storeModuleViewed(courseId: number, cmId: number, options: CoreCourseStoreModuleViewedOptions = {}): Promise<void> {
+        const site = await CoreSites.getSite(options.siteId);
+
+        const timeaccess = options.timeaccess ?? Date.now();
+
+        await this.viewedModulesTables[site.getId()].insert({
+            courseId,
+            cmId,
+            sectionId: options.sectionId,
+            timeaccess,
+        });
+
+        CoreEvents.trigger(CoreEvents.COURSE_MODULE_VIEWED, {
+            courseId,
+            cmId,
+            timeaccess,
+            sectionId: options.sectionId,
+        }, site.getId());
+    }
+
+    /**
      * Translate a module name to current language.
      *
      * @param moduleName The module name.
@@ -1769,4 +1868,13 @@ type CoreCompletionUpdateActivityCompletionStatusManuallyWSParams = {
  */
 export type CoreCourseAnyModuleData = CoreCourseModuleData | CoreCourseModuleBasicInfo & {
     contents?: CoreCourseModuleContentFile[]; // If needed, calculated in the app in loadModuleContents.
+};
+
+/**
+ * Options for storeModuleViewed.
+ */
+export type CoreCourseStoreModuleViewedOptions = {
+    sectionId?: number;
+    timeaccess?: number;
+    siteId?: string;
 };

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
+import { CoreCourse } from '@features/course/services/course';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { IonRefresher } from '@ionic/angular';
 
@@ -44,6 +45,7 @@ export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
     canLoadMore = false;
 
     protected page = 0;
+    protected fetchSuccess = false;
 
     /**
      * @inheritdoc
@@ -60,17 +62,7 @@ export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
             return;
         }
 
-        try {
-            await this.fetchData();
-
-            if (this.h5pActivity) {
-                await AddonModH5PActivity.logViewReport(this.h5pActivity.id, this.h5pActivity.name);
-            }
-        } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading attempts.');
-        } finally {
-            this.loaded = true;
-        }
+        this.fetchData();
     }
 
     /**
@@ -91,11 +83,25 @@ export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
      * @return Promise resolved when done.
      */
     protected async fetchData(refresh?: boolean): Promise<void> {
-        this.h5pActivity = await AddonModH5PActivity.getH5PActivity(this.courseId, this.cmId);
+        try {
+            this.h5pActivity = await AddonModH5PActivity.getH5PActivity(this.courseId, this.cmId);
 
-        await Promise.all([
-            this.fetchUsers(refresh),
-        ]);
+            await Promise.all([
+                this.fetchUsers(refresh),
+            ]);
+
+            if (!this.fetchSuccess) {
+                this.fetchSuccess = true;
+                CoreUtils.ignoreErrors(AddonModH5PActivity.logViewReport(this.h5pActivity.id, this.h5pActivity.name));
+
+                // Store module viewed. It's done in this page because it can be reached using a link.
+                CoreCourse.storeModuleViewed(this.courseId, this.cmId);
+            }
+        } catch (error) {
+            CoreDomUtils.showErrorModalDefault(error, 'Error loading attempts.');
+        } finally {
+            this.loaded = true;
+        }
     }
 
     /**

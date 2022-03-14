@@ -271,6 +271,10 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
             {
                 replace: true,
                 animationDirection: 'back',
+                params: {
+                    module: this.module,
+                    openModule: false,
+                },
             },
         );
     }

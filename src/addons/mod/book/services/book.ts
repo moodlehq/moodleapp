@@ -391,7 +391,7 @@ export class AddonModBookProvider {
     async storeLastChapterViewed(id: number, chapterId: number, courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
-        await site.storeLastViewed(AddonModBookProvider.COMPONENT, id, chapterId, String(courseId));
+        await site.storeLastViewed(AddonModBookProvider.COMPONENT, id, chapterId, { data: String(courseId) });
     }
 
 }

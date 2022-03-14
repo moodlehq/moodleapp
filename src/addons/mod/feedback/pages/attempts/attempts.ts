@@ -25,6 +25,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { AddonModFeedbackAttemptItem, AddonModFeedbackAttemptsSource } from '../../classes/feedback-attempts-source';
 import { AddonModFeedbackWSAnonAttempt, AddonModFeedbackWSAttempt } from '../../services/feedback';
+import { CoreCourse } from '@features/course/services/course';
 
 /**
  * Page that displays feedback attempts.
@@ -37,14 +38,14 @@ export class AddonModFeedbackAttemptsPage implements AfterViewInit, OnDestroy {
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
-    promisedAttempts: CorePromisedValue<CoreListItemsManager<AddonModFeedbackAttemptItem, AddonModFeedbackAttemptsSource>>;
+    promisedAttempts: CorePromisedValue<AddonModFeedbackAttemptsManager>;
     fetchFailed = false;
 
     constructor(protected route: ActivatedRoute) {
         this.promisedAttempts = new CorePromisedValue();
     }
 
-    get attempts(): CoreListItemsManager<AddonModFeedbackAttemptItem, AddonModFeedbackAttemptsSource> | null {
+    get attempts(): AddonModFeedbackAttemptsManager | null {
         return this.promisedAttempts.value;
     }
 
@@ -95,7 +96,7 @@ export class AddonModFeedbackAttemptsPage implements AfterViewInit, OnDestroy {
 
             source.selectedGroup = CoreNavigator.getRouteNumberParam('group') || 0;
 
-            this.promisedAttempts.resolve(new CoreListItemsManager(source, this.route.component));
+            this.promisedAttempts.resolve(new AddonModFeedbackAttemptsManager(source, this.route.component));
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
 
@@ -178,6 +179,21 @@ export class AddonModFeedbackAttemptsPage implements AfterViewInit, OnDestroy {
         const attempts = await this.promisedAttempts;
 
         await attempts.reload();
+    }
+
+}
+
+/**
+ * Attempts manager.
+ */
+class AddonModFeedbackAttemptsManager extends CoreListItemsManager<AddonModFeedbackAttemptItem, AddonModFeedbackAttemptsSource> {
+
+    /**
+     * @inheritdoc
+     */
+    protected async logActivity(): Promise<void> {
+        // Store module viewed. It's done in this page because it can be reached using a link.
+        CoreCourse.storeModuleViewed(this.getSource().COURSE_ID, this.getSource().CM_ID);
     }
 
 }

@@ -48,6 +48,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
     protected site!: CoreSite;
     protected obsProfileRefreshed: CoreEventObserver;
     protected subscription?: Subscription;
+    protected fetchSuccess = false;
 
     userLoaded = false;
     isLoadingHandlers = false;
@@ -106,18 +107,6 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
 
         try {
             await this.fetchUser();
-
-            if (!this.user) {
-                return;
-            }
-
-            try {
-                await CoreUser.logView(this.userId, this.courseId, this.user.fullname);
-            } catch (error) {
-                this.isDeleted = error?.errorcode === 'userdeleted' || error?.errorcode === 'wsaccessuserdeleted';
-                this.isSuspended = error?.errorcode === 'wsaccessusersuspended';
-                this.isEnrolled = error?.errorcode !== 'notenrolledprofile';
-            }
         } finally {
             this.userLoaded = true;
         }
@@ -161,6 +150,18 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
 
                 this.isLoadingHandlers = !CoreUserDelegate.areHandlersLoaded(user.id, context, this.courseId);
             });
+
+            if (!this.fetchSuccess) {
+                this.fetchSuccess = true;
+
+                try {
+                    await CoreUser.logView(this.userId, this.courseId, this.user.fullname);
+                } catch (error) {
+                    this.isDeleted = error?.errorcode === 'userdeleted' || error?.errorcode === 'wsaccessuserdeleted';
+                    this.isSuspended = error?.errorcode === 'wsaccessusersuspended';
+                    this.isEnrolled = error?.errorcode !== 'notenrolledprofile';
+                }
+            }
 
         } catch (error) {
             // Error is null for deleted users, do not show the modal.

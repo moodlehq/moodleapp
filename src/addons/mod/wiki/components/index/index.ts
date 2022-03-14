@@ -148,24 +148,6 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                 this.openMap();
             }
         }
-
-        if (!this.wiki) {
-            CoreNavigator.back();
-
-            return;
-        }
-
-        if (!this.pageId) {
-            try {
-                await AddonModWiki.logView(this.wiki.id, this.wiki.name);
-
-                CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
-            } catch {
-                // Ignore errors.
-            }
-        } else {
-            CoreUtils.ignoreErrors(AddonModWiki.logPageView(this.pageId, this.wiki.id, this.wiki.name));
-        }
     }
 
     /**
@@ -446,6 +428,22 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             this.canEdit = !!pageContents.caneditpage;
             this.currentPageObj = pageContents;
             this.tags = ('tags' in pageContents && pageContents.tags) || [];
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected async logActivity(): Promise<void> {
+        if (!this.wiki) {
+            return; // Shouldn't happen.
+        }
+
+        if (!this.pageId) {
+            await AddonModWiki.logView(this.wiki.id, this.wiki.name);
+        } else {
+            this.checkCompletionAfterLog = false;
+            CoreUtils.ignoreErrors(AddonModWiki.logPageView(this.pageId, this.wiki.id, this.wiki.name));
         }
     }
 

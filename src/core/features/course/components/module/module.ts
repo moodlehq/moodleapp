@@ -48,6 +48,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     @Input() showActivityDates = false; // Whether to show activity dates.
     @Input() showCompletionConditions = false; // Whether to show activity completion conditions.
     @Input() showLegacyCompletion?: boolean; // Whether to show module completion in the old format.
+    @Input() isLastViewed = false; // Whether it's the last module viewed in a course.
     @Output() completionChanged = new EventEmitter<CoreCourseModuleCompletionData>(); // Notify when module completion changes.
 
     modNameTranslated = '';

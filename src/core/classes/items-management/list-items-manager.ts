@@ -34,6 +34,7 @@ export class CoreListItemsManager<
     protected pageRouteLocator?: unknown | ActivatedRoute;
     protected splitView?: CoreSplitViewComponent;
     protected splitViewOutletSubscription?: Subscription;
+    protected fetchSuccess = false; // Whether a fetch was finished successfully.
 
     constructor(source: Source, pageRouteLocator: unknown | ActivatedRoute) {
         super(source);
@@ -71,9 +72,6 @@ export class CoreListItemsManager<
 
         // Calculate current selected item.
         this.updateSelectedItem();
-
-        // Log activity.
-        await CoreUtils.ignoreErrors(this.logActivity());
     }
 
     /**
@@ -145,6 +143,8 @@ export class CoreListItemsManager<
      */
     async reload(): Promise<void> {
         await this.getSource().reload();
+
+        this.finishSuccessfulFetch();
     }
 
     /**
@@ -152,6 +152,21 @@ export class CoreListItemsManager<
      */
     async load(): Promise<void> {
         await this.getSource().load();
+
+        this.finishSuccessfulFetch();
+    }
+
+    /**
+     * Finish a successful fetch.
+     */
+    protected async finishSuccessfulFetch(): Promise<void> {
+        if (this.fetchSuccess) {
+            return; // Already treated.
+        }
+
+        // Log activity.
+        this.fetchSuccess = true;
+        await CoreUtils.ignoreErrors(this.logActivity());
     }
 
     /**

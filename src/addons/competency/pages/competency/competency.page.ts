@@ -58,6 +58,8 @@ export class AddonCompetencyCompetencyPage implements OnInit, OnDestroy {
     contextLevel?: string;
     contextInstanceId?: number;
 
+    protected fetchSuccess = false;
+
     constructor() {
         try {
             const planId = CoreNavigator.getRouteNumberParam('planId');
@@ -117,33 +119,6 @@ export class AddonCompetencyCompetencyPage implements OnInit, OnDestroy {
             await source.reload();
             await this.competencies.start();
             await this.fetchCompetency();
-
-            if (!this.competency) {
-                return;
-            }
-
-            const name = this.competency.competency.competency.shortname;
-
-            if (source instanceof AddonCompetencyPlanCompetenciesSource) {
-                this.planStatus && await CoreUtils.ignoreErrors(
-                    AddonCompetency.logCompetencyInPlanView(
-                        source.PLAN_ID,
-                        this.requireCompetencyId(),
-                        this.planStatus,
-                        name,
-                        source.user?.id,
-                    ),
-                );
-            } else {
-                await CoreUtils.ignoreErrors(
-                    AddonCompetency.logCompetencyInCourseView(
-                        source.COURSE_ID,
-                        this.requireCompetencyId(),
-                        name,
-                        source.USER_ID,
-                    ),
-                );
-            }
         } finally {
             this.competencyLoaded = true;
         }
@@ -180,6 +155,32 @@ export class AddonCompetencyCompetencyPage implements OnInit, OnDestroy {
                     evidence.description = Translate.instant(key, { $a: evidence.desca });
                 }
             });
+
+            if (!this.fetchSuccess) {
+                this.fetchSuccess = true;
+                const name = this.competency.competency.competency.shortname;
+
+                if (source instanceof AddonCompetencyPlanCompetenciesSource) {
+                    this.planStatus && await CoreUtils.ignoreErrors(
+                        AddonCompetency.logCompetencyInPlanView(
+                            source.PLAN_ID,
+                            this.requireCompetencyId(),
+                            this.planStatus,
+                            name,
+                            source.user?.id,
+                        ),
+                    );
+                } else {
+                    await CoreUtils.ignoreErrors(
+                        AddonCompetency.logCompetencyInCourseView(
+                            source.COURSE_ID,
+                            this.requireCompetencyId(),
+                            name,
+                            source.USER_ID,
+                        ),
+                    );
+                }
+            }
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error getting competency data.');
         }

@@ -68,11 +68,11 @@ export class CoreCourseCourseIndexComponent implements OnInit {
             completionEnabled = this.course.showcompletionconditions;
         }
 
-        const currentSection = await CoreCourseFormatDelegate.getCurrentSection(this.course, this.sections);
+        const currentSectionData = await CoreCourseFormatDelegate.getCurrentSection(this.course, this.sections);
 
         if (this.selectedId === undefined) {
             // Highlight current section if none is selected.
-            this.selectedId = currentSection.id;
+            this.selectedId = currentSectionData.section.id;
         }
 
         // Clone sections to add information.
@@ -104,7 +104,7 @@ export class CoreCourseCourseIndexComponent implements OnInit {
                     name: section.name,
                     availabilityinfo: !!section.availabilityinfo,
                     expanded: section.id === this.selectedId,
-                    highlighted: currentSection?.id === section.id,
+                    highlighted: currentSectionData.section.id === section.id,
                     hasVisibleModules: modules.length > 0,
                     modules: modules,
                 };

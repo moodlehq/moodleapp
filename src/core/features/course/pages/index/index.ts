@@ -59,6 +59,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
     protected module?: CoreCourseModuleData;
     protected modNavOptions?: CoreNavigationOptions;
     protected isGuest = false;
+    protected openModule = true;
     protected contentsTab: CoreTabsOutletTab & { pageParams: Params } = {
         page: CONTENTS_PAGE_NAME,
         title: 'core.course',
@@ -138,6 +139,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
         this.module = CoreNavigator.getRouteParam<CoreCourseModuleData>('module');
         this.isGuest = !!CoreNavigator.getRouteBooleanParam('isGuest');
         this.modNavOptions = CoreNavigator.getRouteParam<CoreNavigationOptions>('modNavOptions');
+        this.openModule = CoreNavigator.getRouteBooleanParam('openModule') ?? true; // If false, just scroll to module.
         if (!this.modNavOptions) {
             // Fallback to old way of passing params. @deprecated since 4.0.
             const modParams = CoreNavigator.getRouteParam<Params>('modParams');
@@ -157,6 +159,10 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
 
         if (this.module) {
             this.contentsTab.pageParams.moduleId = this.module.id;
+            if (!this.contentsTab.pageParams.sectionId && !this.contentsTab.pageParams.sectionNumber) {
+                // No section specified, use module section.
+                this.contentsTab.pageParams.sectionId = this.module.section;
+            }
         }
 
         this.tabs.push(this.contentsTab);
@@ -172,7 +178,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
      * A tab was selected.
      */
     tabSelected(): void {
-        if (!this.module || !this.course) {
+        if (!this.module || !this.course || !this.openModule) {
             return;
         }
         // Now that the first tab has been selected we can load the module.

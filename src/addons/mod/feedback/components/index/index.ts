@@ -82,6 +82,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
 
     protected submitObserver: CoreEventObserver;
     protected syncEventName = AddonModFeedbackSyncProvider.AUTO_SYNCED;
+    protected checkCompletionAfterLog = false;
 
     constructor(
         protected content?: IonContent,
@@ -125,13 +126,20 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
 
         try {
             await this.loadContent(false, true);
-
-            if (this.feedback) {
-                CoreUtils.ignoreErrors(AddonModFeedback.logView(this.feedback.id, this.feedback.name));
-            }
         } finally {
             this.tabsReady = true;
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected async logActivity(): Promise<void> {
+        if (!this.feedback) {
+            return; // Shouldn't happen.
+        }
+
+        await AddonModFeedback.logView(this.feedback.id, this.feedback.name);
     }
 
     /**

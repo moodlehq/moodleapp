@@ -25,6 +25,7 @@ import {
     AddonModH5PActivityData,
     AddonModH5PActivityAttemptResults,
 } from '../../services/h5pactivity';
+import { CoreCourse } from '@features/course/services/course';
 
 /**
  * Page that displays results of an attempt.
@@ -45,6 +46,7 @@ export class AddonModH5PActivityAttemptResultsPage implements OnInit {
     cmId!: number;
 
     protected attemptId!: number;
+    protected fetchSuccess = false;
 
     /**
      * @inheritdoc
@@ -62,17 +64,7 @@ export class AddonModH5PActivityAttemptResultsPage implements OnInit {
             return;
         }
 
-        try {
-            await this.fetchData();
-
-            if (this.h5pActivity) {
-                await AddonModH5PActivity.logViewReport(this.h5pActivity.id, this.h5pActivity.name, { attemptId: this.attemptId });
-            }
-        } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading attempt.');
-        } finally {
-            this.loaded = true;
-        }
+        await this.fetchData();
     }
 
     /**
@@ -92,13 +84,31 @@ export class AddonModH5PActivityAttemptResultsPage implements OnInit {
      * @return Promise resolved when done.
      */
     protected async fetchData(): Promise<void> {
-        this.h5pActivity = await AddonModH5PActivity.getH5PActivity(this.courseId, this.cmId);
+        try {
+            this.h5pActivity = await AddonModH5PActivity.getH5PActivity(this.courseId, this.cmId);
 
-        this.attempt = await AddonModH5PActivity.getAttemptResults(this.h5pActivity.id, this.attemptId, {
-            cmId: this.cmId,
-        });
+            this.attempt = await AddonModH5PActivity.getAttemptResults(this.h5pActivity.id, this.attemptId, {
+                cmId: this.cmId,
+            });
 
-        await this.fetchUserProfile();
+            await this.fetchUserProfile();
+
+            if (!this.fetchSuccess) {
+                this.fetchSuccess = true;
+                CoreUtils.ignoreErrors(AddonModH5PActivity.logViewReport(
+                    this.h5pActivity.id,
+                    this.h5pActivity.name,
+                    { attemptId: this.attemptId },
+                ));
+
+                // Store module viewed. It's done in this page because it can be reached using a link.
+                CoreCourse.storeModuleViewed(this.courseId, this.cmId);
+            }
+        } catch (error) {
+            CoreDomUtils.showErrorModalDefault(error, 'Error loading attempt.');
+        } finally {
+            this.loaded = true;
+        }
     }
 
     /**

@@ -15,7 +15,6 @@
 import { Component, Optional, OnInit } from '@angular/core';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { CoreCourse } from '@features/course/services/course';
 import { IonContent } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -86,18 +85,6 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
         this.userId = CoreSites.getCurrentSiteUserId();
 
         await this.loadContent(false, true);
-
-        if (!this.choice) {
-            return;
-        }
-
-        try {
-            await AddonModChoice.logView(this.choice.id, this.choice.name);
-
-            await CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
-        } catch {
-            // Ignore errors.
-        }
     }
 
     /**
@@ -326,6 +313,17 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     }
 
     /**
+     * @inheritdoc
+     */
+    protected async logActivity(): Promise<void> {
+        if (!this.choice) {
+            return; // Shouldn't happen.
+        }
+
+        await AddonModChoice.logView(this.choice.id, this.choice.name);
+    }
+
+    /**
      * Check if a choice is open.
      *
      * @param choice Choice data.
@@ -384,7 +382,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
             if (online) {
                 CoreEvents.trigger(CoreEvents.ACTIVITY_DATA_SENT, { module: this.moduleName });
                 // Check completion since it could be configured to complete once the user answers the choice.
-                CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
+                this.checkCompletion();
             }
 
             await this.dataUpdated(online);

@@ -160,7 +160,7 @@ export class CoreSite {
         this.lastViewedTable = asyncInstance(() => CoreSites.getSiteTable(CoreSite.LAST_VIEWED_TABLE, {
             siteId: this.getId(),
             database: this.getDb(),
-            config: { cachingStrategy: CoreDatabaseCachingStrategy.None },
+            config: { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
             primaryKeyColumns: ['component', 'id'],
         }));
         this.setInfo(infos);
@@ -2001,20 +2001,54 @@ export class CoreSite {
     }
 
     /**
+     * Get several last viewed for a certain component.
+     *
+     * @param component The component.
+     * @param ids IDs. If not provided or empty, return all last viewed for a component.
+     * @return Resolves with last viewed records, undefined if error.
+     */
+    async getComponentLastViewed(component: string, ids: number[] = []): Promise<CoreSiteLastViewedDBRecord[] | undefined> {
+        try {
+            if (!ids.length) {
+                return await this.lastViewedTable.getMany({ component });
+            }
+
+            const whereAndParams = SQLiteDB.getInOrEqual(ids);
+
+            whereAndParams.sql = 'id ' + whereAndParams.sql + ' AND component = ?';
+            whereAndParams.params.push(component);
+
+            return await this.lastViewedTable.getManyWhere({
+                sql: whereAndParams.sql,
+                sqlParams: whereAndParams.params,
+                js: (record) => record.component === component && ids.includes(record.id),
+            });
+        } catch (error) {
+            // Not found.
+        }
+    }
+
+    /**
      * Store a last viewed record.
      *
      * @param component The component.
      * @param id ID.
      * @param value Last viewed item value.
-     * @param data Other data.
+     * @param options Options.
      * @return Promise resolved when done.
      */
-    async storeLastViewed(component: string, id: number, value: string | number, data?: string): Promise<void> {
+    async storeLastViewed(
+        component: string,
+        id: number,
+        value: string | number,
+        options: CoreSiteStoreLastViewedOptions = {},
+    ): Promise<void> {
         await this.lastViewedTable.insert({
             component,
             id,
             value: String(value),
-            data,
+            data: options.data,
+            timeaccess: options.timeaccess ?? Date.now(),
         });
     }
 
@@ -2349,5 +2383,14 @@ export type CoreSiteLastViewedDBRecord = {
     component: string;
     id: number;
     value: string;
+    timeaccess: number;
     data?: string;
+};
+
+/**
+ * Options for storeLastViewed.
+ */
+export type CoreSiteStoreLastViewedOptions = {
+    data?: string; // Other data.
+    timeaccess?: number; // Accessed time. If not set, current time.
 };

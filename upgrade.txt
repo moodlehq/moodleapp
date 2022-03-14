@@ -22,7 +22,8 @@ information provided here is intended especially for developers.
 - The parameters of the following functions in CoreCourseHelper have changed: navigateToModuleByInstance, navigateToModule, openModule.
 - fillContextMenu, expandDescription, gotoBlog, prefetch and removeFiles functions have been removed from CoreCourseModuleMainResourceComponent.
 - contextMenuPrefetch and fillContextMenu have been removed from CoreCourseHelper.
--The variable "loaded" in CoreCourseModuleMainResourceComponent has been changed to "showLoading" to reflect its purpose better.
+- The variable "loaded" in CoreCourseModuleMainResourceComponent has been changed to "showLoading" to reflect its purpose better.
+- The function getCurrentSection of course formats can now return a forceSelected boolean along with the section (defaults to false if not returned).
 
 
 

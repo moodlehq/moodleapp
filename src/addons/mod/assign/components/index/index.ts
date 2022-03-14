@@ -17,7 +17,6 @@ import { Params } from '@angular/router';
 import { CoreSite } from '@classes/site';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { CoreCourse } from '@features/course/services/course';
 import { IonContent } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
@@ -121,7 +120,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             (data) => {
                 if (this.assign && data.assignmentId == this.assign.id && data.userId == this.currentUserId) {
                     // Assignment submitted, check completion.
-                    CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
+                    this.checkCompletion();
 
                     // Reload data since it can have offline data now.
                     this.showLoadingAndRefresh(true, false);
@@ -138,25 +137,6 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
         }, this.siteId);
 
         await this.loadContent(false, true);
-
-        if (!this.assign) {
-            return;
-        }
-
-        try {
-            await AddonModAssign.logView(this.assign.id, this.assign.name);
-            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
-        } catch {
-            // Ignore errors. Just don't check Module completion.
-        }
-
-        if (this.canViewAllSubmissions) {
-            // User can see all submissions, log grading view.
-            CoreUtils.ignoreErrors(AddonModAssign.logGradingView(this.assign.id, this.assign.name));
-        } else if (this.canViewOwnSubmission) {
-            // User can only see their own submission, log view the user submission.
-            CoreUtils.ignoreErrors(AddonModAssign.logSubmissionView(this.assign.id, this.assign.name));
-        }
     }
 
     /**
@@ -229,6 +209,25 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             if (error.errorcode !== 'nopermission') {
                 throw error;
             }
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected async logActivity(): Promise<void> {
+        if (!this.assign) {
+            return; // Shouldn't happen.
+        }
+
+        await AddonModAssign.logView(this.assign.id, this.assign.name);
+
+        if (this.canViewAllSubmissions) {
+            // User can see all submissions, log grading view.
+            CoreUtils.ignoreErrors(AddonModAssign.logGradingView(this.assign.id, this.assign.name));
+        } else if (this.canViewOwnSubmission) {
+            // User can only see their own submission, log view the user submission.
+            CoreUtils.ignoreErrors(AddonModAssign.logSubmissionView(this.assign.id, this.assign.name));
         }
     }
 

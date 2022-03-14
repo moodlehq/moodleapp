@@ -18,7 +18,6 @@ import { Params } from '@angular/router';
 import { CoreCommentsProvider } from '@features/comments/services/comments';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { CoreCourse } from '@features/course/services/course';
 import { CoreRatingProvider } from '@features/rating/services/rating';
 import { CoreRatingSyncProvider } from '@features/rating/services/rating-sync';
 import { IonContent } from '@ionic/angular';
@@ -154,7 +153,6 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         });
 
         await this.loadContent(false, true);
-        await this.logView(true);
     }
 
     /**
@@ -410,7 +408,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         try {
             await this.fetchEntriesData();
             // Log activity view for coherence with Moodle web.
-            await this.logView();
+            await this.logActivity();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
         } finally {
@@ -456,7 +454,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
             await this.fetchEntriesData();
 
             // Log activity view for coherence with Moodle web.
-            return this.logView();
+            return this.logActivity();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
         }
@@ -522,24 +520,14 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     }
 
     /**
-     * Log viewing the activity.
-     *
-     * @param checkCompletion Whether to check completion.
-     * @return Promise resolved when done.
+     * @inheritdoc
      */
-    protected async logView(checkCompletion = false): Promise<void> {
+    protected async logActivity(): Promise<void> {
         if (!this.database || !this.database.id) {
             return;
         }
 
-        try {
-            await AddonModData.logView(this.database.id, this.database.name);
-            if (checkCompletion) {
-                CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
-            }
-        } catch {
-            // Ignore errors, the user could be offline.
-        }
+        await AddonModData.logView(this.database.id, this.database.name);
     }
 
     /**

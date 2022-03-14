@@ -18,7 +18,6 @@ import { Component, Input, ViewChild, ElementRef, OnInit, OnDestroy, Optional } 
 import { CoreTabsComponent } from '@components/tabs/tabs';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { CoreCourse } from '@features/course/services/course';
 import { CoreUser } from '@features/user/services/user';
 import { IonContent, IonInput } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
@@ -108,12 +107,6 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         this.selectedTab = this.action == 'report' ? 1 : 0;
 
         await this.loadContent(false, true);
-
-        if (!this.lesson || this.preventReasons.length) {
-            return;
-        }
-
-        this.logView();
     }
 
     /**
@@ -285,7 +278,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     protected hasSyncSucceed(result: AddonModLessonSyncResult): boolean {
         if (result.updated || this.dataSent) {
             // Check completion status if something was sent.
-            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
+            this.checkCompletion();
         }
 
         this.dataSent = false;
@@ -373,20 +366,14 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     }
 
     /**
-     * Log viewing the lesson.
-     *
-     * @return Promise resolved when done.
+     * @inheritdoc
      */
-    protected async logView(): Promise<void> {
-        if (!this.lesson) {
+    protected async logActivity(): Promise<void> {
+        if (!this.lesson || this.preventReasons.length) {
             return;
         }
 
-        await CoreUtils.ignoreErrors(
-            AddonModLesson.logViewLesson(this.lesson.id, this.password, this.lesson.name),
-        );
-
-        CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
+        await AddonModLesson.logViewLesson(this.lesson.id, this.password, this.lesson.name);
     }
 
     /**
@@ -631,7 +618,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             this.preventReasons = preventReason ? [preventReason] : [];
 
             // Log view now that we have the password.
-            this.logView();
+            this.logActivity();
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
         } finally {

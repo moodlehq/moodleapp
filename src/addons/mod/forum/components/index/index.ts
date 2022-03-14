@@ -99,6 +99,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     protected ratingOfflineObserver?: CoreEventObserver;
     protected ratingSyncObserver?: CoreEventObserver;
     protected sourceUnsubscribe?: () => void;
+    protected checkCompletionAfterLog = false; // Use CoreListItemsManager log system instead.
 
     constructor(
         public route: ActivatedRoute,
@@ -570,7 +571,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
             });
 
             // Check completion since it could be configured to complete once the user adds a new discussion or replies.
-            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
+            this.checkCompletion();
         }
     }
 
@@ -692,15 +693,13 @@ class AddonModForumDiscussionsManager extends CoreListItemsManager<AddonModForum
             return;
         }
 
-        CoreUtils.ignoreErrors(
-            AddonModForum.instance
-                .logView(forum.id, forum.name)
-                .then(async () => {
-                    CoreCourse.checkModuleCompletion(this.page.courseId, this.page.module.completiondata);
+        try {
+            await AddonModForum.instance.logView(forum.id, forum.name);
 
-                    return;
-                }),
-        );
+            CoreCourse.checkModuleCompletion(this.page.courseId, this.page.module.completiondata);
+        } catch {
+            // Ignore errors.
+        }
     }
 
 }
