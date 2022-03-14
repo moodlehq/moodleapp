@@ -38,6 +38,8 @@ import { CoreUtils } from '@services/utils/utils';
 import { Platform, Translate } from '@singletons';
 import { CoreEventFormActionData, CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreEditorOffline } from '../../services/editor-offline';
+import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreLoadingComponent } from '@components/loading/loading';
 
 /**
  * Component to display a rich text editor if enabled.
@@ -101,7 +103,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
     protected resizeFunction?: () => Promise<number>;
     protected selectionChangeFunction?: () => void;
     protected languageChangedSubscription?: Subscription;
-    protected resizeObserver?: IntersectionObserver;
+    protected resizeListener?: CoreEventObserver;
 
     rteEnabled = false;
     isPhone = false;
@@ -140,14 +142,6 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
         this.contentChanged = new EventEmitter<string>();
         this.element = elementRef.nativeElement as HTMLDivElement;
         this.pageInstance = 'app_' + Date.now(); // Generate a "unique" ID based on timestamp.
-
-        if ('IntersectionObserver' in window) {
-            this.resizeObserver = new IntersectionObserver((observerEntry: IntersectionObserverEntry[]) => {
-                if (observerEntry[0].boundingClientRect.width > 0) {
-                    this.updateToolbarButtons();
-                }
-            });
-        }
     }
 
     /**
@@ -180,14 +174,9 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
         // Use paragraph on enter.
         document.execCommand('DefaultParagraphSeparator', false, 'p');
 
-        let i = 0;
-        this.initHeightInterval = window.setInterval(async () => {
-            const height = await this.maximizeEditorSize();
-            if (i >= 5 || height != 0) {
-                clearInterval(this.initHeightInterval);
-            }
-            i++;
-        }, 750);
+        await this.waitLoadingsDone();
+
+        this.maximizeEditorSize();
 
         this.setListeners();
         this.updateToolbarButtons();
@@ -256,14 +245,14 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
             );
         });
 
-        this.resizeFunction = this.windowResized.bind(this);
-        window.addEventListener('resize', this.resizeFunction!);
+        this.resizeListener = CoreDomUtils.onWindowResize(() => {
+            this.windowResized();
+        }, 50);
 
         // Start observing the target node for configured mutations
         this.resizeObserver?.observe(this.element);
 
-        this.selectionChangeFunction = this.updateToolbarStyles.bind(this);
-        document.addEventListener('selectionchange', this.selectionChangeFunction!);
+        document.addEventListener('selectionchange', this.selectionChangeFunction = this.updateToolbarStyles.bind(this));
 
         this.keyboardObserver = CoreEvents.on(CoreEvents.KEYBOARD_CHANGE, () => {
             // Opening or closing the keyboard also calls the resize function, but sometimes the resize is called too soon.
@@ -281,65 +270,57 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
 
     /**
      * Resize editor to maximize the space occupied.
-     *
-     * @return Resolved with calculated editor size.
      */
-    protected async maximizeEditorSize(): Promise<number> {
-        const contentVisibleHeight = await CoreDomUtils.getContentHeight(this.content);
-
-        if (contentVisibleHeight <= 0) {
-            return 0;
-        }
-
-        await CoreUtils.wait(100);
-
+    protected async maximizeEditorSize(): Promise<void> {
         // Editor is ready, adjust Height if needed.
-        const contentHeight = await CoreDomUtils.getContentHeight(this.content);
-        const height = contentHeight - this.getSurroundingHeight(this.element);
+        const blankHeight = await this.getBlankHeightInContent();
+        const newHeight = blankHeight + this.element.getBoundingClientRect().height;
 
-        if (height > this.minHeight) {
-            this.element.style.height = CoreDomUtils.formatPixelsSize(height - 1);
+        if (newHeight > this.minHeight) {
+            this.element.style.setProperty('--core-rte-height', (newHeight - 1)  + 'px');
         } else {
-            this.element.style.height = '';
+            this.element.style.removeProperty('--core-rte-height');
         }
-
-        return height;
     }
 
     /**
-     * Get the height of the surrounding elements from the current to the top element.
+     * Wait until all <core-loading> children inside the page.
      *
-     * @param element Directive DOM element to get surroundings elements from.
-     * @return Surrounding height in px.
+     * @return Promise resolved when loadings are done.
      */
-    protected getSurroundingHeight(element: HTMLElement): number {
-        let height = 0;
+    protected async waitLoadingsDone(): Promise<void> {
+        await CoreDomUtils.waitToBeInDOM(this.element);
 
-        while (element.parentElement?.tagName != 'ION-CONTENT') {
-            const parent = element.parentElement!;
-            if (element.tagName && element.tagName != 'CORE-LOADING') {
-                for (let x = 0; x < parent.children.length; x++) {
-                    const child = <HTMLElement> parent.children[x];
-                    if (child.tagName && child != element) {
-                        height += CoreDomUtils.getElementHeight(child, false, true, true);
-                    }
-                }
-            }
-            element = parent;
+        const page = this.element.closest('.ion-page');
+
+        await CoreComponentsRegistry.finishRenderingAllElementsInside<CoreLoadingComponent>(page, 'core-loading', 'whenLoaded');
+    }
+
+    /**
+     * Get the height of the space in blank at the end of the page.
+     *
+     * @return Blank height in px. Will be negative if no blank space.
+     */
+    protected async getBlankHeightInContent(): Promise<number> {
+        await CoreUtils.nextTicks(5); // Ensure content is completely loaded in the DOM.
+
+        let content: Element | null = this.element.closest('ion-content');
+        const contentHeight = await CoreDomUtils.getContentHeight(this.content);
+
+        // Get first children with content, not fixed.
+        let scrollContentHeight = 0;
+        while (scrollContentHeight == 0 && content?.children) {
+            const children = Array.from(content.children)
+                .filter((element) => element.slot !== 'fixed' && !element.classList.contains('core-loading-container'));
+
+            scrollContentHeight = children
+                .map((element) => element.getBoundingClientRect().height)
+                .reduce((a,b) => a + b, 0);
+
+            content = children[0];
         }
 
-        const computedStyle = getComputedStyle(element);
-        height += CoreDomUtils.getComputedStyleMeasure(computedStyle, 'paddingTop') +
-            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'paddingBottom');
-
-        if (element.parentElement?.tagName == 'ION-CONTENT') {
-            const cs2 = getComputedStyle(element);
-
-            height -= CoreDomUtils.getComputedStyleMeasure(cs2, 'paddingTop') +
-                CoreDomUtils.getComputedStyleMeasure(cs2, 'paddingBottom');
-        }
-
-        return height;
+        return contentHeight - scrollContentHeight;
     }
 
     /**
@@ -625,7 +606,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
             this.editorElement.innerHTML = '<p></p>';
             this.textarea.value = '';
         } else {
-            this.editorElement.innerHTML = value!;
+            this.editorElement.innerHTML = value || '';
             this.textarea.value = value;
             this.treatExternalContent();
         }
@@ -759,10 +740,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
      * Show the toolbar.
      */
     showToolbar(event: Event): void {
-        if (!('IntersectionObserver' in window)) {
-            // Fallback if IntersectionObserver is not supported.
-            this.updateToolbarButtons();
-        }
+        this.updateToolbarButtons();
 
         this.element.classList.add('ion-touched');
         this.element.classList.remove('ion-untouched');
@@ -851,14 +829,9 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
 
         const length = await this.toolbarSlides.length();
 
-        const width = CoreDomUtils.getElementWidth(this.toolbar.nativeElement);
+        await CoreDomUtils.waitToBeInDOM(this.toolbar.nativeElement);
 
-        if (!width) {
-            // Width is not available yet, try later.
-            setTimeout(this.updateToolbarButtons.bind(this), 100);
-
-            return;
-        }
+        const width = this.toolbar.nativeElement.getBoundingClientRect().width;
 
         if (length > 0 && width > length * this.toolbarButtonWidth) {
             this.slidesOpts = { ...this.slidesOpts, slidesPerView: length };
@@ -1107,15 +1080,14 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
     ngOnDestroy(): void {
         this.valueChangeSubscription?.unsubscribe();
         this.languageChangedSubscription?.unsubscribe();
-        window.removeEventListener('resize', this.resizeFunction!);
-        document.removeEventListener('selectionchange', this.selectionChangeFunction!);
+        this.selectionChangeFunction && document.removeEventListener('selectionchange', this.selectionChangeFunction);
         clearInterval(this.initHeightInterval);
         clearInterval(this.autoSaveInterval);
         clearTimeout(this.hideMessageTimeout);
-        this.resizeObserver?.disconnect();
         this.resetObserver?.off();
         this.keyboardObserver?.off();
         this.labelObserver?.disconnect();
+        this.resizeListener?.off();
     }
 
 }

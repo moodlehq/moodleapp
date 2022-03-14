@@ -272,8 +272,18 @@ export class AddonQtypeDdMarkerQuestion {
             return;
         }
 
-        const width = CoreDomUtils.getElementMeasure(markerSpan, true, true, false, true);
-        const height = CoreDomUtils.getElementMeasure(markerSpan, false, true, false, true);
+        const computedStyle = getComputedStyle(markerSpan);
+        const width = markerSpan.getBoundingClientRect().width +
+            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'borderLeftWidth') +
+            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'borderRightWidth') +
+            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'paddingLeft') +
+            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'paddingRight');
+
+        const height =  markerSpan.getBoundingClientRect().height +
+            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'borderTopWidth') +
+            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'borderBottomWidth') +
+            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'paddingTop') +
+            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'paddingBottom');
         markerSpan.style.opacity = '0.6';
         markerSpan.style.left = (xyForText.x - (width / 2)) + 'px';
         markerSpan.style.top = (xyForText.y - (height / 2)) + 'px';

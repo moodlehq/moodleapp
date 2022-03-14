@@ -111,8 +111,8 @@ export class CoreDomUtilsProvider {
         return new Promise((resolve, reject) => {
             // Disconnect observer for performance reasons.
             const timeout = window.setTimeout(() => {
-                reject(new Error('Waiting for DOM timeout reached'));
                 observer.disconnect();
+                reject(new Error('Waiting for DOM timeout reached'));
             }, 5000);
 
             const observer = new MutationObserver(() => {
@@ -454,6 +454,7 @@ export class CoreDomUtilsProvider {
      * @param useBorder Whether to use borders to calculate the measure.
      * @param innerMeasure If inner measure is needed: padding, margin or borders will be substracted.
      * @return Height in pixels.
+     * @deprecated since app 4.0 Use getBoundingClientRect.height instead.
      */
     getElementHeight(
         element: HTMLElement,
@@ -475,6 +476,7 @@ export class CoreDomUtilsProvider {
      * @param useBorder Whether to use borders to calculate the measure.
      * @param innerMeasure If inner measure is needed: padding, margin or borders will be substracted.
      * @return Measure in pixels.
+     * @deprecated since app 4.0 Use getBoundingClientRect.height or width instead.
      */
     getElementMeasure(
         element: HTMLElement,
@@ -547,6 +549,7 @@ export class CoreDomUtilsProvider {
      * @param useBorder Whether to use borders to calculate the measure.
      * @param innerMeasure If inner measure is needed: padding, margin or borders will be substracted.
      * @return Width in pixels.
+     * @deprecated since app 4.0 Use getBoundingClientRect.width instead.
      */
     getElementWidth(
         element: HTMLElement,
@@ -726,6 +729,7 @@ export class CoreDomUtilsProvider {
      *
      * @param findFunction The function used to find the element.
      * @return Resolved if found, rejected if too many tries.
+     * @deprecated since app 4.0 Use waitToBeInDOM instead.
      */
     waitElementToExist(findFunction: () => HTMLElement | null): Promise<HTMLElement> {
         const promiseInterval = CoreUtils.promiseDefer<HTMLElement>();
@@ -1077,7 +1081,7 @@ export class CoreDomUtilsProvider {
             const scrollElement = await content.getScrollElement();
 
             return scrollElement.clientHeight || 0;
-        } catch (error) {
+        } catch {
             return 0;
         }
     }
@@ -1093,7 +1097,7 @@ export class CoreDomUtilsProvider {
             const scrollElement = await content.getScrollElement();
 
             return scrollElement.scrollHeight || 0;
-        } catch (error) {
+        } catch {
             return 0;
         }
     }

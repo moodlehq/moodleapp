@@ -65,6 +65,8 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
         await this.waitLoadingsDone();
         await this.waitFormatTextsRendered(this.element);
 
+        this.content = this.element.closest('ion-content');
+
         await this.calculateHeight();
 
         this.listenScrollEvents();
@@ -97,13 +99,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
      * Setup scroll event listener.
      */
     protected async listenScrollEvents(): Promise<void> {
-        if (this.content) {
-            return;
-        }
-
-        this.content = this.element.closest('ion-content');
-
-        if (!this.content) {
+        if (!this.content || this.content?.classList.contains('has-collapsible-footer')) {
             return;
         }
 
