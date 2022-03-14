@@ -53,6 +53,7 @@ import { NavigationStart } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CorePromisedValue } from '@classes/promised-value';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -92,6 +93,45 @@ export class CoreDomUtilsProvider {
     }
 
     /**
+     * Wait an element to be in dom of another element.
+     *
+     * @param element Element to wait.
+     * @return Promise resolved when added. It will be rejected after a timeout of 5s.
+     */
+    waitToDom(
+        element: Element,
+    ): CorePromisedValue<void> {
+        let root = element.getRootNode({ composed: true });
+        const inDomPromise = new CorePromisedValue<void>();
+
+        if (root === document) {
+            // Already in DOM.
+            inDomPromise.resolve();
+
+            return inDomPromise;
+        }
+
+        // Disconnect observer for performance reasons.
+        const timeout = window.setTimeout(() => {
+            inDomPromise.reject(new Error('Waiting for DOM timeout reached'));
+            observer.disconnect();
+        }, 5000);
+
+        const observer = new MutationObserver(() => {
+            root = element.getRootNode({ composed: true });
+            if (root === document) {
+                observer.disconnect();
+                clearTimeout(timeout);
+                inDomPromise.resolve();
+            }
+        });
+
+        observer.observe(document.body, { subtree: true, childList: true });
+
+        return inDomPromise;
+    }
+
+    /**
      * Equivalent to element.closest(). If the browser doesn't support element.closest, it will
      * traverse the parents to achieve the same functionality.
      * Returns the closest ancestor of the current element (or the current element itself) which matches the selector.
@@ -99,45 +139,10 @@ export class CoreDomUtilsProvider {
      * @param element DOM Element.
      * @param selector Selector to search.
      * @return Closest ancestor.
+     * @deprecated Not needed anymore since it's supported on both Android and iOS. Use closest instead.
      */
     closest(element: Element | undefined | null, selector: string): Element | null {
-        if (!element) {
-            return null;
-        }
-
-        // Try to use closest if the browser supports it.
-        if (typeof element.closest == 'function') {
-            return element.closest(selector);
-        }
-
-        if (!this.matchesFunctionName) {
-            // Find the matches function supported by the browser.
-            ['matches', 'webkitMatchesSelector', 'mozMatchesSelector', 'msMatchesSelector', 'oMatchesSelector'].some((fn) => {
-                if (typeof document.body[fn] == 'function') {
-                    this.matchesFunctionName = fn;
-
-                    return true;
-                }
-
-                return false;
-            });
-
-            if (!this.matchesFunctionName) {
-                return null;
-            }
-        }
-
-        // Traverse parents.
-        let elementToTreat: Element | null = element;
-
-        while (elementToTreat) {
-            if (elementToTreat[this.matchesFunctionName](selector)) {
-                return elementToTreat;
-            }
-            elementToTreat = elementToTreat.parentElement;
-        }
-
-        return null;
+        return element?.closest(selector) ?? null;
     }
 
     /**

@@ -458,7 +458,7 @@ export class CoreQuestionBaseComponent {
             name: input.name,
             value: input.value,
             readOnly: input.readOnly,
-            isInline: !!CoreDomUtils.closest(input, '.qtext'), // The answer can be inside the question text.
+            isInline: !!input.closest('.qtext'), // The answer can be inside the question text.
         };
 
         // Check if question is marked as correct.

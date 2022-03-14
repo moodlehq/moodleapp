@@ -258,7 +258,7 @@ export class CoreQuestionHelperProvider {
         // Get the last element and check it's not in the question contents.
         let last = matches.pop();
         while (last) {
-            if (!CoreDomUtils.closest(last, '.formulation')) {
+            if (!last.closest('.formulation')) {
                 // Not in question contents. Add it to a separate attribute and remove it from the HTML.
                 question[attrName] = last.innerHTML;
                 last.parentElement?.removeChild(last);
