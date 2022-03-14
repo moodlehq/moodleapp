@@ -29,6 +29,7 @@ import { filter } from 'rxjs/operators';
 import { NavigationEnd } from '@angular/router';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { CoreSites } from '@services/sites';
+import { CoreDomUtils } from '@services/utils/dom';
 
 /**
  * Page that displays the main menu of the app.
@@ -73,7 +74,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
     protected navSubscription?: Subscription;
     protected keyboardObserver?: CoreEventObserver;
     protected badgeUpdateObserver?: CoreEventObserver;
-    protected resizeFunction: () => void;
+    protected resizeListener?: CoreEventObserver;
     protected backButtonFunction: (event: BackButtonEvent) => void;
     protected selectHistory: string[] = [];
     protected firstSelectedTab?: string;
@@ -86,7 +87,6 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
     tabAction: CoreMainMenuRoleTab;
 
     constructor() {
-        this.resizeFunction = this.initHandlers.bind(this);
         this.backButtonFunction = this.backButtonClicked.bind(this);
         this.tabAction = new CoreMainMenuRoleTab(this);
 
@@ -122,7 +122,9 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
             }
         });
 
-        window.addEventListener('resize', this.resizeFunction);
+        this.resizeListener = CoreDomUtils.onWindowResize(() => {
+            this.initHandlers();
+        });
         document.addEventListener('ionBackButton', this.backButtonFunction);
 
         if (CoreApp.isIOS()) {
@@ -221,10 +223,10 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.subscription?.unsubscribe();
         this.navSubscription?.unsubscribe();
-        window.removeEventListener('resize', this.resizeFunction);
         document.removeEventListener('ionBackButton', this.backButtonFunction);
         this.keyboardObserver?.off();
         this.badgeUpdateObserver?.off();
+        this.resizeListener?.off();
     }
 
     /**

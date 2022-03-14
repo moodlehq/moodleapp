@@ -26,6 +26,7 @@ import { CoreContentLinksHelper } from '@features/contentlinks/services/contentl
 import { CoreTextUtils } from '@services/utils/text';
 import { Translate } from '@singletons';
 import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
+import { CoreDomUtils } from '@services/utils/dom';
 
 /**
  * Page that displays the more page of the app.
@@ -46,6 +47,7 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
     protected subscription!: Subscription;
     protected langObserver: CoreEventObserver;
     protected updateSiteObserver: CoreEventObserver;
+    protected resizeListener?: CoreEventObserver;
 
     constructor() {
         this.langObserver = CoreEvents.on(CoreEvents.LANGUAGE_CHANGED, this.loadCustomMenuItems.bind(this));
@@ -71,7 +73,9 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
             this.initHandlers();
         });
 
-        window.addEventListener('resize', this.initHandlers.bind(this));
+        this.resizeListener = CoreDomUtils.onWindowResize(() => {
+            this.initHandlers();
+        });
 
         const deepLinkManager = new CoreMainMenuDeepLinkManager();
         deepLinkManager.treatLink();
@@ -81,10 +85,10 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        window.removeEventListener('resize', this.initHandlers.bind(this));
         this.langObserver?.off();
         this.updateSiteObserver?.off();
         this.subscription?.unsubscribe();
+        this.resizeListener?.off();
     }
 
     /**

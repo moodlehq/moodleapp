@@ -17,8 +17,10 @@ import { CorePromisedValue } from '@classes/promised-value';
 import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreTabsOutletComponent } from '@components/tabs-outlet/tabs-outlet';
 import { ScrollDetail } from '@ionic/core';
+import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreEventObserver } from '@singletons/events';
 import { CoreMath } from '@singletons/math';
 import { Subscription } from 'rxjs';
 import { CoreFormatTextDirective } from './format-text';
@@ -66,6 +68,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
     protected contentScrollListener?: EventListener;
     protected endContentScrollListener?: EventListener;
     protected pageDidEnterListener?: EventListener;
+    protected resizeListener?: CoreEventObserver;
     protected floatingTitle?: HTMLHeadingElement;
     protected scrollingHeight?: number;
     protected subscriptions: Subscription[] = [];
@@ -120,6 +123,8 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         if (this.page && this.pageDidEnterListener) {
             this.page.removeEventListener('ionViewDidEnter', this.pageDidEnterListener);
         }
+
+        this.resizeListener?.off();
     }
 
     /**
@@ -147,6 +152,10 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         const timeout = window.setTimeout(() => {
             this.enteredPromise.reject(new Error('[collapsible-header] Waiting for ionViewDidEnter timeout reached'));
         }, 5000);
+
+        this.resizeListener = CoreDomUtils.onWindowResize(() => {
+            this.initializeFloatingTitle();
+        }, 50);
     }
 
     /**
@@ -217,16 +226,26 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
             throw new Error('[collapsible-header] Couldn\'t create floating title');
         }
 
+        this.page.classList.remove('is-active');
+        CoreUtils.nextTick();
+
         // Add floating title and measure initial position.
         const collapsedHeaderTitle = this.collapsedHeader.querySelector('h1') as HTMLHeadingElement;
-        const originalTitle = this.expandedHeader.querySelector('h1') as HTMLHeadingElement;
-        const floatingTitleWrapper = originalTitle.parentElement as HTMLElement;
-        const floatingTitle = originalTitle.cloneNode(true) as HTMLHeadingElement;
+        const originalTitle = this.expandedHeader.querySelector('h1.collapsible-header-original-title') ||
+            this.expandedHeader.querySelector('h1') as HTMLHeadingElement;
 
-        originalTitle.classList.add('collapsible-header-original-title');
-        floatingTitle.classList.add('collapsible-header-floating-title');
-        floatingTitleWrapper.classList.add('collapsible-header-floating-title-wrapper');
-        floatingTitleWrapper.insertBefore(floatingTitle, originalTitle);
+        const floatingTitleWrapper = originalTitle.parentElement as HTMLElement;
+        let floatingTitle = floatingTitleWrapper.querySelector('.collapsible-header-floating-title') as HTMLHeadingElement;
+        if (!floatingTitle) {
+            // First time, create it.
+            floatingTitle = originalTitle.cloneNode(true) as HTMLHeadingElement;
+            floatingTitle.classList.add('collapsible-header-floating-title');
+
+            floatingTitleWrapper.classList.add('collapsible-header-floating-title-wrapper');
+            floatingTitleWrapper.insertBefore(floatingTitle, originalTitle);
+
+            originalTitle.classList.add('collapsible-header-original-title');
+        }
 
         const floatingTitleBoundingBox = floatingTitle.getBoundingClientRect();
 

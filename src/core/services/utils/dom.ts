@@ -53,6 +53,7 @@ import { NavigationStart } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreEventObserver } from '@singletons/events';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -125,6 +126,28 @@ export class CoreDomUtilsProvider {
 
             observer.observe(document.body, { subtree: true, childList: true });
         });
+    }
+
+    /**
+     * Window resize is widely checked and may have many performance issues, debouce usage is needed to avoid calling it too much.
+     * This function helps setting up the debounce feature and remove listener easily.
+     *
+     * @param resizeFunction Function to execute on resize.
+     * @param debounceDelay Debounce time in ms.
+     * @return Event observer to call off when finished.
+     */
+    onWindowResize(resizeFunction: (ev?: Event) => void, debounceDelay = 20): CoreEventObserver {
+        const resizeListener = CoreUtils.debounce((ev?: Event) => {
+            resizeFunction(ev);
+        }, debounceDelay);
+
+        window.addEventListener('resize', resizeListener);
+
+        return {
+            off: (): void => {
+                window.removeEventListener('resize', resizeListener);
+            },
+        };
     }
 
     /**

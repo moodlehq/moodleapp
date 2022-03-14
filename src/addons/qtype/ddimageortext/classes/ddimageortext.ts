@@ -14,6 +14,7 @@
 
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreEventObserver } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { AddonModQuizDdImageOrTextQuestionData } from '../component/ddimageortext';
 
@@ -28,7 +29,7 @@ export class AddonQtypeDdImageOrTextQuestion {
     protected afterImageLoadDone = false;
     protected proportion = 1;
     protected selected?: HTMLElement | null; // Selected element (being "dragged").
-    protected resizeFunction?: (ev?: Event) => void;
+    protected resizeListener?: CoreEventObserver;
 
     /**
      * Create the this.
@@ -174,9 +175,7 @@ export class AddonQtypeDdImageOrTextQuestion {
     destroy(): void {
         this.stopPolling();
 
-        if (this.resizeFunction) {
-            window.removeEventListener('resize', this.resizeFunction);
-        }
+        this.resizeListener?.off();
     }
 
     /**
@@ -360,8 +359,9 @@ export class AddonQtypeDdImageOrTextQuestion {
             this.pollForImageLoad();
         });
 
-        this.resizeFunction = this.windowResized.bind(this);
-        window.addEventListener('resize', this.resizeFunction!);
+        this.resizeListener = CoreDomUtils.onWindowResize(() => {
+            this.windowResized();
+        });
     }
 
     /**
