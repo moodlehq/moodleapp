@@ -89,7 +89,7 @@ export class CoreCollapsibleItemDirective implements OnInit {
      * @return Promise resolved when loadings are done.
      */
     protected async waitLoadingsDone(): Promise<void> {
-        await CoreDomUtils.waitToDom(this.element);
+        await CoreDomUtils.waitToBeInDOM(this.element);
 
         const page = this.element.closest('.ion-page');
 
