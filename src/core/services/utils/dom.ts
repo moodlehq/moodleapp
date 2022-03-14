@@ -53,7 +53,6 @@ import { NavigationStart } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
-import { CorePromisedValue } from '@classes/promised-value';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -98,37 +97,34 @@ export class CoreDomUtilsProvider {
      * @param element Element to wait.
      * @return Promise resolved when added. It will be rejected after a timeout of 5s.
      */
-    waitToDom(
+    async waitToBeInDOM(
         element: Element,
-    ): CorePromisedValue<void> {
+    ): Promise<void> {
         let root = element.getRootNode({ composed: true });
-        const inDomPromise = new CorePromisedValue<void>();
 
         if (root === document) {
             // Already in DOM.
-            inDomPromise.resolve();
-
-            return inDomPromise;
+            return;
         }
 
-        // Disconnect observer for performance reasons.
-        const timeout = window.setTimeout(() => {
-            inDomPromise.reject(new Error('Waiting for DOM timeout reached'));
-            observer.disconnect();
-        }, 5000);
-
-        const observer = new MutationObserver(() => {
-            root = element.getRootNode({ composed: true });
-            if (root === document) {
+        return new Promise((resolve, reject) => {
+            // Disconnect observer for performance reasons.
+            const timeout = window.setTimeout(() => {
+                reject(new Error('Waiting for DOM timeout reached'));
                 observer.disconnect();
-                clearTimeout(timeout);
-                inDomPromise.resolve();
-            }
+            }, 5000);
+
+            const observer = new MutationObserver(() => {
+                root = element.getRootNode({ composed: true });
+                if (root === document) {
+                    observer.disconnect();
+                    clearTimeout(timeout);
+                    resolve();
+                }
+            });
+
+            observer.observe(document.body, { subtree: true, childList: true });
         });
-
-        observer.observe(document.body, { subtree: true, childList: true });
-
-        return inDomPromise;
     }
 
     /**
@@ -139,7 +135,7 @@ export class CoreDomUtilsProvider {
      * @param element DOM Element.
      * @param selector Selector to search.
      * @return Closest ancestor.
-     * @deprecated Not needed anymore since it's supported on both Android and iOS. Use closest instead.
+     * @deprecated since app 4.0 Not needed anymore since it's supported on both Android and iOS. Use closest instead.
      */
     closest(element: Element | undefined | null, selector: string): Element | null {
         return element?.closest(selector) ?? null;
