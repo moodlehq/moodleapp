@@ -36,7 +36,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { Platform, Translate } from '@singletons';
-import { CoreEventFormActionData, CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventFormActionData, CoreEventObserver, CoreEvents, CoreSingleTimeEventObserver } from '@singletons/events';
 import { CoreEditorOffline } from '../../services/editor-offline';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreLoadingComponent } from '@components/loading/loading';
@@ -104,6 +104,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
     protected selectionChangeFunction?: () => void;
     protected languageChangedSubscription?: Subscription;
     protected resizeListener?: CoreEventObserver;
+    protected domListener?: CoreSingleTimeEventObserver;
 
     rteEnabled = false;
     isPhone = false;
@@ -249,9 +250,6 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
             this.windowResized();
         }, 50);
 
-        // Start observing the target node for configured mutations
-        this.resizeObserver?.observe(this.element);
-
         document.addEventListener('selectionchange', this.selectionChangeFunction = this.updateToolbarStyles.bind(this));
 
         this.keyboardObserver = CoreEvents.on(CoreEvents.KEYBOARD_CHANGE, () => {
@@ -289,7 +287,8 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
      * @return Promise resolved when loadings are done.
      */
     protected async waitLoadingsDone(): Promise<void> {
-        await CoreDomUtils.waitToBeInDOM(this.element);
+        this.domListener = CoreDomUtils.waitToBeInDOM(this.element);
+        await this.domListener.promise;
 
         const page = this.element.closest('.ion-page');
 
@@ -829,7 +828,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
 
         const length = await this.toolbarSlides.length();
 
-        await CoreDomUtils.waitToBeInDOM(this.toolbar.nativeElement);
+        await CoreDomUtils.waitToBeInDOM(this.toolbar.nativeElement, 5000).promise;
 
         const width = this.toolbar.nativeElement.getBoundingClientRect().width;
 
@@ -1075,7 +1074,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
     }
 
     /**
-     * Component being destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.valueChangeSubscription?.unsubscribe();
@@ -1088,6 +1087,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
         this.keyboardObserver?.off();
         this.labelObserver?.disconnect();
         this.resizeListener?.off();
+        this.domListener?.off();
     }
 
 }

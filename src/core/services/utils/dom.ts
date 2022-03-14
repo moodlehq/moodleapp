@@ -53,7 +53,7 @@ import { NavigationStart } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
-import { CoreEventObserver } from '@singletons/events';
+import { CoreEventObserver, CoreSingleTimeEventObserver } from '@singletons/events';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -96,36 +96,52 @@ export class CoreDomUtilsProvider {
      * Wait an element to be in dom of another element.
      *
      * @param element Element to wait.
-     * @return Promise resolved when added. It will be rejected after a timeout of 5s.
+     * @param timeout If defined, timeout to wait before rejecting the promise.
+     * @return Promise CoreSingleTimeEventObserver with a promise.
      */
-    async waitToBeInDOM(
+    waitToBeInDOM(
         element: Element,
-    ): Promise<void> {
+        timeout?: number,
+    ): CoreSingleTimeEventObserver {
         let root = element.getRootNode({ composed: true });
 
         if (root === document) {
             // Already in DOM.
-            return;
+            return {
+                off: (): void => {
+                    // Nothing to do here.
+                },
+                promise: Promise.resolve(),
+            };
         }
 
-        return new Promise((resolve, reject) => {
-            // Disconnect observer for performance reasons.
-            const timeout = window.setTimeout(() => {
-                observer.disconnect();
-                reject(new Error('Waiting for DOM timeout reached'));
-            }, 5000);
+        let observer: MutationObserver | undefined;
+        let observerTimeout: number | undefined;
+        if (timeout) {
+            observerTimeout = window.setTimeout(() => {
+                observer?.disconnect();
+                throw new Error('Waiting for DOM timeout reached');
+            }, timeout);
+        }
 
-            const observer = new MutationObserver(() => {
-                root = element.getRootNode({ composed: true });
-                if (root === document) {
-                    observer.disconnect();
-                    clearTimeout(timeout);
-                    resolve();
-                }
-            });
+        return {
+            off: (): void => {
+                observer?.disconnect();
+                clearTimeout(observerTimeout);
+            },
+            promise: new Promise((resolve) => {
+                observer = new MutationObserver(() => {
+                    root = element.getRootNode({ composed: true });
+                    if (root === document) {
+                        observer?.disconnect();
+                        clearTimeout(observerTimeout);
+                        resolve();
+                    }
+                });
 
-            observer.observe(document.body, { subtree: true, childList: true });
-        });
+                observer.observe(document.body, { subtree: true, childList: true });
+            }),
+        };
     }
 
     /**

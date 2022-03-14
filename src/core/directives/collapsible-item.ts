@@ -18,7 +18,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
-import { CoreEventObserver } from '@singletons/events';
+import { CoreEventObserver, CoreSingleTimeEventObserver } from '@singletons/events';
 import { CoreFormatTextDirective } from './format-text';
 
 const defaultMaxHeight = 80;
@@ -49,6 +49,7 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
     protected maxHeight = defaultMaxHeight;
     protected expandedHeight = 0;
     protected resizeListener?: CoreEventObserver;
+    protected domListener?: CoreSingleTimeEventObserver;
 
     constructor(el: ElementRef<HTMLElement>) {
         this.element = el.nativeElement;
@@ -95,7 +96,8 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
      * @return Promise resolved when loadings are done.
      */
     protected async waitLoadingsDone(): Promise<void> {
-        await CoreDomUtils.waitToBeInDOM(this.element);
+        this.domListener = CoreDomUtils.waitToBeInDOM(this.element);
+        await this.domListener.promise;
 
         const page = this.element.closest('.ion-page');
 
@@ -240,6 +242,7 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.resizeListener?.off();
+        this.domListener?.off();
     }
 
 }

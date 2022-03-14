@@ -19,7 +19,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreMath } from '@singletons/math';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreFormatTextDirective } from './format-text';
-import { CoreEventObserver } from '@singletons/events';
+import { CoreEventObserver, CoreSingleTimeEventObserver } from '@singletons/events';
 import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreDomUtils } from '@services/utils/dom';
 
@@ -48,6 +48,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
     protected contentScrollListener?: EventListener;
     protected endContentScrollListener?: EventListener;
     protected resizeListener?: CoreEventObserver;
+    protected domListener?: CoreSingleTimeEventObserver;
 
     constructor(el: ElementRef, protected ionContent: IonContent) {
         this.element = el.nativeElement;
@@ -61,7 +62,9 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
         // Only if not present or explicitly falsy it will be false.
         this.appearOnBottom = !CoreUtils.isFalseOrZero(this.appearOnBottom);
 
-        await CoreDomUtils.waitToBeInDOM(this.element);
+        this.domListener = CoreDomUtils.waitToBeInDOM(this.element);
+        await this.domListener.promise;
+
         await this.waitLoadingsDone();
         await this.waitFormatTextsRendered(this.element);
 
@@ -231,6 +234,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
         }
 
         this.resizeListener?.off();
+        this.domListener?.off();
     }
 
 }

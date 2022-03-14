@@ -23,6 +23,7 @@ import {
     Optional,
     ViewContainerRef,
     ViewChild,
+    OnDestroy,
 } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 
@@ -41,6 +42,7 @@ import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { CoreSubscriptions } from '@singletons/subscriptions';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreCollapsibleItemDirective } from './collapsible-item';
+import { CoreSingleTimeEventObserver } from '@singletons/events';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -54,7 +56,7 @@ import { CoreCollapsibleItemDirective } from './collapsible-item';
 @Directive({
     selector: 'core-format-text',
 })
-export class CoreFormatTextDirective implements OnChanges {
+export class CoreFormatTextDirective implements OnChanges, OnDestroy {
 
     @ViewChild(CoreCollapsibleItemDirective) collapsible?: CoreCollapsibleItemDirective;
 
@@ -88,6 +90,7 @@ export class CoreFormatTextDirective implements OnChanges {
     protected element: HTMLElement;
     protected emptyText = '';
     protected contentSpan: HTMLElement;
+    protected domListener?: CoreSingleTimeEventObserver;
 
     constructor(
         element: ElementRef,
@@ -124,6 +127,13 @@ export class CoreFormatTextDirective implements OnChanges {
         if (changes.text || changes.filter || changes.contextLevel || changes.contextInstanceId) {
             this.formatAndRenderContents();
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.domListener?.off();
     }
 
     /**
@@ -546,7 +556,8 @@ export class CoreFormatTextDirective implements OnChanges {
      * @return The width of the element in pixels.
      */
     protected async getElementWidth(): Promise<number> {
-        await CoreUtils.ignoreErrors(CoreDomUtils.waitToBeInDOM(this.element));
+        this.domListener = CoreDomUtils.waitToBeInDOM(this.element);
+        await this.domListener.promise;
 
         let width = this.element.getBoundingClientRect().width;
         if (!width) {
@@ -700,7 +711,7 @@ export class CoreFormatTextDirective implements OnChanges {
                 let width: string | number;
                 let height: string | number;
 
-                await CoreDomUtils.waitToBeInDOM(iframe);
+                await CoreDomUtils.waitToBeInDOM(iframe, 5000).promise;
 
                 if (iframe.width) {
                     width = iframe.width;
