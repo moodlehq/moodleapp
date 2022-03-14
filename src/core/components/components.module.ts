@@ -60,6 +60,7 @@ import { CoreSpacerComponent } from './spacer/spacer';
 import { CoreHorizontalScrollControlsComponent } from './horizontal-scroll-controls/horizontal-scroll-controls';
 import { CoreButtonWithSpinnerComponent } from './button-with-spinner/button-with-spinner';
 import { CoreSwipeSlidesComponent } from './swipe-slides/swipe-slides';
+import { CoreSwipeNavigationTourComponent } from './swipe-navigation-tour/swipe-navigation-tour';
 
 @NgModule({
     declarations: [
@@ -102,6 +103,7 @@ import { CoreSwipeSlidesComponent } from './swipe-slides/swipe-slides';
         CoreComboboxComponent,
         CoreSpacerComponent,
         CoreHorizontalScrollControlsComponent,
+        CoreSwipeNavigationTourComponent,
     ],
     imports: [
         CommonModule,
@@ -151,6 +153,7 @@ import { CoreSwipeSlidesComponent } from './swipe-slides/swipe-slides';
         CoreComboboxComponent,
         CoreSpacerComponent,
         CoreHorizontalScrollControlsComponent,
+        CoreSwipeNavigationTourComponent,
     ],
 })
 export class CoreComponentsModule {}

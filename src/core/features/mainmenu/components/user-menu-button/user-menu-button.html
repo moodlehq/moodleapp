@@ -1,3 +1,4 @@
 <core-user-avatar *ngIf="isMainScreen && siteInfo" [user]="siteInfo" class="core-bar-button-image clickable" [linkProfile]="false"
-    (ariaButtonClick)="openUserMenu($event)" role="button" tabindex="0" [attr.aria-label]="'core.user.useraccount' | translate">
+    (ariaButtonClick)="openUserMenu($event)" (onAppear)="showTour()" role="button" tabindex="0"
+    [attr.aria-label]="'core.user.useraccount' | translate" #avatar>
 </core-user-avatar>

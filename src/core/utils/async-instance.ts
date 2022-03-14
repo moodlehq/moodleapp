@@ -54,6 +54,20 @@ function createAsyncInstanceWrapper<T>(lazyConstructor?: () => T | Promise<T>): 
 
             promisedInstance.resolve(instance);
         },
+        setLazyConstructor(constructor) {
+            if (!promisedInstance) {
+                lazyConstructor = constructor;
+
+                return;
+            }
+
+            if (!promisedInstance.isResolved()) {
+                // eslint-disable-next-line promise/catch-or-return
+                Promise
+                    .resolve(constructor())
+                    .then(instance => promisedInstance?.isResolved() || promisedInstance?.resolve(instance));
+            }
+        },
         resetInstance() {
             if (!promisedInstance) {
                 return;
@@ -72,6 +86,7 @@ export interface AsyncInstanceWrapper<T> {
     getInstance(): Promise<T>;
     getProperty<P extends keyof T>(property: P): Promise<T[P]>;
     setInstance(instance: T): void;
+    setLazyConstructor(lazyConstructor: () => T | Promise<T>): void;
     resetInstance(): void;
 }
 

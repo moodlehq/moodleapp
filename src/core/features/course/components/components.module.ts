@@ -28,6 +28,7 @@ import { CoreCourseModuleInfoComponent } from './module-info/module-info';
 import { CoreCourseModuleManualCompletionComponent } from './module-manual-completion/module-manual-completion';
 import { CoreCourseModuleNavigationComponent } from './module-navigation/module-navigation';
 import { CoreCourseModuleSummaryComponent } from './module-summary/module-summary';
+import { CoreCourseCourseIndexTourComponent } from './course-index-tour/course-index-tour';
 
 @NgModule({
     declarations: [
@@ -39,6 +40,7 @@ import { CoreCourseModuleSummaryComponent } from './module-summary/module-summar
         CoreCourseModuleInfoComponent,
         CoreCourseModuleManualCompletionComponent,
         CoreCourseCourseIndexComponent,
+        CoreCourseCourseIndexTourComponent,
         CoreCourseTagAreaComponent,
         CoreCourseUnsupportedModuleComponent,
         CoreCourseModuleNavigationComponent,
@@ -57,6 +59,7 @@ import { CoreCourseModuleSummaryComponent } from './module-summary/module-summar
         CoreCourseModuleInfoComponent,
         CoreCourseModuleManualCompletionComponent,
         CoreCourseCourseIndexComponent,
+        CoreCourseCourseIndexTourComponent,
         CoreCourseTagAreaComponent,
         CoreCourseUnsupportedModuleComponent,
         CoreCourseModuleNavigationComponent,

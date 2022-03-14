@@ -140,6 +140,13 @@ export class CoreDatabaseTableProxy<
     /**
      * @inheritdoc
      */
+    hasAnyByPrimaryKey(primaryKey: PrimaryKey): Promise<boolean> {
+        return this.target.hasAnyByPrimaryKey(primaryKey);
+    }
+
+    /**
+     * @inheritdoc
+     */
     count(conditions?: Partial<DBRecord>): Promise<number> {
         return this.target.count(conditions);
     }

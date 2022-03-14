@@ -23,7 +23,7 @@ import { CoreEvents } from '@singletons/events';
 import { CoreDatabaseTable } from '@classes/database/database-table';
 import { asyncInstance } from '../utils/async-instance';
 import { CorePromisedValue } from '@classes/promised-value';
-import { CoreUtils } from './utils/utils';
+import { CoreBrowser } from '@singletons/browser';
 
 declare module '@singletons/events' {
 
@@ -195,11 +195,11 @@ export class CoreConfigProvider {
      * Load development config overrides.
      */
     protected loadDevelopmentConfig(): void {
-        if (!CoreConstants.enableDevTools() || !CoreUtils.hasCookie('MoodleAppConfig')) {
+        if (!CoreConstants.enableDevTools() || !CoreBrowser.hasCookie('MoodleAppConfig')) {
             return;
         }
 
-        this.patchEnvironment(JSON.parse(CoreUtils.getCookie('MoodleAppConfig') ?? '{}'));
+        this.patchEnvironment(JSON.parse(CoreBrowser.getCookie('MoodleAppConfig') ?? '{}'));
     }
 
     /**

@@ -132,6 +132,15 @@ export class CoreDebugDatabaseTable<
     /**
      * @inheritdoc
      */
+    hasAnyByPrimaryKey(primaryKey: PrimaryKey): Promise<boolean> {
+        this.logger.log('hasAnyByPrimaryKey', primaryKey);
+
+        return this.target.hasAnyByPrimaryKey(primaryKey);
+    }
+
+    /**
+     * @inheritdoc
+     */
     count(conditions?: Partial<DBRecord>): Promise<number> {
         this.logger.log('count', conditions);
 

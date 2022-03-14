@@ -32,6 +32,7 @@ import { CoreSwipeNavigationDirective } from './swipe-navigation';
 import { CoreCollapsibleItemDirective } from './collapsible-item';
 import { CoreCollapsibleFooterDirective } from './collapsible-footer';
 import { CoreContentDirective } from './content';
+import { CoreOnAppearDirective } from './on-appear';
 
 @NgModule({
     declarations: [
@@ -46,6 +47,7 @@ import { CoreContentDirective } from './content';
         CoreSupressEventsDirective,
         CoreUserLinkDirective,
         CoreAriaButtonClickDirective,
+        CoreOnAppearDirective,
         CoreOnResizeDirective,
         CoreDownloadFileDirective,
         CoreCollapsibleHeaderDirective,
@@ -66,6 +68,7 @@ import { CoreContentDirective } from './content';
         CoreSupressEventsDirective,
         CoreUserLinkDirective,
         CoreAriaButtonClickDirective,
+        CoreOnAppearDirective,
         CoreOnResizeDirective,
         CoreDownloadFileDirective,
         CoreCollapsibleHeaderDirective,

@@ -807,6 +807,24 @@ export class CoreDomUtilsProvider {
     }
 
     /**
+     * Check whether an element is visible or not.
+     *
+     * @param element Element.
+     */
+    isElementVisible(element: HTMLElement): boolean {
+        if (element.clientWidth === 0 || element.clientHeight === 0) {
+            return false;
+        }
+
+        const style = getComputedStyle(element);
+        if (style.opacity === '0' || style.display === 'none' || style.visibility === 'hidden') {
+            return false;
+        }
+
+        return element.offsetParent !== null;
+    }
+
+    /**
      * Check if rich text editor is enabled.
      *
      * @return Promise resolved with boolean: true if enabled, false otherwise.

@@ -14,6 +14,8 @@
 
 import {  AfterViewInit, Directive, ElementRef, Input, OnDestroy } from '@angular/core';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
+import { CoreSwipeNavigationTourComponent } from '@components/swipe-navigation-tour/swipe-navigation-tour';
+import { CoreUserTours } from '@features/usertours/services/user-tours';
 import { Gesture, GestureDetail } from '@ionic/angular';
 import { CoreScreen } from '@services/screen';
 import { GestureController, Platform } from '@singletons';
@@ -50,7 +52,8 @@ export class CoreSwipeNavigationDirective implements AfterViewInit, OnDestroy {
     /**
      * @inheritdoc
      */
-    ngAfterViewInit(): void {
+    async ngAfterViewInit(): Promise<void> {
+        // Set up gesture listener
         const style = this.element.style;
         this.swipeGesture = GestureController.create({
             el: this.element,
@@ -71,6 +74,26 @@ export class CoreSwipeNavigationDirective implements AfterViewInit, OnDestroy {
             },
         });
         this.swipeGesture.enable();
+
+        // Show user tour.
+        const source = this.manager?.getSource();
+
+        if (!source) {
+            return;
+        }
+
+        await source.waitForLoaded();
+
+        const items = source.getItems() ?? [];
+
+        if (items.length < 2) {
+            return;
+        }
+
+        await CoreUserTours.showIfPending({
+            id: 'swipe-navigation',
+            component: CoreSwipeNavigationTourComponent,
+        });
     }
 
     /**
