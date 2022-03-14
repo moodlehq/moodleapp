@@ -69,6 +69,9 @@ class behat_app extends behat_base {
     /** @var bool Whether the app is running or not */
     protected $apprunning = false;
 
+    /** @var array Config overrides */
+    protected $appconfig = ['disableUserTours' => true];
+
     /**
      * Register listener.
      *
@@ -549,6 +552,11 @@ class behat_app extends behat_base {
             }, false, 60);
         }
 
+        // Prepare testing config.
+        $configoverrides = json_encode($this->appconfig);
+
+        $this->evaluate_script("configProvider.patchEnvironment($configoverrides)");
+
         // Continue only after JS finishes.
         $this->wait_for_pending_js();
     }
@@ -700,6 +708,7 @@ class behat_app extends behat_base {
      * Opens a custom link.
      *
      * @Given /^I open a custom link in the app for:$/
+     * @param TableNode $data
      */
     public function i_open_a_custom_link(TableNode $data) {
         global $DB, $CFG;
@@ -749,6 +758,18 @@ class behat_app extends behat_base {
         });
 
         $this->wait_for_pending_js();
+    }
+
+    /**
+     * Override app config.
+     *
+     * @Given /^the app has the following config:$/
+     * @param TableNode $data
+     */
+    public function the_app_has_the_following_config(TableNode $data) {
+        foreach ($data->getRows() as $configrow) {
+            $this->appconfig[$configrow[0]] = json_decode($configrow[1]);
+        }
     }
 
     /**
