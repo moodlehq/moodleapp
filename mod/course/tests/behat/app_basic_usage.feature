@@ -453,7 +453,7 @@ Feature: Test basic usage of one course in app
     Then I should find "Course summary" in the app
     And I should find "Course" in the app
 
-    When I press "Course" "ion-button" in the app
+    When I press "View course" "ion-button" in the app
     Then the header should be "Course 1" in the app
     And I should find "Choice course 1" in the app
     And I should find "assignment" in the app
