@@ -42,7 +42,7 @@ import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { CoreSubscriptions } from '@singletons/subscriptions';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreCollapsibleItemDirective } from './collapsible-item';
-import { CoreSingleTimeEventObserver } from '@singletons/events';
+import { CoreCancellablePromise } from '@classes/cancellable-promise';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -90,7 +90,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy {
     protected element: HTMLElement;
     protected emptyText = '';
     protected contentSpan: HTMLElement;
-    protected domListener?: CoreSingleTimeEventObserver;
+    protected domPromise?: CoreCancellablePromise<void>;
 
     constructor(
         element: ElementRef,
@@ -133,7 +133,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy {
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.domListener?.off();
+        this.domPromise?.cancel();
     }
 
     /**
@@ -556,8 +556,9 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy {
      * @return The width of the element in pixels.
      */
     protected async getElementWidth(): Promise<number> {
-        this.domListener = CoreDomUtils.waitToBeInDOM(this.element);
-        await this.domListener.promise;
+        this.domPromise = CoreDomUtils.waitToBeInDOM(this.element);
+
+        await this.domPromise;
 
         let width = this.element.getBoundingClientRect().width;
         if (!width) {
@@ -711,7 +712,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy {
                 let width: string | number;
                 let height: string | number;
 
-                await CoreDomUtils.waitToBeInDOM(iframe, 5000).promise;
+                await CoreDomUtils.waitToBeInDOM(iframe, 5000);
 
                 if (iframe.width) {
                     width = iframe.width;

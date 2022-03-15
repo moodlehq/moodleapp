@@ -53,7 +53,8 @@ import { NavigationStart } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
-import { CoreEventObserver, CoreSingleTimeEventObserver } from '@singletons/events';
+import { CoreEventObserver } from '@singletons/events';
+import { CoreCancellablePromise } from '@classes/cancellable-promise';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -97,51 +98,46 @@ export class CoreDomUtilsProvider {
      *
      * @param element Element to wait.
      * @param timeout If defined, timeout to wait before rejecting the promise.
-     * @return Promise CoreSingleTimeEventObserver with a promise.
+     * @return Cancellable promise.
      */
-    waitToBeInDOM(
-        element: Element,
-        timeout?: number,
-    ): CoreSingleTimeEventObserver {
-        let root = element.getRootNode({ composed: true });
+    waitToBeInDOM(element: Element, timeout?: number): CoreCancellablePromise<void> {
+        const root = element.getRootNode({ composed: true });
 
         if (root === document) {
             // Already in DOM.
-            return {
-                off: (): void => {
-                    // Nothing to do here.
-                },
-                promise: Promise.resolve(),
-            };
+            return CoreCancellablePromise.resolve();
         }
 
-        let observer: MutationObserver | undefined;
+        let observer: MutationObserver;
         let observerTimeout: number | undefined;
-        if (timeout) {
-            observerTimeout = window.setTimeout(() => {
-                observer?.disconnect();
-                throw new Error('Waiting for DOM timeout reached');
-            }, timeout);
-        }
 
-        return {
-            off: (): void => {
-                observer?.disconnect();
-                clearTimeout(observerTimeout);
-            },
-            promise: new Promise((resolve) => {
+        return new CoreCancellablePromise<void>(
+            (resolve, reject) => {
                 observer = new MutationObserver(() => {
-                    root = element.getRootNode({ composed: true });
+                    const root = element.getRootNode({ composed: true });
+
                     if (root === document) {
                         observer?.disconnect();
-                        clearTimeout(observerTimeout);
+                        observerTimeout && clearTimeout(observerTimeout);
                         resolve();
                     }
                 });
 
+                if (timeout) {
+                    observerTimeout = window.setTimeout(() => {
+                        observer?.disconnect();
+
+                        reject(new Error('Waiting for DOM timeout reached'));
+                    }, timeout);
+                }
+
                 observer.observe(document.body, { subtree: true, childList: true });
-            }),
-        };
+            },
+            () => {
+                observer?.disconnect();
+                observerTimeout && clearTimeout(observerTimeout);
+            },
+        );
     }
 
     /**

@@ -19,9 +19,10 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreMath } from '@singletons/math';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreFormatTextDirective } from './format-text';
-import { CoreEventObserver, CoreSingleTimeEventObserver } from '@singletons/events';
+import { CoreEventObserver } from '@singletons/events';
 import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreDomUtils } from '@services/utils/dom';
+import { CoreCancellablePromise } from '@classes/cancellable-promise';
 
 /**
  * Directive to make an element fixed at the bottom collapsible when scrolling.
@@ -48,7 +49,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
     protected contentScrollListener?: EventListener;
     protected endContentScrollListener?: EventListener;
     protected resizeListener?: CoreEventObserver;
-    protected domListener?: CoreSingleTimeEventObserver;
+    protected domPromise?: CoreCancellablePromise<void>;
 
     constructor(el: ElementRef, protected ionContent: IonContent) {
         this.element = el.nativeElement;
@@ -61,10 +62,9 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
     async ngOnInit(): Promise<void> {
         // Only if not present or explicitly falsy it will be false.
         this.appearOnBottom = !CoreUtils.isFalseOrZero(this.appearOnBottom);
+        this.domPromise = CoreDomUtils.waitToBeInDOM(this.element);
 
-        this.domListener = CoreDomUtils.waitToBeInDOM(this.element);
-        await this.domListener.promise;
-
+        await this.domPromise;
         await this.waitLoadingsDone();
         await this.waitFormatTextsRendered(this.element);
 
@@ -234,7 +234,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
         }
 
         this.resizeListener?.off();
-        this.domListener?.off();
+        this.domPromise?.cancel();
     }
 
 }
