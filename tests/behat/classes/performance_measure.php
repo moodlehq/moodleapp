@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+use Behat\Mink\Exception\DriverException;
+use Facebook\WebDriver\Exception\InvalidArgumentException;
 use Moodle\BehatExtension\Driver\WebDriver;
 
 /**
@@ -268,7 +270,7 @@ class performance_measure implements behat_app_listener {
         $scripting = 0;
         $styling = 0;
         $networking = 0;
-        $logs = $this->driver->getWebDriver()->manage()->getLog('performance');
+        $logs = $this->getPerformanceLogs();
 
         foreach ($logs as $log) {
             // TODO this should filter by end time as well, but it seems like the timestamps are not
@@ -302,6 +304,41 @@ class performance_measure implements behat_app_listener {
         $this->scripting = round($scripting / 1000);
         $this->styling = round($styling / 1000);
         $this->networking = $networking;
+    }
+
+    /**
+     * Get performance logs.
+     *
+     * @return array Performance logs.
+     */
+    private function getPerformanceLogs(): array {
+        try {
+            return $this->driver->getWebDriver()->manage()->getLog('performance');
+        } catch (InvalidArgumentException $e) {
+            throw new DriverException(
+                implode("\n", [
+                    "It wasn't possible to get performance logs, make sure that you have configured the following capabilities:",
+                    "",
+                    "\$CFG->behat_profiles = [",
+                    "    'default' => [",
+                    "        'browser' => 'chrome',",
+                    "        'wd_host' => 'http://selenium:4444/wd/hub',",
+                    "        'capabilities' => [",
+                    "            'extra_capabilities' => [",
+                    "                'goog:loggingPrefs' => ['performance' => 'ALL'],",
+                    "                'chromeOptions' => [",
+                    "                    'perfLoggingPrefs' => [",
+                    "                        'traceCategories' => 'devtools.timeline',",
+                    "                    ],",
+                    "                ],",
+                    "            ],",
+                    "        ],",
+                    "    ],",
+                    ");",
+                    "",
+                ])
+            );
+        }
     }
 
 }
