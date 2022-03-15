@@ -16,6 +16,7 @@ import { Directive, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChang
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreTabsOutletComponent } from '@components/tabs-outlet/tabs-outlet';
+import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 import { ScrollDetail } from '@ionic/core';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
@@ -156,6 +157,10 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         this.resizeListener = CoreDomUtils.onWindowResize(() => {
             this.initializeFloatingTitle();
         }, 50);
+
+        this.subscriptions.push(CoreSettingsHelper.onDarkModeChange().subscribe(() => {
+            this.initializeFloatingTitle();
+        }));
     }
 
     /**
