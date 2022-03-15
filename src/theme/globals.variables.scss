@@ -4,7 +4,7 @@
  * Place here all global variables.
  */
 
-$black:           #282828 !default; // Headings, standard text.
+$black:           #090761 !default; // Headings, standard text.
 $gray-darker:     #686566 !default;
 $gray-dark:       #9e9e9e !default;
 $gray:            #dddddd !default;
@@ -28,7 +28,7 @@ $yellow:          #fbad1a !default; // Accent (never text).
 $yellow-light:    mix($yellow, white, 20%) !default;
 $yellow-dark:     mix($yellow, black, 40%) !default;
 
-$brand-color:    #f98012 !default;
+$brand-color:    #fbad1a !default;
 
 $text-color:               $black !default;
 $text-color-rgb:           color-to-rgb-list($text-color) !default;

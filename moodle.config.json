@@ -1,8 +1,8 @@
 {
-    "app_id": "com.moodle.moodlemobile",
-    "appname": "Moodle Mobile",
-    "versioncode": 3950,
-    "versionname": "3.9.5",
+    "app_id": "com.creative.fonon",
+    "appname": "Fonon Mobile",
+    "versioncode": 1000,
+    "versionname": "1.0.0",
     "cache_update_frequency_usually": 420000,
     "cache_update_frequency_often": 1200000,
     "cache_update_frequency_sometimes": 3600000,
@@ -80,9 +80,9 @@
         "low": 110,
         "high": 120
     },
-    "customurlscheme": "moodlemobile",
-    "siteurl": "",
-    "sitename": "",
+    "customurlscheme": "Fonon",
+    "siteurl": "https://test.fonon.org",
+    "sitename": "Fonon",
     "multisitesdisplay": "",
     "sitefindersettings": {},
     "onlyallowlistedsites": false,
@@ -96,7 +96,7 @@
     "forceLoginLogo": false,
     "ioswebviewscheme": "moodleappfs",
     "appstores": {
-        "android": "com.moodle.moodlemobile",
+        "android": "com.creative.fonon",
         "ios": "id633359593"
     }
 }

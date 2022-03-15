@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="39503" id="com.moodle.moodlemobile" ios-CFBundleVersion="3.9.5.3" version="3.9.5" versionCode="39503" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Moodle</name>
-    <description>Moodle official app</description>
-    <author email="mobile@moodle.com" href="http://moodle.com">Moodle Mobile team</author>
+<widget android-versionCode="39503" id="com.creative.fonon" ios-CFBundleVersion="3.9.5.3" version="1.0.0" versionCode="39503" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Fonon</name>
+    <description>Fonon app</description>
+    <author email="mobile@moodle.com" href="http://moodle.com">fonon Mobile team</author>
     <content src="index.html" />
     <access origin="*" />
     <access launch-external="yes" origin="tel:*" />
@@ -40,7 +40,7 @@
     <preference name="SplashMaintainAspectRatio" value="true" />
     <preference name="SplashShowOnlyFirstTime" value="false" />
     <preference name="android-minSdkVersion" value="22" />
-    <preference name="android-targetSdkVersion" value="30" />
+    <preference name="android-targetSdkVersion" value="31" />
     <preference name="AndroidPersistentFileLocation" value="Compatibility" />
     <preference name="AndroidInsecureFileModeEnabled" value="true" />
     <preference name="CustomURLSchemePluginClearsAndroidIntent" value="true" />
@@ -52,7 +52,6 @@
     </feature>
     <platform name="android">
         <resource-file src="MainActivity.java" target="app/src/main/java/com/moodle/moodlemobile/MainActivity.java" />
-        <resource-file src="google-services.json" target="app/google-services.json" />
         <resource-file src="resources/android/icon/drawable-ldpi-smallicon.png" target="app/src/main/res/mipmap-ldpi/smallicon.png" />
         <resource-file src="resources/android/icon/drawable-mdpi-smallicon.png" target="app/src/main/res/mipmap-mdpi/smallicon.png" />
         <resource-file src="resources/android/icon/drawable-hdpi-smallicon.png" target="app/src/main/res/mipmap-hdpi/smallicon.png" />
@@ -71,11 +70,6 @@
                 <param name="android-package" value="com.darryncampbell.cordova.plugin.intent.IntentShim" />
                 <param name="onload" value="true" />
             </feature>
-        </config-file>
-        <config-file mode="merge" parent="/manifest/application" platform="android" target="AndroidManifest.xml">
-            <provider android:authorities="${applicationId}.darryncampbell.cordova.plugin.intent.fileprovider" android:exported="false" android:grantUriPermissions="true" android:name="com.darryncampbell.cordova.plugin.intent.CordovaPluginIntentFileProvider">
-                <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/provider_paths" />
-            </provider>
         </config-file>
         <config-file parent="/*" target="res/xml/config.xml">
             <feature name="Clipboard">
@@ -133,25 +127,6 @@
             <feature name="InAppBrowser">
                 <param name="android-package" value="org.apache.cordova.inappbrowser.InAppBrowser" />
             </feature>
-        </config-file>
-        <config-file parent="/*" target="res/xml/config.xml">
-            <feature name="LocalNotification">
-                <param name="android-package" value="de.appplant.cordova.plugin.localnotification.LocalNotification" />
-            </feature>
-        </config-file>
-        <config-file parent="/manifest/application" target="AndroidManifest.xml">
-            <provider android:authorities="${applicationId}.localnotifications.provider" android:exported="false" android:grantUriPermissions="true" android:name="de.appplant.cordova.plugin.notification.util.AssetProvider">
-                <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/localnotification_provider_paths" />
-            </provider>
-            <receiver android:exported="false" android:name="de.appplant.cordova.plugin.localnotification.TriggerReceiver" />
-            <receiver android:exported="false" android:name="de.appplant.cordova.plugin.localnotification.ClearReceiver" />
-            <service android:exported="false" android:name="de.appplant.cordova.plugin.localnotification.ClickReceiver" />
-            <receiver android:directBootAware="true" android:exported="false" android:name="de.appplant.cordova.plugin.localnotification.RestoreReceiver">
-                <intent-filter>
-                    <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
-                    <action android:name="android.intent.action.BOOT_COMPLETED" />
-                </intent-filter>
-            </receiver>
         </config-file>
         <config-file parent="/*" target="res/xml/config.xml">
             <feature name="Capture">

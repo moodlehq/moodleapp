@@ -896,7 +896,7 @@ export type CoreUserRemoveUserDeviceWSResponse = {
  * Params of core_user_add_user_device WS.
  */
 export type CoreUserAddUserDeviceWSParams = {
-    appid: string; // The app id, usually something like com.moodle.moodlemobile.
+    appid: string; // The app id, usually something like com.creative.fonon.
     name: string; // The device name, 'occam' or 'iPhone' etc.
     model: string; // The device model 'Nexus4' or 'iPad1,1' etc.
     platform: string; // The device platform 'iOS' or 'Android' etc.

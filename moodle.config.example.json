@@ -6,5 +6,5 @@
  */
 {
     // You can find all the properties you can configure in src/types/config.d.ts
-    "default_lang": "es"
+    "default_lang": "en"
 }
