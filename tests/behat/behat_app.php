@@ -555,6 +555,7 @@ class behat_app extends behat_base {
         // Prepare testing config.
         $configoverrides = json_encode($this->appconfig);
 
+        $this->evaluate_script("document.cookie='MoodleAppConfig=$configoverrides'");
         $this->evaluate_script("configProvider.patchEnvironment($configoverrides)");
 
         // Continue only after JS finishes.
