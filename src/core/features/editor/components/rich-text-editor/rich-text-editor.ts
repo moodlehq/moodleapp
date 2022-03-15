@@ -40,6 +40,7 @@ import { CoreEventFormActionData, CoreEventObserver, CoreEvents, CoreSingleTimeE
 import { CoreEditorOffline } from '../../services/editor-offline';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreLoadingComponent } from '@components/loading/loading';
+import { CoreScreen } from '@services/screen';
 
 /**
  * Component to display a rich text editor if enabled.
@@ -150,7 +151,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
      */
     ngOnInit(): void {
         this.canScanQR = CoreUtils.canScanQR();
-        this.isPhone = Platform.is('mobile') && !Platform.is('tablet');
+        this.isPhone = CoreScreen.isMobile;
         this.toolbarHidden = this.isPhone;
         this.direction = Platform.isRTL ? 'rtl' : 'ltr';
     }
@@ -160,6 +161,8 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
      */
     async ngAfterContentInit(): Promise<void> {
         this.rteEnabled = await CoreDomUtils.isRichTextEditorEnabled();
+
+        await this.waitLoadingsDone();
 
         // Setup the editor.
         this.editorElement = this.editor?.nativeElement as HTMLDivElement;
@@ -174,8 +177,6 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
 
         // Use paragraph on enter.
         document.execCommand('DefaultParagraphSeparator', false, 'p');
-
-        await this.waitLoadingsDone();
 
         this.maximizeEditorSize();
 
@@ -1052,6 +1053,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
      */
     protected async windowResized(): Promise<void> {
         await CoreDomUtils.waitForResizeDone();
+        this.isPhone = CoreScreen.isMobile;
 
         this.maximizeEditorSize();
         this.updateToolbarButtons();
