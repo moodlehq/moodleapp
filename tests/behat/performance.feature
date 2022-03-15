@@ -1,6 +1,25 @@
 @app @javascript @performance
 Feature: Measure performance.
 
+  # In order to run performance tests, you need to add the following capabilities to your Behat configuration:
+  #
+  # $CFG->behat_profiles = [
+  #     'default' => [
+  #         'browser' => 'chrome',
+  #         'wd_host' => 'http://selenium:4444/wd/hub',
+  #         'capabilities' => [
+  #             'extra_capabilities' => [
+  #                 'goog:loggingPrefs' => ['performance' => 'ALL'],
+  #                 'chromeOptions' => [
+  #                     'perfLoggingPrefs' => [
+  #                         'traceCategories' => 'devtools.timeline',
+  #                     ],
+  #                 ],
+  #             ],
+  #         ],
+  #     ],
+  # ];
+
   Background:
     Given the following "users" exist:
       | username |

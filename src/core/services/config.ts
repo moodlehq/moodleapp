@@ -164,13 +164,19 @@ export class CoreConfigProvider {
      * Update config with the given values.
      *
      * @param config Config updates.
-     * @param reset Whether to reset environment before applying the patch.
+     * @param options Patching options.
+     *  - reset: Whether to reset environment before applying the patch.
+     *  - patchDefault: Whether to patch default values as well.
      */
-    patchEnvironment(config: Partial<EnvironmentConfig>, reset: boolean = false): void {
+    patchEnvironment(config: Partial<EnvironmentConfig>, options: Partial<{ reset: boolean; patchDefault: boolean }> = {}): void {
         this.defaultEnvironment = this.defaultEnvironment ?? { ...CoreConstants.CONFIG };
 
-        if (reset) {
+        if (options.reset) {
             this.resetEnvironmentSilently();
+        }
+
+        if (options.patchDefault) {
+            Object.assign(this.defaultEnvironment, config);
         }
 
         Object.assign(CoreConstants.CONFIG, config);
@@ -199,7 +205,7 @@ export class CoreConfigProvider {
             return;
         }
 
-        this.patchEnvironment(JSON.parse(CoreBrowser.getCookie('MoodleAppConfig') ?? '{}'));
+        this.patchEnvironment(JSON.parse(CoreBrowser.getCookie('MoodleAppConfig') ?? '{}'), { patchDefault: true });
     }
 
     /**
