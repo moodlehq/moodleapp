@@ -1064,15 +1064,13 @@ export class CoreCourseHelperProvider {
      *
      * @param courses Courses array to get info from.
      * @param prefetch Prefetch information.
-     * @param minCourses Min course to show icon.
      * @return Resolved with the prefetch information updated when done.
      */
     async initPrefetchCoursesIcons(
         courses: CoreCourseBasicData[],
         prefetch: CorePrefetchStatusInfo,
-        minCourses: number = 2,
     ): Promise<CorePrefetchStatusInfo> {
-        if (!courses || courses.length < minCourses) {
+        if (!courses || courses.length <= 0) {
             // Not enough courses.
             prefetch.icon = '';
 
