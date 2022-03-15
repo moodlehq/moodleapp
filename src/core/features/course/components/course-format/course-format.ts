@@ -153,7 +153,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             if (!this.lastModuleViewed || data.timeaccess > this.lastModuleViewed.timeaccess) {
                 this.lastModuleViewed = data;
 
-                if (this.selectedSection) {
+                if (this.selectedSection && this.selectedSection.id !== this.allSectionsId) {
                     // Change section to display the one with the last viewed module
                     const lastViewedSection = this.getViewedModuleSection(this.sections, data);
                     if (lastViewedSection && lastViewedSection.id !== this.selectedSection?.id) {
