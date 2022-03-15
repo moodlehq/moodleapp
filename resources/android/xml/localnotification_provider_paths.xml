@@ -1,0 +1,12 @@
+   <?xml version="1.0" encoding="utf-8"?>
+   <config-file parent="/manifest/application" target="AndroidManifest.xml">
+            <receiver android:exported="false" android:name="de.appplant.cordova.plugin.localnotification.TriggerReceiver" />
+            <receiver android:exported="false" android:name="de.appplant.cordova.plugin.localnotification.ClearReceiver" />
+            <service android:exported="false" android:name="de.appplant.cordova.plugin.localnotification.ClickReceiver" />
+            <receiver android:directBootAware="true" android:exported="false" android:name="de.appplant.cordova.plugin.localnotification.RestoreReceiver">
+                <intent-filter>
+                    <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+                    <action android:name="android.intent.action.BOOT_COMPLETED" />
+                </intent-filter>
+            </receiver>
+ </config-file>
