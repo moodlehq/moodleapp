@@ -23,6 +23,7 @@ import {
     Optional,
     ViewContainerRef,
     ViewChild,
+    OnDestroy,
 } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 
@@ -41,6 +42,7 @@ import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { CoreSubscriptions } from '@singletons/subscriptions';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreCollapsibleItemDirective } from './collapsible-item';
+import { CoreSingleTimeEventObserver } from '@singletons/events';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -54,7 +56,7 @@ import { CoreCollapsibleItemDirective } from './collapsible-item';
 @Directive({
     selector: 'core-format-text',
 })
-export class CoreFormatTextDirective implements OnChanges {
+export class CoreFormatTextDirective implements OnChanges, OnDestroy {
 
     @ViewChild(CoreCollapsibleItemDirective) collapsible?: CoreCollapsibleItemDirective;
 
@@ -88,6 +90,7 @@ export class CoreFormatTextDirective implements OnChanges {
     protected element: HTMLElement;
     protected emptyText = '';
     protected contentSpan: HTMLElement;
+    protected domListener?: CoreSingleTimeEventObserver;
 
     constructor(
         element: ElementRef,
@@ -124,6 +127,13 @@ export class CoreFormatTextDirective implements OnChanges {
         if (changes.text || changes.filter || changes.contextLevel || changes.contextInstanceId) {
             this.formatAndRenderContents();
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.domListener?.off();
     }
 
     /**
@@ -217,14 +227,14 @@ export class CoreFormatTextDirective implements OnChanges {
     /**
      * Add magnifying glass icons to view adapted images at full size.
      */
-    addMagnifyingGlasses(): void {
+    async addMagnifyingGlasses(): Promise<void> {
         const imgs = Array.from(this.contentSpan.querySelectorAll('.core-adapted-img-container > img'));
         if (!imgs.length) {
             return;
         }
 
         // If cannot calculate element's width, use viewport width to avoid false adapt image icons appearing.
-        const elWidth = this.getElementWidth(this.element) || window.innerWidth;
+        const elWidth = await this.getElementWidth();
 
         imgs.forEach((img: HTMLImageElement) => {
             // Skip image if it's inside a link.
@@ -543,41 +553,41 @@ export class CoreFormatTextDirective implements OnChanges {
     /**
      * Returns the element width in pixels.
      *
-     * @param element Element to get width from.
-     * @return The width of the element in pixels. When 0 is returned it means the element is not visible.
+     * @return The width of the element in pixels.
      */
-    protected getElementWidth(element: HTMLElement): number {
-        let width = CoreDomUtils.getElementWidth(element);
+    protected async getElementWidth(): Promise<number> {
+        this.domListener = CoreDomUtils.waitToBeInDOM(this.element);
+        await this.domListener.promise;
 
+        let width = this.element.getBoundingClientRect().width;
         if (!width) {
             // All elements inside are floating or inline. Change display mode to allow calculate the width.
-            const parentWidth = element.parentElement ?
-                CoreDomUtils.getElementWidth(element.parentElement, true, false, false, true) : 0;
-            const previousDisplay = getComputedStyle(element, null).display;
+            const previousDisplay = getComputedStyle(this.element).display;
 
-            element.style.display = 'inline-block';
+            this.element.style.display = 'inline-block';
+            await CoreUtils.nextTick();
 
-            width = CoreDomUtils.getElementWidth(element);
+            width = this.element.getBoundingClientRect().width;
 
-            // If width is incorrectly calculated use parent width instead.
-            if (parentWidth > 0 && (!width || width > parentWidth)) {
-                width = parentWidth;
-            }
-
-            element.style.display = previousDisplay;
+            this.element.style.display = previousDisplay;
         }
 
-        return width;
-    }
+        // Aproximate using parent elements.
+        let element = this.element;
+        while (!width && element.parentElement) {
+            element = element.parentElement;
+            const computedStyle = getComputedStyle(element);
 
-    /**
-     * Returns the element height in pixels.
-     *
-     * @param elementAng Element to get height from.
-     * @return The height of the element in pixels. When 0 is returned it means the element is not visible.
-     */
-    protected getElementHeight(element: HTMLElement): number {
-        return CoreDomUtils.getElementHeight(element) || 0;
+            const padding = CoreDomUtils.getComputedStyleMeasure(computedStyle, 'paddingLeft') +
+                    CoreDomUtils.getComputedStyleMeasure(computedStyle, 'paddingRight');
+
+            // Use parent width as an aproximation.
+            width = element.getBoundingClientRect().width - padding;
+        }
+
+        return width > 0 && width < window.innerWidth
+            ? width
+            : window.innerWidth;
     }
 
     /**
@@ -701,10 +711,12 @@ export class CoreFormatTextDirective implements OnChanges {
                 let width: string | number;
                 let height: string | number;
 
+                await CoreDomUtils.waitToBeInDOM(iframe, 5000).promise;
+
                 if (iframe.width) {
                     width = iframe.width;
                 } else {
-                    width = this.getElementWidth(iframe);
+                    width = iframe.getBoundingClientRect().width;
                     if (!width) {
                         width = window.innerWidth;
                     }
@@ -713,7 +725,7 @@ export class CoreFormatTextDirective implements OnChanges {
                 if (iframe.height) {
                     height = iframe.height;
                 } else {
-                    height = this.getElementHeight(iframe);
+                    height = iframe.getBoundingClientRect().height;
                     if (!height) {
                         height = width;
                     }

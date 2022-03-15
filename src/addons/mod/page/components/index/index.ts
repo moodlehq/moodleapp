@@ -33,7 +33,7 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
 
     component = AddonModPageProvider.COMPONENT;
     contents?: string;
-    displayDescription = true;
+    displayDescription = false;
     displayTimemodified = true;
     timemodified?: number;
     page?: AddonModPagePage;

@@ -437,7 +437,7 @@ export class CoreAppProvider {
     /**
      * Set keyboard shown or hidden.
      *
-     * @param Whether the keyboard is shown or hidden.
+     * @param shown Whether the keyboard is shown or hidden.
      */
     protected setKeyboardShown(shown: boolean): void {
         this.isKeyboardShown = shown;

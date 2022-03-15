@@ -14,6 +14,7 @@
 
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
+import { CoreEventObserver } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { AddonQtypeDdMarkerQuestionData } from '../component/ddmarker';
 import { AddonQtypeDdMarkerGraphicsApi } from './graphics_api';
@@ -41,7 +42,7 @@ export class AddonQtypeDdMarkerQuestion {
     protected proportion = 1;
     protected selected?: HTMLElement; // Selected element (being "dragged").
     protected graphics: AddonQtypeDdMarkerGraphicsApi;
-    protected resizeFunction?: () => void;
+    protected resizeListener?: CoreEventObserver;
 
     doc!: AddonQtypeDdMarkerQuestionDocStructure;
     shapes: SVGElement[] = [];
@@ -160,9 +161,7 @@ export class AddonQtypeDdMarkerQuestion {
      * Function to call when the instance is no longer needed.
      */
     destroy(): void {
-        if (this.resizeFunction) {
-            window.removeEventListener('resize', this.resizeFunction);
-        }
+        this.resizeListener?.off();
     }
 
     /**
@@ -273,8 +272,18 @@ export class AddonQtypeDdMarkerQuestion {
             return;
         }
 
-        const width = CoreDomUtils.getElementMeasure(markerSpan, true, true, false, true);
-        const height = CoreDomUtils.getElementMeasure(markerSpan, false, true, false, true);
+        const computedStyle = getComputedStyle(markerSpan);
+        const width = markerSpan.getBoundingClientRect().width +
+            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'borderLeftWidth') +
+            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'borderRightWidth') +
+            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'paddingLeft') +
+            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'paddingRight');
+
+        const height =  markerSpan.getBoundingClientRect().height +
+            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'borderTopWidth') +
+            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'borderBottomWidth') +
+            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'paddingTop') +
+            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'paddingBottom');
         markerSpan.style.opacity = '0.6';
         markerSpan.style.left = (xyForText.x - (width / 2)) + 'px';
         markerSpan.style.top = (xyForText.y - (height / 2)) + 'px';
@@ -601,8 +610,9 @@ export class AddonQtypeDdMarkerQuestion {
             this.pollForImageLoad();
         });
 
-        this.resizeFunction = this.windowResized.bind(this);
-        window.addEventListener('resize', this.resizeFunction!);
+        this.resizeListener = CoreDomUtils.onWindowResize(() => {
+            this.windowResized();
+        });
     }
 
     /**

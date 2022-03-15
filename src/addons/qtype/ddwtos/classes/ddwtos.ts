@@ -15,6 +15,7 @@
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreEventObserver } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { AddonModQuizDdwtosQuestionData } from '../component/ddwtos';
 
@@ -28,13 +29,11 @@ export class AddonQtypeDdwtosQuestion {
     protected selectors!: AddonQtypeDdwtosQuestionCSSSelectors; // Result of cssSelectors.
     protected placed: {[no: number]: number} = {}; // Map that relates drag elements numbers with drop zones numbers.
     protected selected?: HTMLElement; // Selected element (being "dragged").
-    protected resizeFunction?: () => void;
+    protected resizeListener?: CoreEventObserver;
 
     /**
      * Create the instance.
      *
-     * @param logger Logger provider.
-     * @param domUtils Dom Utils provider.
      * @param container The container HTMLElement of the question.
      * @param question The question instance.
      * @param readOnly Whether it's read only.
@@ -122,9 +121,7 @@ export class AddonQtypeDdwtosQuestion {
      * Function to call when the instance is no longer needed.
      */
     destroy(): void {
-        if (this.resizeFunction) {
-            window.removeEventListener('resize', this.resizeFunction);
-        }
+        this.resizeListener?.off();
     }
 
     /**
@@ -214,8 +211,9 @@ export class AddonQtypeDdwtosQuestion {
 
         this.positionDragItems();
 
-        this.resizeFunction = this.windowResized.bind(this);
-        window.addEventListener('resize', this.resizeFunction!);
+        this.resizeListener = CoreDomUtils.onWindowResize(() => {
+            this.windowResized();
+        });
     }
 
     /**

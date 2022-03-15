@@ -19,8 +19,9 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreMath } from '@singletons/math';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreFormatTextDirective } from './format-text';
-import { CoreEventObserver } from '@singletons/events';
+import { CoreEventObserver, CoreSingleTimeEventObserver } from '@singletons/events';
 import { CoreLoadingComponent } from '@components/loading/loading';
+import { CoreDomUtils } from '@services/utils/dom';
 
 /**
  * Directive to make an element fixed at the bottom collapsible when scrolling.
@@ -37,7 +38,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
     @Input() appearOnBottom = false;
 
     protected element: HTMLElement;
-    protected initialHeight = 0;
+    protected initialHeight = 48;
     protected finalHeight = 0;
     protected initialPaddingBottom = '0px';
     protected previousTop = 0;
@@ -46,6 +47,8 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
     protected loadingChangedListener?: CoreEventObserver;
     protected contentScrollListener?: EventListener;
     protected endContentScrollListener?: EventListener;
+    protected resizeListener?: CoreEventObserver;
+    protected domListener?: CoreSingleTimeEventObserver;
 
     constructor(el: ElementRef, protected ionContent: IonContent) {
         this.element = el.nativeElement;
@@ -53,15 +56,34 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
     }
 
     /**
+     * @inheritdoc
+     */
+    async ngOnInit(): Promise<void> {
+        // Only if not present or explicitly falsy it will be false.
+        this.appearOnBottom = !CoreUtils.isFalseOrZero(this.appearOnBottom);
+
+        this.domListener = CoreDomUtils.waitToBeInDOM(this.element);
+        await this.domListener.promise;
+
+        await this.waitLoadingsDone();
+        await this.waitFormatTextsRendered(this.element);
+
+        this.content = this.element.closest('ion-content');
+
+        await this.calculateHeight();
+
+        this.listenScrollEvents();
+    }
+
+    /**
      * Calculate the height of the footer.
      */
     protected async calculateHeight(): Promise<void> {
-        await this.waitFormatTextsRendered(this.element);
-
+        this.element.classList.remove('is-active');
         await CoreUtils.nextTick();
 
         // Set a minimum height value.
-        this.initialHeight = this.element.getBoundingClientRect().height || 48;
+        this.initialHeight = this.element.getBoundingClientRect().height || this.initialHeight;
         const moduleNav = this.element.querySelector('core-course-module-navigation');
         if (moduleNav) {
             this.element.classList.add('has-module-nav');
@@ -71,6 +93,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
         this.previousHeight = this.initialHeight;
 
         this.content?.style.setProperty('--core-collapsible-footer-max-height', this.initialHeight + 'px');
+        this.element.classList.add('is-active');
 
         this.setBarHeight(this.initialHeight);
     }
@@ -79,13 +102,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
      * Setup scroll event listener.
      */
     protected async listenScrollEvents(): Promise<void> {
-        if (this.content) {
-            return;
-        }
-
-        this.content = this.element.closest('ion-content');
-
-        if (!this.content) {
+        if (!this.content || this.content?.classList.contains('has-collapsible-footer')) {
             return;
         }
 
@@ -131,6 +148,10 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
 
                 this.setBarHeight(newHeight);            }
         });
+
+        this.resizeListener = CoreDomUtils.onWindowResize(() => {
+            this.calculateHeight();
+        }, 50);
     }
 
     /**
@@ -181,20 +202,6 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
     }
 
     /**
-     * @inheritdoc
-     */
-    async ngOnInit(): Promise<void> {
-        // Only if not present or explicitly falsy it will be false.
-        this.appearOnBottom = !CoreUtils.isFalseOrZero(this.appearOnBottom);
-
-        await this.waitLoadingsDone();
-
-        await this.calculateHeight();
-
-        this.listenScrollEvents();
-    }
-
-    /**
      * Wait until all <core-loading> children inside the page.
      *
      * @return Promise resolved when loadings are done.
@@ -225,6 +232,9 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
         if (this.content && this.endContentScrollListener) {
             this.content.removeEventListener('ionScrollEnd', this.endContentScrollListener);
         }
+
+        this.resizeListener?.off();
+        this.domListener?.off();
     }
 
 }

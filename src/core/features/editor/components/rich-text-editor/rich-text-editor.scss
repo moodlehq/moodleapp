@@ -16,7 +16,7 @@
 }
 
 :host {
-    height: 40vh;
+    height: var(--core-rte-height, auto);
     overflow: hidden;
     min-height: 200px; /* Just in case vh is not supported */
     min-height: 40vh;

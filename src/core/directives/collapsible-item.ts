@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, Input, OnInit } from '@angular/core';
+import { Directive, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
 import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreEventObserver, CoreSingleTimeEventObserver } from '@singletons/events';
 import { CoreFormatTextDirective } from './format-text';
 
 const defaultMaxHeight = 80;
@@ -33,7 +34,7 @@ const minMaxHeight = 56;
 @Directive({
     selector: '[collapsible-item]',
 })
-export class CoreCollapsibleItemDirective implements OnInit {
+export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
 
     /**
      * Max height in pixels to render the content box. It should be 56 at least to make sense.
@@ -47,6 +48,8 @@ export class CoreCollapsibleItemDirective implements OnInit {
     protected expanded = false;
     protected maxHeight = defaultMaxHeight;
     protected expandedHeight = 0;
+    protected resizeListener?: CoreEventObserver;
+    protected domListener?: CoreSingleTimeEventObserver;
 
     constructor(el: ElementRef<HTMLElement>) {
         this.element = el.nativeElement;
@@ -81,6 +84,10 @@ export class CoreCollapsibleItemDirective implements OnInit {
         await this.waitLoadingsDone();
 
         await this.calculateHeight();
+
+        this.resizeListener = CoreDomUtils.onWindowResize(() => {
+            this.calculateHeight();
+        }, 50);
     }
 
     /**
@@ -89,7 +96,8 @@ export class CoreCollapsibleItemDirective implements OnInit {
      * @return Promise resolved when loadings are done.
      */
     protected async waitLoadingsDone(): Promise<void> {
-        await CoreDomUtils.waitToBeInDOM(this.element);
+        this.domListener = CoreDomUtils.waitToBeInDOM(this.element);
+        await this.domListener.promise;
 
         const page = this.element.closest('.ion-page');
 
@@ -126,7 +134,7 @@ export class CoreCollapsibleItemDirective implements OnInit {
 
         await this.waitFormatTextsRendered(this.element);
 
-        this.expandedHeight = CoreDomUtils.getElementHeight(this.element) || 0;
+        this.expandedHeight = this.element.getBoundingClientRect().height;
 
         // Restore the max height now.
         this.element.classList.remove('collapsible-loading-height');
@@ -227,6 +235,14 @@ export class CoreCollapsibleItemDirective implements OnInit {
         e.stopPropagation();
 
         this.toggleExpand();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.resizeListener?.off();
+        this.domListener?.off();
     }
 
 }

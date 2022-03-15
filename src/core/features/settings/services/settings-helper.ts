@@ -27,6 +27,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourse } from '@features/course/services/course';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
+import { Observable, Subject } from 'rxjs';
 
 /**
  * Object with space usage and cache entries that can be erased.
@@ -64,6 +65,7 @@ export class CoreSettingsHelperProvider {
     protected prefersDark?: MediaQueryList;
     protected colorSchemes: CoreColorScheme[] = [];
     protected currentColorScheme = CoreColorScheme.LIGHT;
+    protected darkModeObservable = new Subject<boolean>();
 
     async initialize(): Promise<void> {
         this.prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
@@ -93,7 +95,9 @@ export class CoreSettingsHelperProvider {
         }
 
         // Listen for changes to the prefers-color-scheme media query.
-        this.prefersDark.addEventListener && this.prefersDark.addEventListener('change', this.toggleDarkModeListener.bind(this));
+        this.prefersDark.addEventListener && this.prefersDark.addEventListener('change', () => {
+            this.setColorScheme(this.currentColorScheme);
+        });
 
         // Init zoom level.
         await this.upgradeZoomLevel();
@@ -445,21 +449,27 @@ export class CoreSettingsHelperProvider {
     }
 
     /**
-     * Listener function to toggle dark mode.
-     */
-    protected toggleDarkModeListener(): void {
-        this.setColorScheme(this.currentColorScheme);
-    };
-
-    /**
      * Toggles dark mode based on enabled boolean.
      *
      * @param enable True to enable dark mode, false to disable.
      */
     protected toggleDarkMode(enable: boolean = false): void {
-        document.body.classList.toggle('dark', enable);
+        const isDark = document.body.classList.contains('dark');
+        if (isDark !== enable) {
+            document.body.classList.toggle('dark', enable);
+            this.darkModeObservable.next(enable);
 
-        CoreApp.setStatusBarColor();
+            CoreApp.setStatusBarColor();
+        }
+    }
+
+    /**
+     * Returns dark mode change observable.
+     *
+     * @return Dark mode change observable.
+     */
+    onDarkModeChange(): Observable<boolean> {
+        return this.darkModeObservable;
     }
 
 }

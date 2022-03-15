@@ -53,6 +53,7 @@ import { NavigationStart } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreEventObserver, CoreSingleTimeEventObserver } from '@singletons/events';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -95,36 +96,74 @@ export class CoreDomUtilsProvider {
      * Wait an element to be in dom of another element.
      *
      * @param element Element to wait.
-     * @return Promise resolved when added. It will be rejected after a timeout of 5s.
+     * @param timeout If defined, timeout to wait before rejecting the promise.
+     * @return Promise CoreSingleTimeEventObserver with a promise.
      */
-    async waitToBeInDOM(
+    waitToBeInDOM(
         element: Element,
-    ): Promise<void> {
+        timeout?: number,
+    ): CoreSingleTimeEventObserver {
         let root = element.getRootNode({ composed: true });
 
         if (root === document) {
             // Already in DOM.
-            return;
+            return {
+                off: (): void => {
+                    // Nothing to do here.
+                },
+                promise: Promise.resolve(),
+            };
         }
 
-        return new Promise((resolve, reject) => {
-            // Disconnect observer for performance reasons.
-            const timeout = window.setTimeout(() => {
-                reject(new Error('Waiting for DOM timeout reached'));
-                observer.disconnect();
-            }, 5000);
+        let observer: MutationObserver | undefined;
+        let observerTimeout: number | undefined;
+        if (timeout) {
+            observerTimeout = window.setTimeout(() => {
+                observer?.disconnect();
+                throw new Error('Waiting for DOM timeout reached');
+            }, timeout);
+        }
 
-            const observer = new MutationObserver(() => {
-                root = element.getRootNode({ composed: true });
-                if (root === document) {
-                    observer.disconnect();
-                    clearTimeout(timeout);
-                    resolve();
-                }
-            });
+        return {
+            off: (): void => {
+                observer?.disconnect();
+                clearTimeout(observerTimeout);
+            },
+            promise: new Promise((resolve) => {
+                observer = new MutationObserver(() => {
+                    root = element.getRootNode({ composed: true });
+                    if (root === document) {
+                        observer?.disconnect();
+                        clearTimeout(observerTimeout);
+                        resolve();
+                    }
+                });
 
-            observer.observe(document.body, { subtree: true, childList: true });
-        });
+                observer.observe(document.body, { subtree: true, childList: true });
+            }),
+        };
+    }
+
+    /**
+     * Window resize is widely checked and may have many performance issues, debouce usage is needed to avoid calling it too much.
+     * This function helps setting up the debounce feature and remove listener easily.
+     *
+     * @param resizeFunction Function to execute on resize.
+     * @param debounceDelay Debounce time in ms.
+     * @return Event observer to call off when finished.
+     */
+    onWindowResize(resizeFunction: (ev?: Event) => void, debounceDelay = 20): CoreEventObserver {
+        const resizeListener = CoreUtils.debounce((ev?: Event) => {
+            resizeFunction(ev);
+        }, debounceDelay);
+
+        window.addEventListener('resize', resizeListener);
+
+        return {
+            off: (): void => {
+                window.removeEventListener('resize', resizeListener);
+            },
+        };
     }
 
     /**
@@ -431,6 +470,7 @@ export class CoreDomUtilsProvider {
      * @param useBorder Whether to use borders to calculate the measure.
      * @param innerMeasure If inner measure is needed: padding, margin or borders will be substracted.
      * @return Height in pixels.
+     * @deprecated since app 4.0 Use getBoundingClientRect.height instead.
      */
     getElementHeight(
         element: HTMLElement,
@@ -452,6 +492,7 @@ export class CoreDomUtilsProvider {
      * @param useBorder Whether to use borders to calculate the measure.
      * @param innerMeasure If inner measure is needed: padding, margin or borders will be substracted.
      * @return Measure in pixels.
+     * @deprecated since app 4.0 Use getBoundingClientRect.height or width instead.
      */
     getElementMeasure(
         element: HTMLElement,
@@ -524,6 +565,7 @@ export class CoreDomUtilsProvider {
      * @param useBorder Whether to use borders to calculate the measure.
      * @param innerMeasure If inner measure is needed: padding, margin or borders will be substracted.
      * @return Width in pixels.
+     * @deprecated since app 4.0 Use getBoundingClientRect.width instead.
      */
     getElementWidth(
         element: HTMLElement,
@@ -703,6 +745,7 @@ export class CoreDomUtilsProvider {
      *
      * @param findFunction The function used to find the element.
      * @return Resolved if found, rejected if too many tries.
+     * @deprecated since app 4.0 Use waitToBeInDOM instead.
      */
     waitElementToExist(findFunction: () => HTMLElement | null): Promise<HTMLElement> {
         const promiseInterval = CoreUtils.promiseDefer<HTMLElement>();
@@ -1054,7 +1097,7 @@ export class CoreDomUtilsProvider {
             const scrollElement = await content.getScrollElement();
 
             return scrollElement.clientHeight || 0;
-        } catch (error) {
+        } catch {
             return 0;
         }
     }
@@ -1070,7 +1113,7 @@ export class CoreDomUtilsProvider {
             const scrollElement = await content.getScrollElement();
 
             return scrollElement.scrollHeight || 0;
-        } catch (error) {
+        } catch {
             return 0;
         }
     }

@@ -1421,37 +1421,42 @@ ion-grid.core-no-grid > ion-row {
 }
 
 [collapsible-footer] {
-    &.footer-collapsed {
-        --core-collapsible-footer-height: 0;
-        opacity: 0;
-    }
-    &.has-module-nav.footer-collapsed {
-        --core-collapsible-footer-height: auto;
-        opacity: 1;
-        core-course-module-navigation {
-            height: 0;
-            opacity: 0;
-            @include core-transition(all, 200ms);
-        }
-
-    }
-    &.footer-expanded {
-        --core-collapsible-footer-height: auto;
-    }
+    box-shadow: var(--drop-shadow-top, none);
+    width: 100%;
+    bottom: 0;
+    z-index: 3;
+    display: block;
+    background-color: var(--core-collapsible-footer-background);
 
     .ion-margin {
         margin-top: 8px;
         margin-bottom: 8px;
     }
 
-    box-shadow: var(--drop-shadow-top, none);
-    width: 100%;
-    bottom: 0;
-    z-index: 3;
-    height: var(--core-collapsible-footer-height, auto);
-    background-color: var(--core-collapsible-footer-background);
-    display: block;
-    @include core-transition(all, 200ms);
+    &.is-active {
+        height: var(--core-collapsible-footer-height, auto);
+        @include core-transition(all, 200ms);
+
+        &.footer-collapsed {
+            --core-collapsible-footer-height: 0;
+            opacity: 0;
+        }
+        &.has-module-nav.footer-collapsed {
+            --core-collapsible-footer-height: auto;
+            opacity: 1;
+            core-course-module-navigation {
+                height: 0;
+                opacity: 0;
+                @include core-transition(all, 200ms);
+            }
+
+        }
+        &.footer-expanded {
+            --core-collapsible-footer-height: auto;
+        }
+
+
+    }
 }
 
 .core-iframe-fullscreen [collapsible-footer] {

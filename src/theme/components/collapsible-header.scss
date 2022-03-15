@@ -8,6 +8,7 @@
     --collapsible-header-floating-title-width: 0px;
     --collapsible-header-floating-title-x-delta: 0px;
     --collapsible-header-floating-title-width-delta: 0px;
+
     ion-header.core-header-shadow {
         --core-header-shadow: none;
     }
@@ -19,9 +20,8 @@
 
     .collapsible-header-floating-title {
         position: absolute;
-        top: var(--collapsible-header-floating-title-top);
-        left: var(--collapsible-header-floating-title-left);
-        transform: translateX(calc(var(--collapsible-header-floating-title-x-delta) * var(--collapsible-header-progress)));
+        top: 0;
+        left: 0;
         opacity: 0;
     }
 
@@ -52,6 +52,9 @@
 
             .collapsible-header-floating-title {
                 opacity: 1;
+                top: var(--collapsible-header-floating-title-top);
+                left: var(--collapsible-header-floating-title-left);
+                transform: translateX(calc(var(--collapsible-header-floating-title-x-delta) * var(--collapsible-header-progress)));
                 width: calc(var(--collapsible-header-floating-title-width) + var(--collapsible-header-progress) * var(--collapsible-header-floating-title-width-delta));
 
                 @include core-transition(width transform, 200ms, linear);

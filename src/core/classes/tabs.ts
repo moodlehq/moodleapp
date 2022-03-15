@@ -32,6 +32,8 @@ import { Subscription } from 'rxjs';
 import { Platform, Translate } from '@singletons';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 import { CoreAriaRoleTab, CoreAriaRoleTabFindable } from './aria-role-tab';
+import { CoreEventObserver } from '@singletons/events';
+import { CoreDomUtils } from '@services/utils/dom';
 
 /**
  * Class to abstract some common code for tabs.
@@ -75,7 +77,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
     protected tabsElement?: HTMLElement; // The tabs parent element. It's the element that will be "scrolled" to hide tabs.
     protected tabBarElement?: HTMLIonTabBarElement; // The top tab bar element.
     protected tabsShown = true;
-    protected resizeFunction: EventListenerOrEventListenerObject;
+    protected resizeListener?: CoreEventObserver;
     protected isDestroyed = false;
     protected isCurrentView = true;
     protected shouldSlideToInitial = false; // Whether we need to slide to the initial slide because it's out of view.
@@ -99,7 +101,6 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
         protected element: ElementRef,
     ) {
         this.backButtonFunction = this.backButtonClicked.bind(this);
-        this.resizeFunction = this.windowResized.bind(this);
 
         this.tabAction = new CoreTabsRoleTab(this);
     }
@@ -134,7 +135,9 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
             await this.initializeTabs();
         }
 
-        window.addEventListener('resize', this.resizeFunction);
+        this.resizeListener = CoreDomUtils.onWindowResize(() => {
+            this.windowResized();
+        });
     }
 
     /**
@@ -419,24 +422,24 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
      */
     async slideNext(): Promise<void> {
         // Stop if slides are in transition.
-        if (!this.showNextButton || this.isInTransition) {
+        if (!this.showNextButton || this.isInTransition || !this.slides) {
             return;
         }
 
-        if (await this.slides!.isBeginning()) {
+        if (await this.slides.isBeginning()) {
             // Slide to the second page.
-            this.slides!.slideTo(this.maxSlides);
+            this.slides.slideTo(this.maxSlides);
         } else {
-            const currentIndex = await this.slides!.getActiveIndex();
+            const currentIndex = await this.slides.getActiveIndex();
             if (currentIndex !== undefined) {
                 const nextSlideIndex = currentIndex + this.maxSlides;
                 this.isInTransition = true;
                 if (nextSlideIndex < this.numTabsShown) {
                     // Slide to the next page.
-                    await this.slides!.slideTo(nextSlideIndex);
+                    await this.slides.slideTo(nextSlideIndex);
                 } else {
                     // Slide to the latest slide.
-                    await this.slides!.slideTo(this.numTabsShown - 1);
+                    await this.slides.slideTo(this.numTabsShown - 1);
                 }
             }
 
@@ -448,24 +451,24 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
      */
     async slidePrev(): Promise<void> {
         // Stop if slides are in transition.
-        if (!this.showPrevButton || this.isInTransition) {
+        if (!this.showPrevButton || this.isInTransition || !this.slides) {
             return;
         }
 
-        if (await this.slides!.isEnd()) {
-            this.slides!.slideTo(this.numTabsShown - this.maxSlides * 2);
+        if (await this.slides.isEnd()) {
+            this.slides.slideTo(this.numTabsShown - this.maxSlides * 2);
             // Slide to the previous of the latest page.
         } else {
-            const currentIndex = await this.slides!.getActiveIndex();
+            const currentIndex = await this.slides.getActiveIndex();
             if (currentIndex !== undefined) {
                 const prevSlideIndex = currentIndex - this.maxSlides;
                 this.isInTransition = true;
                 if (prevSlideIndex >= 0) {
                     // Slide to the previous page.
-                    await this.slides!.slideTo(prevSlideIndex);
+                    await this.slides.slideTo(prevSlideIndex);
                 } else {
                     // Slide to the first page.
-                    await this.slides!.slideTo(0);
+                    await this.slides.slideTo(0);
                 }
             }
         }
@@ -646,9 +649,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
     ngOnDestroy(): void {
         this.isDestroyed = true;
 
-        if (this.resizeFunction) {
-            window.removeEventListener('resize', this.resizeFunction);
-        }
+        this.resizeListener?.off();
         this.languageChangedSubscription?.unsubscribe();
     }
 
