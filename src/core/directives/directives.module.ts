@@ -33,6 +33,7 @@ import { CoreCollapsibleItemDirective } from './collapsible-item';
 import { CoreCollapsibleFooterDirective } from './collapsible-footer';
 import { CoreContentDirective } from './content';
 import { CoreOnAppearDirective } from './on-appear';
+import { CoreUpdateNonReactiveAttributesDirective } from './update-non-reactive-attributes';
 
 @NgModule({
     declarations: [
@@ -55,6 +56,7 @@ import { CoreOnAppearDirective } from './on-appear';
         CoreCollapsibleItemDirective,
         CoreCollapsibleFooterDirective,
         CoreContentDirective,
+        CoreUpdateNonReactiveAttributesDirective,
     ],
     exports: [
         CoreAutoFocusDirective,
@@ -76,6 +78,7 @@ import { CoreOnAppearDirective } from './on-appear';
         CoreCollapsibleItemDirective,
         CoreCollapsibleFooterDirective,
         CoreContentDirective,
+        CoreUpdateNonReactiveAttributesDirective,
     ],
 })
 export class CoreDirectivesModule {}
