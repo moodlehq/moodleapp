@@ -1696,7 +1696,7 @@ export class AddonCalendarProvider {
             const event = await AddonCalendarOffline.saveEvent(eventId, formData, siteId);
 
             // Now save the reminders if any.
-            if (options.reminders) {
+            if (options.reminders?.length) {
                 await CoreUtils.ignoreErrors(
                     Promise.all(options.reminders.map((reminder) => this.addEventReminder(event, reminder.time, siteId))),
                 );
@@ -1718,7 +1718,7 @@ export class AddonCalendarProvider {
             const event = await this.submitEventOnline(eventId, formData, siteId);
 
             // Now save the reminders if any.
-            if (options.reminders) {
+            if (options.reminders?.length) {
                 await CoreUtils.ignoreErrors(
                     Promise.all(options.reminders.map((reminder) => this.addEventReminder(event, reminder.time, siteId))),
                 );

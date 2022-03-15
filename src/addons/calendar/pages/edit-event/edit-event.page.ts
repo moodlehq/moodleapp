@@ -520,7 +520,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
         try {
             const result = await AddonCalendar.submitEvent(this.eventId, data, {
-                reminders: this.reminders,
+                reminders: this.eventId ? [] : this.reminders, // Only allow adding reminders for new events.
             });
             event = result.event;
 
@@ -638,7 +638,8 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
      * @return Promise resolved when done.
      */
     protected async initReminders(): Promise<void> {
-        if (!this.notificationsEnabled) {
+        // Don't init reminders when editing an event. Right now, only allow adding reminders for new events.
+        if (!this.notificationsEnabled || this.eventId) {
             return;
         }
 
