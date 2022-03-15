@@ -24,7 +24,7 @@
             </ion-item>
             <ng-container *ngIf="allSectionId != section.id">
                 <ion-item class="divider section" (click)="selectSectionOrModule($event, section.id)" button
-                    [class.item-current]="selectedId === section.id" [class.item-dimmed]="section.visible === 0"
+                    [class.item-current]="selectedId === section.id" [class.item-dimmed]="!section.visible"
                     [class.item-hightlighted]="section.highlighted" detail="false" sticky="true">
                     <ion-icon *ngIf="section.hasVisibleModules" name="fas-chevron-right" flip-rtl slot="start"
                         class="expandable-status-icon" (click)="toggleExpand($event, section)"
@@ -40,9 +40,13 @@
                             </core-format-text>
                         </h2>
                     </ion-label>
-                    <ion-badge *ngIf="section.highlighted && highlighted">{{highlighted}}</ion-badge>
+                    <ion-badge *ngIf="section.highlighted && highlighted" slot="end">{{highlighted}}</ion-badge>
                     <ion-icon name="fas-lock" *ngIf="section.availabilityinfo" slot="end" class="restricted"
                         [attr.aria-label]="'core.restricted' | translate"></ion-icon>
+                    <ion-icon name="fas-eye-slash" *ngIf="!section.visible && !section.uservisible" slot="end" class="restricted"
+                        [attr.aria-label]="'core.notavailable' | translate"></ion-icon>
+                    <ion-icon name="fas-eye-slash" *ngIf="!section.visible && section.uservisible" slot="end" class="restricted"
+                        [attr.aria-label]="'core.course.hiddenfromstudents' | translate"></ion-icon>
                 </ion-item>
                 <ng-container *ngIf="section.expanded">
                     <ng-container *ngFor="let module of section.modules">

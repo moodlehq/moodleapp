@@ -78,8 +78,7 @@ export class CoreCourseCourseIndexComponent implements OnInit {
         // Clone sections to add information.
         this.sectionsToRender = this.sections
             .filter((section) => !section.hiddenbynumsections &&
-                section.id != CoreCourseProvider.STEALTH_MODULES_SECTION_ID &&
-                section.uservisible !== false)
+                section.id != CoreCourseProvider.STEALTH_MODULES_SECTION_ID)
             .map((section) => {
                 const modules = section.modules
                     .filter((module) => module.visibleoncoursepage !== 0 && !module.noviewlink)
@@ -103,6 +102,8 @@ export class CoreCourseCourseIndexComponent implements OnInit {
                     id: section.id,
                     name: section.name,
                     availabilityinfo: !!section.availabilityinfo,
+                    visible: !!section.visible,
+                    uservisible: section.uservisible !== false,
                     expanded: section.id === this.selectedId,
                     highlighted: currentSectionData.section.id === section.id,
                     hasVisibleModules: modules.length > 0,
@@ -160,6 +161,8 @@ type CourseIndexSection = {
     expanded: boolean;
     hasVisibleModules: boolean;
     availabilityinfo: boolean;
+    visible: boolean;
+    uservisible: boolean;
     modules: {
         id: number;
         course: number;

@@ -228,7 +228,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
             throw new Error('[collapsible-header] Couldn\'t create floating title');
         }
 
-        this.page.classList.remove('is-active');
+        this.page.classList.remove('collapsible-header-page-is-active');
         CoreUtils.nextTick();
 
         // Add floating title and measure initial position.
@@ -293,7 +293,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
             .forEach(([property, value]) => floatingTitle.style.setProperty(property, value as string));
 
         // Activate styles.
-        this.page.classList.add('is-active');
+        this.page.classList.add('collapsible-header-page-is-active');
 
         this.floatingTitle = floatingTitle;
         this.scrollingHeight = originalTitleBoundingBox.top - collapsedHeaderTitleBoundingBox.top;
@@ -376,7 +376,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         }
 
         this.page.style.setProperty('--collapsible-header-progress', enable ? '0' : '1');
-        this.page.classList.toggle('is-collapsed', !enable);
+        this.page.classList.toggle('collapsible-header-page-is-collapsed', !enable);
     }
 
     /**
@@ -409,11 +409,12 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
             !collapsedFontStyles ||
             !floatingTitle
         ) {
+            page?.classList.remove('collapsible-header-page-is-active');
             throw new Error('[collapsible-header] Couldn\'t set up scrolling');
         }
 
         this.isWithinContent = content.contains(expandedHeader);
-        page.classList.toggle('is-within-content', this.isWithinContent);
+        page.classList.toggle('collapsible-header-page-is-within-content', this.isWithinContent);
         this.setEnabled(this.enabled);
 
         Object
@@ -440,8 +441,8 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
                 : CoreMath.clamp(contentScroll.scrollTop / scrollingHeight, 0, 1);
 
             page.style.setProperty('--collapsible-header-progress', `${progress}`);
-            page.classList.toggle('is-frozen', frozen);
-            page.classList.toggle('is-collapsed', progress === 1);
+            page.classList.toggle('collapsible-header-page-is-frozen', frozen);
+            page.classList.toggle('collapsible-header-page-is-collapsed', progress === 1);
 
             Object
                 .entries(progress > .5 ? collapsedFontStyles : expandedFontStyles)
@@ -455,7 +456,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
                     return;
                 }
 
-                if (page.classList.contains('is-frozen')) {
+                if (page.classList.contains('collapsible-header-page-is-frozen')) {
                     return;
                 }
 
@@ -464,7 +465,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
                 const collapse = progress > 0.5;
 
                 page.style.setProperty('--collapsible-header-progress', collapse ? '1' : '0');
-                page.classList.toggle('is-collapsed', collapse);
+                page.classList.toggle('collapsible-header-page-is-collapsed', collapse);
 
                 if (collapse && this.scrollingHeight && this.scrollingHeight > 0 && scrollTop < this.scrollingHeight) {
                     this.content?.scrollToPoint(null, this.scrollingHeight);

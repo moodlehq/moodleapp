@@ -103,23 +103,19 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit {
      * @return Promise resolved when done.
      */
     async changeState(loaded: boolean): Promise<void> {
-        await CoreUtils.nextTick();
-
         this.element.classList.toggle('core-loading-loaded', loaded);
-        this.content?.nativeElement.classList.add('core-loading-content', loaded);
-
-        await CoreUtils.nextTick();
-
-        // Wait for next tick before triggering the event to make sure ngIf elements have been added to the DOM.
-        CoreEvents.trigger(CoreEvents.CORE_LOADING_CHANGED, <CoreEventLoadingChangedData> {
-            loaded: loaded,
-            uniqueId: this.uniqueId,
-        });
+        this.content?.nativeElement.classList.toggle('core-loading-content', loaded);
 
         if (!this.loaded && loaded) {
             this.loaded = true; // Only comes true once.
             this.firstLoadedPromise.resolve(this.uniqueId);
         }
+
+        // Event has been deprecated since app 4.0.
+        CoreEvents.trigger(CoreEvents.CORE_LOADING_CHANGED, <CoreEventLoadingChangedData> {
+            loaded: true,
+            uniqueId: this.uniqueId,
+        });
     }
 
     /**
