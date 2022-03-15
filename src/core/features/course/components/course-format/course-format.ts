@@ -92,6 +92,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     selectedSection?: CoreCourseSection;
     previousSection?: CoreCourseSection;
     nextSection?: CoreCourseSection;
+    hasPreviousOrNextSections = false;
     allSectionsId: number = CoreCourseProvider.ALL_SECTIONS_ID;
     stealthModulesSectionId: number = CoreCourseProvider.STEALTH_MODULES_SECTION_ID;
     loaded = false;
@@ -487,6 +488,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             this.showSectionId = 0;
             this.showMoreActivities();
         }
+
+        this.hasPreviousOrNextSections = !!this.previousSection || !!this.nextSection;
 
         // Scroll to module if needed. Give more priority to the input.
         const moduleIdToScroll = this.moduleId && previousValue === undefined ? this.moduleId : moduleId;
