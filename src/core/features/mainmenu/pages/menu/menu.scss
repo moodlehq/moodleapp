@@ -168,11 +168,11 @@ ion-tabs.placement-side {
     opacity: .8;
     z-index: 12;
 
-    .core-online {
+    .core-online-message {
         display: var(--network-message-online);
     }
 
-    .core-offline {
+    .core-offline-message {
         display: var(--network-message-offline);
     }
 }
