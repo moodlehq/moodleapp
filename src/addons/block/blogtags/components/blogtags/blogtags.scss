@@ -1,9 +1,7 @@
 :host .core-block-content ::ng-deep {
     ul.inline-list {
-        font-size: 80%;
         list-style: none;
-        margin-left: 0;
-        margin-right: 0;
+        margin: 0;
         -webkit-padding-start: 0;
 
         li {
