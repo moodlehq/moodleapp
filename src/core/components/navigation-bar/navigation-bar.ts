@@ -67,7 +67,7 @@ export class CoreNavigationBarComponent implements OnChanges {
         this.progress = ((this.currentIndex + 1) / this.items.length) * 100;
         this.progressText = `${this.currentIndex + 1} / ${this.items.length}`;
 
-        this.nextIndex =this.currentIndex + 1;
+        this.nextIndex = this.currentIndex + 1;
         while (this.items[this.nextIndex] && !this.items[this.nextIndex].enabled) {
             this.nextIndex++;
         }
@@ -75,7 +75,7 @@ export class CoreNavigationBarComponent implements OnChanges {
             ? Translate.instant(this.nextTranslate, { $a: this.items[this.nextIndex].title || '' })
             : '';
 
-        this.previousIndex =this.currentIndex - 1;
+        this.previousIndex = this.currentIndex - 1;
         while (this.items[this.previousIndex] && !this.items[this.previousIndex].enabled) {
             this.previousIndex--;
         }
