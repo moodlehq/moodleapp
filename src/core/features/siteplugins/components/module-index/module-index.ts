@@ -21,6 +21,7 @@ import {
     CoreCourseModuleSummaryResult,
     CoreCourseModuleSummaryComponent,
 } from '@features/course/components/module-summary/module-summary';
+import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import {
     CoreCourseModuleDelegate,
@@ -35,7 +36,7 @@ import {
 import { IonRefresher } from '@ionic/angular';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-content';
+import { CoreSitePluginsPluginContentComponent, CoreSitePluginsPluginContentLoadedData } from '../plugin-content/plugin-content';
 
 /**
  * Component that displays the index of a module site plugin.
@@ -161,9 +162,12 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
     /**
      * Function called when the data of the site plugin content is loaded.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    contentLoaded(refresh: boolean): void {
-        return;
+    contentLoaded(data: CoreSitePluginsPluginContentLoadedData): void {
+        if (data.success) {
+            CoreCourse.storeModuleViewed(this.courseId, this.module.id, {
+                sectionId: this.module.section,
+            });
+        }
     }
 
     /**
