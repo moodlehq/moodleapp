@@ -777,6 +777,7 @@ export class AddonCalendarProvider {
         const reminder: Partial<AddonCalendarReminderDBRecord> = {
             eventid: event.id,
             time: time ?? null,
+            timecreated: Date.now(),
         };
 
         const reminderId = await site.getDb().insertRecord(REMINDERS_TABLE, reminder);
@@ -913,7 +914,7 @@ export class AddonCalendarProvider {
     async getEventReminders(id: number, siteId?: string): Promise<AddonCalendarReminderDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
 
-        return await site.getDb().getRecords(REMINDERS_TABLE, { eventid: id }, 'time ASC');
+        return await site.getDb().getRecords(REMINDERS_TABLE, { eventid: id }, 'timecreated ASC, time ASC');
     }
 
     /**

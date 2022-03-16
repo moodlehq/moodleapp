@@ -37,6 +37,7 @@ import { AddonCalendarSyncInvalidateEvent } from './calendar-sync';
 import { AddonCalendarOfflineEventDBRecord } from './database/calendar-offline';
 import { CoreCategoryData } from '@features/courses/services/courses';
 import { AddonCalendarReminderDBRecord } from './database/calendar';
+import { CoreTimeUtils } from '@services/utils/time';
 
 /**
  * Context levels enumeration.
@@ -329,6 +330,9 @@ export class AddonCalendarHelperProvider {
 
             if (reminder.value && reminder.unit) {
                 reminder.label = AddonCalendar.getUnitValueLabel(reminder.value, reminder.unit, reminder.time === null);
+                if (reminder.timestamp) {
+                    reminder.sublabel = CoreTimeUtils.userDate(reminder.timestamp * 1000, 'core.strftimedatetime');
+                }
             }
 
             return reminder;
@@ -796,4 +800,5 @@ export type AddonCalendarEventReminder = AddonCalendarReminderDBRecord & {
     unit?: AddonCalendarReminderUnits; // Units.
     timestamp?: number; // Timestamp (in seconds).
     label?: string; // Label to represent the reminder.
+    sublabel?: string; // Sub label.
 };
