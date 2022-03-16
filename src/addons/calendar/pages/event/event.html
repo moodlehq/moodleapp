@@ -136,7 +136,8 @@
             <ng-container *ngFor="let reminder of reminders">
                 <ion-item *ngIf="reminder.timestamp > 0" class="ion-text-wrap" [class.item-dimmed]="reminder.timestamp <= currentTime">
                     <ion-label>
-                        <p>{{ reminder.label }}</p>
+                        <p class="item-heading">{{ reminder.label }}</p>
+                        <p *ngIf="reminder.sublabel">{{ reminder.sublabel }}</p>
                     </ion-label>
                     <ion-button fill="clear" (click)="cancelNotification(reminder.id, $event)" [attr.aria-label]="'core.delete' | translate"
                         slot="end">

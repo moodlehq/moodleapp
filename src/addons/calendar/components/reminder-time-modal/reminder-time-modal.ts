@@ -15,6 +15,7 @@
 import { AddonCalendar, AddonCalendarReminderUnits, AddonCalendarValueAndUnit } from '@addons/calendar/services/calendar';
 import { Component, Input, OnInit } from '@angular/core';
 import { CoreDomUtils } from '@services/utils/dom';
+import { CoreUtils } from '@services/utils/utils';
 import { ModalController } from '@singletons';
 
 /**
@@ -150,6 +151,26 @@ export class AddonCalendarReminderTimeModalComponent implements OnInit {
             }
 
             ModalController.dismiss(option.unit * option.value);
+        }
+    }
+
+    /**
+     * Custom value input clicked.
+     *
+     * @param ev Click event.
+     */
+    async customInputClicked(ev: Event): Promise<void> {
+        if (this.radioValue === 'custom') {
+            return;
+        }
+
+        this.radioValue = 'custom';
+
+        await CoreUtils.nextTick();
+
+        const target = <HTMLInputElement | Element | null> ev.target;
+        if (target && 'focus' in target) {
+            target.focus();
         }
     }
 
