@@ -22,6 +22,7 @@ import { CoreFormatDatePipe } from './format-date';
 import { CoreNoTagsPipe } from './no-tags';
 import { CoreSecondsToHMSPipe } from './seconds-to-hms';
 import { CoreTimeAgoPipe } from './time-ago';
+import { CoreToLocaleStringPipe } from './to-locale-string';
 
 @NgModule({
     declarations: [
@@ -33,6 +34,7 @@ import { CoreTimeAgoPipe } from './time-ago';
         CoreNoTagsPipe,
         CoreSecondsToHMSPipe,
         CoreTimeAgoPipe,
+        CoreToLocaleStringPipe,
     ],
     exports: [
         CoreBytesToSizePipe,
@@ -43,6 +45,7 @@ import { CoreTimeAgoPipe } from './time-ago';
         CoreNoTagsPipe,
         CoreSecondsToHMSPipe,
         CoreTimeAgoPipe,
+        CoreToLocaleStringPipe,
     ],
 })
 export class CorePipesModule {}
