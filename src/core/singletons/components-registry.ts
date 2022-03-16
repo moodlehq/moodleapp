@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Component } from '@angular/core';
+import { AsyncComponent } from '@classes/async-component';
 import { CoreUtils } from '@services/utils/utils';
 
 /**
@@ -39,7 +40,7 @@ export class CoreComponentsRegistry {
      * @param componentClass Component class.
      * @returns Component instance.
      */
-    static resolve<T = Component>(element?: Element | null, componentClass?: ComponentConstructor<T>): T | null {
+    static resolve<T>(element?: Element | null, componentClass?: ComponentConstructor<T>): T | null {
         const instance = (element && this.instances.get(element) as T) ?? null;
 
         return instance && (!componentClass || instance instanceof componentClass)
@@ -65,35 +66,45 @@ export class CoreComponentsRegistry {
     }
 
     /**
-     * Waits all elements to be rendered.
+     * Get a component instances and wait to be ready.
      *
-     * @param element Parent element where to search.
-     * @param selector Selector to search on parent.
-     * @param fnName Component function that have to be resolved when rendered.
-     * @param params Params of function that have to be resolved when rendered.
+     * @param element Root element.
+     * @param componentClass Component class.
      * @return Promise resolved when done.
      */
-    static async finishRenderingAllElementsInside<T = Component>(
-        element: Element | undefined | null,
-        selector: string,
-        fnName: string,
-        params?: unknown[],
+    static async waitComponentReady<T extends AsyncComponent>(
+        element: Element | null,
+        componentClass?: ComponentConstructor<T>,
     ): Promise<void> {
-        if (!element) {
+        const instance = this.resolve(element, componentClass);
+        if (!instance) {
             return;
         }
 
-        const components = Array
-            .from(element.querySelectorAll(selector))
-            .map(element => CoreComponentsRegistry.resolve<T>(element));
+        await instance.ready();
+    }
 
-        await Promise.all(components.map(component => {
-            if (!component) {
-                return;
-            }
-
-            return component[fnName].apply(component, params);
-        }));
+    /**
+     * Waits all elements matching to be ready.
+     *
+     * @param element Element where to search.
+     * @param selector Selector to search on parent.
+     * @param componentClass Component class.
+     * @return Promise resolved when done.
+     */
+    static async waitComponentsReady<T extends AsyncComponent>(
+        element: Element,
+        selector: string,
+        componentClass?: ComponentConstructor<T>,
+    ): Promise<void> {
+        if (element.matches(selector)) {
+            // Element to wait is myself.
+            await CoreComponentsRegistry.waitComponentReady<T>(element, componentClass);
+        } else {
+            await Promise.all(Array
+                .from(element.querySelectorAll(selector))
+                .map(element => CoreComponentsRegistry.waitComponentReady<T>(element, componentClass)));
+        }
 
         // Wait for next tick to ensure components are completely rendered.
         await CoreUtils.nextTick();
@@ -105,4 +116,4 @@ export class CoreComponentsRegistry {
  * Component constructor.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type ComponentConstructor<T> = { new(...args: any[]): T };
+export type ComponentConstructor<T = Component> = { new(...args: any[]): T };

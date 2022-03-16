@@ -80,7 +80,7 @@
 
     body.dark {
         $dark: map-get($base, 'dark');
-        $dark: mix($light, white, 40%) !default;
+        $dark: mix($light, white, 80%) !default;
         @include generate-color-variants($color-name, $dark);
     }
 }

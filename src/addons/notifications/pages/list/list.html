@@ -36,10 +36,11 @@
                     <core-user-avatar *ngIf="notification.useridfrom > 0" [user]="notification" slot="start"
                         [profileUrl]="notification.profileimageurlfrom" [fullname]="notification.userfromfullname"
                         [userId]="notification.useridfrom">
-                        <img *ngIf="notification.iconurl && !notification.modname" [src]="notification.iconurl" alt="" role="presentation"
-                            class="core-avatar-extra">
+                        <div class="core-avatar-extra-img" *ngIf="notification.iconurl && !notification.modname">
+                            <img [src]="notification.iconurl" alt="" role="presentation">
+                        </div>
                         <core-mod-icon *ngIf="notification.modname" [modicon]="notification.iconurl" [modname]="notification.modname"
-                            [showAlt]="false" class="core-avatar-extra">
+                            [showAlt]="false">
                         </core-mod-icon>
                     </core-user-avatar>
 

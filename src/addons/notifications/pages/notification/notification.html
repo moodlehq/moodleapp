@@ -13,8 +13,10 @@
         <ion-item class="ion-text-wrap" [attr.aria-label]="subject">
             <core-user-avatar *ngIf="userIdFrom > 0" slot="start" [userId]="userIdFrom" [profileUrl]="profileImageUrlFrom"
                 [fullname]="userFromFullName">
-                <img *ngIf="iconUrl && !modname" [src]="iconUrl" alt="" role="presentation" class="core-avatar-extra">
-                <core-mod-icon *ngIf="modname" [modicon]="iconUrl" [modname]="modname" [showAlt]="false" class="core-avatar-extra">
+                <div class="core-avatar-extra-img" *ngIf="iconUrl && !modname">
+                    <img [src]="iconUrl" alt="" role="presentation">
+                </div>
+                <core-mod-icon *ngIf="modname" [modicon]="iconUrl" [modname]="modname" [showAlt]="false">
                 </core-mod-icon>
             </core-user-avatar>
 

@@ -271,7 +271,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     async ngOnInit(): Promise<void> {
         this.route.queryParams.subscribe(async (params) => {
             // When a child page loads this callback is triggered too.
-            const conversationId =CoreNavigator.getRouteNumberParam('conversationId', { params });
+            const conversationId = CoreNavigator.getRouteNumberParam('conversationId', { params });
             const userId = CoreNavigator.getRouteNumberParam('userId', { params });
             if (conversationId || userId) {
                 // Update the selected ones.

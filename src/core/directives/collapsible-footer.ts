@@ -66,7 +66,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
 
         await this.domPromise;
         await this.waitLoadingsDone();
-        await this.waitFormatTextsRendered(this.element);
+        await this.waitFormatTextsRendered();
 
         this.content = this.element.closest('ion-content');
 
@@ -156,15 +156,9 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
 
     /**
      * Wait until all <core-format-text> children inside the element are done rendering.
-     *
-     * @param element Element.
      */
-    protected async waitFormatTextsRendered(element: Element): Promise<void> {
-        await CoreComponentsRegistry.finishRenderingAllElementsInside<CoreFormatTextDirective>(
-            element,
-            'core-format-text',
-            'rendered',
-        );
+    protected async waitFormatTextsRendered(): Promise<void> {
+        await CoreComponentsRegistry.waitComponentsReady(this.element, 'core-format-text', CoreFormatTextDirective);
     }
 
     /**
@@ -210,13 +204,8 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
         const scrollElement = await this.ionContent.getScrollElement();
 
         await Promise.all([
-            await CoreComponentsRegistry.finishRenderingAllElementsInside<CoreLoadingComponent>
-            (scrollElement, 'core-loading', 'whenLoaded'),
-            await CoreComponentsRegistry.finishRenderingAllElementsInside<CoreLoadingComponent>(
-                this.element,
-                'core-loading',
-                'whenLoaded',
-            ),
+            await CoreComponentsRegistry.waitComponentsReady(scrollElement, 'core-loading', CoreLoadingComponent),
+            await CoreComponentsRegistry.waitComponentsReady(this.element, 'core-loading', CoreLoadingComponent),
         ]);
     }
 

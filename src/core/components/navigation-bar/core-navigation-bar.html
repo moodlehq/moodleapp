@@ -9,7 +9,7 @@
         </core-progress-bar>
     </ion-col>
     <ion-col class="ion-text-end ion-no-padding core-navigation-arrow" size="auto">
-        <ion-button [disabled]="nextIndex < 0" fill="clear" [attr.aria-label]="nextTitle" (click)="navigate(nextIndex)">
+        <ion-button [disabled]="nextIndex >= items.length" fill="clear" [attr.aria-label]="nextTitle" (click)="navigate(nextIndex)">
             <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true"></ion-icon>
         </ion-button>
     </ion-col>

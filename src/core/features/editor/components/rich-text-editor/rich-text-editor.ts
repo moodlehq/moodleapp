@@ -294,8 +294,11 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
         await this.domPromise;
 
         const page = this.element.closest('.ion-page');
+        if (!page) {
+            return;
+        }
 
-        await CoreComponentsRegistry.finishRenderingAllElementsInside<CoreLoadingComponent>(page, 'core-loading', 'whenLoaded');
+        await CoreComponentsRegistry.waitComponentsReady(page, 'core-loading', CoreLoadingComponent);
     }
 
     /**

@@ -76,6 +76,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
     protected enabled = true;
     protected isWithinContent = false;
     protected enteredPromise = new CorePromisedValue<void>();
+    protected mutationObserver?: MutationObserver;
 
     constructor(el: ElementRef) {
         this.collapsedHeader = el.nativeElement;
@@ -126,6 +127,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         }
 
         this.resizeListener?.off();
+        this.mutationObserver?.disconnect();
     }
 
     /**
@@ -161,6 +163,31 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         this.subscriptions.push(CoreSettingsHelper.onDarkModeChange().subscribe(() => {
             this.initializeFloatingTitle();
         }));
+
+        this.mutationObserver = new MutationObserver(() => {
+            if (!this.expandedHeader) {
+                return;
+            }
+
+            const originalTitle = this.expandedHeader.querySelector('h1.collapsible-header-original-title') ||
+                this.expandedHeader.querySelector('h1') as HTMLHeadingElement;
+
+            const floatingTitleWrapper = originalTitle.parentElement as HTMLElement;
+            const floatingTitle = floatingTitleWrapper.querySelector('.collapsible-header-floating-title') as HTMLHeadingElement;
+
+            if (!floatingTitle || !originalTitle) {
+                return;
+            }
+
+            // Original title changed, change the contents.
+            const newFloatingTitle = originalTitle.cloneNode(true) as HTMLHeadingElement;
+            newFloatingTitle.classList.add('collapsible-header-floating-title');
+            newFloatingTitle.classList.remove('collapsible-header-original-title');
+
+            floatingTitleWrapper.replaceChild(newFloatingTitle, floatingTitle);
+
+            this.initializeFloatingTitle();
+        });
     }
 
     /**
@@ -247,6 +274,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
             floatingTitleWrapper.insertBefore(floatingTitle, originalTitle);
 
             originalTitle.classList.add('collapsible-header-original-title');
+            this.mutationObserver?.observe(originalTitle, { childList: true, subtree: true });
         }
 
         const floatingTitleBoundingBox = floatingTitle.getBoundingClientRect();
@@ -304,15 +332,13 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
 
     /**
      * Wait until all <core-loading> children inside the page.
-     *
-     * @return Promise resolved when loadings are done.
      */
     protected async waitLoadingsDone(): Promise<void> {
-        await CoreComponentsRegistry.finishRenderingAllElementsInside<CoreLoadingComponent>(
-            this.page,
-            'core-loading',
-            'whenLoaded',
-        );
+        if (!this.page) {
+            return;
+        }
+
+        await CoreComponentsRegistry.waitComponentsReady(this.page, 'core-loading', CoreLoadingComponent);
     }
 
     /**
@@ -322,11 +348,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
      * @return Promise resolved when texts are rendered.
      */
     protected async waitFormatTextsRendered(element: Element): Promise<void> {
-        await CoreComponentsRegistry.finishRenderingAllElementsInside<CoreFormatTextDirective>(
-            element,
-            'core-format-text',
-            'rendered',
-        );
+        await CoreComponentsRegistry.waitComponentsReady(element, 'core-format-text', CoreFormatTextDirective);
     }
 
     /**

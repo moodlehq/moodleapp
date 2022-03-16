@@ -78,8 +78,6 @@
 }
 
 :host-context(ion-item) {
-    margin-top: 6px;
-    margin-bottom: 6px;
     @include margin(6px, 8px, 6px, 0px);
     img {
         min-width: var(--core-avatar-size);

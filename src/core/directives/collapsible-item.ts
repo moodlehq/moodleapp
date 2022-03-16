@@ -16,7 +16,6 @@ import { Directive, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreEventObserver } from '@singletons/events';
@@ -103,28 +102,18 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
 
         const page = this.element.closest('.ion-page');
 
-        await CoreComponentsRegistry.finishRenderingAllElementsInside<CoreLoadingComponent>(page, 'core-loading', 'whenLoaded');
+        if (!page) {
+            return;
+        }
+
+        await CoreComponentsRegistry.waitComponentsReady(page, 'core-loading', CoreLoadingComponent);
     }
 
     /**
      * Wait until all <core-format-text> children inside the element are done rendering.
-     *
-     * @param element Element.
      */
-    protected async waitFormatTextsRendered(element: Element): Promise<void> {
-        let formatTextElements: HTMLElement[] = [];
-
-        if (this.element.tagName == 'CORE-FORMAT-TEXT') {
-            formatTextElements = [this.element];
-        } else {
-            formatTextElements = Array.from(element.querySelectorAll('core-format-text'));
-        }
-
-        const formatTexts = formatTextElements.map(element => CoreComponentsRegistry.resolve(element, CoreFormatTextDirective));
-
-        await Promise.all(formatTexts.map(formatText => formatText?.rendered()));
-
-        await CoreUtils.nextTick();
+    protected async waitFormatTextsRendered(): Promise<void> {
+        await CoreComponentsRegistry.waitComponentsReady(this.element, 'core-format-text', CoreFormatTextDirective);
     }
 
     /**
@@ -134,7 +123,7 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
         // Remove max-height (if any) to calculate the real height.
         this.element.classList.add('collapsible-loading-height');
 
-        await this.waitFormatTextsRendered(this.element);
+        await this.waitFormatTextsRendered();
 
         this.expandedHeight = this.element.getBoundingClientRect().height;
 

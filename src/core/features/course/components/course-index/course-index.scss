@@ -18,6 +18,7 @@ ion-item.item {
 
     &.item-current {
         --background: var(--primary-tint);
+        --color: var(--gray-900);
         border: 0;
     }
 
@@ -34,6 +35,7 @@ ion-item.item {
 
                 &:hover {
                     background: var(--primary-shade);
+                    color: var(--gray-100);
                 }
             }
         }
@@ -43,7 +45,7 @@ ion-item.item {
             margin: 3px;
             border-radius: 50%;
             &:hover {
-                background: var(--gray-300);
+                background: var(--secondary);
             }
         }
 

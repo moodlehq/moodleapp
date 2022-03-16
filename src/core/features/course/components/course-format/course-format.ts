@@ -92,7 +92,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     selectedSection?: CoreCourseSection;
     previousSection?: CoreCourseSection;
     nextSection?: CoreCourseSection;
-    hasPreviousOrNextSections = false;
     allSectionsId: number = CoreCourseProvider.ALL_SECTIONS_ID;
     stealthModulesSectionId: number = CoreCourseProvider.STEALTH_MODULES_SECTION_ID;
     loaded = false;
@@ -489,8 +488,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             this.showMoreActivities();
         }
 
-        this.hasPreviousOrNextSections = !!this.previousSection || !!this.nextSection;
-
         // Scroll to module if needed. Give more priority to the input.
         const moduleIdToScroll = this.moduleId && previousValue === undefined ? this.moduleId : moduleId;
         if (moduleIdToScroll) {
@@ -507,8 +504,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                 CoreCourse.logView(this.course.id, newSection.section, undefined, this.course.fullname),
             );
         }
-
-        this.invalidateSectionButtons();
     }
 
     /**
@@ -561,25 +556,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
         refresher?.complete();
         done?.();
-    }
-
-    /**
-     * Invalidate section buttons so that they are rendered again. This is necessary in order to update
-     * some attributes that are not reactive, for example aria-label.
-     *
-     * @see https://github.com/ionic-team/ionic-framework/issues/21534
-     */
-    protected async invalidateSectionButtons(): Promise<void> {
-        const previousSection = this.previousSection;
-        const nextSection = this.nextSection;
-
-        this.previousSection = undefined;
-        this.nextSection = undefined;
-
-        await CoreUtils.nextTick();
-
-        this.previousSection = previousSection;
-        this.nextSection = nextSection;
     }
 
     /**
