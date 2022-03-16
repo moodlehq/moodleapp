@@ -176,6 +176,8 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
         this.editorElement.oninput = this.onChange.bind(this);
         this.editorElement.onkeydown = this.moveCursor.bind(this);
 
+        await CoreDomUtils.waitToBeVisible(this.editorElement);
+
         // Use paragraph on enter.
         document.execCommand('DefaultParagraphSeparator', false, 'p');
 
