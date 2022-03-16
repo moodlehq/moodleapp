@@ -35,7 +35,7 @@
 
 // Common styles.
 .item-heading ion-icon {
-    margin-right: 4px;
+    @include margin-horizontal(null, 4px);
     color: var(--core-star-color);
 }
 
@@ -130,7 +130,7 @@ ion-card.core-course-list-item {
     }
 
     .core-course-maininfo {
-        margin-right: 32px;
+        @include margin-horizontal(null, 32px);
     }
 }
 

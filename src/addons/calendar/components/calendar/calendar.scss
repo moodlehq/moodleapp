@@ -22,17 +22,17 @@
 
     .addon-calendar-day {
         border-bottom: 1px solid var(--addon-calendar-border-color);
-        border-right: 1px solid var(--addon-calendar-border-color);
+        @include border-end(1px, solid var(--addon-calendar-border-color));
         overflow: hidden;
         min-height: 60px;
         cursor: pointer;
 
         &:first-child {
-            padding-left: 10px;
+            @include padding-horizontal(10px, null);
         }
         &:last-child {
-            border-right: 0;
-            padding-left: 8px;
+            @include border-end(0);
+            @include padding-horizontal(8px, null);
         }
 
         &.addon-calendar-event-past-day > .addon-calendar-dot-types,
@@ -89,9 +89,7 @@
         }
 
         .addon-calendar-day-more {
-            margin-top: 0.6em;
-            margin-bottom: 0.6em;
-            margin-right: 4px;
+            @include margin(0.6em, null, 0.6em, 4px);
         }
 
         .addon-calendar-dot-types {
@@ -117,10 +115,10 @@
     }
 
     .addon-calendar-day-events {
-        text-align: left;
+        text-align: start;
 
         ion-icon {
-            margin-right: 2px;
+            @include margin-horizontal(null, 2px);
             font-size: 1em;
         }
     }
@@ -151,37 +149,6 @@
         justify-content: start;
         align-items: start;
         text-align: start;
-    }
-}
-
-:host-context([dir=rtl]) {
-    .addon-calendar-day-events {
-        text-align: right;
-
-        ion-icon {
-            margin-right: unset;
-            margin-left: 2px;
-        }
-    }
-
-    .addon-calendar-day {
-        border-left: 1px solid var(--addon-calendar-border-color);
-        border-right: unset;
-
-        &:first-child {
-            padding-right: 10px;
-            padding-left: unset;
-        }
-        &:last-child {
-            border-left: 0;
-            border-right: unset;
-            padding-right: 8px;
-            padding-left: unset;
-        }
-        .addon-calendar-day-more {
-            margin-left: 4px;
-            margin-right: unset;
-        }
     }
 }
 
