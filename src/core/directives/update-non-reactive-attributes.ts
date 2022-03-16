@@ -33,15 +33,18 @@ export class CoreUpdateNonReactiveAttributesDirective implements OnInit, OnDestr
     constructor(element: ElementRef<HTMLIonButtonElement>) {
         this.element = element.nativeElement;
         this.mutationObserver = new MutationObserver(() => {
-            const ariaLabel = this.element.getAttribute('aria-label');
-            if (!ariaLabel) {
-                // Aria label unset by ionButton component (when first created).
+            const button = this.element.shadowRoot?.querySelector('button');
+
+            if (!button) {
                 return;
             }
 
             // Propagate label to button.
-            const button = this.element.shadowRoot?.querySelector('button');
-            button?.setAttribute('aria-label', ariaLabel);
+            const ariaLabel = this.element.getAttribute('aria-label');
+
+            ariaLabel
+                ? button.setAttribute('aria-label', ariaLabel)
+                : button.removeAttribute('aria-label');
         });
     }
 
@@ -50,10 +53,6 @@ export class CoreUpdateNonReactiveAttributesDirective implements OnInit, OnDestr
      */
     async ngOnInit(): Promise<void> {
         await this.element.componentOnReady();
-
-        if (!this.element.getAttribute('aria-label')) {
-            return;
-        }
 
         this.mutationObserver.observe(this.element, { attributes: true, attributeFilter: ['aria-label'] });
     }
