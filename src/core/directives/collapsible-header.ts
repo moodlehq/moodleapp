@@ -332,15 +332,13 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
 
     /**
      * Wait until all <core-loading> children inside the page.
-     *
-     * @return Promise resolved when loadings are done.
      */
     protected async waitLoadingsDone(): Promise<void> {
-        await CoreComponentsRegistry.finishRenderingAllElementsInside<CoreLoadingComponent>(
-            this.page,
-            'core-loading',
-            'whenLoaded',
-        );
+        if (!this.page) {
+            return;
+        }
+
+        await CoreComponentsRegistry.waitComponentsReady(this.page, 'core-loading', CoreLoadingComponent);
     }
 
     /**
@@ -350,11 +348,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
      * @return Promise resolved when texts are rendered.
      */
     protected async waitFormatTextsRendered(element: Element): Promise<void> {
-        await CoreComponentsRegistry.finishRenderingAllElementsInside<CoreFormatTextDirective>(
-            element,
-            'core-format-text',
-            'rendered',
-        );
+        await CoreComponentsRegistry.waitComponentsReady(element, 'core-format-text', CoreFormatTextDirective);
     }
 
     /**

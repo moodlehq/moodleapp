@@ -43,6 +43,7 @@ import { CoreSubscriptions } from '@singletons/subscriptions';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreCollapsibleItemDirective } from './collapsible-item';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
+import { AsyncComponent } from '@classes/async-component';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -56,7 +57,7 @@ import { CoreCancellablePromise } from '@classes/cancellable-promise';
 @Directive({
     selector: 'core-format-text',
 })
-export class CoreFormatTextDirective implements OnChanges, OnDestroy {
+export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncComponent {
 
     @ViewChild(CoreCollapsibleItemDirective) collapsible?: CoreCollapsibleItemDirective;
 
@@ -137,9 +138,9 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy {
     }
 
     /**
-     * Wait until the text is fully rendered.
+     * @inheritdoc
      */
-    async rendered(): Promise<void> {
+    async ready(): Promise<void> {
         if (!this.element.classList.contains('core-format-text-loading')) {
             return;
         }

@@ -20,6 +20,7 @@ import { CoreAnimations } from '@components/animations';
 import { Translate } from '@singletons';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CorePromisedValue } from '@classes/promised-value';
+import { AsyncComponent } from '@classes/async-component';
 
 /**
  * Component to show a loading spinner and message while data is being loaded.
@@ -47,7 +48,7 @@ import { CorePromisedValue } from '@classes/promised-value';
     styleUrls: ['loading.scss'],
     animations: [CoreAnimations.SHOW_HIDE],
 })
-export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit {
+export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, AsyncComponent {
 
     @Input() hideUntil: unknown; // Determine when should the contents be shown.
     @Input() message?: string; // Message to show while loading.
@@ -58,7 +59,7 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit {
     uniqueId: string;
     protected element: HTMLElement; // Current element.
     loaded = false; // Only comes true once.
-    protected firstLoadedPromise = new CorePromisedValue<string>();
+    protected onReadyPromise = new CorePromisedValue<void>();
 
     constructor(element: ElementRef) {
         this.element = element.nativeElement;
@@ -108,7 +109,7 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit {
 
         if (!this.loaded && loaded) {
             this.loaded = true; // Only comes true once.
-            this.firstLoadedPromise.resolve(this.uniqueId);
+            this.onReadyPromise.resolve();
         }
 
         // Event has been deprecated since app 4.0.
@@ -119,12 +120,10 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit {
     }
 
     /**
-     * Wait the loading to finish.
-     *
-     * @return Promise resolved with the uniqueId when done.
+     * @inheritdoc
      */
-    async whenLoaded(): Promise<string> {
-        return await this.firstLoadedPromise;
+    async ready(): Promise<void> {
+        return await this.onReadyPromise;
     }
 
 }
