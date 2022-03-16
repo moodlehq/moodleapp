@@ -380,7 +380,7 @@
 
     @for $i from 0 to length($core-course-image-background) {
         --core-course-color-#{$i}: #{nth($core-course-image-background, $i + 1)};
-        --core-course-color-#{$i}-tint: #{get-color-tint(nth($core-course-image-background, $i + 1))};
+        --core-course-color-#{$i}-tint: #{get-color-tint-percent(nth($core-course-image-background, $i + 1))};
     }
 
     @for $i from 0 to length($core-dd-question-colors) {
