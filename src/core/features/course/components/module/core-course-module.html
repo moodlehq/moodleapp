@@ -1,4 +1,4 @@
-<ion-card *ngIf="module.handlerData && module.visibleoncoursepage !== 0">
+<ion-card *ngIf="module.handlerData && module.visibleoncoursepage !== 0" [class.core-course-module-with-view]="moduleHasView">
     <ng-container *ngIf="!module.handlerData.loading">
         <ion-item id="core-course-module-{{module.id}}" detail="false"
             class="ion-text-wrap core-course-module-handler core-module-main-item {{module.handlerData.class}}"

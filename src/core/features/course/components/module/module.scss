@@ -93,7 +93,7 @@
         display: none;
     }
 
-    &.core-course-module-not-viewed {
+    &.core-course-module-not-viewed ion-card.core-course-module-with-view {
         --ion-card-border-color: var(--core-course-module-not-viewed-border-color);
     }
 
