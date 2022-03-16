@@ -12,10 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CorePromise } from '@classes/promise';
+
 /**
  * Promise wrapper to expose result synchronously.
  */
-export class CorePromisedValue<T = unknown> implements Promise<T> {
+export class CorePromisedValue<T = unknown> extends CorePromise<T> {
 
     /**
      * Wrap an existing promise.
@@ -33,20 +35,28 @@ export class CorePromisedValue<T = unknown> implements Promise<T> {
         return promisedValue;
     }
 
-    private _resolvedValue?: T;
-    private _rejectedReason?: Error;
-    declare private promise: Promise<T>;
-    declare private _resolve: (result: T) => void;
-    declare private _reject: (error?: Error) => void;
+    protected resolvedValue?: T;
+    protected rejectedReason?: Error;
+    protected resolvePromise!: (result: T) => void;
+    protected rejectPromise!: (error?: Error) => void;
 
     constructor() {
-        this.initPromise();
+        let resolvePromise!: (result: T) => void;
+        let rejectPromise!: (error?: Error) => void;
+
+        const nativePromise = new Promise<T>((resolve, reject) => {
+            resolvePromise = resolve;
+            rejectPromise = reject;
+        });
+
+        super(nativePromise);
+
+        this.resolvePromise = resolvePromise;
+        this.rejectPromise = rejectPromise;
     }
 
-    [Symbol.toStringTag]: string;
-
     get value(): T | null {
-        return this._resolvedValue ?? null;
+        return this.resolvedValue ?? null;
     }
 
     /**
@@ -55,7 +65,7 @@ export class CorePromisedValue<T = unknown> implements Promise<T> {
      * @return Whether the promise resolved successfuly.
      */
     isResolved(): this is { value: T } {
-        return '_resolvedValue' in this;
+        return 'resolvedValue' in this;
     }
 
     /**
@@ -64,7 +74,7 @@ export class CorePromisedValue<T = unknown> implements Promise<T> {
      * @return Whether the promise was rejected.
      */
     isRejected(): boolean {
-        return '_rejectedReason' in this;
+        return 'rejectedReason' in this;
     }
 
     /**
@@ -77,45 +87,19 @@ export class CorePromisedValue<T = unknown> implements Promise<T> {
     }
 
     /**
-     * @inheritdoc
-     */
-    then<TResult1 = T, TResult2 = never>(
-        onFulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null,
-        onRejected?: ((reason: Error) => TResult2 | PromiseLike<TResult2>) | undefined | null,
-    ): Promise<TResult1 | TResult2> {
-        return this.promise.then(onFulfilled, onRejected);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    catch<TResult = never>(
-        onRejected?: ((reason: Error) => TResult | PromiseLike<TResult>) | undefined | null,
-    ): Promise<T | TResult> {
-        return this.promise.catch(onRejected);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    finally(onFinally?: (() => void) | null): Promise<T> {
-        return this.promise.finally(onFinally);
-    }
-
-    /**
      * Resolve the promise.
      *
      * @param value Promise result.
      */
     resolve(value: T): void {
         if (this.isSettled()) {
-            delete this._rejectedReason;
+            delete this.rejectedReason;
 
-            this.initPromise();
+            this.resetNativePromise();
         }
 
-        this._resolvedValue = value;
-        this._resolve(value);
+        this.resolvedValue = value;
+        this.resolvePromise(value);
     }
 
     /**
@@ -125,32 +109,32 @@ export class CorePromisedValue<T = unknown> implements Promise<T> {
      */
     reject(reason?: Error): void {
         if (this.isSettled()) {
-            delete this._resolvedValue;
+            delete this.resolvedValue;
 
-            this.initPromise();
+            this.resetNativePromise();
         }
 
-        this._rejectedReason = reason;
-        this._reject(reason);
+        this.rejectedReason = reason;
+        this.rejectPromise(reason);
     }
 
     /**
      * Reset status and value.
      */
     reset(): void {
-        delete this._resolvedValue;
-        delete this._rejectedReason;
+        delete this.resolvedValue;
+        delete this.rejectedReason;
 
-        this.initPromise();
+        this.resetNativePromise();
     }
 
     /**
-     * Initialize the promise and the callbacks.
+     * Reset native promise and callbacks.
      */
-    private initPromise(): void {
-        this.promise = new Promise((resolve, reject) => {
-            this._resolve = resolve;
-            this._reject = reject;
+    protected resetNativePromise(): void {
+        this.nativePromise = new Promise((resolve, reject) => {
+            this.resolvePromise = resolve;
+            this.rejectPromise = reject;
         });
     }
 

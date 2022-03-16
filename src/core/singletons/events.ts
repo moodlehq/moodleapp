@@ -32,21 +32,6 @@ export interface CoreEventObserver {
 }
 
 /**
- * Observer instance to stop listening to an observer.
- */
-export interface CoreSingleTimeEventObserver {
-    /**
-     * Stop the observer.
-     */
-    off: () => void;
-
-    /**
-     * Promise Resolved when event is done (first time).
-     */
-    promise: Promise<void>;
-}
-
-/**
  * Event payloads.
  */
 export interface CoreEventsData {

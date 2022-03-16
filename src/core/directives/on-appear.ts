@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { Directive, ElementRef, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreSingleTimeEventObserver } from '@singletons/events';
 
 /**
  * Directive to listen when an element becomes visible.
@@ -27,7 +27,7 @@ export class CoreOnAppearDirective implements OnInit, OnDestroy {
     @Output() onAppear = new EventEmitter();
 
     private element: HTMLElement;
-    protected domListener?: CoreSingleTimeEventObserver;
+    protected domPromise?: CoreCancellablePromise<void>;
 
     constructor(element: ElementRef) {
         this.element = element.nativeElement;
@@ -37,8 +37,9 @@ export class CoreOnAppearDirective implements OnInit, OnDestroy {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.domListener = CoreDomUtils.waitToBeInDOM(this.element);
-        await this.domListener.promise;
+        this.domPromise = CoreDomUtils.waitToBeInDOM(this.element);
+
+        await this.domPromise;
 
         this.onAppear.emit();
     }
@@ -47,7 +48,7 @@ export class CoreOnAppearDirective implements OnInit, OnDestroy {
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.domListener?.off();
+        this.domPromise?.cancel();
     }
 
 }

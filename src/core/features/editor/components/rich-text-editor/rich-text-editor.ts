@@ -36,11 +36,12 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { Platform, Translate } from '@singletons';
-import { CoreEventFormActionData, CoreEventObserver, CoreEvents, CoreSingleTimeEventObserver } from '@singletons/events';
+import { CoreEventFormActionData, CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreEditorOffline } from '../../services/editor-offline';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreScreen } from '@services/screen';
+import { CoreCancellablePromise } from '@classes/cancellable-promise';
 
 /**
  * Component to display a rich text editor if enabled.
@@ -105,7 +106,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
     protected selectionChangeFunction?: () => void;
     protected languageChangedSubscription?: Subscription;
     protected resizeListener?: CoreEventObserver;
-    protected domListener?: CoreSingleTimeEventObserver;
+    protected domPromise?: CoreCancellablePromise<void>;
 
     rteEnabled = false;
     isPhone = false;
@@ -288,8 +289,9 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
      * @return Promise resolved when loadings are done.
      */
     protected async waitLoadingsDone(): Promise<void> {
-        this.domListener = CoreDomUtils.waitToBeInDOM(this.element);
-        await this.domListener.promise;
+        this.domPromise = CoreDomUtils.waitToBeInDOM(this.element);
+
+        await this.domPromise;
 
         const page = this.element.closest('.ion-page');
 
@@ -829,7 +831,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
 
         const length = await this.toolbarSlides.length();
 
-        await CoreDomUtils.waitToBeInDOM(this.toolbar.nativeElement, 5000).promise;
+        await CoreDomUtils.waitToBeInDOM(this.toolbar.nativeElement, 5000);
 
         const width = this.toolbar.nativeElement.getBoundingClientRect().width;
 
@@ -1089,7 +1091,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
         this.keyboardObserver?.off();
         this.labelObserver?.disconnect();
         this.resizeListener?.off();
-        this.domListener?.off();
+        this.domPromise?.cancel();
     }
 
 }
