@@ -8,6 +8,7 @@
     --loading-inline-margin: 0px;
     --loading-inline-min-height: 28px;
     --internal-loading-inline-min-height: var(--loading-inline-min-height);
+    --content-display: contents;
 
     position: static;
     color: var(--loading-text-color);
@@ -45,6 +46,7 @@
 
     .core-loading-content {
         @include core-transition(opacity, 200ms);
+        display: var(--content-display);
     }
 
     .core-loading-message {
@@ -75,10 +77,13 @@
         height: 100%;
     }
 
-    &.has-spacer .core-loading-content {
-        min-height: 100%;
-        display: flex;
-        flex-direction: column;
+    &.has-spacer {
+        --content-display: flex;
+
+        .core-loading-content {
+            min-height: 100%;
+            flex-direction: column;
+        }
     }
 
     &.list-item-limited-width .core-loading-content {
