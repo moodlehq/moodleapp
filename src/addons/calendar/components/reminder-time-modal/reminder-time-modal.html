@@ -38,7 +38,8 @@
 
             <div class="flex-row">
                 <!-- Input to enter the value. -->
-                <ion-input type="number" name="customvalue" [(ngModel)]="customValue" [disabled]="radioValue != 'custom'" placeholder="10">
+                <ion-input type="number" name="customvalue" [(ngModel)]="customValue" [disabled]="radioValue != 'custom'" placeholder="10"
+                    (click)="customInputClicked($event)">
                 </ion-input>
 
                 <!-- Units. -->
