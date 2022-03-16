@@ -374,7 +374,9 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
 
             const selectedDay = this.manager?.getSelectedItem();
             if (selectedDay) {
-                params.timestamp = selectedDay.moment.unix() * 1000;
+                // Use current time but in the specified day.
+                const now = moment();
+                params.timestamp = selectedDay.moment.clone().set({ hour: now.hour(), minute: now.minute() }).unix() * 1000;
             }
         }
 
