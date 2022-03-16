@@ -27,7 +27,7 @@ export class CoreOnAppearDirective implements OnInit, OnDestroy {
     @Output() onAppear = new EventEmitter();
 
     private element: HTMLElement;
-    protected domPromise?: CoreCancellablePromise<void>;
+    protected visiblePromise?: CoreCancellablePromise<void>;
 
     constructor(element: ElementRef) {
         this.element = element.nativeElement;
@@ -37,9 +37,9 @@ export class CoreOnAppearDirective implements OnInit, OnDestroy {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.domPromise = CoreDomUtils.waitToBeInDOM(this.element);
+        this.visiblePromise = CoreDomUtils.waitToBeVisible(this.element);
 
-        await this.domPromise;
+        await this.visiblePromise;
 
         this.onAppear.emit();
     }
@@ -48,7 +48,7 @@ export class CoreOnAppearDirective implements OnInit, OnDestroy {
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.domPromise?.cancel();
+        this.visiblePromise?.cancel();
     }
 
 }

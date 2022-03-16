@@ -100,7 +100,7 @@ export class CoreDomUtilsProvider {
      * @param timeout If defined, timeout to wait before rejecting the promise.
      * @return Cancellable promise.
      */
-    waitToBeInDOM(element: Element, timeout?: number): CoreCancellablePromise<void> {
+    waitToBeInDOM(element: HTMLElement, timeout?: number): CoreCancellablePromise<void> {
         const root = element.getRootNode({ composed: true });
 
         if (root === document) {
@@ -136,6 +136,41 @@ export class CoreDomUtilsProvider {
             () => {
                 observer?.disconnect();
                 observerTimeout && clearTimeout(observerTimeout);
+            },
+        );
+    }
+
+    /**
+     * Wait an element to be in dom and visible.
+     *
+     * @param element Element to wait.
+     * @return Cancellable promise.
+     */
+    waitToBeVisible(element: HTMLElement): CoreCancellablePromise<void> {
+        const domPromise = CoreDomUtils.waitToBeInDOM(element);
+
+        let interval: number | undefined;
+
+        return new CoreCancellablePromise<void>(
+            async (resolve) => {
+                await domPromise;
+
+                if (CoreDomUtils.isElementVisible(element)) {
+                    return resolve();
+                }
+
+                interval = window.setInterval(() => {
+                    if (!CoreDomUtils.isElementVisible(element)) {
+                        return;
+                    }
+
+                    resolve();
+                    window.clearInterval(interval);
+                }, 50);
+            },
+            () => {
+                domPromise.cancel();
+                window.clearInterval(interval);
             },
         );
     }
