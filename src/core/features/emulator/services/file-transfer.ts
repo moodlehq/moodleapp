@@ -113,7 +113,10 @@ export class FileTransferObjectMock extends FileTransferObject {
             xhr.open('GET', source, true);
             xhr.responseType = 'blob';
             for (const name in headers) {
-                xhr.setRequestHeader(name, headers[name]);
+                // We can't set the User-Agent in browser.
+                if (name !== 'User-Agent') {
+                    xhr.setRequestHeader(name, headers[name]);
+                }
             }
 
             xhr.onprogress = (ev: ProgressEvent): void => {
@@ -332,7 +335,7 @@ export class FileTransferObjectMock extends FileTransferObject {
                 xhr.open(httpMethod || 'POST', url);
                 for (const name in headers) {
                     // Filter "unsafe" headers.
-                    if (name != 'Connection') {
+                    if (name !=='Connection' && name !== 'User-Agent') {
                         xhr.setRequestHeader(name, headers[name]);
                     }
                 }
