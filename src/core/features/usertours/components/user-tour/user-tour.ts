@@ -12,21 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, ElementRef, HostBinding, Input, ViewChild } from '@angular/core';
+import { BackButtonEvent } from '@ionic/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, HostBinding, Input, Output, ViewChild } from '@angular/core';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreUserToursFocusLayout } from '@features/usertours/classes/focus-layout';
 import { CoreUserToursPopoverLayout } from '@features/usertours/classes/popover-layout';
-import {
-    CoreUserTours,
-    CoreUserToursAlignment,
-    CoreUserToursSide,
-    CoreUserToursStyle,
-} from '@features/usertours/services/user-tours';
+import { CoreUserTours, CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/services/user-tours';
 import { CoreDomUtils } from '@services/utils/dom';
 import { AngularFrameworkDelegate } from '@singletons';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
 
 const ANIMATION_DURATION = 200;
+const USER_TOURS_BACK_BUTTON_PRIORITY = 100;
 
 /**
  * User Tour wrapper component.
@@ -45,9 +42,10 @@ export class CoreUserToursUserTourComponent implements AfterViewInit {
     @Input() component!: unknown;
     @Input() componentProps?: Record<string, unknown>;
     @Input() focus?: HTMLElement;
-    @Input() style?: CoreUserToursStyle; // When this is undefined in a tour with a focused element, popover style will be used.
     @Input() side?: CoreUserToursSide;
     @Input() alignment?: CoreUserToursAlignment;
+    @Output() beforeDismiss = new EventEmitter<void>();
+    @Output() afterDismiss = new EventEmitter<void>();
     @HostBinding('class.is-active') active = false;
     @HostBinding('class.is-popover') popover = false;
     @ViewChild('wrapper') wrapper?: ElementRef<HTMLElement>;
@@ -58,6 +56,7 @@ export class CoreUserToursUserTourComponent implements AfterViewInit {
     private element: HTMLElement;
     private wrapperTransform = '';
     private wrapperElement = new CorePromisedValue<HTMLElement>();
+    private backButtonListener?: (event: BackButtonEvent) => void;
 
     constructor({ nativeElement: element }: ElementRef<HTMLElement>) {
         this.element = element;
@@ -86,10 +85,27 @@ export class CoreUserToursUserTourComponent implements AfterViewInit {
 
         await CoreDomUtils.waitForImages(tour);
 
+        // Calculate focus styles or dismiss if the element is gone.
+        if (this.focus && !CoreDomUtils.isElementVisible(this.focus)) {
+            await this.dismiss(false);
+
+            return;
+        }
+
         this.calculateStyles();
 
         // Show tour.
         this.active = true;
+
+        document.addEventListener(
+            'ionBackButton',
+            this.backButtonListener = ({ detail }) => detail.register(
+                USER_TOURS_BACK_BUTTON_PRIORITY,
+                () => {
+                    // Silence back button.
+                },
+            ),
+        );
 
         await this.playEnterAnimation();
     }
@@ -100,11 +116,16 @@ export class CoreUserToursUserTourComponent implements AfterViewInit {
      * @param acknowledge Whether to confirm that the user has seen the User Tour.
      */
     async dismiss(acknowledge: boolean = true): Promise<void> {
+        this.beforeDismiss.emit();
+
         await this.playLeaveAnimation();
+        await Promise.all<unknown>([
+            AngularFrameworkDelegate.removeViewFromDom(this.container, this.element),
+            acknowledge && CoreUserTours.acknowledge(this.id),
+        ]);
 
-        AngularFrameworkDelegate.removeViewFromDom(this.container, this.element);
-
-        acknowledge && CoreUserTours.acknowledge(this.id);
+        this.backButtonListener && document.removeEventListener('ionBackButton', this.backButtonListener);
+        this.afterDismiss.emit();
     }
 
     /**
@@ -121,18 +142,16 @@ export class CoreUserToursUserTourComponent implements AfterViewInit {
         this.focusStyles = focusLayout.inlineStyles;
 
         // Calculate popup styles.
-        if ((this.style ?? CoreUserToursStyle.Popover) === CoreUserToursStyle.Popover) {
-            if (!this.side || !this.alignment) {
-                throw new Error('Cannot create a popover user tour without side and alignment');
-            }
-
-            const popoverLayout = new CoreUserToursPopoverLayout(this.focus, this.side, this.alignment);
-
-            this.popover = true;
-            this.popoverWrapperStyles = popoverLayout.wrapperInlineStyles;
-            this.popoverWrapperArrowStyles = popoverLayout.wrapperArrowInlineStyles;
-            this.wrapperTransform = `${popoverLayout.wrapperStyles.transform ?? ''}`;
+        if (!this.side || !this.alignment) {
+            throw new Error('Cannot create a focused user tour without side and alignment');
         }
+
+        const popoverLayout = new CoreUserToursPopoverLayout(this.focus, this.side, this.alignment);
+
+        this.popover = true;
+        this.popoverWrapperStyles = popoverLayout.wrapperInlineStyles;
+        this.popoverWrapperArrowStyles = popoverLayout.wrapperArrowInlineStyles;
+        this.wrapperTransform = `${popoverLayout.wrapperStyles.transform ?? ''}`;
     }
 
     /**
