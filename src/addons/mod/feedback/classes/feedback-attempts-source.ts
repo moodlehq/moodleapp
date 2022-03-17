@@ -135,8 +135,14 @@ export class AddonModFeedbackAttemptsSource extends CoreRoutedItemsManagerSource
 
         const totalItemsLoaded = this.getPageLength() * (page + 1);
         const pageAttempts: AddonModFeedbackAttemptItem[] = [
-            ...result.attempts,
-            ...result.anonattempts,
+            // The page argument is ignored in the webservice when there is only one page,
+            // so we should ignore the responses of pages beyond the first if that's the case.
+            ...(page === 0 || result.totalattempts > AddonModFeedbackProvider.PER_PAGE)
+                ? result.attempts
+                : [],
+            ...(page === 0 || result.totalanonattempts > AddonModFeedbackProvider.PER_PAGE)
+                ? result.anonattempts
+                : [],
         ];
 
         return {
