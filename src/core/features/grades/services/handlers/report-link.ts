@@ -24,10 +24,10 @@ import { makeSingleton } from '@singletons';
  * Handler to treat links to user grades.
  */
 @Injectable({ providedIn: 'root' })
-export class CoreGradesUserLinkHandlerService extends CoreContentLinksHandlerBase {
+export class CoreGradesReportLinkHandlerService extends CoreContentLinksHandlerBase {
 
-    name = 'CoreGradesUserLinkHandler';
-    pattern = /\/course\/user\.php.*[?&]mode=grade/;
+    name = 'CoreGradesReportLinkHandler';
+    pattern = /\/grade\/report(\/user)?\/index.php/;
 
     /**
      * Get the list of actions for a link (url).
@@ -51,7 +51,7 @@ export class CoreGradesUserLinkHandlerService extends CoreContentLinksHandlerBas
 
         return [{
             action: (siteId): void => {
-                const userId = params.user ? parseInt(params.user, 10) : undefined;
+                const userId = params.userid ? parseInt(params.userid, 10) : undefined;
                 const moduleId = data?.cmid && parseInt(data.cmid, 10) || undefined;
 
                 CoreGradesHelper.goToGrades(courseId!, userId, moduleId, siteId);
@@ -79,4 +79,4 @@ export class CoreGradesUserLinkHandlerService extends CoreContentLinksHandlerBas
 
 }
 
-export const CoreGradesUserLinkHandler = makeSingleton(CoreGradesUserLinkHandlerService);
+export const CoreGradesReportLinkHandler = makeSingleton(CoreGradesReportLinkHandlerService);
