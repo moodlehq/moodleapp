@@ -16,12 +16,7 @@ import { AfterViewInit, Component, ElementRef, HostBinding, Input, ViewChild } f
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreUserToursFocusLayout } from '@features/usertours/classes/focus-layout';
 import { CoreUserToursPopoverLayout } from '@features/usertours/classes/popover-layout';
-import {
-    CoreUserTours,
-    CoreUserToursAlignment,
-    CoreUserToursSide,
-    CoreUserToursStyle,
-} from '@features/usertours/services/user-tours';
+import { CoreUserTours, CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/services/user-tours';
 import { CoreDomUtils } from '@services/utils/dom';
 import { AngularFrameworkDelegate } from '@singletons';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
@@ -45,7 +40,6 @@ export class CoreUserToursUserTourComponent implements AfterViewInit {
     @Input() component!: unknown;
     @Input() componentProps?: Record<string, unknown>;
     @Input() focus?: HTMLElement;
-    @Input() style?: CoreUserToursStyle; // When this is undefined in a tour with a focused element, popover style will be used.
     @Input() side?: CoreUserToursSide;
     @Input() alignment?: CoreUserToursAlignment;
     @HostBinding('class.is-active') active = false;
@@ -121,18 +115,16 @@ export class CoreUserToursUserTourComponent implements AfterViewInit {
         this.focusStyles = focusLayout.inlineStyles;
 
         // Calculate popup styles.
-        if ((this.style ?? CoreUserToursStyle.Popover) === CoreUserToursStyle.Popover) {
-            if (!this.side || !this.alignment) {
-                throw new Error('Cannot create a popover user tour without side and alignment');
-            }
-
-            const popoverLayout = new CoreUserToursPopoverLayout(this.focus, this.side, this.alignment);
-
-            this.popover = true;
-            this.popoverWrapperStyles = popoverLayout.wrapperInlineStyles;
-            this.popoverWrapperArrowStyles = popoverLayout.wrapperArrowInlineStyles;
-            this.wrapperTransform = `${popoverLayout.wrapperStyles.transform ?? ''}`;
+        if (!this.side || !this.alignment) {
+            throw new Error('Cannot create a focused user tour without side and alignment');
         }
+
+        const popoverLayout = new CoreUserToursPopoverLayout(this.focus, this.side, this.alignment);
+
+        this.popover = true;
+        this.popoverWrapperStyles = popoverLayout.wrapperInlineStyles;
+        this.popoverWrapperArrowStyles = popoverLayout.wrapperArrowInlineStyles;
+        this.wrapperTransform = `${popoverLayout.wrapperStyles.transform ?? ''}`;
     }
 
     /**

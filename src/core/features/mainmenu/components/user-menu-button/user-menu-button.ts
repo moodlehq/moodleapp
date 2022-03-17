@@ -14,8 +14,9 @@
 
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CoreSiteInfo } from '@classes/site';
-import { CoreUserTours, CoreUserToursStyle } from '@features/usertours/services/user-tours';
+import { CoreUserTours, CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/services/user-tours';
 import { IonRouterOutlet } from '@ionic/angular';
+import { CoreScreen } from '@services/screen';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMainMenuUserMenuTourComponent } from '../user-menu-tour/user-menu-tour';
@@ -77,7 +78,8 @@ export class CoreMainMenuUserButtonComponent implements OnInit {
             id: 'user-menu',
             component: CoreMainMenuUserMenuTourComponent,
             focus: this.avatar.nativeElement,
-            style: CoreUserToursStyle.Overlay,
+            alignment: CoreUserToursAlignment.Start,
+            side: CoreScreen.isMobile ? CoreUserToursSide.Start : CoreUserToursSide.End,
         });
     }
 

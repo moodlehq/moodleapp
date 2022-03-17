@@ -85,9 +85,8 @@ export class CoreUserToursService {
      * @param options User Tour options.
      */
     async showIfPending(options: CoreUserToursBasicOptions): Promise<void>;
-    async showIfPending(options: CoreUserToursPopoverFocusedOptions): Promise<void>;
-    async showIfPending(options: CoreUserToursOverlayFocusedOptions): Promise<void>;
-    async showIfPending(options: CoreUserToursOptions): Promise<void> {
+    async showIfPending(options: CoreUserToursFocusedOptions): Promise<void>;
+    async showIfPending(options: CoreUserToursBasicOptions | CoreUserToursFocusedOptions): Promise<void> {
         const isPending = await CoreUserTours.isPending(options.id);
 
         if (!isPending) {
@@ -103,9 +102,8 @@ export class CoreUserToursService {
      * @param options User Tour options.
      */
     protected async show(options: CoreUserToursBasicOptions): Promise<void>;
-    protected async show(options: CoreUserToursPopoverFocusedOptions): Promise<void>;
-    protected async show(options: CoreUserToursOverlayFocusedOptions): Promise<void>;
-    protected async show(options: CoreUserToursOptions): Promise<void> {
+    protected async show(options: CoreUserToursFocusedOptions): Promise<void>;
+    protected async show(options: CoreUserToursBasicOptions | CoreUserToursFocusedOptions): Promise<void> {
         const { delay, ...componentOptions } = options;
 
         await CoreUtils.wait(delay ?? 200);
@@ -148,14 +146,6 @@ export class CoreUserToursService {
 }
 
 export const CoreUserTours = makeSingleton(CoreUserToursService);
-
-/**
- * User Tour style.
- */
-export const enum CoreUserToursStyle {
-    Overlay = 'overlay',
-    Popover = 'popover',
-}
 
 /**
  * User Tour side.
@@ -217,18 +207,6 @@ export interface CoreUserToursFocusedOptions extends CoreUserToursBasicOptions {
      */
     focus: HTMLElement;
 
-}
-
-/**
- * Options to create a focused User Tour using the Popover style.
- */
-export interface CoreUserToursPopoverFocusedOptions extends CoreUserToursFocusedOptions {
-
-    /**
-     * User Tour style.
-     */
-    style?: CoreUserToursStyle.Popover;
-
     /**
      * Position relative to the focused element.
      */
@@ -240,23 +218,3 @@ export interface CoreUserToursPopoverFocusedOptions extends CoreUserToursFocused
     alignment: CoreUserToursAlignment;
 
 }
-
-/**
- * Options to create a focused User Tour using the Overlay style.
- */
-export interface CoreUserToursOverlayFocusedOptions extends CoreUserToursFocusedOptions {
-
-    /**
-     * User Tour style.
-     */
-    style: CoreUserToursStyle.Overlay;
-
-}
-
-/**
- * Options to create a User Tour.
- */
-export type CoreUserToursOptions =
-    CoreUserToursBasicOptions |
-    CoreUserToursPopoverFocusedOptions |
-    CoreUserToursOverlayFocusedOptions;
