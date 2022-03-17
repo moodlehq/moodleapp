@@ -58,7 +58,7 @@ describe('CoreFormatTextDirective', () => {
         );
 
         // Assert
-        const text = fixture.nativeElement.querySelector('core-format-text .core-format-text-content');
+        const text = fixture.nativeElement.querySelector('core-format-text');
         expect(text).not.toBeNull();
         expect(text.innerHTML).toEqual(sentence);
     });

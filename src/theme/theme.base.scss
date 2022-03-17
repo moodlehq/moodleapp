@@ -120,15 +120,15 @@ body {
 }
 
 // Correctly inherit ion-text-wrap onto labels.
-.item ion-label core-format-text .core-format-text-content > *,
-.fake-ion-item core-format-text .core-format-text-content > * {
+.item ion-label core-format-text > *,
+.fake-ion-item core-format-text > * {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.item.ion-text-wrap > ion-label core-format-text .core-format-text-content > *,
-.fake-ion-item.ion-text-wrap core-format-text .core-format-text-content > * {
+.item.ion-text-wrap > ion-label core-format-text > *,
+.fake-ion-item.ion-text-wrap core-format-text > * {
     white-space: normal;
     overflow: inherit;
 }
@@ -334,7 +334,7 @@ ion-button.button-solid {
     --box-shadow: none;
 }
 
-ion-button core-format-text .core-format-text-content {
+ion-button core-format-text {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -350,7 +350,7 @@ ion-button > * {
 
 ion-button.ion-text-wrap {
     white-space: normal;
-    core-format-text .core-format-text-content {
+    core-format-text {
         white-space: normal;
         display: contents;
     }
@@ -1514,5 +1514,38 @@ ion-header.no-title {
     }
     .spacer {
         flex-grow: 1;
+    }
+}
+
+
+// Loader animation.
+.core-loading {
+    position: relative;
+    background-color: var(--loader-background-color);
+    color: transparent; // Hide contents.
+    overflow: hidden;
+    display: var(--loader-display);
+    border-radius: var(--loader-radius);
+    @include core-transition(all, 200ms);
+    min-height: 8px;
+    min-width: 50px;
+
+    // Hide contents.
+    > * {
+        opacity: 0;
+        @include core-transition(opacity, 200ms);
+    }
+
+    &::after {
+        content: '';
+        position: absolute;
+        left: -45%;
+        height: 100%;
+        width: 45%;
+        background-image: linear-gradient(to left, rgba(var(--loader-shine), .05), rgba(var(--loader-shine), .3), rgba(var(--loader-shine), .6), rgba(var(--loader-shine), .3), rgba(var(--loader-shine), .05));
+        animation: loading 1s infinite;
+        display: block;
+        top: 0;
+        bottom: 0;
     }
 }

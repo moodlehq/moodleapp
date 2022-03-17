@@ -90,8 +90,8 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
 
     protected element: HTMLElement;
     protected emptyText = '';
-    protected contentSpan: HTMLElement;
-    protected domPromise?: CoreCancellablePromise<void>;
+    protected domPromises: CoreCancellablePromise<void>[] = [];
+    protected domElementPromise?: CoreCancellablePromise<void>;
 
     constructor(
         element: ElementRef,
@@ -101,18 +101,10 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
         CoreComponentsRegistry.register(element.nativeElement, this);
 
         this.element = element.nativeElement;
-        this.element.classList.add('core-format-text-loading'); // Hide contents until they're treated.
-
-        const placeholder = document.createElement('span');
-        placeholder.classList.add('core-format-text-loader');
-        this.element.appendChild(placeholder);
-
-        this.contentSpan = document.createElement('span');
-        this.contentSpan.classList.add('core-format-text-content');
-        this.element.appendChild(this.contentSpan);
+        this.element.classList.add('core-loading'); // Hide contents until they're treated.
 
         this.emptyText = this.hideIfEmpty ? '' : '&nbsp;';
-        this.contentSpan.innerHTML = this.emptyText;
+        this.element.innerHTML = this.emptyText;
 
         this.afterRender = new EventEmitter<void>();
 
@@ -134,14 +126,15 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.domPromise?.cancel();
+        this.domElementPromise?.cancel();
+        this.domPromises.forEach((promise) => { promise.cancel();});
     }
 
     /**
      * @inheritdoc
      */
     async ready(): Promise<void> {
-        if (!this.element.classList.contains('core-format-text-loading')) {
+        if (!this.element.classList.contains('core-loading')) {
             return;
         }
 
@@ -229,7 +222,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
      * Add magnifying glass icons to view adapted images at full size.
      */
     async addMagnifyingGlasses(): Promise<void> {
-        const imgs = Array.from(this.contentSpan.querySelectorAll('.core-adapted-img-container > img'));
+        const imgs = Array.from(this.element.querySelectorAll('.core-adapted-img-container > img'));
         if (!imgs.length) {
             return;
         }
@@ -311,7 +304,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
      */
     protected async finishRender(): Promise<void> {
         // Show the element again.
-        this.element.classList.remove('core-format-text-loading');
+        this.element.classList.remove('core-loading');
 
         await CoreUtils.nextTick();
 
@@ -324,7 +317,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
      */
     protected async formatAndRenderContents(): Promise<void> {
         if (!this.text) {
-            this.contentSpan.innerHTML = this.emptyText; // Remove current contents.
+            this.element.innerHTML = this.emptyText; // Remove current contents.
 
             await this.finishRender();
 
@@ -342,10 +335,10 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
         // Disable media adapt to correctly calculate the height.
         this.element.classList.add('core-disable-media-adapt');
 
-        this.contentSpan.innerHTML = ''; // Remove current contents.
+        this.element.innerHTML = ''; // Remove current contents.
 
         // Move the children to the current element to be able to calculate the height.
-        CoreDomUtils.moveChildren(result.div, this.contentSpan);
+        CoreDomUtils.moveChildren(result.div, this.element);
 
         await CoreUtils.nextTick();
 
@@ -362,7 +355,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
         if (result.options.filter) {
             // Let filters handle HTML. We do it here because we don't want them to block the render of the text.
             CoreFilterDelegate.handleHtml(
-                this.contentSpan,
+                this.element,
                 result.filters,
                 this.viewContainerRef,
                 result.options,
@@ -557,9 +550,10 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
      * @return The width of the element in pixels.
      */
     protected async getElementWidth(): Promise<number> {
-        this.domPromise = CoreDomUtils.waitToBeInDOM(this.element);
-
-        await this.domPromise;
+        if (!this.domElementPromise) {
+            this.domElementPromise = CoreDomUtils.waitToBeInDOM(this.element);
+        }
+        await this.domElementPromise;
 
         let width = this.element.getBoundingClientRect().width;
         if (!width) {
@@ -709,11 +703,14 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
                     newUrl += `&h=${privacyHash}`;
                 }
 
+                const domPromise = CoreDomUtils.waitToBeInDOM(iframe);
+                this.domPromises.push(domPromise);
+
+                await domPromise;
+
                 // Width and height are mandatory, we need to calculate them.
                 let width: string | number;
                 let height: string | number;
-
-                await CoreDomUtils.waitToBeInDOM(iframe, 5000);
 
                 if (iframe.width) {
                     width = iframe.width;
