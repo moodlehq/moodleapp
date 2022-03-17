@@ -177,8 +177,6 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
         this.editorElement.oninput = this.onChange.bind(this);
         this.editorElement.onkeydown = this.moveCursor.bind(this);
 
-        await CoreDomUtils.waitToBeVisible(this.editorElement);
-
         // Use paragraph on enter.
         document.execCommand('DefaultParagraphSeparator', false, 'p');
 
@@ -340,7 +338,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
                 return;
             }
 
-            if (this.isNullOrWhiteSpace(this.editorElement.innerText)) {
+            if (this.isNullOrWhiteSpace(this.editorElement.textContent)) {
                 this.clearText();
             } else {
                 // The textarea and the form control must receive the original URLs.
@@ -719,8 +717,17 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
 
     /**
      * Hide the toolbar in phone mode.
+     *
+     * @param event Event.
+     * @param force If true it will not check the target of the event.
      */
-    hideToolbar(event: Event): void {
+    hideToolbar(event: Event, force = false): void {
+        if (!force && event.target && this.element.contains(event.target as HTMLElement)) {
+            // Do not hide if clicked inside the editor area, except forced.
+
+            return;
+        }
+
         if (event.type == 'keyup' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
             return;
         }
