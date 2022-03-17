@@ -21,12 +21,12 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreApp } from '@services/app';
 import { CoreFile } from '@services/file';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreSites } from '@services/sites';
 import { CoreEvents } from '@singletons/events';
 import { makeSingleton } from '@singletons';
 import { APP_SCHEMA, CoreSharedFilesDBRecord, SHARED_FILES_TABLE_NAME } from './database/sharedfiles';
+import { CoreText } from '@singletons/text';
 
 /**
  * Service to share files with the app.
@@ -157,7 +157,7 @@ export class CoreSharedFilesProvider {
     async getSiteSharedFiles(siteId?: string, path?: string, mimetypes?: string[]): Promise<(FileEntry | DirectoryEntry)[]> {
         let pathToGet = this.getSiteSharedFilesDirPath(siteId);
         if (path) {
-            pathToGet = CoreTextUtils.concatenatePaths(pathToGet, path);
+            pathToGet = CoreText.concatenatePaths(pathToGet, path);
         }
 
         try {
@@ -240,7 +240,7 @@ export class CoreSharedFilesProvider {
         newName = newName || entry.name;
 
         const sharedFilesFolder = this.getSiteSharedFilesDirPath(siteId);
-        const newPath = CoreTextUtils.concatenatePaths(sharedFilesFolder, newName);
+        const newPath = CoreText.concatenatePaths(sharedFilesFolder, newName);
 
         // Create dir if it doesn't exist already.
         await CoreFile.createDir(sharedFilesFolder);

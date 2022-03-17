@@ -52,6 +52,7 @@ import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
 import { lazyMap, LazyMap } from '../utils/lazy-map';
 import { asyncInstance, AsyncInstance } from '../utils/async-instance';
+import { CoreText } from '@singletons/text';
 
 /*
  * Factory for handling downloading files and retrieve downloaded files.
@@ -811,7 +812,7 @@ export class CoreFilepoolProvider {
                 if (file.filepath && file.filepath !== '/') {
                     path = file.filepath.substring(1) + path;
                 }
-                path = CoreTextUtils.concatenatePaths(dirPath, path);
+                path = CoreText.concatenatePaths(dirPath, path);
             }
 
             if (prefetch) {
@@ -905,7 +906,7 @@ export class CoreFilepoolProvider {
                     if (file.filepath && file.filepath !== '/') {
                         path = file.filepath.substring(1) + path;
                     }
-                    path = CoreTextUtils.concatenatePaths(dirPath, path);
+                    path = CoreText.concatenatePaths(dirPath, path);
                 }
 
                 if (prefetch) {
@@ -2948,7 +2949,7 @@ export class CoreFilepoolProvider {
      * and store the result in the CSS file.
      *
      * @param siteId Site ID.
-     * @param fileUrl CSS file URL. If a local path is supplied the app will assume it's the path where to write the file.
+     * @param fileUrl CSS file URL. It must be the online URL, not a local path.
      * @param cssCode CSS code.
      * @param component The component to link the file to.
      * @param componentId An ID to use in conjunction with the component.
@@ -2967,19 +2968,24 @@ export class CoreFilepoolProvider {
         let updated = false;
 
         // Get the path of the CSS file. If it's a local file, assume it's the path where to write the file.
-        const filePath = CoreUrlUtils.isLocalFileUrl(fileUrl) ?
-            fileUrl :
-            await this.getFilePathByUrl(siteId, fileUrl);
+        const filePath = await this.getFilePathByUrl(siteId, fileUrl);
 
         // Download all files in the CSS.
         await Promise.all(urls.map(async (url) => {
+            if (!url.trim()) {
+                return; // Ignore empty URLs.
+            }
+
+            const absoluteUrl = CoreUrl.toAbsoluteURL(fileUrl, url);
+
             try {
-                let fileUrl = url;
-                if (!CoreUrlUtils.isLocalFileUrl(url)) {
+                let fileUrl = absoluteUrl;
+
+                if (!CoreUrlUtils.isLocalFileUrl(absoluteUrl)) {
                     // Not a local file, download it.
                     fileUrl = await this.downloadUrl(
                         siteId,
-                        url,
+                        absoluteUrl,
                         false,
                         component,
                         componentId,
@@ -2994,12 +3000,18 @@ export class CoreFilepoolProvider {
                 // Convert the URL so it works in mobile devices.
                 fileUrl = CoreFile.convertFileSrc(fileUrl);
 
-                if (fileUrl != url) {
+                if (fileUrl !== url) {
                     cssCode = cssCode.replace(new RegExp(CoreTextUtils.escapeForRegex(url), 'g'), fileUrl);
                     updated = true;
                 }
             } catch (error) {
                 this.logger.warn('Error treating file ', url, error);
+
+                // If the URL is relative, store the absolute URL.
+                if (absoluteUrl !== url) {
+                    cssCode = cssCode.replace(new RegExp(CoreTextUtils.escapeForRegex(url), 'g'), absoluteUrl);
+                    updated = true;
+                }
             }
         }));
 

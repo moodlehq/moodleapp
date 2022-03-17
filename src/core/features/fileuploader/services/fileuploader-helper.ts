@@ -35,6 +35,7 @@ import { CoreCaptureError } from '@classes/errors/captureerror';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreWSUploadFileResult } from '@services/ws';
 import { CoreSites } from '@services/sites';
+import { CoreText } from '@singletons/text';
 
 /**
  * Helper service to upload files.
@@ -158,7 +159,7 @@ export class CoreFileUploaderHelperProvider {
             // Get unique name for the copy.
             const newName = await CoreFile.getUniqueNameInFolder(CoreFileProvider.TMPFOLDER, name);
 
-            const filePath = CoreTextUtils.concatenatePaths(CoreFileProvider.TMPFOLDER, newName);
+            const filePath = CoreText.concatenatePaths(CoreFileProvider.TMPFOLDER, newName);
 
             // Write the data into the file.
             fileEntry = await CoreFile.writeFileDataInFile(
@@ -218,7 +219,7 @@ export class CoreFileUploaderHelperProvider {
         const newName = await CoreFile.getUniqueNameInFolder(CoreFileProvider.TMPFOLDER, fileName, defaultExt);
 
         // Now move or copy the file.
-        const destPath = CoreTextUtils.concatenatePaths(CoreFileProvider.TMPFOLDER, newName);
+        const destPath = CoreText.concatenatePaths(CoreFileProvider.TMPFOLDER, newName);
         if (shouldDelete) {
             return CoreFile.moveExternalFile(path, destPath);
         } else {

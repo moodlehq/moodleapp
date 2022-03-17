@@ -44,6 +44,7 @@ import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreCollapsibleItemDirective } from './collapsible-item';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { AsyncComponent } from '@classes/async-component';
+import { CoreText } from '@singletons/text';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -695,7 +696,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
             // Check if it's a Vimeo video. If it is, use the wsplayer script instead to make restricted videos work.
             const matches = src.match(/https?:\/\/player\.vimeo\.com\/video\/([0-9]+)([?&]+h=([a-zA-Z0-9]*))?/);
             if (matches && matches[1]) {
-                let newUrl = CoreTextUtils.concatenatePaths(site.getURL(), '/media/player/vimeo/wsplayer.php?video=') +
+                let newUrl = CoreText.concatenatePaths(site.getURL(), '/media/player/vimeo/wsplayer.php?video=') +
                     matches[1] + '&token=' + site.getToken();
 
                 let privacyHash: string | undefined | null = matches[3];

@@ -17,7 +17,6 @@ import { ActionSheetButton, IonRefresher } from '@ionic/angular';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
 import {
     CoreCourseCustomField,
     CoreCourseEnrolmentMethod,
@@ -38,6 +37,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreCoursesHelper, CoreCourseWithImageAndColor } from '@features/courses/services/courses-helper';
 import { Subscription } from 'rxjs';
 import { CoreColors } from '@singletons/colors';
+import { CoreText } from '@singletons/text';
 
 /**
  * Page that shows the summary of a course including buttons to enrol and other available options.
@@ -117,8 +117,8 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
         }
 
         const currentSiteUrl = CoreSites.getRequiredCurrentSite().getURL();
-        this.enrolUrl = CoreTextUtils.concatenatePaths(currentSiteUrl, 'enrol/index.php?id=' + this.courseId);
-        this.courseUrl = CoreTextUtils.concatenatePaths(currentSiteUrl, 'course/view.php?id=' + this.courseId);
+        this.enrolUrl = CoreText.concatenatePaths(currentSiteUrl, 'enrol/index.php?id=' + this.courseId);
+        this.courseUrl = CoreText.concatenatePaths(currentSiteUrl, 'course/view.php?id=' + this.courseId);
 
         await this.getCourse();
     }

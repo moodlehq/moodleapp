@@ -38,7 +38,6 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreLang } from '@services/lang';
 import { CoreSites } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWS } from '@services/ws';
 import { CoreEvents } from '@singletons/events';
@@ -85,6 +84,7 @@ import { CoreContentLinksModuleIndexHandler } from '@features/contentlinks/class
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreContentLinksModuleListHandler } from '@features/contentlinks/classes/module-list-handler';
 import { CoreObject } from '@singletons/object';
+import { CoreUrl } from '@singletons/url';
 
 const HANDLER_DISABLED = 'core_site_plugins_helper_handler_disabled';
 
@@ -164,11 +164,8 @@ export class CoreSitePluginsHelperProvider {
     ): Promise<string> {
         const site = await CoreSites.getSite(siteId);
 
-        // Get the absolute URL. If it's a relative URL, add the site URL to it.
-        let url = handlerSchema.styles?.url;
-        if (url && !CoreUrlUtils.isAbsoluteURL(url)) {
-            url = CoreTextUtils.concatenatePaths(site.getURL(), url);
-        }
+        // Make sure it's an absolute URL.
+        let url = handlerSchema.styles?.url ? CoreUrl.toAbsoluteURL(site.getURL(), handlerSchema.styles.url) : undefined;
 
         if (url && handlerSchema.styles?.version) {
             // Add the version to the URL to prevent getting a cached file.

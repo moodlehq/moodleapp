@@ -23,8 +23,8 @@ import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents, CoreEventSiteData } from '@singletons/events';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreText } from '@singletons/text';
 
 const ROOT_CACHE_KEY = 'mmaMessageOutputAirnotifier:';
 
@@ -214,7 +214,7 @@ export class AddonMessageOutputAirnotifierProvider {
                         handler: (data, resolve) => {
                             resolve(data[0]);
 
-                            const url = CoreTextUtils.concatenatePaths(
+                            const url = CoreText.concatenatePaths(
                                 site.getURL(),
                                 site.isVersionGreaterEqualThan('3.11') ?
                                     'message/output/airnotifier/checkconfiguration.php' :

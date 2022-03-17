@@ -19,6 +19,7 @@ import { CoreSites } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
+import { CoreText } from '@singletons/text';
 import { AddonModGlossaryOfflineEntryDBRecord, OFFLINE_ENTRIES_TABLE_NAME } from './database/glossary';
 import { AddonModGlossaryDiscardedEntry, AddonModGlossaryEntryOption } from './glossary';
 
@@ -213,7 +214,7 @@ export class AddonModGlossaryOfflineProvider {
         const siteFolderPath = CoreFile.getSiteFolder(site.getId());
         const folderPath = 'offlineglossary/' + glossaryId;
 
-        return CoreTextUtils.concatenatePaths(siteFolderPath, folderPath);
+        return CoreText.concatenatePaths(siteFolderPath, folderPath);
     }
 
     /**
@@ -228,7 +229,7 @@ export class AddonModGlossaryOfflineProvider {
     async getEntryFolder(glossaryId: number, concept: string, timeCreated: number, siteId?: string): Promise<string> {
         const folderPath = await this.getGlossaryFolder(glossaryId, siteId);
 
-        return CoreTextUtils.concatenatePaths(folderPath, 'newentry_' + concept + '_' + timeCreated);
+        return CoreText.concatenatePaths(folderPath, 'newentry_' + concept + '_' + timeCreated);
     }
 
     /**

@@ -40,6 +40,7 @@ import { CoreNavigator } from '@services/navigator';
 import { AddonCalendarFilter } from './calendar-helper';
 import { AddonCalendarSyncEvents, AddonCalendarSyncProvider } from './calendar-sync';
 import { CoreEvents } from '@singletons/events';
+import { CoreText } from '@singletons/text';
 
 const ROOT_CACHE_KEY = 'mmaCalendar:';
 
@@ -1218,7 +1219,7 @@ export class AddonCalendarProvider {
      */
     async getViewUrl(view: string, time?: number, courseId?: string, siteId?: string): Promise<string> {
         const site = await CoreSites.getSite(siteId);
-        let url = CoreTextUtils.concatenatePaths(site.getURL(), 'calendar/view.php?view=' + view);
+        let url = CoreText.concatenatePaths(site.getURL(), 'calendar/view.php?view=' + view);
 
         if (time) {
             url += '&time=' + time;

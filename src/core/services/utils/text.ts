@@ -269,24 +269,10 @@ export class CoreTextUtilsProvider {
      * @param leftPath Left path.
      * @param rightPath Right path.
      * @return Concatenated path.
+     * @deprecated since 4.0. Use CoreText instead.
      */
     concatenatePaths(leftPath: string, rightPath: string): string {
-        if (!leftPath) {
-            return rightPath;
-        } else if (!rightPath) {
-            return leftPath;
-        }
-
-        const lastCharLeft = leftPath.slice(-1);
-        const firstCharRight = rightPath.charAt(0);
-
-        if (lastCharLeft === '/' && firstCharRight === '/') {
-            return leftPath + rightPath.substring(1);
-        } else if (lastCharLeft !== '/' && firstCharRight !== '/') {
-            return leftPath + '/' + rightPath;
-        } else {
-            return leftPath + rightPath;
-        }
+        return CoreText.concatenatePaths(leftPath, rightPath);
     }
 
     /**
@@ -770,7 +756,7 @@ export class CoreTextUtilsProvider {
             return { text };
         }
 
-        const draftfileUrl = this.concatenatePaths(siteUrl, 'draftfile.php');
+        const draftfileUrl = CoreText.concatenatePaths(siteUrl, 'draftfile.php');
         const matches = text.match(new RegExp(this.escapeForRegex(draftfileUrl) + '[^\'" ]+', 'ig'));
 
         if (!matches || !matches.length) {
@@ -839,7 +825,7 @@ export class CoreTextUtilsProvider {
             return treatedText;
         }
 
-        const draftfileUrl = this.concatenatePaths(siteUrl, 'draftfile.php');
+        const draftfileUrl = CoreText.concatenatePaths(siteUrl, 'draftfile.php');
         const draftfileUrlRegexPrefix = this.escapeForRegex(draftfileUrl) + '/[^/]+/[^/]+/[^/]+/[^/]+/';
 
         files.forEach((file) => {

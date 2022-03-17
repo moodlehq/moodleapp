@@ -23,13 +23,13 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreCourse, CoreCourseModuleCompletionStatus, CoreCourseWSSection } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CONTENTS_PAGE_NAME } from '@features/course/course.module';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourseSummaryPage } from '../course-summary/course-summary';
 import { CoreCoursesHelper, CoreCourseWithImageAndColor } from '@features/courses/services/courses-helper';
 import { CoreColors } from '@singletons/colors';
+import { CoreText } from '@singletons/text';
 
 /**
  * Page that displays the list of courses the user is enrolled in.
@@ -149,7 +149,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
         }
 
         this.currentPagePath = CoreNavigator.getCurrentPath();
-        this.contentsTab.page = CoreTextUtils.concatenatePaths(this.currentPagePath, this.contentsTab.page);
+        this.contentsTab.page = CoreText.concatenatePaths(this.currentPagePath, this.contentsTab.page);
         this.contentsTab.pageParams = {
             course: this.course,
             sectionId: CoreNavigator.getRouteNumberParam('sectionId'),
@@ -207,7 +207,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
 
         // Create the full path.
         handlers.forEach((handler, index) => {
-            handler.data.page = CoreTextUtils.concatenatePaths(this.currentPagePath, handler.data.page);
+            handler.data.page = CoreText.concatenatePaths(this.currentPagePath, handler.data.page);
             handler.data.pageParams = handler.data.pageParams || {};
 
             // Check if this handler should be the first selected tab.

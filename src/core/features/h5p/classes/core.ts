@@ -24,6 +24,7 @@ import { CoreH5PContentValidator, CoreH5PSemantics } from './content-validator';
 import { Translate } from '@singletons';
 import { CoreH5PContentBeingSaved } from './storage';
 import { CoreH5PLibraryAddTo } from './validator';
+import { CoreText } from '@singletons/text';
 
 /**
  * Equivalent to H5P's H5PCore class.
@@ -148,7 +149,7 @@ export class CoreH5PCore {
             urls.push(libUrl + script);
         });
 
-        urls.push(CoreTextUtils.concatenatePaths(libUrl, 'moodle/js/h5p_overrides.js'));
+        urls.push(CoreText.concatenatePaths(libUrl, 'moodle/js/h5p_overrides.js'));
 
         return urls;
     }
@@ -456,7 +457,7 @@ export class CoreH5PCore {
 
             // Add URL prefix if not external.
             if (asset.path.indexOf('://') == -1 && assetsFolderPath) {
-                url = CoreTextUtils.concatenatePaths(assetsFolderPath, url);
+                url = CoreText.concatenatePaths(assetsFolderPath, url);
             }
 
             // Add version if set.

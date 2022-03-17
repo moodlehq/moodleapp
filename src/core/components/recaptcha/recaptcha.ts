@@ -16,8 +16,8 @@ import { Component, Input, OnInit } from '@angular/core';
 
 import { CoreLang } from '@services/lang';
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreText } from '@singletons/text';
 
 /**
  * Component that allows answering a recaptcha.
@@ -62,7 +62,7 @@ export class CoreRecaptchaComponent implements OnInit {
         // Open the recaptcha challenge in an InAppBrowser.
         // The app used to use an iframe for this, but the app can no longer access the iframe to create the required callbacks.
         // The app cannot render the recaptcha directly because it has problems with the local protocols and domains.
-        const src = CoreTextUtils.concatenatePaths(this.siteUrl!, 'webservice/recaptcha.php?lang=' + this.lang);
+        const src = CoreText.concatenatePaths(this.siteUrl!, 'webservice/recaptcha.php?lang=' + this.lang);
 
         const inAppBrowserWindow = CoreUtils.openInApp(src);
         if (!inAppBrowserWindow) {

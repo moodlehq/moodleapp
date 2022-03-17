@@ -14,8 +14,8 @@
 
 import { CoreFile, CoreFileProvider } from '@services/file';
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreText } from '@singletons/text';
 import { CoreH5PCore, CoreH5PLibraryBasicData } from './core';
 import { CoreH5PFramework } from './framework';
 import { CoreH5PMetadata } from './metadata';
@@ -199,8 +199,8 @@ export class CoreH5PStorage {
             await this.h5pCore.saveContent(content, folderName, fileUrl, siteId);
 
             // Save the content files in their right place in FS.
-            const destFolder = CoreTextUtils.concatenatePaths(CoreFileProvider.TMPFOLDER, 'h5p/' + folderName);
-            const contentPath = CoreTextUtils.concatenatePaths(destFolder, 'content');
+            const destFolder = CoreText.concatenatePaths(CoreFileProvider.TMPFOLDER, 'h5p/' + folderName);
+            const contentPath = CoreText.concatenatePaths(destFolder, 'content');
 
             try {
                 await this.h5pCore.h5pFS.saveContent(contentPath, folderName, siteId);
