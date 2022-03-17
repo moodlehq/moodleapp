@@ -141,6 +141,7 @@ export class CoreDomUtilsProvider {
 
         let interval: number | undefined;
 
+        // Mutations did not observe for visibility properties.
         return new CoreCancellablePromise<void>(
             async (resolve) => {
                 await domPromise;
@@ -160,6 +161,60 @@ export class CoreDomUtilsProvider {
             },
             () => {
                 domPromise.cancel();
+                window.clearInterval(interval);
+            },
+        );
+    }
+
+    /**
+     * Wait an element to be in dom and visible.
+     *
+     * @param element Element to wait.
+     * @param intersectionRatio Intersection ratio (From 0 to 1).
+     * @return Cancellable promise.
+     */
+    waitToBeInViewport(element: HTMLElement, intersectionRatio = 1): CoreCancellablePromise<void> {
+        const visiblePromise = CoreDomUtils.waitToBeVisible(element);
+
+        let intersectionObserver: IntersectionObserver;
+        let interval: number | undefined;
+
+        return new CoreCancellablePromise<void>(
+            async (resolve) => {
+                await visiblePromise;
+
+                if (CoreDomUtils.isElementInViewport(element, intersectionRatio)) {
+
+                    return resolve();
+                }
+
+                if ('IntersectionObserver' in window) {
+                    intersectionObserver = new IntersectionObserver((observerEntries) => {
+                        const isIntersecting = observerEntries
+                            .some((entry) => entry.isIntersecting && entry.intersectionRatio >= intersectionRatio);
+                        if (!isIntersecting) {
+                            return;
+                        }
+
+                        resolve();
+                        intersectionObserver?.disconnect();
+                    });
+
+                    intersectionObserver.observe(element);
+                } else {
+                    interval = window.setInterval(() => {
+                        if (!CoreDomUtils.isElementInViewport(element, intersectionRatio)) {
+                            return;
+                        }
+
+                        resolve();
+                        window.clearInterval(interval);
+                    }, 50);
+                }
+            },
+            () => {
+                visiblePromise.cancel();
+                intersectionObserver?.disconnect();
                 window.clearInterval(interval);
             },
         );
@@ -871,9 +926,20 @@ export class CoreDomUtilsProvider {
     }
 
     /**
+     * Check whether an element has been added to the DOM.
+     *
+     * @param element Element.
+     * @return True if element has been added to the DOM, false otherwise.
+     */
+    isElementInDom(element: HTMLElement): boolean {
+        return element.getRootNode({ composed: true }) === document;
+    }
+
+    /**
      * Check whether an element is visible or not.
      *
      * @param element Element.
+     * @return True if element is visible inside the DOM.
      */
     isElementVisible(element: HTMLElement): boolean {
         if (element.clientWidth === 0 || element.clientHeight === 0) {
@@ -885,7 +951,35 @@ export class CoreDomUtilsProvider {
             return false;
         }
 
-        return element.offsetParent !== null;
+        return CoreDomUtils.isElementInDom(element);
+    }
+
+    /**
+     * Check whether an element is intersecting the intersectionRatio in viewport.
+     *
+     * @param element
+     * @param intersectionRatio Intersection ratio (From 0 to 1).
+     * @return True if in viewport.
+     */
+    isElementInViewport(element: HTMLElement, intersectionRatio = 1): boolean {
+        const elementRectangle = element.getBoundingClientRect();
+
+        const elementArea = elementRectangle.width * elementRectangle.height;
+        if (elementArea == 0) {
+            return false;
+        }
+
+        const intersectionRectangle = {
+            top: Math.max(0, elementRectangle.top),
+            left: Math.max(0, elementRectangle.left),
+            bottom: Math.min(window.innerHeight, elementRectangle.bottom),
+            right: Math.min(window.innerWidth, elementRectangle.right),
+        };
+
+        const intersectionArea = (intersectionRectangle.right - intersectionRectangle.left) *
+            (intersectionRectangle.bottom - intersectionRectangle.top);
+
+        return intersectionArea / elementArea >= intersectionRatio;
     }
 
     /**

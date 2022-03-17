@@ -37,7 +37,7 @@ export class CoreOnAppearDirective implements OnInit, OnDestroy {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.visiblePromise = CoreDomUtils.waitToBeVisible(this.element);
+        this.visiblePromise = CoreDomUtils.waitToBeInViewport(this.element);
 
         await this.visiblePromise;
 
