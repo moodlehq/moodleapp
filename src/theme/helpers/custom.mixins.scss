@@ -1,10 +1,73 @@
 @use "sass:math" as math;
 
-/*
+/**
  * App custom mixins for SCSS
  * ----------------------------------------------------------------------------
  * Place here our custom mixins.
  */
+
+// Mixes a color with black to create its shade.
+// Default to bootstrap level 6.
+// --------------------------------------------------------------------------------------------
+@function get-color-shade-percent($color, $percent: 48%) {
+    @return mix(#000, $color, $percent);
+  }
+
+  // Mixes a color with white to create its tint.
+  // Default to bootstrap level -10.
+  // --------------------------------------------------------------------------------------------
+  @function get-color-tint-percent($color, $percent: 80%) {
+    @return mix(#fff, $color, $percent);
+  }
+
+  // Ionic Colors
+  // --------------------------------------------------
+  // Generates the color classes and variables based on the
+  // colors map
+
+  @mixin generate-color($color-name, $colors) {
+      $base: map-get($colors, $color-name);
+      $light: map-get($base, 'light');
+
+      @include generate-color-variants($color-name, $light);
+
+      body.dark {
+          $dark: map-get($base, 'dark');
+          $dark: mix($light, white, 80%) !default;
+          @include generate-color-variants($color-name, $dark);
+      }
+  }
+
+  @mixin generate-color-variants($color-name, $base) {
+      $contrast: get_contrast_color($base);
+      $shade: get-color-shade-percent($base);
+      $tint: get-color-tint-percent($base);
+
+      --#{$color-name}: #{$base};
+      --#{$color-name}-shade: #{$shade};
+      --#{$color-name}-tint: #{$tint};
+      --#{$color-name}-contrast: #{$contrast};
+
+      // Internal ionic use only.
+      --ion-color-#{$color-name}: var(--#{$color-name});
+      --ion-color-#{$color-name}-base: var(--ion-color-#{$color-name});
+      --ion-color-#{$color-name}-rgb: #{color-to-rgb-list($base)};
+      --ion-color-#{$color-name}-contrast: #{$contrast};
+      --ion-color-#{$color-name}-contrast-rgb: #{color-to-rgb-list($contrast)};
+      --ion-color-#{$color-name}-shade: #{$shade};
+      --ion-color-#{$color-name}-tint: #{$tint};
+
+      .ion-color-#{$color-name} {
+          --ion-color: var(--ion-color-#{$color-name});
+          --ion-color-base: var(--ion-color-#{$color-name}-base);
+          --ion-color-rgb: var(--ion-color-#{$color-name}-rgb);
+          --ion-color-contrast: var(--ion-color-#{$color-name}-contrast);
+          --ion-color-contrast-rgb: var(--ion-color-#{$color-name}-contrast-rgb);
+          --ion-color-shade: var(--ion-color-#{$color-name}-shade);
+          --ion-color-tint: var(--ion-color-#{$color-name}-tint);
+      }
+  }
+
 
  @mixin core-focus() {
     outline: none;
@@ -32,47 +95,24 @@
     }
 
     -webkit-transition: $transitions;
-    -moz-transition: $transitions;
-    -ms-transition: $transitions;
-    -o-transition: $transitions;
     transition: $transitions;
 }
 
-@mixin push-arrow-color($color: dedede, $flip-rtl: false) {
-    $svg: "<svg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2012%2020'><path%20d='M2,20l-2-2l8-8L0,2l2-2l10,10L2,20z'%20fill='%23#{$color}'/></svg>";
-    @if $flip-rtl != true {
-        @include multi-dir() {
-            background-image: url("data:image/svg+xml;charset=utf-8,#{$svg}");
-        }
-    } @else {
-        $flipped-svg: "<svg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2012%2020'><path%20transform='translate(20,%200)%20scale(-1,%201)'%20d='M2,20l-2-2l8-8L0,2l2-2l10,10L2,20z'%20fill='%23#{$color}'/></svg>";
+/**
+ * Same as item-push-svg-url but admits flip-rtl
+ */
+@mixin push-arrow-color($fill: 626262, $flip-rtl: false) {
+    $item-detail-push-svg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 20'><path d='M2,20l-2-2l8-8L0,2l2-2l10,10L2,20z' fill='#{$fill}'/></svg>";
 
-        @include ltr () {
-            background-image: url("data:image/svg+xml;charset=utf-8,#{$svg}");
-        }
-        @include rtl() {
-            background-image: url("data:image/svg+xml;charset=utf-8,#{$flipped-svg}");
-        }
-    }
+    @include svg-background-image($item-detail-push-svg, $flip-rtl);
 }
 
 @mixin border-start($px, $type: null, $color: null) {
-    border-left: $px $type $color;
-
-    @include rtl() {
-        border-left: unset;
-        border-right: $px $type $color;
-    }
+    @include property-horizontal(border, $px $type $color, null);
 }
 
-
 @mixin border-end($px, $type: null, $color: null) {
-    border-right: $px $type $color;
-
-    @include rtl() {
-        border-right: unset;
-        border-left: $px $type $color;
-    }
+    @include property-horizontal(border, null, $px $type $color);
 }
 
 @mixin safe-area-border-start($px, $type, $color) {
@@ -167,41 +207,11 @@
     }
 }
 
-@mixin core-as-items() {
-    .item-md.item-block > .item-inner {
-        border-bottom: 1px solid $list-md-border-color;
-    }
-
-    .item-ios.item-block > .item-inner {
-        border-bottom: $hairlines-width solid $list-ios-border-color;
-    }
-
-    &:last-child .item > .item-inner {
-        border-bottom: 0;
-    }
-}
-
-@mixin core-items() {
-    &.item-md.item-block > .item-inner {
-        border-bottom: 1px solid $list-md-border-color;
-    }
-
-    &.item-ios.item-block > .item-inner {
-        border-bottom: $hairlines-width solid $list-ios-border-color;
-    }
-
-    &.item-block:last-child > .item-inner {
-        border-bottom: 0;
-    }
-}
-
 @mixin darkmode() {
     $root: #{&};
 
-    @at-root body.dark {
-        #{$root} {
-            @content;
-        }
+    @at-root #{add-root-selector($root, "body.dark")} {
+        @content;
     }
 }
 

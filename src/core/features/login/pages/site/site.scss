@@ -38,9 +38,8 @@
         max-width: fit-content;
         width: auto;
         height: auto;
-        margin: 0 auto;
-        margin-left: 50%;
-        transform: translateX(-50%);
+        margin: 0 50% 0 auto; // LTR will be applied on transform.
+        @include transform(translate3d(-50%,0,0));
         object-fit: cover;
         object-position: 50% 50%;
     }

@@ -53,10 +53,10 @@
 
                     @include core-transition(transform, 500ms);
 
-                    @include push-arrow-color(626262, true);
+                    @include push-arrow-color(#626262);
 
                     @include darkmode() {
-                        @include push-arrow-color(ffffff, true);
+                        @include push-arrow-color(#ffffff);
                     }
                 }
             }

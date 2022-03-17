@@ -1,3 +1,5 @@
+@import "~theme/globals";
+
 :host .core-block-content ::ng-deep {
     .activitydate, .activityhead {
         text-align: center;
@@ -12,14 +14,8 @@
             margin-bottom: 1em;
 
             .head .date {
-                float: right;
+                @include float(end);
             }
         }
-    }
-}
-
-:host-context([dir=rtl]) .core-block-content ::ng-deep {
-    .unlist li .head .date {
-        float: left;
     }
 }
