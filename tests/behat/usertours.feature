@@ -30,8 +30,7 @@ Feature: User Tours work properly.
     Then I should not find "Expand to explore" in the app
     And I should not find "Explore your personal area" in the app
 
-    When I press "My courses" in the app
-    And I press "Course 1" in the app
+    When I enter the course "Course 1" in the app
     Then I should find "Find your way around" in the app
 
     When I press "Got it" in the app
