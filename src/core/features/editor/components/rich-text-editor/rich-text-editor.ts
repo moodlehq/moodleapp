@@ -107,6 +107,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
     protected languageChangedSubscription?: Subscription;
     protected resizeListener?: CoreEventObserver;
     protected domPromise?: CoreCancellablePromise<void>;
+    protected buttonsDomPromise?: CoreCancellablePromise<void>;
 
     rteEnabled = false;
     isPhone = false;
@@ -836,7 +837,10 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
 
         const length = await this.toolbarSlides.length();
 
-        await CoreDomUtils.waitToBeInDOM(this.toolbar.nativeElement, 5000);
+        // Cancel previous one, if any.
+        this.buttonsDomPromise?.cancel();
+        this.buttonsDomPromise = CoreDomUtils.waitToBeInDOM(this.toolbar.nativeElement);
+        await this.buttonsDomPromise;
 
         const width = this.toolbar.nativeElement.getBoundingClientRect().width;
 
@@ -1097,6 +1101,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
         this.labelObserver?.disconnect();
         this.resizeListener?.off();
         this.domPromise?.cancel();
+        this.buttonsDomPromise?.cancel();
     }
 
 }

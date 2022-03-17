@@ -97,10 +97,9 @@ export class CoreDomUtilsProvider {
      * Wait an element to be in dom of another element.
      *
      * @param element Element to wait.
-     * @param timeout If defined, timeout to wait before rejecting the promise.
      * @return Cancellable promise.
      */
-    waitToBeInDOM(element: HTMLElement, timeout?: number): CoreCancellablePromise<void> {
+    waitToBeInDOM(element: HTMLElement): CoreCancellablePromise<void> {
         const root = element.getRootNode({ composed: true });
 
         if (root === document) {
@@ -109,33 +108,24 @@ export class CoreDomUtilsProvider {
         }
 
         let observer: MutationObserver;
-        let observerTimeout: number | undefined;
 
         return new CoreCancellablePromise<void>(
-            (resolve, reject) => {
+            (resolve) => {
                 observer = new MutationObserver(() => {
                     const root = element.getRootNode({ composed: true });
 
-                    if (root === document) {
-                        observer?.disconnect();
-                        observerTimeout && clearTimeout(observerTimeout);
-                        resolve();
+                    if (root !== document) {
+                        return;
                     }
+
+                    observer?.disconnect();
+                    resolve();
                 });
-
-                if (timeout) {
-                    observerTimeout = window.setTimeout(() => {
-                        observer?.disconnect();
-
-                        reject(new Error('Waiting for DOM timeout reached'));
-                    }, timeout);
-                }
 
                 observer.observe(document.body, { subtree: true, childList: true });
             },
             () => {
                 observer?.disconnect();
-                observerTimeout && clearTimeout(observerTimeout);
             },
         );
     }
