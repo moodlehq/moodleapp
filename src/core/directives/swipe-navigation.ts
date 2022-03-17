@@ -86,7 +86,7 @@ export class CoreSwipeNavigationDirective implements AfterViewInit, OnDestroy {
 
         const items = source.getItems() ?? [];
 
-        if (items.length < 2) {
+        if (!this.enabled || items.length < 2) {
             return;
         }
 
