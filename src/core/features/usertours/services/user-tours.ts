@@ -21,6 +21,7 @@ import { CoreApp } from '@services/app';
 import { CoreUtils } from '@services/utils/utils';
 import { AngularFrameworkDelegate, makeSingleton } from '@singletons';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreSubscriptions } from '@singletons/subscriptions';
 import { CoreUserToursUserTourComponent } from '../components/user-tour/user-tour';
 import { APP_SCHEMA, CoreUserToursDBEntry, USER_TOURS_TABLE_NAME } from './database/user-tours';
 
@@ -106,8 +107,10 @@ export class CoreUserToursService {
     protected async show(options: CoreUserToursBasicOptions | CoreUserToursFocusedOptions): Promise<void> {
         const { delay, ...componentOptions } = options;
 
+        // Delay start.
         await CoreUtils.wait(delay ?? 200);
 
+        // Create tour.
         const container = document.querySelector('ion-app') ?? document.body;
         const element = await AngularFrameworkDelegate.attachViewToDom(
             container,
@@ -117,6 +120,22 @@ export class CoreUserToursService {
         const tour = CoreComponentsRegistry.require(element, CoreUserToursUserTourComponent);
 
         this.tours.push(tour);
+
+        // Handle present/dismiss lifecycle.
+        CoreSubscriptions.once(tour.beforeDismiss, () => {
+            const index = this.tours.indexOf(tour);
+
+            if (index === -1) {
+                return;
+            }
+
+            this.tours.splice(index, 1);
+
+            const nextTour = this.tours[0] as CoreUserToursUserTourComponent | undefined;
+
+            nextTour?.present().then(() => this.tourReadyCallbacks.get(nextTour)?.());
+        });
+
         this.tours.length > 1
             ? await new Promise<void>(resolve => this.tourReadyCallbacks.set(tour, resolve))
             : await tour.present();
@@ -128,19 +147,7 @@ export class CoreUserToursService {
      * @param acknowledge Whether to acknowledge that the user has seen this User Tour or not.
      */
     async dismiss(acknowledge: boolean = true): Promise<void> {
-        if (this.tours.length === 0) {
-            return;
-        }
-
-        const activeTour = this.tours.shift() as CoreUserToursUserTourComponent;
-        const nextTour = this.tours[0] as CoreUserToursUserTourComponent | undefined;
-
-        await Promise.all([
-            activeTour.dismiss(acknowledge),
-            nextTour?.present(),
-        ]);
-
-        nextTour && this.tourReadyCallbacks.get(nextTour)?.();
+        await this.tours[0]?.dismiss(acknowledge);
     }
 
 }

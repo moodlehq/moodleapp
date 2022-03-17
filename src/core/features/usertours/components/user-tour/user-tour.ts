@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, ElementRef, HostBinding, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, HostBinding, Input, Output, ViewChild } from '@angular/core';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreUserToursFocusLayout } from '@features/usertours/classes/focus-layout';
 import { CoreUserToursPopoverLayout } from '@features/usertours/classes/popover-layout';
@@ -42,6 +42,8 @@ export class CoreUserToursUserTourComponent implements AfterViewInit {
     @Input() focus?: HTMLElement;
     @Input() side?: CoreUserToursSide;
     @Input() alignment?: CoreUserToursAlignment;
+    @Output() beforeDismiss = new EventEmitter<void>();
+    @Output() afterDismiss = new EventEmitter<void>();
     @HostBinding('class.is-active') active = false;
     @HostBinding('class.is-popover') popover = false;
     @ViewChild('wrapper') wrapper?: ElementRef<HTMLElement>;
@@ -80,6 +82,13 @@ export class CoreUserToursUserTourComponent implements AfterViewInit {
 
         await CoreDomUtils.waitForImages(tour);
 
+        // Calculate focus styles or dismiss if the element is gone.
+        if (this.focus && !CoreDomUtils.isElementVisible(this.focus)) {
+            await this.dismiss(false);
+
+            return;
+        }
+
         this.calculateStyles();
 
         // Show tour.
@@ -94,11 +103,15 @@ export class CoreUserToursUserTourComponent implements AfterViewInit {
      * @param acknowledge Whether to confirm that the user has seen the User Tour.
      */
     async dismiss(acknowledge: boolean = true): Promise<void> {
+        this.beforeDismiss.emit();
+
         await this.playLeaveAnimation();
+        await Promise.all<unknown>([
+            AngularFrameworkDelegate.removeViewFromDom(this.container, this.element),
+            acknowledge && CoreUserTours.acknowledge(this.id),
+        ]);
 
-        AngularFrameworkDelegate.removeViewFromDom(this.container, this.element);
-
-        acknowledge && CoreUserTours.acknowledge(this.id);
+        this.afterDismiss.emit();
     }
 
     /**
