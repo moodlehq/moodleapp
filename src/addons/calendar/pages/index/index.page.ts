@@ -360,7 +360,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
      * Open calendar events settings.
      */
     openSettings(): void {
-        CoreNavigator.navigateToSitePath('/calendar/settings');
+        CoreNavigator.navigateToSitePath('/calendar/calendar-settings');
     }
 
     /**

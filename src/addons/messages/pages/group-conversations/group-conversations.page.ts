@@ -538,7 +538,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * Navigate to message settings.
      */
     gotoSettings(): void {
-        CoreNavigator.navigateToSitePath('../preferences');
+        CoreNavigator.navigateToSitePath('../message-settings');
     }
 
     /**

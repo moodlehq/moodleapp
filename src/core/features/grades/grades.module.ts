@@ -26,6 +26,7 @@ import { CoreGradesHelperProvider, GRADES_PAGE_NAME } from './services/grades-he
 import { CoreGradesCourseOptionHandler } from './services/handlers/course-option';
 import { CoreGradesOverviewLinkHandler } from './services/handlers/overview-link';
 import { CoreGradesUserHandler } from './services/handlers/user';
+import { CoreGradesReportLinkHandler } from './services/handlers/report-link';
 import { CoreGradesUserLinkHandler } from './services/handlers/user-link';
 
 export const CORE_GRADES_SERVICES: Type<unknown>[] = [
@@ -62,6 +63,7 @@ const courseIndexRoutes: Routes = [
             multi: true,
             useValue: () => {
                 CoreUserDelegate.registerHandler(CoreGradesUserHandler.instance);
+                CoreContentLinksDelegate.registerHandler(CoreGradesReportLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(CoreGradesUserLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(CoreGradesOverviewLinkHandler.instance);
                 CoreCourseOptionsDelegate.registerHandler(CoreGradesCourseOptionHandler.instance);

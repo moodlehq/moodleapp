@@ -28,7 +28,7 @@ function buildRoutes(injector: Injector): Routes {
             loadChildren: () => import('@addons/calendar/pages/index/index.module').then(m => m.AddonCalendarIndexPageModule),
         },
         {
-            path: 'settings',
+            path: 'calendar-settings',
             loadChildren: () =>
                 import('@addons/calendar/pages/settings/settings.module').then(m => m.AddonCalendarSettingsPageModule),
         },

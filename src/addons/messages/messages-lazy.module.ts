@@ -52,7 +52,7 @@ function buildRoutes(injector: Injector): Routes {
                 .then(m => m.AddonMessagesContactsPageModule),
         },
         {
-            path: 'preferences',
+            path: 'message-settings',
             loadChildren: () => import('./pages/settings/settings.module').then(m => m.AddonMessagesSettingsPageModule),
         },
         ...buildTabMainRoutes(injector, {
