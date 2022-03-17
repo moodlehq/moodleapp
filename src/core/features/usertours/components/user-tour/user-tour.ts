@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { BackButtonEvent } from '@ionic/core';
 import { AfterViewInit, Component, ElementRef, EventEmitter, HostBinding, Input, Output, ViewChild } from '@angular/core';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreUserToursFocusLayout } from '@features/usertours/classes/focus-layout';
@@ -22,6 +23,7 @@ import { AngularFrameworkDelegate } from '@singletons';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
 
 const ANIMATION_DURATION = 200;
+const USER_TOURS_BACK_BUTTON_PRIORITY = 100;
 
 /**
  * User Tour wrapper component.
@@ -54,6 +56,7 @@ export class CoreUserToursUserTourComponent implements AfterViewInit {
     private element: HTMLElement;
     private wrapperTransform = '';
     private wrapperElement = new CorePromisedValue<HTMLElement>();
+    private backButtonListener?: (event: BackButtonEvent) => void;
 
     constructor({ nativeElement: element }: ElementRef<HTMLElement>) {
         this.element = element;
@@ -94,6 +97,16 @@ export class CoreUserToursUserTourComponent implements AfterViewInit {
         // Show tour.
         this.active = true;
 
+        document.addEventListener(
+            'ionBackButton',
+            this.backButtonListener = ({ detail }) => detail.register(
+                USER_TOURS_BACK_BUTTON_PRIORITY,
+                () => {
+                    // Silence back button.
+                },
+            ),
+        );
+
         await this.playEnterAnimation();
     }
 
@@ -111,6 +124,7 @@ export class CoreUserToursUserTourComponent implements AfterViewInit {
             acknowledge && CoreUserTours.acknowledge(this.id),
         ]);
 
+        this.backButtonListener && document.removeEventListener('ionBackButton', this.backButtonListener);
         this.afterDismiss.emit();
     }
 
