@@ -30,6 +30,7 @@ import { makeSingleton } from '@singletons';
 import { CoreEvents, CoreEventSiteData } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSite } from '@classes/site';
+import { CoreCourseHelper } from '@features/course/services/course-helper';
 
 /**
  * Helper service to provide filter functionalities.
@@ -159,7 +160,7 @@ export class CoreFilterHelperProvider {
         sections.forEach((section) => {
             if (section.modules) {
                 section.modules.forEach((module) => {
-                    if (module.uservisible) {
+                    if (CoreCourseHelper.canUserViewModule(module, section)) {
                         contexts.push({
                             contextlevel: 'module',
                             instanceid: module.id,

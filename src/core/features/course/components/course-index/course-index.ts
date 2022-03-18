@@ -18,7 +18,7 @@ import {
     CoreCourseModuleCompletionTracking,
     CoreCourseProvider,
 } from '@features/course/services/course';
-import { CoreCourseSection } from '@features/course/services/course-helper';
+import { CoreCourseHelper, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { IonContent } from '@ionic/angular';
@@ -77,11 +77,10 @@ export class CoreCourseCourseIndexComponent implements OnInit {
 
         // Clone sections to add information.
         this.sectionsToRender = this.sections
-            .filter((section) => !section.hiddenbynumsections &&
-                section.id != CoreCourseProvider.STEALTH_MODULES_SECTION_ID)
+            .filter((section) => !CoreCourseHelper.isSectionStealth(section))
             .map((section) => {
                 const modules = section.modules
-                    .filter((module) => module.visibleoncoursepage !== 0 && !module.noviewlink)
+                    .filter((module) => !CoreCourseHelper.isModuleStealth(module, section) && !module.noviewlink)
                     .map((module) => {
                         const completionStatus = !completionEnabled || module.completiondata === undefined ||
                         module.completiondata.tracking == CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_NONE
@@ -93,7 +92,7 @@ export class CoreCourseCourseIndexComponent implements OnInit {
                             name: module.name,
                             course: module.course,
                             visible: !!module.visible,
-                            uservisible: !!module.uservisible,
+                            uservisible: CoreCourseHelper.canUserViewModule(module, section),
                             completionStatus,
                         };
                     });
@@ -103,7 +102,7 @@ export class CoreCourseCourseIndexComponent implements OnInit {
                     name: section.name,
                     availabilityinfo: !!section.availabilityinfo,
                     visible: !!section.visible,
-                    uservisible: section.uservisible !== false,
+                    uservisible: CoreCourseHelper.canUserViewSection(section),
                     expanded: section.id === this.selectedId,
                     highlighted: currentSectionData.section.id === section.id,
                     hasVisibleModules: modules.length > 0,

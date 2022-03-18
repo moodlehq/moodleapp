@@ -33,7 +33,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreWSFile, CoreWSExternalWarning } from '@services/ws';
 import { CHECK_UPDATES_TIMES_TABLE, CoreCourseCheckUpdatesDBRecord } from './database/module-prefetch';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
-import { CoreCourseModuleData } from './course-helper';
+import { CoreCourseHelper, CoreCourseModuleData } from './course-helper';
 
 const ROOT_CACHE_KEY = 'mmCourse:';
 
@@ -956,7 +956,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * @return Promise resolved with true if downloadable, false otherwise.
      */
     async isModuleDownloadable(module: CoreCourseAnyModuleData, courseId: number): Promise<boolean> {
-        if ('uservisible' in module && module.uservisible === false) {
+        if ('uservisible' in module && !CoreCourseHelper.canUserViewModule(module)) {
             // Module isn't visible by the user, cannot be downloaded.
             return false;
         }

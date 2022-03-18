@@ -34,6 +34,7 @@ import {
     CoreCourseProvider,
 } from '@features/course/services/course';
 import {
+    CoreCourseHelper,
     CoreCourseSection,
 } from '@features/course/services/course-helper';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
@@ -444,7 +445,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                             await CoreCourseModuleDelegate.getModuleDataFor(module.modname, module, this.course.id);
         }
 
-        if (module.uservisible !== false && module.handlerData?.action) {
+        if (CoreCourseHelper.canUserViewModule(module, section) && module.handlerData?.action) {
             module.handlerData.action(data.event, module, module.course);
         }
 
@@ -574,7 +575,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                 continue;
             }
 
-            modulesLoaded += sections[i].modules.reduce((total, module) => module.visibleoncoursepage !== 0 ? total + 1 : total, 0);
+            modulesLoaded += sections[i].modules.reduce((total, module) =>
+                !CoreCourseHelper.isModuleStealth(module, sections[i]) ? total + 1 : total, 0);
 
             if (modulesLoaded >= CoreCourseFormatComponent.LOAD_MORE_ACTIVITIES) {
                 break;
@@ -632,8 +634,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @return Whether the section can be viewed.
      */
     canViewSection(section: CoreCourseSection): boolean {
-        return section.uservisible !== false && !section.hiddenbynumsections &&
-                section.id != CoreCourseProvider.STEALTH_MODULES_SECTION_ID;
+        return CoreCourseHelper.canUserViewSection(section) && !CoreCourseHelper.isSectionStealth(section);
     }
 
 }

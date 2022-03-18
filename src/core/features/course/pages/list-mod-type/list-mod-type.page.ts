@@ -75,7 +75,7 @@ export class CoreCourseListModTypePage implements OnInit {
                 }
 
                 section.modules = section.modules.filter((mod) => {
-                    if (mod.uservisible === false || !CoreCourse.moduleHasView(mod)) {
+                    if (!CoreCourseHelper.canUserViewModule(mod, section) || !CoreCourse.moduleHasView(mod)) {
                         // Ignore this module.
                         return false;
                     }
