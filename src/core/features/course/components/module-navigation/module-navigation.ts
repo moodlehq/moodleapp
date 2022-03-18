@@ -177,7 +177,7 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
      * @return Wether the module is available to the user or not.
      */
     protected async isModuleAvailable(module: CoreCourseModuleData): Promise<boolean> {
-        return CoreCourse.instance.moduleHasView(module);
+        return !CoreCourseHelper.isModuleStealth(module) && CoreCourse.instance.moduleHasView(module);
     }
 
     /**
