@@ -985,6 +985,18 @@ ion-chip {
             color: var(--ion-color-base);
         }
     }
+
+    &.ion-color {
+        &.ion-color-light,
+        &.ion-color-medium,
+        &.ion-color-dark,
+        &.ion-color-secondary {
+            color: var(--gray-900);
+            &.chip-outline {
+                color: var(--text-color);
+            }
+        }
+    }
 }
 
 ion-searchbar {
