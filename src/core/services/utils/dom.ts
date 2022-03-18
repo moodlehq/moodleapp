@@ -221,6 +221,53 @@ export class CoreDomUtilsProvider {
     }
 
     /**
+     * Runs a function when an element has been slotted.
+     *
+     * @param element HTML Element inside an ion-content to wait for slot.
+     * @param callback Function to execute on resize.
+     */
+    onElementSlot(element: HTMLElement, callback: (ev?: Event) => void): void {
+        if (!element.slot) {
+            // Element not declared to be slotted.
+            return;
+        }
+
+        const slotName = element.slot;
+        if (element.assignedSlot?.name === slotName) {
+            // Slot already assigned.
+            callback();
+
+            return;
+        }
+
+        const content = element.closest('ion-content');
+        if (!content || !content.shadowRoot) {
+            // Cannot find content.
+            return;
+        }
+
+        const slots = content.shadowRoot.querySelectorAll('slot');
+        const slot = Array.from(slots).find((slot) => slot.name === slotName);
+
+        if (!slot) {
+            // Slot not found.
+            return;
+        }
+
+        const slotListener = () => {
+            if (element.assignedSlot?.name !== slotName) {
+                return;
+            }
+
+            callback();
+            // It would happen only once.
+            slot.removeEventListener('slotchange', slotListener);
+        };
+
+        slot.addEventListener('slotchange', slotListener);;
+    }
+
+    /**
      * Window resize is widely checked and may have many performance issues, debouce usage is needed to avoid calling it too much.
      * This function helps setting up the debounce feature and remove listener easily.
      *
