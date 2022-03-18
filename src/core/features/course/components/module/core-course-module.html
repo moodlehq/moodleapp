@@ -35,10 +35,10 @@
                     </ion-chip>
 
                     <!-- Hidden badges -->
-                    <ion-badge color="warning" *ngIf="module.visible === 0">
+                    <ion-badge color="warning" *ngIf="module.visible === 0" class="ion-text-wrap">
                         {{ 'core.course.hiddenfromstudents' | translate }}
                     </ion-badge>
-                    <ion-badge color="warning" *ngIf="module.visible !== 0 && module.isStealth">
+                    <ion-badge color="warning" *ngIf="module.visible !== 0 && module.isStealth" class="ion-text-wrap">
                         {{ 'core.course.hiddenoncoursepage' | translate }}
                     </ion-badge>
                 </div>
