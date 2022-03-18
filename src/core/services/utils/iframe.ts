@@ -51,7 +51,7 @@ export class CoreIframeUtilsProvider {
     protected waitAutoLoginDefer?: PromiseDefer<void>;
 
     constructor() {
-        this.logger = CoreLogger.getInstance('CoreUtilsProvider');
+        this.logger = CoreLogger.getInstance('CoreIframeUtilsProvider');
     }
 
     /**
@@ -237,7 +237,7 @@ export class CoreIframeUtilsProvider {
             contentDocument = 'contentDocument' in element && element.contentDocument
                 ? element.contentDocument
                 : contentWindow && contentWindow.document;
-        } catch (ex) {
+        } catch {
             // Ignore errors.
         }
 
@@ -250,7 +250,7 @@ export class CoreIframeUtilsProvider {
             // It's probably an <embed>. Try to get the window and the document.
             try {
                 contentDocument = element.getSVGDocument();
-            } catch (ex) {
+            } catch {
                 // Ignore errors.
             }
 
@@ -310,10 +310,10 @@ export class CoreIframeUtilsProvider {
             };
         }
 
-        if (contentDocument) {
+        if (contentDocument.body) {
             // Search sub frames.
             CoreIframeUtilsProvider.FRAME_TAGS.forEach((tag) => {
-                const elements = Array.from(contentDocument.querySelectorAll(tag));
+                const elements = Array.from(contentDocument.body.querySelectorAll(tag));
                 elements.forEach((subElement: CoreFrameElement) => {
                     this.treatFrame(subElement, true);
                 });
@@ -333,6 +333,8 @@ export class CoreIframeUtilsProvider {
             return;
         }
 
+        element.classList.add('core-loading');
+
         const treatElement = (sendResizeEvent: boolean = false) => {
             this.checkOnlineFrameInOffline(element, isSubframe);
 
@@ -348,9 +350,12 @@ export class CoreIframeUtilsProvider {
                 this.treatFrameLinks(element, document);
             }
 
+            // Iframe content has been loaded.
             // Send a resize events to the iframe so it calculates the right size if needed.
             if (window && sendResizeEvent) {
-                setTimeout(() => window.dispatchEvent(new Event('resize')), 1000);
+                element.classList.remove('core-loading');
+
+                setTimeout(() => window.dispatchEvent && window.dispatchEvent(new Event('resize')), 1000);
             }
         };
 

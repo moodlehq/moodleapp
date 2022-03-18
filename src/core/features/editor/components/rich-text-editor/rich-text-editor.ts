@@ -107,6 +107,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
     protected languageChangedSubscription?: Subscription;
     protected resizeListener?: CoreEventObserver;
     protected domPromise?: CoreCancellablePromise<void>;
+    protected buttonsDomPromise?: CoreCancellablePromise<void>;
 
     rteEnabled = false;
     isPhone = false;
@@ -175,8 +176,6 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
         this.editorElement.onpaste = this.onChange.bind(this);
         this.editorElement.oninput = this.onChange.bind(this);
         this.editorElement.onkeydown = this.moveCursor.bind(this);
-
-        await CoreDomUtils.waitToBeVisible(this.editorElement);
 
         // Use paragraph on enter.
         document.execCommand('DefaultParagraphSeparator', false, 'p');
@@ -339,7 +338,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
                 return;
             }
 
-            if (this.isNullOrWhiteSpace(this.editorElement.innerText)) {
+            if (this.isNullOrWhiteSpace(this.editorElement.textContent)) {
                 this.clearText();
             } else {
                 // The textarea and the form control must receive the original URLs.
@@ -718,8 +717,17 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
 
     /**
      * Hide the toolbar in phone mode.
+     *
+     * @param event Event.
+     * @param force If true it will not check the target of the event.
      */
-    hideToolbar(event: Event): void {
+    hideToolbar(event: Event, force = false): void {
+        if (!force && event.target && this.element.contains(event.target as HTMLElement)) {
+            // Do not hide if clicked inside the editor area, except forced.
+
+            return;
+        }
+
         if (event.type == 'keyup' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
             return;
         }
@@ -836,7 +844,10 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
 
         const length = await this.toolbarSlides.length();
 
-        await CoreDomUtils.waitToBeInDOM(this.toolbar.nativeElement, 5000);
+        // Cancel previous one, if any.
+        this.buttonsDomPromise?.cancel();
+        this.buttonsDomPromise = CoreDomUtils.waitToBeInDOM(this.toolbar.nativeElement);
+        await this.buttonsDomPromise;
 
         const width = this.toolbar.nativeElement.getBoundingClientRect().width;
 
@@ -1097,6 +1108,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
         this.labelObserver?.disconnect();
         this.resizeListener?.off();
         this.domPromise?.cancel();
+        this.buttonsDomPromise?.cancel();
     }
 
 }

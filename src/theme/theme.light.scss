@@ -85,6 +85,11 @@
 
     --contrast-background: white;
 
+    --loader-background-color: rgba(0, 0, 0, .1);
+    --loader-shine: 251, 251, 251;
+    --loader-radius: var(--small-radius);
+    --loader-display: block;
+
     --drop-shadow-color: 0, 0, 0, 0.5;
     --drop-shadow-top: 0px 2px 5px rgba(var(--drop-shadow-color));
     --drop-shadow-bottom: 0px -2px 5px rgba(var(--drop-shadow-color));

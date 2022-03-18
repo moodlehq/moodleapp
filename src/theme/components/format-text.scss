@@ -5,59 +5,25 @@
 core-format-text {
     --core-format-text-background: var(--background, var(--ion-item-background));
     --core-format-text-viewer-icon-background: rgba(255, 255, 255, .5);
-    --core-format-text-loader-shine: 251,251,251;
 }
 
 body.dark core-format-text {
     --core-format-text-viewer-icon-background: rgba(0, 0, 0, .5);
-    --core-format-text-loader-shine: 90,90,90;
 }
 
 core-format-text {
     display: contents;
+    user-select: text;
+    word-break: break-word;
+    word-wrap: break-word;
 
-    .core-format-text-loader {
-        opacity: 0;
-        @include core-transition(opacity, 200ms);
-        display: contents;
-    }
-
-    &.core-format-text-loading {
-        position: relative;
+    @include core-transition(background-color color, 200ms);
+    &.core-loading {
         width: 100%;
-        height: 100%;
-        opacity: 1;
-        background-color: rgba(0,0,0,.1);
-        overflow: hidden;
-        display: block;
-        border-radius: var(--small-radius);
-
-        .core-format-text-loader {
-            position: absolute;
-            left: -45%;
-            height: 100%;
-            width: 45%;
-            background-image: -webkit-linear-gradient(to left, rgba(var(--core-format-text-loader-shine), .05), rgba(var(--core-format-text-loader-shine), .3), rgba(var(--core-format-text-loader-shine), .6), rgba(var(--core-format-text-loader-shine), .3), rgba(var(--core-format-text-loader-shine), .05));
-            background-image: linear-gradient(to left, rgba(var(--core-format-text-loader-shine), .05), rgba(var(--core-format-text-loader-shine), .3), rgba(var(--core-format-text-loader-shine), .6), rgba(var(--core-format-text-loader-shine), .3), rgba(var(--core-format-text-loader-shine), .05));
-            animation: loading 1s infinite;
-            opacity: 1;
-            display: inline;
-        }
-
-        .core-format-text-content {
+        &:empty:before {
+            content: 'E'; // Set a minimum empty text to have a minimum height of one line.
             opacity: 0;
-            display: inline;
         }
-    }
-
-    .core-format-text-content {
-        opacity: 1;
-        @include core-transition(opacity, 200ms);
-
-        display: contents;
-        user-select: text;
-        word-break: break-word;
-        word-wrap: break-word;
     }
 
     &.collapsible-item {
@@ -66,16 +32,11 @@ core-format-text {
         cursor: pointer;
         pointer-events: auto;
 
-        .core-format-text-content {
-            display: block;
-        }
-
         &.collapsible-enabled {
-            .core-format-text-content {
-                display: block;
-                max-height: none;
-            }
-            &.collapsible-collapsed .core-format-text-content {
+            display: block;
+            max-height: none;
+
+            &.collapsible-collapsed {
                 overflow: hidden;
             }
         }
@@ -97,7 +58,7 @@ core-format-text {
     }
     &.collapsible-item.inline {
         display: inline-block;
-        &.collapsible-enabled .core-format-text-content {
+        &.collapsible-enabled {
            display: inline-block;
         }
     }
@@ -141,7 +102,7 @@ core-format-text {
     }
 
     // Disable clicks in links inside MathJax equations.
-    .core-format-text-content .filter_mathjaxloader_equation .MathJax_Preview a {
+    .filter_mathjaxloader_equation .MathJax_Preview a {
         pointer-events: none;
     }
 
@@ -243,7 +204,7 @@ core-format-text {
 
 }
 
-core-format-text .core-format-text-content,
+core-format-text,
 core-rich-text-editor .core-rte-editor {
     @include core-headings();
 
@@ -657,13 +618,9 @@ core-rich-text-editor .core-rte-editor {
 
 // h1 is too big and ugly, reduce size when loading.
 ion-header.ios h1 core-format-text {
-    &.core-format-text-loading {
+    &.core-loading {
         max-height: 30px;
         margin-top: 10px;
-    }
-    &.core-format-text-content {
-        display: block;
-        margin-top: -10px;
     }
 }
 
