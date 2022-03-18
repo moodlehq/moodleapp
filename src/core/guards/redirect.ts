@@ -55,10 +55,14 @@ export class CoreRedirectGuard implements CanLoad, CanActivate {
         // Redirect to site path.
         if (redirect.siteId && redirect.siteId !== CoreConstants.NO_SITE_ID) {
             const redirectData: CoreRedirectPayload = {
-                redirectPath: redirect.redirectPath,
-                redirectOptions: redirect.redirectOptions,
                 urlToOpen: redirect.urlToOpen,
             };
+
+            if (redirect.redirectPath !== 'main') {
+                // Only pass redirect path if the page to load isn't the main menu.
+                redirectData.redirectPath = redirect.redirectPath;
+                redirectData.redirectOptions = redirect.redirectOptions;
+            }
 
             const loggedIn = await CoreSites.loadSite(
                 redirect.siteId,
