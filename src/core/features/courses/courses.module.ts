@@ -50,17 +50,10 @@ const mainMenuHomeChildrenRoutes: Routes = [
     },
 ];
 
-const mainMenuHomeSiblingRoutes: Routes = [
-    {
-        path: 'courses',
-        loadChildren: () => import('./courses-lazy.module').then(m => m.CoreCoursesLazyModule),
-    },
-];
-
-const mainMenuTabRoutes: Routes = [
+const routes: Routes = [
     {
         path: CoreCoursesMyCoursesMainMenuHandlerService.PAGE_NAME,
-        loadChildren: () => import('./pages/my/my.module').then(m => m.CoreCoursesMyCoursesPageModule),
+        loadChildren: () => import('./courses-lazy.module').then(m => m.CoreCoursesLazyModule),
     },
 ];
 
@@ -68,10 +61,9 @@ const mainMenuTabRoutes: Routes = [
     imports: [
         CoreMainMenuHomeRoutingModule.forChild({
             children: mainMenuHomeChildrenRoutes,
-            siblings: mainMenuHomeSiblingRoutes,
         }),
-        CoreMainMenuRoutingModule.forChild({ children: mainMenuTabRoutes }),
-        CoreMainMenuTabRoutingModule.forChild(mainMenuTabRoutes),
+        CoreMainMenuRoutingModule.forChild({ children: routes }),
+        CoreMainMenuTabRoutingModule.forChild(routes),
     ],
     exports: [CoreMainMenuRoutingModule],
     providers: [
