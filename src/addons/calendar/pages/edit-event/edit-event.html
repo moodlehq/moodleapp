@@ -183,7 +183,7 @@
                 </ion-item>
                 <ion-item class="ion-text-wrap">
                     <ion-label position="stacked">
-                        <p>{{ 'addon.calendar.repeatweeksl' | translate }}</p>
+                        <p class="item-heading">{{ 'addon.calendar.repeatweeksl' | translate }}</p>
                     </ion-label>
                     <ion-input type="number" name="repeats" formControlName="repeats" [disabled]="!form.controls.repeat.value">
                     </ion-input>
@@ -231,23 +231,17 @@
                 <ion-input type="text" name="location" [placeholder]="'core.location' | translate" formControlName="location">
                 </ion-input>
             </ion-item>
-
-            <ion-item>
-                <ion-label>
-                    <ion-row>
-                        <ion-col *ngIf="hasOffline && eventId && eventId < 0">
-                            <ion-button expand="block" fill="outline" (click)="discard()">
-                                {{ 'core.discard' | translate }}
-                            </ion-button>
-                        </ion-col>
-                        <ion-col>
-                            <ion-button expand="block" (click)="submit()" [disabled]="!form.valid" type="submit">
-                                {{ 'core.save' | translate }}
-                            </ion-button>
-                        </ion-col>
-                    </ion-row>
-                </ion-label>
-            </ion-item>
         </form>
+        <div collapsible-footer appearOnBottom *ngIf="loaded && !error" slot="fixed">
+            <div class="list-item-limited-width adaptable-buttons-row">
+                <ion-button *ngIf="hasOffline && eventId && eventId < 0" expand="block" fill="outline" (click)="discard()"
+                    class="ion-margin ion-text-wrap">
+                    {{ 'core.discard' | translate }}
+                </ion-button>
+                <ion-button expand="block" (click)="submit()" [disabled]="!form.valid" type="submit" class="ion-margin ion-text-wrap">
+                    {{ 'core.save' | translate }}
+                </ion-button>
+            </div>
+        </div>
     </core-loading>
 </ion-content>

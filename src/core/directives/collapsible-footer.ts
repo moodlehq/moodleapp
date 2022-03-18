@@ -146,7 +146,8 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
                     ? this.finalHeight
                     : this.initialHeight;
 
-                this.setBarHeight(newHeight);            }
+                this.setBarHeight(newHeight);
+            }
         });
 
         this.resizeListener = CoreDomUtils.onWindowResize(() => {
