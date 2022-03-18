@@ -1266,6 +1266,13 @@ export class CoreCourseProvider {
         course: CoreCourseAnyCourseData | { id: number },
         navOptions?: CoreNavigationOptions,
     ): Promise<void> {
+        if (course.id === CoreSites.getCurrentSite()?.getSiteHomeId()) {
+            // Open site home.
+            await CoreNavigator.navigate('/main/home/site', navOptions);
+
+            return;
+        }
+
         const loading = await CoreDomUtils.showModalLoading();
 
         // Wait for site plugins to be fetched.
