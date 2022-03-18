@@ -27,6 +27,7 @@ import { CoreContentLinksHelper } from '@features/contentlinks/services/contentl
 import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { DomSanitizer } from '@singletons';
 import { CoreFilepool } from '@services/filepool';
+import { CoreUrl } from '@singletons/url';
 
 /**
  * Directive to open a link in external browser or in the app.
@@ -209,15 +210,8 @@ export class CoreLinkDirective implements OnInit {
 
         const currentSite = CoreSites.getRequiredCurrentSite();
 
-        // Check if URL does not have any protocol, so it's a relative URL.
-        if (!CoreUrlUtils.isAbsoluteURL(href)) {
-            // Add the site URL at the begining.
-            if (href.charAt(0) == '/') {
-                href = currentSite.getURL() + href;
-            } else {
-                href = currentSite.getURL() + '/' + href;
-            }
-        }
+        // Make sure it's an absolute URL.
+        href = CoreUrl.toAbsoluteURL(currentSite.getURL(), href);
 
         if (currentSite.isSitePluginFileUrl(href)) {
             // It's a site file. Check if it's being downloaded right now.

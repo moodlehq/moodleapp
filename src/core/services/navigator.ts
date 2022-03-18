@@ -182,7 +182,9 @@ export class CoreNavigatorService {
      * @return Whether navigation suceeded.
      */
     async navigateToSiteHome(options: Omit<CoreNavigationOptions, 'reset'> & { siteId?: string } = {}): Promise<boolean> {
-        const landingPagePath = this.getLandingTabPage();
+        const siteId = options.siteId ?? CoreSites.getCurrentSiteId();
+        const landingPagePath = CoreSites.isLoggedIn() && CoreSites.getCurrentSiteId() === siteId ?
+            this.getLandingTabPage() : 'main';
 
         return this.navigateToSitePath(landingPagePath, {
             ...options,

@@ -88,7 +88,7 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
     }
 
     /**
-     * View has been initialized.
+     * @inheritdoc
      */
     async ngAfterViewInit(): Promise<void> {
         super.ngAfterViewInit();
@@ -103,10 +103,18 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
                 return;
             }
 
+            // Search the tab loaded.
+            const tabIndex = this.tabs.findIndex((tab) => tab.page == stackEvent.enteringView.url);
+            const tab = tabIndex >= 0 ? this.tabs[tabIndex] : undefined;
+
             // Add tabid to the tab content element.
             if (stackEvent.enteringView.element.id == '') {
-                const tab = this.tabs.find((tab) => tab.page == stackEvent.enteringView.url);
                 stackEvent.enteringView.element.id = tab?.id || '';
+            }
+
+            if (tab && this.selected !== tab.id) {
+                // Tab loaded using a navigation, update the selected tab.
+                this.tabSelected(tab, tabIndex);
             }
 
             this.showHideNavBarButtons(stackEvent.enteringView.element.tagName);
@@ -125,7 +133,7 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
     }
 
     /**
-     * Detect changes on input properties.
+     * @inheritdoc
      */
     ngOnChanges(changes: Record<string, SimpleChange>): void {
         if (changes.tabs) {
@@ -166,6 +174,21 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
         // The `ionViewDidLeave` method is not called on nested outlets unless the active view changes, that's why
         // we need to call it manually if the page is leaving and the last active component was not notified.
         this.lastActiveComponent?.ionViewDidLeave?.();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected calculateInitialTab(): CoreTabsOutletTab | undefined {
+        // Check if a tab should be selected because it was loaded by path.
+        const currentPath = CoreNavigator.getCurrentPath();
+        const currentPathTab = this.tabs.find(tab => tab.page === currentPath);
+
+        if (currentPathTab && currentPathTab.enabled) {
+            return currentPathTab;
+        }
+
+        return super.calculateInitialTab();
     }
 
     /**

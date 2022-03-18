@@ -17,11 +17,11 @@ import { FileEntry } from '@ionic-native/file/ngx';
 import { CoreFile, CoreFileProvider } from '@services/file';
 import { CoreSites } from '@services/sites';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreH5P } from '../services/h5p';
 import { CoreH5PCore, CoreH5PDisplayOptions } from './core';
 import { CoreError } from '@classes/errors/error';
+import { CoreText } from '@singletons/text';
 
 /**
  * Equivalent to Moodle's H5P helper class.
@@ -131,13 +131,13 @@ export class CoreH5PHelper {
         return {
             baseUrl: CoreFile.getWWWPath(),
             url: CoreFile.convertFileSrc(
-                CoreTextUtils.concatenatePaths(
+                CoreText.concatenatePaths(
                     basePath,
                     CoreH5P.h5pCore.h5pFS.getExternalH5PFolderPath(site.getId()),
                 ),
             ),
             urlLibraries: CoreFile.convertFileSrc(
-                CoreTextUtils.concatenatePaths(
+                CoreText.concatenatePaths(
                     basePath,
                     CoreH5P.h5pCore.h5pFS.getLibrariesFolderPath(site.getId()),
                 ),
@@ -155,7 +155,7 @@ export class CoreH5PHelper {
             crossorigin: null,
             libraryConfig: null,
             pluginCacheBuster: '',
-            libraryUrl: CoreTextUtils.concatenatePaths(CoreH5P.h5pCore.h5pFS.getCoreH5PPath(), 'js'),
+            libraryUrl: CoreText.concatenatePaths(CoreH5P.h5pCore.h5pFS.getCoreH5PPath(), 'js'),
         };
     }
 
@@ -197,7 +197,7 @@ export class CoreH5PHelper {
     ): Promise<void> {
 
         const folderName = CoreMimetypeUtils.removeExtension(file.name);
-        const destFolder = CoreTextUtils.concatenatePaths(CoreFileProvider.TMPFOLDER, 'h5p/' + folderName);
+        const destFolder = CoreText.concatenatePaths(CoreFileProvider.TMPFOLDER, 'h5p/' + folderName);
 
         // Unzip the file.
         await CoreFile.unzipFile(file.toURL(), destFolder, onProgress);

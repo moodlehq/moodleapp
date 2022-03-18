@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
 import { CoreWSExternalWarning, CoreWSExternalFile, CoreWSFile } from '@services/ws';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreQueueRunner } from '@classes/queue-runner';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
@@ -29,6 +28,7 @@ import { CoreH5PValidator } from '../classes/validator';
 
 import { makeSingleton } from '@singletons';
 import { CoreError } from '@classes/errors/error';
+import { CoreText } from '@singletons/text';
 
 /**
  * Service to provide H5P functionalities.
@@ -207,7 +207,7 @@ export class CoreH5PProvider {
      * @return Treated url.
      */
     treatH5PUrl(url: string, siteUrl: string): string {
-        if (url.indexOf(CoreTextUtils.concatenatePaths(siteUrl, '/webservice/pluginfile.php')) === 0) {
+        if (url.indexOf(CoreText.concatenatePaths(siteUrl, '/webservice/pluginfile.php')) === 0) {
             url = url.replace('/webservice/pluginfile', '/pluginfile');
         }
 

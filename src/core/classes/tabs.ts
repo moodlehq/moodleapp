@@ -306,13 +306,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
             this.calculateSlides();
         });
 
-        let selectedTab: T | undefined = this.tabs[this.selectedIndex || 0] || undefined;
-
-        if (!selectedTab || !selectedTab.enabled) {
-            // The tab is not enabled or not shown. Get the first tab that is enabled.
-            selectedTab = this.tabs.find((tab) => tab.enabled) || undefined;
-        }
-
+        const selectedTab = this.calculateInitialTab();
         if (!selectedTab) {
             return;
         }
@@ -327,6 +321,22 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
 
         // Check which arrows should be shown.
         this.calculateSlides();
+    }
+
+    /**
+     * Calculate the initial tab to load.
+     *
+     * @return Initial tab, undefined if no valid tab found.
+     */
+    protected calculateInitialTab(): T | undefined {
+        const selectedTab: T | undefined = this.tabs[this.selectedIndex || 0] || undefined;
+
+        if (selectedTab && selectedTab.enabled) {
+            return selectedTab;
+        }
+
+        // The tab is not enabled or not shown. Get the first tab that is enabled.
+        return this.tabs.find((tab) => tab.enabled) || undefined;
     }
 
     /**
@@ -564,8 +574,8 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
         }
 
         const tabToSelect = this.tabs[index];
-        if (!tabToSelect || !tabToSelect.enabled || tabToSelect.id == this.selected) {
-            // Already selected or not enabled.
+        if (!tabToSelect || !tabToSelect.enabled) {
+            // Not enabled.
             return;
         }
 
@@ -578,15 +588,30 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
             }
         }
 
+        if (tabToSelect.id === this.selected) {
+            // Already selected.
+            return;
+        }
+
         const ok = await this.loadTab(tabToSelect);
 
         if (ok !== false) {
-            this.selectHistory.push(tabToSelect.id!);
-            this.selected = tabToSelect.id;
-            this.selectedIndex = index;
-
-            this.ionChange.emit(tabToSelect);
+            this.tabSelected(tabToSelect, index);
         }
+    }
+
+    /**
+     * Update selected tab.
+     *
+     * @param tab Tab.
+     * @param tabIndex Tab index.
+     */
+    protected tabSelected(tab: T, tabIndex: number): void {
+        this.selectHistory.push(tab.id ?? '');
+        this.selected = tab.id;
+        this.selectedIndex = tabIndex;
+
+        this.ionChange.emit(tab);
     }
 
     /**

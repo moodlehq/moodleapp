@@ -36,6 +36,7 @@ import { CoreNavigator, CoreRedirectPayload } from '@services/navigator';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
+import { CoreText } from '@singletons/text';
 
 /**
  * Helper provider that provides some common features regarding authentication.
@@ -385,8 +386,8 @@ export class CoreLoginHelperProvider {
         }
 
         const validProviders: CoreSiteIdentityProvider[] = [];
-        const httpUrl = CoreTextUtils.concatenatePaths(siteConfig.wwwroot, 'auth/oauth2/');
-        const httpsUrl = CoreTextUtils.concatenatePaths(siteConfig.httpswwwroot, 'auth/oauth2/');
+        const httpUrl = CoreText.concatenatePaths(siteConfig.wwwroot, 'auth/oauth2/');
+        const httpsUrl = CoreText.concatenatePaths(siteConfig.httpswwwroot, 'auth/oauth2/');
 
         if (siteConfig.identityproviders && siteConfig.identityproviders.length) {
             siteConfig.identityproviders.forEach((provider) => {

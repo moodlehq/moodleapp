@@ -27,7 +27,7 @@ import { CoreDashboardHomeHandler } from './dashboard-home';
 @Injectable({ providedIn: 'root' })
 export class CoreCoursesMyCoursesMainMenuHandlerService implements CoreMainMenuHandler {
 
-    static readonly PAGE_NAME = 'my';
+    static readonly PAGE_NAME = 'courses';
 
     name = 'CoreCoursesMyCourses';
     priority = 900;

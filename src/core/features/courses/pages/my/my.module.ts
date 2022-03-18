@@ -12,52 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injector, NgModule } from '@angular/core';
-import { RouterModule, ROUTES, Routes } from '@angular/router';
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreBlockComponentsModule } from '@features/block/components/components.module';
 
 import { CoreCoursesMyCoursesPage } from './my';
 import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
-import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { CoreCoursesMyCoursesMainMenuHandlerService } from '@features/courses/services/handlers/my-courses-mainmenu';
 
-function buildRoutes(injector: Injector): Routes {
-    return [
-        {
-            path: '',
-            component: CoreCoursesMyCoursesPage,
-            data: {
-                mainMenuTabRoot: CoreCoursesMyCoursesMainMenuHandlerService.PAGE_NAME,
-            },
-        },
-        {
-            path: 'list',
-            loadChildren: () =>
-                import('../list/list.module')
-                    .then(m => m.CoreCoursesListPageModule),
-        },
-        ...buildTabMainRoutes(injector, {
-            redirectTo: '',
-            pathMatch: 'full',
-        }),
-    ];
-}
+const routes: Routes = [
+    {
+        path: '',
+        component: CoreCoursesMyCoursesPage,
+    },
+];
 
 @NgModule({
     imports: [
+        RouterModule.forChild(routes),
         CoreSharedModule,
         CoreBlockComponentsModule,
         CoreMainMenuComponentsModule,
-    ],
-    providers: [
-        {
-            provide: ROUTES,
-            multi: true,
-            deps: [Injector],
-            useFactory: buildRoutes,
-        },
     ],
     declarations: [
         CoreCoursesMyCoursesPage,

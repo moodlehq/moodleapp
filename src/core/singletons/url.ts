@@ -112,6 +112,22 @@ export class CoreUrl {
     }
 
     /**
+     * Given some parts of a URL, returns the URL as a string.
+     *
+     * @param parts Parts.
+     * @return Assembled URL.
+     */
+    static assemble(parts: UrlParts): string {
+        return (parts.protocol ? `${parts.protocol}://` : '') +
+            (parts.credentials ? `${parts.credentials}@` : '') +
+            (parts.domain ?? '') +
+            (parts.port ? `:${parts.port}` : '') +
+            (parts.path ?? '') +
+            (parts.query ? `?${parts.query}` : '') +
+            (parts.fragment ? `#${parts.fragment}` : '');
+    }
+
+    /**
      * Guess the Moodle domain from a site url.
      *
      * @param url Site url.
@@ -229,6 +245,39 @@ export class CoreUrl {
         const urlAndAnchor = url.split('#');
 
         return urlAndAnchor[0];
+    }
+
+    /**
+     * Convert a URL to an absolute URL (if it isn't already).
+     *
+     * @param parentUrl The parent URL.
+     * @param url The url to convert.
+     * @return Absolute URL.
+     */
+    static toAbsoluteURL(parentUrl: string, url: string): string {
+        const parsedUrl = CoreUrl.parse(url);
+
+        if (parsedUrl?.protocol) {
+            return url; // Already absolute URL.
+        }
+
+        const parsedParentUrl = CoreUrl.parse(parentUrl);
+
+        if (url.startsWith('//')) {
+            // It only lacks the protocol, add it.
+            return (parsedParentUrl?.protocol || 'https') + ':' + url;
+        }
+
+        // The URL should be added after the domain (if starts with /) or after the parent path.
+        const treatedParentUrl = CoreUrl.assemble({
+            protocol: parsedParentUrl?.protocol || 'https',
+            domain: parsedParentUrl?.domain,
+            port: parsedParentUrl?.port,
+            credentials: parsedParentUrl?.credentials,
+            path: url.startsWith('/') ? undefined : parsedParentUrl?.path,
+        });
+
+        return CoreText.concatenatePaths(treatedParentUrl, url);
     }
 
 }

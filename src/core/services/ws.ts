@@ -270,7 +270,11 @@ export class CoreWSProvider {
             onProgress && transfer.onProgress(onProgress);
 
             // Download the file in the tmp file.
-            await transfer.download(url, fileEntry.toURL(), true);
+            await transfer.download(url, fileEntry.toURL(), true, {
+                headers: {
+                    'User-Agent': navigator.userAgent, // eslint-disable-line @typescript-eslint/naming-convention
+                },
+            });
 
             let extension = '';
 
@@ -885,7 +889,9 @@ export class CoreWSProvider {
             itemid: options.itemId || 0,
         };
         options.chunkedMode = false;
-        options.headers = {};
+        options.headers = {
+            'User-Agent': navigator.userAgent, // eslint-disable-line @typescript-eslint/naming-convention
+        };
         options['Connection'] = 'close';
 
         let success: FileUploadResult;

@@ -56,4 +56,12 @@ describe('CoreUrl singleton', () => {
         expect(CoreUrl.sameDomainAndPath('https://school.edu/moodle', 'https://school.edu/moodle/about')).toBe(false);
     });
 
+    it('converts to absolute URLs', () => {
+        expect(CoreUrl.toAbsoluteURL('https://school.edu/foo/bar', 'https://mysite.edu')).toBe('https://mysite.edu');
+        expect(CoreUrl.toAbsoluteURL('https://school.edu/foo/bar', '//mysite.edu')).toBe('https://mysite.edu');
+        expect(CoreUrl.toAbsoluteURL('https://school.edu/foo/bar', '/image.png')).toBe('https://school.edu/image.png');
+        expect(CoreUrl.toAbsoluteURL('https://school.edu/foo/bar', 'image.png')).toBe('https://school.edu/foo/bar/image.png');
+        expect(CoreUrl.toAbsoluteURL('https://school.edu/foo.php', 'image.png')).toBe('https://school.edu/foo.php/image.png');
+    });
+
 });

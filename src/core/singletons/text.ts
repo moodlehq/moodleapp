@@ -40,4 +40,30 @@ export class CoreText {
         return text;
     }
 
+    /**
+     * Concatenate two paths, adding a slash between them if needed.
+     *
+     * @param leftPath Left path.
+     * @param rightPath Right path.
+     * @return Concatenated path.
+     */
+    static concatenatePaths(leftPath: string, rightPath: string): string {
+        if (!leftPath) {
+            return rightPath;
+        } else if (!rightPath) {
+            return leftPath;
+        }
+
+        const lastCharLeft = leftPath.slice(-1);
+        const firstCharRight = rightPath.charAt(0);
+
+        if (lastCharLeft === '/' && firstCharRight === '/') {
+            return leftPath + rightPath.substring(1);
+        } else if (lastCharLeft !== '/' && firstCharRight !== '/') {
+            return leftPath + '/' + rightPath;
+        } else {
+            return leftPath + rightPath;
+        }
+    }
+
 }

@@ -24,9 +24,9 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtilsOpenFileOptions } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
+import { CoreText } from '@singletons/text';
 import { AddonModResource, AddonModResourceProvider } from './resource';
 
 /**
@@ -77,7 +77,7 @@ export class AddonModResourceHelperProvider {
             const dirPath = await CoreFilepool.getPackageDirUrlByUrl(CoreSites.getCurrentSiteId(), module.url!);
 
             // This URL is going to be injected in an iframe, we need trustAsResourceUrl to make it work in a browser.
-            return CoreTextUtils.concatenatePaths(dirPath, mainFilePath);
+            return CoreText.concatenatePaths(dirPath, mainFilePath);
         } catch (e) {
             // Error getting directory, there was an error downloading or we're in browser. Return online URL.
             if (CoreApp.isOnline() && mainFile.fileurl) {

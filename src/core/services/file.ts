@@ -26,6 +26,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreLogger } from '@singletons/logger';
 import { makeSingleton, File, Zip, Platform, WebView } from '@singletons';
 import { CoreFileEntry } from '@services/file-helper';
+import { CoreText } from '@singletons/text';
 
 /**
  * Progress event used when writing a file data into a file.
@@ -916,7 +917,7 @@ export class CoreFileProvider {
         if (path.indexOf(this.basePath) > -1) {
             return path;
         } else {
-            return CoreTextUtils.concatenatePaths(this.basePath, path);
+            return CoreText.concatenatePaths(this.basePath, path);
         }
     }
 
@@ -1245,7 +1246,7 @@ export class CoreFileProvider {
      */
     getWWWAbsolutePath(): string {
         if (window.cordova && cordova.file && cordova.file.applicationDirectory) {
-            return CoreTextUtils.concatenatePaths(cordova.file.applicationDirectory, 'www');
+            return CoreText.concatenatePaths(cordova.file.applicationDirectory, 'www');
         }
 
         // Cannot use Cordova to get it, use the WebView URL.
