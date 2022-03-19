@@ -103,7 +103,7 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
                     selector += '[slot="' + slot + '"]';
                 }
 
-                const buttonsContainer = <HTMLElement> header.querySelector(selector);
+                const buttonsContainer = header.querySelector<HTMLIonButtonsElement>(selector);
                 if (buttonsContainer) {
                     this.mergeContextMenus(buttonsContainer);
 
@@ -147,7 +147,7 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
      *
      * @param buttonsContainer The container where the buttons will be moved.
      */
-    protected mergeContextMenus(buttonsContainer: HTMLElement): void {
+    protected mergeContextMenus(buttonsContainer: HTMLIonButtonsElement): void {
         // Check if both button containers have a context menu.
         const secondaryContextMenu = this.element.querySelector('core-context-menu');
         if (!secondaryContextMenu) {
@@ -194,58 +194,24 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
     /**
      * Search the ion-header where the buttons should be added.
      *
-     * @param retries Number of retries so far.
      * @return Promise resolved with the header element.
      */
-    protected async searchHeader(retries: number = 0): Promise<HTMLElement> {
+    protected async searchHeader(): Promise<HTMLIonHeaderElement> {
+        await CoreDomUtils.waitToBeInDOM(this.element);
+
         let parentPage: HTMLElement | null = this.element;
-
-        while (parentPage) {
-            if (!parentPage.parentElement) {
-                // No parent, stop.
-                break;
-            }
-
+        while (parentPage && parentPage.parentElement) {
             // Get the next parent page.
             parentPage = parentPage.parentElement.closest('.ion-page');
-            if (parentPage) {
-                // Check if the page has a header. If it doesn't, search the next parent page.
-                const header = this.searchHeaderInPage(parentPage);
-                if (header && getComputedStyle(header, null).display != 'none') {
-                    return header;
-                }
+            // Check if the page has a header. If it doesn't, search the next parent page.
+            const header  = parentPage?.querySelector<HTMLIonHeaderElement>(':scope > ion-header');
+            if (header && getComputedStyle(header).display !== 'none') {
+                return header;
             }
         }
 
-        // Header not found.
-        if (retries < 5) {
-            // If the component or any of its parent is inside a ng-content or similar it can be detached when it's initialized.
-            // Try again after a while.
-            return new Promise((resolve, reject): void => {
-                setTimeout(() => {
-                    // eslint-disable-next-line promise/catch-or-return
-                    this.searchHeader(retries + 1).then(resolve, reject);
-                }, 200);
-            });
-        }
-
-        // We've waited enough time, reject.
+        // Header not found, reject.
         throw Error('Header not found.');
-    }
-
-    /**
-     * Search ion-header inside a page. The header should be a direct child.
-     *
-     * @param page Page to search in.
-     * @return Header element. Undefined if not found.
-     */
-    protected searchHeaderInPage(page: HTMLElement): HTMLElement | undefined {
-        for (let i = 0; i < page.children.length; i++) {
-            const child = page.children[i];
-            if (child.tagName == 'ION-HEADER') {
-                return <HTMLElement> child;
-            }
-        }
     }
 
     /**
@@ -280,7 +246,7 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Component destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         // This component was destroyed, remove all the buttons that were moved.
