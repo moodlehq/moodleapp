@@ -360,7 +360,7 @@ export class AddonQtypeDdImageOrTextQuestion {
         });
 
         this.resizeListener = CoreDomUtils.onWindowResize(() => {
-            this.windowResized();
+            this.repositionDragsForQuestion();
         });
     }
 
@@ -677,15 +677,6 @@ export class AddonQtypeDdImageOrTextQuestion {
         for (let groupNo = 1; groupNo <= 8; groupNo++) {
             this.updatePaddingSizeForGroup(groupNo);
         }
-    }
-
-    /**
-     * Window resized.
-     */
-    async windowResized(): Promise<void> {
-        await CoreDomUtils.waitForResizeDone();
-
-        this.repositionDragsForQuestion();
     }
 
 }

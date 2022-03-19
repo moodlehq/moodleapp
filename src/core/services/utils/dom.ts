@@ -276,7 +276,9 @@ export class CoreDomUtilsProvider {
      * @return Event observer to call off when finished.
      */
     onWindowResize(resizeFunction: (ev?: Event) => void, debounceDelay = 20): CoreEventObserver {
-        const resizeListener = CoreUtils.debounce((ev?: Event) => {
+        const resizeListener = CoreUtils.debounce(async (ev?: Event) => {
+            await this.waitForResizeDone();
+
             resizeFunction(ev);
         }, debounceDelay);
 
@@ -2153,6 +2155,7 @@ export class CoreDomUtilsProvider {
 
     /**
      * In iOS the resize event is triggered before the window size changes. Wait for the size to change.
+     * Use of this function is discouraged. Please use onWindowResize to check window resize event.
      *
      * @param windowWidth Initial window width.
      * @param windowHeight Initial window height.
