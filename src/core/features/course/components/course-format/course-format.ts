@@ -492,9 +492,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         // Scroll to module if needed. Give more priority to the input.
         const moduleIdToScroll = this.moduleId && previousValue === undefined ? this.moduleId : moduleId;
         if (moduleIdToScroll) {
-            setTimeout(() => {
-                this.scrollToModule(moduleIdToScroll);
-            }, 200);
+            this.scrollToModule(moduleIdToScroll);
         } else {
             this.content.scrollToTop(0);
         }
@@ -513,9 +511,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @param moduleId Module ID.
      */
     protected scrollToModule(moduleId: number): void {
-        CoreDomUtils.scrollToElementBySelector(
+        CoreDomUtils.scrollViewToElement(
             this.elementRef.nativeElement,
-            this.content,
             '#core-course-module-' + moduleId,
         );
     }

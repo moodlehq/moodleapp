@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnInit } from '@angular/core';
 import {
     CoreCourseModuleCompletionStatus,
     CoreCourseModuleCompletionTracking,
@@ -21,7 +21,6 @@ import {
 import { CoreCourseHelper, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
-import { IonContent } from '@ionic/angular';
 import { CoreDomUtils } from '@services/utils/dom';
 import { ModalController } from '@singletons';
 
@@ -34,8 +33,6 @@ import { ModalController } from '@singletons';
     styleUrls: ['course-index.scss'],
 })
 export class CoreCourseCourseIndexComponent implements OnInit {
-
-    @ViewChild(IonContent) content?: IonContent;
 
     @Input() sections: CoreCourseSection[] = [];
     @Input() selectedId?: number;
@@ -112,13 +109,10 @@ export class CoreCourseCourseIndexComponent implements OnInit {
 
         this.highlighted = CoreCourseFormatDelegate.getSectionHightlightedName(this.course);
 
-        setTimeout(() => {
-            CoreDomUtils.scrollToElementBySelector(
-                this.elementRef.nativeElement,
-                this.content,
-                '.item.item-current',
-            );
-        }, 300);
+        CoreDomUtils.scrollViewToElement(
+            this.elementRef.nativeElement,
+            '.item.item-current',
+        );
     }
 
     /**

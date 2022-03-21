@@ -1106,10 +1106,10 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
      * Scroll to the first new unread message.
      */
     scrollToFirstUnreadMessage(): void {
-        if (this.newMessages > 0 && this.content) {
-            const messages = Array.from(this.hostElement.querySelectorAll('.addon-message-not-mine'));
+        if (this.newMessages > 0) {
+            const messages = Array.from(this.hostElement.querySelectorAll<HTMLElement>('.addon-message-not-mine'));
 
-            CoreDomUtils.scrollToElement(this.content, <HTMLElement> messages[messages.length - this.newMessages]);
+            CoreDomUtils.scrollViewToElement(messages[messages.length - this.newMessages]);
         }
     }
 

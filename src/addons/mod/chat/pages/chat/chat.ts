@@ -159,7 +159,7 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
         this.messages[this.messages.length - 1].showTail = true;
 
         // New messages or beeps, scroll to bottom.
-        setTimeout(() => this.scrollToBottom());
+        this.scrollToBottom();
     }
 
     protected async loadMessageBeepWho(message: AddonModChatFormattedMessage): Promise<void> {
@@ -341,13 +341,12 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Scroll bottom when render has finished.
      */
-    scrollToBottom(): void {
+    async scrollToBottom(): Promise<void> {
         // Need a timeout to leave time to the view to be rendered.
-        setTimeout(() => {
-            if (!this.viewDestroyed) {
-                this.content?.scrollToBottom();
-            }
-        });
+        await CoreUtils.nextTick();
+        if (!this.viewDestroyed) {
+            this.content?.scrollToBottom();
+        }
     }
 
     /**

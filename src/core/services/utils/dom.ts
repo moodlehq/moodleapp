@@ -725,19 +725,19 @@ export class CoreDomUtilsProvider {
      * @param positionParentClass Parent Class where to stop calculating the position. Default inner-scroll.
      * @return positionLeft, positionTop of the element relative to.
      */
-    getElementXY(container: HTMLElement, selector: undefined, positionParentClass?: string): number[];
+    getElementXY(container: HTMLElement, selector?: undefined, positionParentClass?: string): number[];
     getElementXY(container: HTMLElement, selector: string, positionParentClass?: string): number[] | null;
-    getElementXY(container: HTMLElement, selector?: string, positionParentClass?: string): number[] | null {
-        let element: HTMLElement | null = <HTMLElement> (selector ? container.querySelector(selector) : container);
+    getElementXY(container: HTMLElement, selector?: string, positionParentClass = 'inner-scroll'): number[] | null {
+        let element = (selector ? container.querySelector<HTMLElement>(selector) : container);
+        if (!element) {
+            return null;
+        }
+
         let positionTop = 0;
         let positionLeft = 0;
 
         if (!positionParentClass) {
             positionParentClass = 'inner-scroll';
-        }
-
-        if (!element) {
-            return null;
         }
 
         while (element) {
@@ -764,6 +764,25 @@ export class CoreDomUtilsProvider {
         }
 
         return [positionLeft, positionTop];
+    }
+
+    /**
+     * Retrieve the position of a element relative to another element.
+     *
+     * @param element Element to get the position.
+     * @param parent Parent element to get relative position.
+     * @return X and Y position.
+     */
+    getRelativeElementPosition(element: HTMLElement, parent: HTMLElement): { x: number; y: number} {
+        // Get the top, left coordinates of two elements
+        const elementRectangle = element.getBoundingClientRect();
+        const parentRectangle = parent.getBoundingClientRect();
+
+        // Calculate the top and left positions
+        return {
+            x: elementRectangle.x - parentRectangle.x,
+            y: elementRectangle.y - parentRectangle.y,
+        };
     }
 
     /**
@@ -1096,11 +1115,9 @@ export class CoreDomUtilsProvider {
      * @param selector Selector to search.
      */
     removeElement(element: HTMLElement, selector: string): void {
-        if (element) {
-            const selected = element.querySelector(selector);
-            if (selected) {
-                selected.remove();
-            }
+        const selected = element.querySelector(selector);
+        if (selected) {
+            selected.remove();
         }
     }
 
@@ -1198,9 +1215,9 @@ export class CoreDomUtilsProvider {
             }
 
             // Treat video posters.
-            if (media.tagName == 'VIDEO' && media.getAttribute('poster')) {
-                const currentPoster = media.getAttribute('poster');
-                const newPoster = paths[CoreTextUtils.decodeURIComponent(currentPoster!)];
+            const currentPoster = media.getAttribute('poster');
+            if (media.tagName == 'VIDEO' && currentPoster) {
+                const newPoster = paths[CoreTextUtils.decodeURIComponent(currentPoster)];
                 if (newPoster !== undefined) {
                     media.setAttribute('poster', newPoster);
                 }
@@ -1237,8 +1254,8 @@ export class CoreDomUtilsProvider {
      * @return Returns a promise which is resolved when the scroll has completed.
      * @deprecated since 3.9.5. Use directly the IonContent class.
      */
-    scrollTo(content: IonContent, x: number, y: number, duration?: number): Promise<void> {
-        return content.scrollToPoint(x, y, duration || 0);
+    scrollTo(content: IonContent, x: number, y: number, duration = 0): Promise<void> {
+        return content.scrollToPoint(x, y, duration);
     }
 
     /**
@@ -1261,7 +1278,7 @@ export class CoreDomUtilsProvider {
      * @return Returns a promise which is resolved when the scroll has completed.
      * @deprecated since 3.9.5. Use directly the IonContent class.
      */
-    scrollToTop(content: IonContent, duration?: number): Promise<void> {
+    scrollToTop(content: IonContent, duration = 0): Promise<void> {
         return content.scrollToTop(duration);
     }
 
@@ -1308,7 +1325,7 @@ export class CoreDomUtilsProvider {
             const scrollElement = await content.getScrollElement();
 
             return scrollElement.scrollTop || 0;
-        } catch (error) {
+        } catch {
             return 0;
         }
     }
@@ -1316,51 +1333,34 @@ export class CoreDomUtilsProvider {
     /**
      * Scroll to a certain element.
      *
-     * @param content The content that must be scrolled.
      * @param element The element to scroll to.
-     * @param scrollParentClass Parent class where to stop calculating the position. Default inner-scroll.
+     * @param selector Selector to find the element to scroll to inside the defined element.
      * @param duration Duration of the scroll animation in milliseconds.
-     * @return True if the element is found, false otherwise.
+     * @return Wether the scroll suceeded.
      */
-    scrollToElement(content: IonContent, element: HTMLElement, scrollParentClass?: string, duration?: number): boolean {
-        const position = this.getElementXY(element, undefined, scrollParentClass);
-        if (!position) {
-            return false;
+    async scrollViewToElement(element: HTMLElement, selector?: string, duration = 0): Promise<boolean> {
+        await CoreDomUtils.waitToBeInDOM(element);
+
+        if (selector) {
+            const foundElement = element.querySelector<HTMLElement>(selector);
+            if (!foundElement) {
+                // Element not found.
+                return false;
+            }
+
+            element = foundElement;
         }
 
-        content.scrollToPoint(position[0], position[1], duration || 0);
-
-        return true;
-    }
-
-    /**
-     * Scroll to a certain element using a selector to find it.
-     *
-     * @param container The element that contains the element that must be scrolled.
-     * @param content The content that must be scrolled.
-     * @param selector Selector to find the element to scroll to.
-     * @param scrollParentClass Parent class where to stop calculating the position. Default inner-scroll.
-     * @param duration Duration of the scroll animation in milliseconds.
-     * @return True if the element is found, false otherwise.
-     */
-    scrollToElementBySelector(
-        container: HTMLElement | null,
-        content: IonContent | undefined,
-        selector: string,
-        scrollParentClass?: string,
-        duration?: number,
-    ): boolean {
-        if (!container || !content) {
+        const content = element.closest<HTMLIonContentElement>('ion-content') ?? undefined;
+        if (!content) {
+            // Content to scroll, not found.
             return false;
         }
 
         try {
-            const position = this.getElementXY(container, selector, scrollParentClass);
-            if (!position) {
-                return false;
-            }
+            const position = CoreDomUtils.getRelativeElementPosition(element, content);
 
-            content.scrollToPoint(position[0], position[1], duration || 0);
+            await content.scrollToPoint(position.x, position.y, duration);
 
             return true;
         } catch {
@@ -1372,12 +1372,71 @@ export class CoreDomUtilsProvider {
      * Search for an input with error (core-input-error directive) and scrolls to it if found.
      *
      * @param container The element that contains the element that must be scrolled.
-     * @param content The content that must be scrolled.
-     * @param scrollParentClass Parent class where to stop calculating the position. Default inner-scroll.
      * @return True if the element is found, false otherwise.
      */
-    scrollToInputError(container: HTMLElement | null, content?: IonContent, scrollParentClass?: string): boolean {
-        return this.scrollToElementBySelector(container, content, '.core-input-error', scrollParentClass);
+    async scrollViewToInputError(container: HTMLElement): Promise<boolean> {
+        return this.scrollViewToElement(container, '.core-input-error');
+    }
+
+    /**
+     * Scroll to a certain element.
+     *
+     * @param content Not used anymore.
+     * @param element The element to scroll to.
+     * @param scrollParentClass Not used anymore.
+     * @param duration Duration of the scroll animation in milliseconds.
+     * @return True if the element is found, false otherwise.
+     * @deprecated since app 4.0 Use scrollViewToElement instead.
+     */
+    scrollToElement(content: IonContent, element: HTMLElement, scrollParentClass?: string, duration = 0): boolean {
+        CoreDomUtils.scrollViewToElement(element, undefined, duration);
+
+        return true;
+    }
+
+    /**
+     * Scroll to a certain element using a selector to find it.
+     *
+     * @param container The element that contains the element that must be scrolled.
+     * @param content Not used anymore.
+     * @param selector Selector to find the element to scroll to.
+     * @param scrollParentClass Not used anymore.
+     * @param duration Duration of the scroll animation in milliseconds.
+     * @return True if the element is found, false otherwise.
+     * @deprecated since app 4.0 Use scrollViewToElement instead.
+     */
+    scrollToElementBySelector(
+        container: HTMLElement | null,
+        content: unknown | null,
+        selector: string,
+        scrollParentClass?: string,
+        duration = 0,
+    ): boolean {
+        if (!container || !content) {
+            return false;
+        }
+
+        CoreDomUtils.scrollViewToElement(container, selector, duration);
+
+        return true;
+
+    }
+
+    /**
+     * Search for an input with error (core-input-error directive) and scrolls to it if found.
+     *
+     * @param container The element that contains the element that must be scrolled.
+     * @return True if the element is found, false otherwise.
+     * @deprecated since app 4.0 Use scrollViewToInputError instead.
+     */
+    scrollToInputError(container: HTMLElement | null): boolean {
+        if (!container) {
+            return false;
+        }
+
+        this.scrollViewToInputError(container);
+
+        return true;
     }
 
     /**
