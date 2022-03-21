@@ -773,7 +773,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      * @param event Event.
      */
     stopBubble(event: Event): void {
-        if (event.type != 'touchend' &&event.type != 'mouseup' && event.type != 'keyup') {
+        if (event.type != 'touchend' && event.type != 'mouseup' && event.type != 'keyup') {
             event.preventDefault();
         }
         event.stopPropagation();

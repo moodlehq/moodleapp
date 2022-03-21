@@ -32,7 +32,7 @@ export class CoreAutoFocusDirective implements AfterViewInit {
 
     @Input('core-auto-focus') autoFocus: boolean | string = true;
 
-    protected element: HTMLElement;
+    protected element: HTMLIonInputElement | HTMLIonTextareaElement | HTMLIonSearchbarElement | HTMLElement;
 
     constructor(element: ElementRef) {
         this.element = element.nativeElement;
@@ -41,51 +41,27 @@ export class CoreAutoFocusDirective implements AfterViewInit {
     /**
      * @inheritdoc
      */
-    ngAfterViewInit(): void {
+    async ngAfterViewInit(): Promise<void> {
         if (CoreUtils.isFalseOrZero(this.autoFocus)) {
             return;
         }
 
-        this.setFocus();
-    }
+        await CoreDomUtils.waitToBeInDOM(this.element);
 
-    /**
-     * Function to focus the element.
-     *
-     * @param retries Internal param to stop retrying on 0.
-     */
-    protected setFocus(retries = 10): void {
-        if (retries == 0) {
+        let focusElement = this.element;
+
+        if ('getInputElement' in focusElement) {
+            // If it's an Ionic element get the right input to use.
+            focusElement.componentOnReady && await focusElement.componentOnReady();
+            focusElement = await focusElement.getInputElement();
+        }
+
+        if (!focusElement) {
             return;
         }
 
-        // Wait a bit to make sure the view is loaded.
-        setTimeout(() => {
-            // If it's a ion-input or ion-textarea, search the right input to use.
-            let element: HTMLElement | null = null;
+        CoreDomUtils.focusElement(focusElement);
 
-            if (this.element.tagName == 'ION-INPUT') {
-                element = this.element.querySelector('input');
-            } else if (this.element.tagName == 'ION-TEXTAREA') {
-                element = this.element.querySelector('textarea');
-            } else {
-                element = this.element;
-            }
-
-            if (!element) {
-                this.setFocus(retries - 1);
-
-                return;
-            }
-
-            CoreDomUtils.focusElement(element);
-
-            if (element != document.activeElement) {
-                this.setFocus(retries - 1);
-
-                return;
-            }
-        }, 200);
     }
 
 }

@@ -510,15 +510,30 @@ export class CoreDomUtilsProvider {
     /**
      * Focus an element and open keyboard.
      *
-     * @param el HTML element to focus.
+     * @param focusElement HTML element to focus.
      */
-    focusElement(el: HTMLElement): void {
-        if (el?.focus) {
-            el.focus();
-            if (CoreApp.isAndroid() && this.supportsInputKeyboard(el)) {
-                // On some Android versions the keyboard doesn't open automatically.
-                CoreApp.openKeyboard();
+    async focusElement(focusElement: HTMLElement): Promise<void> {
+        let retries = 10;
+
+        if (!focusElement.focus) {
+            throw new CoreError('Element to focus cannot be focused');
+        }
+
+        while (retries > 0 && focusElement !== document.activeElement) {
+            focusElement.focus();
+
+            if (focusElement === document.activeElement) {
+                await CoreUtils.nextTick();
+                if (CoreApp.isAndroid() && this.supportsInputKeyboard(focusElement)) {
+                    // On some Android versions the keyboard doesn't open automatically.
+                    CoreApp.openKeyboard();
+                }
+                break;
             }
+
+            // @TODO Probably a Mutation Observer would get this working.
+            await CoreUtils.wait(50);
+            retries--;
         }
     }
 
