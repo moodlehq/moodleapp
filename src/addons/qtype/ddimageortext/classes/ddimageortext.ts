@@ -78,13 +78,18 @@ export class AddonQtypeDdImageOrTextQuestion {
             return bgImgXY;
         }
 
-        const position = CoreDomUtils.getElementXY(bgImg, undefined, 'ddarea');
+        const ddArea = this.container.querySelector<HTMLElement>('.ddarea');
+        if (!ddArea) {
+            return bgImgXY;
+        }
+
+        const position = CoreDomUtils.getRelativeElementPosition(bgImg, ddArea);
 
         // Render the position related to the current image dimensions.
         bgImgXY[0] *= this.proportion;
         bgImgXY[1] *= this.proportion;
 
-        return [Number(bgImgXY[0]) + position[0] + 1, Number(bgImgXY[1]) + position[1] + 1];
+        return [bgImgXY[0] + position.x + 1, bgImgXY[1] + position.y + 1];
     }
 
     /**
@@ -409,10 +414,15 @@ export class AddonQtypeDdImageOrTextQuestion {
         }
 
         // Now position the draggable and set it to the input.
-        const position = CoreDomUtils.getElementXY(drop, undefined, 'ddarea');
+        const ddArea = this.container.querySelector<HTMLElement>('.ddarea');
+        if (!ddArea) {
+            return;
+        }
+
+        const position = CoreDomUtils.getRelativeElementPosition(drop, ddArea);
         const choice = drag.getAttribute('choice');
-        drag.style.left = position[0] - 1 + 'px';
-        drag.style.top = position[1] - 1 + 'px';
+        drag.style.left = position.x + 'px';
+        drag.style.top = position.y + 'px';
         drag.classList.add('placed');
 
         if (choice) {
@@ -458,13 +468,14 @@ export class AddonQtypeDdImageOrTextQuestion {
 
         // Move the element to its original position.
         const dragItemHome = this.doc.dragItemHome(Number(drag.getAttribute('dragitemno')));
-        if (!dragItemHome) {
+        const ddArea = this.container.querySelector<HTMLElement>('.ddarea');
+        if (!dragItemHome || !ddArea) {
             return;
         }
 
-        const position = CoreDomUtils.getElementXY(dragItemHome, undefined, 'ddarea');
-        drag.style.left = position[0] + 'px';
-        drag.style.top = position[1] + 'px';
+        const position = CoreDomUtils.getRelativeElementPosition(dragItemHome, ddArea);
+        drag.style.left = position.x + 'px';
+        drag.style.top = position.y + 'px';
         drag.classList.remove('placed');
 
         drag.setAttribute('inputid', '');

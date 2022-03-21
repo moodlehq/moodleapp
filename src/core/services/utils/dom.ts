@@ -720,50 +720,35 @@ export class CoreDomUtilsProvider {
     /**
      * Retrieve the position of a element relative to another element.
      *
-     * @param container Element to search in.
+     * @param element Element to search in.
      * @param selector Selector to find the element to gets the position.
      * @param positionParentClass Parent Class where to stop calculating the position. Default inner-scroll.
      * @return positionLeft, positionTop of the element relative to.
+     * @deprecated since app 4.0. Use getRelativeElementPosition instead.
      */
-    getElementXY(container: HTMLElement, selector?: undefined, positionParentClass?: string): number[];
-    getElementXY(container: HTMLElement, selector: string, positionParentClass?: string): number[] | null;
-    getElementXY(container: HTMLElement, selector?: string, positionParentClass = 'inner-scroll'): number[] | null {
-        let element = (selector ? container.querySelector<HTMLElement>(selector) : container);
-        if (!element) {
+    getElementXY(element: HTMLElement, selector?: string, positionParentClass = 'inner-scroll'): [number, number] | null {
+        if (selector) {
+            const foundElement = element.querySelector<HTMLElement>(selector);
+            if (!foundElement) {
+                // Element not found.
+                return null;
+            }
+
+            element = foundElement;
+        }
+
+        const parent = element.closest<HTMLElement>(`.${positionParentClass}`);
+        if (!parent) {
             return null;
         }
 
-        let positionTop = 0;
-        let positionLeft = 0;
+        const position = CoreDomUtils.getRelativeElementPosition(element, parent);
 
-        if (!positionParentClass) {
-            positionParentClass = 'inner-scroll';
-        }
-
-        while (element) {
-            positionLeft += (element.offsetLeft - element.scrollLeft + element.clientLeft);
-            positionTop += (element.offsetTop - element.scrollTop + element.clientTop);
-
-            const offsetElement = element.offsetParent;
-            element = element.parentElement;
-
-            // Every parent class has to be checked but the position has to be got form offsetParent.
-            while (offsetElement != element && element) {
-                // If positionParentClass element is reached, stop adding tops.
-                if (element.className.indexOf(positionParentClass) != -1) {
-                    element = null;
-                } else {
-                    element = element.parentElement;
-                }
-            }
-
-            // Finally, check again.
-            if (element?.className.indexOf(positionParentClass) != -1) {
-                element = null;
-            }
-        }
-
-        return [positionLeft, positionTop];
+        // Calculate the top and left positions.
+        return [
+            Math.ceil(position.x),
+            Math.ceil(position.y),
+        ];
     }
 
     /**
@@ -773,12 +758,12 @@ export class CoreDomUtilsProvider {
      * @param parent Parent element to get relative position.
      * @return X and Y position.
      */
-    getRelativeElementPosition(element: HTMLElement, parent: HTMLElement): { x: number; y: number} {
+    getRelativeElementPosition(element: HTMLElement, parent: HTMLElement): CoreCoordinates {
         // Get the top, left coordinates of two elements
         const elementRectangle = element.getBoundingClientRect();
         const parentRectangle = parent.getBoundingClientRect();
 
-        // Calculate the top and left positions
+        // Calculate the top and left positions.
         return {
             x: elementRectangle.x - parentRectangle.x,
             y: elementRectangle.y - parentRectangle.y,
@@ -2442,3 +2427,11 @@ export enum VerticalPoint {
     MID = 'mid',
     BOTTOM = 'bottom',
 }
+
+/**
+ * Coordinates of an element.
+ */
+export type CoreCoordinates = {
+    x: number; // X axis coordinates.
+    y: number; // Y axis coordinates.
+};

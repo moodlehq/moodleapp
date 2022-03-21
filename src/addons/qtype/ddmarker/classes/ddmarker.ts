@@ -12,20 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreCoordinates, CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreEventObserver } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { AddonQtypeDdMarkerQuestionData } from '../component/ddmarker';
 import { AddonQtypeDdMarkerGraphicsApi } from './graphics_api';
-
-/**
- * Point type.
- */
-export type AddonQtypeDdMarkerQuestionPoint = {
-    x: number; // X axis coordinates.
-    y: number; // Y axis coordinates.
-};
 
 /**
  * Class to make a question of ddmarker type work.
@@ -36,8 +28,7 @@ export class AddonQtypeDdMarkerQuestion {
 
     protected logger: CoreLogger;
     protected afterImageLoadDone = false;
-    protected drops;
-    protected topNode;
+    protected topNode?: HTMLElement | null;
     protected nextColourIndex = 0;
     protected proportion = 1;
     protected selected?: HTMLElement; // Selected element (being "dragged").
@@ -123,7 +114,7 @@ export class AddonQtypeDdMarkerQuestion {
             return [];
         }
 
-        const position = CoreDomUtils.getElementXY(bgImg, undefined, 'ddarea');
+        const position = this.getElementCoordinates(bgImg);
         let coordsNumbers = this.parsePoint(bgImgXY);
 
         coordsNumbers = this.makePointProportional(coordsNumbers);
@@ -132,12 +123,29 @@ export class AddonQtypeDdMarkerQuestion {
     }
 
     /**
+     * Returns elements coordinates relative to ddarea container.
+     *
+     * @param element Element.
+     * @return Array of X and Y coordinates.
+     */
+    protected getElementCoordinates(element: HTMLElement): number[] {
+        const ddArea = this.container.querySelector<HTMLElement>('.ddarea');
+        if (!ddArea) {
+            return [];
+        }
+
+        const position = CoreDomUtils.getRelativeElementPosition(element, ddArea);
+
+        return [position.x, position.y];
+    }
+
+    /**
      * Check if some coordinates (X, Y) are inside the background image.
      *
      * @param coords Coordinates to check.
      * @return Whether they're inside the background image.
      */
-    coordsInImg(coords: AddonQtypeDdMarkerQuestionPoint): boolean {
+    coordsInImg(coords: CoreCoordinates): boolean {
         const bgImg = this.doc.bgImg();
         if (!bgImg) {
             return false;
@@ -177,13 +185,13 @@ export class AddonQtypeDdMarkerQuestion {
             const dragging = this.selected;
             if (dragging && !drag.classList.contains('unplaced')) {
 
-                const position = CoreDomUtils.getElementXY(drag, undefined, 'ddarea');
+                const position = this.getElementCoordinates(drag);
                 const bgImg = this.doc.bgImg();
                 if (!bgImg) {
                     return;
                 }
 
-                const bgImgPos = CoreDomUtils.getElementXY(bgImg, undefined, 'ddarea');
+                const bgImgPos = this.getElementCoordinates(bgImg);
 
                 position[0] = position[0] - bgImgPos[0] + e.offsetX;
                 position[1] = position[1] - bgImgPos[1] + e.offsetY;
@@ -217,7 +225,7 @@ export class AddonQtypeDdMarkerQuestion {
             return [];
         }
 
-        const position = CoreDomUtils.getElementXY(dragItemHome, undefined, 'ddarea');
+        const position = this.getElementCoordinates(dragItemHome);
 
         return [position[0], position[1]];
     }
@@ -317,7 +325,7 @@ export class AddonQtypeDdMarkerQuestion {
      * @param colour Colour of the circle.
      * @return X and Y position of the center of the circle.
      */
-    drawShapeCircle(dropZoneNo: number, coordinates: string, colour: string): AddonQtypeDdMarkerQuestionPoint | null {
+    drawShapeCircle(dropZoneNo: number, coordinates: string, colour: string): CoreCoordinates | null {
         if (!coordinates.match(/^\d+(\.\d+)?,\d+(\.\d+)?;\d+(\.\d+)?$/)) {
             return null;
         }
@@ -356,7 +364,7 @@ export class AddonQtypeDdMarkerQuestion {
      * @param colour Colour of the rectangle.
      * @return X and Y position of the center of the rectangle.
      */
-    drawShapeRectangle(dropZoneNo: number, coordinates: string, colour: string): AddonQtypeDdMarkerQuestionPoint | null {
+    drawShapeRectangle(dropZoneNo: number, coordinates: string, colour: string): CoreCoordinates | null {
         if (!coordinates.match(/^\d+(\.\d+)?,\d+(\.\d+)?;\d+(\.\d+)?,\d+(\.\d+)?$/)) {
             return null;
         }
@@ -399,7 +407,7 @@ export class AddonQtypeDdMarkerQuestion {
      * @param colour Colour of the polygon.
      * @return X and Y position of the center of the polygon.
      */
-    drawShapePolygon(dropZoneNo: number, coordinates: string, colour: string): AddonQtypeDdMarkerQuestionPoint | null {
+    drawShapePolygon(dropZoneNo: number, coordinates: string, colour: string): CoreCoordinates | null {
         if (!coordinates.match(/^\d+(\.\d+)?,\d+(\.\d+)?(?:;\d+(\.\d+)?,\d+(\.\d+)?)*$/)) {
             return null;
         }
@@ -449,7 +457,7 @@ export class AddonQtypeDdMarkerQuestion {
      * @param coordinates "x,y".
      * @return Coordinates to the point.
      */
-    parsePoint(coordinates: string): AddonQtypeDdMarkerQuestionPoint {
+    parsePoint(coordinates: string): CoreCoordinates {
         const bits = coordinates.split(',');
         if (bits.length !== 2) {
             throw coordinates + ' is not a valid point';
@@ -464,7 +472,7 @@ export class AddonQtypeDdMarkerQuestion {
      * @param point Point coordinates.
      * @return Converted point.
      */
-    makePointProportional(point: AddonQtypeDdMarkerQuestionPoint): AddonQtypeDdMarkerQuestionPoint {
+    makePointProportional(point: CoreCoordinates): CoreCoordinates {
         return {
             x: Math.round(point.x * this.proportion),
             y: Math.round(point.y * this.proportion),
@@ -542,10 +550,10 @@ export class AddonQtypeDdMarkerQuestion {
      * @return Coordinates.
      */
     getDragXY(dragItem: HTMLElement): number[] {
-        const position = CoreDomUtils.getElementXY(dragItem, undefined, 'ddarea');
+        const position = this.getElementCoordinates(dragItem);
         const bgImg = this.doc.bgImg();
         if (bgImg) {
-            const bgImgXY = CoreDomUtils.getElementXY(bgImg, undefined, 'ddarea');
+            const bgImgXY = this.getElementCoordinates(bgImg);
 
             position[0] -= bgImgXY[0];
             position[1] -= bgImgXY[1];

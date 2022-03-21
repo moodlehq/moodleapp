@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreFormatTextDirective } from '@directives/format-text';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreCoordinates, CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
@@ -375,33 +375,37 @@ export class AddonQtypeDdwtosQuestion {
             return;
         }
 
-        let position;
-
         const placeNo = this.placed[this.getNo(drag) ?? -1];
+        const parent = this.container.querySelector<HTMLElement>('.addon-qtype-ddwtos-container');
+        if (!parent) {
+            return;
+        }
+
+        let position: CoreCoordinates | undefined;
+
         if (!placeNo) {
             // Not placed, put it in home zone.
             const groupNo = this.getGroup(drag) ?? -1;
             const choiceNo = this.getChoice(drag) ?? -1;
-
-            position = CoreDomUtils.getElementXY(
-                this.container,
-                this.selectors.dragHome(groupNo, choiceNo),
-                'answercontainer',
-            );
-            drag.classList.add('unplaced');
+            const dragHome = this.container.querySelector<HTMLElement>(this.selectors.dragHome(groupNo, choiceNo));
+            if (dragHome) {
+                position = CoreDomUtils.getRelativeElementPosition(dragHome, parent);
+            }
         } else {
             // Get the drop zone position.
-            position = CoreDomUtils.getElementXY(
-                this.container,
-                this.selectors.dropForPlace(placeNo),
-                'addon-qtype-ddwtos-container',
-            );
-            drag.classList.remove('unplaced');
+            const dropZone = this.container.querySelector<HTMLElement>(this.selectors.dropForPlace(placeNo));
+            if (dropZone) {
+                position = CoreDomUtils.getRelativeElementPosition(dropZone, parent);
+                // Avoid the border.
+                position.x++;
+                position.y++;
+            }
         }
+        drag.classList.toggle('unplaced', !placeNo);
 
         if (position) {
-            drag.style.left = position[0] + 'px';
-            drag.style.top = position[1] + 'px';
+            drag.style.left = position.x + 'px';
+            drag.style.top = position.y + 'px';
         }
     }
 
