@@ -318,10 +318,8 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             this.loaded = true;
 
             if (slot !== undefined) {
-                // Scroll to the question. Give some time to the questions to render.
-                setTimeout(() => {
-                    this.scrollToQuestion(slot);
-                }, 2000);
+                // Scroll to the question.
+                this.scrollToQuestion(slot);
             }
         }
     }
@@ -689,9 +687,8 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
      * @param slot Slot of the question to scroll to.
      */
     protected scrollToQuestion(slot: number): void {
-        CoreDomUtils.scrollToElementBySelector(
+        CoreDomUtils.scrollViewToElement(
             this.elementRef.nativeElement,
-            this.content,
             '#addon-mod_quiz-question-' + slot,
         );
     }

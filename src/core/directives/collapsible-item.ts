@@ -16,6 +16,7 @@ import { Directive, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreDomUtils } from '@services/utils/dom';
+import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreEventObserver } from '@singletons/events';
@@ -50,11 +51,14 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
     protected expandedHeight = 0;
     protected resizeListener?: CoreEventObserver;
     protected domPromise?: CoreCancellablePromise<void>;
+    protected uniqueId: string;
 
     constructor(el: ElementRef<HTMLElement>) {
         this.element = el.nativeElement;
 
         this.element.addEventListener('click', this.elementClicked.bind(this));
+        this.uniqueId = 'collapsible-item-' + CoreUtils.getUniqueId('CoreCollapsibleItemDirective');
+        this.element.id = this.uniqueId;
     }
 
     /**
@@ -153,6 +157,7 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
         const toggleButton = document.createElement('ion-button');
         toggleButton.classList.add('collapsible-toggle');
         toggleButton.setAttribute('fill', 'clear');
+        toggleButton.setAttribute('aria-controls', this.uniqueId);
 
         const toggleText = document.createElement('span');
         toggleText.classList.add('collapsible-toggle-text');
@@ -163,7 +168,7 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
         expandArrow.classList.add('collapsible-toggle-arrow');
         toggleButton.appendChild(expandArrow);
 
-        this.element.appendChild(toggleButton);
+        this.element.append(toggleButton);
 
         this.toggleExpand(this.expanded);
     }
@@ -194,6 +199,9 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
             expand = !this.expanded;
         }
         this.expanded = expand;
+
+        // Reset scroll inside the element to show always the top part.
+        this.element.scrollTo(0, 0);
         this.element.classList.toggle('collapsible-collapsed', !expand);
         this.setHeight(!expand ? this.maxHeight: undefined);
 

@@ -221,6 +221,53 @@ export class CoreDomUtilsProvider {
     }
 
     /**
+     * Runs a function when an element has been slotted.
+     *
+     * @param element HTML Element inside an ion-content to wait for slot.
+     * @param callback Function to execute on resize.
+     */
+    onElementSlot(element: HTMLElement, callback: (ev?: Event) => void): void {
+        if (!element.slot) {
+            // Element not declared to be slotted.
+            return;
+        }
+
+        const slotName = element.slot;
+        if (element.assignedSlot?.name === slotName) {
+            // Slot already assigned.
+            callback();
+
+            return;
+        }
+
+        const content = element.closest('ion-content');
+        if (!content || !content.shadowRoot) {
+            // Cannot find content.
+            return;
+        }
+
+        const slots = content.shadowRoot.querySelectorAll('slot');
+        const slot = Array.from(slots).find((slot) => slot.name === slotName);
+
+        if (!slot) {
+            // Slot not found.
+            return;
+        }
+
+        const slotListener = () => {
+            if (element.assignedSlot?.name !== slotName) {
+                return;
+            }
+
+            callback();
+            // It would happen only once.
+            slot.removeEventListener('slotchange', slotListener);
+        };
+
+        slot.addEventListener('slotchange', slotListener);;
+    }
+
+    /**
      * Window resize is widely checked and may have many performance issues, debouce usage is needed to avoid calling it too much.
      * This function helps setting up the debounce feature and remove listener easily.
      *
@@ -229,7 +276,9 @@ export class CoreDomUtilsProvider {
      * @return Event observer to call off when finished.
      */
     onWindowResize(resizeFunction: (ev?: Event) => void, debounceDelay = 20): CoreEventObserver {
-        const resizeListener = CoreUtils.debounce((ev?: Event) => {
+        const resizeListener = CoreUtils.debounce(async (ev?: Event) => {
+            await this.waitForResizeDone();
+
             resizeFunction(ev);
         }, debounceDelay);
 
@@ -461,15 +510,30 @@ export class CoreDomUtilsProvider {
     /**
      * Focus an element and open keyboard.
      *
-     * @param el HTML element to focus.
+     * @param focusElement HTML element to focus.
      */
-    focusElement(el: HTMLElement): void {
-        if (el?.focus) {
-            el.focus();
-            if (CoreApp.isAndroid() && this.supportsInputKeyboard(el)) {
-                // On some Android versions the keyboard doesn't open automatically.
-                CoreApp.openKeyboard();
+    async focusElement(focusElement: HTMLElement): Promise<void> {
+        let retries = 10;
+
+        if (!focusElement.focus) {
+            throw new CoreError('Element to focus cannot be focused');
+        }
+
+        while (retries > 0 && focusElement !== document.activeElement) {
+            focusElement.focus();
+
+            if (focusElement === document.activeElement) {
+                await CoreUtils.nextTick();
+                if (CoreApp.isAndroid() && this.supportsInputKeyboard(focusElement)) {
+                    // On some Android versions the keyboard doesn't open automatically.
+                    CoreApp.openKeyboard();
+                }
+                break;
             }
+
+            // @TODO Probably a Mutation Observer would get this working.
+            await CoreUtils.wait(50);
+            retries--;
         }
     }
 
@@ -656,50 +720,54 @@ export class CoreDomUtilsProvider {
     /**
      * Retrieve the position of a element relative to another element.
      *
-     * @param container Element to search in.
+     * @param element Element to search in.
      * @param selector Selector to find the element to gets the position.
      * @param positionParentClass Parent Class where to stop calculating the position. Default inner-scroll.
      * @return positionLeft, positionTop of the element relative to.
+     * @deprecated since app 4.0. Use getRelativeElementPosition instead.
      */
-    getElementXY(container: HTMLElement, selector: undefined, positionParentClass?: string): number[];
-    getElementXY(container: HTMLElement, selector: string, positionParentClass?: string): number[] | null;
-    getElementXY(container: HTMLElement, selector?: string, positionParentClass?: string): number[] | null {
-        let element: HTMLElement | null = <HTMLElement> (selector ? container.querySelector(selector) : container);
-        let positionTop = 0;
-        let positionLeft = 0;
+    getElementXY(element: HTMLElement, selector?: string, positionParentClass = 'inner-scroll'): [number, number] | null {
+        if (selector) {
+            const foundElement = element.querySelector<HTMLElement>(selector);
+            if (!foundElement) {
+                // Element not found.
+                return null;
+            }
 
-        if (!positionParentClass) {
-            positionParentClass = 'inner-scroll';
+            element = foundElement;
         }
 
-        if (!element) {
+        const parent = element.closest<HTMLElement>(`.${positionParentClass}`);
+        if (!parent) {
             return null;
         }
 
-        while (element) {
-            positionLeft += (element.offsetLeft - element.scrollLeft + element.clientLeft);
-            positionTop += (element.offsetTop - element.scrollTop + element.clientTop);
+        const position = CoreDomUtils.getRelativeElementPosition(element, parent);
 
-            const offsetElement = element.offsetParent;
-            element = element.parentElement;
+        // Calculate the top and left positions.
+        return [
+            Math.ceil(position.x),
+            Math.ceil(position.y),
+        ];
+    }
 
-            // Every parent class has to be checked but the position has to be got form offsetParent.
-            while (offsetElement != element && element) {
-                // If positionParentClass element is reached, stop adding tops.
-                if (element.className.indexOf(positionParentClass) != -1) {
-                    element = null;
-                } else {
-                    element = element.parentElement;
-                }
-            }
+    /**
+     * Retrieve the position of a element relative to another element.
+     *
+     * @param element Element to get the position.
+     * @param parent Parent element to get relative position.
+     * @return X and Y position.
+     */
+    getRelativeElementPosition(element: HTMLElement, parent: HTMLElement): CoreCoordinates {
+        // Get the top, left coordinates of two elements
+        const elementRectangle = element.getBoundingClientRect();
+        const parentRectangle = parent.getBoundingClientRect();
 
-            // Finally, check again.
-            if (element?.className.indexOf(positionParentClass) != -1) {
-                element = null;
-            }
-        }
-
-        return [positionLeft, positionTop];
+        // Calculate the top and left positions.
+        return {
+            x: elementRectangle.x - parentRectangle.x,
+            y: elementRectangle.y - parentRectangle.y,
+        };
     }
 
     /**
@@ -1032,11 +1100,9 @@ export class CoreDomUtilsProvider {
      * @param selector Selector to search.
      */
     removeElement(element: HTMLElement, selector: string): void {
-        if (element) {
-            const selected = element.querySelector(selector);
-            if (selected) {
-                selected.remove();
-            }
+        const selected = element.querySelector(selector);
+        if (selected) {
+            selected.remove();
         }
     }
 
@@ -1134,9 +1200,9 @@ export class CoreDomUtilsProvider {
             }
 
             // Treat video posters.
-            if (media.tagName == 'VIDEO' && media.getAttribute('poster')) {
-                const currentPoster = media.getAttribute('poster');
-                const newPoster = paths[CoreTextUtils.decodeURIComponent(currentPoster!)];
+            const currentPoster = media.getAttribute('poster');
+            if (media.tagName == 'VIDEO' && currentPoster) {
+                const newPoster = paths[CoreTextUtils.decodeURIComponent(currentPoster)];
                 if (newPoster !== undefined) {
                     media.setAttribute('poster', newPoster);
                 }
@@ -1173,8 +1239,8 @@ export class CoreDomUtilsProvider {
      * @return Returns a promise which is resolved when the scroll has completed.
      * @deprecated since 3.9.5. Use directly the IonContent class.
      */
-    scrollTo(content: IonContent, x: number, y: number, duration?: number): Promise<void> {
-        return content.scrollToPoint(x, y, duration || 0);
+    scrollTo(content: IonContent, x: number, y: number, duration = 0): Promise<void> {
+        return content.scrollToPoint(x, y, duration);
     }
 
     /**
@@ -1197,7 +1263,7 @@ export class CoreDomUtilsProvider {
      * @return Returns a promise which is resolved when the scroll has completed.
      * @deprecated since 3.9.5. Use directly the IonContent class.
      */
-    scrollToTop(content: IonContent, duration?: number): Promise<void> {
+    scrollToTop(content: IonContent, duration = 0): Promise<void> {
         return content.scrollToTop(duration);
     }
 
@@ -1244,7 +1310,7 @@ export class CoreDomUtilsProvider {
             const scrollElement = await content.getScrollElement();
 
             return scrollElement.scrollTop || 0;
-        } catch (error) {
+        } catch {
             return 0;
         }
     }
@@ -1252,51 +1318,34 @@ export class CoreDomUtilsProvider {
     /**
      * Scroll to a certain element.
      *
-     * @param content The content that must be scrolled.
      * @param element The element to scroll to.
-     * @param scrollParentClass Parent class where to stop calculating the position. Default inner-scroll.
+     * @param selector Selector to find the element to scroll to inside the defined element.
      * @param duration Duration of the scroll animation in milliseconds.
-     * @return True if the element is found, false otherwise.
+     * @return Wether the scroll suceeded.
      */
-    scrollToElement(content: IonContent, element: HTMLElement, scrollParentClass?: string, duration?: number): boolean {
-        const position = this.getElementXY(element, undefined, scrollParentClass);
-        if (!position) {
-            return false;
+    async scrollViewToElement(element: HTMLElement, selector?: string, duration = 0): Promise<boolean> {
+        await CoreDomUtils.waitToBeInDOM(element);
+
+        if (selector) {
+            const foundElement = element.querySelector<HTMLElement>(selector);
+            if (!foundElement) {
+                // Element not found.
+                return false;
+            }
+
+            element = foundElement;
         }
 
-        content.scrollToPoint(position[0], position[1], duration || 0);
-
-        return true;
-    }
-
-    /**
-     * Scroll to a certain element using a selector to find it.
-     *
-     * @param container The element that contains the element that must be scrolled.
-     * @param content The content that must be scrolled.
-     * @param selector Selector to find the element to scroll to.
-     * @param scrollParentClass Parent class where to stop calculating the position. Default inner-scroll.
-     * @param duration Duration of the scroll animation in milliseconds.
-     * @return True if the element is found, false otherwise.
-     */
-    scrollToElementBySelector(
-        container: HTMLElement | null,
-        content: IonContent | undefined,
-        selector: string,
-        scrollParentClass?: string,
-        duration?: number,
-    ): boolean {
-        if (!container || !content) {
+        const content = element.closest<HTMLIonContentElement>('ion-content') ?? undefined;
+        if (!content) {
+            // Content to scroll, not found.
             return false;
         }
 
         try {
-            const position = this.getElementXY(container, selector, scrollParentClass);
-            if (!position) {
-                return false;
-            }
+            const position = CoreDomUtils.getRelativeElementPosition(element, content);
 
-            content.scrollToPoint(position[0], position[1], duration || 0);
+            await content.scrollToPoint(position.x, position.y, duration);
 
             return true;
         } catch {
@@ -1308,12 +1357,71 @@ export class CoreDomUtilsProvider {
      * Search for an input with error (core-input-error directive) and scrolls to it if found.
      *
      * @param container The element that contains the element that must be scrolled.
-     * @param content The content that must be scrolled.
-     * @param scrollParentClass Parent class where to stop calculating the position. Default inner-scroll.
      * @return True if the element is found, false otherwise.
      */
-    scrollToInputError(container: HTMLElement | null, content?: IonContent, scrollParentClass?: string): boolean {
-        return this.scrollToElementBySelector(container, content, '.core-input-error', scrollParentClass);
+    async scrollViewToInputError(container: HTMLElement): Promise<boolean> {
+        return this.scrollViewToElement(container, '.core-input-error');
+    }
+
+    /**
+     * Scroll to a certain element.
+     *
+     * @param content Not used anymore.
+     * @param element The element to scroll to.
+     * @param scrollParentClass Not used anymore.
+     * @param duration Duration of the scroll animation in milliseconds.
+     * @return True if the element is found, false otherwise.
+     * @deprecated since app 4.0 Use scrollViewToElement instead.
+     */
+    scrollToElement(content: IonContent, element: HTMLElement, scrollParentClass?: string, duration = 0): boolean {
+        CoreDomUtils.scrollViewToElement(element, undefined, duration);
+
+        return true;
+    }
+
+    /**
+     * Scroll to a certain element using a selector to find it.
+     *
+     * @param container The element that contains the element that must be scrolled.
+     * @param content Not used anymore.
+     * @param selector Selector to find the element to scroll to.
+     * @param scrollParentClass Not used anymore.
+     * @param duration Duration of the scroll animation in milliseconds.
+     * @return True if the element is found, false otherwise.
+     * @deprecated since app 4.0 Use scrollViewToElement instead.
+     */
+    scrollToElementBySelector(
+        container: HTMLElement | null,
+        content: unknown | null,
+        selector: string,
+        scrollParentClass?: string,
+        duration = 0,
+    ): boolean {
+        if (!container || !content) {
+            return false;
+        }
+
+        CoreDomUtils.scrollViewToElement(container, selector, duration);
+
+        return true;
+
+    }
+
+    /**
+     * Search for an input with error (core-input-error directive) and scrolls to it if found.
+     *
+     * @param container The element that contains the element that must be scrolled.
+     * @return True if the element is found, false otherwise.
+     * @deprecated since app 4.0 Use scrollViewToInputError instead.
+     */
+    scrollToInputError(container: HTMLElement | null): boolean {
+        if (!container) {
+            return false;
+        }
+
+        this.scrollViewToInputError(container);
+
+        return true;
     }
 
     /**
@@ -2106,6 +2214,7 @@ export class CoreDomUtilsProvider {
 
     /**
      * In iOS the resize event is triggered before the window size changes. Wait for the size to change.
+     * Use of this function is discouraged. Please use onWindowResize to check window resize event.
      *
      * @param windowWidth Initial window width.
      * @param windowHeight Initial window height.
@@ -2318,3 +2427,11 @@ export enum VerticalPoint {
     MID = 'mid',
     BOTTOM = 'bottom',
 }
+
+/**
+ * Coordinates of an element.
+ */
+export type CoreCoordinates = {
+    x: number; // X axis coordinates.
+    y: number; // Y axis coordinates.
+};

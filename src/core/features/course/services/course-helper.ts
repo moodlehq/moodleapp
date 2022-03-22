@@ -198,7 +198,7 @@ export class CoreCourseHelperProvider {
                     }
 
                     // Check if the module is stealth.
-                    module.isStealth = module.visibleoncoursepage === 0 || (!!module.visible && !section.visible);
+                    module.isStealth = CoreCourseHelper.isModuleStealth(module, section);
                 }));
 
                 return section;
@@ -206,6 +206,50 @@ export class CoreCourseHelperProvider {
         );
 
         return { hasContent, sections: formattedSections };
+    }
+
+    /**
+     * Module is stealth.
+     *
+     * @param module Module to check.
+     * @param section Section to check.
+     * @return Wether the module is stealth.
+     */
+    isModuleStealth(module: CoreCourseModuleData, section?: CoreCourseWSSection): boolean {
+        // visibleoncoursepage can be 1 for teachers when the section is hidden.
+        return !!module.visible && (!module.visibleoncoursepage || (!!section && !section.visible));
+    }
+
+    /**
+     * Module is visible by the user.
+     *
+     * @param module Module to check.
+     * @param section Section to check. Omitted if not defined.
+     * @return Wether the section is visible by the user.
+     */
+    canUserViewModule(module: CoreCourseModuleData, section?: CoreCourseWSSection): boolean {
+        return module.uservisible !== false && (!section || CoreCourseHelper.canUserViewSection(section));
+    }
+
+    /**
+     * Section is stealth.
+     * This should not be true on Moodle 4.0 onwards.
+     *
+     * @param section Section to check.
+     * @return Wether section is stealth (accessible but not visible to students).
+     */
+    isSectionStealth(section: CoreCourseWSSection): boolean {
+        return section.hiddenbynumsections === 1 || section.id === CoreCourseProvider.STEALTH_MODULES_SECTION_ID;
+    }
+
+    /**
+     * Section is visible by the user.
+     *
+     * @param section Section to check.
+     * @return Wether the section is visible by the user.
+     */
+    canUserViewSection(section: CoreCourseWSSection): boolean {
+        return section.uservisible !== false;
     }
 
     /**

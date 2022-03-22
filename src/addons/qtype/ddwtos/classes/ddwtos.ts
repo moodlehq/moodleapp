@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreFormatTextDirective } from '@directives/format-text';
+import { CoreCoordinates, CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreEventObserver } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { AddonModQuizDdwtosQuestionData } from '../component/ddwtos';
@@ -26,7 +28,7 @@ export class AddonQtypeDdwtosQuestion {
 
     protected logger: CoreLogger;
     protected nextDragItemNo = 1;
-    protected selectors!: AddonQtypeDdwtosQuestionCSSSelectors; // Result of cssSelectors.
+    protected selectors = new AddonQtypeDdwtosQuestionCSSSelectors(); // Result of cssSelectors.
     protected placed: {[no: number]: number} = {}; // Map that relates drag elements numbers with drop zones numbers.
     protected selected?: HTMLElement; // Selected element (being "dragged").
     protected resizeListener?: CoreEventObserver;
@@ -80,8 +82,8 @@ export class AddonQtypeDdwtosQuestion {
      * Invisible 'drag homes' are output in the question. These have the same properties as the drag items but are invisible.
      * We clone these invisible elements to make the actual drag items.
      */
-    cloneDragItems(): void {
-        const dragHomes = <HTMLElement[]> Array.from(this.container.querySelectorAll(this.selectors.dragHomes()));
+    async cloneDragItems(): Promise<void> {
+        const dragHomes = Array.from(this.container.querySelectorAll<HTMLElement>(this.selectors.dragHomes()));
         for (let x = 0; x < dragHomes.length; x++) {
             this.cloneDragItemsForOneChoice(dragHomes[x]);
         }
@@ -110,7 +112,7 @@ export class AddonQtypeDdwtosQuestion {
      */
     deselectDrags(): void {
         // Remove the selected class from all drags.
-        const drags = <HTMLElement[]> Array.from(this.container.querySelectorAll(this.selectors.drags()));
+        const drags = Array.from(this.container.querySelectorAll<HTMLElement>(this.selectors.drags()));
         drags.forEach((drag) => {
             drag.classList.remove('selected');
         });
@@ -192,19 +194,13 @@ export class AddonQtypeDdwtosQuestion {
      * Initialize the question.
      */
     async initializer(): Promise<void> {
-        this.selectors = new AddonQtypeDdwtosQuestionCSSSelectors();
-
-        const container = <HTMLElement> this.container.querySelector(this.selectors.topNode());
-        if (this.readOnly) {
-            container.classList.add('readonly');
-        } else {
-            container.classList.add('notreadonly');
-        }
+        const container = this.container.querySelector<HTMLElement>(this.selectors.topNode());
+        container?.classList.add(this.readOnly ? 'readonly' : 'notreadonly');
 
         // Wait for the elements to be ready.
         await this.waitForReady();
 
-        this.setPaddingSizesAll();
+        await this.setPaddingSizesAll();
         this.cloneDragItems();
         this.initialPlaceOfDragItems();
         this.makeDropZones();
@@ -212,7 +208,7 @@ export class AddonQtypeDdwtosQuestion {
         this.positionDragItems();
 
         this.resizeListener = CoreDomUtils.onWindowResize(() => {
-            this.windowResized();
+            this.positionDragItems();
         });
     }
 
@@ -220,7 +216,7 @@ export class AddonQtypeDdwtosQuestion {
      * Initialize drag items, putting them in their initial place.
      */
     initialPlaceOfDragItems(): void {
-        const drags = <HTMLElement[]> Array.from(this.container.querySelectorAll(this.selectors.drags()));
+        const drags = Array.from(this.container.querySelectorAll<HTMLElement>(this.selectors.drags()));
 
         // Add the class 'unplaced' to all elements.
         drags.forEach((drag) => {
@@ -292,15 +288,15 @@ export class AddonQtypeDdwtosQuestion {
         }
 
         // Create all the drop zones.
-        const drops = <HTMLElement[]> Array.from(this.container.querySelectorAll(this.selectors.drops()));
+        const drops = Array.from(this.container.querySelectorAll<HTMLElement>(this.selectors.drops()));
         drops.forEach((drop) => {
             this.makeDropZone(drop);
         });
 
         // If home answer zone is clicked, return drag home.
-        const home = <HTMLElement> this.container.querySelector(this.selectors.topNode() + ' .answercontainer');
+        const home = this.container.querySelector<HTMLElement>(this.selectors.topNode() + ' .answercontainer');
 
-        home.addEventListener('click', () => {
+        home?.addEventListener('click', () => {
             const drag = this.selected;
             if (!drag) {
                 // No element selected, nothing to do.
@@ -379,33 +375,37 @@ export class AddonQtypeDdwtosQuestion {
             return;
         }
 
-        let position;
-
         const placeNo = this.placed[this.getNo(drag) ?? -1];
+        const parent = this.container.querySelector<HTMLElement>('.addon-qtype-ddwtos-container');
+        if (!parent) {
+            return;
+        }
+
+        let position: CoreCoordinates | undefined;
+
         if (!placeNo) {
             // Not placed, put it in home zone.
             const groupNo = this.getGroup(drag) ?? -1;
             const choiceNo = this.getChoice(drag) ?? -1;
-
-            position = CoreDomUtils.getElementXY(
-                this.container,
-                this.selectors.dragHome(groupNo, choiceNo),
-                'answercontainer',
-            );
-            drag.classList.add('unplaced');
+            const dragHome = this.container.querySelector<HTMLElement>(this.selectors.dragHome(groupNo, choiceNo));
+            if (dragHome) {
+                position = CoreDomUtils.getRelativeElementPosition(dragHome, parent);
+            }
         } else {
             // Get the drop zone position.
-            position = CoreDomUtils.getElementXY(
-                this.container,
-                this.selectors.dropForPlace(placeNo),
-                'addon-qtype-ddwtos-container',
-            );
-            drag.classList.remove('unplaced');
+            const dropZone = this.container.querySelector<HTMLElement>(this.selectors.dropForPlace(placeNo));
+            if (dropZone) {
+                position = CoreDomUtils.getRelativeElementPosition(dropZone, parent);
+                // Avoid the border.
+                position.x++;
+                position.y++;
+            }
         }
+        drag.classList.toggle('unplaced', !placeNo);
 
         if (position) {
-            drag.style.left = position[0] + 'px';
-            drag.style.top = position[1] + 'px';
+            drag.style.left = position.x + 'px';
+            drag.style.top = position.y + 'px';
         }
     }
 
@@ -413,36 +413,25 @@ export class AddonQtypeDdwtosQuestion {
      * Postition, or reposition, all the drag items. They're placed in the right drop zone or in the home zone.
      */
     positionDragItems(): void {
-        const drags = <HTMLElement[]> Array.from(this.container.querySelectorAll(this.selectors.drags()));
+        const drags = Array.from(this.container.querySelectorAll<HTMLElement>(this.selectors.drags()));
         drags.forEach((drag) => {
             this.positionDragItem(drag);
         });
     }
 
     /**
-     * Wait for the drag items to have an offsetParent. For some reason it takes a while.
+     * Wait for the drag home items to be in DOM.
      *
-     * @param retries Number of times this has been retried.
-     * @return Promise resolved when ready or if it took too long to load.
+     * @return Promise resolved when ready in the DOM.
      */
-    protected async waitForReady(retries: number = 0): Promise<void> {
-        const drag = <HTMLElement | null> Array.from(this.container.querySelectorAll(this.selectors.drags()))[0];
-        if (drag?.offsetParent || retries >= 10) {
-            // Ready or too many retries, stop.
-            return;
-        }
+    protected async waitForReady(): Promise<void> {
+        await CoreDomUtils.waitToBeInDOM(this.container);
 
-        const deferred = CoreUtils.promiseDefer<void>();
+        await CoreComponentsRegistry.waitComponentsReady(this.container, 'core-format-text', CoreFormatTextDirective);
 
-        setTimeout(async () => {
-            try {
-                await this.waitForReady(retries + 1);
-            } finally {
-                deferred.resolve();
-            }
-        }, 20);
+        const drag = Array.from(this.container.querySelectorAll<HTMLElement>(this.selectors.dragHomes()))[0];
 
-        return deferred.promise;
+        await CoreDomUtils.waitToBeInDOM(drag);
     }
 
     /**
@@ -452,7 +441,7 @@ export class AddonQtypeDdwtosQuestion {
      */
     removeDragFromDrop(drag: HTMLElement): void {
         const placeNo = this.placed[this.getNo(drag) ?? -1];
-        const drop = <HTMLElement> this.container.querySelector(this.selectors.dropForPlace(placeNo));
+        const drop = this.container.querySelector<HTMLElement>(this.selectors.dropForPlace(placeNo));
 
         this.placeDragInDrop(null, drop);
     }
@@ -473,9 +462,9 @@ export class AddonQtypeDdwtosQuestion {
     /**
      * Set the padding size for all groups.
      */
-    setPaddingSizesAll(): void {
+    async setPaddingSizesAll(): Promise<void> {
         for (let groupNo = 1; groupNo <= 8; groupNo++) {
-            this.setPaddingSizeForGroup(groupNo);
+            await this.setPaddingSizeForGroup(groupNo);
         }
     }
 
@@ -484,19 +473,25 @@ export class AddonQtypeDdwtosQuestion {
      *
      * @param groupNo Group number.
      */
-    setPaddingSizeForGroup(groupNo: number): void {
-        const groupItems = <HTMLElement[]> Array.from(this.container.querySelectorAll(this.selectors.dragHomesGroup(groupNo)));
+    async setPaddingSizeForGroup(groupNo: number): Promise<void> {
+        const groupItems = Array.from(this.container.querySelectorAll<HTMLElement>(this.selectors.dragHomesGroup(groupNo)));
 
         if (!groupItems.length) {
             return;
         }
 
+        await CoreDomUtils.waitToBeInDOM(groupItems[0]);
+
         let maxWidth = 0;
         let maxHeight = 0;
-
         // Find max height and width.
         groupItems.forEach((item) => {
             item.innerHTML = CoreTextUtils.decodeHTML(item.innerHTML);
+        });
+        // Wait to render in order to calculate size.
+        await CoreUtils.nextTick();
+
+        groupItems.forEach((item) => {
             maxWidth = Math.max(maxWidth, Math.ceil(item.offsetWidth));
             maxHeight = Math.max(maxHeight, Math.ceil(item.offsetHeight));
         });
@@ -507,19 +502,10 @@ export class AddonQtypeDdwtosQuestion {
             this.padToWidthHeight(item, maxWidth, maxHeight);
         });
 
-        const dropsGroup = <HTMLElement[]> Array.from(this.container.querySelectorAll(this.selectors.dropsGroup(groupNo)));
+        const dropsGroup = Array.from(this.container.querySelectorAll<HTMLElement>(this.selectors.dropsGroup(groupNo)));
         dropsGroup.forEach((item) => {
             this.padToWidthHeight(item, maxWidth + 2, maxHeight + 2);
         });
-    }
-
-    /**
-     * Window resized.
-     */
-    async windowResized(): Promise<void> {
-        await CoreDomUtils.waitForResizeDone();
-
-        this.positionDragItems();
     }
 
 }

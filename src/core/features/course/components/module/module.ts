@@ -19,6 +19,7 @@ import {
     CoreCourseModuleData,
     CoreCourseModuleCompletionData,
     CoreCourseSection,
+    CoreCourseHelper,
 } from '@features/course/services/course-helper';
 import { CoreCourse, CoreCourseModuleCompletionStatus, CoreCourseModuleCompletionTracking } from '@features/course/services/course';
 import { CoreCourseModuleDelegate, CoreCourseModuleHandlerButton } from '@features/course/services/module-delegate';
@@ -166,7 +167,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
      * @param event Click event.
      */
     moduleClicked(event: Event): void {
-        if (this.module.uservisible !== false && this.module.handlerData?.action) {
+        if (CoreCourseHelper.canUserViewModule(this.module, this.section) && this.module.handlerData?.action) {
             this.module.handlerData.action(event, this.module, this.module.course);
         }
     }

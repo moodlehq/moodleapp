@@ -21,6 +21,7 @@ import { ContextLevel, CoreConstants } from '@/core/constants';
 import { Translate } from '@singletons';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreNavigator } from '@services/navigator';
+import { CoreCourseHelper } from '@features/course/services/course-helper';
 
 /**
  * Component to render an "activity modules" block.
@@ -67,7 +68,7 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
             }
 
             section.modules.forEach((mod) => {
-                if (mod.uservisible === false || !CoreCourse.moduleHasView(mod) ||
+                if (!CoreCourseHelper.canUserViewModule(mod, section) || !CoreCourse.moduleHasView(mod) ||
                     modFullNames[mod.modname] !== undefined) {
                     // Ignore this module.
                     return;

@@ -352,9 +352,7 @@ export class AddonModDataEditPage implements OnInit {
                     }
                     this.jsData!.errors = this.errors;
 
-                    setTimeout(() => {
-                        this.scrollToFirstError();
-                    });
+                    this.scrollToFirstError();
                 }
             } finally {
                 modal.dismiss();
@@ -449,8 +447,9 @@ export class AddonModDataEditPage implements OnInit {
     /**
      * Scroll to first error or to the top if not found.
      */
-    protected scrollToFirstError(): void {
-        if (!CoreDomUtils.scrollToElementBySelector(this.formElement.nativeElement, this.content, '.addon-data-error')) {
+    protected async scrollToFirstError(): Promise<void> {
+        const scrolled = await CoreDomUtils.scrollViewToElement(this.formElement.nativeElement, '.addon-data-error');
+        if (!scrolled) {
             this.content?.scrollToTop();
         }
     }

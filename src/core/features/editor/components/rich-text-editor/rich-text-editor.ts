@@ -20,7 +20,6 @@ import {
     ViewChild,
     ElementRef,
     OnInit,
-    AfterContentInit,
     OnDestroy,
     Optional,
     AfterViewInit,
@@ -56,7 +55,7 @@ import { CoreCancellablePromise } from '@classes/cancellable-promise';
     templateUrl: 'core-editor-rich-text-editor.html',
     styleUrls: ['rich-text-editor.scss'],
 })
-export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentInit, AfterViewInit, OnDestroy {
+export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Based on: https://github.com/judgewest2000/Ionic3RichText/
     // @todo: Anchor button, fullscreen...
@@ -149,7 +148,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.canScanQR = CoreUtils.canScanQR();
@@ -159,9 +158,9 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
     }
 
     /**
-     * Init editor.
+     * @inheritdoc
      */
-    async ngAfterContentInit(): Promise<void> {
+    async ngAfterViewInit(): Promise<void> {
         this.rteEnabled = await CoreDomUtils.isRichTextEditorEnabled();
 
         await this.waitLoadingsDone();
@@ -202,13 +201,14 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
 
             this.deleteDraftOnSubmitOrCancel();
         }
-    }
 
-    /**
-     * @inheritdoc
-     */
-    async ngAfterViewInit(): Promise<void> {
-        const label = this.element.closest('ion-item')?.querySelector('ion-label');
+        const ionItem = this.element.closest<HTMLIonItemElement>('ion-item');
+        if (!ionItem) {
+            return;
+        }
+        ionItem.classList.add('item-rte');
+
+        const label = ionItem.querySelector('ion-label');
 
         if (!label) {
             return;
@@ -773,7 +773,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterContentIn
      * @param event Event.
      */
     stopBubble(event: Event): void {
-        if (event.type != 'touchend' &&event.type != 'mouseup' && event.type != 'keyup') {
+        if (event.type != 'touchend' && event.type != 'mouseup' && event.type != 'keyup') {
             event.preventDefault();
         }
         event.stopPropagation();

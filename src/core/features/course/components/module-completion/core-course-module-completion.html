@@ -21,7 +21,7 @@
                         </ion-label>
                     </ion-chip>
 
-                    <ion-chip *ngIf="rule.statusincomplete" color="dark" role="listitem" [attr.aria-label]="rule.accessibleDescription"
+                    <ion-chip *ngIf="rule.statusincomplete" color="secondary" role="listitem" [attr.aria-label]="rule.accessibleDescription"
                         class="completioninfo completion_incomplete">
                         <ion-icon name="fas-edit" [attr.aria-label]="'core.course.completion_automatic:todo' | translate "></ion-icon>
                         <ion-label>
@@ -42,7 +42,7 @@
         </div>
 
         <ng-container *ngIf="mode == 'basic' && completion.istrackeduser">
-            <ion-chip class="completioninfo completion_incomplete" *ngIf="completionStatus === 0" color="dark">
+            <ion-chip class="completioninfo completion_incomplete" *ngIf="completionStatus === 0" color="secondary">
                 <ion-icon name="fas-edit" aria-hidden="true"></ion-icon>
                 <ion-label>
                     {{ 'core.course.todo' | translate }}

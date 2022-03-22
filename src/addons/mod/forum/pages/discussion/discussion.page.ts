@@ -187,13 +187,10 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
         const scrollTo = this.postId || this.parent;
         if (scrollTo) {
             // Scroll to the post.
-            setTimeout(() => {
-                CoreDomUtils.scrollToElementBySelector(
-                    this.elementRef.nativeElement,
-                    this.content,
-                    '#addon-mod_forum-post-' + scrollTo,
-                );
-            });
+            CoreDomUtils.scrollViewToElement(
+                this.elementRef.nativeElement,
+                '#addon-mod_forum-post-' + scrollTo,
+            );
         }
     }
 

@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { CoreCourse, CoreCourseProvider, CoreCourseWSSection } from '@features/course/services/course';
-import { CoreCourseModuleData } from '@features/course/services/course-helper';
+import { CoreCourse, CoreCourseWSSection } from '@features/course/services/course';
+import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { IonContent } from '@ionic/angular';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
@@ -177,7 +177,7 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
      * @return Wether the module is available to the user or not.
      */
     protected async isModuleAvailable(module: CoreCourseModuleData): Promise<boolean> {
-        return CoreCourse.instance.moduleHasView(module);
+        return !CoreCourseHelper.isModuleStealth(module) && CoreCourse.instance.moduleHasView(module);
     }
 
     /**
@@ -187,7 +187,7 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
      * @return Wether the module is available to the user or not.
      */
     protected isSectionAvailable(section: CoreCourseWSSection): boolean {
-        return section.uservisible !== false && section.id != CoreCourseProvider.STEALTH_MODULES_SECTION_ID;
+        return CoreCourseHelper.canUserViewSection(section) && !CoreCourseHelper.isSectionStealth(section);
     }
 
     /**
@@ -223,7 +223,7 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
             animationDirection: next ? 'forward' : 'back',
         };
 
-        if (module.uservisible === false) {
+        if (!CoreCourseHelper.canUserViewModule(module)) {
             const section = next ? this.nextModuleSection : this.previousModuleSection;
             options.params = {
                 module,

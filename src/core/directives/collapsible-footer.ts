@@ -72,6 +72,10 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
 
         await this.calculateHeight();
 
+        CoreDomUtils.onElementSlot(this.element, () => {
+            this.calculateHeight();
+        });
+
         this.listenScrollEvents();
     }
 
@@ -146,7 +150,8 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
                     ? this.finalHeight
                     : this.initialHeight;
 
-                this.setBarHeight(newHeight);            }
+                this.setBarHeight(newHeight);
+            }
         });
 
         this.resizeListener = CoreDomUtils.onWindowResize(() => {

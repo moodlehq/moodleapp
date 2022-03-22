@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { ActivatedRoute } from '@angular/router';
-import { AfterViewInit, Component, ElementRef, OnDestroy, Optional } from '@angular/core';
-import { IonContent, IonRefresher } from '@ionic/angular';
+import { AfterViewInit, Component, ElementRef, OnDestroy } from '@angular/core';
+import { IonRefresher } from '@ionic/angular';
 
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreGrades } from '@features/grades/services/grades';
@@ -59,7 +59,6 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     constructor(
         protected route: ActivatedRoute,
         protected element: ElementRef<HTMLElement>,
-        @Optional() protected content?: IonContent,
     ) {
         try {
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId', { route });
@@ -170,11 +169,9 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
 
                 if (row) {
                     this.toggleRow(row, true);
-                    await CoreUtils.nextTick();
 
-                    CoreDomUtils.scrollToElementBySelector(
+                    CoreDomUtils.scrollViewToElement(
                         this.element.nativeElement,
-                        this.content,
                         '#grade-' + row.id,
                     );
                     this.gradeId = undefined;

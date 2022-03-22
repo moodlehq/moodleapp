@@ -985,6 +985,18 @@ ion-chip {
             color: var(--ion-color-base);
         }
     }
+
+    &.ion-color {
+        &.ion-color-light,
+        &.ion-color-medium,
+        &.ion-color-dark,
+        &.ion-color-secondary {
+            color: var(--gray-900);
+            &.chip-outline {
+                color: var(--text-color);
+            }
+        }
+    }
 }
 
 ion-searchbar {
@@ -1243,7 +1255,7 @@ ion-datetime.datetime-disabled {
 
 // Make links clickable when inside radio or checkbox items. Style part.
 @media (hover: hover) {
-    ion-item.item-multiple-inputs:hover::part(native) {
+    ion-item.item-multiple-inputs:not(.item-rte):hover::part(native) {
         color: var(--color-hover);
 
         &::after {
@@ -1264,7 +1276,7 @@ ion-datetime.datetime-disabled {
 
 // It fixes the click on links where ion-ripple-effect is present.
 // Make links clickable when inside radio or checkbox items. Pointer and cursor part.
-ion-item.item-multiple-inputs:not(.only-links),
+ion-item.item-multiple-inputs:not(.only-links):not(.item-rte),
 ion-item.ion-activatable:not(.only-links) {
     cursor: pointer;
     ion-label {
