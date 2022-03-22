@@ -38,6 +38,7 @@ import { CoreCoursesHelper, CoreCourseWithImageAndColor } from '@features/course
 import { Subscription } from 'rxjs';
 import { CoreColors } from '@singletons/colors';
 import { CoreText } from '@singletons/text';
+import { CorePromisedValue } from '@classes/promised-value';
 
 /**
  * Page that shows the summary of a course including buttons to enrol and other available options.
@@ -70,7 +71,8 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
     courseMenuHandlers: CoreCourseOptionsMenuHandlerToDisplay[] = [];
 
     protected useGuestAccess = false;
-    protected guestInstanceId?: number;
+    protected guestInstanceId = new CorePromisedValue<number | undefined>();
+    protected courseData = new CorePromisedValue<CoreCourseSummaryData | undefined>();
     protected waitStart = 0;
     protected enrolUrl = '';
     protected pageDestroyed = false;
@@ -130,11 +132,12 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
      *         password is required for guest access.
      */
     protected async canAccessAsGuest(): Promise<boolean> {
-        if (this.guestInstanceId === undefined) {
+        const guestInstanceId = await this.guestInstanceId;
+        if (guestInstanceId === undefined) {
             return false;
         }
 
-        const info = await CoreCourses.getCourseGuestEnrolmentInfo(this.guestInstanceId);
+        const info = await CoreCourses.getCourseGuestEnrolmentInfo(guestInstanceId);
 
         // Guest access with password is not supported by the app.
         return !!info.status && !info.passwordrequired;
@@ -146,32 +149,70 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
      * @param refresh If it's refreshing content.
      */
     protected async getCourse(refresh = false): Promise<void> {
-        // Get course enrolment methods.
-        this.selfEnrolInstances = [];
         this.otherEnrolments = false;
 
         try {
-            const enrolmentMethods = await CoreCourses.getCourseEnrolmentMethods(this.courseId);
-            this.guestInstanceId = undefined;
-
-            enrolmentMethods.forEach((method) => {
-                if (!method.status) {
-                    return;
-                }
-
-                if (method.type === 'self') {
-                    this.selfEnrolInstances.push(method);
-                } else if (method.type === 'guest') {
-                    this.guestInstanceId = method.id;
-                } else {
-                    // Other enrolments that comes from that WS should need user action.
-                    this.otherEnrolments = true;
-                }
-            });
+            await Promise.all([
+                this.getEnrolmentMethods(),
+                this.getCourseData(),
+                this.loadCourseExtraData(),
+            ]);
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error getting enrolment data');
         }
 
+        await this.setCourseColor();
+
+        if (!this.course ||
+            !('progress' in this.course) ||
+            typeof this.course.progress !== 'number' ||
+            this.course.progress < 0 ||
+            this.course.completionusertracked === false
+        ) {
+            this.progress = undefined;
+        } else {
+            this.progress = this.course.progress;
+        }
+
+        await this.loadMenuHandlers(refresh);
+
+        this.dataLoaded = true;
+    }
+
+    /**
+     * Get course enrolment methods.
+     */
+    protected async getEnrolmentMethods(): Promise<void> {
+        this.selfEnrolInstances = [];
+        this.guestInstanceId.reset();
+
+        const enrolmentMethods = await CoreCourses.getCourseEnrolmentMethods(this.courseId);
+
+        enrolmentMethods.forEach((method) => {
+            if (!method.status) {
+                return;
+            }
+
+            if (method.type === 'self') {
+                this.selfEnrolInstances.push(method);
+            } else if (method.type === 'guest') {
+                this.guestInstanceId.resolve(method.id);
+            } else {
+                // Other enrolments that comes from that WS should need user action.
+                this.otherEnrolments = true;
+            }
+        });
+
+        if (!this.guestInstanceId.isSettled()) {
+            // No guest instance found.
+            this.guestInstanceId.resolve(undefined);
+        }
+    }
+
+    /**
+     * Get course data.
+     */
+    protected async getCourseData(): Promise<void> {
         try {
             // Check if user is enrolled in the course.
             try {
@@ -192,16 +233,26 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
             this.useGuestAccess = this.canAccessCourse;
         }
 
+        this.courseData.resolve(this.course);
+    }
+
+    /**
+     * Load some extra data for the course.
+     */
+    protected async loadCourseExtraData(): Promise<void> {
         try {
             const courseByField = await CoreCourses.getCourseByField('id', this.courseId);
-            if (this.course) {
-                this.course.customfields = courseByField.customfields;
-                this.course.contacts = courseByField.contacts;
-                this.course.displayname = courseByField.displayname;
-                this.course.categoryname = courseByField.categoryname;
-                this.course.overviewfiles = courseByField.overviewfiles;
+            const courseData = await this.courseData;
+
+            if (courseData) {
+                courseData.customfields = courseByField.customfields;
+                courseData.contacts = courseByField.contacts;
+                courseData.displayname = courseByField.displayname;
+                courseData.categoryname = courseByField.categoryname;
+                courseData.overviewfiles = courseByField.overviewfiles;
             } else  {
                 this.course = courseByField;
+                this.courseData.resolve(courseByField);
             }
 
             // enrollmentmethods contains ALL enrolment methods including manual.
@@ -212,23 +263,6 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
         } catch {
             // Ignore errors.
         }
-
-        await this.setCourseColor();
-
-        if (!this.course ||
-            !('progress' in this.course) ||
-            typeof this.course.progress !== 'number' ||
-            this.course.progress < 0 ||
-            this.course.completionusertracked === false
-        ) {
-            this.progress = undefined;
-        } else {
-            this.progress = this.course.progress;
-        }
-
-        await this.loadMenuHandlers(refresh);
-
-        this.dataLoaded = true;
     }
 
     /**
@@ -375,8 +409,8 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
         promises.push(CoreCourses.invalidateCourseEnrolmentMethods(this.courseId));
         promises.push(CoreCourseOptionsDelegate.clearAndInvalidateCoursesOptions(this.courseId));
         promises.push(CoreCourses.invalidateCoursesByField('id', this.courseId));
-        if (this.guestInstanceId) {
-            promises.push(CoreCourses.invalidateCourseGuestEnrolmentInfo(this.guestInstanceId));
+        if (this.guestInstanceId.value) {
+            promises.push(CoreCourses.invalidateCourseGuestEnrolmentInfo(this.guestInstanceId.value));
         }
 
         await Promise.all(promises).finally(() => this.getCourse()).finally(() => {
