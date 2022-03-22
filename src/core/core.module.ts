@@ -33,7 +33,6 @@ import { CoreFileHelperProvider } from '@services/file-helper';
 import { CoreFilepoolProvider } from '@services/filepool';
 import { CoreFileProvider } from '@services/file';
 import { CoreFileSessionProvider } from '@services/file-session';
-import { CoreForms } from '@singletons/form';
 import { CoreGeolocationProvider } from '@services/geolocation';
 import { CoreGroupsProvider } from '@services/groups';
 import { CoreIframeUtilsProvider } from '@services/utils/iframe';
@@ -51,11 +50,9 @@ import { CoreUpdateManagerProvider } from '@services/update-manager';
 import { CoreUrlUtilsProvider } from '@services/utils/url';
 import { CoreUtilsProvider } from '@services/utils/utils';
 import { CoreWSProvider } from '@services/ws';
-import { CoreComponentsRegistry } from '@singletons/components-registry';
 
 export const CORE_SERVICES: Type<unknown>[] = [
     CoreAppProvider,
-    CoreComponentsRegistry,
     CoreConfigProvider,
     CoreCronDelegateService,
     CoreCustomURLSchemesProvider,
@@ -65,7 +62,6 @@ export const CORE_SERVICES: Type<unknown>[] = [
     CoreFilepoolProvider,
     CoreFileProvider,
     CoreFileSessionProvider,
-    CoreForms,
     CoreGeolocationProvider,
     CoreGroupsProvider,
     CoreIframeUtilsProvider,
