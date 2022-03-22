@@ -15,7 +15,6 @@
 import { AddonCalendar, AddonCalendarReminderUnits, AddonCalendarValueAndUnit } from '@addons/calendar/services/calendar';
 import { Component, Input, OnInit } from '@angular/core';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
 import { ModalController } from '@singletons';
 
 /**
@@ -166,11 +165,9 @@ export class AddonCalendarReminderTimeModalComponent implements OnInit {
 
         this.radioValue = 'custom';
 
-        await CoreUtils.nextTick();
-
-        const target = <HTMLInputElement | Element | null> ev.target;
-        if (target && 'focus' in target) {
-            target.focus();
+        const target = <HTMLInputElement | HTMLElement | null> ev.target;
+        if (target) {
+            CoreDomUtils.focusElement(target);
         }
     }
 

@@ -336,12 +336,22 @@ export class CoreDomUtilsProvider {
     /**
      * Focus an element and open keyboard.
      *
-     * @param focusElement HTML element to focus.
+     * @param element HTML element to focus.
      */
-    async focusElement(focusElement: HTMLElement): Promise<void> {
+    async focusElement(
+        element: HTMLIonInputElement | HTMLIonTextareaElement | HTMLIonSearchbarElement | HTMLElement,
+    ): Promise<void> {
         let retries = 10;
 
-        if (!focusElement.focus) {
+        let focusElement = element;
+
+        if ('getInputElement' in focusElement) {
+            // If it's an Ionic element get the right input to use.
+            focusElement.componentOnReady && await focusElement.componentOnReady();
+            focusElement = await focusElement.getInputElement();
+        }
+
+        if (!focusElement || !focusElement.focus) {
             throw new CoreError('Element to focus cannot be focused');
         }
 

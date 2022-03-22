@@ -49,19 +49,7 @@ export class CoreAutoFocusDirective implements AfterViewInit {
 
         await CoreDom.waitToBeInDOM(this.element);
 
-        let focusElement = this.element;
-
-        if ('getInputElement' in focusElement) {
-            // If it's an Ionic element get the right input to use.
-            focusElement.componentOnReady && await focusElement.componentOnReady();
-            focusElement = await focusElement.getInputElement();
-        }
-
-        if (!focusElement) {
-            return;
-        }
-
-        CoreDomUtils.focusElement(focusElement);
+        CoreDomUtils.focusElement(this.element);
 
     }
 
