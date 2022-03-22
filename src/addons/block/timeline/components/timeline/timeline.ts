@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { CoreTimeUtils } from '@services/utils/time';
 import { CoreSites } from '@services/sites';
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
 import { AddonBlockTimeline } from '../../services/timeline';
@@ -171,11 +170,8 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
      * @return Promise resolved when done.
      */
     protected async fetchMyOverviewTimelineByCourses(): Promise<void> {
-        const courses = await CoreCoursesHelper.getUserCoursesWithOptions();
-        const today = CoreTimeUtils.timestamp();
-
-        this.timelineCourses.courses = courses.filter((course) =>
-            (course.startdate || 0) <= today && (!course.enddate || course.enddate >= today));
+        // Do not filter courses by date because they can contain activities due.
+        this.timelineCourses.courses = await CoreCoursesHelper.getUserCoursesWithOptions();
 
         if (this.timelineCourses.courses.length > 0) {
             this.courseIds = this.timelineCourses.courses.map((course) => course.id);
