@@ -54,44 +54,9 @@
             </ion-label>
         </ion-item>
 
-        <ion-card *ngIf="(canPrefetch && displayOptions.displayPrefetch) || (sizeReadable && displayOptions.displaySize)">
-            <ion-item lines="full" class="ion-text-wrap">
-                <ion-label>
-                    <h2>
-                        <ion-icon name="fas-cloud-download-alt" aria-hidden="true"></ion-icon>
-                        {{ 'addon.storagemanager.downloads' | translate }}
-                    </h2>
-                </ion-label>
-            </ion-item>
-            <ion-item *ngIf="sizeReadable && displayOptions.displaySize" class="ion-text-wrap">
-                <ion-label>
-                    <p class="item-heading ion-text-wrap">{{ 'addon.storagemanager.totalspaceusage' | translate }}</p>
-                    <ion-badge color="light">{{ sizeReadable | coreBytesToSize }}</ion-badge>
-                </ion-label>
-                <ion-button *ngIf="!removeFilesLoading" [disabled]="prefetchLoading" (click)="removeFiles()" color="danger" fill="clear"
-                    [attr.aria-label]="'core.clearstoreddata' | translate:{$a: sizeReadable}" slot="end">
-                    <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
-                </ion-button>
-                <ion-spinner *ngIf="removeFilesLoading" slot="end" aria-hidden="true"></ion-spinner>
-            </ion-item>
-            <ion-item *ngIf="downloadTimeReadable" class="ion-text-wrap">
-                <ion-label>
-                    <p class="ion-text-wrap">{{ 'core.lastdownloaded' | translate }} {{ downloadTimeReadable }}</p>
-                </ion-label>
-            </ion-item>
-            <ion-button fill="outline" expand="block" *ngIf="canPrefetch && displayOptions.displayPrefetch" class="ion-text-wrap"
-                (click)="prefetch()" [disabled]="prefetchDisabled">
-                <ion-icon *ngIf="!prefetchLoading" name="fas-cloud-download-alt" slot="start" aria-hidden="true"></ion-icon>
-                <ion-spinner *ngIf="prefetchLoading" slot="start" aria-hidden="true"></ion-spinner>
-                <ion-label>
-                    {{ 'core.download' | translate }}
-                </ion-label>
-            </ion-button>
-        </ion-card>
-
         <ion-card *ngIf="displayOptions.displayGrades && grades?.length > 0">
             <ion-list>
-                <ion-item lines="full" class="ion-text-wrap">
+                <ion-item lines="full" class="ion-text-wrap card-header">
                     <ion-label>
                         <h2>
                             <ion-icon name="fas-chart-bar" slot="end" aria-hidden="true"></ion-icon>{{ 'core.grades.gradebook' | translate
@@ -186,6 +151,41 @@
                     </div>
                 </ng-container>
             </ion-list>
+        </ion-card>
+
+        <ion-card *ngIf="(canPrefetch && displayOptions.displayPrefetch) || (sizeReadable && displayOptions.displaySize)">
+            <ion-item lines="full" class="ion-text-wrap card-header">
+                <ion-label>
+                    <h2>
+                        <ion-icon name="fas-cloud-download-alt" aria-hidden="true"></ion-icon>
+                        {{ 'addon.storagemanager.downloads' | translate }}
+                    </h2>
+                </ion-label>
+            </ion-item>
+            <ion-item *ngIf="sizeReadable && displayOptions.displaySize" class="ion-text-wrap">
+                <ion-label>
+                    <p class="item-heading ion-text-wrap">{{ 'addon.storagemanager.totalspaceusage' | translate }}</p>
+                    <ion-badge color="light">{{ sizeReadable | coreBytesToSize }}</ion-badge>
+                </ion-label>
+                <ion-button *ngIf="!removeFilesLoading" [disabled]="prefetchLoading" (click)="removeFiles()" color="danger" fill="clear"
+                    [attr.aria-label]="'core.clearstoreddata' | translate:{$a: sizeReadable}" slot="end">
+                    <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
+                </ion-button>
+                <ion-spinner *ngIf="removeFilesLoading" slot="end" aria-hidden="true"></ion-spinner>
+            </ion-item>
+            <ion-item *ngIf="downloadTimeReadable" class="ion-text-wrap">
+                <ion-label>
+                    <p class="ion-text-wrap">{{ 'core.lastdownloaded' | translate }} {{ downloadTimeReadable }}</p>
+                </ion-label>
+            </ion-item>
+            <ion-button fill="outline" expand="block" *ngIf="canPrefetch && displayOptions.displayPrefetch" class="ion-text-wrap"
+                (click)="prefetch()" [disabled]="prefetchDisabled">
+                <ion-icon *ngIf="!prefetchLoading" name="fas-cloud-download-alt" slot="start" aria-hidden="true"></ion-icon>
+                <ion-spinner *ngIf="prefetchLoading" slot="start" aria-hidden="true"></ion-spinner>
+                <ion-label>
+                    {{ 'core.download' | translate }}
+                </ion-label>
+            </ion-button>
         </ion-card>
 
         <ion-item button *ngIf="blog && displayOptions.displayBlog" (click)="gotoBlog()" [detail]="true">
