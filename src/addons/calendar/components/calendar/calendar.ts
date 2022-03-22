@@ -496,7 +496,6 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
         const weeks = result.weeks as AddonCalendarWeek[];
         const currentDay = new Date().getDate();
         const currentTime = CoreTimeUtils.timestamp();
-        let isPast = true;
 
         const preloadedMonth: PreloadedMonth = {
             ...month,
@@ -523,8 +522,7 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
 
                 if (preloadedMonth.isCurrentMonth) {
                     day.istoday = day.mday == currentDay;
-                    day.ispast = isPast && !day.istoday;
-                    isPast = day.ispast;
+                    day.ispast = preloadedMonth.isPastMonth || day.mday < currentDay;
 
                     if (day.istoday) {
                         day.eventsFormated?.forEach((event) => {
