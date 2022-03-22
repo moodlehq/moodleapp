@@ -79,6 +79,9 @@ import { Md5 } from 'ts-md5/dist/md5';
 // Import core classes that can be useful for site plugins.
 import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { CoreArray } from '@singletons/array';
+import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreDom } from '@singletons/dom';
+import { CoreForms } from '@singletons/form';
 import { CoreText } from '@singletons/text';
 import { CoreUrl } from '@singletons/url';
 import { CoreWindow } from '@singletons/window';
@@ -151,7 +154,6 @@ import { ADDON_PRIVATEFILES_SERVICES } from '@addons/privatefiles/privatefiles.m
 // Import some addon modules that define components, directives and pipes. Only import the important ones.
 import { AddonModAssignComponentsModule } from '@addons/mod/assign/components/components.module';
 import { AddonModWorkshopComponentsModule } from '@addons/mod/workshop/components/components.module';
-import { CoreDom } from '@singletons/dom';
 
 /**
  * Service to provide functionalities regarding compiling dynamic HTML and Javascript.
@@ -342,7 +344,9 @@ export class CoreCompileProvider {
         instance['Md5'] = Md5;
         instance['CoreSyncBaseProvider'] = CoreSyncBaseProvider;
         instance['CoreArray'] = CoreArray;
+        instance['CoreComponentsRegistry'] = CoreComponentsRegistry;
         instance['CoreDom'] = CoreDom;
+        instance['CoreForms'] = CoreForms;
         instance['CoreText'] = CoreText;
         instance['CoreUrl'] = CoreUrl;
         instance['CoreWindow'] = CoreWindow;
