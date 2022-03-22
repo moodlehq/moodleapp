@@ -20,6 +20,8 @@ import { CoreContentLinksAction } from '@features/contentlinks/services/contentl
 import { CoreSiteHome } from '../sitehome';
 import { makeSingleton } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSiteHomeHomeHandlerService } from './sitehome-home';
+import { CoreMainMenuHomeHandlerService } from '@features/mainmenu/services/handlers/mainmenu';
 
 /**
  * Handler to treat links to site home index.
@@ -29,7 +31,7 @@ export class CoreSiteHomeIndexLinkHandlerService extends CoreContentLinksHandler
 
     name = 'CoreSiteHomeIndexLinkHandler';
     featureName = 'CoreMainMenuDelegate_CoreSiteHome';
-    pattern = /\/course\/view\.php.*([?&]id=\d+)/;
+    pattern = /\/course\/view\.php.*([?&]id=\d+)|\/index\.php(\?redirect=0)?/;
 
     /**
      * @inheritdoc
@@ -37,10 +39,13 @@ export class CoreSiteHomeIndexLinkHandlerService extends CoreContentLinksHandler
     getActions(): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
             action: (siteId: string): void => {
-                CoreNavigator.navigateToSitePath('/home/site', {
-                    preferCurrentTab: false,
-                    siteId,
-                });
+                CoreNavigator.navigateToSitePath(
+                    `/${CoreMainMenuHomeHandlerService.PAGE_NAME}/${CoreSiteHomeHomeHandlerService.PAGE_NAME}`,
+                    {
+                        preferCurrentTab: false,
+                        siteId,
+                    },
+                );
             },
         }];
     }
@@ -51,7 +56,7 @@ export class CoreSiteHomeIndexLinkHandlerService extends CoreContentLinksHandler
     async isEnabled(siteId: string, url: string, params: Record<string, string>, courseId?: number): Promise<boolean> {
         courseId = parseInt(params.id, 10);
         if (!courseId) {
-            return false;
+            return url.includes('index.php');
         }
 
         const site = await CoreSites.getSite(siteId);

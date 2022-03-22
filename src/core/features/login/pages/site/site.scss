@@ -38,7 +38,8 @@
         max-width: fit-content;
         width: auto;
         height: auto;
-        margin: 0 50% 0 auto; // LTR will be applied on transform.
+        margin: 0 auto;
+        margin-left: 50%;
         @include transform(translate3d(-50%,0,0));
         object-fit: cover;
         object-position: 50% 50%;
@@ -48,6 +49,15 @@
         font-size: 35px;
         height: 50px;
     }
+}
+
+:host-context([dir="rtl"]) {
+
+    .item ion-thumbnail img {
+        margin-left: 0;
+        margin-right: 50%;
+    }
+
 }
 
 .core-login-site-logo,
