@@ -94,7 +94,7 @@ export class CoreDomUtilsProvider {
     }
 
     /**
-     * Wait an element to be in dom of another element.
+     * Wait an element to be added to the root DOM.
      *
      * @param element Element to wait.
      * @return Cancellable promise.
@@ -123,6 +123,44 @@ export class CoreDomUtilsProvider {
                 });
 
                 observer.observe(document.body, { subtree: true, childList: true });
+            },
+            () => {
+                observer?.disconnect();
+            },
+        );
+    }
+
+    /**
+     * Wait an element to be in dom of another element using a selector
+     *
+     * @param container Element to wait.
+     * @return Cancellable promise.
+     */
+    async waitToBeInsideElement(container: HTMLElement, selector: string): Promise<CoreCancellablePromise<HTMLElement>> {
+        await CoreDomUtils.waitToBeInDOM(container);
+
+        let element = container.querySelector<HTMLElement>(selector);
+        if (element) {
+            // Already in DOM.
+            return CoreCancellablePromise.resolve(element);
+        }
+
+        let observer: MutationObserver;
+
+        return new CoreCancellablePromise<HTMLElement>(
+            (resolve) => {
+                observer = new MutationObserver(() => {
+                    element = container.querySelector<HTMLElement>(selector);
+
+                    if (!element) {
+                        return;
+                    }
+
+                    observer?.disconnect();
+                    resolve(element);
+                });
+
+                observer.observe(container, { subtree: true, childList: true });
             },
             () => {
                 observer?.disconnect();
@@ -889,7 +927,7 @@ export class CoreDomUtilsProvider {
      *
      * @param findFunction The function used to find the element.
      * @return Resolved if found, rejected if too many tries.
-     * @deprecated since app 4.0 Use waitToBeInDOM instead.
+     * @deprecated since app 4.0 Use waitToBeInsideElement instead.
      */
     waitElementToExist(findFunction: () => HTMLElement | null): Promise<HTMLElement> {
         const promiseInterval = CoreUtils.promiseDefer<HTMLElement>();
@@ -1320,14 +1358,12 @@ export class CoreDomUtilsProvider {
      *
      * @param element The element to scroll to.
      * @param selector Selector to find the element to scroll to inside the defined element.
-     * @param duration Duration of the scroll animation in milliseconds.
+     * @param scrollOptions Scroll Options.
      * @return Wether the scroll suceeded.
      */
-    async scrollViewToElement(element: HTMLElement, selector?: string, duration = 0): Promise<boolean> {
-        await CoreDomUtils.waitToBeInDOM(element);
-
+    async scrollViewToElement(element: HTMLElement, selector?: string, scrollOptions: CoreScrollOptions = {}): Promise<boolean> {
         if (selector) {
-            const foundElement = element.querySelector<HTMLElement>(selector);
+            const foundElement = await CoreDomUtils.waitToBeInsideElement(element, selector);
             if (!foundElement) {
                 // Element not found.
                 return false;
@@ -1336,16 +1372,28 @@ export class CoreDomUtilsProvider {
             element = foundElement;
         }
 
+        await CoreDomUtils.waitToBeVisible(element);
+
         const content = element.closest<HTMLIonContentElement>('ion-content') ?? undefined;
         if (!content) {
+
             // Content to scroll, not found.
             return false;
         }
 
         try {
             const position = CoreDomUtils.getRelativeElementPosition(element, content);
+            const scrollElement = await content.getScrollElement();
 
-            await content.scrollToPoint(position.x, position.y, duration);
+            scrollOptions.duration = scrollOptions.duration ?? 200;
+            scrollOptions.addXAxis = scrollOptions.addXAxis ?? 0;
+            scrollOptions.addYAxis = scrollOptions.addYAxis ?? 0;
+
+            await content.scrollToPoint(
+                position.x + scrollElement.scrollLeft + scrollOptions.addXAxis,
+                position.y + scrollElement.scrollTop + scrollOptions.addYAxis,
+                scrollOptions.duration,
+            );
 
             return true;
         } catch {
@@ -1373,8 +1421,8 @@ export class CoreDomUtilsProvider {
      * @return True if the element is found, false otherwise.
      * @deprecated since app 4.0 Use scrollViewToElement instead.
      */
-    scrollToElement(content: IonContent, element: HTMLElement, scrollParentClass?: string, duration = 0): boolean {
-        CoreDomUtils.scrollViewToElement(element, undefined, duration);
+    scrollToElement(content: IonContent, element: HTMLElement, scrollParentClass?: string, duration?: number): boolean {
+        CoreDomUtils.scrollViewToElement(element, undefined, { duration });
 
         return true;
     }
@@ -1395,13 +1443,13 @@ export class CoreDomUtilsProvider {
         content: unknown | null,
         selector: string,
         scrollParentClass?: string,
-        duration = 0,
+        duration?: number,
     ): boolean {
         if (!container || !content) {
             return false;
         }
 
-        CoreDomUtils.scrollViewToElement(container, selector, duration);
+        CoreDomUtils.scrollViewToElement(container, selector, { duration });
 
         return true;
 
@@ -2434,4 +2482,13 @@ export enum VerticalPoint {
 export type CoreCoordinates = {
     x: number; // X axis coordinates.
     y: number; // Y axis coordinates.
+};
+
+/**
+ * Scroll options.
+ */
+export type CoreScrollOptions = {
+    duration?: number;
+    addYAxis?: number;
+    addXAxis?: number;
 };

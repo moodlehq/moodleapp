@@ -112,6 +112,7 @@ export class CoreCourseCourseIndexComponent implements OnInit {
         CoreDomUtils.scrollViewToElement(
             this.elementRef.nativeElement,
             '.item.item-current',
+            { addYAxis: -10 },
         );
     }
 

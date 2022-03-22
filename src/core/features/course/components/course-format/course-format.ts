@@ -514,6 +514,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         CoreDomUtils.scrollViewToElement(
             this.elementRef.nativeElement,
             '#core-course-module-' + moduleId,
+            { addYAxis: -10 },
         );
     }
 
