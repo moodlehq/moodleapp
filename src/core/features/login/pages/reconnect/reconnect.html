@@ -51,20 +51,15 @@
                     </ion-input>
                 </core-show-password>
             </ion-item>
-            <ion-grid class="ion-padding">
-                <ion-row>
-                    <ion-col>
-                        <ion-button expand="block" fill="outline" (click)="cancel($event)">
-                            {{ 'core.login.cancel' | translate }}
-                        </ion-button>
-                    </ion-col>
-                    <ion-col>
-                        <ion-button type="submit" expand="block" [disabled]="!credForm.valid">
-                            {{ 'core.login.loginbutton' | translate }}
-                        </ion-button>
-                    </ion-col>
-                </ion-row>
-            </ion-grid>
+            <div class="adaptable-buttons-row">
+                <ion-button expand="block" fill="outline" (click)="cancel($event)" class="ion-margin ion-text-wrap">
+                    {{ 'core.login.cancel' | translate }}
+                </ion-button>
+                <ion-button type="submit" expand="block" [disabled]="!credForm.valid"
+                    class="ion-margin core-login-login-button ion-text-wrap">
+                    {{ 'core.login.loginbutton' | translate }}
+                </ion-button>
+            </div>
 
             <ng-container *ngIf="showScanQR">
                 <div class="ion-text-center ion-padding">{{ 'core.login.or' | translate }}</div>

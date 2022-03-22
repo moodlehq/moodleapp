@@ -9,6 +9,12 @@
             color: white;
             border-radius: 50%;
             padding: 0.7rem;
+            --margin-vertical: 12px;
+            --margin-end: 12px;
+            margin-top: var(--margin-vertical);
+            margin-bottom: var(--margin-vertical);
+            @include margin-horizontal(null, var(--margin-end));
+
         }
 
         @each $category, $value in $calendar-event-category-colors {

@@ -50,11 +50,10 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
     protected contentScrollListener?: EventListener;
     protected endContentScrollListener?: EventListener;
     protected resizeListener?: CoreEventObserver;
-    protected domPromise?: CoreCancellablePromise<void>;
+    protected slotPromise?: CoreCancellablePromise<void>;
 
     constructor(el: ElementRef, protected ionContent: IonContent) {
         this.element = el.nativeElement;
-        this.element.setAttribute('slot', 'fixed'); // Just in case somebody forgets to add it.
     }
 
     /**
@@ -63,9 +62,9 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
     async ngOnInit(): Promise<void> {
         // Only if not present or explicitly falsy it will be false.
         this.appearOnBottom = !CoreUtils.isFalseOrZero(this.appearOnBottom);
-        this.domPromise = CoreDom.waitToBeInDOM(this.element);
+        this.slotPromise = CoreDom.slotOnContent(this.element);
 
-        await this.domPromise;
+        await this.slotPromise;
         await this.waitLoadingsDone();
         await this.waitFormatTextsRendered();
 
@@ -229,7 +228,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
         }
 
         this.resizeListener?.off();
-        this.domPromise?.cancel();
+        this.slotPromise?.cancel();
     }
 
 }

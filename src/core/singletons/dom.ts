@@ -206,6 +206,38 @@ export class CoreDom {
     }
 
     /**
+     * Move element to content so it can be slotted.
+     *
+     * @param element HTML Element.
+     * @param slot Slot name.
+     * @return Promise resolved when done.
+     */
+    static slotOnContent(element: HTMLElement, slot = 'fixed'): CoreCancellablePromise<void> {
+        element.setAttribute('slot', slot);
+        if (element.parentElement?.nodeName === 'ION-CONTENT') {
+            return CoreCancellablePromise.resolve();
+        }
+
+        const domPromise = CoreDom.waitToBeInDOM(element);
+
+        return new CoreCancellablePromise<void>(
+            async (resolve) => {
+                await domPromise;
+
+                // Move element to the nearest ion-content if it's not the parent
+                if (element.parentElement?.nodeName !== 'ION-CONTENT') {
+                    element.closest('ion-content')?.appendChild(element);
+                }
+
+                resolve();
+            },
+            () => {
+                domPromise.cancel();
+            },
+        );
+    }
+
+    /**
      * Wait an element to be added to the root DOM.
      *
      * @param element Element to wait.
