@@ -482,23 +482,17 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * @return Promise resolved with the total size (0 if unknown)
      */
     async getModuleStoredSize(module: CoreCourseAnyModuleData, courseId: number): Promise<number> {
-        let downloadedSize = await this.getModuleDownloadedSize(module, courseId);
-
-        if (isNaN(downloadedSize)) {
-            downloadedSize = 0;
-        }
-
         const site = CoreSites.getCurrentSite();
         const handler = this.getPrefetchHandlerFor(module.modname);
-        if (!handler || !site) {
-            // If there is no handler then we can't find out the component name.
-            // We can't work out the cached size, so just return downloaded size.
-            return downloadedSize;
-        }
 
-        const cachedSize = await site.getComponentCacheSize(handler.component, module.id);
+        const [downloadedSize, cachedSize] = await Promise.all([
+            this.getModuleDownloadedSize(module, courseId),
+            handler && site ? site.getComponentCacheSize(handler.component, module.id) : 0,
+        ]);
 
-        return cachedSize + downloadedSize;
+        const totalSize = cachedSize + downloadedSize;
+
+        return isNaN(totalSize) ? 0 : totalSize;
     }
 
     /**
