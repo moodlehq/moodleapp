@@ -22,6 +22,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
+import { CoreDom } from '@singletons/dom';
 import {
     AddonModQuizNavigationModalComponent,
     AddonModQuizNavigationModalReturn,
@@ -247,7 +248,7 @@ export class AddonModQuizReviewPage implements OnInit {
      * @param slot Slot of the question to scroll to.
      */
     protected scrollToQuestion(slot: number): void {
-        CoreDomUtils.scrollViewToElement(
+        CoreDom.scrollToElement(
             this.elementRef.nativeElement,
             `#addon-mod_quiz-question-${slot}`,
         );

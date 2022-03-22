@@ -41,6 +41,7 @@ import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreScreen } from '@services/screen';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Component to display a rich text editor if enabled.
@@ -290,7 +291,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      * @return Promise resolved when loadings are done.
      */
     protected async waitLoadingsDone(): Promise<void> {
-        this.domPromise = CoreDomUtils.waitToBeInDOM(this.element);
+        this.domPromise = CoreDom.waitToBeInDOM(this.element);
 
         await this.domPromise;
 
@@ -846,7 +847,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
 
         // Cancel previous one, if any.
         this.buttonsDomPromise?.cancel();
-        this.buttonsDomPromise = CoreDomUtils.waitToBeInDOM(this.toolbar.nativeElement);
+        this.buttonsDomPromise = CoreDom.waitToBeInDOM(this.toolbar.nativeElement);
         await this.buttonsDomPromise;
 
         const width = this.toolbar.nativeElement.getBoundingClientRect().width;

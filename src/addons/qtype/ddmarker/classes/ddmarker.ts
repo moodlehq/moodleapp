@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreCoordinates, CoreDomUtils } from '@services/utils/dom';
+import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
+import { CoreCoordinates, CoreDom } from '@singletons/dom';
 import { CoreEventObserver } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { AddonQtypeDdMarkerQuestionData } from '../component/ddmarker';
@@ -134,7 +135,7 @@ export class AddonQtypeDdMarkerQuestion {
             return [];
         }
 
-        const position = CoreDomUtils.getRelativeElementPosition(element, ddArea);
+        const position = CoreDom.getRelativeElementPosition(element, ddArea);
 
         return [position.x, position.y];
     }

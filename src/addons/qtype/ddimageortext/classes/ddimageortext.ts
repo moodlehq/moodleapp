@@ -14,6 +14,7 @@
 
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreDom } from '@singletons/dom';
 import { CoreEventObserver } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { AddonModQuizDdImageOrTextQuestionData } from '../component/ddimageortext';
@@ -83,7 +84,7 @@ export class AddonQtypeDdImageOrTextQuestion {
             return bgImgXY;
         }
 
-        const position = CoreDomUtils.getRelativeElementPosition(bgImg, ddArea);
+        const position = CoreDom.getRelativeElementPosition(bgImg, ddArea);
 
         // Render the position related to the current image dimensions.
         bgImgXY[0] *= this.proportion;
@@ -419,7 +420,7 @@ export class AddonQtypeDdImageOrTextQuestion {
             return;
         }
 
-        const position = CoreDomUtils.getRelativeElementPosition(drop, ddArea);
+        const position = CoreDom.getRelativeElementPosition(drop, ddArea);
         const choice = drag.getAttribute('choice');
         drag.style.left = position.x + 'px';
         drag.style.top = position.y + 'px';
@@ -473,7 +474,7 @@ export class AddonQtypeDdImageOrTextQuestion {
             return;
         }
 
-        const position = CoreDomUtils.getRelativeElementPosition(dragItemHome, ddArea);
+        const position = CoreDom.getRelativeElementPosition(dragItemHome, ddArea);
         drag.style.left = position.x + 'px';
         drag.style.top = position.y + 'px';
         drag.classList.remove('placed');

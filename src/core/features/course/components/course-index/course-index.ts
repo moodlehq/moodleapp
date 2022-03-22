@@ -21,8 +21,8 @@ import {
 import { CoreCourseHelper, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
-import { CoreDomUtils } from '@services/utils/dom';
 import { ModalController } from '@singletons';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Component to display course index modal.
@@ -109,9 +109,10 @@ export class CoreCourseCourseIndexComponent implements OnInit {
 
         this.highlighted = CoreCourseFormatDelegate.getSectionHightlightedName(this.course);
 
-        CoreDomUtils.scrollViewToElement(
+        CoreDom.scrollToElement(
             this.elementRef.nativeElement,
             '.item.item-current',
+            { addYAxis: -10 },
         );
     }
 

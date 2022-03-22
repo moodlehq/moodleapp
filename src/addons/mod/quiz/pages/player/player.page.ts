@@ -46,6 +46,7 @@ import { AddonModQuizAttempt, AddonModQuizHelper } from '../../services/quiz-hel
 import { AddonModQuizSync } from '../../services/quiz-sync';
 import { CanLeave } from '@guards/can-leave';
 import { CoreForms } from '@singletons/form';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Page that allows attempting a quiz.
@@ -687,7 +688,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
      * @param slot Slot of the question to scroll to.
      */
     protected scrollToQuestion(slot: number): void {
-        CoreDomUtils.scrollViewToElement(
+        CoreDom.scrollToElement(
             this.elementRef.nativeElement,
             '#addon-mod_quiz-question-' + slot,
         );

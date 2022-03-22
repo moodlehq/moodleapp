@@ -14,7 +14,7 @@
 
 import { Directive, ElementRef, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Directive to listen when an element becomes visible.
@@ -37,7 +37,7 @@ export class CoreOnAppearDirective implements OnInit, OnDestroy {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.visiblePromise = CoreDomUtils.waitToBeInViewport(this.element);
+        this.visiblePromise = CoreDom.waitToBeInViewport(this.element);
 
         await this.visiblePromise;
 

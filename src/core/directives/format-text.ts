@@ -45,6 +45,7 @@ import { CoreCollapsibleItemDirective } from './collapsible-item';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { AsyncComponent } from '@classes/async-component';
 import { CoreText } from '@singletons/text';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -552,7 +553,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
      */
     protected async getElementWidth(): Promise<number> {
         if (!this.domElementPromise) {
-            this.domElementPromise = CoreDomUtils.waitToBeInDOM(this.element);
+            this.domElementPromise = CoreDom.waitToBeInDOM(this.element);
         }
         await this.domElementPromise;
 
@@ -704,7 +705,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
                     newUrl += `&h=${privacyHash}`;
                 }
 
-                const domPromise = CoreDomUtils.waitToBeInDOM(iframe);
+                const domPromise = CoreDom.waitToBeInDOM(iframe);
                 this.domPromises.push(domPromise);
 
                 await domPromise;

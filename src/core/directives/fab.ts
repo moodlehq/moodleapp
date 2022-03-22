@@ -14,7 +14,7 @@
 
 import { Directive, ElementRef, OnDestroy, OnInit } from '@angular/core';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Directive to move ion-fab components as direct children of the nearest ion-content.
@@ -42,7 +42,7 @@ export class CoreFabDirective implements OnInit, OnDestroy {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.domPromise = CoreDomUtils.waitToBeInDOM(this.element);
+        this.domPromise = CoreDom.waitToBeInDOM(this.element);
         await this.domPromise;
 
         this.content = this.element.closest('ion-content');
@@ -56,7 +56,7 @@ export class CoreFabDirective implements OnInit, OnDestroy {
 
         await this.calculatePlace();
 
-        CoreDomUtils.onElementSlot(this.element, () => {
+        CoreDom.onElementSlot(this.element, () => {
             this.calculatePlace();
         });
     }

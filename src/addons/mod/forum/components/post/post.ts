@@ -51,6 +51,7 @@ import { CoreRatingInfo } from '@features/rating/services/rating';
 import { CoreForms } from '@singletons/form';
 import { CoreFileEntry } from '@services/file-helper';
 import { AddonModForumSharedPostFormData } from '../../pages/discussion/discussion.page';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -540,7 +541,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
      * @return Promise resolved when done.
      */
     protected async scrollToForm(): Promise<void> {
-        await CoreDomUtils.scrollViewToElement(
+        await CoreDom.scrollToElement(
             this.elementRef.nativeElement,
             '#addon-forum-reply-edit-form-' + this.uniqueId,
         );

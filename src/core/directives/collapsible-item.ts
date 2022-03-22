@@ -19,6 +19,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreDom } from '@singletons/dom';
 import { CoreEventObserver } from '@singletons/events';
 import { CoreFormatTextDirective } from './format-text';
 
@@ -100,7 +101,7 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
      * @return Promise resolved when loadings are done.
      */
     protected async waitLoadingsDone(): Promise<void> {
-        this.domPromise = CoreDomUtils.waitToBeInDOM(this.element);
+        this.domPromise = CoreDom.waitToBeInDOM(this.element);
 
         await this.domPromise;
 

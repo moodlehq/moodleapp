@@ -22,3 +22,16 @@ ion-item ion-label ion-icon {
     @include margin-horizontal(0, 4px);
     vertical-align: text-top;
 }
+
+
+ion-item.card-header {
+    --padding-start: 8px;
+    --padding-end: 8px;
+    --inner-padding-start: 0px;
+    --inner-padding-end: 0px;
+    --min-height: 40px;
+
+    ion-label {
+        margin: 0px;
+    }
+}

@@ -40,6 +40,7 @@ import {
     AddonModDataEntryWSField,
 } from '../../services/data';
 import { AddonModDataHelper } from '../../services/data-helper';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Page that displays the view edit page.
@@ -448,7 +449,7 @@ export class AddonModDataEditPage implements OnInit {
      * Scroll to first error or to the top if not found.
      */
     protected async scrollToFirstError(): Promise<void> {
-        const scrolled = await CoreDomUtils.scrollViewToElement(this.formElement.nativeElement, '.addon-data-error');
+        const scrolled = await CoreDom.scrollToElement(this.formElement.nativeElement, '.addon-data-error');
         if (!scrolled) {
             this.content?.scrollToTop();
         }

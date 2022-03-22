@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 import { AddonQtypeDdMarkerQuestion } from './ddmarker';
 
 /**
@@ -59,7 +59,7 @@ export class AddonQtypeDdMarkerGraphicsApi {
             return;
         }
 
-        const position = CoreDomUtils.getRelativeElementPosition(bgImg, ddArea);
+        const position = CoreDom.getRelativeElementPosition(bgImg, ddArea);
 
         dropZones.style.left = position.x + 'px';
         dropZones.style.top = position.y + 'px';

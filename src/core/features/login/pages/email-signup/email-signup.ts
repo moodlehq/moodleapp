@@ -35,6 +35,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreForms } from '@singletons/form';
 import { CoreRecaptchaComponent } from '@components/recaptcha/recaptcha';
 import { CoreText } from '@singletons/text';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Page to signup using email.
@@ -284,7 +285,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
             this.changeDetector.detectChanges();
 
             // Scroll to the first element with errors.
-            const errorFound = await CoreDomUtils.scrollViewToInputError(
+            const errorFound = await CoreDom.scrollToInputError(
                 this.elementRef.nativeElement,
             );
 
