@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreDom } from '@singletons/dom';
 import { CoreEventObserver } from '@singletons/events';
@@ -365,7 +364,7 @@ export class AddonQtypeDdImageOrTextQuestion {
             this.pollForImageLoad();
         });
 
-        this.resizeListener = CoreDomUtils.onWindowResize(() => {
+        this.resizeListener = CoreDom.onWindowResize(() => {
             this.repositionDragsForQuestion();
         });
     }

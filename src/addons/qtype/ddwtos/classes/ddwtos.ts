@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { CoreFormatTextDirective } from '@directives/format-text';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
@@ -208,7 +207,7 @@ export class AddonQtypeDdwtosQuestion {
 
         this.positionDragItems();
 
-        this.resizeListener = CoreDomUtils.onWindowResize(() => {
+        this.resizeListener = CoreDom.onWindowResize(() => {
             this.positionDragItems();
         });
     }

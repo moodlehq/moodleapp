@@ -619,7 +619,7 @@ export class AddonQtypeDdMarkerQuestion {
             this.pollForImageLoad();
         });
 
-        this.resizeListener = CoreDomUtils.onWindowResize(() => {
+        this.resizeListener = CoreDom.onWindowResize(() => {
             this.redrawDragsAndDrops();
         });
     }

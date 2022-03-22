@@ -26,7 +26,7 @@ import { CoreContentLinksHelper } from '@features/contentlinks/services/contentl
 import { CoreTextUtils } from '@services/utils/text';
 import { Translate } from '@singletons';
 import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Page that displays the more page of the app.
@@ -73,7 +73,7 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
             this.initHandlers();
         });
 
-        this.resizeListener = CoreDomUtils.onWindowResize(() => {
+        this.resizeListener = CoreDom.onWindowResize(() => {
             this.initHandlers();
         });
 

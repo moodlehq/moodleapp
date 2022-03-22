@@ -13,6 +13,9 @@
 // limitations under the License.
 
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
+import { CoreDomUtils } from '@services/utils/dom';
+import { CoreUtils } from '@services/utils/utils';
+import { CoreEventObserver } from '@singletons/events';
 
 /**
  * Singleton with helper functions for dom.
@@ -145,6 +148,30 @@ export class CoreDom {
         };
 
         slot.addEventListener('slotchange', slotListener);;
+    }
+
+    /**
+     * Window resize is widely checked and may have many performance issues, debouce usage is needed to avoid calling it too much.
+     * This function helps setting up the debounce feature and remove listener easily.
+     *
+     * @param resizeFunction Function to execute on resize.
+     * @param debounceDelay Debounce time in ms.
+     * @return Event observer to call off when finished.
+     */
+    static onWindowResize(resizeFunction: (ev?: Event) => void, debounceDelay = 20): CoreEventObserver {
+        const resizeListener = CoreUtils.debounce(async (ev?: Event) => {
+            await CoreDomUtils.waitForResizeDone();
+
+            resizeFunction(ev);
+        }, debounceDelay);
+
+        window.addEventListener('resize', resizeListener);
+
+        return {
+            off: (): void => {
+                window.removeEventListener('resize', resizeListener);
+            },
+        };
     }
 
     /**

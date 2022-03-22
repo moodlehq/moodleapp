@@ -29,7 +29,7 @@ import { filter } from 'rxjs/operators';
 import { NavigationEnd } from '@angular/router';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Page that displays the main menu of the app.
@@ -122,7 +122,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
             }
         });
 
-        this.resizeListener = CoreDomUtils.onWindowResize(() => {
+        this.resizeListener = CoreDom.onWindowResize(() => {
             this.initHandlers();
         });
         document.addEventListener('ionBackButton', this.backButtonFunction);
