@@ -23,6 +23,7 @@ import { CoreEventObserver } from '@singletons/events';
 import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Directive to make an element fixed at the bottom collapsible when scrolling.
@@ -62,7 +63,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
     async ngOnInit(): Promise<void> {
         // Only if not present or explicitly falsy it will be false.
         this.appearOnBottom = !CoreUtils.isFalseOrZero(this.appearOnBottom);
-        this.domPromise = CoreDomUtils.waitToBeInDOM(this.element);
+        this.domPromise = CoreDom.waitToBeInDOM(this.element);
 
         await this.domPromise;
         await this.waitLoadingsDone();
@@ -72,7 +73,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
 
         await this.calculateHeight();
 
-        CoreDomUtils.onElementSlot(this.element, () => {
+        CoreDom.onElementSlot(this.element, () => {
             this.calculateHeight();
         });
 

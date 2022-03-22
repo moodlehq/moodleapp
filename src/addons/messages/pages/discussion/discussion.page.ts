@@ -45,6 +45,7 @@ import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { ActivatedRoute } from '@angular/router';
 import { AddonMessagesConversationInfoComponent } from '../../components/conversation-info/conversation-info';
 import { CoreConstants } from '@/core/constants';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Page that displays a message discussion page.
@@ -1109,7 +1110,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
         if (this.newMessages > 0) {
             const messages = Array.from(this.hostElement.querySelectorAll<HTMLElement>('.addon-message-not-mine'));
 
-            CoreDomUtils.scrollViewToElement(messages[messages.length - this.newMessages]);
+            CoreDom.scrollToElement(messages[messages.length - this.newMessages]);
         }
     }
 

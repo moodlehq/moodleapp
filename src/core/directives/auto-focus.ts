@@ -16,6 +16,7 @@ import { Directive, Input, ElementRef, AfterViewInit } from '@angular/core';
 
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Directive to auto focus an element when a view is loaded.
@@ -46,7 +47,7 @@ export class CoreAutoFocusDirective implements AfterViewInit {
             return;
         }
 
-        await CoreDomUtils.waitToBeInDOM(this.element);
+        await CoreDom.waitToBeInDOM(this.element);
 
         let focusElement = this.element;
 

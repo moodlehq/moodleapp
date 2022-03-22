@@ -13,10 +13,11 @@
 // limitations under the License.
 
 import { CoreFormatTextDirective } from '@directives/format-text';
-import { CoreCoordinates, CoreDomUtils } from '@services/utils/dom';
+import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreCoordinates, CoreDom } from '@singletons/dom';
 import { CoreEventObserver } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { AddonModQuizDdwtosQuestionData } from '../component/ddwtos';
@@ -389,13 +390,13 @@ export class AddonQtypeDdwtosQuestion {
             const choiceNo = this.getChoice(drag) ?? -1;
             const dragHome = this.container.querySelector<HTMLElement>(this.selectors.dragHome(groupNo, choiceNo));
             if (dragHome) {
-                position = CoreDomUtils.getRelativeElementPosition(dragHome, parent);
+                position = CoreDom.getRelativeElementPosition(dragHome, parent);
             }
         } else {
             // Get the drop zone position.
             const dropZone = this.container.querySelector<HTMLElement>(this.selectors.dropForPlace(placeNo));
             if (dropZone) {
-                position = CoreDomUtils.getRelativeElementPosition(dropZone, parent);
+                position = CoreDom.getRelativeElementPosition(dropZone, parent);
                 // Avoid the border.
                 position.x++;
                 position.y++;
@@ -425,13 +426,13 @@ export class AddonQtypeDdwtosQuestion {
      * @return Promise resolved when ready in the DOM.
      */
     protected async waitForReady(): Promise<void> {
-        await CoreDomUtils.waitToBeInDOM(this.container);
+        await CoreDom.waitToBeInDOM(this.container);
 
         await CoreComponentsRegistry.waitComponentsReady(this.container, 'core-format-text', CoreFormatTextDirective);
 
         const drag = Array.from(this.container.querySelectorAll<HTMLElement>(this.selectors.dragHomes()))[0];
 
-        await CoreDomUtils.waitToBeInDOM(drag);
+        await CoreDom.waitToBeInDOM(drag);
     }
 
     /**
@@ -480,7 +481,7 @@ export class AddonQtypeDdwtosQuestion {
             return;
         }
 
-        await CoreDomUtils.waitToBeInDOM(groupItems[0]);
+        await CoreDom.waitToBeInDOM(groupItems[0]);
 
         let maxWidth = 0;
         let maxHeight = 0;

@@ -21,6 +21,7 @@ import { CoreUserTours, CoreUserToursAlignment, CoreUserToursSide } from '@featu
 import { CoreDomUtils } from '@services/utils/dom';
 import { AngularFrameworkDelegate } from '@singletons';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreDom } from '@singletons/dom';
 
 const ANIMATION_DURATION = 200;
 const USER_TOURS_BACK_BUTTON_PRIORITY = 100;
@@ -86,7 +87,7 @@ export class CoreUserToursUserTourComponent implements AfterViewInit {
         await CoreDomUtils.waitForImages(tour);
 
         // Calculate focus styles or dismiss if the element is gone.
-        if (this.focus && !CoreDomUtils.isElementVisible(this.focus)) {
+        if (this.focus && !CoreDom.isElementVisible(this.focus)) {
             await this.dismiss(false);
 
             return;

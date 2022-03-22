@@ -48,6 +48,7 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 import { CoreCourseViewedModulesDBRecord } from '@features/course/services/database/course';
 import { CoreUserTours, CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/services/user-tours';
 import { CoreCourseCourseIndexTourComponent } from '../course-index-tour/course-index-tour';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
@@ -511,7 +512,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @param moduleId Module ID.
      */
     protected scrollToModule(moduleId: number): void {
-        CoreDomUtils.scrollViewToElement(
+        CoreDom.scrollToElement(
             this.elementRef.nativeElement,
             '#core-course-module-' + moduleId,
             { addYAxis: -10 },

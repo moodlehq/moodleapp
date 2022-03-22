@@ -31,6 +31,7 @@ import { Translate } from '@singletons';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreGradesCoursesSource } from '@features/grades/classes/grades-courses-source';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Page that displays a course grades.
@@ -170,7 +171,7 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
                 if (row) {
                     this.toggleRow(row, true);
 
-                    CoreDomUtils.scrollViewToElement(
+                    CoreDom.scrollToElement(
                         this.element.nativeElement,
                         '#grade-' + row.id,
                     );

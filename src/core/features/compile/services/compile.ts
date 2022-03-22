@@ -151,6 +151,7 @@ import { ADDON_PRIVATEFILES_SERVICES } from '@addons/privatefiles/privatefiles.m
 // Import some addon modules that define components, directives and pipes. Only import the important ones.
 import { AddonModAssignComponentsModule } from '@addons/mod/assign/components/components.module';
 import { AddonModWorkshopComponentsModule } from '@addons/mod/workshop/components/components.module';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Service to provide functionalities regarding compiling dynamic HTML and Javascript.
@@ -341,6 +342,7 @@ export class CoreCompileProvider {
         instance['Md5'] = Md5;
         instance['CoreSyncBaseProvider'] = CoreSyncBaseProvider;
         instance['CoreArray'] = CoreArray;
+        instance['CoreDom'] = CoreDom;
         instance['CoreText'] = CoreText;
         instance['CoreUrl'] = CoreUrl;
         instance['CoreWindow'] = CoreWindow;

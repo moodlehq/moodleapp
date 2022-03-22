@@ -26,6 +26,7 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreContextMenuComponent } from '../context-menu/context-menu';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreDom } from '@singletons/dom';
 
 const BUTTON_HIDDEN_CLASS = 'core-navbar-button-hidden';
 
@@ -197,7 +198,7 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
      * @return Promise resolved with the header element.
      */
     protected async searchHeader(): Promise<HTMLIonHeaderElement> {
-        await CoreDomUtils.waitToBeInDOM(this.element);
+        await CoreDom.waitToBeInDOM(this.element);
 
         let parentPage: HTMLElement | null = this.element;
         while (parentPage && parentPage.parentElement) {

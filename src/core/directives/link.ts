@@ -28,6 +28,7 @@ import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { DomSanitizer } from '@singletons';
 import { CoreFilepool } from '@services/filepool';
 import { CoreUrl } from '@singletons/url';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Directive to open a link in external browser or in the app.
@@ -144,7 +145,7 @@ export class CoreLinkDirective implements OnInit {
             href = href.substring(1);
             const container = this.element.closest('ion-content');
             if (container) {
-                CoreDomUtils.scrollViewToElement(
+                CoreDom.scrollToElement(
                     container,
                     `#${href}, [name='${href}']`,
                 );

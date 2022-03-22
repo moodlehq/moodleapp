@@ -21,6 +21,7 @@ import { CoreForms } from '@singletons/form';
 import { ModalController, Translate } from '@singletons';
 import { AddonModQuizAccessRuleDelegate } from '../../services/access-rules-delegate';
 import { AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from '../../services/quiz';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Modal that renders the access rules for a quiz.
@@ -115,7 +116,7 @@ export class AddonModQuizPreflightModalComponent implements OnInit {
 
         if (!this.preflightForm.valid) {
             // Form not valid. Scroll to the first element with errors.
-            const hasScrolled = await CoreDomUtils.scrollViewToInputError(
+            const hasScrolled = await CoreDom.scrollToInputError(
                 this.elementRef.nativeElement,
             );
 
