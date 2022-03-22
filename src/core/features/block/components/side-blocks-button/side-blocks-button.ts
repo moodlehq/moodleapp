@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreUserTours, CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/services/user-tours';
 import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 import { CoreBlockSideBlocksTourComponent } from '../side-blocks-tour/side-blocks-tour';
 import { CoreBlockSideBlocksComponent } from '../side-blocks/side-blocks';
 
@@ -26,10 +28,24 @@ import { CoreBlockSideBlocksComponent } from '../side-blocks/side-blocks';
     templateUrl: 'side-blocks-button.html',
     styleUrls: ['side-blocks-button.scss'],
 })
-export class CoreBlockSideBlocksButtonComponent {
+export class CoreBlockSideBlocksButtonComponent implements OnInit, OnDestroy {
 
     @Input() courseId!: number;
     @ViewChild('button', { read: ElementRef }) button?: ElementRef<HTMLElement>;
+
+    protected element: HTMLElement;
+    protected slotPromise?: CoreCancellablePromise<void>;
+
+    constructor(el: ElementRef) {
+        this.element = el.nativeElement;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async ngOnInit(): Promise<void> {
+        this.slotPromise = CoreDom.slotOnContent(this.element);
+    }
 
     /**
      * Open side blocks.
@@ -60,6 +76,13 @@ export class CoreBlockSideBlocksButtonComponent {
             side: CoreUserToursSide.Start,
             alignment: CoreUserToursAlignment.Center,
         });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.slotPromise?.cancel();
     }
 
 }

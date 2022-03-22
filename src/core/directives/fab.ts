@@ -31,19 +31,18 @@ export class CoreFabDirective implements OnInit, OnDestroy {
     protected element: HTMLElement;
     protected content?: HTMLIonContentElement | null;
     protected initialPaddingBottom = 0;
-    protected domPromise?: CoreCancellablePromise<void>;
+    protected slotPromise?: CoreCancellablePromise<void>;
 
     constructor(el: ElementRef) {
         this.element = el.nativeElement;
-        this.element.setAttribute('slot', 'fixed');
     }
 
     /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.domPromise = CoreDom.waitToBeInDOM(this.element);
-        await this.domPromise;
+        this.slotPromise = CoreDom.slotOnContent(this.element);
+        await this.slotPromise;
 
         this.content = this.element.closest('ion-content');
 
@@ -70,12 +69,6 @@ export class CoreFabDirective implements OnInit, OnDestroy {
         }
 
         const initialHeight = this.element.getBoundingClientRect().height || 56;
-
-        // Move element to the nearest ion-content if it's not the parent
-        if (this.element.parentElement?.nodeName != 'ION-CONTENT') {
-            this.content.appendChild(this.element);
-        }
-
         this.content.style.setProperty('--padding-bottom', this.initialPaddingBottom + initialHeight + 'px');
     }
 
@@ -86,7 +79,7 @@ export class CoreFabDirective implements OnInit, OnDestroy {
         if (this.content) {
             this.content.style.setProperty('--padding-bottom', this.initialPaddingBottom + 'px');
         }
-        this.domPromise?.cancel();
+        this.slotPromise?.cancel();
     }
 
 }

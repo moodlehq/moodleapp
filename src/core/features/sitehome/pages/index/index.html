@@ -45,7 +45,7 @@
                 </ng-container>
             </ng-container>
         </ion-list>
-        <core-block-side-blocks-button *ngIf="hasBlocks" [courseId]="siteHomeId">
+        <core-block-side-blocks-button slot="fixed" *ngIf="hasBlocks" [courseId]="siteHomeId">
         </core-block-side-blocks-button>
 
         <core-empty-box *ngIf="!hasContent" icon="fas-box-open" [message]="'core.course.nocontentavailable' | translate">
