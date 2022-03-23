@@ -215,8 +215,12 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
             return;
         }
 
-        this.labelObserver = new MutationObserver(() => this.ariaLabelledBy = label.getAttribute('id') ?? undefined);
+        const updateArialabelledBy = () => this.ariaLabelledBy = label.getAttribute('id') ?? undefined;
+
+        this.labelObserver = new MutationObserver(updateArialabelledBy);
         this.labelObserver.observe(label, { attributes: true, attributeFilter: ['id'] });
+
+        updateArialabelledBy();
     }
 
     /**
