@@ -40,6 +40,8 @@ import { CoreColors } from '@singletons/colors';
 import { CoreText } from '@singletons/text';
 import { CorePromisedValue } from '@classes/promised-value';
 
+const ENROL_BROWSER_METHODS = ['fee', 'paypal'];
+
 /**
  * Page that shows the summary of a course including buttons to enrol and other available options.
  */
@@ -256,7 +258,7 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
             }
 
             // enrollmentmethods contains ALL enrolment methods including manual.
-            if (!this.isEnrolled && courseByField.enrollmentmethods?.some((method) => method === 'paypal')) {
+            if (!this.isEnrolled && courseByField.enrollmentmethods?.some((method) => ENROL_BROWSER_METHODS.includes(method))) {
                 this.otherEnrolments = true;
             }
 
