@@ -325,7 +325,7 @@ export class CoreCompileProvider {
                     // Inject the provider to the instance. We use the class name as the property name.
                     instance[providerDef.name.replace(/DelegateService$/, 'Delegate')] = this.injector.get(providerDef);
                 } catch (ex) {
-                    this.logger.warn('Error injecting provider', providerDef.name, ex);
+                    this.logger.error('Error injecting provider', providerDef.name, ex);
                 }
             }
         }
