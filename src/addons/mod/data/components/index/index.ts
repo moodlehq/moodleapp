@@ -243,6 +243,8 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
             this.isEmpty = true;
             this.groupInfo = undefined;
+
+            return;
         } else {
             canSearch = true;
             canAdd = this.access.canaddentry;
