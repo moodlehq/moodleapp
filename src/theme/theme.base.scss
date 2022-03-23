@@ -152,9 +152,11 @@ ion-toolbar {
 // Header.
 ion-header {
     z-index: 12; // To hide ion-slides on scroll.
-    --core-header-buttons-background: var(--core-header-toolbar-background);
 
     ion-toolbar {
+        --core-header-buttons-background: var(--core-header-toolbar-background);
+        --core-header-buttons-color: var(--core-header-toolbar-color);
+
         ion-spinner {
             margin: 10px;
         }
@@ -164,11 +166,11 @@ ion-header {
         .in-toolbar.button-solid,
         .button.button-clear,
         .button.button-solid {
-            --color: var(--core-header-toolbar-color);
+            --color: var(--core-header-buttons-color);
             --background: var(--core-header-buttons-background);
-            --ion-toolbar-color: var(--core-header-toolbar-color);
+            --ion-toolbar-color: var(--core-header-buttons-color);
             --border-radius: var(--huge-radius);
-            --primary: var(--core-header-toolbar-color);
+            --primary: var(--core-header-buttons-color);
         }
         ion-back-button::part(text) {
             display: none;
@@ -1490,7 +1492,11 @@ ion-header.no-title {
     --core-header-toolbar-border-width: 0;
     --core-header-toolbar-background: transparent;
     --core-header-shadow: none !important;
-    --core-header-buttons-background: var(--ion-background-color);
+    ion-toolbar {
+        --core-header-buttons-background: var(--ion-background-color);
+        --core-header-buttons-color: var(--text-color);
+    }
+
 }
 
 // To make core-swipe-slides fill the remaining height.
