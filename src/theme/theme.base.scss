@@ -1520,7 +1520,8 @@ ion-header.no-title {
 
 }
 
-.has-spacer {
+.has-spacer,
+.core-flex-fill {
     display: flex;
     flex-direction: column;
     min-height: 100%;

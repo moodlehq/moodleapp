@@ -10,7 +10,7 @@
     --menu-display: flex;
     --content-display: block;
     --content-outlet-display: none;
-    --content-placeholder-display: var(--content-display);
+    --content-placeholder-display: flex;
 
     top: 0;
     right: 0;
@@ -70,6 +70,7 @@
     --menu-min-width: 0px;
     --menu-max-width: 100%;
     --content-display: none;
+    --content-placeholder-display: none;
     --menu-border-width: 0px;
     --menu-box-shadow: none;
     --menu-z: 0px;
