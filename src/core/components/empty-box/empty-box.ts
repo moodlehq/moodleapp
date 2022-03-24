@@ -32,12 +32,11 @@ export class CoreEmptyBoxComponent {
     @Input() message = ''; // Message to display.
     @Input() icon?: string; // Name of the icon to use.
     @Input() image?: string; // Image source. If an icon is provided, image won't be used.
+    @Input() flipIconRtl = false; // Whether to flip the icon in RTL. Defaults to false.
 
     /**
-     * If this has to be shown inline instead of occupying whole page.
-     * If image or icon is not supplied, it's true by default.
+     * @deprecated not used anymore.
      */
     @Input() inline = false;
-    @Input() flipIconRtl = false; // Whether to flip the icon in RTL. Defaults to false.
 
 }

@@ -254,7 +254,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
             );
         });
 
-        this.resizeListener = CoreDomUtils.onWindowResize(() => {
+        this.resizeListener = CoreDom.onWindowResize(() => {
             this.windowResized();
         }, 50);
 

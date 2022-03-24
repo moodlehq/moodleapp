@@ -15,7 +15,6 @@
 import { Directive, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreLoadingComponent } from '@components/loading/loading';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
@@ -90,7 +89,7 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
 
         await this.calculateHeight();
 
-        this.resizeListener = CoreDomUtils.onWindowResize(() => {
+        this.resizeListener = CoreDom.onWindowResize(() => {
             this.calculateHeight();
         }, 50);
     }

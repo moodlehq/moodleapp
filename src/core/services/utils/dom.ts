@@ -53,7 +53,6 @@ import { NavigationStart } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
-import { CoreEventObserver } from '@singletons/events';
 import { CoreDom } from '@singletons/dom';
 
 /*
@@ -91,30 +90,6 @@ export class CoreDomUtilsProvider {
         const debugDisplay = await CoreConfig.get<number>(CoreConstants.SETTINGS_DEBUG_DISPLAY, 0);
 
         this.debugDisplay = debugDisplay != 0;
-    }
-
-    /**
-     * Window resize is widely checked and may have many performance issues, debouce usage is needed to avoid calling it too much.
-     * This function helps setting up the debounce feature and remove listener easily.
-     *
-     * @param resizeFunction Function to execute on resize.
-     * @param debounceDelay Debounce time in ms.
-     * @return Event observer to call off when finished.
-     */
-    onWindowResize(resizeFunction: (ev?: Event) => void, debounceDelay = 20): CoreEventObserver {
-        const resizeListener = CoreUtils.debounce(async (ev?: Event) => {
-            await this.waitForResizeDone();
-
-            resizeFunction(ev);
-        }, debounceDelay);
-
-        window.addEventListener('resize', resizeListener);
-
-        return {
-            off: (): void => {
-                window.removeEventListener('resize', resizeListener);
-            },
-        };
     }
 
     /**
@@ -1902,7 +1877,7 @@ export class CoreDomUtilsProvider {
     /**
      * Trigger form cancelled event.
      *
-     * @param form Form element.
+     * @param formRef Form element.
      * @param siteId The site affected. If not provided, no site affected.
      * @deprecated since 3.9.5. Function has been moved to CoreForms.
      */
@@ -1913,7 +1888,7 @@ export class CoreDomUtilsProvider {
     /**
      * Trigger form submitted event.
      *
-     * @param form Form element.
+     * @param formRef Form element.
      * @param online Whether the action was done in offline or not.
      * @param siteId The site affected. If not provided, no site affected.
      * @deprecated since 3.9.5. Function has been moved to CoreForms.
@@ -1924,7 +1899,7 @@ export class CoreDomUtilsProvider {
 
     /**
      * In iOS the resize event is triggered before the window size changes. Wait for the size to change.
-     * Use of this function is discouraged. Please use onWindowResize to check window resize event.
+     * Use of this function is discouraged. Please use CoreDom.onWindowResize to check window resize event.
      *
      * @param windowWidth Initial window width.
      * @param windowHeight Initial window height.

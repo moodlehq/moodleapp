@@ -33,7 +33,7 @@ import { Platform, Translate } from '@singletons';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 import { CoreAriaRoleTab, CoreAriaRoleTabFindable } from './aria-role-tab';
 import { CoreEventObserver } from '@singletons/events';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Class to abstract some common code for tabs.
@@ -135,7 +135,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
             await this.initializeTabs();
         }
 
-        this.resizeListener = CoreDomUtils.onWindowResize(() => {
+        this.resizeListener = CoreDom.onWindowResize(() => {
             this.windowResized();
         });
     }

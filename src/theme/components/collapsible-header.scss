@@ -29,6 +29,8 @@
         --core-header-toolbar-border-width: 0;
         ion-toolbar {
             --background: transparent;
+            --core-header-buttons-background: var(--ion-background-color);
+            --core-header-buttons-color: var(--text-color);
         }
 
         h1 {
