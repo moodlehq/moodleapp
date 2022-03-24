@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, OnChanges, SimpleChange, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChange, ElementRef, AfterViewInit } from '@angular/core';
 
 import { CoreEventLoadingChangedData, CoreEvents } from '@singletons/events';
 import { CoreUtils } from '@services/utils/utils';
@@ -50,15 +50,14 @@ import { AsyncComponent } from '@classes/async-component';
 })
 export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, AsyncComponent {
 
-    @Input() hideUntil: unknown; // Determine when should the contents be shown.
+    @Input() hideUntil = false; // Determine when should the contents be shown.
     @Input() message?: string; // Message to show while loading.
     @Input() fullscreen = true; // Use the whole screen.
 
-    @ViewChild('content') content?: ElementRef;
-
     uniqueId: string;
-    protected element: HTMLElement; // Current element.
     loaded = false; // Only comes true once.
+
+    protected element: HTMLElement; // Current element.
     protected onReadyPromise = new CorePromisedValue<void>();
 
     constructor(element: ElementRef) {
@@ -67,6 +66,7 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
 
         // Calculate the unique ID.
         this.uniqueId = 'core-loading-content-' + CoreUtils.getUniqueId('CoreLoadingComponent');
+        this.element.setAttribute('id', this.uniqueId);
     }
 
     /**
@@ -77,7 +77,6 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
             // Default loading message.
             this.message = Translate.instant('core.loading');
         }
-
         this.element.classList.toggle('core-loading-inline', !this.fullscreen);
     }
 
@@ -85,7 +84,7 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
      * @inheritdoc
      */
     ngAfterViewInit(): void {
-        this.changeState(!!this.hideUntil);
+        this.changeState(this.hideUntil);
     }
 
     /**
@@ -93,7 +92,7 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if (changes.hideUntil) {
-            this.changeState(!!this.hideUntil);
+            this.changeState(this.hideUntil);
         }
     }
 
@@ -105,7 +104,7 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
      */
     async changeState(loaded: boolean): Promise<void> {
         this.element.classList.toggle('core-loading-loaded', loaded);
-        this.content?.nativeElement.classList.toggle('core-loading-content', loaded);
+        this.element.setAttribute('aria-busy', loaded ?  'false' : 'true');
 
         if (!this.loaded && loaded) {
             this.loaded = true; // Only comes true once.

@@ -1,5 +1,27 @@
 @import "~theme/globals";
 
+@mixin inline() {
+    min-height: var(--internal-loading-inline-min-height);
+    max-height: 100vh; // In order show it on the page (content will be cut).
+
+    &:not(.core-loading-loaded) {
+        position: relative;
+        --contents-display: flex;
+        flex-direction: column;
+    }
+
+    .core-loading-container {
+        --loading-background: rgba(var(--loading-background-inline), 0.4);
+        flex-direction: row;
+        height: auto;
+        width: auto;
+
+        .core-loading-message {
+            @include margin(0, 0, 0, 10px);
+        }
+    }
+}
+
 :host {
     --loading-background: var(--ion-background-color);
     --loading-background-inline: var(--ion-background-color-rgb);
@@ -8,27 +30,28 @@
     --loading-inline-margin: 0px;
     --loading-inline-min-height: 28px;
     --internal-loading-inline-min-height: var(--loading-inline-min-height);
-    --content-display: contents;
+    --loading-display: flex;
+    --loading-display-message: block;
+    --contents-display: contents;
 
-    position: static;
-    color: var(--loading-text-color);
     @include core-transition(all, 200ms);
-
-    &.margin {
-        --loading-inline-margin: 10px;
-        --internal-loading-inline-min-height: calc(var(--loading-inline-min-height) + var(--loading-inline-margin) + var(--loading-inline-margin));
-    }
+    pointer-events: none;
+    display: var(--contents-display);
 
     &.core-loading-loaded {
+        position: static;
+        pointer-events: auto;
         --internal-loading-inline-min-height: 0px;
-    }
 
-    ion-spinner {
-        --color: var(--loading-spinner);
-        color: var(--color);
+        &.has-spacer {
+            --contents-display: flex;
+            min-height: 100%;
+            flex-direction: column;
+        }
     }
 
     .core-loading-container {
+        pointer-events: none;
         position: absolute;
         @include position(0, 0, 0, 0);
         height: 100%;
@@ -36,78 +59,38 @@
         z-index: 3;
         margin: 0;
         padding: 0;
+        color: var(--loading-text-color);
         background-color: var(--loading-background);
         @include core-transition(all, 200ms);
-        display: flex;
+        display: var(--loading-display);
         justify-content: center;
         align-items: center;
         flex-direction: column;
-    }
 
-    .core-loading-content {
-        @include core-transition(opacity, 200ms);
-        display: var(--content-display);
-    }
+        .core-loading-message {
+            @include margin(10px, 0, 0, 0);
+            display: var(--loading-display-message);
+        }
 
-    .core-loading-message {
-        @include margin(10px, 0, 0, 0);
-    }
-
-    &.core-loading-loaded {
-        position: unset;
-        display: contents;
+        ion-spinner {
+            --color: var(--loading-spinner);
+            color: var(--color);
+        }
     }
 
     &.core-loading-inline {
-        --loading-background: rgba(var(--loading-background-inline), 0.5);
-        position: relative;
-        display: block;
-        min-height: var(--internal-loading-inline-min-height);
-
-        .core-loading-message {
-            @include margin(0, 0, 0, 10px);
-        }
-
-        .core-loading-container {
-            flex-direction: row;
-        }
-    }
-
-    &.core-loading-full-height .core-loading-content {
-        height: 100%;
-    }
-
-    &.has-spacer {
-        --content-display: flex;
-
-        .core-loading-content {
-            min-height: 100%;
-            flex-direction: column;
-        }
-    }
-
-    &.list-item-limited-width .core-loading-content {
-        max-width: var(--list-item-max-width);
-        margin-left: auto !important;
-        margin-right: auto !important;
-    }
-
-    &.safe-area-padding:not(.core-loading-inline) .core-loading-content,
-    &.safe-area-padding-horizontal:not(.core-loading-inline) .core-loading-content {
-        @include safe-area-padding-horizontal(0px, 0px);
-    }
-
-    &.safe-area-padding:not(.core-loading-inline) .core-loading-content {
-        padding-bottom: var(--ion-safe-area-bottom);
-        > * {
-            --ion-safe-area-bottom: 0px;
-        }
+       @include inline();
     }
 }
 
-:host-context(ion-item) {
-    &.core-loading-inline {
-        position: static;
-        display: block;
-    }
+// Force inline on some contexts.
+:host-context(ion-item),
+:host-context(core-block) {
+    // Implicit Inline.
+    @include inline();
+}
+
+:host-context(.limited-width > ):not([slot]) {
+    --contents-display: flex;
+    flex-direction: column;
 }
