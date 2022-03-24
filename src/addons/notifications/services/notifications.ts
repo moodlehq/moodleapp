@@ -24,6 +24,19 @@ import { CoreLogger } from '@singletons/logger';
 import { makeSingleton } from '@singletons';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [AddonNotificationsProvider.READ_CHANGED_EVENT]: AddonNotificationsReadChangedEvent;
+    }
+
+}
+
 const ROOT_CACHE_KEY = 'mmaNotifications:';
 
 /**
@@ -577,3 +590,11 @@ export enum AddonNotificationsGetReadType {
     READ = 1,
     BOTH = 2,
 }
+
+/**
+ * Event triggered when one or more notifications are read.
+ */
+export type AddonNotificationsReadChangedEvent = {
+    id?: number; // Set to the single id notification read. Undefined if multiple.
+    time: number; // Time of the change.
+};

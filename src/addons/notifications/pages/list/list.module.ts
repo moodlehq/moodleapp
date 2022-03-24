@@ -16,7 +16,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { AddonNotificationsComponentsModule } from '../../components/components.module';
 import { AddonNotificationsListPage } from './list';
 import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 
@@ -31,7 +30,6 @@ const routes: Routes = [
     imports: [
         RouterModule.forChild(routes),
         CoreSharedModule,
-        AddonNotificationsComponentsModule,
         CoreMainMenuComponentsModule,
     ],
     declarations: [
