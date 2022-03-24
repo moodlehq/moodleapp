@@ -82,6 +82,15 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
     }
 
     /**
+     * Invalidate list of courses.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async invalidateCourseList(): Promise<void> {
+        return AddonBlockStarredCourses.invalidateStarredCourses();
+    }
+
+    /**
      * Helper function to invalidate only selected courses.
      *
      * @param courseIds Course Id array.
@@ -91,7 +100,7 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
         const promises: Promise<void>[] = [];
 
         // Invalidate course completion data.
-        promises.push(AddonBlockStarredCourses.invalidateStarredCourses().finally(() =>
+        promises.push(this.invalidateCourseList().finally(() =>
             CoreUtils.allPromises(courseIds.map((courseId) =>
                 AddonCourseCompletion.invalidateCourseCompletion(courseId)))));
 
@@ -172,7 +181,7 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
                 this.courses.unshift(course);
             }
 
-            await this.invalidateCourses([course.id]);
+            await this.invalidateCourseList();
         }
     }
 

@@ -20,6 +20,7 @@ import { CoreStatusWithWarningsWSResponse, CoreWarningsWSResponse, CoreWSExterna
 import { CoreEvents } from '@singletons/events';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreCourseAnyCourseDataWithExtraInfoAndOptions, CoreCourseWithImageAndColor } from './courses-helper';
+import { CoreUtils } from '@services/utils/utils';
 
 const ROOT_CACHE_KEY = 'mmCourses:';
 
@@ -625,25 +626,13 @@ export class CoreCoursesProvider {
         // Get the list of courseIds to use based on the param.
         courseIds = await this.getCourseIdsForAdminAndNavOptions(courseIds, siteId);
 
-        let navOptions: CoreCourseUserAdminOrNavOptionCourseIndexed;
-        let admOptions: CoreCourseUserAdminOrNavOptionCourseIndexed;
-
         // Get user navigation and administration options.
-        try {
-            navOptions = await this.getUserNavigationOptions(courseIds, siteId);
-        } catch {
-            // Couldn't get it, return empty options.
-            navOptions = {};
-        }
+        const [navOptions, admOptions] = await Promise.all([
+            CoreUtils.ignoreErrors(this.getUserNavigationOptions(courseIds, siteId), {}),
+            CoreUtils.ignoreErrors(this.getUserAdministrationOptions(courseIds, siteId), {}),
+        ]);
 
-        try {
-            admOptions = await this.getUserAdministrationOptions(courseIds, siteId);
-        } catch {
-            // Couldn't get it, return empty options.
-            admOptions = {};
-        }
-
-        return ({ navOptions: navOptions, admOptions: admOptions });
+        return { navOptions: navOptions, admOptions: admOptions };
     }
 
     /**

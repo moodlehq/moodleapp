@@ -204,6 +204,15 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     }
 
     /**
+     * Invalidate list of courses.
+     *
+     * @return Promise resolved when done.
+     */
+    protected invalidateCourseList(): Promise<void> {
+        return CoreCourses.invalidateUserCourses();
+    }
+
+    /**
      * Helper function to invalidate only selected courses.
      *
      * @param courseIds Course Id array.
@@ -213,7 +222,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         const promises: Promise<void>[] = [];
 
         // Invalidate course completion data.
-        promises.push(CoreCourses.invalidateUserCourses().finally(() =>
+        promises.push(this.invalidateCourseList().finally(() =>
             CoreUtils.allPromises(courseIds.map((courseId) =>
                 AddonCourseCompletion.invalidateCourseCompletion(courseId)))));
 
@@ -397,7 +406,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
                 course.hidden = !!data.value;
             }
 
-            await this.invalidateCourses([course.id]);
+            await this.invalidateCourseList();
             await this.filterCourses();
         }
 
@@ -409,7 +418,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
             course.lastaccess = CoreTimeUtils.timestamp();
 
-            await this.invalidateCourses([course.id]);
+            await this.invalidateCourseList();
             await this.filterCourses();
         }
     }
