@@ -163,8 +163,10 @@ export class AddonModDataEditPage implements OnInit {
             const entry = await AddonModDataHelper.fetchEntry(this.database, this.fieldsArray, this.entryId || 0);
             this.entry = entry.entry;
 
-            // Load correct group.
-            this.selectedGroup = this.entry.groupid;
+            if (this.entryId) {
+                // Load correct group.
+                this.selectedGroup = this.entry.groupid;
+            }
 
             // Check permissions when adding a new entry or offline entry.
             if (!this.isEditing) {

@@ -20,8 +20,8 @@
     <core-loading [hideUntil]="loaded">
         <ion-item class="ion-text-wrap core-group-selector" *ngIf="groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)">
             <ion-label id="addon-data-groupslabel">
-                <ng-container *ngIf="groupInfo.separateGroups">{{ 'core.groupsvisible' | translate }}</ng-container>
-                <ng-container *ngIf="groupInfo.visibleGroups">{{ 'core.groupsseparate' | translate }}</ng-container>
+                <ng-container *ngIf="groupInfo.separateGroups">{{ 'core.groupsseparate' | translate }}</ng-container>
+                <ng-container *ngIf="groupInfo.visibleGroups">{{ 'core.groupsvisible' | translate }}</ng-container>
             </ion-label>
             <ion-select [(ngModel)]="selectedGroup" (ionChange)="setGroup(selectedGroup)" aria-labelledby="addon-data-groupslabel"
                 interface="action-sheet" [interfaceOptions]="{header: 'core.group' | translate}">
