@@ -233,6 +233,21 @@ export class CoreDom {
     }
 
     /**
+     * Has the scroll reached bottom?
+     *
+     * @param scrollElement Scroll Element.
+     * @param marginError Error margin when calculating.
+     * @return Wether the scroll reached the bottom.
+     */
+    static scrollIsBottom(scrollElement?: HTMLElement, marginError = 0): boolean {
+        if (!scrollElement) {
+            return true;
+        }
+
+        return scrollElement.scrollTop + scrollElement.clientHeight >= scrollElement.scrollHeight - marginError;
+    }
+
+    /**
      * Move element to content so it can be slotted.
      *
      * @param element HTML Element.

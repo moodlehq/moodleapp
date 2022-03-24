@@ -1434,8 +1434,11 @@ ion-grid.core-no-grid > ion-row {
     right: 0;
 }
 
-[collapsible-footer] {
+.core-footer-shadow [collapsible-footer] {
     box-shadow: var(--drop-shadow-top, none);
+}
+[collapsible-footer] {
+    transition: box-shadow 0.5s;
     width: 100%;
     bottom: 0;
     z-index: 3;

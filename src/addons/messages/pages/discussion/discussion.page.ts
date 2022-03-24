@@ -445,13 +445,9 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             return;
         }
 
-        // Don't use domUtils.getScrollHeight because it gives an outdated value after receiving a new message.
-        const scrollHeight = this.scrollElement ? this.scrollElement.scrollHeight : 0;
-
         // Check if we are at the bottom to scroll it after render.
         // Use a 5px error margin because in iOS there is 1px difference for some reason.
-        this.scrollBottom = Math.abs(scrollHeight - (this.scrollElement?.scrollTop || 0) -
-            (this.scrollElement?.clientHeight || 0)) < 5;
+        this.scrollBottom = CoreDom.scrollIsBottom(this.scrollElement, 5);
 
         if (this.messagesBeingSent > 0) {
             // Ignore polling due to a race condition.
@@ -510,39 +506,39 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
      * The scroll was moved. Update new messages count.
      */
     scrollFunction(): void {
-        if (this.newMessages > 0) {
-            const scrollBottom = (this.scrollElement?.scrollTop || 0) + (this.scrollElement?.clientHeight || 0);
-            const scrollHeight = (this.scrollElement?.scrollHeight || 0);
-            if (scrollBottom > scrollHeight - 40) {
-                // At the bottom, reset.
-                this.setNewMessagesBadge(0);
+        if (this.newMessages == 0) {
+            return;
+        }
 
-                return;
+        if (CoreDom.scrollIsBottom(this.scrollElement, 40)) {
+            // At the bottom, reset.
+            this.setNewMessagesBadge(0);
+
+            return;
+        }
+
+        const scrollElRect = this.scrollElement?.getBoundingClientRect();
+        const scrollBottomPos = (scrollElRect && scrollElRect.bottom) || 0;
+
+        if (scrollBottomPos == 0) {
+            return;
+        }
+
+        const messages = Array.from(this.hostElement.querySelectorAll('.addon-message-not-mine'))
+            .slice(-this.newMessages)
+            .reverse();
+
+        const newMessagesUnread = messages.findIndex((message) => {
+            const elementRect = message.getBoundingClientRect();
+            if (!elementRect) {
+                return false;
             }
 
-            const scrollElRect = this.scrollElement?.getBoundingClientRect();
-            const scrollBottomPos = (scrollElRect && scrollElRect.bottom) || 0;
+            return elementRect.bottom <= scrollBottomPos;
+        });
 
-            if (scrollBottomPos == 0) {
-                return;
-            }
-
-            const messages = Array.from(this.hostElement.querySelectorAll('.addon-message-not-mine'))
-                .slice(-this.newMessages)
-                .reverse();
-
-            const newMessagesUnread = messages.findIndex((message) => {
-                const elementRect = message.getBoundingClientRect();
-                if (!elementRect) {
-                    return false;
-                }
-
-                return elementRect.bottom <= scrollBottomPos;
-            });
-
-            if (newMessagesUnread > 0 && newMessagesUnread < this.newMessages) {
-                this.setNewMessagesBadge(newMessagesUnread);
-            }
+        if (newMessagesUnread > 0 && newMessagesUnread < this.newMessages) {
+            this.setNewMessagesBadge(newMessagesUnread);
         }
     }
 

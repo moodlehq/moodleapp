@@ -31,6 +31,7 @@ import { CoreUrlUtils } from '@services/utils/url';
 import { CoreConstants } from '@/core/constants';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 
 const MOODLE_VERSION_PREFIX = 'version-';
 const MOODLEAPP_VERSION_PREFIX = 'moodleapp-';
@@ -90,9 +91,21 @@ export class AppComponent implements OnInit, AfterViewInit {
         });
 
         // Listen to scroll to add style when scroll is not 0.
-        win.addEventListener('ionScroll', ({ detail, target }: CustomEvent<ScrollDetail>) => {
-            const header = (target as HTMLElement).closest('.ion-page')?.querySelector('ion-header');
-            header?.classList.toggle('core-header-shadow', detail.scrollTop > 0);
+        win.addEventListener('ionScroll', async ({ detail, target }: CustomEvent<ScrollDetail>) => {
+            if ((target as HTMLElement).tagName != 'ION-CONTENT') {
+                return;
+            }
+            const content = (target as HTMLIonContentElement);
+
+            const page = content.closest('.ion-page');
+            if (!page) {
+                return;
+            }
+
+            page.querySelector<HTMLIonHeaderElement>('ion-header')?.classList.toggle('core-header-shadow', detail.scrollTop > 0);
+
+            const scrollElement = await content.getScrollElement();
+            content.classList.toggle('core-footer-shadow', !CoreDom.scrollIsBottom(scrollElement));
         });
 
         // Listen for session expired events.
