@@ -86,6 +86,17 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
     }
 
     /**
+     * Invalidate list of courses.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async invalidateCourseList(): Promise<void> {
+        return this.site.isVersionGreaterEqualThan('3.8')
+            ? CoreCourses.invalidateRecentCourses()
+            : CoreCourses.invalidateUserCourses();
+    }
+
+    /**
      * Helper function to invalidate only selected courses.
      *
      * @param courseIds Course Id array.
@@ -94,12 +105,8 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
     protected async invalidateCourses(courseIds: number[]): Promise<void> {
         const promises: Promise<void>[] = [];
 
-        const invalidateCoursePromise = this.site.isVersionGreaterEqualThan('3.8')
-            ? CoreCourses.invalidateRecentCourses()
-            : CoreCourses.invalidateUserCourses();
-
         // Invalidate course completion data.
-        promises.push(invalidateCoursePromise.finally(() =>
+        promises.push(this.invalidateCourseList().finally(() =>
             CoreUtils.allPromises(courseIds.map((courseId) =>
                 AddonCourseCompletion.invalidateCourseCompletion(courseId)))));
 
@@ -179,13 +186,13 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
             this.courses.splice(courseIndex, 1);
             this.courses.unshift(course);
 
-            await this.invalidateCourses([course.id]);
+            await this.invalidateCourseList();
         }
 
         if (data.action == CoreCoursesProvider.ACTION_STATE_CHANGED &&
             data.state == CoreCoursesProvider.STATE_FAVOURITE && course) {
             course.isfavourite = !!data.value;
-            await this.invalidateCourses([course.id]);
+            await this.invalidateCourseList();
         }
     }
 
