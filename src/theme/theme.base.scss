@@ -1471,8 +1471,13 @@ ion-grid.core-no-grid > ion-row {
         &.footer-expanded {
             --core-collapsible-footer-height: auto;
         }
+    }
+}
 
-
+.keyboard-is-open ion-content {
+    --core-collapsible-footer-height: 0px !important;
+    [collapsible-footer] {
+        height: 0;
     }
 }
 
