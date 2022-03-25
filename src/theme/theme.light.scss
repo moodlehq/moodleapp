@@ -237,6 +237,12 @@
         }
     }
 
+    ion-toast {
+        --color: var(--ion-color-step-50);
+        --button-color: var(--primary);
+        --background: var(--ion-color-step-800);
+    }
+
     --core-tabs-background: var(--white);
     --core-tab-background: var(--core-tabs-background);
     --core-tab-color: var(--subdued-text-color);
