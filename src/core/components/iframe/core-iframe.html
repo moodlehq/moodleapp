@@ -1,5 +1,4 @@
-<div [class.core-loading-container]="loading || !safeUrl" [ngStyle]="{'width': iframeWidth, 'height': iframeHeight}">
-
+<core-loading [hideUntil]="!loading && safeUrl">
     <core-navbar-buttons slot="end" prepend *ngIf="initialized && showFullscreenOnToolbar">
         <ion-button fill="clear" (click)="toggleFullscreen()"
             [attr.aria-label]="(fullscreen ? 'core.disablefullscreen' : 'core.fullscreen') | translate">
@@ -17,8 +16,4 @@
         class="core-button-as-link core-iframe-help">
         {{ 'core.iframehelp' | translate }}
     </ion-button>
-
-    <span class="core-loading-spinner">
-        <ion-spinner *ngIf="loading" [attr.aria-label]="'core.loading' | translate"></ion-spinner>
-    </span>
-</div>
+</core-loading>

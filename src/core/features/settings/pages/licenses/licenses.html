@@ -9,8 +9,8 @@
         </ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content>
-    <core-loading [hideUntil]="loaded" class="list-item-limited-width">
+<ion-content class="limited-width">
+    <core-loading [hideUntil]="loaded">
         <ion-searchbar [(ngModel)]="textFilter" (ionInput)="filterChanged($event.target)" (ionCancel)="filterChanged($event.target)"
             [placeholder]="'core.filter' | translate">
         </ion-searchbar>

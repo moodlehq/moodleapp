@@ -7,7 +7,7 @@
         </core-horizontal-scroll-controls>
     </div>
 </ion-item-divider>
-<core-loading [hideUntil]="loaded" [fullscreen]="false">
+<core-loading [hideUntil]="loaded">
     <div [id]="scrollElementId" [hidden]="!items || items.length === 0" class="core-horizontal-scroll"
         (scroll)="scrollControls.updateScrollPosition()">
         <div *ngIf="items" (onResize)="scrollControls.updateScrollPosition()" class="flex-row">

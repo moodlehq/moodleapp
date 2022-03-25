@@ -11,13 +11,12 @@
         </ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content>
+<ion-content class="limited-width">
     <ion-refresher slot="fixed" [disabled]="!entryLoaded || !(isPullingToRefresh || !renderingEntry && !loadingRating && !loadingComments)"
         (ionRefresh)="refreshDatabase($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    <core-loading [hideUntil]="entryLoaded && (isPullingToRefresh || !renderingEntry && !loadingRating && !loadingComments)"
-        class="list-item-limited-width">
+    <core-loading [hideUntil]="entryLoaded && (isPullingToRefresh || !renderingEntry && !loadingRating && !loadingComments)">
         <!-- Database entries found to be synchronized -->
         <ion-card class="core-warning-card" *ngIf="entry && entry.hasOffline">
             <ion-item>

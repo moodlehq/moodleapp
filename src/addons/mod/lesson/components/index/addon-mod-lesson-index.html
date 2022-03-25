@@ -6,7 +6,7 @@
 </core-navbar-buttons>
 
 <!-- Content. -->
-<core-loading [hideUntil]="!showLoading" class="list-item-limited-width">
+<core-loading [hideUntil]="!showLoading">
     <core-tabs [hideUntil]="!showLoading" [selectedIndex]="selectedTab">
         <!-- Index/Preview tab. -->
         <core-tab [title]="'addon.mod_lesson.preview' | translate" (ionSelect)="indexSelected()">

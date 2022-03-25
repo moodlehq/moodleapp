@@ -32,7 +32,7 @@
             </ion-col>
         </ion-row>
     </ion-grid>
-    <core-loading [hideUntil]="loaded && !searching" class="safe-area-padding">
+    <core-loading [hideUntil]="loaded && !searching">
         <core-empty-box *ngIf="!cloud || !cloud!.tags || !cloud!.tags.length" icon="fas-tags"
             [message]="'core.tag.notagsfound' | translate: {$a: query}"></core-empty-box>
 

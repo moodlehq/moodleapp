@@ -8,11 +8,11 @@
         </ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content>
+<ion-content class="limited-width">
     <ion-refresher slot="fixed" [disabled]="!competencies.loaded" (ionRefresh)="refreshCourseCompetencies($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    <core-loading [hideUntil]="competencies.loaded" class="list-item-limited-width">
+    <core-loading [hideUntil]="competencies.loaded">
         <ion-card *ngIf="!user && courseCompetencies && courseCompetencies.statistics.competencycount > 0">
             <ng-container *ngIf="courseCompetencies.cangradecompetencies">
                 <ion-item class="ion-text-wrap" *ngIf="courseCompetencies.settings.pushratingstouserplans">

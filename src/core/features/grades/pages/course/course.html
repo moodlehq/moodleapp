@@ -12,7 +12,7 @@
     <ion-refresher slot="fixed" [disabled]="!columns || !rows" (ionRefresh)="refreshGrades($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    <core-loading [hideUntil]="columns && rows" class="safe-area-padding">
+    <core-loading [hideUntil]="columns && rows">
         <core-empty-box *ngIf="rows && rows.length === 0" icon="fas-chart-bar" [message]="'core.grades.nogradesreturned' | translate">
         </core-empty-box>
         <div *ngIf="rows && rows.length > 0" class="core-grades-container">

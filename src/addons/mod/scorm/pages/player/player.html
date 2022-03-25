@@ -20,7 +20,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <core-loading [hideUntil]="loaded" class="core-loading-full-height">
+    <core-loading [hideUntil]="loaded">
         <core-iframe *ngIf="loaded && src" [src]="src" [iframeWidth]="scormWidth" [iframeHeight]="scormHeight"
             [showFullscreenOnToolbar]="true" [autoFullscreenOnRotate]="true">
         </core-iframe>

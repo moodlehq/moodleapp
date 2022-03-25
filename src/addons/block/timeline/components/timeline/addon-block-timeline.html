@@ -3,7 +3,7 @@
         <h2>{{ 'addon.block_timeline.pluginname' | translate }}</h2>
     </ion-label>
 </ion-item-divider>
-<core-loading [hideUntil]="loaded" [fullscreen]="false">
+<core-loading [hideUntil]="loaded">
     <ion-row class="ion-no-padding ion-justify-content-between ion-align-items-center">
         <ion-col size="auto" class="ion-no-padding">
             <core-combobox [selection]="filter" (onChange)="switchFilter($event)" icon="fas-filter">
@@ -57,11 +57,11 @@
         </ion-col>
     </ion-row>
 
-    <core-loading [hideUntil]="timeline.loaded" [hidden]="sort != 'sortbydates'" [fullscreen]="false">
+    <core-loading [hideUntil]="timeline.loaded" [hidden]="sort != 'sortbydates'">
         <addon-block-timeline-events [events]="timeline.events" [canLoadMore]="timeline.canLoadMore" (loadMore)="loadMore()"
             [from]="dataFrom" [to]="dataTo"></addon-block-timeline-events>
     </core-loading>
-    <core-loading [hideUntil]="timelineCourses.loaded" [hidden]="sort != 'sortbycourses'" [fullscreen]="false" class="safe-area-page">
+    <core-loading [hideUntil]="timelineCourses.loaded" [hidden]="sort != 'sortbycourses'">
         <ng-container *ngFor="let course of timelineCourses.courses">
             <addon-block-timeline-events [events]="course.events" [canLoadMore]="course.canLoadMore" (loadMore)="loadMore(course)"
                 [course]="course" [from]="dataFrom" [to]="dataTo"></addon-block-timeline-events>

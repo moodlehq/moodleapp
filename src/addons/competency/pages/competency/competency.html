@@ -10,11 +10,11 @@
         </ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content [core-swipe-navigation]="competencies">
+<ion-content [core-swipe-navigation]="competencies" class="limited-width">
     <ion-refresher slot="fixed" [disabled]="!competencyLoaded" (ionRefresh)="refreshCompetency($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    <core-loading [hideUntil]="competencyLoaded" class="list-item-limited-width">
+    <core-loading [hideUntil]="competencyLoaded">
         <ion-card *ngIf="user">
             <ion-item class="ion-text-wrap">
                 <core-user-avatar [user]="user" slot="start"></core-user-avatar>

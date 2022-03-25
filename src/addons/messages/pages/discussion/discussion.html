@@ -57,8 +57,8 @@
         </core-context-menu>
     </core-navbar-buttons>
 </ion-header>
-<ion-content class="has-footer" (ionScroll)="scrollFunction()">
-    <core-loading [hideUntil]="loaded" class="safe-area-padding-horizontal">
+<ion-content (ionScroll)="scrollFunction()">
+    <core-loading [hideUntil]="loaded">
         <!-- Load previous messages. -->
         <core-infinite-loading [enabled]="canLoadMore" (action)="loadPrevious($event)" position="top" [error]="loadMoreError">
         </core-infinite-loading>
