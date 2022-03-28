@@ -11,8 +11,8 @@
         </ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content>
-    <core-loading [hideUntil]="feedbackLoaded" class="has-spacer list-item-limited-width">
+<ion-content class="limited-width">
+    <core-loading [hideUntil]="feedbackLoaded" class="has-spacer">
         <ng-container *ngIf="items && items.length">
             <ion-list class="ion-no-margin has-spacer">
                 <ion-item class="ion-text-wrap">

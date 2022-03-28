@@ -18,11 +18,11 @@
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
-<ion-content>
+<ion-content class="limited-width">
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="doRefresh($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    <core-loading [hideUntil]="loaded" class="has-spacer list-item-limited-width">
+    <core-loading [hideUntil]="loaded" class="has-spacer">
         <core-course-module-info [module]="module" [courseId]="courseId" [description]="module.description" [component]="module.modname"
             [componentId]="module.id" [expandDescription]="true" [showAvailabilityInfo]="true" (completionChanged)="onCompletionChange()"
             [showManualCompletion]="showManualCompletion">

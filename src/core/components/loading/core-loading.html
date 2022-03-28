@@ -2,8 +2,4 @@
     <ion-spinner color="primary" aria-hidden="true"></ion-spinner>
     <p class="core-loading-message" *ngIf="message" role="status">{{message}}</p>
 </div>
-<div #content class="core-loading-content" [id]="uniqueId" [attr.aria-busy]="!hideUntil" @coreShowHideAnimation
-    [class.opacity-hide]="!hideUntil">
-    <ng-content *ngIf="loaded">
-    </ng-content>
-</div>
+<ng-content *ngIf="loaded" @coreShowHideAnimation></ng-content>

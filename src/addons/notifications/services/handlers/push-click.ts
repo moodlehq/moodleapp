@@ -18,12 +18,12 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
-import { CoreEvents } from '@singletons/events';
 import { CorePushNotificationsClickHandler } from '@features/pushnotifications/services/push-delegate';
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
-import { AddonNotifications, AddonNotificationsProvider } from '../notifications';
+import { AddonNotifications } from '../notifications';
 import { AddonNotificationsMainMenuHandlerService } from './mainmenu';
+import { AddonNotificationsHelper } from '../notifications-helper';
 
 /**
  * Handler for non-messaging push notifications clicks.
@@ -64,15 +64,7 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
      * @return Promise resolved when done.
      */
     protected async markAsRead(notification: AddonNotificationsNotificationData): Promise<void> {
-        const notifId = notification.savedmessageid || notification.id;
-
-        if (!notifId) {
-            return;
-        }
-
-        await CoreUtils.ignoreErrors(AddonNotifications.markNotificationRead(notifId, notification.site));
-
-        CoreEvents.trigger(AddonNotificationsProvider.READ_CHANGED_EVENT, {}, notification.site);
+        await CoreUtils.ignoreErrors(AddonNotificationsHelper.markNotificationAsRead(notification));
     }
 
     /**

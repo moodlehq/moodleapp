@@ -8,13 +8,13 @@
         </ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content>
+<ion-content class="limited-width">
     <ion-refresher slot="fixed" [disabled]="!filesLoaded || (!showPrivateFiles && !showSiteFiles)"
         (ionRefresh)="refreshData($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 
-    <core-loading [hideUntil]="filesLoaded" *ngIf="showPrivateFiles || showSiteFiles" class="list-item-limited-width">
+    <core-loading [hideUntil]="filesLoaded" *ngIf="showPrivateFiles || showSiteFiles">
         <!-- Allow selecting the files to see: private or site. -->
         <core-combobox [selection]="root" (onChange)="rootChanged($event)" *ngIf="showPrivateFiles && showSiteFiles && !path">
             <ion-select-option class="ion-text-wrap" value="my">

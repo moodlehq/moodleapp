@@ -1,10 +1,4 @@
 :host {
-    core-loading ::ng-deep .core-loading-content {
-        min-height: 100%;
-        display: flex;
-        flex-direction: column;
-    }
-
     .core-swipe-slides-container {
         ion-card {
             flex: none;

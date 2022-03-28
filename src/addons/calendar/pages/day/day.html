@@ -27,7 +27,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 
-    <core-loading [hideUntil]="loaded" class="core-loading-full-height">
+    <core-loading [hideUntil]="loaded">
         <div class="core-swipe-slides-container">
             <!-- Period name and arrows to navigate. -->
             <ion-grid class="ion-no-padding safe-area-padding">
@@ -50,9 +50,9 @@
 
             <core-swipe-slides [manager]="manager">
                 <ng-template let-day="item">
-                    <core-loading [hideUntil]="day.loaded" class="safe-area-padding list-item-limited-width">
+                    <core-loading [hideUntil]="day.loaded">
                         <!-- There is data to be synchronized -->
-                        <ion-card class="core-warning-card" *ngIf="day.hasOffline">
+                        <ion-card class="core-warning-card list-item-limited-width" *ngIf="day.hasOffline">
                             <ion-item>
                                 <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
                                 <ion-label>{{ 'core.hasdatatosync' | translate:{$a: 'core.day' | translate} }}</ion-label>
@@ -63,7 +63,7 @@
                             [message]="'addon.calendar.noevents' | translate">
                         </core-empty-box>
 
-                        <ion-list *ngIf="day.filteredEvents && day.filteredEvents.length" class="ion-no-margin">
+                        <ion-list *ngIf="day.filteredEvents && day.filteredEvents.length" class="list-item-limited-width">
                             <ng-container *ngFor="let event of day.filteredEvents">
                                 <ion-card>
                                     <ion-item class="addon-calendar-event ion-text-wrap" [attr.aria-label]="event.name"

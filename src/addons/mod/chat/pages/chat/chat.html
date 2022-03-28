@@ -16,8 +16,8 @@
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
-<ion-content class="has-footer">
-    <core-loading [hideUntil]="loaded" class="safe-area-padding">
+<ion-content>
+    <core-loading [hideUntil]="loaded">
         <ion-list class="addon-messages-discussion-container" aria-live="polite">
             <ng-container *ngFor="let message of messages; index as index; last as last">
 

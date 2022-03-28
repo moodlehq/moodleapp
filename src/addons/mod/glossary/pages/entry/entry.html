@@ -11,12 +11,12 @@
         </ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content [core-swipe-navigation]="entries">
+<ion-content [core-swipe-navigation]="entries" class="limited-width">
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="doRefresh($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 
-    <core-loading [hideUntil]="loaded" class="list-item-limited-width">
+    <core-loading [hideUntil]="loaded">
         <ng-container *ngIf="entry && loaded">
             <ion-item class="ion-text-wrap" *ngIf="showAuthor">
                 <core-user-avatar [user]="entry" slot="start"></core-user-avatar>

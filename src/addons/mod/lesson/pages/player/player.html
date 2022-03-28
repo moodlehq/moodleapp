@@ -17,8 +17,8 @@
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
-<ion-content>
-    <core-loading [hideUntil]="loaded" class="list-item-limited-width">
+<ion-content class="limited-width">
+    <core-loading [hideUntil]="loaded">
         <!-- Info messages. Only show the first one. -->
         <ion-card class="core-info-card" *ngIf="lesson && messages?.length">
             <ion-item class="ion-text-wrap">

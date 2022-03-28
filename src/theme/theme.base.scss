@@ -501,7 +501,6 @@ ion-loading {
 
 // Toasts.
 ion-toast {
-    --button-color: var(--primary-tint);
     @include media-breakpoint-down(sm) {
         &::part(container) {
             flex-direction: column;
@@ -817,10 +816,16 @@ ion-card {
 
 ion-list.core-course-module-list-wrapper,
 .list-item-limited-width,
-.core-course-module-list-wrapper {
+.core-course-module-list-wrapper,
+ion-content.limited-width > :not([slot]) {
     max-width: var(--list-item-max-width);
     margin-left: auto !important;
     margin-right: auto !important;
+}
+
+ion-content.limited-width > :not([slot]) {
+    display: flex;
+    flex-direction: column;
 }
 
 ion-toolbar h1 img.core-bar-button-image,
@@ -1434,8 +1439,11 @@ ion-grid.core-no-grid > ion-row {
     right: 0;
 }
 
-[collapsible-footer] {
+.core-footer-shadow [collapsible-footer] {
     box-shadow: var(--drop-shadow-top, none);
+}
+[collapsible-footer] {
+    transition: box-shadow 0.5s;
     width: 100%;
     bottom: 0;
     z-index: 3;
@@ -1468,8 +1476,13 @@ ion-grid.core-no-grid > ion-row {
         &.footer-expanded {
             --core-collapsible-footer-height: auto;
         }
+    }
+}
 
-
+.keyboard-is-open ion-content {
+    --core-collapsible-footer-height: 0px !important;
+    [collapsible-footer] {
+        height: 0;
     }
 }
 

@@ -126,6 +126,9 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
         const scroll = await this.content.getScrollElement();
         this.content.scrollEvents = true;
 
+        // Init shadow.
+        this.content.classList.toggle('core-footer-shadow', !CoreDom.scrollIsBottom(scroll));
+
         this.content.addEventListener('ionScroll', this.contentScrollListener = (e: CustomEvent<ScrollDetail>): void => {
             if (!this.content) {
                 return;

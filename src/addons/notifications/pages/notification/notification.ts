@@ -19,7 +19,9 @@ import {
     AddonNotificationsNotificationToRender,
 } from '@addons/notifications/services/notifications-helper';
 import { Component, OnInit } from '@angular/core';
+import { CoreContentLinksAction, CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 
@@ -29,7 +31,7 @@ import { CoreUtils } from '@services/utils/utils';
 @Component({
     selector: 'page-addon-notifications-notification',
     templateUrl: 'notification.html',
-    styleUrls: ['../../notifications.scss'],
+    styleUrls: ['../../notifications.scss', 'notification.scss'],
 })
 export class AddonNotificationsNotificationPage implements OnInit {
 
@@ -41,12 +43,19 @@ export class AddonNotificationsNotificationPage implements OnInit {
     iconUrl?: string; // Icon URL.
     modname?: string; // Module name.
     loaded = false;
+    timecreated = 0;
+
+    // Actions data.
+    actions: CoreContentLinksAction[] = [];
+    contextUrl?: string;
+    courseId?: number;
+    actionsData?: Record<string, unknown>; // Extra data to handle the URL.
 
     /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        let notification: AddonNotificationsNotificationToRender | AddonNotificationsNotificationData;
+        let notification: AddonNotificationsNotification;
 
         try {
             notification = CoreNavigator.getRequiredRouteParam('notification');
@@ -85,6 +94,8 @@ export class AddonNotificationsNotificationPage implements OnInit {
                     this.modname = modname;
                 }
             }
+            this.timecreated = notification.timecreated;
+
         } else {
             this.subject = notification.title || '';
             this.content = notification.message || '';
@@ -93,7 +104,73 @@ export class AddonNotificationsNotificationPage implements OnInit {
             this.userFromFullName = notification.userfromfullname;
         }
 
+        await this.loadActions(notification);
+        AddonNotificationsHelper.markNotificationAsRead(notification);
+
         this.loaded = true;
     }
 
+    /**
+     * Load notification actions
+     *
+     * @param notification Notification.
+     * @return Promise resolved when done.
+     */
+    async loadActions(notification: AddonNotificationsNotification): Promise<void> {
+        if (!notification.contexturl && (!notification.customdata || !notification.customdata.appurl)) {
+            // No URL, nothing to do.
+            return;
+        }
+
+        let actions: CoreContentLinksAction[] = [];
+        this.actionsData = notification.customdata;
+        this.contextUrl = notification.contexturl;
+        this.courseId = 'courseid' in notification ? notification.courseid : undefined;
+
+        // Treat appurl first if any.
+        if (this.actionsData?.appurl) {
+            actions = await CoreContentLinksDelegate.getActionsFor(
+                <string> this.actionsData.appurl,
+                this.courseId,
+                undefined,
+                this.actionsData,
+            );
+        }
+
+        if (!actions.length && this.contextUrl) {
+            // No appurl or cannot handle it. Try with contextUrl.
+            actions = await CoreContentLinksDelegate.getActionsFor(this.contextUrl, this.courseId, undefined, this.actionsData);
+        }
+
+        if (!actions.length) {
+            // URL is not supported. Add an action to open it in browser.
+            actions.push({
+                message: 'core.view',
+                icon: 'fas-eye',
+                action: this.openInBrowser.bind(this),
+            });
+        }
+
+        this.actions = actions;
+    }
+
+    /**
+     * Default action. Open in browser.
+     *
+     * @param siteId Site ID to use.
+     */
+    protected async openInBrowser(siteId?: string): Promise<void> {
+        const url = <string> this.actionsData?.appurl || this.contextUrl;
+
+        if (!url) {
+            return;
+        }
+
+        const site = await CoreSites.getSite(siteId);
+
+        site.openInBrowserWithAutoLogin(url);
+    }
+
 }
+
+type AddonNotificationsNotification = AddonNotificationsNotificationToRender | AddonNotificationsNotificationData;

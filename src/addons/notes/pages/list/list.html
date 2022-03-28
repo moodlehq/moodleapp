@@ -25,12 +25,12 @@
             [closeOnClick]="false"></core-context-menu-item>
     </core-context-menu>
 </core-navbar-buttons>
-<ion-content>
+<ion-content class="limited-width">
     <ion-refresher slot="fixed" [disabled]="!notesLoaded" (ionRefresh)="refreshNotes(false, $event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 
-    <core-loading [hideUntil]="notesLoaded" class="list-item-limited-width">
+    <core-loading [hideUntil]="notesLoaded">
         <ion-item class="ion-text-wrap" *ngIf="user">
             <core-user-avatar [user]="user" [courseId]="courseId" slot="start" [linkProfile]="false"></core-user-avatar>
             <ion-label>

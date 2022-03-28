@@ -18,13 +18,18 @@ import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { AddonMessageOutputDelegate } from '@addons/messageoutput/services/messageoutput-delegate';
 import {
+    AddonNotifications,
     AddonNotificationsNotificationMessageFormatted,
     AddonNotificationsPreferences,
     AddonNotificationsPreferencesComponent,
     AddonNotificationsPreferencesNotification,
     AddonNotificationsPreferencesNotificationProcessor,
     AddonNotificationsPreferencesProcessor,
+    AddonNotificationsProvider,
 } from './notifications';
+import { CoreEvents } from '@singletons/events';
+import { AddonNotificationsNotificationData } from './handlers/push-click';
+import { CoreTimeUtils } from '@services/utils/time';
 
 /**
  * Service that provides some helper functions for notifications.
@@ -113,6 +118,46 @@ export class AddonNotificationsHelperProvider {
         });
 
         return result;
+    }
+
+    /**
+     * Mark notification as read, trigger event and invalidate data.
+     *
+     * @param notification Notification object.
+     * @return Promise resolved when done.
+     */
+    async markNotificationAsRead(
+        notification: AddonNotificationsNotificationMessageFormatted | AddonNotificationsNotificationData,
+        siteId?: string,
+    ): Promise<boolean> {
+        if ('read' in notification && (notification.read || notification.timeread > 0)) {
+            // Already read, don't mark it.
+            return false;
+        }
+
+        const notifId = 'savedmessageid' in notification ? notification.savedmessageid || notification.id : notification.id;
+        if (!notifId) {
+            return false;
+        }
+
+        siteId = 'site' in notification ? notification.site : siteId;
+
+        await CoreUtils.ignoreErrors(AddonNotifications.markNotificationRead(notifId, siteId));
+
+        const time = CoreTimeUtils.timestamp();
+        if ('read' in notification) {
+            notification.read = true;
+            notification.timeread = time;
+        }
+
+        await CoreUtils.ignoreErrors(AddonNotifications.invalidateNotificationsList());
+
+        CoreEvents.trigger(AddonNotificationsProvider.READ_CHANGED_EVENT, {
+            id: notifId,
+            time,
+        }, siteId);
+
+        return true;
     }
 
 }

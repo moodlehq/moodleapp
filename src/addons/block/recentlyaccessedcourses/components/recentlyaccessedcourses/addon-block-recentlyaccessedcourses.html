@@ -7,7 +7,7 @@
         </core-horizontal-scroll-controls>
     </div>
 </ion-item-divider>
-<core-loading [hideUntil]="loaded" [fullscreen]="false">
+<core-loading [hideUntil]="loaded">
     <core-empty-box *ngIf="courses.length == 0" image="assets/img/icons/courses.svg"
         [message]="'addon.block_recentlyaccessedcourses.nocourses' | translate"></core-empty-box>
     <!-- List of courses. -->

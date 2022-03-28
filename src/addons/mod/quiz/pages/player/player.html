@@ -30,8 +30,8 @@
         </ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content>
-    <core-loading [hideUntil]="loaded" class="has-spacer list-item-limited-width">
+<ion-content class="limited-width">
+    <core-loading [hideUntil]="loaded" class="has-spacer">
         <!-- Button to start attempting. -->
         <ion-button *ngIf="!attempt" expand="block" class="ion-margin" (click)="start()">
             {{ 'addon.mod_quiz.startattempt' | translate }}

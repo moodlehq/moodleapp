@@ -15,11 +15,11 @@
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
-<ion-content>
+<ion-content class="limited-width">
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshData($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    <core-loading [hideUntil]="loaded" class="list-item-limited-width">
+    <core-loading [hideUntil]="loaded">
 
         <!-- Review summary -->
         <ion-card *ngIf="attempt">
