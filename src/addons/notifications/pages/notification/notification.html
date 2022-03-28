@@ -11,45 +11,42 @@
 <ion-content>
     <core-loading [hideUntil]="loaded">
         <div class="list-item-limited-width">
-            <ion-card>
 
-                <ion-item class="ion-text-wrap">
-                    <core-user-avatar *ngIf="userIdFrom > 0" slot="start" [userId]="userIdFrom" [profileUrl]="profileImageUrlFrom"
-                        [fullname]="userFromFullName">
-                        <div class="core-avatar-extra-img" *ngIf="iconUrl && !modname">
-                            <img [src]="iconUrl" alt="" role="presentation">
-                        </div>
-                        <core-mod-icon *ngIf="modname" [modicon]="iconUrl" [modname]="modname" [showAlt]="false">
-                        </core-mod-icon>
-                    </core-user-avatar>
+            <ion-item class="ion-text-wrap core-notification-title" lines="full">
+                <core-user-avatar *ngIf="userIdFrom > 0" slot="start" [userId]="userIdFrom" [profileUrl]="profileImageUrlFrom"
+                    [fullname]="userFromFullName">
+                    <div class="core-avatar-extra-img" *ngIf="iconUrl && !modname">
+                        <img [src]="iconUrl" alt="" role="presentation">
+                    </div>
+                    <core-mod-icon *ngIf="modname" [modicon]="iconUrl" [modname]="modname" [showAlt]="false">
+                    </core-mod-icon>
+                </core-user-avatar>
 
-                    <ng-container *ngIf="userIdFrom <= 0 && iconUrl">
-                        <div class="core-notification-icon" *ngIf="!modname" slot="start">
-                            <img [src]="iconUrl" alt="" role="presentation">
-                        </div>
-                        <core-mod-icon *ngIf="modname" [modicon]="iconUrl" [modname]="modname" [showAlt]="false"
-                            class="core-notification-icon" slot="start">
-                        </core-mod-icon>
-                    </ng-container>
+                <ng-container *ngIf="userIdFrom <= 0 && iconUrl">
+                    <div class="core-notification-icon" *ngIf="!modname" slot="start">
+                        <img [src]="iconUrl" alt="" role="presentation">
+                    </div>
+                    <core-mod-icon *ngIf="modname" [modicon]="iconUrl" [modname]="modname" [showAlt]="false" class="core-notification-icon"
+                        slot="start">
+                    </core-mod-icon>
+                </ng-container>
 
-                    <ion-label>
-                        <ion-card-subtitle *ngIf="userIdFrom > 0">{{ userFromFullName }}</ion-card-subtitle>
-                        <ion-card-title>
-                            <core-format-text [text]="subject" contextLevel="system" [contextInstanceId]="0" [wsNotFiltered]="true">
-                            </core-format-text>
-                        </ion-card-title>
-                    </ion-label>
-                    <ion-note slot="end" *ngIf="timecreated">
-                        {{ timecreated | coreDateDayOrTime }}
-                    </ion-note>
-                </ion-item>
-                <ion-item class="ion-text-wrap">
-                    <ion-label>
-                        <core-format-text [text]="content | coreCreateLinks" contextLevel="system" [contextInstanceId]="0">
+                <ion-label>
+                    <p class="item-heading">
+                        <core-format-text [text]="subject" contextLevel="system" [contextInstanceId]="0" [wsNotFiltered]="true">
                         </core-format-text>
-                    </ion-label>
-                </ion-item>
-            </ion-card>
+                    </p>
+                    <p>{{ timecreated | coreTimeAgo }}<ng-container *ngIf="userIdFrom > 0"> · {{
+                            userFromFullName }}</ng-container>
+                    </p>
+                </ion-label>
+            </ion-item>
+            <ion-item class="ion-text-wrap core-notification-body">
+                <ion-label>
+                    <core-format-text [text]="content | coreCreateLinks" contextLevel="system" [contextInstanceId]="0">
+                    </core-format-text>
+                </ion-label>
+            </ion-item>
         </div>
 
         <div collapsible-footer appearOnBottom *ngIf="loaded && actions && actions.length > 0" slot="fixed">

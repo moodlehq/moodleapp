@@ -17,20 +17,11 @@
     </ion-refresher>
     <core-loading [hideUntil]="notificationsLoaded">
 
-        <div class="ion-padding" *ngIf="canMarkAllNotificationsAsRead">
-            <ion-button [disabled]="loadingMarkAllNotificationsAsRead" expand="block" (click)="markAllNotificationsAsRead()" fill="outline">
-                <ion-icon slot="start" name="fas-check" aria-hidden="true" *ngIf="!loadingMarkAllNotificationsAsRead"></ion-icon>
-                <ion-spinner slot="start" [attr.aria-label]="'core.loading' | translate" *ngIf="loadingMarkAllNotificationsAsRead">
-                </ion-spinner>
-                {{ 'addon.notifications.markallread' | translate }}
-            </ion-button>
-        </div>
-
         <ion-item *ngFor="let notification of notifications" class="ion-text-wrap" [attr.aria-label]="
                     notification.timeread
                     ? notification.subject
                     : 'addon.notifications.unreadnotification' | translate: {$a: notification.subject}"
-            (click)="openNotification(notification)" button [detail]="true" lines="true">
+            (click)="openNotification(notification)" button [detail]="false" lines="full">
             <core-user-avatar *ngIf="notification.useridfrom > 0" [user]="notification" slot="start"
                 [profileUrl]="notification.profileimageurlfrom" [fullname]="notification.userfromfullname"
                 [userId]="notification.useridfrom">
@@ -56,13 +47,12 @@
                     <core-format-text [text]="notification.subject" contextLevel="system" [contextInstanceId]="0" [wsNotFiltered]="true">
                     </core-format-text>
                 </p>
-                <p *ngIf="notification.useridfrom > 0">{{ notification.userfromfullname }}</p>
+                <p>{{ notification.timecreated | coreTimeAgo }}<ng-container *ngIf="notification.useridfrom > 0"> · {{
+                        notification.userfromfullname }}</ng-container>
+                </p>
             </ion-label>
-            <ion-note slot="end">
-                {{ notification.timecreated | coreDateDayOrTime }}
-                <span *ngIf="!notification.timeread">
-                    <ion-icon name="fas-circle" color="primary" aria-hidden="true"></ion-icon>
-                </span>
+            <ion-note slot="end" *ngIf="!notification.timeread">
+                <ion-icon name="fas-circle" color="primary" aria-hidden="true"></ion-icon>
             </ion-note>
         </ion-item>
 
@@ -72,4 +62,15 @@
         <core-infinite-loading [enabled]="canLoadMore" (action)="loadMoreNotifications($event)" [error]="loadMoreError">
         </core-infinite-loading>
     </core-loading>
+
+
+    <div class="mark-all-as-read" slot="fixed" collapsible-footer appearOnBottom>
+        <ion-chip *ngIf="notificationsLoaded && canMarkAllNotificationsAsRead" [disabled]="loadingMarkAllNotificationsAsRead"
+            color="primary" (click)="markAllNotificationsAsRead()">
+            <ion-icon name="fas-eye" aria-hidden="true" *ngIf="!loadingMarkAllNotificationsAsRead"></ion-icon>
+            <ion-spinner [attr.aria-label]="'core.loading' | translate" *ngIf="loadingMarkAllNotificationsAsRead">
+            </ion-spinner>
+            {{ 'addon.notifications.markallread' | translate }}
+        </ion-chip>
+    </div>
 </ion-content>

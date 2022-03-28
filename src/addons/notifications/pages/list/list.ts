@@ -39,7 +39,7 @@ import { CoreTimeUtils } from '@services/utils/time';
 @Component({
     selector: 'page-addon-notifications-list',
     templateUrl: 'list.html',
-    styleUrls: ['../../notifications.scss'],
+    styleUrls: ['list.scss', '../../notifications.scss'],
 })
 export class AddonNotificationsListPage implements OnInit, OnDestroy {
 
@@ -155,22 +155,6 @@ export class AddonNotificationsListPage implements OnInit, OnDestroy {
         this.notificationsLoaded = false;
 
         await this.refreshNotifications();
-    }
-
-    /**
-     * Mark notifications as read.
-     *
-     * @param notification Array of notification objects.
-     * @return Promise resolved when done.
-     */
-    protected async markNotificationAsRead(notification: AddonNotificationsNotificationToRender): Promise<void> {
-        const updated = await AddonNotificationsHelper.markNotificationAsRead(notification);
-
-        if (!updated) {
-            return;
-        }
-
-        await this.loadMarkAllAsReadButton();
     }
 
     /**
