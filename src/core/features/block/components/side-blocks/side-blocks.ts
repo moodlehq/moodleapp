@@ -32,7 +32,8 @@ import { CoreCoursesDashboard } from '@features/courses/services/dashboard';
 })
 export class CoreBlockSideBlocksComponent implements OnInit {
 
-    @Input() courseId?: number;
+    @Input() contextLevel!: string;
+    @Input() instanceId!: number;
 
     @ViewChildren(CoreBlockComponent) blocksComponents?: QueryList<CoreBlockComponent>;
 
@@ -56,8 +57,8 @@ export class CoreBlockSideBlocksComponent implements OnInit {
     async invalidateBlocks(): Promise<void> {
         const promises: Promise<void>[] = [];
 
-        if (this.courseId) {
-            promises.push(CoreCourse.invalidateCourseBlocks(this.courseId));
+        if (this.contextLevel === 'course') {
+            promises.push(CoreCourse.invalidateCourseBlocks(this.instanceId));
         } else {
             promises.push(CoreCoursesDashboard.invalidateDashboardBlocks());
         }
@@ -79,8 +80,8 @@ export class CoreBlockSideBlocksComponent implements OnInit {
      */
     async loadContent(): Promise<void> {
         try {
-            if (this.courseId) {
-                this.blocks = await CoreBlockHelper.getCourseBlocks(this.courseId);
+            if (this.contextLevel === 'course') {
+                this.blocks = await CoreBlockHelper.getCourseBlocks(this.instanceId);
             } else {
                 const blocks = await CoreCoursesDashboard.getDashboardBlocks();
 

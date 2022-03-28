@@ -30,7 +30,8 @@ import { CoreBlockSideBlocksComponent } from '../side-blocks/side-blocks';
 })
 export class CoreBlockSideBlocksButtonComponent implements OnInit, OnDestroy {
 
-    @Input() courseId!: number;
+    @Input() contextLevel!: string;
+    @Input() instanceId!: number;
     @ViewChild('button', { read: ElementRef }) button?: ElementRef<HTMLElement>;
 
     protected element: HTMLElement;
@@ -54,7 +55,8 @@ export class CoreBlockSideBlocksButtonComponent implements OnInit, OnDestroy {
         CoreDomUtils.openSideModal({
             component: CoreBlockSideBlocksComponent,
             componentProps: {
-                courseId: this.courseId,
+                contextLevel: this.contextLevel,
+                instanceId: this.instanceId,
             },
         });
     }
