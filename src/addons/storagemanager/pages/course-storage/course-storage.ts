@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreConstants } from '@/core/constants';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
 import { CoreCourse, CoreCourseProvider } from '@features/course/services/course';
 import {
     CoreCourseHelper,
@@ -30,6 +30,7 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
+import { CoreDom } from '@singletons/dom';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 
 /**
@@ -62,6 +63,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
     statusDownloaded = CoreConstants.DOWNLOADED;
 
+    protected initialSectionId?: number;
     protected siteUpdatedObserver?: CoreEventObserver;
     protected courseStatusObserver?: CoreEventObserver;
     protected sectionStatusObserver?: CoreEventObserver;
@@ -69,7 +71,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
     protected isDestroyed = false;
     protected isGuest = false;
 
-    constructor() {
+    constructor(protected elementRef: ElementRef) {
         // Refresh the enabled flags if site is updated.
         this.siteUpdatedObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
@@ -100,16 +102,19 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
         }
 
         this.isGuest = !!CoreNavigator.getRouteBooleanParam('isGuest');
+        this.initialSectionId = CoreNavigator.getRouteNumberParam('sectionId');
 
         this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
         this.downloadEnabled = !CoreSites.getRequiredCurrentSite().isOfflineDisabled();
 
-        const sections = await CoreCourse.getSections(this.courseId, false, true);
+        const sections = (await CoreCourse.getSections(this.courseId, false, true))
+            .filter((section) => !CoreCourseHelper.isSectionStealth(section));
         this.sections = (await CoreCourseHelper.addHandlerDataForModules(sections, this.courseId)).sections
             .map(section => ({
                 ...section,
                 totalSize: 0,
                 calculatingSize: true,
+                expanded: section.id === this.initialSectionId,
                 modules: section.modules.map(module => ({
                     ...module,
                     calculatingSize: true,
@@ -117,6 +122,12 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
             }));
 
         this.loaded = true;
+
+        CoreDom.scrollToElement(
+            this.elementRef.nativeElement,
+            '.core-course-storage-section-expanded',
+            { addYAxis: -10 },
+        );
 
         await Promise.all([
             this.initSizes(),
@@ -642,6 +653,18 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
     }
 
     /**
+     * Toggle expand status.
+     *
+     * @param event Event object.
+     * @param section Section to expand / collapse.
+     */
+    toggleExpand(event: Event, section: AddonStorageManagerCourseSection): void {
+        section.expanded = !section.expanded;
+        event.stopPropagation();
+        event.preventDefault();
+    }
+
+    /**
      * @inheritdoc
      */
     ngOnDestroy(): void {
@@ -663,6 +686,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 type AddonStorageManagerCourseSection = Omit<CoreCourseSectionWithStatus, 'modules'> & {
     totalSize: number;
     calculatingSize: boolean;
+    expanded: boolean;
     modules: AddonStorageManagerModule[];
 };
 
