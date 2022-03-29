@@ -24,7 +24,6 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { ModalController, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -47,6 +46,7 @@ import { AddonModQuizSync } from '../../services/quiz-sync';
 import { CanLeave } from '@guards/can-leave';
 import { CoreForms } from '@singletons/form';
 import { CoreDom } from '@singletons/dom';
+import { CoreTime } from '@singletons/time';
 
 /**
  * Page that allows attempting a quiz.
@@ -352,7 +352,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             }
 
             if (this.quiz!.timelimit && this.quiz!.timelimit > 0) {
-                this.readableTimeLimit = CoreTimeUtils.formatTime(this.quiz.timelimit);
+                this.readableTimeLimit = CoreTime.formatTime(this.quiz.timelimit);
             }
 
             // Get access information for the quiz.

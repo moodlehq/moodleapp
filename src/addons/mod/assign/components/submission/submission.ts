@@ -58,6 +58,7 @@ import { CoreSync } from '@services/sync';
 import { AddonModAssignSubmissionPluginComponent } from '../submission-plugin/submission-plugin';
 import { AddonModAssignModuleHandlerService } from '../../services/handlers/module';
 import { CanLeave } from '@guards/can-leave';
+import { CoreTime } from '@singletons/time';
 
 /**
  * Component that displays an assignment submission.
@@ -230,7 +231,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
 
             this.timeRemaining = Translate.instant(
                 'addon.mod_assign.' + (onTime ? earlyString : lateString),
-                { $a: CoreTimeUtils.formatTime(Math.abs(lateCalculation - lateThreshold)) },
+                { $a: CoreTime.formatTime(Math.abs(lateCalculation - lateThreshold)) },
             );
             this.timeRemainingClass = onTime ? 'earlysubmission' : 'latesubmission';
 
@@ -242,7 +243,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
             const submissionsEnabled = response.lastattempt?.submissionsenabled || response.gradingsummary?.submissionsenabled;
             this.timeRemaining = Translate.instant(
                 'addon.mod_assign.' + (submissionsEnabled ? 'overdue' : 'duedatereached'),
-                { $a: CoreTimeUtils.formatTime(time - this.assign.duedate) },
+                { $a: CoreTime.formatTime(time - this.assign.duedate) },
             );
             this.timeRemainingClass = 'overdue';
             this.timeLimitFinished = true;
@@ -260,7 +261,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
         }
 
         // Assignment is not overdue, and no submission has been made. Just display the due date.
-        this.timeRemaining = CoreTimeUtils.formatTime(this.assign.duedate - time);
+        this.timeRemaining = CoreTime.formatTime(this.assign.duedate - time);
         this.timeRemainingClass = 'timeremaining';
     }
 
@@ -367,7 +368,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
             try {
                 await CoreDomUtils.showConfirm(
                     Translate.instant('addon.mod_assign.confirmstart', {
-                        $a: CoreTimeUtils.formatTime(this.assign.timelimit),
+                        $a: CoreTime.formatTime(this.assign.timelimit),
                     }),
                     undefined,
                     Translate.instant('addon.mod_assign.beginassignment'),

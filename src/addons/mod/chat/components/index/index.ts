@@ -18,6 +18,7 @@ import { CoreCourseContentsPage } from '@features/course/pages/contents/contents
 import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { AddonModChat, AddonModChatChat, AddonModChatProvider } from '../../services/chat';
 import { AddonModChatModuleHandlerService } from '../../services/handlers/module';
 
@@ -67,7 +68,7 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
         if (this.chat.chattime && this.chat.schedule && span > 0) {
             this.chatInfo = {
                 date: CoreTimeUtils.userDate(this.chat.chattime * 1000),
-                fromnow: CoreTimeUtils.formatTime(span),
+                fromnow: CoreTime.formatTime(span),
             };
         } else {
             this.chatInfo = undefined;

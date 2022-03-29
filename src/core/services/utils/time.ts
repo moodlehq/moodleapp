@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 
 import moment, { LongDateFormatKey } from 'moment';
 import { makeSingleton, Translate } from '@singletons';
+import { CoreTime } from '@singletons/time';
 
 /*
  * "Utils" service with helper functions for date and time.
@@ -160,39 +161,10 @@ export class CoreTimeUtilsProvider {
      * @param seconds A number of seconds
      * @param precision Number of elements to have in precision.
      * @return Seconds in a human readable format.
+     * @deprecated since app 4.0. Use CoreTime.formatTime instead.
      */
     formatTime(seconds: number, precision = 2): string {
-        precision = precision || 6; // Use max precision if 0 is passed.
-
-        const eventDuration = moment.duration(Math.abs(seconds), 'seconds');
-        let durationString = '';
-
-        if (precision && eventDuration.years() > 0) {
-            durationString += ' ' + moment.duration(eventDuration.years(), 'years').humanize();
-            precision--;
-        }
-        if (precision && eventDuration.months() > 0) {
-            durationString += ' ' + moment.duration(eventDuration.months(), 'months').humanize();
-            precision--;
-        }
-        if (precision && eventDuration.days() > 0) {
-            durationString += ' ' + moment.duration(eventDuration.days(), 'days').humanize();
-            precision--;
-        }
-        if (precision && eventDuration.hours() > 0) {
-            durationString += ' ' + moment.duration(eventDuration.hours(), 'hours').humanize();
-            precision--;
-        }
-        if (precision && eventDuration.minutes() > 0) {
-            durationString += ' ' + moment.duration(eventDuration.minutes(), 'minutes').humanize();
-            precision--;
-        }
-        if (precision && (eventDuration.seconds() > 0 || !durationString)) {
-            durationString += ' ' + moment.duration(eventDuration.seconds(), 'seconds').humanize();
-            precision--;
-        }
-
-        return durationString.trim();
+        return CoreTime.formatTime(seconds, precision);
     }
 
     /**
@@ -200,21 +172,10 @@ export class CoreTimeUtilsProvider {
      *
      * @param seconds Seconds
      * @return Short human readable text.
+     * @deprecated since app 4.0. Use CoreTime.formatTimeShort instead.
      */
     formatTimeShort(duration: number): string {
-        const minutes = Math.floor(duration / 60);
-        const seconds = duration - minutes * 60;
-        const durations = <string[]>[];
-
-        if (minutes > 0) {
-            durations.push(minutes + '\'');
-        }
-
-        if (seconds > 0 || minutes === 0) {
-            durations.push(seconds + '\'\'');
-        }
-
-        return durations.join(' ');
+        return CoreTime.formatTimeShort(duration);
     }
 
     /**
@@ -223,10 +184,10 @@ export class CoreTimeUtilsProvider {
      * @param duration Duration in seconds
      * @param precision Number of elements to have in precision. 0 or undefined to full precission.
      * @return Duration in a human readable format.
-     * @deprecated since 4.0. Use formatTime instead.
+     * @deprecated since app 4.0. Use CoreTime.formatTime instead.
      */
     formatDuration(duration: number, precision?: number): string {
-        return this.formatTime(duration, precision);
+        return CoreTime.formatTime(duration, precision);
     }
 
     /**
@@ -234,10 +195,10 @@ export class CoreTimeUtilsProvider {
      *
      * @param duration Duration in seconds
      * @return Duration in a short human readable format.
-     * @deprecated since 4.0. Use formatTime instead.
+     * @deprecated since app 4.0. Use CoreTime.formatTimeShort instead.
      */
     formatDurationShort(duration: number): string {
-        return this.formatTimeShort(duration);
+        return CoreTime.formatTimeShort(duration);
     }
 
     /**

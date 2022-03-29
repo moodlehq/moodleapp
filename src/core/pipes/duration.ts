@@ -14,7 +14,7 @@
 
 import { Pipe, PipeTransform } from '@angular/core';
 import { CoreLogger } from '@singletons/logger';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 
 /**
  * Filter to turn a number of seconds to a duration. E.g. 60 -> 1 minute.
@@ -48,7 +48,7 @@ export class CoreDurationPipe implements PipeTransform {
             seconds = numberSeconds;
         }
 
-        return CoreTimeUtils.formatTime(seconds);
+        return CoreTime.formatTime(seconds);
     }
 
 }

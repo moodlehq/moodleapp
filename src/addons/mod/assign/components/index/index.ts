@@ -26,6 +26,7 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreTime } from '@singletons/time';
 import { AddonModAssignListFilterName } from '../../classes/submissions-source';
 import {
     AddonModAssign,
@@ -182,7 +183,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
                 if (this.assign.duedate - time <= 0) {
                     this.timeRemaining = Translate.instant('addon.mod_assign.assignmentisdue');
                 } else {
-                    this.timeRemaining = CoreTimeUtils.formatTime(this.assign.duedate - time);
+                    this.timeRemaining = CoreTime.formatTime(this.assign.duedate - time);
                 }
 
                 if (this.assign.duedate < time) {
