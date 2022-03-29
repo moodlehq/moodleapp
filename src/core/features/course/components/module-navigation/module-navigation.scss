@@ -21,6 +21,10 @@
         margin-top: var(--button-vertical-margin);
         margin-bottom: var(--button-vertical-margin);
     }
+
+    &.empty {
+        display: none;
+    }
 }
 
 :host-context(core-course-format.core-course-format-singleactivity) {
