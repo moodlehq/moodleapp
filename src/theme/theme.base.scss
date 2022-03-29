@@ -1069,9 +1069,7 @@ ion-chip {
             border-color: var(--ion-color-base);
             color: var(--ion-color-base);
         }
-    }
 
-    &.ion-color {
         &.ion-color-light,
         &.ion-color-medium,
         &.ion-color-dark,
@@ -1081,6 +1079,10 @@ ion-chip {
                 color: var(--text-color);
             }
         }
+    }
+
+    &:not(.ion-color) ion-icon {
+        color: var(--text-color);
     }
 }
 

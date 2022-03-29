@@ -40,6 +40,8 @@ ion-item {
     div.core-notification-icon,
     core-mod-icon.core-notification-icon {
         padding: 8px;
+        max-width: var(--core-avatar-size);
+        max-height:  var(--core-avatar-size);
     }
 }
 
