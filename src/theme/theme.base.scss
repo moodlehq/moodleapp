@@ -870,7 +870,8 @@ ion-action-sheet.md {
 
 // Radio.
 ion-radio,
-input[type=radio] {
+input[type=radio],
+.select-alert.ios .alert-radio-icon {
     --color: var(--text-color);
     --color-checked: var(--color);
     --border-radius: 50%;
@@ -882,7 +883,8 @@ input[type=radio] {
 }
 
 .ios ion-radio,
-.ios input[type=radio] {
+.ios input[type=radio],
+.select-alert.ios .alert-radio-icon {
     --border-width: 1px;
     --outer-border-width: 1px;
 }
@@ -911,11 +913,49 @@ input[type=radio] {
 
     &.radio-checked {
         &::part(container) {
-            border-color: var(--color-checked);
-            background: var(--color-checked);
+            border-color: var(--color);
+            background: var(--color);
         }
 
         &::part(mark) {
+            transform: scale3d(1, 1, 1);
+        }
+    }
+}
+
+.select-alert.ios {
+    .alert-radio-icon {
+        height: var(--size);
+        width: var(--size);
+        min-width: var(--size);
+        border-radius: var(--border-radius);
+        border-width: var(--outer-border-width);
+        border-style: var(--border-style);
+        border-color: var(--color);
+        @include margin(10px, 8px, 10px, 8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .alert-radio-inner {
+            top: auto;
+            left: auto;
+            position: static;
+            border-radius: var(--inner-border-radius);
+            width: calc(50% + var(--outer-border-width));
+            height: calc(50% + var(--outer-border-width));
+            transform: scale3d(0, 0, 0);
+            transition: transform 280ms cubic-bezier(.4, 0, .2, 1);
+            background: var(--contrast-background);
+            border: 0 !important;
+        }
+    }
+
+    button[aria-checked=true] .alert-radio-icon {
+        border-color: var(--color-checked);
+        background: var(--color-checked);
+
+        .alert-radio-inner {
             transform: scale3d(1, 1, 1);
         }
     }
@@ -936,6 +976,10 @@ input[type=checkbox] {
 
 .ios input[type=checkbox] {
     --outer-border-width: 1px;
+}
+
+.select-alert.ios .alert-checkbox-icon {
+    border-radius: 2px;
 }
 
 // Select.
