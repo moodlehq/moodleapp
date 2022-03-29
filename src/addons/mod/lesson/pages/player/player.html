@@ -30,7 +30,7 @@
         <div *ngIf="lesson" [ngClass]='{"addon-mod_lesson-slideshow": lesson.slideshow}'
             [ngStyle]="{'width': lessonWidth, 'height': lessonHeight}">
 
-            <core-timer *ngIf="endTime" [endTime]="endTime" (finished)="timeUp()"
+            <core-timer *ngIf="endTime" [endTime]="endTime" (finished)="timeUp()" [timeLeftClassThreshold]="-1"
                 [timerText]="'addon.mod_lesson.timeremaining' | translate">
             </core-timer>
 

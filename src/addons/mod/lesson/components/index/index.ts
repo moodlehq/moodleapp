@@ -25,7 +25,6 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreForms } from '@singletons/form';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { AddonModLessonRetakeFinishedInSyncDBRecord } from '../../services/database/lesson';
@@ -47,6 +46,7 @@ import {
     AddonModLessonSyncResult,
 } from '../../services/lesson-sync';
 import { AddonModLessonModuleHandlerService } from '../../services/handlers/module';
+import { CoreTime } from '@singletons/time';
 
 /**
  * Component that displays a lesson entry page.
@@ -505,15 +505,15 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         // Format times and grades.
         if (formattedData.avetime != null && formattedData.numofattempts) {
             formattedData.avetime = Math.floor(formattedData.avetime / formattedData.numofattempts);
-            this.avetimeReadable = CoreTimeUtils.formatTime(formattedData.avetime);
+            this.avetimeReadable = CoreTime.formatTime(formattedData.avetime);
         }
 
         if (formattedData.hightime != null) {
-            this.hightimeReadable = CoreTimeUtils.formatTime(formattedData.hightime);
+            this.hightimeReadable = CoreTime.formatTime(formattedData.hightime);
         }
 
         if (formattedData.lowtime != null) {
-            this.lowtimeReadable = CoreTimeUtils.formatTime(formattedData.lowtime);
+            this.lowtimeReadable = CoreTime.formatTime(formattedData.lowtime);
         }
 
         if (formattedData.lessonscored) {

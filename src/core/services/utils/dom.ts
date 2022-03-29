@@ -14,7 +14,7 @@
 
 import { Injectable, SimpleChange, ElementRef, KeyValueChanges } from '@angular/core';
 import { IonContent } from '@ionic/angular';
-import { ModalOptions, PopoverOptions, AlertOptions, AlertButton, TextFieldTypes, getMode } from '@ionic/core';
+import { ModalOptions, PopoverOptions, AlertOptions, AlertButton, TextFieldTypes, getMode, ToastOptions } from '@ionic/core';
 import { Md5 } from 'ts-md5';
 
 import { CoreApp } from '@services/app';
@@ -1627,6 +1627,24 @@ export class CoreDomUtilsProvider {
             position: 'bottom',
             cssClass: cssClass,
         });
+
+        await loader.present();
+
+        return loader;
+    }
+
+    /**
+     * Show toast with some options.
+     *
+     * @param options Options.
+     * @return Promise resolved with Toast instance.
+     */
+    async showToastWithOptions(options: ToastOptions): Promise<HTMLIonToastElement> {
+        // Set some default values.
+        options.duration = options.duration ?? 2000;
+        options.position = options.position ?? 'bottom';
+
+        const loader = await ToastController.create(options);
 
         await loader.present();
 

@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreWSExternalWarning, CoreWSExternalFile, CoreWSFile } from '@services/ws';
-import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
@@ -27,6 +26,7 @@ import { makeSingleton, Translate } from '@singletons/index';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreError } from '@classes/errors/error';
 import { AddonModH5PActivityAutoSyncData, AddonModH5PActivitySyncProvider } from './h5pactivity-sync';
+import { CoreTime } from '@singletons/time';
 
 const ROOT_CACHE_KEY = 'mmaModH5PActivity:';
 
@@ -90,8 +90,8 @@ export class AddonModH5PActivityProvider {
             formattedAttempt.durationReadable = '-';
             formattedAttempt.durationCompact = '-';
         } else {
-            formattedAttempt.durationReadable = CoreTimeUtils.formatTime(attempt.duration);
-            formattedAttempt.durationCompact = CoreTimeUtils.formatDurationShort(attempt.duration);
+            formattedAttempt.durationReadable = CoreTime.formatTime(attempt.duration, 3);
+            formattedAttempt.durationCompact = CoreTime.formatTimeShort(attempt.duration);
         }
 
         return formattedAttempt;

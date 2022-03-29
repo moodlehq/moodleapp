@@ -18,6 +18,7 @@ import { CoreLang } from '@services/lang';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreSites } from '@services/sites';
 import { CoreUpdateManager } from '@services/update-manager';
+import { CoreTimeUtils } from '@services/utils/time';
 
 export default async function(): Promise<void> {
     await Promise.all([
@@ -27,5 +28,6 @@ export default async function(): Promise<void> {
         CoreLang.initialize(),
         CoreLocalNotifications.initialize(),
         CoreUpdateManager.initialize(),
+        CoreTimeUtils.initialize(),
     ]);
 }

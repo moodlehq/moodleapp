@@ -19,10 +19,10 @@ import { CoreQuestionHelper } from '@features/question/services/question-helper'
 import { IonContent, IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreDom } from '@singletons/dom';
+import { CoreTime } from '@singletons/time';
 import {
     AddonModQuizNavigationModalComponent,
     AddonModQuizNavigationModalReturn,
@@ -276,11 +276,11 @@ export class AddonModQuizReviewPage implements OnInit {
         const timeTaken = (this.attempt.timefinish || 0) - (this.attempt.timestart || 0);
         if (timeTaken > 0) {
             // Format time taken.
-            this.timeTaken = CoreTimeUtils.formatTime(timeTaken);
+            this.timeTaken = CoreTime.formatTime(timeTaken);
 
             // Calculate overdue time.
             if (this.quiz.timelimit && timeTaken > this.quiz.timelimit + 60) {
-                this.overTime = CoreTimeUtils.formatTime(timeTaken - this.quiz.timelimit);
+                this.overTime = CoreTime.formatTime(timeTaken - this.quiz.timelimit);
             }
         } else {
             this.timeTaken = undefined;

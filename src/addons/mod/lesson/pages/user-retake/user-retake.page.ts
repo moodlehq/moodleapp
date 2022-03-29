@@ -34,8 +34,8 @@ import {
     AddonModLessonUserAttemptAnswerPageWSData,
 } from '../../services/lesson';
 import { AddonModLessonAnswerData, AddonModLessonHelper } from '../../services/lesson-helper';
-import { CoreTimeUtils } from '@services/utils/time';
 import { CoreCourse } from '@features/course/services/course';
+import { CoreTime } from '@singletons/time';
 
 /**
  * Page that displays a retake made by a certain user.
@@ -222,7 +222,7 @@ export class AddonModLessonUserRetakePage implements OnInit {
         if (formattedData.userstats.gradeinfo) {
             // Completed.
             formattedData.userstats.grade = CoreTextUtils.roundToDecimals(formattedData.userstats.grade, 2);
-            this.timeTakenReadable = CoreTimeUtils.formatTime(formattedData.userstats.timetotake);
+            this.timeTakenReadable = CoreTime.formatTime(formattedData.userstats.timetotake);
         }
 
         // Format pages data.

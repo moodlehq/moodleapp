@@ -32,10 +32,15 @@ export class CoreTimerComponent implements OnInit, OnDestroy {
     @Input() endTime?: string | number; // Timestamp (in seconds) when the timer should end.
     @Input() timerText?: string; // Text to show next to the timer. If not defined, no text shown.
     @Input() timeLeftClass?: string; // Name of the class to apply with each second. By default, 'core-timer-timeleft-'.
+    @Input() timeLeftClassThreshold = 100; // Number of seconds to start adding the timeLeftClass. Set it to -1 to not add it.
     @Input() align?: string; // Where to align the time and text. Defaults to 'left'. Other values: 'center', 'right'.
+    @Input() timeUpText?: string; // Text to show when the timer reaches 0. If not defined, 'core.timesup'.
+    @Input() mode: CoreTimerMode = CoreTimerMode.ITEM; // How to display data.
+    @Input() underTimeClassThresholds = []; // Number of seconds to add the class 'core-timer-under-'.
     @Output() finished = new EventEmitter<void>(); // Will emit an event when the timer reaches 0.
 
     timeLeft?: number; // Seconds left to end.
+    modeBasic = CoreTimerMode.BASIC;
 
     protected timeInterval?: number;
     protected element?: HTMLElement;
@@ -50,30 +55,50 @@ export class CoreTimerComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         const timeLeftClass = this.timeLeftClass || 'core-timer-timeleft-';
         const endTime = Math.round(Number(this.endTime));
-        const container: HTMLElement | undefined = this.elementRef.nativeElement.querySelector('.core-timer');
+        this.underTimeClassThresholds.sort((a, b) => a - b); // Sort by increase order.
 
         if (!endTime) {
             return;
         }
 
+        let container: HTMLElement | undefined;
+
         // Check time left every 200ms.
         this.timeInterval = window.setInterval(() => {
-            this.timeLeft = endTime - CoreTimeUtils.timestamp();
+            container = container || this.elementRef.nativeElement.querySelector('.core-timer');
+            this.timeLeft = Math.max(endTime - CoreTimeUtils.timestamp(), 0);
 
-            if (this.timeLeft < 0) {
+            if (container) {
+                // Add class if timer is below timeLeftClassThreshold.
+                if (this.timeLeft < this.timeLeftClassThreshold && !container.classList.contains(timeLeftClass + this.timeLeft)) {
+                    // Time left has changed. Remove previous classes and add the new one.
+                    container.classList.remove(timeLeftClass + (this.timeLeft + 1));
+                    container.classList.remove(timeLeftClass + (this.timeLeft + 2));
+                    container.classList.add(timeLeftClass + this.timeLeft);
+                }
+
+                // Add classes for underTimeClassThresholds.
+                for (let i = 0; i < this.underTimeClassThresholds.length; i++) {
+                    const threshold = this.underTimeClassThresholds[i];
+                    if (this.timeLeft <= threshold) {
+                        if (!container.classList.contains('core-timer-under-' + this.timeLeft)) {
+                            // Add new class and remove the previous one.
+                            const nextTreshold = this.underTimeClassThresholds[i + 1];
+                            container.classList.add('core-timer-under-' + threshold);
+                            nextTreshold && container.classList.remove('core-timer-under-' + nextTreshold);
+                        }
+
+                        break;
+                    }
+                }
+            }
+
+            if (this.timeLeft === 0) {
                 // Time is up! Stop the timer and call the finish function.
                 clearInterval(this.timeInterval);
                 this.finished.emit();
 
                 return;
-            }
-
-            // If the time has nearly expired, change the color.
-            if (this.timeLeft < 100 && container && !container.classList.contains(timeLeftClass + this.timeLeft)) {
-                // Time left has changed. Remove previous classes and add the new one.
-                container.classList.remove(timeLeftClass + (this.timeLeft + 1));
-                container.classList.remove(timeLeftClass + (this.timeLeft + 2));
-                container.classList.add(timeLeftClass + this.timeLeft);
             }
         }, 200);
     }
@@ -85,4 +110,9 @@ export class CoreTimerComponent implements OnInit, OnDestroy {
         clearInterval(this.timeInterval);
     }
 
+}
+
+export enum CoreTimerMode {
+    ITEM = 'item',
+    BASIC = 'basic',
 }
