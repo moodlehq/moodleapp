@@ -54,6 +54,7 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
         if (this.subfolder) {
             this.description = this.folderInstance ? this.folderInstance.intro : this.module.description;
             this.contents = this.subfolder;
+            this.sortFilesAndFolders();
 
             this.showLoading = false;
 
@@ -88,6 +89,30 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
 
         this.description = this.folderInstance ? this.folderInstance.intro : this.module.description;
         this.contents = AddonModFolderHelper.formatContents(contents);
+        this.sortFilesAndFolders();
+    }
+
+    /**
+     * Sort files and folders alphabetically.
+     */
+    protected sortFilesAndFolders(): void {
+        if (!this.contents) {
+            return;
+        }
+
+        this.contents.folders.sort((a, b) => {
+            const compareA = a.filename.toLowerCase();
+            const compareB = b.filename.toLowerCase();
+
+            return compareA.localeCompare(compareB);
+        });
+
+        this.contents.files.sort((a, b) => {
+            const compareA = a.filename.toLowerCase();
+            const compareB = b.filename.toLowerCase();
+
+            return compareA.localeCompare(compareB);
+        });
     }
 
     /**

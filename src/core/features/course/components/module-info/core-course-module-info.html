@@ -14,43 +14,39 @@
     </ion-label>
 </ion-item>
 
-<!-- Module completion. -->
-<ion-item class="ion-text-wrap"
-    *ngIf="showCompletion && module.completiondata && (module.completiondata.isautomatic || (showManualCompletion && module.uservisible))">
-    <ion-label>
+<div class="core-module-info-box">
+    <!-- Module completion. -->
+    <div class="core-module-info-completion core-module-info-box-section" *ngIf="showCompletion &&
+            module.completiondata && (module.completiondata.isautomatic || (showManualCompletion && module.uservisible))">
         <core-course-module-completion [completion]="module.completiondata" [moduleName]="module.name" [moduleId]="module.id"
             [showCompletionConditions]="true" [showManualCompletion]="showManualCompletion && module.uservisible"
             (completionChanged)="completionChanged.emit($event)">
         </core-course-module-completion>
-    </ion-label>
-</ion-item>
+    </div>
 
-<div class="core-module-dates-availabilityinfo"
-    *ngIf="(module.dates && module.dates.length) || (showAvailabilityInfo && module.availabilityinfo)">
     <!-- Activity dates. -->
-    <div *ngIf="module.dates && module.dates.length" class="core-module-dates">
+    <div *ngIf="module.dates && module.dates.length" class="core-module-dates core-module-info-box-section">
         <p *ngFor="let date of module.dates">
             <ion-icon name="fas-calendar" aria-hidden="true"></ion-icon><strong>{{ date.label }}</strong> {{ date.timestamp
             *
             1000 | coreFormatDate:'strftimedatetime' }}
         </p>
     </div>
+
     <!-- Availability info space. -->
-    <div class="core-module-availabilityinfo" *ngIf="showAvailabilityInfo">
+    <div class="core-module-availabilityinfo core-module-info-box-section" *ngIf="showAvailabilityInfo">
         <ion-icon name="fas-lock" [attr.aria-label]="'core.restricted' | translate"></ion-icon>
         <core-format-text [text]="module.availabilityinfo" contextLevel="module" [contextInstanceId]="module.id" [courseId]="module.course">
         </core-format-text>
     </div>
-</div>
 
-<ion-item class="ion-text-wrap" *ngIf="description">
-    <ion-label>
+    <div class="core-module-info-description core-module-info-box-section" *ngIf="description">
         <core-format-text [text]="description" [component]="component" [componentId]="componentId" contextLevel="module"
             [contextInstanceId]="module.id" [courseId]="courseId" [collapsible-item]="expandDescription ? null : ''">
         </core-format-text>
-    </ion-label>
-</ion-item>
-<ng-content select="[description]"></ng-content>
+    </div>
+    <ng-content select="[description]"></ng-content>
+</div>
 
 <ng-content></ng-content>
 

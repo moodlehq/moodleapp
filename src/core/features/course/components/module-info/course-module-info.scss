@@ -23,27 +23,46 @@
 
     }
 
-    .core-module-dates-availabilityinfo {
+    .core-module-info-box {
         background: var(--light);
         border-radius: var(--small-radius);
-        padding: 8px;
         margin: 8px;
-        font-size: 90%;
-        ion-icon {
-            position: static;
-            @include margin-horizontal(null, 8px);
+        padding: 8px;
+
+        ::ng-deep ion-item {
+            --ion-item-background: var(--light);
+            --background: var(--light);
         }
 
-        p,
-        ul {
-            margin-top: 4px;
-            margin-bottom: 4px;
+        ::ng-deep ion-card.card-file {
+            --ion-card-horizontal-margin: 0px;
         }
-    }
 
-    .core-module-dates + .core-module-availabilityinfo {
-        border-top: 1px solid var(--stroke);
-        padding-top: 8px;
+        .core-module-info-box-section + .core-module-info-box-section {
+            border-top: 1px solid var(--stroke);
+            margin-top: 8px;
+            padding-top: 8px;
+        }
+
+        .core-module-dates ion-icon {
+            margin-left: 4px;
+            margin-right: 4px;
+        }
+
+        .core-module-dates,
+        .core-module-availabilityinfo {
+            font-size: 90%;
+            ion-icon {
+                position: static;
+                @include margin-horizontal(null, 8px);
+            }
+
+            p,
+            ul {
+                margin-top: 4px;
+                margin-bottom: 4px;
+            }
+        }
     }
 
     core-course-module-completion ::ng-deep ion-button {

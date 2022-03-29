@@ -706,9 +706,34 @@ body.core-iframe-fullscreen ion-router-outlet {
 
 .item.item-file {
     ion-thumbnail {
-        --size: 32px;
+        --size: 24px;
         width: var(--size);
         height: var(--size);
+    }
+
+    p.item-heading {
+        font-size: 14px;
+    }
+
+    p {
+        font-size: 12px;
+    }
+
+    ion-label {
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+
+    ion-button {
+        --a11y-min-target-size: 40px;
+    }
+
+    &.item-directory ion-icon {
+        @include margin-horizontal(0px, 16px);
+    }
+
+    [slot=end] {
+        @include margin-horizontal(16px, null);
     }
 }
 
