@@ -17,6 +17,7 @@ import { Component } from '@angular/core';
 import { CoreConstants } from '@/core/constants';
 import { CoreSites } from '@services/sites';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSite } from '@classes/site';
 
 /**
  * App settings about menu page.
@@ -33,16 +34,17 @@ export class CoreSettingsAboutPage {
     privacyPolicy: string;
     feedbackFormUrl = CoreConstants.CONFIG.feedbackFormUrl ?? 'https://feedback.moodle.org/mobileapp';
     a11yStatement = CoreConstants.CONFIG.a11yStatement ?? 'https://apps.moodle.com/admin/tool/policy/view.php?versionid=5';
+    currentSite?: CoreSite;
 
     constructor() {
-        const currentSite = CoreSites.getCurrentSite();
+        this.currentSite = CoreSites.getCurrentSite();
 
         this.appName = CoreConstants.CONFIG.appname;
         this.versionName = CoreConstants.CONFIG.versionname;
 
         // Calculate the privacy policy to use.
-        this.privacyPolicy = (currentSite && (currentSite.getStoredConfig('tool_mobile_apppolicy') ||
-        currentSite.getStoredConfig('sitepolicy'))) || CoreConstants.CONFIG.privacypolicy;
+        this.privacyPolicy = (this.currentSite && (this.currentSite.getStoredConfig('tool_mobile_apppolicy') ||
+        this.currentSite.getStoredConfig('sitepolicy'))) || CoreConstants.CONFIG.privacypolicy;
     }
 
     /**
