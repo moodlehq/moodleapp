@@ -23,6 +23,7 @@ import {
     KeyValueDiffers,
     KeyValueDiffer,
     ViewChild,
+    HostBinding,
 } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
@@ -64,6 +65,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
     @Input() initialYear?: number; // Initial year to load.
     @Input() initialMonth?: number; // Initial month to load.
     @Input() filter?: AddonCalendarFilter; // Filter to apply.
+    @Input() hidden?: boolean; // Whether the component is hidden.
     @Input() canNavigate?: string | boolean; // Whether to include arrows to change the month. Defaults to true.
     @Input() displayNavButtons?: string | boolean; // Whether to display nav buttons created by this component. Defaults to true.
     @Output() onEventClicked = new EventEmitter<number>();
@@ -74,14 +76,13 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
     loaded = false;
 
     protected currentSiteId: string;
-    protected differ: KeyValueDiffer<unknown, unknown>; // To detect changes in the data input.
+    protected hiddenDiffer?: boolean; // To detect changes in the hidden input.
+    protected filterDiffer: KeyValueDiffer<unknown, unknown>; // To detect changes in the filters input.
     // Observers and listeners.
     protected undeleteEventObserver: CoreEventObserver;
     protected managerUnsubscribe?: () => void;
 
-    constructor(
-        differs: KeyValueDiffers,
-    ) {
+    constructor(differs: KeyValueDiffers) {
         this.currentSiteId = CoreSites.getCurrentSiteId();
 
         // Listen for events "undeleted" (offline).
@@ -104,7 +105,12 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
             this.currentSiteId,
         );
 
-        this.differ = differs.find([]).create();
+        this.hiddenDiffer = this.hidden;
+        this.filterDiffer = differs.find(this.filter ?? {}).create();
+    }
+
+    @HostBinding('attr.hidden') get hiddenAttribute(): string | null {
+        return this.hidden ? 'hidden' : null;
     }
 
     /**
@@ -137,13 +143,21 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
 
         if (items?.length) {
             // Check if there's any change in the filter object.
-            const changes = this.differ.diff(this.filter || {});
+            const changes = this.filterDiffer.diff(this.filter ?? {});
             if (changes) {
                 items.forEach((month) => {
                     if (month.loaded && month.weeks) {
                         this.manager?.getSource().filterEvents(month.weeks, this.filter);
                     }
                 });
+            }
+        }
+
+        if (this.hiddenDiffer !== this.hidden) {
+            this.hiddenDiffer = this.hidden;
+
+            if (!this.hidden) {
+                this.slides?.slides?.getSwiper().then(swipper => swipper.update());
             }
         }
     }

@@ -20,6 +20,7 @@ import { CoreCourseBlock } from '@features/course/services/course';
 import { Params } from '@angular/router';
 import { makeSingleton } from '@singletons';
 import { AddonCalendarMainMenuHandlerService } from '@addons/calendar/services/handlers/mainmenu';
+import { CoreSites } from '@services/sites';
 
 /**
  * Block handler.
@@ -39,8 +40,11 @@ export class AddonBlockCalendarUpcomingHandlerService extends CoreBlockBaseHandl
      * @return Data or promise resolved with the data.
      */
     getDisplayData(block: CoreCourseBlock, contextLevel: string, instanceId: number): CoreBlockHandlerData {
-        const linkParams: Params = contextLevel == 'course' ? { courseId: instanceId } : {};
-        linkParams.upcoming = true;
+        const linkParams: Params = { upcoming: true };
+
+        if (contextLevel == 'course' && instanceId !== CoreSites.getCurrentSiteHomeId()) {
+            linkParams.courseId = instanceId;
+        }
 
         return {
             title: 'addon.block_calendarupcoming.pluginname',
@@ -48,9 +52,6 @@ export class AddonBlockCalendarUpcomingHandlerService extends CoreBlockBaseHandl
             component: CoreBlockOnlyTitleComponent,
             link: AddonCalendarMainMenuHandlerService.PAGE_NAME,
             linkParams: linkParams,
-            navOptions: {
-                preferCurrentTab: false,
-            },
         };
     }
 

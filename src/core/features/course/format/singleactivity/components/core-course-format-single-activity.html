@@ -2,5 +2,5 @@
     <core-dynamic-component [component]="componentClass" [data]="data"></core-dynamic-component>
 </div>
 
-<core-block-side-blocks-button slot="fixed" *ngIf="course && hasBlocks" [courseId]="course.id">
+<core-block-side-blocks-button slot="fixed" *ngIf="course && hasBlocks" contextLevel="course" [instanceId]="course.id">
 </core-block-side-blocks-button>
