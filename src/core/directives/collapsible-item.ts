@@ -15,11 +15,14 @@
 import { Directive, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreLoadingComponent } from '@components/loading/loading';
+import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
+import { CoreColors } from '@singletons/colors';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreDom } from '@singletons/dom';
 import { CoreEventObserver } from '@singletons/events';
+import { Subscription } from 'rxjs';
 import { CoreFormatTextDirective } from './format-text';
 
 const defaultMaxHeight = 80;
@@ -50,6 +53,7 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
     protected maxHeight = defaultMaxHeight;
     protected expandedHeight = 0;
     protected resizeListener?: CoreEventObserver;
+    protected darkModeListener?: Subscription;
     protected domPromise?: CoreCancellablePromise<void>;
     protected uniqueId: string;
 
@@ -92,6 +96,10 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
         this.resizeListener = CoreDom.onWindowResize(() => {
             this.calculateHeight();
         }, 50);
+
+        this.darkModeListener = CoreSettingsHelper.onDarkModeChange().subscribe(() => {
+            this.setGradientColor();
+        });
     }
 
     /**
@@ -135,7 +143,34 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
         this.element.classList.remove('collapsible-loading-height');
 
         // If cannot calculate height, shorten always.
-        this.setExpandButtonEnabled(!this.expandedHeight || this.expandedHeight >= this.maxHeight);
+        const enable = !this.expandedHeight || this.expandedHeight >= this.maxHeight;
+        this.setExpandButtonEnabled(enable);
+        this.setGradientColor();
+
+    }
+
+    /**
+     * Sets the gradient color based on the background.
+     */
+    protected setGradientColor(): void {
+        if (!this.toggleExpandEnabled) {
+            return;
+        }
+
+        let coloredElement: HTMLElement | null = this.element;
+        let backgroundColor = [0, 0, 0, 0];
+        let background = '';
+        while (coloredElement && backgroundColor[3] === 0) {
+            background = getComputedStyle(coloredElement).backgroundColor;
+            backgroundColor = CoreColors.getColorRGBA(background);
+            coloredElement = coloredElement.parentElement;
+        }
+
+        if (backgroundColor[3] !== 0) {
+            delete(backgroundColor[3]);
+            const bgList = backgroundColor.join(',');
+            this.element.style.setProperty('--background-gradient-rgb', `${bgList}`);
+        }
     }
 
     /**
@@ -241,6 +276,7 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.resizeListener?.off();
+        this.darkModeListener?.unsubscribe();
         this.domPromise?.cancel();
     }
 

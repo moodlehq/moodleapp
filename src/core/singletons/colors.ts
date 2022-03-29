@@ -90,28 +90,42 @@ export class CoreColors {
      * Returns the hex code from any color css type (ie named).
      *
      * @param color Color in any format.
-     * @returns Color in hex format.
+     * @return Color in hex format.
      */
     static getColorHex(color: string): string {
-        const d = document.createElement('div');
-        d.style.color = color;
-        document.body.appendChild(d);
-
-        // Color in RGB .
-        const matches = getComputedStyle(d).color.match(/\d+/g) || [];
-        if (matches.length == 0) {
+        const rgba = CoreColors.getColorRGBA(color, true);
+        if (rgba.length === 0) {
             return '';
         }
-
-        const rgba = matches.map((a) => parseInt(a, 10));
 
         const hex = [0,1,2].map(
             (idx) => this.componentToHex(rgba[idx]),
         ).join('');
 
-        document.body.removeChild(d);
-
         return '#' + hex;
+    }
+
+    /**
+     * Returns RGBA color from any color format.
+     *
+     * @param color Color in any format.
+     * @param createElement Wether create a new element is needed to calculate value.
+     * @return Red, green, blue and alpha.
+     */
+    static getColorRGBA(color: string, createElement = false): number[] {
+        if (createElement) {
+            const d = document.createElement('span');
+            d.style.color = color;
+            document.body.appendChild(d);
+
+            // Color in RGB.
+            color = getComputedStyle(d).color;
+            document.body.removeChild(d);
+        }
+
+        const matches = color.match(/\d+/g) || [];
+
+        return matches.map((a, index) => index < 3 ? parseInt(a, 10) : parseFloat(a));
     }
 
     /**
