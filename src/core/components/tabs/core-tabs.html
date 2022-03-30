@@ -5,10 +5,9 @@
             <ion-icon *ngIf="showPrevButton" name="fas-chevron-left" [attr.aria-label]="'core.previous' | translate"></ion-icon>
         </ion-col>
         <ion-col class="ion-no-padding" size="10">
-            <ion-slides (ionSlideDidChange)="slideChanged()" [options]="slidesOpts" [dir]="direction" role="tablist"
-                [attr.aria-label]="description">
+            <ion-slides [options]="slidesOpts" [dir]="direction" role="tablist" [attr.aria-label]="description">
                 <ng-container *ngFor="let tab of tabs">
-                    <ion-slide *ngIf="tab.enabled" role="presentation" [hidden]="!hideUntil" class="tab-slide" [id]="tab.id! + '-tab'"
+                    <ion-slide *ngIf="tab.enabled" role="presentation" class="tab-slide" [id]="tab.id! + '-tab'"
                         [class.selected]="selected == tab.id">
                         <ion-tab-button (click)="selectTab(tab.id, $event)" (keydown)="tabAction.keyDown($event)"
                             (keyup)="tabAction.keyUp(tab.id, $event)" class="{{tab.class}}" [layout]="layout" role="tab"

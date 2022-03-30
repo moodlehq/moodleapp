@@ -70,7 +70,7 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
     protected existsInNavigationStack = false;
 
     constructor(element: ElementRef) {
-        super(element);
+        super();
 
         CoreComponentsRegistry.register(element.nativeElement, this);
     }

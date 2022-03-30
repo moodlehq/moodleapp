@@ -51,12 +51,6 @@ export class CoreTabsComponent extends CoreTabsBaseComponent<CoreTabComponent> i
 
     protected originalTabsContainer?: HTMLElement; // The container of the original tabs. It will include each tab's content.
 
-    constructor(
-        element: ElementRef,
-    ) {
-        super(element);
-    }
-
     /**
      * View has been initialized.
      */
@@ -84,7 +78,7 @@ export class CoreTabsComponent extends CoreTabsBaseComponent<CoreTabComponent> i
      */
     addTab(tab: CoreTabComponent): void {
         // Check if tab is already in the list.
-        if (this.getTabIndex(tab.id!) == -1) {
+        if (this.getTabIndex(tab.id) === -1) {
             this.tabs.push(tab);
             this.sortTabs();
 
@@ -100,7 +94,7 @@ export class CoreTabsComponent extends CoreTabsBaseComponent<CoreTabComponent> i
      * @param tab The tab to remove.
      */
     removeTab(tab: CoreTabComponent): void {
-        const index = this.getTabIndex(tab.id!);
+        const index = this.getTabIndex(tab.id);
         this.tabs.splice(index, 1);
 
         this.calculateSlides();

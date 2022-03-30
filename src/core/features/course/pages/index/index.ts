@@ -131,6 +131,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
             CoreNavigator.back();
+            this.loaded = true;
 
             return;
         }
@@ -224,9 +225,9 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
         // Select the tab if needed.
         this.firstTabName = undefined;
         if (tabToLoad) {
-            setTimeout(() => {
-                this.tabsComponent?.selectByIndex(tabToLoad!);
-            });
+            await CoreUtils.nextTick();
+
+            this.tabsComponent?.selectByIndex(tabToLoad);
         }
     }
 
