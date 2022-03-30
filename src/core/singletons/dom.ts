@@ -355,6 +355,62 @@ export class CoreDom {
     }
 
     /**
+     * Watch whenever an elements visibility changes within the viewport.
+     *
+     * @param element Element to watch.
+     * @param intersectionRatio Intersection ratio (From 0 to 1).
+     * @param callback Callback when visibility changes.
+     * @return Function to stop watching.
+     */
+    static watchElementInViewport(
+        element: HTMLElement,
+        intersectionRatio: number,
+        callback: (visible: boolean) => void,
+    ): () => void;
+
+    /**
+     * Watch whenever an elements visibility changes within the viewport.
+     *
+     * @param element Element to watch.
+     * @param callback Callback when visibility changes.
+     * @return Function to stop watching.
+     */
+    static watchElementInViewport(element: HTMLElement, callback: (visible: boolean) => void): () => void;
+
+    static watchElementInViewport(
+        element: HTMLElement,
+        intersectionRatioOrCallback: number | ((visible: boolean) => void),
+        callback?: (visible: boolean) => void,
+    ): () => void {
+        const visibleCallback = callback ?? intersectionRatioOrCallback as (visible: boolean) => void;
+        const intersectionRatio = typeof intersectionRatioOrCallback === 'number' ? intersectionRatioOrCallback : 1;
+
+        let visible = CoreDom.isElementInViewport(element, intersectionRatio);
+        const setVisible = (newValue: boolean) => {
+            if (visible === newValue) {
+                return;
+            }
+
+            visible = newValue;
+            visibleCallback(visible);
+        };
+
+        if (!('IntersectionObserver' in window)) {
+            const interval = setInterval(() => setVisible(CoreDom.isElementInViewport(element, intersectionRatio)), 50);
+
+            return () => clearInterval(interval);
+        }
+
+        const observer = new IntersectionObserver(([{ isIntersecting, intersectionRatio }]) => {
+            setVisible(isIntersecting && intersectionRatio >= intersectionRatio);
+        });
+
+        observer.observe(element);
+
+        return () => observer.disconnect();
+    }
+
+    /**
      * Wait an element to be in dom and visible.
      *
      * @param element Element to wait.
@@ -362,48 +418,29 @@ export class CoreDom {
      * @return Cancellable promise.
      */
     static waitToBeInViewport(element: HTMLElement, intersectionRatio = 1): CoreCancellablePromise<void> {
+        let unsubscribe: (() => void) | undefined;
         const visiblePromise = CoreDom.waitToBeVisible(element);
-
-        let intersectionObserver: IntersectionObserver;
-        let interval: number | undefined;
 
         return new CoreCancellablePromise<void>(
             async (resolve) => {
                 await visiblePromise;
 
                 if (CoreDom.isElementInViewport(element, intersectionRatio)) {
-
                     return resolve();
                 }
 
-                if ('IntersectionObserver' in window) {
-                    intersectionObserver = new IntersectionObserver((observerEntries) => {
-                        const isIntersecting = observerEntries
-                            .some((entry) => entry.isIntersecting && entry.intersectionRatio >= intersectionRatio);
-                        if (!isIntersecting) {
-                            return;
-                        }
+                unsubscribe = this.watchElementInViewport(element, intersectionRatio, inViewport => {
+                    if (!inViewport) {
+                        return;
+                    }
 
-                        resolve();
-                        intersectionObserver?.disconnect();
-                    });
-
-                    intersectionObserver.observe(element);
-                } else {
-                    interval = window.setInterval(() => {
-                        if (!CoreDom.isElementInViewport(element, intersectionRatio)) {
-                            return;
-                        }
-
-                        resolve();
-                        window.clearInterval(interval);
-                    }, 50);
-                }
+                    resolve();
+                    unsubscribe?.();
+                });
             },
             () => {
                 visiblePromise.cancel();
-                intersectionObserver?.disconnect();
-                window.clearInterval(interval);
+                unsubscribe?.();
             },
         );
     }

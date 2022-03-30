@@ -14,7 +14,8 @@
 
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
-import { CoreUserTours, CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/services/user-tours';
+import { CoreUserTourDirectiveOptions } from '@directives/user-tour';
+import { CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/services/user-tours';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreDom } from '@singletons/dom';
 import { CoreBlockSideBlocksTourComponent } from '../side-blocks-tour/side-blocks-tour';
@@ -33,6 +34,14 @@ export class CoreBlockSideBlocksButtonComponent implements OnInit, OnDestroy {
     @Input() contextLevel!: string;
     @Input() instanceId!: number;
     @ViewChild('button', { read: ElementRef }) button?: ElementRef<HTMLElement>;
+
+    userTour: CoreUserTourDirectiveOptions = {
+        id: 'side-blocks-button',
+        component: CoreBlockSideBlocksTourComponent,
+        side: CoreUserToursSide.Start,
+        alignment: CoreUserToursAlignment.Center,
+        getFocusedElement: nativeButton => nativeButton.shadowRoot?.children[0] as HTMLElement,
+    };
 
     protected element: HTMLElement;
     protected slotPromise?: CoreCancellablePromise<void>;
@@ -58,25 +67,6 @@ export class CoreBlockSideBlocksButtonComponent implements OnInit, OnDestroy {
                 contextLevel: this.contextLevel,
                 instanceId: this.instanceId,
             },
-        });
-    }
-
-    /**
-     * Show User Tour.
-     */
-    async showTour(): Promise<void> {
-        const nativeButton = this.button?.nativeElement.shadowRoot?.children[0] as HTMLElement;
-
-        if (!nativeButton) {
-            return;
-        }
-
-        await CoreUserTours.showIfPending({
-            id: 'side-blocks-button',
-            component: CoreBlockSideBlocksTourComponent,
-            focus: nativeButton,
-            side: CoreUserToursSide.Start,
-            alignment: CoreUserToursAlignment.Center,
         });
     }
 

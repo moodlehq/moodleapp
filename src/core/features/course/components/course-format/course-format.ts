@@ -46,9 +46,10 @@ import { CoreBlockHelper } from '@features/block/services/block-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseViewedModulesDBRecord } from '@features/course/services/database/course';
-import { CoreUserTours, CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/services/user-tours';
+import { CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/services/user-tours';
 import { CoreCourseCourseIndexTourComponent } from '../course-index-tour/course-index-tour';
 import { CoreDom } from '@singletons/dom';
+import { CoreUserTourDirectiveOptions } from '@directives/user-tour';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
@@ -87,6 +88,13 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     canLoadMore = false;
     showSectionId = 0;
     data: Record<string, unknown> = {}; // Data to pass to the components.
+    courseIndexTour: CoreUserTourDirectiveOptions = {
+        id: 'course-index',
+        component: CoreCourseCourseIndexTourComponent,
+        side: CoreUserToursSide.Top,
+        alignment: CoreUserToursAlignment.End,
+        getFocusedElement: nativeButton => nativeButton.shadowRoot?.children[0] as HTMLElement,
+    };
 
     displayCourseIndex = false;
     displayBlocks = false;
@@ -163,25 +171,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                     }
                 }
             }
-        });
-    }
-
-    /**
-     * Show Course Index User Tour.
-     */
-    async showCourseIndexTour(): Promise<void> {
-        const nativeButton = this.courseIndexFab?.nativeElement.shadowRoot?.children[0] as HTMLElement;
-
-        if (!nativeButton) {
-            return;
-        }
-
-        await CoreUserTours.showIfPending({
-            id: 'course-index',
-            component: CoreCourseCourseIndexTourComponent,
-            focus: nativeButton,
-            side: CoreUserToursSide.Top,
-            alignment: CoreUserToursAlignment.End,
         });
     }
 

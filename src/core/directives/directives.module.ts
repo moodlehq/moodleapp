@@ -32,8 +32,8 @@ import { CoreSwipeNavigationDirective } from './swipe-navigation';
 import { CoreCollapsibleItemDirective } from './collapsible-item';
 import { CoreCollapsibleFooterDirective } from './collapsible-footer';
 import { CoreContentDirective } from './content';
-import { CoreOnAppearDirective } from './on-appear';
 import { CoreUpdateNonReactiveAttributesDirective } from './update-non-reactive-attributes';
+import { CoreUserTourDirective } from './user-tour';
 
 @NgModule({
     declarations: [
@@ -48,7 +48,6 @@ import { CoreUpdateNonReactiveAttributesDirective } from './update-non-reactive-
         CoreSupressEventsDirective,
         CoreUserLinkDirective,
         CoreAriaButtonClickDirective,
-        CoreOnAppearDirective,
         CoreOnResizeDirective,
         CoreDownloadFileDirective,
         CoreCollapsibleHeaderDirective,
@@ -57,6 +56,7 @@ import { CoreUpdateNonReactiveAttributesDirective } from './update-non-reactive-
         CoreCollapsibleFooterDirective,
         CoreContentDirective,
         CoreUpdateNonReactiveAttributesDirective,
+        CoreUserTourDirective,
     ],
     exports: [
         CoreAutoFocusDirective,
@@ -70,7 +70,6 @@ import { CoreUpdateNonReactiveAttributesDirective } from './update-non-reactive-
         CoreSupressEventsDirective,
         CoreUserLinkDirective,
         CoreAriaButtonClickDirective,
-        CoreOnAppearDirective,
         CoreOnResizeDirective,
         CoreDownloadFileDirective,
         CoreCollapsibleHeaderDirective,
@@ -79,6 +78,7 @@ import { CoreUpdateNonReactiveAttributesDirective } from './update-non-reactive-
         CoreCollapsibleFooterDirective,
         CoreContentDirective,
         CoreUpdateNonReactiveAttributesDirective,
+        CoreUserTourDirective,
     ],
 })
 export class CoreDirectivesModule {}
