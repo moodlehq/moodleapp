@@ -48,34 +48,36 @@
                     <ion-icon name="fas-eye-slash" *ngIf="!section.visible && section.uservisible" slot="end" class="restricted"
                         [attr.aria-label]="'core.course.hiddenfromstudents' | translate"></ion-icon>
                 </ion-item>
-                <ng-container *ngIf="section.expanded">
-                    <ng-container *ngFor="let module of section.modules">
-                        <ion-item class="module" [class.item-dimmed]="!module.visible" [class.item-hightlighted]="section.highlighted"
-                            (click)="selectSectionOrModule($event, section.id, module.id)" button>
-                            <ion-icon class="completioninfo completion_none" name="" *ngIf="module.completionStatus === undefined"
-                                slot="start" aria-hidden="true"></ion-icon>
-                            <ion-icon class="completioninfo completion_incomplete" name="far-circle" *ngIf="module.completionStatus === 0"
-                                slot="start" [attr.aria-label]="'core.course.todo' | translate">
-                            </ion-icon>
-                            <ion-icon class="completioninfo completion_complete" name="fas-circle"
-                                *ngIf="module.completionStatus === 1 || module.completionStatus === 2" color="success" slot="start"
-                                [attr.aria-label]="'core.course.done' | translate">
-                            </ion-icon>
-                            <ion-icon class="completioninfo completion_fail" name="fas-circle" *ngIf="module.completionStatus === 3"
-                                color="danger" slot="start" [attr.aria-label]="'core.course.failed' | translate">
-                            </ion-icon>
-                            <ion-label>
-                                <p class="item-heading">
-                                    <core-format-text [text]="module.name" contextLevel="module" [contextInstanceId]="module.id"
-                                        [courseId]="module.course">
-                                    </core-format-text>
-                                </p>
-                            </ion-label>
-                            <ion-icon name="fas-lock" *ngIf="!module.uservisible" slot="end" class="restricted"
-                                [attr.aria-label]="'core.restricted' | translate"></ion-icon>
-                        </ion-item>
+                <div id="core-course-index-section-{{section.id}}">
+                    <ng-container *ngIf="section.expanded">
+                        <ng-container *ngFor="let module of section.modules">
+                            <ion-item class="module" [class.item-dimmed]="!module.visible" [class.item-hightlighted]="section.highlighted"
+                                (click)="selectSectionOrModule($event, section.id, module.id)" button>
+                                <ion-icon class="completioninfo completion_none" name="" *ngIf="module.completionStatus === undefined"
+                                    slot="start" aria-hidden="true"></ion-icon>
+                                <ion-icon class="completioninfo completion_incomplete" name="far-circle"
+                                    *ngIf="module.completionStatus === 0" slot="start" [attr.aria-label]="'core.course.todo' | translate">
+                                </ion-icon>
+                                <ion-icon class="completioninfo completion_complete" name="fas-circle"
+                                    *ngIf="module.completionStatus === 1 || module.completionStatus === 2" color="success" slot="start"
+                                    [attr.aria-label]="'core.course.done' | translate">
+                                </ion-icon>
+                                <ion-icon class="completioninfo completion_fail" name="fas-circle" *ngIf="module.completionStatus === 3"
+                                    color="danger" slot="start" [attr.aria-label]="'core.course.failed' | translate">
+                                </ion-icon>
+                                <ion-label>
+                                    <p class="item-heading">
+                                        <core-format-text [text]="module.name" contextLevel="module" [contextInstanceId]="module.id"
+                                            [courseId]="module.course">
+                                        </core-format-text>
+                                    </p>
+                                </ion-label>
+                                <ion-icon name="fas-lock" *ngIf="!module.uservisible" slot="end" class="restricted"
+                                    [attr.aria-label]="'core.restricted' | translate"></ion-icon>
+                            </ion-item>
+                        </ng-container>
                     </ng-container>
-                </ng-container>
+                </div>
             </ng-container>
         </ng-container>
     </ion-list>

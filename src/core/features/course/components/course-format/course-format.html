@@ -1,3 +1,8 @@
+<core-navbar-buttons slot="end" prepend>
+    <ion-button fill="clear" (click)="gotoCourseDownloads()" [attr.aria-label]="'addon.storagemanager.coursedownloads' | translate">
+        <ion-icon name="fas-cloud-download-alt" slot="icon-only" aria-hidden="true"></ion-icon>
+    </ion-button>
+</core-navbar-buttons>
 <core-dynamic-component [component]="courseFormatComponent" [data]="data">
     <!-- Default course format. -->
     <core-loading [hideUntil]="loaded">

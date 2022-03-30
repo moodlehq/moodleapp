@@ -218,6 +218,12 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         }
 
         this.groupInfo = await CoreGroups.getActivityGroupInfo(this.database.coursemodule);
+        if (this.groupInfo.visibleGroups && this.groupInfo.groups?.length) {
+            // There is a bug in Moodle with All participants and visible groups (MOBILE-3597). Remove it.
+            this.groupInfo.groups = this.groupInfo.groups.filter(group => group.id !== 0);
+            this.groupInfo.defaultGroupId = this.groupInfo.groups[0].id;
+        }
+
         this.selectedGroup = CoreGroups.validateGroupId(this.selectedGroup, this.groupInfo);
 
         this.access = await AddonModData.getDatabaseAccessInformation(this.database.id, {

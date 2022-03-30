@@ -366,14 +366,6 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         }
     }
 
-    gotoCourseDownloads(): void {
-        CoreNavigator.navigateToSitePath(
-            `storage/${this.course.id}`,
-            { params: { title: this.course.fullname } },
-        );
-
-    }
-
     /**
      * @inheritdoc
      */

@@ -392,28 +392,37 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
+     * Get selected section ID. If viewing all sections, use current scrolled section.
+     *
+     * @return Section ID, undefined if not found.
+     */
+    protected async getSelectedSectionId(): Promise<number | undefined> {
+        if (this.selectedSection?.id !== this.allSectionsId) {
+            return this.selectedSection?.id;
+        }
+
+        // Check current scrolled section.
+        const allSectionElements: NodeListOf<HTMLElement> =
+            this.elementRef.nativeElement.querySelectorAll('section.core-course-module-list-wrapper');
+
+        const scroll = await this.content.getScrollElement();
+        const containerTop = scroll.getBoundingClientRect().top;
+
+        const element = Array.from(allSectionElements).find((element) => {
+            const position = element.getBoundingClientRect();
+
+            // The bottom is inside the container or lower.
+            return position.bottom >= containerTop;
+        });
+
+        return Number(element?.getAttribute('id')) || undefined;
+    }
+
+    /**
      * Display the course index modal.
      */
     async openCourseIndex(): Promise<void> {
-        let selectedId = this.selectedSection?.id;
-
-        if (selectedId == this.allSectionsId) {
-            // Check current scrolled section.
-            const allSectionElements: NodeListOf<HTMLElement> =
-                this.elementRef.nativeElement.querySelectorAll('section.section-wrapper');
-
-            const scroll = await this.content.getScrollElement();
-            const containerTop = scroll.getBoundingClientRect().top;
-
-            const element = Array.from(allSectionElements).find((element) => {
-                const position = element.getBoundingClientRect();
-
-                // The bottom is inside the container or lower.
-                return position.bottom >= containerTop;
-            });
-
-            selectedId = Number(element?.getAttribute('id')) || undefined;
-        }
+        const selectedId = await this.getSelectedSectionId();
 
         const data = await CoreDomUtils.openModal<CoreCourseIndexSectionWithModule>({
             component: CoreCourseCourseIndexComponent,
@@ -451,6 +460,23 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         this.moduleId = data.moduleId;
+    }
+
+    /**
+     * Open course downloads page.
+     */
+    async gotoCourseDownloads(): Promise<void> {
+        const selectedId = await this.getSelectedSectionId();
+
+        CoreNavigator.navigateToSitePath(
+            `storage/${this.course.id}`,
+            {
+                params: {
+                    title: this.course.fullname,
+                    sectionId: selectedId,
+                },
+            },
+        );
     }
 
     /**

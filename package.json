@@ -100,7 +100,6 @@
     "cordova-plugin-file": "6.0.2",
     "cordova-plugin-file-opener2": "3.0.5",
     "cordova-plugin-geolocation": "4.1.0",
-    "cordova-plugin-globalization": "1.11.0",
     "cordova-plugin-ionic-keyboard": "2.2.0",
     "cordova-plugin-media": "5.0.4",
     "cordova-plugin-media-capture": "3.0.3",
@@ -236,7 +235,6 @@
         "ANDROIDX_VERSION": "1.0.0",
         "ANDROIDX_APPCOMPAT_VERSION": "1.3.1"
       },
-      "cordova-plugin-globalization": {},
       "@moodlehq/cordova-plugin-file-transfer": {},
       "cordova-plugin-prevent-override": {},
       "cordova-plugin-androidx-adapter": {}

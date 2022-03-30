@@ -446,26 +446,13 @@ export class CoreIframeUtilsProvider {
             } else {
                 element.setAttribute('src', url);
             }
-        } else if (CoreUrlUtils.isLocalFileUrl(url)) {
-            // It's a local file.
-            const filename = url.substring(url.lastIndexOf('/') + 1);
-
-            if (!CoreFileHelper.isOpenableInApp({ filename })) {
-                try {
-                    await CoreFileHelper.showConfirmOpenUnsupportedFile();
-                } catch (error) {
-                    return; // Cancelled, stop.
-                }
-            }
-
+        } else {
             try {
-                await CoreUtils.openFile(url);
+                // It's an external link or a local file, check if it can be opened in the app.
+                await CoreWindow.open(url, name);
             } catch (error) {
                 CoreDomUtils.showErrorModal(error);
             }
-        } else {
-            // It's an external link, check if it can be opened in the app.
-            await CoreWindow.open(url, name);
         }
     }
 

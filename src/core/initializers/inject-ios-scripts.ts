@@ -17,10 +17,11 @@ import { CoreIframeUtils } from '@services/utils/iframe';
 import { Platform } from '@singletons';
 
 export default async function(): Promise<void> {
+    await Platform.ready();
+
     if (!CoreApp.isIOS() || !('WKUserScript' in window)) {
         return;
     }
 
-    await Platform.ready();
     CoreIframeUtils.injectiOSScripts(window);
 }
