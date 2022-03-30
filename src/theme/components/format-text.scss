@@ -210,7 +210,7 @@ core-rich-text-editor .core-rte-editor {
 
     p, ul, ol, li {
         // Normalize font-size inside formatted text.
-        font-size: 14px;
+        font-size: var(--text-size);
     }
 
     p {

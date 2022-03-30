@@ -96,7 +96,7 @@ body {
     &.item-heading-secondary {
         @include margin(2px, 0);
 
-        font-size: 14px;
+        font-size: var(--text-size);
         font-weight: normal;
 
         line-height: normal;
@@ -112,7 +112,7 @@ body {
     &.item-heading-secondary {
         @include margin(0, 0, 3px);
 
-        font-size: 14px;
+        font-size: var(--text-size);
         font-weight: normal;
 
         line-height: normal;
@@ -222,7 +222,7 @@ ion-header {
 
         h1 + h2,
         h1 + .subheading {
-            font-size: 14px;
+            font-size: var(--text-size);
             font-weight: 400;
         }
 
@@ -242,7 +242,7 @@ ion-header {
 
             h1 + h2,
             h1 + .subheading {
-                font-size: 14px;
+                font-size: var(--text-size);
                 font-weight: 400;
             }
         }
@@ -690,7 +690,7 @@ body.core-iframe-fullscreen ion-router-outlet {
     font-style: italic;
     margin-top: 0;
     margin-bottom: 10px;
-    font-size: 14px;
+    font-size: var(--text-size);
 }
 
 // Item styles
@@ -714,7 +714,7 @@ body.core-iframe-fullscreen ion-router-outlet {
     }
 
     p.item-heading {
-        font-size: 14px;
+        font-size: var(--text-size);
     }
 
     p {
@@ -767,6 +767,7 @@ body.core-iframe-fullscreen ion-router-outlet {
             --color: var(--color-shade);
             --inner-border-width: 0px;
             --border-width: 0px;
+            font-size: var(--text-size);
 
             ion-label, ion-label > p {
                 --color: var(--color-shade);
@@ -1227,6 +1228,7 @@ audio.core-media-adapt-width {
 }
 
 ion-item {
+    font-size: var(--text-size);
     --inner-border-width: 0px;
 }
 
@@ -1283,7 +1285,7 @@ html.md div.fake-ion-item {
     h6 {
         @include margin(2px, 0);
 
-        font-size: 14px;
+        font-size: var(--text-size);
         font-weight: normal;
 
         line-height: normal;
@@ -1291,7 +1293,7 @@ html.md div.fake-ion-item {
 
     p {
         @include margin(0, 0, 2px);
-        font-size: 14px;
+        font-size: var(--text-size);
         line-height: 20px;
         text-overflow: inherit;
         overflow: inherit;
@@ -1299,7 +1301,7 @@ html.md div.fake-ion-item {
 }
 
 html.ios div.fake-ion-item {
-    font-size: 14px;
+    font-size: var(--text-size);
     @include padding(null, 10px, null, 20px);
     @include margin(10px, 8px, 10px, null);
 
@@ -1320,14 +1322,14 @@ html.ios div.fake-ion-item {
     h5,
     h6 {
         @include margin(0, 0, 3px);
-        font-size: 14px;
+        font-size: var(--text-size);
         font-weight: normal;
         line-height: normal;
     }
 
     p {
         @include margin(0, 0, 2px 0);
-        font-size: 14px;
+        font-size: var(--text-size);
         line-height: normal;
         text-overflow: inherit;
         overflow: inherit;
