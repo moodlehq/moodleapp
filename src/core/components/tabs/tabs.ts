@@ -67,7 +67,6 @@ export class CoreTabsComponent extends CoreTabsBaseComponent<CoreTabComponent> i
             return;
         }
 
-        this.tabsElement = this.element.nativeElement;
         this.originalTabsContainer = this.originalTabsRef?.nativeElement;
     }
 
@@ -92,14 +91,6 @@ export class CoreTabsComponent extends CoreTabsBaseComponent<CoreTabComponent> i
             setTimeout(() => {
                 this.calculateSlides();
             });
-
-            if (this.initialized && this.tabs.length > 1 && this.tabBarHeight == 0) {
-                // Calculate the tabBarHeight again now that there is more than 1 tab and the bar will be seen.
-                // Use timeout to wait for the view to be rendered. 0 ms should be enough, use 50 to be sure.
-                setTimeout(() => {
-                    this.calculateTabBarHeight();
-                }, 50);
-            }
         }
     }
 

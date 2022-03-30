@@ -120,9 +120,6 @@ export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
         this.loaded = true;
         this.ionSelect.emit(this);
         this.showHideNavBarButtons(true);
-
-        // Setup tab scrolling.
-        this.tabs.listenContentScroll(this.element, this.id!);
     }
 
     /**

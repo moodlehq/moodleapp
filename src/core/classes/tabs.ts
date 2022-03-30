@@ -26,7 +26,7 @@ import {
     SimpleChange,
 } from '@angular/core';
 import { IonSlides } from '@ionic/angular';
-import { BackButtonEvent, ScrollDetail } from '@ionic/core';
+import { BackButtonEvent } from '@ionic/core';
 import { Subscription } from 'rxjs';
 
 import { Platform, Translate } from '@singletons';
@@ -45,9 +45,6 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
 
     // Minimum tab's width.
     protected static readonly MIN_TAB_WIDTH = 107;
-    // @todo [4.0]
-    // Max height that allows tab hiding. WARNING: Hide tabs on scroll disabled. If confirmed, remove the associated code.
-    protected static readonly MAX_HEIGHT_TO_HIDE_TABS = 0;
 
     @Input() selectedIndex = 0; // Index of the tab to select.
     @Input() hideUntil = false; // Determine when should the contents be shown.
@@ -73,10 +70,6 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
     protected initialized = false;
     protected afterViewInitTriggered = false;
 
-    protected tabBarHeight = 0;
-    protected tabsElement?: HTMLElement; // The tabs parent element. It's the element that will be "scrolled" to hide tabs.
-    protected tabBarElement?: HTMLIonTabBarElement; // The top tab bar element.
-    protected tabsShown = true;
     protected resizeListener?: CoreEventObserver;
     protected isDestroyed = false;
     protected isCurrentView = true;
@@ -91,9 +84,6 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
     protected isInTransition = false; // Wether Slides is in transition.
     protected slidesSwiper: any; // eslint-disable-line @typescript-eslint/no-explicit-any
     protected slidesSwiperLoaded = false;
-    protected scrollElements: Record<string | number, HTMLElement> = {}; // Scroll elements for each loaded tab.
-    protected lastScroll = 0;
-    protected previousLastScroll = 0;
 
     tabAction: CoreTabsRoleTab<T>;
 
@@ -128,7 +118,6 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
         }
 
         this.afterViewInitTriggered = true;
-        this.tabBarElement = this.element.nativeElement.querySelector('ion-tab-bar');
 
         if (!this.initialized && this.hideUntil) {
             // Tabs should be shown, initialize them.
@@ -138,49 +127,6 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
         this.resizeListener = CoreDom.onWindowResize(() => {
             this.windowResized();
         });
-    }
-
-    /**
-     * Calculate the tab bar height.
-     */
-    protected calculateTabBarHeight(): void {
-        if (!this.tabBarElement) {
-            return;
-        }
-
-        this.tabBarHeight = this.tabBarElement.offsetHeight;
-
-        this.applyScroll(this.tabsShown, this.lastScroll);
-    }
-
-    /**
-     * Apply scroll to hiding tabs.
-     *
-     * @param showTabs Show or completely hide tabs.
-     * @param scroll Scroll position.
-     */
-    protected applyScroll(showTabs: boolean, scroll?: number): void {
-        if (!this.tabBarElement || !this.tabBarHeight) {
-
-            return;
-        }
-
-        if (showTabs) {
-            // Smooth translation.
-            this.tabBarElement.classList.remove('tabs-hidden');
-            if (scroll === 0) {
-                this.tabBarElement.style.height = '';
-                this.previousLastScroll = this.lastScroll;
-                this.lastScroll = 0;
-            } else if (scroll !== undefined) {
-                this.tabBarElement.style.height = (this.tabBarHeight - scroll) + 'px';
-            }
-        } else {
-            this.tabBarElement.classList.add('tabs-hidden');
-            this.tabBarElement.style.height = '';
-        }
-
-        this.tabsShown = showTabs;
     }
 
     /**
@@ -260,15 +206,6 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
             return;
         }
 
-        if (window.innerHeight >= CoreTabsBaseComponent.MAX_HEIGHT_TO_HIDE_TABS) {
-            // Ensure tabbar is shown.
-            this.applyScroll(true, 0);
-            this.calculateTabBarHeight();
-        } else if (!this.tabsShown) {
-            // Don't recalculate.
-            return;
-        }
-
         await this.calculateMaxSlides();
 
         await this.updateSlides();
@@ -313,9 +250,6 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
 
         this.firstSelectedTab = selectedTab.id!;
         this.selectTab(this.firstSelectedTab);
-
-        // Setup tab scrolling.
-        this.calculateTabBarHeight();
 
         this.initialized = true;
 
@@ -373,8 +307,6 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
         this.slidesOpts = { ...this.slidesOpts, slidesPerView: Math.min(this.maxSlides, this.numTabsShown) };
 
         this.slideChanged();
-
-        this.calculateTabBarHeight();
 
         // @todo: This call to update() can trigger JS errors in the console if tabs are re-loaded and there's only 1 tab.
         // For some reason, swiper.slides is undefined inside the Slides class, and the swiper is marked as destroyed.
@@ -485,61 +417,6 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
     }
 
     /**
-     * Show or hide the tabs. This is used when the user is scrolling inside a tab.
-     *
-     * @param scrollTop Scroll top.
-     * @param scrollElement Content scroll element to check measures.
-     */
-    showHideTabs(scrollTop: number, scrollElement: HTMLElement): void {
-        if (!this.tabBarElement || !this.tabsElement || !scrollElement) {
-            return;
-        }
-
-        // Always show on very tall screens.
-        if (window.innerHeight >= CoreTabsBaseComponent.MAX_HEIGHT_TO_HIDE_TABS) {
-            return;
-        }
-
-        if (!this.tabBarHeight && this.tabBarElement.offsetHeight != this.tabBarHeight) {
-            // Wrong tab height, recalculate it.
-            this.calculateTabBarHeight();
-        }
-
-        if (!this.tabBarHeight) {
-            // We don't have the tab bar height, this means the tab bar isn't shown.
-            return;
-        }
-
-        if (scrollTop <= 0) {
-            // Ensure tabbar is shown.
-            this.applyScroll(true, 0);
-
-            return;
-        }
-
-        if (scrollTop == this.lastScroll || scrollTop == this.previousLastScroll) {
-            // Ensure scroll has been modified to avoid flicks.
-            return;
-        }
-
-        if (this.tabsShown && scrollTop > this.tabBarHeight) {
-            // Hide tabs.
-            this.applyScroll(false);
-        } else if (!this.tabsShown && scrollTop <= this.tabBarHeight) {
-            this.applyScroll(true);
-        }
-
-        if (this.tabsShown && scrollElement.scrollHeight > scrollElement.clientHeight + (this.tabBarHeight - scrollTop)) {
-            // Smooth translation.
-            this.applyScroll(true, scrollTop);
-        }
-
-        // Use lastScroll after moving the tabs to avoid flickering.
-        this.previousLastScroll = this.lastScroll;
-        this.lastScroll = scrollTop;
-    }
-
-    /**
      * Select a tab by ID.
      *
      * @param tabId Tab ID.
@@ -624,39 +501,6 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
     protected async loadTab(tabToSelect: T): Promise<boolean> {
         // Each implementation should override this function.
         return true;
-    }
-
-    /**
-     * Listen scroll events in an element's inner ion-content (if any).
-     *
-     * @param element Element to search ion-content in.
-     * @param id ID of the tab/page.
-     * @return Promise resolved when done.
-     */
-    async listenContentScroll(element: HTMLElement, id: number | string): Promise<void> {
-        if (this.scrollElements[id]) {
-            return; // Already set.
-        }
-
-        let content = element.querySelector('ion-content');
-        if (!content) {
-            return;
-        }
-
-        // Search the inner ion-content if there's more than one.
-        let childContent = content.querySelector('ion-content') || null;
-        while (childContent != null) {
-            content = childContent;
-            childContent = content.querySelector('ion-content') || null;
-        }
-
-        const scroll = await content.getScrollElement();
-
-        content.scrollEvents = true;
-        this.scrollElements[id] = scroll;
-        content.addEventListener('ionScroll', (e: CustomEvent<ScrollDetail>): void => {
-            this.showHideTabs(e.detail.scrollTop, scroll);
-        });
     }
 
     /**
