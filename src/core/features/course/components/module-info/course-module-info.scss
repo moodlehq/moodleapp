@@ -29,6 +29,10 @@
         margin: 8px;
         padding: 8px;
 
+        &:empty {
+            display: none;
+        }
+
         ::ng-deep ion-item {
             --ion-item-background: var(--light);
             --background: var(--light);
