@@ -11,10 +11,10 @@
     <!-- Activity info. -->
     <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
         [courseId]="courseId" [hasDataToSync]="hasOffline" (completionChanged)="onCompletionChange()">
-        <ion-list inset="true" description *ngIf="assign && assign.introattachments?.length && !assign.submissionattachments">
+        <div description *ngIf="assign && assign.introattachments?.length && !assign.submissionattachments">
             <core-file *ngFor="let file of assign.introattachments" [file]="file" [component]="component" [componentId]="componentId">
             </core-file>
-        </ion-list>
+        </div>
     </core-course-module-info>
 
     <!-- User can view all submissions (teacher). -->

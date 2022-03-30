@@ -208,7 +208,11 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         this.expandedHeader = this.page?.querySelector('ion-item[collapsible]') ?? undefined;
 
         if (!this.expandedHeader) {
+            this.enabled = false;
+            this.setEnabled(this.enabled);
+
             throw new Error('[collapsible-header] Couldn\'t initialize expanded header');
+
         }
         this.expandedHeader.classList.add('collapsible-header-expanded');
 
@@ -384,11 +388,11 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
      * @param enable True to enable, false otherwise
      */
     async setEnabled(enable: boolean): Promise<void> {
-        if (!this.page || !this.content) {
+        if (!this.page) {
             return;
         }
 
-        if (enable) {
+        if (enable && this.content) {
             const contentScroll = await this.content.getScrollElement();
 
             // Do nothing, since scroll has already started on the page.

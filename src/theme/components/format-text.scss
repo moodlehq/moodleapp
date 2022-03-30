@@ -208,6 +208,11 @@ core-format-text,
 core-rich-text-editor .core-rte-editor {
     @include core-headings();
 
+    p, ul, ol, li {
+        // Normalize font-size inside formatted text.
+        font-size: 14px;
+    }
+
     p {
         margin-bottom: 1rem;
         margin-block-start: 0;

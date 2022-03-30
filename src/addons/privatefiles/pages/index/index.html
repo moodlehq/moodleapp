@@ -37,10 +37,8 @@
         <!-- List of files. -->
         <ion-list *ngIf="files && files.length > 0">
             <ng-container *ngFor="let file of files">
-                <ion-item button *ngIf="file.isdir" class="item-file" (click)="openFolder(file)" detail="true">
-                    <ion-thumbnail slot="start">
-                        <img [src]="file.imgPath" alt="" role="presentation">
-                    </ion-thumbnail>
+                <ion-item button *ngIf="file.isdir" class="ion-text-wrap item-file item-directory" (click)="openFolder(file)" detail="true">
+                    <ion-icon name="fas-folder" slot="start" [attr.aria-label]="'core.folder' | translate"></ion-icon>
                     <ion-label>{{file.filename}}</ion-label>
                 </ion-item>
                 <core-file *ngIf="!file.isdir" [file]="file" [component]="component" [componentId]="file.contextid"></core-file>

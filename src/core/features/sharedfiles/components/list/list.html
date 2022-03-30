@@ -13,10 +13,8 @@
                 (onDelete)="fileDeleted(idx)" (onRename)="fileRenamed(idx, $event)">
             </core-local-file>
 
-            <ion-item button *ngIf="!file.isFile" class="ion-text-wrap item-file" (click)="openFolder(file)" detail="true">
-                <ion-thumbnail slot="start" aria-hidden="true">
-                    <img src="assets/img/files/folder-64.png" alt="">
-                </ion-thumbnail>
+            <ion-item button *ngIf="!file.isFile" class="ion-text-wrap item-file item-directory" (click)="openFolder(file)" detail="true">
+                <ion-icon name="fas-folder" slot="start" [attr.aria-label]="'core.folder' | translate"></ion-icon>
                 <ion-label>{{ file.name }}</ion-label>
             </ion-item>
         </ng-container>

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
 import { CoreCourse, CoreCourseWSSection } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -44,11 +44,13 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
     nextModuleSection?: CoreCourseWSSection;
     previousModuleSection?: CoreCourseWSSection;
     loaded = false;
+    element: HTMLElement;
 
     protected completionObserver: CoreEventObserver;
 
-    constructor(protected ionContent: IonContent) {
+    constructor(protected ionContent: IonContent, element: ElementRef) {
         const siteId = CoreSites.getCurrentSiteId();
+        this.element = element.nativeElement;
 
         this.completionObserver = CoreEvents.on(CoreEvents.COMPLETION_MODULE_VIEWED, async (data) => {
             if (data && data.courseId == this.courseId) {
@@ -168,6 +170,8 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
                 }
             }
         }
+
+        this.element.classList.toggle('empty', !this.nextModule && !this.previousModule);
     }
 
     /**
