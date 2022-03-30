@@ -153,7 +153,7 @@
             </ion-list>
         </ion-card>
 
-        <ion-card *ngIf="(canPrefetch && displayOptions.displayPrefetch) || (sizeReadable && displayOptions.displaySize)">
+        <ion-card *ngIf="(canPrefetch && displayOptions.displayPrefetch) || (size && displayOptions.displaySize)">
             <ion-item lines="full" class="ion-text-wrap card-header">
                 <ion-label>
                     <h2>
@@ -162,13 +162,13 @@
                     </h2>
                 </ion-label>
             </ion-item>
-            <ion-item *ngIf="sizeReadable && displayOptions.displaySize" class="ion-text-wrap">
+            <ion-item *ngIf="size && displayOptions.displaySize" class="ion-text-wrap">
                 <ion-label>
                     <p class="item-heading ion-text-wrap">{{ 'addon.storagemanager.totalspaceusage' | translate }}</p>
-                    <ion-badge color="light">{{ sizeReadable | coreBytesToSize }}</ion-badge>
+                    <ion-badge color="light">{{ size | coreBytesToSize }}</ion-badge>
                 </ion-label>
                 <ion-button *ngIf="!removeFilesLoading" [disabled]="prefetchLoading" (click)="removeFiles()" color="danger" fill="clear"
-                    [attr.aria-label]="'core.clearstoreddata' | translate:{$a: sizeReadable}" slot="end">
+                    [attr.aria-label]="'core.clearstoreddata' | translate:{$a: size | coreBytesToSize}" slot="end">
                     <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
                 </ion-button>
                 <ion-spinner *ngIf="removeFilesLoading" slot="end" aria-hidden="true"></ion-spinner>

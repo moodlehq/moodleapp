@@ -62,7 +62,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
     prefetchLoading = false;
     canPrefetch = false;;
     prefetchDisabled = false;
-    sizeReadable = '';
+    size?: number; // Size in bytes
     downloadTimeReadable = ''; // Last download time in a readable format.
     grades?: CoreGradesFormattedRow[];
     blog = false; // If blog is available.
@@ -137,7 +137,9 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
 
                 const moduleSize = await CoreCourseModulePrefetchDelegate.getModuleStoredSize(this.module, this.courseId);
 
-                this.sizeReadable = moduleSize > 0 ? CoreTextUtils.bytesToSize(moduleSize, 2) : '';
+                if (moduleSize) {
+                    this.size = moduleSize;
+                }
             }, 1000);
 
             this.fileStatusObserver = CoreEvents.on(
@@ -211,9 +213,9 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
             this.prefetchDisabled = moduleInfo.status == CoreConstants.DOWNLOADED;
         }
 
-        this.sizeReadable = moduleInfo.size && moduleInfo.size > 0
-            ? moduleInfo.sizeReadable
-            : '';
+        if (moduleInfo.size && moduleInfo.size > 0) {
+            this.size = moduleInfo.size;
+        }
     }
 
     /**
