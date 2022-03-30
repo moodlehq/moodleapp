@@ -77,6 +77,8 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
     protected isWithinContent = false;
     protected enteredPromise = new CorePromisedValue<void>();
     protected mutationObserver?: MutationObserver;
+    protected firstEnter = true;
+    protected initPending = false;
 
     constructor(el: ElementRef) {
         this.collapsedHeader = el.nativeElement;
@@ -145,14 +147,19 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         this.page.addEventListener(
             'ionViewDidEnter',
             this.pageDidEnterListener = () => {
-                clearTimeout(timeout);
-                this.enteredPromise.resolve();
+                if (this.firstEnter) {
+                    this.firstEnter = false;
+                    clearTimeout(timeout);
+                    this.enteredPromise.resolve();
+                } else if (this.initPending) {
+                    this.initializeFloatingTitle();
+                }
             },
-            { once: true },
         );
 
         // Timeout in case event is never fired.
         const timeout = window.setTimeout(() => {
+            this.firstEnter = false;
             this.enteredPromise.reject(new Error('[collapsible-header] Waiting for ionViewDidEnter timeout reached'));
         }, 5000);
 
@@ -258,6 +265,14 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         if (!this.page || !this.expandedHeader) {
             throw new Error('[collapsible-header] Couldn\'t create floating title');
         }
+
+        if (!CoreDom.isElementVisible(this.expandedHeader)) {
+            this.initPending = true;
+
+            return;
+        }
+
+        this.initPending = false;
 
         this.page.classList.remove('collapsible-header-page-is-active');
         CoreUtils.nextTick();
