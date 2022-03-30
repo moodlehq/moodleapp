@@ -209,6 +209,9 @@ class behat_app extends behat_base {
         });
 
         $this->wait_for_pending_js();
+
+        // Wait scroll animation to finish.
+        $this->getSession()->wait(300);
     }
 
     /**
