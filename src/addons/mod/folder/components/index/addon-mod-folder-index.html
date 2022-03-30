@@ -32,6 +32,6 @@
 
 </core-loading>
 
-<core-course-module-navigation collapsible-footer appearOnBottom [hidden]="showLoading" [courseId]="courseId" [currentModuleId]="module.id"
-    (completionChanged)="onCompletionChange()">
+<core-course-module-navigation collapsible-footer appearOnBottom *ngIf="!subfolder" [hidden]="showLoading" [courseId]="courseId"
+    [currentModuleId]="module.id" (completionChanged)="onCompletionChange()">
 </core-course-module-navigation>
