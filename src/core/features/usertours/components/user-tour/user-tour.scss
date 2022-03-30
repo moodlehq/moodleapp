@@ -33,6 +33,7 @@
         color: var(--ion-text-color, #000);
         background: var(--popover-background);
         width: 70vw;
+        max-width: 400px;
         padding: 16px;
         border-radius: 8px;
 
