@@ -863,6 +863,7 @@ ion-content.limited-width > :not([slot]) {
 ion-content.limited-width > :not([slot]) {
     display: flex;
     flex-direction: column;
+    min-height: 100%;
 }
 
 ion-toolbar h1 img.core-bar-button-image,
@@ -1500,6 +1501,7 @@ ion-content.disable-scroll-y::part(scroll) {
 }
 
 iframe {
+    flex-grow: 1;
     border: 0;
     display: block;
     max-width: 100%;
