@@ -308,10 +308,8 @@
         --min-height: var(--item-divider-min-height);
     }
 
-    --spacer-background: var(--light);
-    core-spacer {
-        --item-divider-background: var(--spacer-background);
-    }
+    --spacer-vertical: 8px;
+    --spacer-color: var(--gray-300);
 
     ion-note {
         --color: var(--subdued-text-color);

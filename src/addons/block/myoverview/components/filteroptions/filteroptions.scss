@@ -1,0 +1,8 @@
+ion-footer {
+    &::before {
+        display: none;
+    }
+    ion-button {
+        margin: 0;
+    }
+}

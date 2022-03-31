@@ -22,6 +22,7 @@ import { AddonBlockMyOverviewFilterOptions } from '../myoverview/myoverview';
 @Component({
     selector: 'addon-block-myoverview-filter-options',
     templateUrl: 'filteroptions.html',
+    styleUrls: ['filteroptions.scss'],
 })
 export class AddonBlockMyOverviewFilterOptionsComponent {
 
