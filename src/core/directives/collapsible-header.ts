@@ -88,7 +88,18 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
     /**
      * @inheritdoc
      */
-    async ngOnInit(): Promise<void> {
+    ngOnInit(): void {
+        this.init();
+    }
+
+    /**
+     * Init function.
+     */
+    async init(): Promise<void> {
+        if (!this.collapsible || this.expandedHeader) {
+            return;
+        }
+
         this.initializePage();
 
         await Promise.all([
@@ -104,9 +115,12 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
     /**
      * @inheritdoc
      */
-    ngOnChanges(changes: {[name: string]: SimpleChange}): void {
+    async ngOnChanges(changes: {[name: string]: SimpleChange}): Promise<void> {
         if (changes.collapsible) {
             this.enabled = !CoreUtils.isFalseOrZero(changes.collapsible.currentValue);
+
+            await this.init();
+
             setTimeout(() => {
                 this.setEnabled(this.enabled);
             }, 200);
@@ -160,8 +174,10 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
 
         // Timeout in case event is never fired.
         const timeout = window.setTimeout(() => {
-            this.firstEnter = false;
-            this.enteredPromise.reject(new Error('[collapsible-header] Waiting for ionViewDidEnter timeout reached'));
+            if (this.firstEnter) {
+                this.firstEnter = false;
+                this.enteredPromise.reject(new Error('[collapsible-header] Waiting for ionViewDidEnter timeout reached'));
+            }
         }, 5000);
 
         this.resizeListener = CoreDom.onWindowResize(() => {

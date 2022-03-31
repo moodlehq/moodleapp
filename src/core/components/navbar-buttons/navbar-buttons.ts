@@ -86,7 +86,7 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         try {
@@ -128,7 +128,7 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
             }
         } catch (error) {
             // Header not found.
-            this.logger.warn(error);
+            this.logger.error(error);
         }
     }
 
@@ -199,13 +199,20 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
      */
     protected async searchHeader(): Promise<HTMLIonHeaderElement> {
         await CoreDom.waitToBeInDOM(this.element);
-
         let parentPage: HTMLElement | null = this.element;
+
         while (parentPage && parentPage.parentElement) {
-            // Get the next parent page.
+            const content = parentPage.closest<HTMLIonContentElement>('ion-content');
+            if (content) {
+                // Sometimes ion-page class is not yet added by the ViewController, wait for content to render.
+                await content.componentOnReady();
+            }
+
             parentPage = parentPage.parentElement.closest('.ion-page');
+
             // Check if the page has a header. If it doesn't, search the next parent page.
             const header  = parentPage?.querySelector<HTMLIonHeaderElement>(':scope > ion-header');
+
             if (header && getComputedStyle(header).display !== 'none') {
                 return header;
             }
