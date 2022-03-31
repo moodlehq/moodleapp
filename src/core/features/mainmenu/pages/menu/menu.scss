@@ -21,6 +21,7 @@
     .core-network-message {
         visibility: visible;
         height: var(--network-message-height);
+        line-height: var(--network-message-height);
         padding-bottom: calc(var(--ion-safe-area-bottom, 0px) + var(--network-message-height));
     }
 }
@@ -167,6 +168,7 @@ ion-tabs.placement-side {
     transition: all 500ms ease-in-out;
     opacity: .8;
     z-index: 12;
+    font-size: 12px;
 
     .core-online-message {
         display: var(--network-message-online);
