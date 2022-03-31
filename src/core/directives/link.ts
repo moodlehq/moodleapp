@@ -140,10 +140,10 @@ export class CoreLinkDirective implements OnInit {
             return this.openLocalFile(href);
         }
 
-        if (href.charAt(0) == '#') {
+        if (href.charAt(0) === '#') {
             // Look for id or name.
             href = href.substring(1);
-            const container = this.element.closest('ion-content');
+            const container = this.element.closest<HTMLIonContentElement>('ion-content');
             if (container) {
                 CoreDom.scrollToElement(
                     container,

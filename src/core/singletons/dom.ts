@@ -88,10 +88,11 @@ export class CoreDom {
      * Check whether an element is visible or not.
      *
      * @param element Element.
+     * @param checkSize Wether to check size to check for visibility.
      * @return True if element is visible inside the DOM.
      */
-    static isElementVisible(element: HTMLElement): boolean {
-        if (element.clientWidth === 0 || element.clientHeight === 0) {
+    static isElementVisible(element: HTMLElement, checkSize = true): boolean {
+        if (checkSize && (element.clientWidth === 0 || element.clientHeight === 0)) {
             return false;
         }
 
@@ -193,11 +194,10 @@ export class CoreDom {
             element = foundElement;
         }
 
-        await CoreDom.waitToBeVisible(element);
+        await CoreDom.waitToBeVisible(element, false);
 
         const content = element.closest<HTMLIonContentElement>('ion-content') ?? undefined;
         if (!content) {
-
             // Content to scroll, not found.
             return false;
         }
@@ -449,9 +449,10 @@ export class CoreDom {
      * Wait an element to be in dom and visible.
      *
      * @param element Element to wait.
+     * @param checkSize Wether to check size to check for visibility.
      * @return Cancellable promise.
      */
-    static waitToBeVisible(element: HTMLElement): CoreCancellablePromise<void> {
+    static waitToBeVisible(element: HTMLElement, checkSize = true): CoreCancellablePromise<void> {
         const domPromise = CoreDom.waitToBeInDOM(element);
 
         let interval: number | undefined;
@@ -461,12 +462,12 @@ export class CoreDom {
             async (resolve) => {
                 await domPromise;
 
-                if (CoreDom.isElementVisible(element)) {
+                if (CoreDom.isElementVisible(element, checkSize)) {
                     return resolve();
                 }
 
                 interval = window.setInterval(() => {
-                    if (!CoreDom.isElementVisible(element)) {
+                    if (!CoreDom.isElementVisible(element, checkSize)) {
                         return;
                     }
 
