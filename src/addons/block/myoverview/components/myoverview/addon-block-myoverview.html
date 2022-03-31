@@ -22,6 +22,14 @@
 </ion-item-divider>
 <core-loading [hideUntil]="loaded">
 
+    <ion-row class="ion-hide-md-up addon-block-myoverview-filter" *ngIf="hasCourses">
+        <ion-col>
+            <!-- Filter courses. -->
+            <ion-searchbar [(ngModel)]="textFilter" (ionInput)="filterTextChanged($event.target)"
+                (ionCancel)="filterTextChanged($event.target)" [placeholder]="'core.filter' | translate">
+            </ion-searchbar>
+        </ion-col>
+    </ion-row>
     <ion-row class="ion-justify-content-between ion-align-items-center addon-block-myoverview-filter" *ngIf="hasCourses">
         <ion-col size="auto" *ngIf="filters.enabled">
             <core-combobox interface="modal" [label]="'core.courses.filtermycourses' | translate" (onChange)="filterOptionsChanged($event)"
@@ -57,14 +65,6 @@
                 [attr.aria-label]="'addon.block_myoverview.card' | translate">
                 <ion-icon slot="icon-only" name="fas-th" aria-hidden="true"></ion-icon>
             </ion-button>
-        </ion-col>
-    </ion-row>
-    <ion-row class="ion-hide-md-up addon-block-myoverview-filter" *ngIf="hasCourses">
-        <ion-col>
-            <!-- Filter courses. -->
-            <ion-searchbar [(ngModel)]="textFilter" (ionInput)="filterTextChanged($event.target)"
-                (ionCancel)="filterTextChanged($event.target)" [placeholder]="'core.filter' | translate">
-            </ion-searchbar>
         </ion-col>
     </ion-row>
 
