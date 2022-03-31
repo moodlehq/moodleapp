@@ -93,6 +93,7 @@ export class CoreSwipeNavigationDirective implements AfterViewInit, OnDestroy {
         await CoreUserTours.showIfPending({
             id: 'swipe-navigation',
             component: CoreSwipeNavigationTourComponent,
+            watch: this.element,
         });
     }
 

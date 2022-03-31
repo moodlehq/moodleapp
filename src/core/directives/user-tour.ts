@@ -12,20 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import { Directive, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
+import { CoreUserTours, CoreUserToursFocusedOptions, CoreUserToursUserTour } from '@features/usertours/services/user-tours';
 import { CoreDom } from '@singletons/dom';
 
 /**
- * Directive to listen when an element becomes visible.
+ * Directive to control a User Tour linked to the lifecycle of the element where it's defined.
  */
 @Directive({
-    selector: '[onAppear]',
+    selector: '[userTour]',
 })
-export class CoreOnAppearDirective implements OnInit, OnDestroy {
+export class CoreUserTourDirective implements OnInit, OnDestroy {
 
-    @Output() onAppear = new EventEmitter();
+    @Input() userTour!: CoreUserTourDirectiveOptions;
 
+    private tour?: CoreUserToursUserTour | null;
     private element: HTMLElement;
     protected visiblePromise?: CoreCancellablePromise<void>;
 
@@ -41,14 +43,35 @@ export class CoreOnAppearDirective implements OnInit, OnDestroy {
 
         await this.visiblePromise;
 
-        this.onAppear.emit();
+        const { getFocusedElement, ...options } = this.userTour;
+
+        this.tour = await CoreUserTours.showIfPending({
+            ...options,
+            focus: getFocusedElement?.(this.element) ?? this.element,
+        });
     }
 
     /**
      * @inheritdoc
      */
     ngOnDestroy(): void {
+        this.tour?.cancel();
         this.visiblePromise?.cancel();
     }
 
 }
+
+/**
+ * User Tour options to control with this directive.
+ */
+export type CoreUserTourDirectiveOptions = Omit<CoreUserToursFocusedOptions, 'focus'> & {
+
+    /**
+     * Getter to obtain element to focus in the User Tour. If this isn't provided, the element where the
+     * directive is defined will be used.
+     *
+     * @param element Element where the directive is defined.
+     */
+    getFocusedElement?(element: HTMLElement): HTMLElement;
+
+};

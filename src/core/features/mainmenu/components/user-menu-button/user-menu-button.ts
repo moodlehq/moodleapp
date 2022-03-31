@@ -14,7 +14,8 @@
 
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CoreSiteInfo } from '@classes/site';
-import { CoreUserTours, CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/services/user-tours';
+import { CoreUserTourDirectiveOptions } from '@directives/user-tour';
+import { CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/services/user-tours';
 import { IonRouterOutlet } from '@ionic/angular';
 import { CoreScreen } from '@services/screen';
 import { CoreSites } from '@services/sites';
@@ -36,6 +37,12 @@ export class CoreMainMenuUserButtonComponent implements OnInit {
 
     siteInfo?: CoreSiteInfo;
     isMainScreen = false;
+    userTour: CoreUserTourDirectiveOptions = {
+        id: 'user-menu',
+        component: CoreMainMenuUserMenuTourComponent,
+        alignment: CoreUserToursAlignment.Start,
+        side: CoreScreen.isMobile ? CoreUserToursSide.Start : CoreUserToursSide.End,
+    };
 
     @ViewChild('avatar', { read: ElementRef }) avatar?: ElementRef<HTMLElement>;
 
@@ -63,23 +70,6 @@ export class CoreMainMenuUserButtonComponent implements OnInit {
 
         CoreDomUtils.openSideModal<void>({
             component: CoreMainMenuUserMenuComponent,
-        });
-    }
-
-    /**
-     * Show User Tour.
-     */
-    async showTour(): Promise<void> {
-        if (!this.avatar) {
-            return;
-        }
-
-        await CoreUserTours.showIfPending({
-            id: 'user-menu',
-            component: CoreMainMenuUserMenuTourComponent,
-            focus: this.avatar.nativeElement,
-            alignment: CoreUserToursAlignment.Start,
-            side: CoreScreen.isMobile ? CoreUserToursSide.Start : CoreUserToursSide.End,
         });
     }
 

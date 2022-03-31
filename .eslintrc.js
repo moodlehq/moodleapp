@@ -234,6 +234,11 @@ const appConfig = {
                 prev: '*',
                 next: 'return',
             },
+            {
+                blankLine: 'always',
+                prev: '*',
+                next: 'function',
+            },
         ],
         'prefer-arrow/prefer-arrow-functions': [
             'error',
