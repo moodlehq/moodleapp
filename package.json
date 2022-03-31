@@ -114,7 +114,7 @@
     "core-js": "3.9.1",
     "es6-promise-plugin": "4.2.2",
     "hammerjs": "2.0.8",
-    "jszip": "3.5.0",
+    "jszip": "3.7.1",
     "mathjax": "2.7.7",
     "moment": "2.29.0",
     "nl.kingsquare.cordova.background-audio": "1.0.1",
