@@ -23,6 +23,7 @@ import {
     AfterViewInit,
     ViewChild,
     SimpleChange,
+    ElementRef,
 } from '@angular/core';
 import { IonSlides } from '@ionic/angular';
 import { BackButtonEvent } from '@ionic/core';
@@ -35,6 +36,9 @@ import { CoreEventObserver } from '@singletons/events';
 import { CoreDom } from '@singletons/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreError } from './errors/error';
+import { CorePromisedValue } from './promised-value';
+import { AsyncComponent } from './async-component';
+import { CoreComponentsRegistry } from '@singletons/components-registry';
 
 /**
  * Class to abstract some common code for tabs.
@@ -42,7 +46,7 @@ import { CoreError } from './errors/error';
 @Component({
     template: '',
 })
-export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, AfterViewInit, OnChanges, OnDestroy, AsyncComponent {
 
     // Minimum tab's width.
     protected static readonly MIN_TAB_WIDTH = 107;
@@ -85,13 +89,16 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
     // Swiper 6 documentation: https://swiper6.vercel.app/
     protected isInTransition = false; // Wether Slides is in transition.
     protected subscriptions: Subscription[] = [];
+    protected onReadyPromise = new CorePromisedValue<void>();
 
     tabAction: CoreTabsRoleTab<T>;
 
-    constructor() {
+    constructor(element: ElementRef) {
         this.backButtonFunction = this.backButtonClicked.bind(this);
 
         this.tabAction = new CoreTabsRoleTab(this);
+
+        CoreComponentsRegistry.register(element.nativeElement, this);
     }
 
     /**
@@ -525,6 +532,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
         if (suceeded !== false) {
             this.tabSelected(tabToSelect, index);
         }
+        this.onReadyPromise.resolve();
     }
 
     /**
@@ -554,7 +562,14 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
     }
 
     /**
-     * Component destroyed.
+     * @inheritdoc
+     */
+    async ready(): Promise<void> {
+        return await this.onReadyPromise;
+    }
+
+    /**
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.isDestroyed = true;

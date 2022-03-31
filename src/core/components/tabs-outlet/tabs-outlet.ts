@@ -20,7 +20,6 @@ import {
     OnDestroy,
     AfterViewInit,
     ViewChild,
-    ElementRef,
     SimpleChange,
 } from '@angular/core';
 import { IonRouterOutlet, IonTabs, ViewDidEnter, ViewDidLeave } from '@ionic/angular';
@@ -68,12 +67,6 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
     protected outletActivatedSubscription?: Subscription;
     protected lastActiveComponent?: Partial<ViewDidLeave>;
     protected existsInNavigationStack = false;
-
-    constructor(element: ElementRef) {
-        super();
-
-        CoreComponentsRegistry.register(element.nativeElement, this);
-    }
 
     /**
      * Init tab info.
@@ -223,7 +216,7 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
     }
 
     /**
-     * Component destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         super.ngOnDestroy();
