@@ -89,6 +89,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
      * @inheritdoc
      */
     ngOnInit(): void {
+        this.collapsible = !CoreUtils.isFalseOrZero(this.collapsible);
         this.init();
     }
 
@@ -117,7 +118,8 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
      */
     async ngOnChanges(changes: {[name: string]: SimpleChange}): Promise<void> {
         if (changes.collapsible) {
-            this.enabled = !CoreUtils.isFalseOrZero(changes.collapsible.currentValue);
+            this.collapsible = !CoreUtils.isFalseOrZero(changes.collapsible.currentValue);
+            this.enabled = this.collapsible;
 
             await this.init();
 
