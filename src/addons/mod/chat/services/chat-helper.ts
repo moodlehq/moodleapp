@@ -66,8 +66,7 @@ export class AddonModChatHelperProvider {
         if (!formattedMessage.special && formattedMessage.message.match(patternTo)) {
             const matches = formattedMessage.message.match(patternTo);
 
-            formattedMessage.message = '<b>' + Translate.instant('addon.mod_chat.saidto') +
-                '</b> <i>' + matches![1] + '</i>: ' + matches![2];
+            formattedMessage.message = `<i><b>${Translate.instant('addon.mod_chat.saidto')} </b>${matches![1]}</i>: ${matches![2]}`;
         }
 
         formattedMessage.showUserData = this.showUserData(currentUserId, message, prevMessage);
