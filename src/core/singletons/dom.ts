@@ -481,6 +481,29 @@ export class CoreDom {
         );
     }
 
+    /**
+     * Listen to click and Enter/Space keys in an element.
+     *
+     * @param element Element to listen to events.
+     * @param callback Callback to call when clicked or the key is pressed.
+     */
+    static onActivate(element: HTMLElement, callback: (event: MouseEvent | KeyboardEvent) => void): void {
+        element.addEventListener('click', (event) => callback(event));
+
+        element.addEventListener('keydown', (event) => {
+            if ((event.key == ' ' || event.key == 'Enter')) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        });
+
+        element.addEventListener('keyup', (event) => {
+            if ((event.key == ' ' || event.key == 'Enter')) {
+                callback(event);
+            }
+        });
+    }
+
 }
 
 /**

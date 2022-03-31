@@ -452,9 +452,16 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
         const svgImages = Array.from(div.querySelectorAll('image'));
         const promises: Promise<void>[] = [];
 
+        this.treatAppUrlElements(div, site);
+
         // Walk through the content to find the links and add our directive to it.
         // Important: We need to look for links first because in 'img' we add new links without core-link.
         anchors.forEach((anchor) => {
+            if (anchor.getAttribute('data-app-url')) {
+                // Link already treated in data-app-url, ignore it.
+                return;
+            }
+
             // Angular 2 doesn't let adding directives dynamically. Create the CoreLinkDirective manually.
             const linkDir = new CoreLinkDirective(new ElementRef(anchor), this.content);
             linkDir.capture = this.captureLinks ?? true;
@@ -544,6 +551,57 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
         }
 
         await Promise.all(promises);
+    }
+
+    /**
+     * Treat elements with an app-url data attribute.
+     *
+     * @param div Div containing the elements.
+     * @param site Site.
+     */
+    protected treatAppUrlElements(div: HTMLElement, site?: CoreSite): void {
+        const appUrlElements = Array.from(div.querySelectorAll<HTMLElement>('*[data-app-url]'));
+
+        appUrlElements.forEach((element) => {
+            const url = element.getAttribute('data-app-url');
+            if (!url) {
+                return;
+            }
+
+            if (element.tagName !== 'BUTTON' && element.tagName !== 'A') {
+                element.setAttribute('tabindex', '0');
+                element.setAttribute('role', 'button');
+            }
+
+            CoreDom.onActivate(element, async (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+
+                site = site || CoreSites.getCurrentSite();
+                if (!site) {
+                    return;
+                }
+
+                const confirmMessage = element.getAttribute('data-app-url-confirm');
+                const openInApp = element.getAttribute('data-open-in') === 'app';
+
+                if (confirmMessage) {
+                    try {
+                        await CoreDomUtils.showConfirm(Translate.instant(confirmMessage));
+                    } catch {
+                        return;
+                    }
+                }
+
+                if (openInApp) {
+                    site.openInAppWithAutoLoginIfSameSite(url);
+                } else {
+                    site.openInBrowserWithAutoLoginIfSameSite(url, undefined, {
+                        showBrowserWarning: !confirmMessage,
+                    });
+                }
+            });
+        });
     }
 
     /**
