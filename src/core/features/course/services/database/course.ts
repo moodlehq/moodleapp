@@ -109,7 +109,7 @@ export const OFFLINE_SITE_SCHEMA: CoreSiteSchema = {
                     type: 'TEXT',
                 },
                 {
-                    name: 'timeaccess',
+                    name: 'timecompleted',
                     type: 'INTEGER',
                 },
             ],
