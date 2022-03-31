@@ -16,6 +16,7 @@ import { AbstractType, Component, CUSTOM_ELEMENTS_SCHEMA, Type, ViewChild } from
 import { BrowserModule } from '@angular/platform-browser';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Observable, Subject } from 'rxjs';
+import { sep } from 'path';
 
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { CoreSingletonProxy, Network, Platform } from '@singletons';
@@ -244,4 +245,14 @@ export async function renderWrapperComponent<T>(
         .join(' ');
 
     return renderTemplate(component, `<${tag} ${inputAttributes}></${tag}>`, config);
+}
+
+/**
+ * Transform the provided path into a cross-platform path.
+ *
+ * @param unixPath path in unix format.
+ * @returns cross-platform path.
+ */
+export function agnosticPath(unixPath: string): string {
+    return unixPath.replace(/\//g, sep);
 }
