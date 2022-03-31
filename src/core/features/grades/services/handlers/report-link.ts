@@ -27,7 +27,7 @@ import { makeSingleton } from '@singletons';
 export class CoreGradesReportLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'CoreGradesReportLinkHandler';
-    pattern = /\/grade\/report(\/user)?\/index.php/;
+    pattern = /^\/grade\/report(\/user)?\/index.php/;
 
     /**
      * Get the list of actions for a link (url).

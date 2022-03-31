@@ -31,7 +31,7 @@ export class AddonModWikiEditLinkHandlerService extends CoreContentLinksHandlerB
 
     name = 'AddonModWikiEditLinkHandler';
     featureName = 'CoreCourseModuleDelegate_AddonModWiki';
-    pattern = /\/mod\/wiki\/edit\.php.*([&?]pageid=\d+)/;
+    pattern = /^\/mod\/wiki\/edit\.php.*([&?]pageid=\d+)/;
 
     /**
      * @inheritdoc

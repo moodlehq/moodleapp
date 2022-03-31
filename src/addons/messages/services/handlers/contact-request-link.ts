@@ -26,7 +26,7 @@ import { AddonMessages } from '../messages';
 export class AddonMessagesContactRequestLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonMessagesContactRequestLinkHandler';
-    pattern = /\/message\/pendingcontactrequests\.php/;
+    pattern = /^\/message\/pendingcontactrequests\.php/;
 
     /**
      * Get the list of actions for a link (url).

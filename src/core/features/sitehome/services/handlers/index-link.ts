@@ -31,7 +31,7 @@ export class CoreSiteHomeIndexLinkHandlerService extends CoreContentLinksHandler
 
     name = 'CoreSiteHomeIndexLinkHandler';
     featureName = 'CoreMainMenuDelegate_CoreSiteHome';
-    pattern = /\/course\/view\.php.*([?&]id=\d+)|\/index\.php(\?redirect=0)?/;
+    pattern = /^\/course\/view\.php.*([?&]id=\d+)|^\/index\.php(\?redirect=0)?/;
 
     /**
      * @inheritdoc

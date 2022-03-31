@@ -23,6 +23,20 @@ export class CoreText {
     }
 
     /**
+     * Add starting slash to a string if needed.
+     *
+     * @param text Text to treat.
+     * @return Treated text.
+     */
+    static addStartingSlash(text = ''): string {
+        if (text[0] === '/') {
+            return text;
+        }
+
+        return '/' + text;
+    }
+
+    /**
      * Remove ending slash from a path or URL.
      *
      * @param text Text to treat.

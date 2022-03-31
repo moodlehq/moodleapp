@@ -30,7 +30,7 @@ export class AddonModFeedbackAnalysisLinkHandlerService extends CoreContentLinks
 
     name = 'AddonModFeedbackAnalysisLinkHandler';
     featureName = 'CoreCourseModuleDelegate_AddonModFeedback';
-    pattern = /\/mod\/feedback\/analysis\.php.*([&?]id=\d+)/;
+    pattern = /^\/mod\/feedback\/analysis\.php.*([&?]id=\d+)/;
 
     /**
      * @inheritdoc

@@ -43,11 +43,11 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
     ) {
         super();
 
+        // Match the view.php URL with an id or instance id param.
         const pattern = instanceIdParam ?
-            '/mod/' + modName + '/view.php.*([&?](' + instanceIdParam + '|id)=\\d+)' :
-            '/mod/' + modName + '/view.php.*([&?]id=\\d+)';
+            '^/mod/' + modName + '/view.php.*([&?](' + instanceIdParam + '|id)=\\d+)' :
+            '^/mod/' + modName + '/view.php.*([&?]id=\\d+)';
 
-        // Match the view.php URL with an id param.
         this.pattern = new RegExp(pattern);
         this.featureName = 'CoreCourseModuleDelegate_' + addon;
     }

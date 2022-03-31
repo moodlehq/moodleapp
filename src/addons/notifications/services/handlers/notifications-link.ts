@@ -27,7 +27,7 @@ import { AddonNotificationsMainMenuHandlerService } from './mainmenu';
 export class AddonNotificationsLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonNotificationsLinkHandler';
-    pattern = /\/message\/output\/popup\/notifications\.php/;
+    pattern = /^\/message\/output\/popup\/notifications\.php/;
     featureName = 'CoreMainMenuDelegate_AddonNotifications';
 
     /**

@@ -31,7 +31,7 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
 
     name = 'AddonModLessonReportLinkHandler';
     featureName = 'CoreCourseModuleDelegate_AddonModLesson';
-    pattern = /\/mod\/lesson\/report\.php.*([&?]id=\d+)/;
+    pattern = /^\/mod\/lesson\/report\.php.*([&?]id=\d+)/;
 
     /**
      * Get the list of actions for a link (url).

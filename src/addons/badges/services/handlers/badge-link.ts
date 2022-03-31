@@ -27,7 +27,7 @@ import { AddonBadges } from '../badges';
 export class AddonBadgesBadgeLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonBadgesBadgeLinkHandler';
-    pattern = /\/badges\/badge\.php.*([?&]hash=)/;
+    pattern = /^\/badges\/badge\.php.*([?&]hash=)/;
 
     /**
      * Get the list of actions for a link (url).

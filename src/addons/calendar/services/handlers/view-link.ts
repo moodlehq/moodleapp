@@ -30,7 +30,7 @@ const SUPPORTED_VIEWS = ['month', 'mini', 'minithree', 'day', 'upcoming', 'upcom
 export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonCalendarViewLinkHandler';
-    pattern = /\/calendar\/view\.php/;
+    pattern = /^\/calendar\/view\.php/;
 
     /**
      * Get the list of actions for a link (url).

@@ -30,7 +30,7 @@ export class AddonModFeedbackShowNonRespondentsLinkHandlerService extends CoreCo
 
     name = 'AddonModFeedbackShowNonRespondentsLinkHandler';
     featureName = 'CoreCourseModuleDelegate_AddonModFeedback';
-    pattern = /\/mod\/feedback\/show_nonrespondents\.php.*([?&](id)=\d+)/;
+    pattern = /^\/mod\/feedback\/show_nonrespondents\.php.*([?&](id)=\d+)/;
 
     /**
      * @inheritdoc
