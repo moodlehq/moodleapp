@@ -36,6 +36,8 @@
                 color: var(--collapsible-toggle-text);
                 min-height: var(--toggle-size);
                 min-width: var(--toggle-size);
+                height: var(--toggle-size);
+                width: var(--toggle-size);
                 --border-radius: var(--huge-radius);
                 border-radius: var(--border-radius);
                 --padding-start: 0px;

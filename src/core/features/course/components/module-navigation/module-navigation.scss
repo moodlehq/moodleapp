@@ -3,7 +3,7 @@
 :host {
     --height: var(--core-navigation-max-height);
     --background: var(--core-navigation-background);
-    --button-vertical-margin: 2px;
+    --button-color: var(--gray-700);
 
     height: var(--height);
     width: 100%;
@@ -16,18 +16,42 @@
         --loading-inline-min-height: var(--height);
     }
 
-    ion-button,
-    ::ng-deep ion-button {
-        margin-top: var(--button-vertical-margin);
-        margin-bottom: var(--button-vertical-margin);
-    }
-
     &.empty {
         display: none;
+    }
+
+    .core-course-module-navigation-arrow {
+        ion-button {
+            margin: 0;
+            --border-radius: 0;
+            width: 100%;
+            text-transform: none;
+            font-size: 12px;
+            font-weight: normal;
+            --color: var(--button-color);
+
+            .button-text {
+                width:100%;
+            }
+
+            ion-icon {
+                font-size: 12px;
+            }
+        }
+        .core-course-previous-module {
+            text-align: start;
+        }
+        .core-course-next-module {
+            text-align: end;
+        }
     }
 }
 
 :host-context(core-course-format.core-course-format-singleactivity) {
     opacity: 0 !important;
     height: 0 !important;
+}
+
+:host-context(body.dark) {
+    --button-color: var(--gray-100);
 }

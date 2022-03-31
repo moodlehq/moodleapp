@@ -96,7 +96,7 @@ body {
     &.item-heading-secondary {
         @include margin(2px, 0);
 
-        font-size: 14px;
+        font-size: var(--text-size);
         font-weight: normal;
 
         line-height: normal;
@@ -112,7 +112,7 @@ body {
     &.item-heading-secondary {
         @include margin(0, 0, 3px);
 
-        font-size: 14px;
+        font-size: var(--text-size);
         font-weight: normal;
 
         line-height: normal;
@@ -154,9 +154,6 @@ ion-header {
     z-index: 12; // To hide ion-slides on scroll.
 
     ion-toolbar {
-        --core-header-buttons-background: var(--core-header-toolbar-background);
-        --core-header-buttons-color: var(--core-header-toolbar-color);
-
         ion-spinner {
             margin: 10px;
         }
@@ -225,7 +222,7 @@ ion-header {
 
         h1 + h2,
         h1 + .subheading {
-            font-size: 14px;
+            font-size: var(--text-size);
             font-weight: 400;
         }
 
@@ -245,7 +242,7 @@ ion-header {
 
             h1 + h2,
             h1 + .subheading {
-                font-size: 14px;
+                font-size: var(--text-size);
                 font-weight: 400;
             }
         }
@@ -579,14 +576,19 @@ body.core-iframe-fullscreen ion-router-outlet {
         }
     }
 
-    --core-header-toolbar-height: 48px;
-    --core-header-toolbar-color: white;
-    --core-header-toolbar-background: black;
-    --core-header-toolbar-border-width: 0px;
+    .ion-page ion-header {
+        --core-header-toolbar-height: 48px;
+        --core-header-toolbar-color: white;
+        --core-header-toolbar-background: black;
+        --core-header-buttons-background: var(--core-header-toolbar-background);
+        --core-header-buttons-background: var(--core-header-toolbar-background);
+        --core-header-buttons-color: var(--core-header-toolbar-color);
+        --core-header-toolbar-border-width: 0px;
 
-    ion-header ion-toolbar {
-        h1, ion-back-button {
-            display: none;
+        ion-toolbar {
+            h1, ion-back-button {
+                display: none;
+            }
         }
     }
 
@@ -688,7 +690,7 @@ body.core-iframe-fullscreen ion-router-outlet {
     font-style: italic;
     margin-top: 0;
     margin-bottom: 10px;
-    font-size: 14px;
+    font-size: var(--text-size);
 }
 
 // Item styles
@@ -712,7 +714,7 @@ body.core-iframe-fullscreen ion-router-outlet {
     }
 
     p.item-heading {
-        font-size: 14px;
+        font-size: var(--text-size);
     }
 
     p {
@@ -765,6 +767,7 @@ body.core-iframe-fullscreen ion-router-outlet {
             --color: var(--color-shade);
             --inner-border-width: 0px;
             --border-width: 0px;
+            font-size: var(--text-size);
 
             ion-label, ion-label > p {
                 --color: var(--color-shade);
@@ -860,6 +863,7 @@ ion-content.limited-width > :not([slot]) {
 ion-content.limited-width > :not([slot]) {
     display: flex;
     flex-direction: column;
+    min-height: 100%;
 }
 
 ion-toolbar h1 img.core-bar-button-image,
@@ -1225,6 +1229,7 @@ audio.core-media-adapt-width {
 }
 
 ion-item {
+    font-size: var(--text-size);
     --inner-border-width: 0px;
 }
 
@@ -1281,7 +1286,7 @@ html.md div.fake-ion-item {
     h6 {
         @include margin(2px, 0);
 
-        font-size: 14px;
+        font-size: var(--text-size);
         font-weight: normal;
 
         line-height: normal;
@@ -1289,7 +1294,7 @@ html.md div.fake-ion-item {
 
     p {
         @include margin(0, 0, 2px);
-        font-size: 14px;
+        font-size: var(--text-size);
         line-height: 20px;
         text-overflow: inherit;
         overflow: inherit;
@@ -1297,7 +1302,7 @@ html.md div.fake-ion-item {
 }
 
 html.ios div.fake-ion-item {
-    font-size: 14px;
+    font-size: var(--text-size);
     @include padding(null, 10px, null, 20px);
     @include margin(10px, 8px, 10px, null);
 
@@ -1318,14 +1323,14 @@ html.ios div.fake-ion-item {
     h5,
     h6 {
         @include margin(0, 0, 3px);
-        font-size: 14px;
+        font-size: var(--text-size);
         font-weight: normal;
         line-height: normal;
     }
 
     p {
         @include margin(0, 0, 2px 0);
-        font-size: 14px;
+        font-size: var(--text-size);
         line-height: normal;
         text-overflow: inherit;
         overflow: inherit;
@@ -1496,6 +1501,7 @@ ion-content.disable-scroll-y::part(scroll) {
 }
 
 iframe {
+    flex-grow: 1;
     border: 0;
     display: block;
     max-width: 100%;
@@ -1585,11 +1591,8 @@ ion-header.no-title {
     --core-header-toolbar-border-width: 0;
     --core-header-toolbar-background: transparent;
     --core-header-shadow: none !important;
-    ion-toolbar {
-        --core-header-buttons-background: var(--ion-background-color);
-        --core-header-buttons-color: var(--text-color);
-    }
-
+    --core-header-buttons-background: var(--ion-background-color);
+    --core-header-buttons-color: var(--text-color);
 }
 
 // To make core-swipe-slides fill the remaining height.

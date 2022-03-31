@@ -15,6 +15,7 @@
 import { Component } from '@angular/core';
 import { AsyncComponent } from '@classes/async-component';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreLogger } from './logger';
 
 /**
  * Registry to keep track of component instances.
@@ -22,6 +23,7 @@ import { CoreUtils } from '@services/utils/utils';
 export class CoreComponentsRegistry {
 
     private static instances: WeakMap<Element, unknown> = new WeakMap();
+    protected static logger = CoreLogger.getInstance('CoreComponentsRegistry');
 
     /**
      * Register a component instance.
@@ -78,6 +80,8 @@ export class CoreComponentsRegistry {
     ): Promise<void> {
         const instance = this.resolve(element, componentClass);
         if (!instance) {
+            this.logger.error('No instance registered for element ' + componentClass, element);
+
             return;
         }
 
@@ -97,14 +101,20 @@ export class CoreComponentsRegistry {
         selector: string,
         componentClass?: ComponentConstructor<T>,
     ): Promise<void> {
+        let elements: Element[] = [];
+
         if (element.matches(selector)) {
             // Element to wait is myself.
-            await CoreComponentsRegistry.waitComponentReady<T>(element, componentClass);
+            elements = [element];
         } else {
-            await Promise.all(Array
-                .from(element.querySelectorAll(selector))
-                .map(element => CoreComponentsRegistry.waitComponentReady<T>(element, componentClass)));
+            elements = Array.from(element.querySelectorAll(selector));
         }
+
+        if (!elements.length) {
+            return;
+        }
+
+        await Promise.all(elements.map(element => CoreComponentsRegistry.waitComponentReady<T>(element, componentClass)));
 
         // Wait for next tick to ensure components are completely rendered.
         await CoreUtils.nextTick();

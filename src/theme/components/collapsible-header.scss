@@ -1,4 +1,4 @@
-.collapsible-header-page {
+body:not(.core-iframe-fullscreen) .collapsible-header-page {
     --collapsible-header-progress: 0;
     --collapsible-header-collapsed-height: 0px;
     --collapsible-header-expanded-y-delta: 0px;
@@ -27,10 +27,10 @@
 
     &:not(.collapsible-header-page-is-collapsed) .collapsible-header-collapsed {
         --core-header-toolbar-border-width: 0;
+        --core-header-buttons-background: var(--ion-background-color);
+        --core-header-buttons-color: var(--text-color);
         ion-toolbar {
             --background: transparent;
-            --core-header-buttons-background: var(--ion-background-color);
-            --core-header-buttons-color: var(--text-color);
         }
 
         h1 {

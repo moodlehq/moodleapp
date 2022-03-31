@@ -17,7 +17,7 @@
     .addon-calendar-months {
         background-color: var(--contrast-background);
         padding: 0;
-        font-size: 14px;
+        font-size: var(--text-size);
     }
 
     .addon-calendar-day {

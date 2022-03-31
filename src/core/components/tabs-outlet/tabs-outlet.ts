@@ -20,7 +20,6 @@ import {
     OnDestroy,
     AfterViewInit,
     ViewChild,
-    ElementRef,
     SimpleChange,
 } from '@angular/core';
 import { IonRouterOutlet, IonTabs, ViewDidEnter, ViewDidLeave } from '@ionic/angular';
@@ -69,12 +68,6 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
     protected lastActiveComponent?: Partial<ViewDidLeave>;
     protected existsInNavigationStack = false;
 
-    constructor(element: ElementRef) {
-        super(element);
-
-        CoreComponentsRegistry.register(element.nativeElement, this);
-    }
-
     /**
      * Init tab info.
      *
@@ -97,7 +90,6 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
             return;
         }
 
-        this.tabsElement = this.element.nativeElement.querySelector('ion-tabs');
         this.stackEventsSubscription = this.ionTabs.outlet.stackEvents.subscribe(async (stackEvent: StackEvent) => {
             if (!this.isCurrentView) {
                 return;
@@ -118,14 +110,6 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
             }
 
             this.showHideNavBarButtons(stackEvent.enteringView.element.tagName);
-
-            await this.listenContentScroll(stackEvent.enteringView.element, stackEvent.enteringView.id);
-
-            const scrollElement = this.scrollElements[stackEvent.enteringView.id];
-            if (scrollElement) {
-                // Show or hide tabs based on the new page scroll.
-                this.showHideTabs(scrollElement.scrollTop, scrollElement);
-            }
         });
         this.outletActivatedSubscription = this.ionTabs.outlet.activateEvents.subscribe(() => {
             this.lastActiveComponent = this.ionTabs.outlet.component;
@@ -232,7 +216,7 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
     }
 
     /**
-     * Component destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         super.ngOnDestroy();

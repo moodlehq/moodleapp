@@ -16,6 +16,7 @@ import { Directive, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChang
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreTabsOutletComponent } from '@components/tabs-outlet/tabs-outlet';
+import { CoreTabsComponent } from '@components/tabs/tabs';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 import { ScrollDetail } from '@ionic/core';
 import { CoreUtils } from '@services/utils/utils';
@@ -77,6 +78,8 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
     protected isWithinContent = false;
     protected enteredPromise = new CorePromisedValue<void>();
     protected mutationObserver?: MutationObserver;
+    protected firstEnter = true;
+    protected initPending = false;
 
     constructor(el: ElementRef) {
         this.collapsedHeader = el.nativeElement;
@@ -145,14 +148,19 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         this.page.addEventListener(
             'ionViewDidEnter',
             this.pageDidEnterListener = () => {
-                clearTimeout(timeout);
-                this.enteredPromise.resolve();
+                if (this.firstEnter) {
+                    this.firstEnter = false;
+                    clearTimeout(timeout);
+                    this.enteredPromise.resolve();
+                } else if (this.initPending) {
+                    this.initializeFloatingTitle();
+                }
             },
-            { once: true },
         );
 
         // Timeout in case event is never fired.
         const timeout = window.setTimeout(() => {
+            this.firstEnter = false;
             this.enteredPromise.reject(new Error('[collapsible-header] Waiting for ionViewDidEnter timeout reached'));
         }, 5000);
 
@@ -223,8 +231,12 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
      * Search the page content, initialize it, and wait until it's ready for the transition to trigger on scroll.
      */
     protected async initializeContent(): Promise<void> {
+        if (!this.page) {
+            return;
+        }
+
         // Initialize from tabs.
-        const tabs = CoreComponentsRegistry.resolve(this.page?.querySelector('core-tabs-outlet'), CoreTabsOutletComponent);
+        const tabs = CoreComponentsRegistry.resolve(this.page.querySelector('core-tabs-outlet'), CoreTabsOutletComponent);
 
         if (tabs) {
             const outlet = tabs.getOutlet();
@@ -242,7 +254,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         }
 
         // Initialize from page content.
-        const content = this.page?.querySelector('ion-content:not(.disable-scroll-y)');
+        const content = this.page.querySelector('ion-content:not(.disable-scroll-y)');
 
         if (!content) {
             throw new Error('[collapsible-header] Couldn\'t get content');
@@ -258,6 +270,14 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         if (!this.page || !this.expandedHeader) {
             throw new Error('[collapsible-header] Couldn\'t create floating title');
         }
+
+        if (!CoreDom.isElementVisible(this.expandedHeader)) {
+            this.initPending = true;
+
+            return;
+        }
+
+        this.initPending = false;
 
         this.page.classList.remove('collapsible-header-page-is-active');
         CoreUtils.nextTick();
@@ -342,7 +362,19 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
             return;
         }
 
+        // Wait loadings to finish.
         await CoreComponentsRegistry.waitComponentsReady(this.page, 'core-loading', CoreLoadingComponent);
+
+        // Wait tabs to be ready.
+        await CoreComponentsRegistry.waitComponentsReady(this.page, 'core-tabs', CoreTabsComponent);
+        await CoreComponentsRegistry.waitComponentsReady(this.page, 'core-tabs-outlet', CoreTabsOutletComponent);
+
+        // Wait loadings to finish, inside tabs (if any).
+        await CoreComponentsRegistry.waitComponentsReady(
+            this.page,
+            'core-tab core-loading, ion-router-outlet core-loading',
+            CoreLoadingComponent,
+        );
     }
 
     /**

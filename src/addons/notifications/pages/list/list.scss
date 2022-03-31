@@ -5,7 +5,7 @@ ion-item {
         margin-top: 8px;
         margin-bottom: 8px;
         p.item-heading {
-            font-size: 14px;
+            font-size: var(--text-size);
             -webkit-line-clamp: 3;
             overflow: hidden;
             text-overflow: ellipsis;

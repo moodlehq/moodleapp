@@ -59,6 +59,7 @@
     --huge-radius: 24px;
 
     --text-color:       #{$text-color};
+    --text-size:        14px;
     --background-color: #{$background-color};
     --stroke:            var(--gray-300);
 
@@ -148,6 +149,8 @@
     --core-header-toolbar-color: var(--text-color);
     --core-header-toolbar-height: 48px;
     --core-header-shadow: none;
+    --core-header-buttons-background: var(--core-header-toolbar-background);
+    --core-header-buttons-color: var(--core-header-toolbar-color);
 
     ion-header {
         box-shadow: var(--core-header-shadow, none);

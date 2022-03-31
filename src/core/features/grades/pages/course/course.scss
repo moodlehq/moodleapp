@@ -98,7 +98,7 @@
         }
 
         .expandable-status-icon {
-            font-size: 14px;
+            font-size: var(--text-size);
             @include margin-horizontal(0, 2px);
             @include core-transition(transform, 200ms);
 

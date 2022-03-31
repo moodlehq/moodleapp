@@ -17,7 +17,7 @@
 
     .core-notification-body {
         core-format-text {
-            font-size: 14px;
+            font-size: var(--text-size);
         }
 
         h2 {

@@ -93,4 +93,5 @@
 :host-context(.limited-width > ):not([slot]) {
     --contents-display: flex;
     flex-direction: column;
+    min-height: 100%;
 }

@@ -50,6 +50,9 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
     protected endContentScrollListener?: EventListener;
     protected resizeListener?: CoreEventObserver;
     protected slotPromise?: CoreCancellablePromise<void>;
+    protected calcPending = false;
+    protected pageDidEnterListener?: EventListener;
+    protected page?: HTMLElement;
 
     constructor(el: ElementRef, protected ionContent: IonContent) {
         this.element = el.nativeElement;
@@ -82,6 +85,14 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
      * Calculate the height of the footer.
      */
     protected async calculateHeight(): Promise<void> {
+        if (!CoreDom.isElementVisible(this.element)) {
+            this.calcPending = true;
+
+            return;
+        }
+
+        this.calcPending = false;
+
         this.element.classList.remove('is-active');
         await CoreUtils.nextTick();
 
@@ -159,6 +170,16 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
         this.resizeListener = CoreDom.onWindowResize(() => {
             this.calculateHeight();
         }, 50);
+
+        this.page = this.content.closest<HTMLElement>('.ion-page') || undefined;
+        this.page?.addEventListener(
+            'ionViewDidEnter',
+            this.pageDidEnterListener = () => {
+                if (this.calcPending) {
+                    this.calculateHeight();
+                }
+            },
+        );
     }
 
     /**
@@ -227,6 +248,9 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
         }
         if (this.content && this.endContentScrollListener) {
             this.content.removeEventListener('ionScrollEnd', this.endContentScrollListener);
+        }
+        if (this.page && this.pageDidEnterListener) {
+            this.page.removeEventListener('ionViewDidEnter', this.pageDidEnterListener);
         }
 
         this.resizeListener?.off();

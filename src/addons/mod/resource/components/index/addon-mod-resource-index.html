@@ -81,6 +81,12 @@
 
     <div collapsible-footer appearOnBottom *ngIf="!showLoading" slot="fixed">
         <div class="list-item-limited-width" *ngIf="mode == 'external'">
+            <ion-button *ngIf="isIOS && (!shouldOpenInBrowser || !isOnline)" expand="block" fill="outline"
+                (click)="open(openFileAction.OPEN_WITH)" class="ion-margin ion-text-wrap">
+                <ion-icon name="far-share-square" slot="start" aria-hidden="true"></ion-icon>
+                {{ 'core.openwith' | translate }}
+            </ion-button>
+
             <ion-button expand="block" (click)="open(openFileAction.OPEN)" class="ion-margin ion-text-wrap">
                 <ng-container *ngIf="isStreamedFile">
                     <ion-icon name="fas-play" slot="start" aria-hidden="true"></ion-icon>
@@ -90,12 +96,6 @@
                     <ion-icon name="far-file" slot="start" aria-hidden="true"></ion-icon>
                     {{ 'addon.mod_resource.openthefile' | translate }}
                 </ng-container>
-            </ion-button>
-
-            <ion-button *ngIf="isIOS && (!shouldOpenInBrowser || !isOnline)" expand="block" (click)="open(openFileAction.OPEN_WITH)"
-                class="ion-margin ion-text-wrap">
-                <ion-icon name="far-share-square" slot="start" aria-hidden="true"></ion-icon>
-                {{ 'core.openwith' | translate }}
             </ion-button>
         </div>
         <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id">

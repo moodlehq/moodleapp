@@ -215,7 +215,7 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
         if (!module) {
             // It seems the module was hidden. Show a message.
             CoreDomUtils.instance.showErrorModal(
-                next ? 'core.course.gotonextactivitynotfound' : 'core.course.gotopreviousactivitynotfound',
+                next ? 'core.course.nextactivitynotfound' : 'core.course.previousactivitynotfound',
                 true,
             );
 
