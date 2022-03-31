@@ -12,18 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreApp, CoreAppProvider } from '@services/app';
 import { CoreConfig, CoreConfigProvider } from '@services/config';
 import { CoreDB, CoreDbProvider } from '@services/db';
 import { CoreCustomURLSchemes, CoreCustomURLSchemesProvider } from '@services/urlschemes';
 import { CoreConstants } from '../constants';
 
 type DevelopmentWindow = Window & {
+    appProvider?: CoreAppProvider;
     configProvider?: CoreConfigProvider;
     dbProvider?: CoreDbProvider;
     urlSchemes?: CoreCustomURLSchemesProvider;
 };
 
 function initializeDevelopmentWindow(window: DevelopmentWindow) {
+    window.appProvider = CoreApp.instance;
     window.configProvider = CoreConfig.instance;
     window.dbProvider = CoreDB.instance;
     window.urlSchemes = CoreCustomURLSchemes.instance;
