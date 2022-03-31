@@ -30,6 +30,7 @@ import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursec
 import { AddonBlockMyOverviewFilterOptionsComponent } from '../filteroptions/filteroptions';
 import { IonSearchbar } from '@ionic/angular';
 import moment from 'moment';
+import { CoreNavigator } from '@services/navigator';
 
 const FILTER_PRIORITY: AddonBlockMyOverviewTimeFilters[] = ['all', 'inprogress', 'future', 'past'];
 
@@ -88,6 +89,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
     textFilter = '';
     hasCourses = false;
+    searchEnabled = false;
 
     protected currentSite!: CoreSite;
     protected allCourses: CoreEnrolledCourseDataWithOptions[] = [];
@@ -110,12 +112,13 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         // Refresh the enabled flags if enabled.
         this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
         this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
+        this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
 
         // Refresh the enabled flags if site is updated.
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
             this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
-
+            this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
         }, CoreSites.getCurrentSiteId());
 
         this.coursesObserver = CoreEvents.on(
@@ -674,6 +677,13 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         this.filters = modalData;
         this.saveFilters(this.filters.timeFilterSelected);
         this.filterCourses();
+    }
+
+    /**
+     * Go to search courses.
+     */
+    async openSearch(): Promise<void> {
+        CoreNavigator.navigateToSitePath('/list', { params : { mode: 'search' } });
     }
 
     /**

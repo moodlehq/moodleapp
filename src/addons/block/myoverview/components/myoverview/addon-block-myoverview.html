@@ -70,6 +70,11 @@
 
     <core-empty-box *ngIf="filteredCourses.length == 0" image="assets/img/icons/courses.svg"
         [message]="'addon.block_myoverview.nocourses' | translate">
+        <ion-button *ngIf="searchEnabled" (click)="openSearch()" fill="outline">
+            <ion-icon name="fas-search" slot="start" aria-hidden="true">
+            </ion-icon>
+            {{'core.courses.searchcourses' | translate}}
+        </ion-button>
     </core-empty-box>
 
     <!-- List of courses. -->
