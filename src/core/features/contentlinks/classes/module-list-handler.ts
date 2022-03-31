@@ -40,8 +40,8 @@ export class CoreContentLinksModuleListHandler extends CoreContentLinksHandlerBa
     ) {
         super();
 
-        // Match the view.php URL with an id param.
-        this.pattern = new RegExp('/mod/' + modName + '/index.php.*([&?]id=\\d+)');
+        // Match the index.php URL with an id param.
+        this.pattern = new RegExp('^/mod/' + modName + '/index.php.*([&?]id=\\d+)');
         this.featureName = 'CoreCourseModuleDelegate_' + addon;
     }
 

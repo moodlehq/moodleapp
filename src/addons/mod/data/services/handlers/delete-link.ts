@@ -28,7 +28,7 @@ export class AddonModDataDeleteLinkHandlerService extends CoreContentLinksHandle
 
     name = 'AddonModDataDeleteLinkHandler';
     featureName = 'CoreCourseModuleDelegate_AddonModData';
-    pattern = /\/mod\/data\/view\.php.*([?&](d|delete)=\d+)/;
+    pattern = /^\/mod\/data\/view\.php.*([?&](d|delete)=\d+)/;
 
     /**
      * @inheritdoc

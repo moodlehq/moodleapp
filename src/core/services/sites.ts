@@ -1484,7 +1484,7 @@ export class CoreSitesProvider {
     async getSiteIdsFromUrl(url: string, prioritize?: boolean, username?: string): Promise<string[]> {
         // If prioritize is true, check current site first.
         if (prioritize && this.currentSite && this.currentSite.containsUrl(url)) {
-            if (!username || this.currentSite?.getInfo()?.username == username) {
+            if (!username || this.currentSite?.getInfo()?.username === username) {
                 return [this.currentSite.getId()];
             }
         }
@@ -1508,21 +1508,18 @@ export class CoreSitesProvider {
         try {
             const siteEntries = await this.sitesTable.getMany();
             const ids: string[] = [];
-            const promises: Promise<unknown>[] = [];
 
-            siteEntries.forEach((site) => {
+            await Promise.all(siteEntries.map(async (site) => {
                 if (!this.sites[site.id]) {
-                    promises.push(this.addSiteFromSiteListEntry(site));
+                    await this.addSiteFromSiteListEntry(site);
                 }
 
                 if (this.sites[site.id].containsUrl(url)) {
-                    if (!username || this.sites[site.id].getInfo()?.username == username) {
+                    if (!username || this.sites[site.id].getInfo()?.username === username) {
                         ids.push(site.id);
                     }
                 }
-            });
-
-            await Promise.all(promises);
+            }));
 
             return ids;
         } catch {

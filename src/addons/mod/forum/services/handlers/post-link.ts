@@ -32,7 +32,7 @@ export class AddonModForumPostLinkHandlerService extends CoreContentLinksHandler
 
     name = 'AddonModForumPostLinkHandler';
     featureName = 'CoreCourseModuleDelegate_AddonModForum';
-    pattern = /\/mod\/forum\/post\.php.*([?&](forum)=\d+)/;
+    pattern = /^\/mod\/forum\/post\.php.*([?&](forum)=\d+)/;
 
     /**
      * Get the list of actions for a link (url).

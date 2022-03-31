@@ -32,7 +32,7 @@ export class AddonModWikiPageOrMapLinkHandlerService extends CoreContentLinksHan
 
     name = 'AddonModWikiPageOrMapLinkHandler';
     featureName = 'CoreCourseModuleDelegate_AddonModWiki';
-    pattern = /\/mod\/wiki\/(view|map)\.php.*([&?]pageid=\d+)/;
+    pattern = /^\/mod\/wiki\/(view|map)\.php.*([&?]pageid=\d+)/;
 
     /**
      * @inheritdoc

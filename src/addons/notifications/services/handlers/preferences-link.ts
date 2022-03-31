@@ -28,7 +28,7 @@ import { AddonNotificationsSettingsHandlerService } from './settings';
 export class AddonNotificationsPreferencesLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonNotificationsPreferencesLinkHandler';
-    pattern = /\/message\/notificationpreferences\.php/;
+    pattern = /^\/message\/notificationpreferences\.php/;
     checkAllUsers = true;
     featureName = 'CoreMainMenuDelegate_AddonNotifications';
 

@@ -28,7 +28,7 @@ import { AddonMessagesMainMenuHandlerService } from './mainmenu';
 export class AddonMessagesIndexLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonMessagesIndexLinkHandler';
-    pattern = /\/message\/index\.php((?![?&](id|user1|user2)=\d+).)*$/;
+    pattern = /^\/message\/index\.php((?![?&](id|user1|user2)=\d+).)*$/;
 
     /**
      * Get the list of actions for a link (url).

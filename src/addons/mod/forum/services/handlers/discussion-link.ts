@@ -28,7 +28,7 @@ export class AddonModForumDiscussionLinkHandlerService extends CoreContentLinksH
 
     name = 'AddonModForumDiscussionLinkHandler';
     featureName = 'CoreCourseModuleDelegate_AddonModForum';
-    pattern = /\/mod\/forum\/discuss\.php.*([&?]d=\d+)/;
+    pattern = /^\/mod\/forum\/discuss\.php.*([&?]d=\d+)/;
 
     /**
      * Get the list of actions for a link (url).
