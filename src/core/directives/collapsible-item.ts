@@ -55,8 +55,9 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
     protected resizeListener?: CoreEventObserver;
     protected darkModeListener?: Subscription;
     protected domPromise?: CoreCancellablePromise<void>;
+    protected visiblePromise?: CoreCancellablePromise<void>;
     protected uniqueId: string;
-    protected calcPending = false;
+    protected loadingHeight = false;
     protected pageDidEnterListener?: EventListener;
     protected page?: HTMLElement;
 
@@ -99,9 +100,7 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
         this.page?.addEventListener(
             'ionViewDidEnter',
             this.pageDidEnterListener = () => {
-                if (this.calcPending) {
-                    this.calculateHeight();
-                }
+                this.calculateHeight();
             },
         );
 
@@ -143,19 +142,19 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
      * Calculate the height and check if we need to display show more or not.
      */
     protected async calculateHeight(): Promise<void> {
+        if (this.loadingHeight) {
+            // Already calculating, return.
+            return;
+        }
+        this.loadingHeight = true;
+
+        this.visiblePromise = CoreDom.waitToBeVisible(this.element);
+        await this.visiblePromise;
+
         // Remove max-height (if any) to calculate the real height.
         this.element.classList.add('collapsible-loading-height');
 
         await this.waitFormatTextsRendered();
-
-        if (!this.element.clientHeight) {
-            this.calcPending = true;
-            this.element.classList.remove('collapsible-loading-height');
-
-            return;
-        }
-
-        this.calcPending = false;
 
         this.expandedHeight = this.element.getBoundingClientRect().height;
 
@@ -167,6 +166,7 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
         this.setExpandButtonEnabled(enable);
         this.setGradientColor();
 
+        this.loadingHeight = false;
     }
 
     /**
@@ -298,6 +298,7 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
         this.resizeListener?.off();
         this.darkModeListener?.unsubscribe();
         this.domPromise?.cancel();
+        this.visiblePromise?.cancel();
 
         if (this.page && this.pageDidEnterListener) {
             this.page.removeEventListener('ionViewDidEnter', this.pageDidEnterListener);

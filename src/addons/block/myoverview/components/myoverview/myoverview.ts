@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ModalOptions } from '@ionic/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
@@ -27,11 +26,12 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursecompletion';
-import { AddonBlockMyOverviewFilterOptionsComponent } from '../filteroptions/filteroptions';
 import { IonSearchbar } from '@ionic/angular';
 import moment from 'moment';
+import { CoreNavigator } from '@services/navigator';
 
-const FILTER_PRIORITY: AddonBlockMyOverviewTimeFilters[] = ['all', 'inprogress', 'future', 'past'];
+const FILTER_PRIORITY: AddonBlockMyOverviewTimeFilters[] =
+    ['all', 'inprogress', 'future', 'past', 'favourite', 'allincludinghidden', 'hidden'];
 
 /**
  * Component to render a my overview block.
@@ -58,6 +58,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     filters: AddonBlockMyOverviewFilterOptions = {
         enabled: false,
         show: { // Options are visible, disabled, hidden.
+            allincludinghidden: true,
             all: true,
             past: true,
             inprogress: true,
@@ -67,14 +68,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             custom: false,
         },
         timeFilterSelected: 'inprogress',
-        favouriteSelected: false,
-        hiddenSelected: false,
         customFilters: [],
-        count: 0,
-    };
-
-    filterModalOptions: ModalOptions = {
-        component: AddonBlockMyOverviewFilterOptionsComponent,
     };
 
     isLayoutSwitcherAvailable = false;
@@ -88,6 +82,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
     textFilter = '';
     hasCourses = false;
+    searchEnabled = false;
 
     protected currentSite!: CoreSite;
     protected allCourses: CoreEnrolledCourseDataWithOptions[] = [];
@@ -98,6 +93,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     protected fetchContentDefaultError = 'Error getting my overview data.';
     protected gradePeriodAfter = 0;
     protected gradePeriodBefore = 0;
+    protected today = 0;
 
     constructor() {
         super('AddonBlockMyOverviewComponent');
@@ -110,12 +106,13 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         // Refresh the enabled flags if enabled.
         this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
         this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
+        this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
 
         // Refresh the enabled flags if site is updated.
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
             this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
-
+            this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
         }, CoreSites.getCurrentSiteId());
 
         this.coursesObserver = CoreEvents.on(
@@ -148,43 +145,11 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             return;
         }));
 
-        // Wait for the migration.
-        await this.currentSite.getLocalSiteConfig<string>(
+        promises.push(this.currentSite.getLocalSiteConfig(
             'AddonBlockMyOverviewFilter',
             this.filters.timeFilterSelected,
-        ).then(async (value) => {
-            if (FILTER_PRIORITY.includes(value as AddonBlockMyOverviewTimeFilters)) {
-                this.filters.timeFilterSelected = value as AddonBlockMyOverviewTimeFilters;
-
-                return;
-            }
-
-            // Migrate setting.
-            this.filters.hiddenSelected = value == 'allincludinghidden' || value == 'hidden';
-
-            if (value == 'favourite') {
-                this.filters.favouriteSelected = true;
-            } else {
-                this.filters.favouriteSelected = false;
-            }
-
-            return await this.saveFilters('all');
-        });
-
-        promises.push(this.currentSite.getLocalSiteConfig(
-            'AddonBlockMyOverviewFavouriteFilter',
-            this.filters.favouriteSelected ? 1 : 0,
         ).then((value) => {
-            this.filters.favouriteSelected = value == 1;
-
-            return;
-        }));
-
-        promises.push(this.currentSite.getLocalSiteConfig(
-            'AddonBlockMyOverviewHiddenFilter',
-            this.filters.hiddenSelected ? 1 : 0,
-        ).then((value) => {
-            this.filters.hiddenSelected = value == 1;
+            this.filters.timeFilterSelected = value;
 
             return;
         }));
@@ -312,6 +277,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             config?.displaygroupingallincludinghidden?.value == '1' ||
             sampleCourse.hidden !== undefined && (!config || config.displaygroupinghidden?.value == '1');
 
+        this.filters.show.allincludinghidden =  !config || config.displaygroupingallincludinghidden?.value == '1';
         this.filters.show.all =  !config || config.displaygroupingall?.value == '1';
         this.filters.show.inprogress = !config || config.displaygroupinginprogress?.value == '1';
         this.filters.show.past = !config || config.displaygroupingpast?.value == '1';
@@ -334,10 +300,6 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             this.filters.show.all = true;
             this.saveFilters('all');
         }
-
-        this.filterModalOptions.componentProps = {
-            options: Object.assign({}, this.filters),
-        };
 
         this.filterCourses();
     }
@@ -472,81 +434,66 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * Set selected courses filter.
      */
     protected async filterCourses(): Promise<void> {
-        this.filters.count = 0;
-
         let timeFilter = this.filters.timeFilterSelected;
-
-        // Filter is not active, take the first active or all.
-        if (!this.filters.show[timeFilter]) {
-            timeFilter = FILTER_PRIORITY.find((name) => this.filters.show[name]) || 'all';
-
-            this.saveFilters(timeFilter);
-        }
-
-        if (timeFilter !== 'all') {
-            this.filters.count++;
-        }
 
         this.filteredCourses = this.allCourses;
 
-        const customFilterName = this.block.configsRecord?.customfiltergrouping.value;
-        const customFilterValue = this.filters.customSelected;
-        if (customFilterName && this.filters.show.custom && customFilterValue !== undefined) {
-            this.filters.count++;
+        if (this.filters.show.custom && timeFilter.startsWith('custom-')) {
+            // Custom filter.
+            const customFilterName = this.block.configsRecord?.customfiltergrouping.value;
+            const customFilterValue = this.filters.customFilters[timeFilter.substring(7)]?.value;
 
-            this.loaded = false;
-            try {
-                const courses = await CoreCourses.getEnrolledCoursesByCustomField(customFilterName, customFilterValue);
+            if (customFilterName !== undefined && customFilterValue !== undefined) {
+                this.loaded = false;
+                try {
+                    const courses = await CoreCourses.getEnrolledCoursesByCustomField(customFilterName, customFilterValue);
 
-                const courseIds = courses.map((course) => course.id);
+                    // Get the courses information from allincludinghidden to get the max info about the course.
+                    const courseIds = courses.map((course) => course.id);
 
-                this.filteredCourses = this.filteredCourses.filter((course) => courseIds.includes(course.id));
-            } catch (error) {
-                CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError);
-            } finally {
-                this.loaded = true;
-            }
-        }
-
-        const onlyFavourite = this.filters.show.favourite && this.filters.favouriteSelected;
-        if (onlyFavourite) {
-            this.filters.count++;
-        }
-
-        const showHidden = this.filters.show.hidden && this.filters.hiddenSelected;
-        if (showHidden) {
-            this.filters.count++;
-        }
-
-        // Time filter, favourite and hidden.
-        const today = CoreTimeUtils.timestamp();
-
-        this.filteredCourses = this.filteredCourses.filter((course) => {
-            let include = timeFilter == 'all';
-
-            if (!include) {
-                if ((course.enddate && this.courseClassifyEndDate(course.enddate) < today) || course.completed) {
-                    // Courses that have already ended.
-                    include = timeFilter == 'past';
-                } else if (course.startdate && this.courseClassifyStartDate(course.startdate) > today) {
-                    // Courses that have not started yet.
-                    include = timeFilter == 'future';
-                } else {
-                    // Courses still in progress.
-                    include = timeFilter == 'inprogress';
+                    this.filteredCourses = this.filteredCourses.filter((course) => courseIds.includes(course.id));
+                } catch (error) {
+                    CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError);
+                } finally {
+                    this.loaded = true;
                 }
             }
-
-            if (onlyFavourite) {
-                include = include && !!course.isfavourite;
+        } else {
+            // Filter is not active, take the first active or all. Custom is never saved.
+            if (!this.filters.show[timeFilter]) {
+                timeFilter = FILTER_PRIORITY.find((name) => this.filters.show[name]) || 'all';
             }
+            this.saveFilters(timeFilter);
 
-            if (!showHidden) {
-                include = include && !course.hidden;
+            // Update today date.
+            this.today = Date.now();
+
+            // Apply filters.
+            switch(timeFilter) {
+                case 'allincludinghidden':
+                    // No nothing, it's all courses.
+                    break;
+                case 'all':
+                    this.filteredCourses = this.filteredCourses.filter((course) => !course.hidden);
+                    break;
+                case 'inprogress':
+                    this.filteredCourses = this.filteredCourses.filter((course) =>
+                        !course.hidden && !this.isPastCourse(course) && !this.isFutureCourse(course));
+                    break;
+                case 'future':
+                    this.filteredCourses = this.filteredCourses.filter((course) => !course.hidden && this.isFutureCourse(course));
+                    break;
+                case 'past':
+                    this.filteredCourses = this.filteredCourses.filter((course) => !course.hidden && this.isPastCourse(course));
+                    break;
+                case 'favourite':
+                    this.filteredCourses = this.filteredCourses.filter((course) => !course.hidden && course.isfavourite);
+                    break;
+                case 'hidden':
+                    this.filteredCourses = this.filteredCourses.filter((course) => course.hidden);
+                    break;
             }
-
-            return include;
-        });
+        }
 
         // Text filter.
         const value = this.textFilter.trim().toLowerCase();
@@ -569,23 +516,41 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     }
 
     /**
-     * This function calculates the end date to use for display classification purposes, incorporating the grace period, if any.
+     * Calculates if course date is past.
      *
-     * @param endDate Course end date.
-     * @return The new enddate.
+     * @param course Course Object.
+     * @return Wether the course is past.
      */
-    protected courseClassifyEndDate(endDate: number): number {
-        return moment(endDate).add(this.gradePeriodAfter, 'days').valueOf();
+    protected isPastCourse(course: CoreEnrolledCourseDataWithOptions): boolean {
+        if (course.completed) {
+            return true;
+        }
+
+        if (!course.enddate) {
+            return false;
+        }
+
+        // Calculate the end date to use for display classification purposes, incorporating the grace period, if any.
+        const endDate = moment(course.enddate * 1000).add(this.gradePeriodAfter, 'days').valueOf();
+
+        return endDate < this.today;
     }
 
     /**
-     * This function calculates the start date to use for display classification purposes, incorporating the grace period, if any.
+     * Calculates if course date is future.
      *
-     * @param startDate Course start date.
-     * @return The new startdate.
+     * @param course Course Object.
+     * @return Wether the course is future.
      */
-    protected courseClassifyStartDate(startDate: number): number {
-        return moment(startDate).subtract(this.gradePeriodBefore, 'days').valueOf();
+    protected isFutureCourse(course: CoreEnrolledCourseDataWithOptions): boolean {
+        if (this.isPastCourse(course) || !course.startdate) {
+            return false;
+        }
+
+        // Calculate the start date to use for display classification purposes, incorporating the grace period, if any.
+        const startDate = moment(course.startdate * 1000).subtract(this.gradePeriodBefore, 'days').valueOf();
+
+        return startDate > this.today;
     }
 
     /**
@@ -627,18 +592,9 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * @param timeFilter New time filter.
      * @return Promise resolved when done.
      */
-    async saveFilters(timeFilter: AddonBlockMyOverviewTimeFilters): Promise<void> {
+    async saveFilters(timeFilter: string): Promise<void> {
         this.filters.timeFilterSelected = timeFilter;
-
-        this.filterModalOptions.componentProps = {
-            options: Object.assign({}, this.filters),
-        };
-
-        await Promise.all([
-            this.currentSite.setLocalSiteConfig('AddonBlockMyOverviewFilter', this.filters.timeFilterSelected),
-            this.currentSite.setLocalSiteConfig('AddonBlockMyOverviewFavouriteFilter', this.filters.favouriteSelected ? 1 : 0),
-            this.currentSite.setLocalSiteConfig('AddonBlockMyOverviewHiddenFilter', this.filters.hiddenSelected ? 1 : 0),
-        ]);
+        await this.currentSite.setLocalSiteConfig('AddonBlockMyOverviewFilter', timeFilter);
     }
 
     /**
@@ -666,14 +622,21 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     }
 
     /**
-     * Opens display Options modal.
+     * Option selected save and apply filter.
      *
+     * @param selected Option selected.
      * @return Promise resolved when done.
      */
-    filterOptionsChanged(modalData: AddonBlockMyOverviewFilterOptions): void {
-        this.filters = modalData;
-        this.saveFilters(this.filters.timeFilterSelected);
+    async filterOptionsChanged(selected: AddonBlockMyOverviewTimeFilters): Promise<void> {
+        this.filters.timeFilterSelected = selected;
         this.filterCourses();
+    }
+
+    /**
+     * Go to search courses.
+     */
+    async openSearch(): Promise<void> {
+        CoreNavigator.navigateToSitePath('courses/list', { params : { mode: 'search' } });
     }
 
     /**
@@ -688,11 +651,12 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 }
 
 type AddonBlockMyOverviewLayouts = 'card'|'list';
-type AddonBlockMyOverviewTimeFilters = 'all'|'inprogress'|'future'|'past';
+type AddonBlockMyOverviewTimeFilters = 'allincludinghidden'|'all'|'inprogress'|'future'|'past'|'favourite'|'hidden';
 
 export type AddonBlockMyOverviewFilterOptions = {
     enabled: boolean;
     show: {
+        allincludinghidden: boolean;
         all: boolean;
         inprogress: boolean;
         future: boolean;
@@ -701,15 +665,11 @@ export type AddonBlockMyOverviewFilterOptions = {
         hidden: boolean;
         custom: boolean;
     };
-    timeFilterSelected: AddonBlockMyOverviewTimeFilters;
-    favouriteSelected: boolean;
-    hiddenSelected: boolean;
+    timeFilterSelected: string;
     customFilters: {
         name: string;
         value: string;
     }[];
-    customSelected?: string;
-    count: number;
 };
 
 type AddonBlockMyOverviewSortOptions = {

@@ -11,10 +11,6 @@ ion-item ion-icon {
     @include margin-horizontal(null, var(--margin-end));
 }
 
-core-spacer ::ng-deep .item {
-    border-radius: var(--medium-radius);
-    --horizontal-margin: 10px;
-    margin-left: var(--horizontal-margin);
-    margin-right: var(--horizontal-margin);
-    width: auto;
+core-spacer {
+    --spacer-horizontal: 10px;
 }

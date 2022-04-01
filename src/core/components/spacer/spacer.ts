@@ -22,8 +22,9 @@ import { Component } from '@angular/core';
  */
 @Component({
     selector: 'core-spacer',
-    template: '<ion-item-divider><ion-label></ion-label></ion-item-divider>',
-    styles: [':host {--item-divider-min-height: 30px;}'],
+    template: '',
+    styles: [':host { display: block; margin: var(--spacer-vertical) var(--spacer-horizontal); \
+        border-bottom: 1px solid var(--spacer-color);}'],
 })
 export class CoreSpacerComponent {
 

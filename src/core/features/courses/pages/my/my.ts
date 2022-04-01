@@ -19,7 +19,6 @@ import { CoreCourseBlock } from '@features/course/services/course';
 import { CoreCoursesDashboard, CoreCoursesDashboardProvider } from '@features/courses/services/dashboard';
 import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
 import { IonRefresher } from '@ionic/angular';
-import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -38,7 +37,6 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
     @ViewChild(CoreBlockComponent) block!: CoreBlockComponent;
 
     siteName = '';
-    searchEnabled = false;
     downloadCoursesEnabled = false;
     userId: number;
     loadedBlock?: Partial<CoreCourseBlock>;
@@ -50,7 +48,6 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
     constructor() {
         // Refresh the enabled flags if site is updated.
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
-            this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
             this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
             this.loadSiteName();
 
@@ -63,7 +60,6 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
      * @inheritdoc
      */
     ngOnInit(): void {
-        this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
         this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
 
         const deepLinkManager = new CoreMainMenuDeepLinkManager();
@@ -120,13 +116,6 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
             name: 'myoverview',
             visible: true,
         };
-    }
-
-    /**
-     * Go to search courses.
-     */
-    async openSearch(): Promise<void> {
-        CoreNavigator.navigateToSitePath('/list', { params : { mode: 'search' } });
     }
 
     /**

@@ -24,7 +24,7 @@
                         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
                     </ion-refresher>
                     <core-loading [hideUntil]="confirmedLoaded">
-                        <ion-list class="ion-no-margin">
+                        <ion-list class="ion-no-margin" *ngIf="confirmedContacts.length">
                             <ion-item class="ion-text-wrap addon-messages-conversation-item" (click)="selectUser(contact.id)" button
                                 *ngFor="let contact of confirmedContacts" [attr.aria-label]="contact.fullname" detail="true"
                                 [attr.aria-current]="contact.id == selectedUserId ? 'page' : 'false'">
@@ -62,7 +62,7 @@
                         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
                     </ion-refresher>
                     <core-loading [hideUntil]="requestsLoaded">
-                        <ion-list class="ion-no-margin">
+                        <ion-list class="ion-no-margin" *ngIf="requests.length">
                             <ion-item class="ion-text-wrap addon-messages-conversation-item" *ngFor="let request of requests"
                                 [attr.aria-label]="request.fullname" (click)="selectUser(request.id)" button
                                 [attr.aria-current]="request.id == selectedUserId ? 'page' : 'false'" detail="true">
