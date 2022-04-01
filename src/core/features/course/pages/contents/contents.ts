@@ -59,6 +59,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
     sectionId?: number;
     sectionNumber?: number;
     dataLoaded = false;
+    updatingData = false;
     downloadCourseEnabled = false;
     moduleId?: number;
     displayEnableDownload = false;
@@ -355,7 +356,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
         const scrollTop = scrollElement?.scrollTop || 0;
         const scrollLeft = scrollElement?.scrollLeft || 0;
 
-        this.dataLoaded = false;
+        this.updatingData = true;
         this.content?.scrollToTop(0); // Scroll top so the spinner is seen.
 
         try {
@@ -367,7 +368,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
 
             await this.formatComponent?.doRefresh(undefined, undefined, true);
         } finally {
-            this.dataLoaded = true;
+            this.updatingData = false;
 
             // Wait for new content height to be calculated and scroll without animation.
             setTimeout(() => {
