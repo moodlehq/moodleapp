@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
+import { Component, ViewChild, OnInit, OnDestroy, forwardRef } from '@angular/core';
 import { IonContent, IonRefresher } from '@ionic/angular';
 
 import { CoreDomUtils } from '@services/utils/dom';
@@ -36,6 +36,7 @@ import {
     CoreEventObserver,
 } from '@singletons/events';
 import { CoreNavigator } from '@services/navigator';
+import { CoreRefreshContext, CORE_REFRESH_CONTEXT } from '@/core/utils/refresh-context';
 
 /**
  * Page that displays the contents of a course.
@@ -43,8 +44,12 @@ import { CoreNavigator } from '@services/navigator';
 @Component({
     selector: 'page-core-course-contents',
     templateUrl: 'contents.html',
+    providers: [{
+        provide: CORE_REFRESH_CONTEXT,
+        useExisting: forwardRef(() => CoreCourseContentsPage),
+    }],
 })
-export class CoreCourseContentsPage implements OnInit, OnDestroy {
+export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshContext {
 
     @ViewChild(IonContent) content?: IonContent;
     @ViewChild(CoreCourseFormatComponent) formatComponent?: CoreCourseFormatComponent;
@@ -127,7 +132,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
             CoreEvents.COMPLETION_MODULE_VIEWED,
             (data) => {
                 if (data && data.courseId == this.course.id) {
-                    this.refreshAfterCompletionChange(true);
+                    this.showLoadingAndRefresh(true, false);
                 }
             },
         );
@@ -141,7 +146,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
                 return;
             }
 
-            this.refreshAfterCompletionChange(false);
+            this.showLoadingAndRefresh(false, false);
 
             if (data.warnings && data.warnings[0]) {
                 CoreDomUtils.showErrorModal(data.warnings[0]);
@@ -315,7 +320,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
 
         await CoreUtils.ignoreErrors(this.invalidateData());
 
-        await this.refreshAfterCompletionChange(true);
+        await this.showLoadingAndRefresh(true, false);
     }
 
     /**
@@ -341,9 +346,10 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
      * Refresh list after a completion change since there could be new activities.
      *
      * @param sync If it should try to sync.
+     * @param invalidateData Whether to invalidate data. Set it to false if data has already been invalidated.
      * @return Promise resolved when done.
      */
-    protected async refreshAfterCompletionChange(sync?: boolean): Promise<void> {
+    protected async showLoadingAndRefresh(sync = false, invalidateData = true): Promise<void> {
         // Save scroll position to restore it once done.
         const scrollElement = await this.content?.getScrollElement();
         const scrollTop = scrollElement?.scrollTop || 0;
@@ -353,6 +359,10 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         this.content?.scrollToTop(0); // Scroll top so the spinner is seen.
 
         try {
+            if (invalidateData) {
+                await CoreUtils.ignoreErrors(this.invalidateData());
+            }
+
             await this.loadData(true, sync);
 
             await this.formatComponent?.doRefresh(undefined, undefined, true);
@@ -364,6 +374,13 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
                 this.content?.scrollToPoint(scrollLeft, scrollTop, 0);
             });
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async refreshContext(): Promise<void> {
+        await this.showLoadingAndRefresh(true, true);
     }
 
     /**
