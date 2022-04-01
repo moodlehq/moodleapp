@@ -26,20 +26,51 @@
         <ion-col>
             <!-- Filter courses. -->
             <ion-searchbar [(ngModel)]="textFilter" (ionInput)="filterTextChanged($event.target)"
-                (ionCancel)="filterTextChanged($event.target)" [placeholder]="'core.filter' | translate">
+                (ionCancel)="filterTextChanged($event.target)" [placeholder]="'core.courses.filtermycourses' | translate">
             </ion-searchbar>
         </ion-col>
     </ion-row>
     <ion-row class="ion-justify-content-between ion-align-items-center addon-block-myoverview-filter" *ngIf="hasCourses">
         <ion-col size="auto" *ngIf="filters.enabled">
-            <core-combobox interface="modal" [label]="'core.courses.filtermycourses' | translate" (onChange)="filterOptionsChanged($event)"
-                icon="fas-filter" [badge]="filters.count" [modalOptions]="filterModalOptions">
+            <core-combobox [label]="'core.courses.filtermycourses' | translate" [selection]="filters.timeFilterSelected"
+                (onChange)="filterOptionsChanged($event)">
+                <ion-select-option class="ion-text-wrap core-select-option-border-bottom" value="allincludinghidden"
+                    *ngIf="filters.show.allincludinghidden">
+                    {{ 'addon.block_myoverview.allincludinghidden' | translate }}
+                </ion-select-option>
+                <ion-select-option class="ion-text-wrap core-select-option-border-bottom" value="all" *ngIf="filters.show.all">
+                    {{ 'addon.block_myoverview.all' | translate }}
+                </ion-select-option>
+                <ion-select-option class="ion-text-wrap"
+                    [class.core-select-option-border-bottom]="!filters.show.past && !filters.show.future" value="inprogress"
+                    *ngIf="filters.show.inprogress">
+                    {{ 'addon.block_myoverview.inprogress' | translate }}
+                </ion-select-option>
+                <ion-select-option class="ion-text-wrap" [class.core-select-option-border-bottom]="!filters.show.past" value="future"
+                    *ngIf="filters.show.future">
+                    {{ 'addon.block_myoverview.future' | translate }}
+                </ion-select-option>
+                <ion-select-option class="ion-text-wrap core-select-option-border-bottom" value="past" *ngIf="filters.show.past">
+                    {{ 'addon.block_myoverview.past' | translate }}
+                </ion-select-option>
+                <ng-container *ngIf="filters.show.custom">
+                    <ng-container *ngFor="let customOption of filters.customFilters; let index = index; let last = last">
+                        <ion-select-option class="ion-text-wrap" value="custom-{{index}}" [class.core-select-option-border-bottom]="last">
+                            {{ customOption.name }}</ion-select-option>
+                    </ng-container>
+                </ng-container>
+                <ion-select-option class="ion-text-wrap core-select-option-border-bottom" value="favourite" *ngIf="filters.show.favourite">
+                    {{ 'addon.block_myoverview.favourites' | translate }}
+                </ion-select-option>
+                <ion-select-option class="ion-text-wrap" value="hidden" *ngIf="filters.show.hidden">
+                    {{ 'addon.block_myoverview.hiddencourses' | translate }}
+                </ion-select-option>
             </core-combobox>
         </ion-col>
         <ion-col>
             <!-- Filter courses. -->
             <ion-searchbar class="ion-hide-md-down" [(ngModel)]="textFilter" (ionInput)="filterTextChanged($event.target)"
-                (ionCancel)="filterTextChanged($event.target)" [placeholder]="'core.filter' | translate">
+                (ionCancel)="filterTextChanged($event.target)" [placeholder]="'core.courses.filtermycourses' | translate">
             </ion-searchbar>
         </ion-col>
         <ion-col size="auto" *ngIf="sort.enabled">

@@ -1,7 +1,6 @@
 <ion-button (click)="openSelect($event)" *ngIf="interface != 'modal' && icon" [disabled]="disabled">
     <ion-icon [name]="icon" [attr.aria-label]="label" slot="start">
     </ion-icon>
-    <ion-badge *ngIf="badge && badge > 0" slot="start">{{badge}}</ion-badge>
     <div class="select-icon" role="presentation" aria-hidden="true">
         <div class="select-icon-inner"></div>
     </div>
@@ -14,7 +13,6 @@
 <ion-button *ngIf="interface == 'modal'" aria-haspopup="listbox" [attr.aria-controls]="listboxId" [attr.aria-owns]="listboxId"
     [attr.aria-expanded]="expanded" (click)="openSelect()" [disabled]="disabled" expand="block" role="combobox">
     <ion-icon *ngIf="icon" [name]="icon" slot="start" aria-hidden="true"></ion-icon>
-    <ion-badge *ngIf="badge && badge > 0" slot="start">{{badge}}</ion-badge>
     <span class="sr-only" *ngIf="label">{{ label }}:</span>
     <div class="select-text">
         <slot name="text">{{selection}}</slot>
