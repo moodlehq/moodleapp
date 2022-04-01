@@ -171,31 +171,34 @@ export class AddonModDataEditPage implements OnInit {
             // Check permissions when adding a new entry or offline entry.
             if (!this.isEditing) {
                 let haveAccess = false;
+                let groupInfo: CoreGroupInfo | undefined = this.groupInfo;
 
                 if (refresh) {
-                    this.groupInfo = await CoreGroups.getActivityGroupInfo(this.database.coursemodule);
-                    if (this.groupInfo.visibleGroups && this.groupInfo.groups?.length) {
+                    groupInfo = await CoreGroups.getActivityGroupInfo(this.database.coursemodule);
+                    if (groupInfo.visibleGroups && groupInfo.groups?.length) {
                         // There is a bug in Moodle with All participants and visible groups (MOBILE-3597). Remove it.
-                        this.groupInfo.groups = this.groupInfo.groups.filter(group => group.id !== 0);
-                        this.groupInfo.defaultGroupId = this.groupInfo.groups[0].id;
+                        groupInfo.groups = groupInfo.groups.filter(group => group.id !== 0);
+                        groupInfo.defaultGroupId = groupInfo.groups[0].id;
                     }
 
-                    this.selectedGroup = CoreGroups.validateGroupId(this.selectedGroup, this.groupInfo);
+                    this.selectedGroup = CoreGroups.validateGroupId(this.selectedGroup, groupInfo);
                     this.initialSelectedGroup = this.selectedGroup;
                 }
 
-                if (this.groupInfo?.groups && this.groupInfo.groups.length > 0) {
+                if (groupInfo?.groups && groupInfo?.groups.length > 0) {
                     if (refresh) {
                         const canAddGroup: Record<number, boolean> = {};
 
-                        await Promise.all(this.groupInfo.groups.map(async (group) => {
+                        await Promise.all(groupInfo.groups.map(async (group) => {
                             const accessData = await AddonModData.getDatabaseAccessInformation(this.database!.id, {
-                                cmId: this.moduleId, groupId: group.id });
+                                cmId: this.moduleId,
+                                groupId: group.id,
+                            });
 
                             canAddGroup[group.id] = accessData.canaddentry;
                         }));
 
-                        this.groupInfo.groups = this.groupInfo.groups.filter((group) => !!canAddGroup[group.id]);
+                        groupInfo.groups = groupInfo.groups.filter((group) => !!canAddGroup[group.id]);
 
                         haveAccess = canAddGroup[this.selectedGroup];
                     } else {
@@ -206,6 +209,8 @@ export class AddonModDataEditPage implements OnInit {
                     const accessData = await AddonModData.getDatabaseAccessInformation(this.database.id, { cmId: this.moduleId });
                     haveAccess = accessData.canaddentry;
                 }
+
+                this.groupInfo = groupInfo;
 
                 if (!haveAccess) {
                     // You shall not pass, go back.
