@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Directive, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChange } from '@angular/core';
-import { CorePromisedValue } from '@classes/promised-value';
+import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreTabsOutletComponent } from '@components/tabs-outlet/tabs-outlet';
 import { CoreTabsComponent } from '@components/tabs/tabs';
@@ -69,17 +69,15 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
     protected content?: HTMLIonContentElement;
     protected contentScrollListener?: EventListener;
     protected endContentScrollListener?: EventListener;
-    protected pageDidEnterListener?: EventListener;
     protected resizeListener?: CoreEventObserver;
     protected floatingTitle?: HTMLHeadingElement;
     protected scrollingHeight?: number;
     protected subscriptions: Subscription[] = [];
     protected enabled = true;
     protected isWithinContent = false;
-    protected enteredPromise = new CorePromisedValue<void>();
     protected mutationObserver?: MutationObserver;
-    protected firstEnter = true;
-    protected initPending = false;
+    protected loadingFloatingTitle = false;
+    protected visiblePromise?: CoreCancellablePromise<void>;
 
     constructor(el: ElementRef) {
         this.collapsedHeader = el.nativeElement;
@@ -106,10 +104,9 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         await Promise.all([
             this.initializeCollapsedHeader(),
             this.initializeExpandedHeader(),
-            await this.enteredPromise,
         ]);
 
-        this.initializeFloatingTitle();
+        await this.initializeFloatingTitle();
         this.initializeContent();
     }
 
@@ -117,7 +114,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
      * @inheritdoc
      */
     async ngOnChanges(changes: {[name: string]: SimpleChange}): Promise<void> {
-        if (changes.collapsible) {
+        if (changes.collapsible && !changes.collapsible.firstChange) {
             this.collapsible = !CoreUtils.isFalseOrZero(changes.collapsible.currentValue);
             this.enabled = this.collapsible;
 
@@ -141,47 +138,16 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         if (this.content && this.endContentScrollListener) {
             this.content.removeEventListener('ionScrollEnd', this.endContentScrollListener);
         }
-        if (this.page && this.pageDidEnterListener) {
-            this.page.removeEventListener('ionViewDidEnter', this.pageDidEnterListener);
-        }
 
         this.resizeListener?.off();
         this.mutationObserver?.disconnect();
+        this.visiblePromise?.cancel();
     }
 
     /**
-     * Search the page element, initialize it, and wait until it's ready for the transition to trigger on scroll.
+     * Listen to changing events.
      */
-    protected initializePage(): void {
-        if (!this.collapsedHeader.parentElement) {
-            throw new Error('[collapsible-header] Couldn\'t get page');
-        }
-
-        // Find element and prepare classes.
-        this.page = this.collapsedHeader.parentElement;
-        this.page.classList.add('collapsible-header-page');
-
-        this.page.addEventListener(
-            'ionViewDidEnter',
-            this.pageDidEnterListener = () => {
-                if (this.firstEnter) {
-                    this.firstEnter = false;
-                    clearTimeout(timeout);
-                    this.enteredPromise.resolve();
-                } else if (this.initPending) {
-                    this.initializeFloatingTitle();
-                }
-            },
-        );
-
-        // Timeout in case event is never fired.
-        const timeout = window.setTimeout(() => {
-            if (this.firstEnter) {
-                this.firstEnter = false;
-                this.enteredPromise.reject(new Error('[collapsible-header] Waiting for ionViewDidEnter timeout reached'));
-            }
-        }, 5000);
-
+    protected listenEvents(): void {
         this.resizeListener = CoreDom.onWindowResize(() => {
             this.initializeFloatingTitle();
         }, 50);
@@ -214,6 +180,19 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
 
             this.initializeFloatingTitle();
         });
+    }
+
+    /**
+     * Search the page element, initialize it, and wait until it's ready for the transition to trigger on scroll.
+     */
+    protected initializePage(): void {
+        if (!this.collapsedHeader.parentElement) {
+            throw new Error('[collapsible-header] Couldn\'t get page');
+        }
+
+        // Find element and prepare classes.
+        this.page = this.collapsedHeader.parentElement;
+        this.page.classList.add('collapsible-header-page');
     }
 
     /**
@@ -253,6 +232,8 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
             return;
         }
 
+        this.listenEvents();
+
         // Initialize from tabs.
         const tabs = CoreComponentsRegistry.resolve(this.page.querySelector('core-tabs-outlet'), CoreTabsOutletComponent);
 
@@ -284,21 +265,22 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
     /**
      * Initialize a floating title to mimic transitioning the title from one state to the other.
      */
-    protected initializeFloatingTitle(): void {
+    protected async initializeFloatingTitle(): Promise<void> {
         if (!this.page || !this.expandedHeader) {
-            throw new Error('[collapsible-header] Couldn\'t create floating title');
-        }
-
-        if (!CoreDom.isElementVisible(this.expandedHeader)) {
-            this.initPending = true;
-
             return;
         }
 
-        this.initPending = false;
+        if (this.loadingFloatingTitle) {
+            // Already calculating, return.
+            return;
+        }
+        this.loadingFloatingTitle = true;
+
+        this.visiblePromise = CoreDom.waitToBeVisible(this.expandedHeader);
+        await this.visiblePromise;
 
         this.page.classList.remove('collapsible-header-page-is-active');
-        CoreUtils.nextTick();
+        await CoreUtils.nextTick();
 
         // Add floating title and measure initial position.
         const collapsedHeaderTitle = this.collapsedHeader.querySelector('h1') as HTMLHeadingElement;
@@ -370,6 +352,8 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         this.collapsedFontStyles = collapsedFontStyles;
         this.expandedFontStyles = expandedFontStyles;
         this.expandedHeaderHeight = expandedHeaderHeight;
+
+        this.loadingFloatingTitle = false;
     }
 
     /**

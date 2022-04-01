@@ -683,7 +683,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * Go to search courses.
      */
     async openSearch(): Promise<void> {
-        CoreNavigator.navigateToSitePath('/list', { params : { mode: 'search' } });
+        CoreNavigator.navigateToSitePath('courses/list', { params : { mode: 'search' } });
     }
 
     /**

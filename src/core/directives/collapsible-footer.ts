@@ -50,7 +50,8 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
     protected endContentScrollListener?: EventListener;
     protected resizeListener?: CoreEventObserver;
     protected slotPromise?: CoreCancellablePromise<void>;
-    protected calcPending = false;
+    protected viewportPromise?: CoreCancellablePromise<void>;
+    protected loadingHeight = false;
     protected pageDidEnterListener?: EventListener;
     protected page?: HTMLElement;
 
@@ -85,13 +86,14 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
      * Calculate the height of the footer.
      */
     protected async calculateHeight(): Promise<void> {
-        if (!CoreDom.isElementVisible(this.element)) {
-            this.calcPending = true;
-
+        if (this.loadingHeight) {
+            // Already calculating, return.
             return;
         }
+        this.loadingHeight = true;
 
-        this.calcPending = false;
+        this.viewportPromise = CoreDom.waitToBeInViewport(this.element);
+        await this.viewportPromise;
 
         this.element.classList.remove('is-active');
         await CoreUtils.nextTick();
@@ -110,6 +112,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
         this.element.classList.add('is-active');
 
         this.setBarHeight(this.initialHeight);
+        this.loadingHeight = false;
     }
 
     /**
@@ -175,9 +178,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
         this.page?.addEventListener(
             'ionViewDidEnter',
             this.pageDidEnterListener = () => {
-                if (this.calcPending) {
-                    this.calculateHeight();
-                }
+                this.calculateHeight();
             },
         );
     }
@@ -255,6 +256,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
 
         this.resizeListener?.off();
         this.slotPromise?.cancel();
+        this.viewportPromise?.cancel();
     }
 
 }
