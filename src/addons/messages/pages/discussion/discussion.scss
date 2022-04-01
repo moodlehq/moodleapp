@@ -27,24 +27,28 @@
         @include position(0, 0, null, null);
     }
 
-    ion-header ion-toolbar h1 {
-        display: flex;
-        align-items: center;
+    ion-header ion-toolbar ion-title {
         padding: 0;
 
-        .core-bar-button-image {
-            @include margin-horizontal(null, 6px);
-        }
+        h1 {
+            display: flex;
+            align-items: center;
+            padding: 0;
 
-        core-format-text {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            flex-shrink: 1;
-        }
+            .core-bar-button-image {
+                @include margin-horizontal(null, 6px);
+            }
 
-        ion-icon {
-            @include margin-horizontal(6px, null);
+            core-format-text {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                flex-shrink: 1;
+            }
+
+            ion-icon {
+                @include margin-horizontal(6px, null);
+            }
         }
     }
 }
