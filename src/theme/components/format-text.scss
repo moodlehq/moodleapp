@@ -218,6 +218,10 @@ core-rich-text-editor .core-rte-editor {
         margin-block-start: 0;
     }
 
+    hr {
+        border-top: 1px solid var(--stroke);
+    }
+
     .no-overflow {
         overflow: auto;
     }
