@@ -336,6 +336,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
             }
         } finally {
             this.removeFilesLoading = false;
+            delete this.size;
         }
 
         await this.getPackageStatus();
