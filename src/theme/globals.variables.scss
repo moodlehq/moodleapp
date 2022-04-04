@@ -24,11 +24,11 @@ $red:             #cb3d4d !default;
 $red-light:       mix($red, white, 20%) !default;
 $red-dark:        darken($red, 10%) !default;
 
-$yellow:          #fbad1a !default; // Accent (never text).
+$yellow:          #fbf71a !default; // Accent (never text).
 $yellow-light:    mix($yellow, white, 20%) !default;
 $yellow-dark:     mix($yellow, black, 40%) !default;
 
-$brand-color:    #f98012 !default;
+$brand-color:    #009691 !default;
 
 $text-color:               $black !default;
 $text-color-rgb:           color-to-rgb-list($text-color) !default;

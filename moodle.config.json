@@ -1,6 +1,6 @@
 {
-    "app_id": "com.moodle.moodlemobile",
-    "appname": "Moodle Mobile",
+    "app_id": "com.edupac.edupaclmsmobile",
+    "appname": "Edupac LMS",
     "versioncode": 3950,
     "versionname": "3.9.5",
     "cache_update_frequency_usually": 420000,
@@ -96,7 +96,7 @@
     "forceLoginLogo": false,
     "ioswebviewscheme": "moodleappfs",
     "appstores": {
-        "android": "com.moodle.moodlemobile",
+        "android": "com.edupac.edupaclmsmobile",
         "ios": "id633359593"
     }
 }
