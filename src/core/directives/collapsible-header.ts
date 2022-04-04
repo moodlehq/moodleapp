@@ -14,6 +14,7 @@
 
 import { Directive, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChange } from '@angular/core';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
+import { CorePromisedValue } from '@classes/promised-value';
 import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreTabsOutletComponent } from '@components/tabs-outlet/tabs-outlet';
 import { CoreTabsComponent } from '@components/tabs/tabs';
@@ -69,12 +70,14 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
     protected content?: HTMLIonContentElement;
     protected contentScrollListener?: EventListener;
     protected endContentScrollListener?: EventListener;
+    protected pageDidEnterListener?: EventListener;
     protected resizeListener?: CoreEventObserver;
     protected floatingTitle?: HTMLHeadingElement;
     protected scrollingHeight?: number;
     protected subscriptions: Subscription[] = [];
     protected enabled = true;
     protected isWithinContent = false;
+    protected enteredPromise = new CorePromisedValue<void>();
     protected mutationObserver?: MutationObserver;
     protected loadingFloatingTitle = false;
     protected visiblePromise?: CoreCancellablePromise<void>;
@@ -104,6 +107,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         await Promise.all([
             this.initializeCollapsedHeader(),
             this.initializeExpandedHeader(),
+            await this.enteredPromise,
         ]);
 
         await this.initializeFloatingTitle();
@@ -137,6 +141,9 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         }
         if (this.content && this.endContentScrollListener) {
             this.content.removeEventListener('ionScrollEnd', this.endContentScrollListener);
+        }
+        if (this.page && this.pageDidEnterListener) {
+            this.page.removeEventListener('ionViewDidEnter', this.pageDidEnterListener);
         }
 
         this.resizeListener?.off();
@@ -193,6 +200,22 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         // Find element and prepare classes.
         this.page = this.collapsedHeader.parentElement;
         this.page.classList.add('collapsible-header-page');
+
+        this.page.addEventListener(
+            'ionViewDidEnter',
+            this.pageDidEnterListener = () => {
+                clearTimeout(timeout);
+                this.enteredPromise.resolve();
+                if (this.page && this.pageDidEnterListener) {
+                    this.page.removeEventListener('ionViewDidEnter', this.pageDidEnterListener);
+                }
+            },
+        );
+
+        // Timeout in case event is never fired.
+        const timeout = window.setTimeout(() => {
+            this.enteredPromise.reject(new Error('[collapsible-header] Waiting for ionViewDidEnter timeout reached'));
+        }, 5000);
     }
 
     /**
