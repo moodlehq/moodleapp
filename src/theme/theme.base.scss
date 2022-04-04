@@ -503,6 +503,9 @@ ion-toast {
             flex-direction: column;
             align-items: flex-end;
         }
+        &::part(message) {
+            align-self: flex-start;
+        }
     }
 }
 
