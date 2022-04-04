@@ -73,6 +73,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
     protected hasOffline = false; // Whether the assignment has offline data.
     protected isDestroyed = false; // Whether the component has been destroyed.
     protected forceLeave = false; // To allow leaving the page without checking for changes.
+    protected timeUpToast?: HTMLIonToastElement;
 
     constructor(
         protected route: ActivatedRoute,
@@ -463,8 +464,8 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Function called when the time is up.
      */
-    timeUp(): void {
-        CoreDomUtils.showToastWithOptions({
+    async timeUp(): Promise<void> {
+        this.timeUpToast = await CoreDomUtils.showToastWithOptions({
             message: Translate.instant('addon.mod_assign.caneditsubmission'),
             duration: 0,
             buttons: [Translate.instant('core.dismiss')],
@@ -477,6 +478,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
      */
     ngOnDestroy(): void {
         this.isDestroyed = true;
+        this.timeUpToast?.dismiss();
 
         // Unblock the assignment.
         if (this.assign) {
