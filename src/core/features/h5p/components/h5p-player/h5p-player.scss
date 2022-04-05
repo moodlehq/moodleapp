@@ -6,7 +6,7 @@
         position: relative;
         width: 100%;
         height: 230px;
-        background: url('../../../../../assets/img/icons/h5p.svg') center top 25px / 100px auto no-repeat var(--core-h5p-placeholder-bg-color);
+        background: url('/assets/img/icons/h5p.svg') center top 25px / 100px auto no-repeat var(--core-h5p-placeholder-bg-color);
         color: var(--core-h5p-placeholder-text-color);
 
         .icon:not([color="success"]) {
