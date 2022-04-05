@@ -448,6 +448,16 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     }
 
     /**
+     * @inheritdoc
+     */
+    protected async storeModuleViewed(): Promise<void> {
+        // Only store module viewed when viewing the main page.
+        if (!this.pageId) {
+            await super.storeModuleViewed();
+        }
+    }
+
+    /**
      * Get path to the wiki home view. If cannot determine or it's current view, return undefined.
      *
      * @return The path of the home view

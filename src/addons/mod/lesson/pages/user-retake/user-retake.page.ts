@@ -34,7 +34,6 @@ import {
     AddonModLessonUserAttemptAnswerPageWSData,
 } from '../../services/lesson';
 import { AddonModLessonAnswerData, AddonModLessonHelper } from '../../services/lesson-helper';
-import { CoreCourse } from '@features/course/services/course';
 import { CoreTime } from '@singletons/time';
 
 /**
@@ -60,7 +59,6 @@ export class AddonModLessonUserRetakePage implements OnInit {
     protected userId?: number; // User ID to see the retakes.
     protected retakeNumber?: number; // Number of the initial retake to see.
     protected previousSelectedRetake?: number; // To be able to detect the previous selected retake when it has changed.
-    protected fetchSuccess = false;
 
     /**
      * Component being initialized.
@@ -162,12 +160,6 @@ export class AddonModLessonUserRetakePage implements OnInit {
             this.student.profileimageurl = user?.profileimageurl;
 
             await this.setRetake(this.selectedRetake);
-
-            if (!this.fetchSuccess) {
-                this.fetchSuccess = true;
-                // Store module viewed. It's done in this page because it can be reached using a link.
-                CoreCourse.storeModuleViewed(this.courseId, this.cmId);
-            }
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error getting data.', true);
         }

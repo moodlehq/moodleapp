@@ -16,7 +16,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRouteSnapshot } from '@angular/router';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
-import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
@@ -50,7 +49,6 @@ export class AddonModFeedbackAttemptPage implements OnInit, OnDestroy {
     loaded = false;
 
     protected attemptId: number;
-    protected fetchSuccess = false;
 
     constructor() {
         this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
@@ -132,12 +130,6 @@ export class AddonModFeedbackAttemptPage implements OnInit, OnDestroy {
 
                 return attemptItem;
             }).filter((itemData) => itemData); // Filter items with errors.
-
-            if (!this.fetchSuccess) {
-                this.fetchSuccess = true;
-                // Store module viewed. It's done in this page because it can be reached using a link.
-                CoreCourse.storeModuleViewed(this.courseId, this.cmId);
-            }
         } catch (message) {
             // Some call failed on fetch, go back.
             CoreDomUtils.showErrorModalDefault(message, 'core.course.errorgetmodule', true);
