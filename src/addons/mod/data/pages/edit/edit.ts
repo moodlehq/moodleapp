@@ -41,6 +41,7 @@ import {
 } from '../../services/data';
 import { AddonModDataHelper } from '../../services/data-helper';
 import { CoreDom } from '@singletons/dom';
+import { AddonModDataEntryFieldInitialized } from '../../classes/field-plugin-component';
 
 /**
  * Page that displays the view edit page.
@@ -62,6 +63,7 @@ export class AddonModDataEditPage implements OnInit {
     protected forceLeave = false; // To allow leaving the page without checking for changes.
     protected initialSelectedGroup?: number;
     protected isEditing = false;
+    protected originalData: AddonModDataEntryFields = {};
 
     entry?: AddonModDataEntry;
     fields: Record<number, AddonModDataField> = {};
@@ -83,6 +85,7 @@ export class AddonModDataEditPage implements OnInit {
         contents: AddonModDataEntryFields;
         errors?: Record<number, string>;
         form: FormGroup;
+        onFieldInit: (data: AddonModDataEntryFieldInitialized) => void;
     };
 
     errors: Record<number, string> = {};
@@ -128,7 +131,7 @@ export class AddonModDataEditPage implements OnInit {
 
         const inputData = this.editForm.value;
 
-        let changed = AddonModDataHelper.hasEditDataChanged(inputData, this.fieldsArray, this.entry.contents);
+        let changed = AddonModDataHelper.hasEditDataChanged(inputData, this.fieldsArray, this.originalData);
         changed = changed || (!this.isEditing && this.initialSelectedGroup != this.selectedGroup);
 
         if (changed) {
@@ -162,6 +165,7 @@ export class AddonModDataEditPage implements OnInit {
 
             const entry = await AddonModDataHelper.fetchEntry(this.database, this.fieldsArray, this.entryId || 0);
             this.entry = entry.entry;
+            this.originalData = CoreUtils.clone(this.entry.contents);
 
             if (this.entryId) {
                 // Load correct group.
@@ -401,6 +405,7 @@ export class AddonModDataEditPage implements OnInit {
             form: this.editForm,
             database: this.database,
             errors: this.errors,
+            onFieldInit: this.onFieldInit.bind(this),
         };
 
         let template = AddonModDataHelper.getTemplate(this.database!, AddonModDataTemplateType.ADD, this.fieldsArray);
@@ -414,7 +419,7 @@ export class AddonModDataEditPage implements OnInit {
             // Replace field by a generic directive.
             const render = '<addon-mod-data-field-plugin [class.has-errors]="!!errors[' + field.id + ']" mode="edit" \
                 [field]="fields[' + field.id + ']" [value]="contents[' + field.id + ']" [form]="form" [database]="database" \
-                [error]="errors[' + field.id + ']"></addon-mod-data-field-plugin>';
+                [error]="errors[' + field.id + ']" (onFieldInit)="onFieldInit($event)"></addon-mod-data-field-plugin>';
             template = template.replace(replaceRegEx, render);
 
             // Replace the field id tag.
@@ -433,6 +438,27 @@ export class AddonModDataEditPage implements OnInit {
         template = template.replace(replaceRegEx, message);
 
         return template;
+    }
+
+    /**
+     * A certain value has been initialized.
+     *
+     * @param data Data.
+     */
+    onFieldInit(data: AddonModDataEntryFieldInitialized): void {
+        if (!this.originalData[data.fieldid]) {
+            this.originalData[data.fieldid] = {
+                id: 0,
+                recordid: this.entry?.id ?? 0,
+                fieldid: data.fieldid,
+                content: data.content,
+                content1: data.content1 ?? null,
+                content2: data.content2 ?? null,
+                content3: data.content3 ?? null,
+                content4: data.content4 ?? null,
+                files: data.files ?? [],
+            };
+        }
     }
 
     /**

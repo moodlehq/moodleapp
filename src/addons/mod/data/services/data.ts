@@ -1134,10 +1134,10 @@ export type AddonModDataEntryField = {
     fieldid: number; // The field type of the content.
     recordid: number; // The record this content belongs to.
     content: string; // Contents.
-    content1: string; // Contents.
-    content2: string; // Contents.
-    content3: string; // Contents.
-    content4: string; // Contents.
+    content1: string | null; // Contents.
+    content2: string | null; // Contents.
+    content3: string | null; // Contents.
+    content4: string | null; // Contents.
     files: CoreFileEntry[];
 };
 
