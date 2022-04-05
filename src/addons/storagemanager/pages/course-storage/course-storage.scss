@@ -20,7 +20,8 @@
         padding: 0;
     }
 
-    .core-course-storage-activity ion-label {
+    .core-course-storage-activity ion-label h3 {
+        position: relative;
         max-height: var(--course-storage-max-activity-height);
 
         &:before {

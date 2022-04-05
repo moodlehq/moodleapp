@@ -45,6 +45,14 @@
                 </ion-label>
                 <ion-toggle [(ngModel)]="pluginStyles" (ionChange)="pluginStylesChanged()"></ion-toggle>
             </ion-item>
+            <ion-item class="ion-text-wrap" *ngIf="userToursEnabled">
+                <ion-label>
+                    <h2>Reset user tours</h2>
+                </ion-label>
+                <ion-button (click)="resetUserTours()" aria-label="Reset user tours" fill="clear" slot="end">
+                    <ion-icon slot="icon-only" aria-hidden="true" name="fas-broom"></ion-icon>
+                </ion-button>
+            </ion-item>
 
             <ion-item-divider>
                 <ion-label>

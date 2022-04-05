@@ -154,6 +154,10 @@ export class AddonModH5PActivityPrefetchHandlerService extends CoreCourseActivit
         };
 
         if (!accessInfo.canreviewattempts) {
+            if (!h5pActivity.enabletracking) {
+                return;
+            }
+
             // Not a teacher, prefetch user attempts and the current user profile.
             const site = await CoreSites.getSite(siteId);
 

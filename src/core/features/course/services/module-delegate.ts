@@ -299,11 +299,17 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
         sectionId?: number,
         forCoursePage?: boolean,
     ): Promise<CoreCourseModuleHandlerData | undefined> {
-        return await this.executeFunctionOnEnabled<CoreCourseModuleHandlerData>(
+        const data = await this.executeFunctionOnEnabled<CoreCourseModuleHandlerData>(
             modname,
             'getData',
             [module, courseId, sectionId, forCoursePage],
         );
+
+        if (data) {
+            data.showDownloadButton = data.showDownloadButton ?? true;
+        }
+
+        return data;
     }
 
     /**

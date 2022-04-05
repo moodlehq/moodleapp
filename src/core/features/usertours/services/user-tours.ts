@@ -63,7 +63,7 @@ export class CoreUserToursService {
      * @returns Whether the User Tour is pending or not.
      */
     async isPending(id: string): Promise<boolean> {
-        if (CoreConstants.CONFIG.disableUserTours || CoreConstants.CONFIG.disabledUserTours?.includes(id)) {
+        if (this.isDisabled(id)) {
             return false;
         }
 
@@ -250,6 +250,31 @@ export class CoreUserToursService {
 
             this.tours.find(({ visible }) => visible)?.component.show();
         }
+    }
+
+    /**
+     * Is user Tour disabled?
+     *
+     * @param tourId Tour Id or undefined to check all user tours.
+     * @return Wether a particular or all user tours are disabled.
+     */
+    isDisabled(tourId?: string): boolean {
+        if (CoreConstants.CONFIG.disableUserTours) {
+            return true;
+        }
+
+        return !!tourId && !!CoreConstants.CONFIG.disabledUserTours?.includes(tourId);
+    }
+
+    /**
+     * It will reset all user tours.
+     */
+    async resetTours(): Promise<void> {
+        if (this.isDisabled()) {
+            return;
+        }
+
+        await this.table.delete();
     }
 
 }

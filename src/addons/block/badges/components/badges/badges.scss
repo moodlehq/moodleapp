@@ -1,21 +1,42 @@
-:host .core-block-content ::ng-deep {
-    ul.badges {
-        list-style: none;
-        margin-left: 0;
-        margin-right: 0;
-        -webkit-padding-start: 0;
+:host {
+    --badge-size: 100px;
+    --badge-container-size: 150px;
 
-        li {
-            position: relative;
-            display: inline-block;
-            padding-top: 1em;
-            text-align: center;
-            vertical-align: top;
-            width: 150px;
+    .core-block-content ::ng-deep {
 
-            .badge-name {
-                display: block;
-                padding: 5px;
+        ul.badges {
+            list-style: none;
+            margin: 0;
+
+            li {
+                position: relative;
+                display: inline-block;
+                text-align: center;
+                margin-top: 1em;
+                vertical-align: top;
+                width: var(--badge-container-size);
+
+                .badge-name {
+                    display: block;
+                    padding: 5px;
+                }
+                .badge-image {
+                    width: var(--badge-size);
+                }
+
+                .expireimage {
+                    content: 'expired';
+                    background-image: url('/assets/img/expired.svg');
+                    background-repeat: no-repeat;
+                    background-size: var(--badge-size) var(--badge-size);
+                    width: var(--badge-size);
+                    height: var(--badge-size);
+                    left: calc((var(--badge-container-size) - var(--badge-size)) /2);
+                    top: 0;
+                    position: absolute;
+                    z-index: 2;
+                    opacity: .85;
+                }
             }
         }
     }
