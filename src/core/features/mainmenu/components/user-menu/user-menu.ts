@@ -79,12 +79,15 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
                         return;
                     }
 
-                    this.handlers = [];
-                    handlers.forEach((handler) => {
-                        if (handler.type == CoreUserDelegateService.TYPE_NEW_PAGE) {
-                            this.handlers.push(handler.data);
-                        }
-                    });
+                    const newHandlers = handlers
+                        .filter((handler) => handler.type === CoreUserDelegateService.TYPE_NEW_PAGE)
+                        .map((handler) => handler.data);
+
+                    // Only update handlers if they have changed, to prevent a blink effect.
+                    if (newHandlers.length !== this.handlers.length ||
+                            JSON.stringify(newHandlers) !== JSON.stringify(this.handlers)) {
+                        this.handlers = newHandlers;
+                    }
 
                     this.handlersLoaded = CoreUserDelegate.areHandlersLoaded(this.user.id, CoreUserDelegateContext.USER_MENU);
                 });

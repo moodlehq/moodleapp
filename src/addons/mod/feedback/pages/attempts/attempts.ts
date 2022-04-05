@@ -25,7 +25,6 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { AddonModFeedbackAttemptItem, AddonModFeedbackAttemptsSource } from '../../classes/feedback-attempts-source';
 import { AddonModFeedbackWSAnonAttempt, AddonModFeedbackWSAttempt } from '../../services/feedback';
-import { CoreCourse } from '@features/course/services/course';
 
 /**
  * Page that displays feedback attempts.
@@ -187,13 +186,4 @@ export class AddonModFeedbackAttemptsPage implements AfterViewInit, OnDestroy {
  * Attempts manager.
  */
 class AddonModFeedbackAttemptsManager extends CoreListItemsManager<AddonModFeedbackAttemptItem, AddonModFeedbackAttemptsSource> {
-
-    /**
-     * @inheritdoc
-     */
-    protected async logActivity(): Promise<void> {
-        // Store module viewed. It's done in this page because it can be reached using a link.
-        CoreCourse.storeModuleViewed(this.getSource().COURSE_ID, this.getSource().CM_ID);
-    }
-
 }

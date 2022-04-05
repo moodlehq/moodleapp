@@ -212,7 +212,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
                 this.logAfterFetch = false;
                 await CoreUtils.ignoreErrors(AddonModData.logView(this.database.id, this.database.name));
 
-                // Store module viewed. It's done in this page because it can be reached using a link.
+                // Store module viewed because this page also updates recent accessed items block.
                 CoreCourse.storeModuleViewed(this.courseId, this.moduleId);
             }
         } catch (error) {

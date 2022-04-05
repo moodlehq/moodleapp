@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { CoreCourse } from '@features/course/services/course';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { IonRefresher } from '@ionic/angular';
 
@@ -93,9 +92,6 @@ export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
             if (!this.fetchSuccess) {
                 this.fetchSuccess = true;
                 CoreUtils.ignoreErrors(AddonModH5PActivity.logViewReport(this.h5pActivity.id, this.h5pActivity.name));
-
-                // Store module viewed. It's done in this page because it can be reached using a link.
-                CoreCourse.storeModuleViewed(this.courseId, this.cmId);
             }
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error loading attempts.');

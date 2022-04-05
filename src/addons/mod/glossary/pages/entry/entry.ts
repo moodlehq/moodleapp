@@ -17,7 +17,6 @@ import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreCommentsCommentsComponent } from '@features/comments/components/comments/comments';
 import { CoreComments } from '@features/comments/services/comments';
-import { CoreCourse } from '@features/course/services/course';
 import { CoreRatingInfo } from '@features/rating/services/rating';
 import { CoreTag } from '@features/tag/services/tag';
 import { IonRefresher } from '@ionic/angular';
@@ -59,7 +58,6 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
     cmId?: number;
 
     protected entryId!: number;
-    protected fetchSuccess = false;
 
     constructor(protected route: ActivatedRoute) {}
 
@@ -147,12 +145,6 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
 
             this.entry = result.entry;
             this.ratingInfo = result.ratinginfo;
-
-            if (!this.fetchSuccess) {
-                this.fetchSuccess = true;
-                // Store module viewed. It's done in this page because it can be reached using a link.
-                this.cmId && CoreCourse.storeModuleViewed(this.courseId, this.cmId);
-            }
 
             if (this.glossary) {
                 // Glossary already loaded, nothing else to load.

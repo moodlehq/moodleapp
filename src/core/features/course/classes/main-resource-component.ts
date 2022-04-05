@@ -442,7 +442,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         }
 
         this.fetchSuccess = true;
-        CoreCourse.storeModuleViewed(this.courseId, this.module.id, { sectionId: this.module.section });
+        this.storeModuleViewed();
 
         // Log activity now.
         try {
@@ -454,6 +454,15 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
         } catch {
             // Ignore errors.
         }
+    }
+
+    /**
+     * Store module as viewed.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async storeModuleViewed(): Promise<void> {
+        await CoreCourse.storeModuleViewed(this.courseId, this.module.id, { sectionId: this.module.section });
     }
 
     /**

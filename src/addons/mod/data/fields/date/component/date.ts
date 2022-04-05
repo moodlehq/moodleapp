@@ -68,7 +68,16 @@ export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginCompo
 
         }
 
-        this.addControl('f_' + this.field.id, CoreTimeUtils.toDatetimeFormat(date.getTime()));
+        const seconds = Math.floor(date.getTime() / 1000);
+
+        this.addControl('f_' + this.field.id, CoreTimeUtils.toDatetimeFormat(seconds * 1000));
+
+        if (!this.searchMode && !this.value?.content) {
+            this.onFieldInit.emit({
+                fieldid: this.field.id,
+                content: String(seconds),
+            });
+        }
     }
 
 }

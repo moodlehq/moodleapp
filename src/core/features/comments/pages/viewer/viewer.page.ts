@@ -30,7 +30,7 @@ import {
 import { IonContent, IonRefresher } from '@ionic/angular';
 import { ContextLevel, CoreConstants } from '@/core/constants';
 import { CoreNavigator } from '@services/navigator';
-import { Translate } from '@singletons';
+import { Network, NgZone, Translate } from '@singletons';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUser } from '@features/user/services/user';
@@ -41,6 +41,7 @@ import { CoreCommentsDBRecord } from '@features/comments/services/database/comme
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreApp } from '@services/app';
 import moment from 'moment';
+import { Subscription } from 'rxjs';
 
 /**
  * Page that displays comments.
@@ -77,9 +78,11 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
     currentUserId: number;
     sending = false;
     newComment = '';
+    isOnline: boolean;
 
     protected addDeleteCommentsAvailable = false;
     protected syncObserver?: CoreEventObserver;
+    protected onlineObserver: Subscription;
     protected viewDestroyed = false;
 
     constructor(
@@ -104,6 +107,14 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
                 this.fetchComments(false);
             }
         }, CoreSites.getCurrentSiteId());
+
+        this.isOnline = CoreApp.isOnline();
+        this.onlineObserver = Network.onChange().subscribe(() => {
+            // Execute the callback in the Angular zone, so change detection doesn't stop working.
+            NgZone.run(() => {
+                this.isOnline = CoreApp.isOnline();
+            });
+        });
     }
 
     /**
@@ -596,6 +607,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.syncObserver?.off();
+        this.onlineObserver.unsubscribe();
         this.viewDestroyed = true;
     }
 
