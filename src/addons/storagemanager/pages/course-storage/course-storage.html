@@ -99,7 +99,7 @@
                         </div>
                     </ion-item>
                 </ion-card-header>
-                <ion-card-content id="core-course-storage-section-{{section.id}}">
+                <ion-card-content id="core-course-storage-section-{{section.id}}" [ngClass]="{'hidden-content': !section.expanded}">
                     <ng-container *ngIf="section.expanded">
                         <ng-container *ngFor="let module of section.modules">
                             <ion-item class="ion-no-padding core-course-storage-activity"
