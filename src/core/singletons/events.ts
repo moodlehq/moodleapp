@@ -174,6 +174,31 @@ export class CoreEvents {
     }
 
     /**
+     * Listen once for a certain event. To stop listening to the event (in case it wasn't triggered):
+     * let observer = eventsProvider.on('something', myCallBack);
+     * ...
+     * observer.off();
+     *
+     * @param eventName Name of the event to listen to.
+     * @param callBack Function to call when the event is triggered.
+     * @param siteId Site where to trigger the event. Undefined won't check the site.
+     * @return Observer to stop listening.
+     */
+    static once<Fallback = unknown, Event extends string = string>(
+        eventName: Event,
+        callBack: (value: CoreEventData<Event, Fallback> & CoreEventSiteData) => void,
+        siteId?: string,
+    ): CoreEventObserver {
+        const listener = CoreEvents.on<Fallback, Event>(eventName, (value) => {
+            setTimeout(() => listener.off(), 0);
+
+            callBack(value);
+        }, siteId);
+
+        return listener;
+    }
+
+    /**
      * Listen for several events. To stop listening to the events:
      * let observer = eventsProvider.onMultiple(['something', 'another'], myCallBack);
      * ...

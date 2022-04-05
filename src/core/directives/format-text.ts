@@ -24,6 +24,7 @@ import {
     ViewContainerRef,
     ViewChild,
     OnDestroy,
+    Inject,
 } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 
@@ -33,7 +34,7 @@ import { CoreIframeUtils, CoreIframeUtilsProvider } from '@services/utils/iframe
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSite } from '@classes/site';
-import { Translate } from '@singletons';
+import { NgZone, Platform, Translate } from '@singletons';
 import { CoreExternalContentDirective } from './external-content';
 import { CoreLinkDirective } from './link';
 import { CoreFilter, CoreFilterFilter, CoreFilterFormatTextOptions } from '@features/filter/services/filter';
@@ -46,6 +47,8 @@ import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { AsyncComponent } from '@classes/async-component';
 import { CoreText } from '@singletons/text';
 import { CoreDom } from '@singletons/dom';
+import { CoreEvents } from '@singletons/events';
+import { CoreRefreshContext, CORE_REFRESH_CONTEXT } from '@/core/utils/refresh-context';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -99,6 +102,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
         element: ElementRef,
         @Optional() protected content: IonContent,
         protected viewContainerRef: ViewContainerRef,
+        @Optional() @Inject(CORE_REFRESH_CONTEXT) protected refreshContext?: CoreRefreshContext,
     ) {
         CoreComponentsRegistry.register(element.nativeElement, this);
 
@@ -453,9 +457,16 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
         const svgImages = Array.from(div.querySelectorAll('image'));
         const promises: Promise<void>[] = [];
 
+        this.treatAppUrlElements(div, site);
+
         // Walk through the content to find the links and add our directive to it.
         // Important: We need to look for links first because in 'img' we add new links without core-link.
         anchors.forEach((anchor) => {
+            if (anchor.dataset.appUrl) {
+                // Link already treated in treatAppUrlElements, ignore it.
+                return;
+            }
+
             // Angular 2 doesn't let adding directives dynamically. Create the CoreLinkDirective manually.
             const linkDir = new CoreLinkDirective(new ElementRef(anchor), this.content);
             linkDir.capture = this.captureLinks ?? true;
@@ -545,6 +556,74 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
         }
 
         await Promise.all(promises);
+    }
+
+    /**
+     * Treat elements with an app-url data attribute.
+     *
+     * @param div Div containing the elements.
+     * @param site Site.
+     */
+    protected treatAppUrlElements(div: HTMLElement, site?: CoreSite): void {
+        const appUrlElements = Array.from(div.querySelectorAll<HTMLElement>('*[data-app-url]'));
+
+        appUrlElements.forEach((element) => {
+            const url = element.dataset.appUrl;
+            if (!url) {
+                return;
+            }
+
+            if (element.tagName !== 'BUTTON' && element.tagName !== 'A') {
+                element.setAttribute('tabindex', '0');
+                element.setAttribute('role', 'button');
+            }
+
+            CoreDom.onActivate(element, async (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+
+                site = site || CoreSites.getCurrentSite();
+                if (!site) {
+                    return;
+                }
+
+                const confirmMessage = element.dataset.appUrlConfirm;
+                const openInApp = element.dataset.openIn === 'app';
+                const refreshOnResume = element.dataset.appUrlResumeAction === 'refresh';
+
+                if (confirmMessage) {
+                    try {
+                        await CoreDomUtils.showConfirm(Translate.instant(confirmMessage));
+                    } catch {
+                        return;
+                    }
+                }
+
+                if (openInApp) {
+                    site.openInAppWithAutoLoginIfSameSite(url);
+
+                    if (refreshOnResume && this.refreshContext) {
+                        // Refresh the context when the IAB is closed.
+                        CoreEvents.once(CoreEvents.IAB_EXIT, () => {
+                            this.refreshContext?.refreshContext();
+                        });
+                    }
+                } else {
+                    site.openInBrowserWithAutoLoginIfSameSite(url, undefined, {
+                        showBrowserWarning: !confirmMessage,
+                    });
+
+                    if (refreshOnResume && this.refreshContext) {
+                        // Refresh the context when the app is resumed.
+                        CoreSubscriptions.once(Platform.resume, () => {
+                            NgZone.run(async () => {
+                                this.refreshContext?.refreshContext();
+                            });
+                        });
+                    }
+                }
+            });
+        });
     }
 
     /**

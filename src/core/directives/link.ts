@@ -48,7 +48,7 @@ export class CoreLinkDirective implements OnInit {
     @Input() autoLogin = 'check';
     @Input() showBrowserWarning = true; // Whether to show a warning before opening browser. Defaults to true.
 
-    protected element: Element;
+    protected element: HTMLElement;
 
     constructor(
         element: ElementRef,
@@ -68,22 +68,7 @@ export class CoreLinkDirective implements OnInit {
             this.element.setAttribute('role', 'button');
         }
 
-        this.element.addEventListener('click', async (event) => {
-            this.performAction(event);
-        });
-
-        this.element.addEventListener('keydown', (event: KeyboardEvent) => {
-            if ((event.key == ' ' || event.key == 'Enter')) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-        });
-
-        this.element.addEventListener('keyup', (event: KeyboardEvent) => {
-            if ((event.key == ' ' || event.key == 'Enter')) {
-                this.performAction(event);
-            }
-        });
+        CoreDom.onActivate(this.element, (event) => this.performAction(event));
     }
 
     /**

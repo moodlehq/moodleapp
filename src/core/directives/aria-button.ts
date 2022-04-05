@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Directive, ElementRef, OnInit, Output, EventEmitter } from '@angular/core';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Directive to emulate click and key actions following aria role button.
@@ -36,22 +37,7 @@ export class CoreAriaButtonClickDirective implements OnInit {
      * Initialize actions.
      */
     ngOnInit(): void {
-        this.element.addEventListener('click', async (event) => {
-            this.ariaButtonClick.emit(event);
-        });
-
-        this.element.addEventListener('keydown', async (event) => {
-            if ((event.key == ' ' || event.key == 'Enter')) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-        });
-
-        this.element.addEventListener('keyup', async (event) => {
-            if ((event.key == ' ' || event.key == 'Enter')) {
-                this.ariaButtonClick.emit(event);
-            }
-        });
+        CoreDom.onActivate(this.element, (event) => this.ariaButtonClick.emit(event));
     }
 
 }
