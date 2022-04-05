@@ -4,5 +4,6 @@
         "moodle.config.json": "jsonc",
         "moodle.config.*.json": "jsonc",
     },
+    "java.configuration.updateBuildConfiguration": "automatic",
 
 }
