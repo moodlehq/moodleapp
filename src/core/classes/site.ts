@@ -1746,10 +1746,21 @@ export class CoreSite {
      * @return Promise resolved with the converted URL.
      */
     async getAutoLoginUrl(url: string, showModal: boolean = true): Promise<string> {
-        if (!this.privateToken || (this.lastAutoLogin &&
-                CoreTimeUtils.timestamp() - this.lastAutoLogin < CoreConstants.SECONDS_MINUTE * 6)) {
-            // No private token, WS not available or last auto-login was less than 6 minutes ago. Don't change the URL.
+        if (!this.privateToken) {
+            // No private token, don't change the URL.
             return url;
+        }
+
+        if (this.lastAutoLogin > 0) {
+            const timeBetweenRequests = await CoreUtils.ignoreErrors(
+                this.getConfig('tool_mobile_autologinmintimebetweenreq'),
+                CoreConstants.SECONDS_MINUTE * 6,
+            );
+
+            if (CoreTimeUtils.timestamp() - this.lastAutoLogin < timeBetweenRequests) {
+                // Not enough time has passed since last auto login.
+                return url;
+            }
         }
 
         const userId = this.getUserId();
