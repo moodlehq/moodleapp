@@ -501,10 +501,6 @@ ion-toast {
     @include media-breakpoint-down(sm) {
         &::part(container) {
             flex-direction: column;
-            align-items: flex-end;
-        }
-        &::part(message) {
-            align-self: flex-start;
         }
     }
 }
