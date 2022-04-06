@@ -131,7 +131,7 @@ export class CoreUserToursService {
      * @param acknowledge Whether to acknowledge that the user has seen this User Tour or not.
      */
     async dismiss(acknowledge: boolean = true): Promise<void> {
-        await this.tours.find(({ visible }) => visible)?.component.dismiss(acknowledge);
+        await this.getForegroundTour()?.dismiss(acknowledge);
     }
 
     /**
@@ -195,7 +195,7 @@ export class CoreUserToursService {
     protected activateTour(tour: CoreUserToursUserTourComponent): void {
         // Handle show/dismiss lifecycle.
         CoreSubscriptions.once(tour.beforeDismiss, () => {
-            const index = this.tours.findIndex(({ component }) => component === tour);
+            const index = this.getTourIndex(tour);
 
             if (index === -1) {
                 return;
@@ -203,14 +203,17 @@ export class CoreUserToursService {
 
             this.tours.splice(index, 1);
 
-            const foregroundTour = this.tours.find(({ visible }) => visible);
-
-            foregroundTour?.component.show();
+            this.getForegroundTour()?.show();
         });
 
         // Add to existing tours and show it if it's on top.
-        const index = this.tours.findIndex(({ component }) => component === tour);
-        const foregroundTour = this.tours.find(({ visible }) => visible);
+        const index = this.getTourIndex(tour);
+        const previousForegroundTour = this.getForegroundTour();
+
+        if (previousForegroundTour?.id === tour.id) {
+            // Already activated.
+            return;
+        }
 
         if (index !== -1) {
             this.tours[index].visible = true;
@@ -221,13 +224,30 @@ export class CoreUserToursService {
             });
         }
 
-        if (this.tours.find(({ visible }) => visible)?.component !== tour) {
+        if (this.getForegroundTour()?.id !== tour.id) {
+            // Another tour is in use.
             return;
         }
 
-        foregroundTour?.component.hide();
-
         tour.show();
+    }
+
+    /**
+     * Returns the first visible tour in the stack.
+     *
+     * @return foreground tour if found or undefined.
+     */
+    protected getForegroundTour(): CoreUserToursUserTourComponent | undefined {
+        return this.tours.find(({ visible }) => visible)?.component;
+    }
+
+    /**
+     * Returns the tour index in the stack.
+     *
+     * @return Tour index if found or -1 otherwise.
+     */
+    protected getTourIndex(tour: CoreUserToursUserTourComponent): number {
+        return this.tours.findIndex(({ component }) => component === tour);
     }
 
     /**
@@ -236,20 +256,21 @@ export class CoreUserToursService {
      * @param tour User tour.
      */
     protected deactivateTour(tour: CoreUserToursUserTourComponent): void {
-        const index = this.tours.findIndex(({ component }) => component === tour);
-        const foregroundTourIndex = this.tours.findIndex(({ visible }) => visible);
-
+        const index = this.getTourIndex(tour);
         if (index === -1) {
             return;
         }
 
+        const foregroundTour = this.getForegroundTour();
+
         this.tours[index].visible = false;
 
-        if (index === foregroundTourIndex) {
-            tour.hide();
-
-            this.tours.find(({ visible }) => visible)?.component.show();
+        if (foregroundTour?.id !== tour.id) {
+            // Another tour is in use.
+            return;
         }
+
+        tour.hide();
     }
 
     /**
