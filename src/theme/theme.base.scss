@@ -1050,7 +1050,14 @@ ion-button.chip {
     ion-icon {
         font-size: 16px;
         min-width: 16px;
+    }
+
+    ion-icon[slot=start] {
         @include margin(0, 8px, 0, 0);
+    }
+
+    ion-icon[slot=end] {
+        @include margin(0, 0, 0, 8px);
     }
 
     ion-label {
