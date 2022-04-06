@@ -31,6 +31,7 @@ import { CoreNavigator } from '@services/navigator';
 @Component({
     selector: 'addon-block-timeline',
     templateUrl: 'addon-block-timeline.html',
+    styleUrls: ['timeline.scss'],
 })
 export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implements OnInit {
 

@@ -53,7 +53,7 @@
                         </ion-row>
                     </ion-col>
                     <ion-col class="addon-block-timeline-activity-action ion-no-padding" *ngIf="event.action?.actionable">
-                        <ion-button fill="outline" (click)="action($event, event.action.url)" [title]="event.action.name">
+                        <ion-button fill="outline" (click)="action($event, event.action.url)" [title]="event.action.name" class="chip">
                             {{event.action.name}}
                             <ion-badge slot="end" class="ion-margin-start" *ngIf="event.action.showitemcount">
                                 {{event.action.itemcount}}
