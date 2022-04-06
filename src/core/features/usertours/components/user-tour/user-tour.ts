@@ -13,7 +13,17 @@
 // limitations under the License.
 
 import { BackButtonEvent } from '@ionic/core';
-import { AfterViewInit, Component, ElementRef, EventEmitter, HostBinding, Input, Output, ViewChild } from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    ElementRef,
+    EventEmitter,
+    HostBinding,
+    Input,
+    OnDestroy,
+    Output,
+    ViewChild,
+} from '@angular/core';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreUserToursFocusLayout } from '@features/usertours/classes/focus-layout';
 import { CoreUserToursPopoverLayout } from '@features/usertours/classes/popover-layout';
@@ -22,6 +32,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { AngularFrameworkDelegate } from '@singletons';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreDom } from '@singletons/dom';
+import { CoreEventObserver } from '@singletons/events';
 
 const ANIMATION_DURATION = 200;
 const USER_TOURS_BACK_BUTTON_PRIORITY = 100;
@@ -36,7 +47,7 @@ const USER_TOURS_BACK_BUTTON_PRIORITY = 100;
     templateUrl: 'core-user-tours-user-tour.html',
     styleUrls: ['user-tour.scss'],
 })
-export class CoreUserToursUserTourComponent implements AfterViewInit {
+export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy {
 
     @Input() container!: HTMLElement;
     @Input() id!: string;
@@ -59,6 +70,9 @@ export class CoreUserToursUserTourComponent implements AfterViewInit {
     private wrapperTransform = '';
     private wrapperElement = new CorePromisedValue<HTMLElement>();
     private backButtonListener?: (event: BackButtonEvent) => void;
+    protected resizeListener?: CoreEventObserver;
+    protected scrollListener?: EventListener;
+    protected content?: HTMLIonContentElement | null;
 
     constructor({ nativeElement: element }: ElementRef<HTMLElement>) {
         this.element = element;
@@ -100,18 +114,7 @@ export class CoreUserToursUserTourComponent implements AfterViewInit {
 
         this.calculateStyles();
 
-        // Show tour.
-        this.active = true;
-
-        document.addEventListener(
-            'ionBackButton',
-            this.backButtonListener = ({ detail }) => detail.register(
-                USER_TOURS_BACK_BUTTON_PRIORITY,
-                () => {
-                    // Silence back button.
-                },
-            ),
-        );
+        this.activate();
 
         await this.playEnterAnimation();
     }
@@ -125,8 +128,7 @@ export class CoreUserToursUserTourComponent implements AfterViewInit {
         await this.playLeaveAnimation();
         await AngularFrameworkDelegate.removeViewFromDom(wrapper, this.tour);
 
-        this.active = false;
-        this.backButtonListener && document.removeEventListener('ionBackButton', this.backButtonListener);
+        this.deactivate();
     }
 
     /**
@@ -139,10 +141,10 @@ export class CoreUserToursUserTourComponent implements AfterViewInit {
 
         if (this.active) {
             await this.playLeaveAnimation();
-            await AngularFrameworkDelegate.removeViewFromDom(this.container, this.element);
-
-            this.backButtonListener && document.removeEventListener('ionBackButton', this.backButtonListener);
         }
+
+        await AngularFrameworkDelegate.removeViewFromDom(this.container, this.element);
+        this.deactivate();
 
         acknowledge && await CoreUserTours.acknowledge(this.id);
 
@@ -203,6 +205,78 @@ export class CoreUserToursUserTourComponent implements AfterViewInit {
         ];
 
         await Promise.all(animations.map(animation => animation?.finished));
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.deactivate();
+    }
+
+    /**
+     * Activate tour.
+     */
+    protected activate(): void {
+        if (this.active) {
+            return;
+        }
+
+        this.active = true;
+
+        if (!this.backButtonListener) {
+            document.addEventListener(
+                'ionBackButton',
+                this.backButtonListener = ({ detail }) => detail.register(
+                    USER_TOURS_BACK_BUTTON_PRIORITY,
+                    () => {
+                        // Silence back button.
+                    },
+                ),
+            );
+        }
+
+        if (!this.focus) {
+            return;
+        }
+
+        if (!this.resizeListener) {
+            this.resizeListener = CoreDom.onWindowResize(() => {
+                this.calculateStyles();
+            });
+        }
+
+        if (!this.content) {
+            this.content = CoreDom.closest(this.focus, 'ion-content');
+        }
+
+        if (!this.scrollListener && this.content) {
+            this.content.scrollEvents = true;
+
+            this.content.addEventListener('ionScrollEnd', this.scrollListener = (): void => {
+                this.calculateStyles();
+            });
+        }
+    }
+
+    /**
+     * Deactivate tour.
+     */
+    protected deactivate(): void {
+        if (!this.active) {
+            return;
+        }
+
+        this.active = false;
+
+        this.resizeListener?.off();
+        this.backButtonListener && document.removeEventListener('ionBackButton', this.backButtonListener);
+        this.backButtonListener = undefined;
+        this.resizeListener = undefined;
+
+        if (this.content && this.scrollListener) {
+            this.content.removeEventListener('ionScrollEnd', this.scrollListener);
+        }
     }
 
 }

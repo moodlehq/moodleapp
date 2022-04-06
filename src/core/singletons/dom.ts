@@ -28,6 +28,33 @@ export class CoreDom {
     }
 
     /**
+     * Perform a dom closest function piercing the shadow DOM.
+     *
+     * @param node DOM Element.
+     * @param selector Selector to search.
+     * @return Closest ancestor or null if not found.
+     */
+    static closest<T = HTMLElement>(node: HTMLElement | Node | null, selector: string): T | null {
+        if (!node) {
+            return null;
+        }
+
+        if (node instanceof ShadowRoot) {
+            return CoreDom.closest(node.host, selector);
+        }
+
+        if (node instanceof HTMLElement) {
+            if (node.matches(selector)) {
+                return node as unknown as T;
+            } else {
+                return CoreDom.closest<T>(node.parentNode, selector);
+            }
+        }
+
+        return CoreDom.closest<T>(node.parentNode, selector);
+    }
+
+    /**
      * Retrieve the position of a element relative to another element.
      *
      * @param element Element to get the position.
