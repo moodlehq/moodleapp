@@ -24,7 +24,6 @@ before_install:
   - npm --version
   - nvm --version
   - npm ci
-  - yes | sdkmanager "build-tools;30.0.3"
 
 before_script:
   - npx gulp
@@ -47,6 +46,8 @@ jobs:
       - extra-google-google_play_services
       - extra-google-m2repository
       - extra-android-m2repository
+    before_install:
+      - yes | sdkmanager "build-tools;30.0.3"
     addons:
       apt:
         packages:
