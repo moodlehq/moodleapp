@@ -844,6 +844,10 @@ ion-card {
     ion-item:only-child {
         --inner-border-width: 0px;
     }
+
+    ion-card-title {
+        font-size: 20px;
+    }
 }
 
 .core-course-module-handler:not(.addon-mod-label-handler) .item-heading .filter_mathjaxloader_equation div {
