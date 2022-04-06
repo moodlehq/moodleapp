@@ -253,7 +253,7 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
             componentProps: {
                 moduleId: this.cmId,
                 chapters: this.chapters,
-                selected: visibleChapter,
+                selected: visibleChapter?.id,
                 courseId: this.courseId,
                 book: this.book,
             },
