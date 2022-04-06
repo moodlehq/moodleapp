@@ -7,16 +7,16 @@
 
 <!-- Content. -->
 <core-loading [hideUntil]="!showLoading">
+
+    <!-- Activity info. -->
+    <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
+        [courseId]="courseId" [hasDataToSync]="hasOffline" (completionChanged)="onCompletionChange()">
+    </core-course-module-info>
+
     <core-tabs [hideUntil]="!showLoading" [selectedIndex]="selectedTab">
         <!-- Index/Preview tab. -->
         <core-tab [title]="'addon.mod_lesson.preview' | translate" (ionSelect)="indexSelected()">
             <ng-template>
-
-                <!-- Activity info. -->
-                <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
-                    [courseId]="courseId" [hasDataToSync]="hasOffline" (completionChanged)="onCompletionChange()">
-                </core-course-module-info>
-
                 <!-- Prevent access messages. Only show the first one. -->
                 <ion-card class="core-info-card" *ngIf="lesson && preventReasons.length">
                     <ion-item>
