@@ -27,7 +27,7 @@ import { CoreDashboardHomeHandler, CoreDashboardHomeHandlerService } from './das
 export class CoreCoursesDashboardLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'CoreCoursesDashboardLinkHandler';
-    pattern = /^\/my\/?$/;
+    pattern = /\/my\/?$/;
 
     /**
      * Get the list of actions for a link (url).

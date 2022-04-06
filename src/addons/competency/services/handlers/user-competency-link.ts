@@ -28,6 +28,7 @@ export class AddonCompetencyUserCompetencyLinkHandlerService extends CoreContent
 
     name = 'AddonCompetencyUserCompetencyLinkHandler';
     pattern = /\/admin\/tool\/lp\/user_competency\.php.*([?&]id=\d+)/;
+    patternMatchStart = false;
 
     /**
      * @inheritdoc

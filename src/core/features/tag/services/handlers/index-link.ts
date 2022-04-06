@@ -27,7 +27,7 @@ import { CoreTag } from '../tag';
 export class CoreTagIndexLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'CoreTagIndexLinkHandler';
-    pattern = /^\/tag\/index\.php/;
+    pattern = /\/tag\/index\.php/;
 
     /**
      * Get the list of actions for a link (url).

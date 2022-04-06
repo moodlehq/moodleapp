@@ -32,7 +32,7 @@ export class AddonModGlossaryEditLinkHandlerService extends CoreContentLinksHand
 
     name = 'AddonModGlossaryEditLinkHandler';
     featureName = 'CoreCourseModuleDelegate_AddonModGlossary';
-    pattern = /^\/mod\/glossary\/edit\.php.*([?&](cmid)=\d+)/;
+    pattern = /\/mod\/glossary\/edit\.php.*([?&](cmid)=\d+)/;
 
     /**
      * @inheritdoc

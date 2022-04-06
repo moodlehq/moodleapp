@@ -31,7 +31,7 @@ export class AddonModGlossaryEntryLinkHandlerService extends CoreContentLinksHan
 
     name = 'AddonModGlossaryEntryLinkHandler';
     featureName = 'CoreCourseModuleDelegate_AddonModGlossary';
-    pattern = /^\/mod\/glossary\/(showentry|view)\.php.*([&?](eid|g|mode|hook)=\d+)/;
+    pattern = /\/mod\/glossary\/(showentry|view)\.php.*([&?](eid|g|mode|hook)=\d+)/;
 
     /**
      * @inheritdoc

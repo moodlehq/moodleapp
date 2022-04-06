@@ -312,12 +312,13 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     }
 
     /**
-     * Checks if sync has succeed from result sync data.
-     *
-     * @param result Data returned by the sync function.
-     * @return If succeed or not.
+     * @inheritdoc
      */
-    protected hasSyncSucceed(result: AddonModAssignSyncResult): boolean {
+    protected hasSyncSucceed(result?: AddonModAssignSyncResult): boolean {
+        if (!result) {
+            return false;
+        }
+
         if (result.updated) {
             this.submissionComponent?.invalidateAndRefresh(false);
         }
@@ -326,9 +327,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     }
 
     /**
-     * Perform the invalidate content function.
-     *
-     * @return Resolved when done.
+     * @inheritdoc
      */
     protected async invalidateContent(): Promise<void> {
         const promises: Promise<void>[] = [];
@@ -367,10 +366,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     }
 
     /**
-     * Compares sync event data with current data to check if refresh content is needed.
-     *
-     * @param syncEventData Data receiven on sync observer.
-     * @return True if refresh is needed, false otherwise.
+     * @inheritdoc
      */
     protected isRefreshSyncNeeded(syncEventData: AddonModAssignAutoSyncData): boolean {
         if (!this.assign || syncEventData.assignId != this.assign.id) {
@@ -386,20 +382,18 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     }
 
     /**
-     * Performs the sync of the activity.
-     *
-     * @return Promise resolved when done.
+     * @inheritdoc
      */
     protected async sync(): Promise<AddonModAssignSyncResult | void> {
         if (!this.assign) {
             return;
         }
 
-        await AddonModAssignSync.syncAssign(this.assign.id);
+        return await AddonModAssignSync.syncAssign(this.assign.id);
     }
 
     /**
-     * Component being destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         super.ngOnDestroy();

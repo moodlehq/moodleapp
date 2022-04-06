@@ -28,6 +28,7 @@ export class AddonCompetencyPlanLinkHandlerService extends CoreContentLinksHandl
 
     name = 'AddonCompetencyPlanLinkHandler';
     pattern = /\/admin\/tool\/lp\/plan\.php.*([?&]id=\d+)/;
+    patternMatchStart = false;
 
     /**
      * @inheritdoc

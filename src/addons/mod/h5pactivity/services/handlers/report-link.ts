@@ -33,7 +33,7 @@ export class AddonModH5PActivityReportLinkHandlerService extends CoreContentLink
 
     name = 'AddonModH5PActivityReportLinkHandler';
     featureName = 'CoreCourseModuleDelegate_AddonModH5PActivity';
-    pattern = /^\/mod\/h5pactivity\/report\.php.*([&?]a=\d+)/;
+    pattern = /\/mod\/h5pactivity\/report\.php.*([&?]a=\d+)/;
 
     /**
      * @inheritdoc

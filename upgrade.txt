@@ -24,7 +24,7 @@ information provided here is intended especially for developers.
 - contextMenuPrefetch and fillContextMenu have been removed from CoreCourseHelper.
 - The variable "loaded" in CoreCourseModuleMainResourceComponent has been changed to "showLoading" to reflect its purpose better.
 - The function getCurrentSection of course formats can now return a forceSelected boolean along with the section (defaults to false if not returned).
-- The link handlers functions (CoreContentLinksHandler) will now always receive a relative URL instead of an absolute URL. It's now recommended to use "^" in your regular expressions to avoid false positives.
+- The link handlers functions (CoreContentLinksHandler) will now always receive a relative URL instead of an absolute URL. The CoreContentLinksHandlerBase class now adds "^" to the start of the pattern by default to prevent false positives.
 
 
 
