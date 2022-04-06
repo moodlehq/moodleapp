@@ -99,13 +99,26 @@
         </ion-col>
     </ion-row>
 
-    <core-empty-box *ngIf="filteredCourses.length == 0" image="assets/img/icons/courses.svg"
-        [message]="'addon.block_myoverview.nocourses' | translate">
-        <ion-button *ngIf="searchEnabled" (click)="openSearch()" fill="outline">
-            <ion-icon name="fas-search" slot="start" aria-hidden="true">
-            </ion-icon>
-            {{'core.courses.searchcourses' | translate}}
-        </ion-button>
+    <core-empty-box *ngIf="filteredCourses.length == 0" image="assets/img/icons/courses.svg">
+        <p *ngIf="hasCourses" class="item-heading">
+            {{'addon.block_myoverview.noresult' | translate}}
+        </p>
+        <p *ngIf="!hasCourses" class="item-heading">
+            {{'addon.block_myoverview.nocoursesenrolled' | translate}}
+        </p>
+        <ng-container *ngIf="searchEnabled">
+            <p *ngIf="hasCourses" class="subdued">
+                {{'addon.block_myoverview.noresultdescription' | translate}}
+            </p>
+            <p *ngIf="!hasCourses" class="subdued">
+                {{'addon.block_myoverview.nocoursesenrolleddescription' | translate}}
+            </p>
+            <ion-button (click)="openSearch()" fill="outline">
+                <ion-icon name="fas-search" slot="start" aria-hidden="true">
+                </ion-icon>
+                {{'addon.block_myoverview.browseallcourses' | translate}}
+            </ion-button>
+        </ng-container>
     </core-empty-box>
 
     <!-- List of courses. -->
