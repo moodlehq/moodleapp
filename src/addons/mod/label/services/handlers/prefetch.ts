@@ -31,7 +31,6 @@ export class AddonModLabelPrefetchHandlerService extends CoreCourseResourcePrefe
     modName = 'label';
     component = AddonModLabelProvider.COMPONENT;
     updatesNames = /^.*files$/;
-    skipListStatus = true;
 
     /**
      * @inheritdoc

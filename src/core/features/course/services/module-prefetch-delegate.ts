@@ -1361,8 +1361,10 @@ export interface CoreCourseModulePrefetchHandler extends CoreDelegateHandler {
     /**
      * If true, this module will be treated as not downloadable when determining the status of a list of modules. The module will
      * still be downloaded when downloading the section/course, it only affects whether the button should be displayed.
+     *
+     * @depracated since app 4.0.
      */
-    skipListStatus: boolean;
+    skipListStatus?: boolean;
 
     /**
      * Get the download size of a module.
