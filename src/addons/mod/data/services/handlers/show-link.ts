@@ -32,7 +32,7 @@ export class AddonModDataShowLinkHandlerService extends CoreContentLinksHandlerB
 
     name = 'AddonModDataShowLinkHandler';
     featureName = 'CoreCourseModuleDelegate_AddonModData';
-    pattern = /^\/mod\/data\/view\.php.*([?&](d|rid|page|group|mode)=\d+)/;
+    pattern = /\/mod\/data\/view\.php.*([?&](d|rid|page|group|mode)=\d+)/;
     priority = 50; // Higher priority than the default link handler for view.php.
 
     /**

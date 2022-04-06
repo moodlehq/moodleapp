@@ -27,7 +27,7 @@ export class AddonBadgesMyBadgesLinkHandlerService extends CoreContentLinksHandl
 
     name = 'AddonBadgesMyBadgesLinkHandler';
     featureName = 'CoreUserDelegate_AddonBadges';
-    pattern = /^\/badges\/mybadges\.php/;
+    pattern = /\/badges\/mybadges\.php/;
 
     /**
      * Get the list of actions for a link (url).

@@ -26,7 +26,7 @@ export class AddonModQuizReviewLinkHandlerService extends CoreContentLinksHandle
 
     name = 'AddonModQuizReviewLinkHandler';
     featureName = 'CoreCourseModuleDelegate_AddonModQuiz';
-    pattern = /^\/mod\/quiz\/review\.php.*([&?]attempt=\d+)/;
+    pattern = /\/mod\/quiz\/review\.php.*([&?]attempt=\d+)/;
 
     /**
      * Get the list of actions for a link (url).

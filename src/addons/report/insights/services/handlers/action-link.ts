@@ -38,7 +38,7 @@ const BULK_ACTIONS = {
 export class AddonReportInsightsActionLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonReportInsightsActionLinkHandler';
-    pattern = /^\/report\/insights\/action\.php/;
+    pattern = /\/report\/insights\/action\.php/;
 
     /**
      * @inheritdoc

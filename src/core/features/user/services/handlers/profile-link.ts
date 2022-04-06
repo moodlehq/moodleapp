@@ -27,7 +27,7 @@ export class CoreUserProfileLinkHandlerService extends CoreContentLinksHandlerBa
 
     name = 'CoreUserProfileLinkHandler';
     // Match user/view.php and user/profile.php but NOT grade/report/user/.
-    pattern = /((^\/user\/view\.php)|(^\/user\/profile\.php)).*([?&]id=\d+)/;
+    pattern = /((\/user\/view\.php)|(\/user\/profile\.php)).*([?&]id=\d+)/;
 
     /**
      * Get the list of actions for a link (url).

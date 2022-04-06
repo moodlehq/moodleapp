@@ -35,7 +35,7 @@ import { CoreIonLoadingElement } from '@classes/ion-loading';
 export class CoreCoursesCourseLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'CoreCoursesCourseLinkHandler';
-    pattern = /((^\/enrol\/index\.php)|(^\/course\/enrol\.php)|(^\/course\/view\.php)).*([?&]id=\d+)/;
+    pattern = /((\/enrol\/index\.php)|(\/course\/enrol\.php)|(\/course\/view\.php)).*([?&]id=\d+)/;
 
     protected waitStart = 0;
     protected logger: CoreLogger;

@@ -33,7 +33,7 @@ export class AddonModWikiCreateLinkHandlerService extends CoreContentLinksHandle
 
     name = 'AddonModWikiCreateLinkHandler';
     featureName = 'CoreCourseModuleDelegate_AddonModWiki';
-    pattern = /^\/mod\/wiki\/create\.php.*([&?]swid=\d+)/;
+    pattern = /\/mod\/wiki\/create\.php.*([&?]swid=\d+)/;
 
     /**
      * Check if the current view is a wiki page of the same wiki.

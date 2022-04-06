@@ -29,6 +29,7 @@ export class AddonCompetencyCompetencyLinkHandlerService extends CoreContentLink
 
     name = 'AddonCompetencyCompetencyLinkHandler';
     pattern = /\/admin\/tool\/lp\/(user_competency_in_course|user_competency_in_plan)\.php/;
+    patternMatchStart = false;
 
     /**
      * @inheritdoc

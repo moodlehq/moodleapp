@@ -31,7 +31,7 @@ export class AddonModFeedbackPrintLinkHandlerService extends CoreContentLinksHan
 
     name = 'AddonModFeedbackPrintLinkHandler';
     featureName = 'CoreCourseModuleDelegate_AddonModFeedback';
-    pattern = /^\/mod\/feedback\/print\.php.*([?&](id)=\d+)/;
+    pattern = /\/mod\/feedback\/print\.php.*([?&](id)=\d+)/;
 
     /**
      * @inheritdoc

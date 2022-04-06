@@ -31,7 +31,7 @@ export class AddonModFeedbackCompleteLinkHandlerService extends CoreContentLinks
 
     name = 'AddonModFeedbackCompleteLinkHandler';
     featureName = 'CoreCourseModuleDelegate_AddonModFeedback';
-    pattern = /^\/mod\/feedback\/complete\.php.*([?&](id|gopage)=\d+)/;
+    pattern = /\/mod\/feedback\/complete\.php.*([?&](id|gopage)=\d+)/;
 
     /**
      * @inheritdoc

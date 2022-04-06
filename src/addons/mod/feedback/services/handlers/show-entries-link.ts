@@ -27,7 +27,7 @@ export class AddonModFeedbackShowEntriesLinkHandlerService extends CoreContentLi
 
     name = 'AddonModFeedbackShowEntriesLinkHandler';
     featureName = 'CoreCourseModuleDelegate_AddonModFeedback';
-    pattern = /^\/mod\/feedback\/show_entries\.php.*([?&](id|showcompleted)=\d+)/;
+    pattern = /\/mod\/feedback\/show_entries\.php.*([?&](id|showcompleted)=\d+)/;
 
     /**
      * @inheritdoc

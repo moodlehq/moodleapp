@@ -28,7 +28,7 @@ export class CoreCoursesIndexLinkHandlerService extends CoreContentLinksHandlerB
 
     name = 'CoreCoursesIndexLinkHandler';
     featureName = 'CoreMainMenuDelegate_CoreCourses';
-    pattern = /^\/course\/?(index\.php.*)?$/;
+    pattern = /\/course\/?(index\.php.*)?$/;
 
     /**
      * @inheritdoc

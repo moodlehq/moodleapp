@@ -28,7 +28,7 @@ export class AddonBlogIndexLinkHandlerService extends CoreContentLinksHandlerBas
 
     name = 'AddonBlogIndexLinkHandler';
     featureName = 'CoreUserDelegate_AddonBlog:blogs';
-    pattern = /^\/blog\/index\.php/;
+    pattern = /\/blog\/index\.php/;
 
     /**
      * @inheritdoc

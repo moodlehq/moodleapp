@@ -32,7 +32,7 @@ export class AddonModDataEditLinkHandlerService extends CoreContentLinksHandlerB
 
     name = 'AddonModDataEditLinkHandler';
     featureName = 'CoreCourseModuleDelegate_AddonModData';
-    pattern = /^\/mod\/data\/edit\.php.*([?&](d|rid)=\d+)/;
+    pattern = /\/mod\/data\/edit\.php.*([?&](d|rid)=\d+)/;
 
     /**
      * @inheritdoc

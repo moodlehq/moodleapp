@@ -27,7 +27,7 @@ import { GRADES_PAGE_NAME } from '../grades-helper';
 export class CoreGradesOverviewLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'CoreGradesOverviewLinkHandler';
-    pattern = /^\/grade\/report\/overview\/index.php/;
+    pattern = /\/grade\/report\/overview\/index.php/;
 
     /**
      * Get the list of actions for a link (url).
