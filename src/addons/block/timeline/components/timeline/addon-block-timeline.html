@@ -4,13 +4,21 @@
     </ion-label>
 </ion-item-divider>
 <core-loading [hideUntil]="loaded">
-    <ion-row class="ion-no-padding ion-justify-content-between ion-align-items-center">
-        <ion-col size="auto" class="ion-no-padding">
-            <core-combobox [selection]="filter" (onChange)="switchFilter($event)" icon="fas-filter">
+    <ion-row class="ion-hide-md-up addon-block-timeline-filter" *ngIf="searchEnabled">
+        <ion-col>
+            <!-- Filter courses. -->
+            <core-search-box (onSubmit)="searchTextChanged($event)" (onClear)="searchTextChanged()"
+                [placeholder]="'addon.block_timeline.searchevents' | translate" autocorrect="off" spellcheck="false" lengthCheck="2"
+                searchArea="AddonBlockTimeline"></core-search-box>
+        </ion-col>
+    </ion-row>
+    <ion-row class="ion-justify-content-between ion-align-items-center addon-block-timeline-filter">
+        <ion-col size="auto">
+            <core-combobox [selection]="filter" (onChange)="switchFilter($event)">
                 <ion-select-option class="ion-text-wrap" value="all">
                     {{ 'core.all' | translate }}
                 </ion-select-option>
-                <ion-select-option class="ion-text-wrap" value="overdue">
+                <ion-select-option class="ion-text-wrap core-select-option-border-bottom" value="overdue">
                     {{ 'addon.block_timeline.overdue' | translate }}
                 </ion-select-option>
                 <ion-select-option class="ion-text-wrap core-select-option-title" disabled value="disabled">
@@ -30,13 +38,13 @@
                 </ion-select-option>
             </core-combobox>
         </ion-col>
-        <ion-col class="ion-no-padding ion-hide-md-down" *ngIf="searchEnabled">
+        <ion-col class="ion-hide-md-down" *ngIf="searchEnabled">
             <!-- Filter courses. -->
             <core-search-box (onSubmit)="searchTextChanged($event)" (onClear)="searchTextChanged()"
                 [placeholder]="'addon.block_timeline.searchevents' | translate" autocorrect="off" spellcheck="false" lengthCheck="2"
                 searchArea="AddonBlockTimeline"></core-search-box>
         </ion-col>
-        <ion-col size="auto" class="ion-no-padding">
+        <ion-col size="auto">
             <core-combobox [label]="'core.sortby' | translate" [selection]="sort" (onChange)="switchSort($event)"
                 icon="fas-sort-amount-down-alt">
                 <ion-select-option class="ion-text-wrap" value="sortbydates">
@@ -48,14 +56,7 @@
             </core-combobox>
         </ion-col>
     </ion-row>
-    <ion-row class="ion-no-padding ion-hide-md-up" *ngIf="searchEnabled">
-        <ion-col class="ion-no-padding">
-            <!-- Filter courses. -->
-            <core-search-box (onSubmit)="searchTextChanged($event)" (onClear)="searchTextChanged()"
-                [placeholder]="'addon.block_timeline.searchevents' | translate" autocorrect="off" spellcheck="false" lengthCheck="2"
-                searchArea="AddonBlockTimeline"></core-search-box>
-        </ion-col>
-    </ion-row>
+
 
     <core-loading [hideUntil]="timeline.loaded" [hidden]="sort != 'sortbydates'">
         <addon-block-timeline-events [events]="timeline.events" [canLoadMore]="timeline.canLoadMore" (loadMore)="loadMore()"
