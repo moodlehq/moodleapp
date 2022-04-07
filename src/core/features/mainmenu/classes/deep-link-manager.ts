@@ -78,7 +78,7 @@ export class CoreMainMenuDeepLinkManager {
             if (!params?.course) {
                 CoreCourseHelper.getAndOpenCourse(Number(coursePathMatches[1]), params);
             } else {
-                CoreCourse.openCourse(params.course, params);
+                CoreCourse.openCourse(params.course, navOptions);
             }
         } else {
             CoreNavigator.navigateToSitePath(path, {
