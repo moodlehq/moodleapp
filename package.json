@@ -146,6 +146,7 @@
     "@typescript-eslint/parser": "4.22.0",
     "check-es-compat": "1.1.1",
     "cordova-plugin-androidx-adapter": "1.1.3",
+    "cordova-plugin-screen-orientation": "^3.0.2",
     "cross-env": "7.0.3",
     "eslint": "7.25.0",
     "eslint-config-prettier": "8.3.0",
@@ -237,7 +238,8 @@
       },
       "@moodlehq/cordova-plugin-file-transfer": {},
       "cordova-plugin-prevent-override": {},
-      "cordova-plugin-androidx-adapter": {}
+      "cordova-plugin-androidx-adapter": {},
+      "cordova-plugin-screen-orientation": {}
     }
   },
   "optionalDependencies": {

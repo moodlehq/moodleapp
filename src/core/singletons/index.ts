@@ -120,7 +120,6 @@ export function setCreateSingletonMethodProxy(method: typeof createSingletonMeth
  *
  * @param injectionToken Injection token used to resolve the service. This is usually the service class if the provider was
  * defined using a class or the string used in the `provide` key if it was defined using an object.
- * @param getters Getter names to proxy.
  * @return Singleton proxy.
  */
 export function makeSingleton<Service extends object = object>( // eslint-disable-line @typescript-eslint/ban-types
