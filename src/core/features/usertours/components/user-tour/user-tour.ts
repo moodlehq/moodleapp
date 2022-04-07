@@ -32,7 +32,8 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { AngularFrameworkDelegate } from '@singletons';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreDom } from '@singletons/dom';
-import { CoreEventObserver } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreMainMenuProvider } from '@features/mainmenu/services/mainmenu';
 
 const ANIMATION_DURATION = 200;
 const USER_TOURS_BACK_BUTTON_PRIORITY = 100;
@@ -70,6 +71,7 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
     private wrapperTransform = '';
     private wrapperElement = new CorePromisedValue<HTMLElement>();
     private backButtonListener?: (event: BackButtonEvent) => void;
+    protected mainMenuListener?: CoreEventObserver;
     protected resizeListener?: CoreEventObserver;
     protected scrollListener?: EventListener;
     protected content?: HTMLIonContentElement | null;
@@ -240,15 +242,10 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
             return;
         }
 
-        if (!this.resizeListener) {
-            this.resizeListener = CoreDom.onWindowResize(() => {
-                this.calculateStyles();
-            });
-        }
-
-        if (!this.content) {
-            this.content = CoreDom.closest(this.focus, 'ion-content');
-        }
+        this.mainMenuListener = this.mainMenuListener ??
+            CoreEvents.on(CoreMainMenuProvider.MAIN_MENU_VISIBILITY_UPDATED, () => this.calculateStyles());
+        this.resizeListener = this.resizeListener ?? CoreDom.onWindowResize(() => this.calculateStyles());
+        this.content = this.content ?? CoreDom.closest(this.focus, 'ion-content');
 
         if (!this.scrollListener && this.content) {
             this.content.scrollEvents = true;
@@ -269,9 +266,11 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
 
         this.active = false;
 
+        this.mainMenuListener?.off();
         this.resizeListener?.off();
         this.backButtonListener && document.removeEventListener('ionBackButton', this.backButtonListener);
         this.backButtonListener = undefined;
+        this.mainMenuListener = undefined;
         this.resizeListener = undefined;
 
         if (this.content && this.scrollListener) {

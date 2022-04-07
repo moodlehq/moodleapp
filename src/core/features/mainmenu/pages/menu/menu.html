@@ -1,7 +1,6 @@
 <ion-tabs #mainTabs [hidden]="!showTabs" [class]="'placement-' + tabsPlacement"
     [class.tabshidden]="!isMainScreen && tabsPlacement == 'bottom'" (ionTabsDidChange)="tabChanged($event)">
-    <ion-tab-bar slot="bottom" class="mainmenu-tabs"
-        [@menuShowHideAnimation]="tabsPlacement == 'side' ? '' : (isMainScreen ? 'visible' : 'hidden')">
+    <ion-tab-bar slot="bottom" class="mainmenu-tabs" [@menuVisibilityAnimation]="visibility">
         <ion-spinner *ngIf="!loaded" [attr.aria-label]="'core.loading' | translate"></ion-spinner>
 
         <core-user-menu-button *ngIf="loaded && tabsPlacement == 'side'"></core-user-menu-button>
