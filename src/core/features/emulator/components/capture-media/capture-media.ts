@@ -229,7 +229,8 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
                 return;
             }
 
-            if (!this.streamVideo) {
+            const streamVideo = this.streamVideo;
+            if (!streamVideo) {
                 throw new CoreError('Video element not found.');
             }
 
@@ -245,7 +246,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
             }, 10000);
 
             // Listen for stream ready to display the stream.
-            this.streamVideo.nativeElement.onloadedmetadata = (): void => {
+            streamVideo.nativeElement.onloadedmetadata = (): void => {
                 if (hasLoaded) {
                     // Already loaded or timeout triggered, stop.
                     return;
@@ -254,19 +255,13 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
                 hasLoaded = true;
                 clearTimeout(waitTimeout);
                 this.readyToCapture = true;
-                this.streamVideo!.nativeElement.onloadedmetadata = null;
+                streamVideo.nativeElement.onloadedmetadata = null;
                 // Force change detection. Angular doesn't detect these async operations.
                 this.changeDetectorRef.detectChanges();
             };
 
             // Set the stream as the source of the video.
-            if ('srcObject' in this.streamVideo.nativeElement) {
-                this.streamVideo.nativeElement.srcObject = this.localMediaStream;
-            } else {
-                // Fallback for old browsers.
-                // See https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/srcObject#Examples
-                this.streamVideo.nativeElement.src = window.URL.createObjectURL(this.localMediaStream);
-            }
+            streamVideo.nativeElement.srcObject = this.localMediaStream;
         } catch (error) {
             this.dismissWithError(-1, error.message || error);
         }
@@ -399,7 +394,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
             this.imgCanvas.nativeElement.getContext('2d').drawImage(this.streamVideo?.nativeElement, 0, 0, width, height);
 
             // Convert the image to blob and show it in an image element.
-            this.imgCanvas.nativeElement.toBlob((blob) => {
+            this.imgCanvas.nativeElement.toBlob((blob: Blob) => {
                 loadingModal.dismiss();
 
                 this.mediaBlob = blob;
