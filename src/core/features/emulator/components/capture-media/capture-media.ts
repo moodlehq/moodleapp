@@ -130,7 +130,27 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
      * @return Promise resolved when ready.
      */
     protected async initCordovaMediaPlugin(): Promise<void> {
+
+        try {
+            await this.createFileAndMediaInstance();
+
+            this.readyToCapture = true;
+            this.previewMedia = this.previewAudio?.nativeElement;
+        } catch (error) {
+            this.dismissWithError(-1, error.message || error);
+        }
+    }
+
+    /**
+     * Create a file entry and the cordova media instance.
+     */
+    protected async createFileAndMediaInstance(): Promise<void> {
         this.filePath = this.getFilePath();
+
+        // First create the file.
+        this.fileEntry = await CoreFile.createFile(this.filePath);
+
+        // Now create the media instance.
         let absolutePath = CoreText.concatenatePaths(CoreFile.getBasePathInstant(), this.filePath);
 
         if (Platform.is('ios')) {
@@ -138,17 +158,21 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
             absolutePath = absolutePath.replace(/^file:\/\//, '');
         }
 
-        try {
-            // First create the file.
-            this.fileEntry = await CoreFile.createFile(this.filePath);
+        this.mediaFile = Media.create(absolutePath);
+    }
 
-            // Now create the media instance.
-            this.mediaFile = Media.create(absolutePath);
-            this.readyToCapture = true;
-            this.previewMedia = this.previewAudio?.nativeElement;
-        } catch (error) {
-            this.dismissWithError(-1, error.message || error);
+    /**
+     * Reset the file and the cordova media instance.
+     */
+    protected async resetCordovaMediaCapture(): Promise<void> {
+        if (this.filePath) {
+            // Remove old file, don't block the user for this.
+            CoreFile.removeFile(this.filePath);
         }
+
+        this.mediaFile?.release();
+
+        await this.createFileAndMediaInstance();
     }
 
     /**
@@ -410,10 +434,14 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
     /**
      * Discard the captured media.
      */
-    discard(): void {
+    async discard(): Promise<void> {
         this.previewMedia?.pause();
         this.streamVideo?.nativeElement.play();
         this.audioDrawer?.start();
+
+        if (this.isCordovaAudioCapture) {
+            await this.resetCordovaMediaCapture();
+        }
 
         this.hasCaptured = false;
         this.isCapturing = false;
