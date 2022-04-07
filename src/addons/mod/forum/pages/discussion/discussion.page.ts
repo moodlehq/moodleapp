@@ -75,7 +75,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
     discussion?: AddonModForumDiscussion;
     discussions?: AddonModForumDiscussionDiscussionsSwipeManager;
     startingPost?: Post;
-    posts!: Post[];
+    posts: Post[] = [];
     discussionLoaded = false;
     postSubjects!: { [id: string]: string };
     isOnline!: boolean;
