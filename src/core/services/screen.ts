@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Platform } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 
 /**
@@ -103,9 +103,9 @@ export class CoreScreenService {
     }
 
     get orientation(): CoreScreenOrientation {
-        const mql = window.matchMedia('(orientation: portrait)');
-
-        return mql.matches ? CoreScreenOrientation.PORTRAIT : CoreScreenOrientation.LANDSCAPE;
+        return screen.orientation.type.startsWith(CoreScreenOrientation.LANDSCAPE)
+            ? CoreScreenOrientation.LANDSCAPE
+            : CoreScreenOrientation.PORTRAIT;
     }
 
     get isPortrait(): boolean {
@@ -119,18 +119,12 @@ export class CoreScreenService {
     /**
      * Watch orientation changes.
      */
-    watchOrientation(): void {
-        // Listen media orientation CSS queries.
-        const changeListener = (m: MediaQueryListEvent) => {
-            const orientation = m.matches ? CoreScreenOrientation.PORTRAIT : CoreScreenOrientation.LANDSCAPE;
+    async watchOrientation(): Promise<void> {
+        await Platform.ready();
 
-            CoreEvents.trigger(CoreEvents.ORIENTATION_CHANGE, { orientation });
-        };
-
-        const mql = window.matchMedia('(orientation: portrait)');
-        mql.addEventListener ?
-            mql.addEventListener('change', changeListener) :
-            mql.addListener(changeListener);
+        screen.orientation.addEventListener('change', () => {
+            CoreEvents.trigger(CoreEvents.ORIENTATION_CHANGE, { orientation: this.orientation });
+        });
     }
 
     /**

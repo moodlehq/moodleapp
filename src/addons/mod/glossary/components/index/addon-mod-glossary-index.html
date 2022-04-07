@@ -69,7 +69,8 @@
             [message]="'addon.mod_glossary.noentriesfound' | translate">
         </core-empty-box>
 
-        <core-infinite-loading [enabled]="entries && !entries.completed" [error]="loadMoreError" (action)="loadMoreEntries($event)">
+        <core-infinite-loading [enabled]="entries && !entries.completed && (!isSearch || hasSearched)" [error]="loadMoreError"
+            (action)="loadMoreEntries($event)">
         </core-infinite-loading>
     </core-loading>
 

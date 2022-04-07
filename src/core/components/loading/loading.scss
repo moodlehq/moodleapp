@@ -95,3 +95,10 @@
     flex-direction: column;
     min-height: 100%;
 }
+
+// There is a bug on iOs that displays inside elements in wrong order.
+// This bug seems not to affect other elements like format-text
+:host-context(.ios) {
+    --contents-display: flex;
+    flex-direction: column;
+}
