@@ -2167,6 +2167,8 @@
   "core.settings.cannotsyncloggedout": "local_moodlemobileapp",
   "core.settings.cannotsyncoffline": "local_moodlemobileapp",
   "core.settings.cannotsyncwithoutwifi": "local_moodlemobileapp",
+  "core.settings.changelanguage": "local_moodlemobileapp",
+  "core.settings.changelanguagealert": "local_moodlemobileapp",
   "core.settings.colorscheme": "local_moodlemobileapp",
   "core.settings.colorscheme-dark": "local_moodlemobileapp",
   "core.settings.colorscheme-light": "local_moodlemobileapp",
