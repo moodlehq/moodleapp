@@ -21,6 +21,7 @@ import {
 import { CoreCourseHelper, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
+import { CoreUtils } from '@services/utils/utils';
 import { ModalController } from '@singletons';
 import { CoreDom } from '@singletons/dom';
 
@@ -41,6 +42,7 @@ export class CoreCourseCourseIndexComponent implements OnInit {
     allSectionId = CoreCourseProvider.ALL_SECTIONS_ID;
     highlighted?: string;
     sectionsToRender: CourseIndexSection[] = [];
+    loaded = false;
 
     constructor(
         protected elementRef: ElementRef,
@@ -108,6 +110,13 @@ export class CoreCourseCourseIndexComponent implements OnInit {
             });
 
         this.highlighted = CoreCourseFormatDelegate.getSectionHightlightedName(this.course);
+
+        // Wait a bit to render the data, otherwise the modal takes a while to appear in big courses or slow devices.
+        await CoreUtils.wait(400);
+
+        this.loaded = true;
+
+        await CoreUtils.nextTick();
 
         CoreDom.scrollToElement(
             this.elementRef.nativeElement,
