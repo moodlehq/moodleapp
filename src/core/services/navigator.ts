@@ -658,6 +658,15 @@ export class CoreNavigatorService {
         }
     }
 
+    /**
+     * Check if the current route page can block leaving the route.
+     *
+     * @return Whether the current route page can block leaving the route.
+     */
+    currentRouteCanBlockLeave(): boolean {
+        return !!this.getCurrentRoute().snapshot.routeConfig?.canDeactivate?.length;
+    }
+
 }
 
 export const CoreNavigator = makeSingleton(CoreNavigatorService);

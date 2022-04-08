@@ -897,7 +897,9 @@ export class CoreSitesProvider {
      */
     protected async getPublicConfigAndCheckApplication(site: CoreSite): Promise<void> {
         try {
-            const config = await site.getPublicConfig();
+            const config = await site.getPublicConfig({
+                readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
+            });
 
             await this.checkApplication(config);
         } catch {
