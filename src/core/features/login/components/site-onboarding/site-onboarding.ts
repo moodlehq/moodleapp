@@ -79,7 +79,7 @@ export class CoreLoginSiteOnboardingComponent {
 
         this.saveOnboardingDone();
 
-        CoreUtils.openInBrowser('https://moodle.com/getstarted/');
+        CoreUtils.openInBrowser('https://moodle.com/getstarted/', { showBrowserWarning: false });
 
         ModalController.dismiss();
     }
