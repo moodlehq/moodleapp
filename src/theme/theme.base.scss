@@ -461,6 +461,34 @@ ion-alert.core-nohead {
     }
 }
 
+@keyframes scaleFrom0 {
+    from {
+        /* More performant than animating `width` */
+        transform: scaleX(0);
+    }
+}
+
+ion-alert .alert-button.timed-button{
+    position: relative;
+
+    &::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: 0;
+        background-color: var(--primary-tint);
+        animation: scaleFrom0 10s forwards linear;
+        transform-origin: left;
+        @include rtl() {
+            transform-origin: right;
+        }
+        z-index: -1;
+    }
+}
+
 ion-alert {
     --border-radius: var(--huge-radius);
 
@@ -1054,18 +1082,21 @@ ion-button.chip {
     ion-icon {
         font-size: 16px;
         min-width: 16px;
+        @include margin(0, 8px, 0, 0);
     }
 
+    ion-label {
+        white-space: normal !important;
+    }
+}
+
+ion-button.chip {
     ion-icon[slot=start] {
         @include margin(0, 8px, 0, 0);
     }
 
     ion-icon[slot=end] {
         @include margin(0, 0, 0, 8px);
-    }
-
-    ion-label {
-        white-space: normal !important;
     }
 }
 
