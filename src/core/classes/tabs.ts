@@ -482,6 +482,9 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
      */
     async selectTab(tabId: string, e?: Event): Promise<void> {
         const index = this.tabs.findIndex((tab) => tabId == tab.id);
+        if (index < 0) {
+            return;
+        }
 
         return this.selectByIndex(index, e);
     }

@@ -184,7 +184,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.isSubmittedForGrading = !!this.submitId;
@@ -1195,6 +1195,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
      * @param tab The tab that was selected.
      */
     tabSelected(tab: CoreTabComponent): void {
+        this.selectedTab = tab.id;
         // Block sync when selecting grade tab, unblock when leaving it.
         this.setGradeSyncBlocked(tab.id === 'grade');
     }

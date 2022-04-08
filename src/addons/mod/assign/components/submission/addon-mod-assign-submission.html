@@ -37,7 +37,7 @@
         </ion-item>
 
         <!-- Tabs: see the submission or grade it. -->
-        <core-tabs [selectedIndex]="selectedTab" [hideUntil]="loaded" parentScrollable="true" (ionChange)="tabSelected($event)">
+        <core-tabs [hideUntil]="loaded" parentScrollable="true" (ionChange)="tabSelected($event)">
             <!-- View the submission tab. -->
             <core-tab [title]="'addon.mod_assign.submission' | translate" id="submission">
                 <ng-template>
@@ -139,79 +139,6 @@
                         [submission]="userSubmission" [plugin]="plugin">
                     </addon-mod-assign-submission-plugin>
 
-                    <!-- Add or edit submission. -->
-                    <ion-item class="ion-text-wrap" *ngIf="canEdit">
-                        <ion-label>
-                            <div *ngIf="!unsupportedEditPlugins.length && !showErrorStatementEdit">
-                                <!-- If has offline data, show edit. -->
-                                <ion-button expand="block" class="ion-text-wrap" *ngIf="hasOffline" (click)="goToEdit()">
-                                    {{ 'addon.mod_assign.editsubmission' | translate }}
-                                </ion-button>
-                                <!-- If no submission or is new, show add submission. -->
-                                <ion-button expand="block" class="ion-text-wrap" (click)="goToEdit()" *ngIf="!hasOffline &&
-                                    (!userSubmission || !userSubmission!.status || userSubmission!.status == statusNew)">
-                                    <ng-container *ngIf="!assign?.timelimit || userSubmission?.timestarted">
-                                        {{ 'addon.mod_assign.addsubmission' | translate }}
-                                    </ng-container>
-                                    <ng-container *ngIf="assign?.timelimit && (!userSubmission || !userSubmission.timestarted)">
-                                        {{ 'addon.mod_assign.beginassignment' | translate }}
-                                    </ng-container>
-                                </ion-button>
-                                <!-- If reopened, show addfromprevious and addnewattempt. -->
-                                <ng-container *ngIf="!hasOffline && userSubmission?.status == statusReopened">
-                                    <ion-button *ngIf="!isPreviousAttemptEmpty" expand="block" class="ion-text-wrap"
-                                        (click)="copyPrevious()">
-                                        {{ 'addon.mod_assign.addnewattemptfromprevious' | translate }}
-                                    </ion-button>
-                                    <ion-button expand="block" class="ion-text-wrap" (click)="goToEdit()">
-                                        {{ 'addon.mod_assign.addnewattempt' | translate }}
-                                    </ion-button>
-                                </ng-container>
-                                <!-- Else show editsubmission. -->
-                                <ion-button expand="block" class="ion-text-wrap" *ngIf="!hasOffline && userSubmission &&
-                                    userSubmission!.status && userSubmission!.status != statusNew &&
-                                    userSubmission!.status != statusReopened" (click)="goToEdit()">
-                                    {{ 'addon.mod_assign.editsubmission' | translate }}
-                                </ion-button>
-                            </div>
-                            <div *ngIf="unsupportedEditPlugins && unsupportedEditPlugins.length && !showErrorStatementEdit">
-                                <p class="core-danger-item">{{ 'addon.mod_assign.erroreditpluginsnotsupported' | translate }}</p>
-                                <p class="core-danger-item" *ngFor="let name of unsupportedEditPlugins">{{ name }}</p>
-                            </div>
-                            <div *ngIf="showErrorStatementEdit">
-                                <p class="core-danger-item">{{ 'addon.mod_assign.cannoteditduetostatementsubmission' | translate }}</p>
-                            </div>
-                        </ion-label>
-                    </ion-item>
-
-                    <!-- Submit for grading form. -->
-                    <ng-container *ngIf="canSubmit">
-                        <ion-item class="ion-text-wrap" *ngIf="submissionStatement">
-                            <ion-label>
-                                <core-format-text [text]="submissionStatement" [filter]="false"></core-format-text>
-                            </ion-label>
-                            <ion-checkbox slot="end" name="submissionstatement" [(ngModel)]="acceptStatement">
-                            </ion-checkbox>
-                        </ion-item>
-                        <!-- Submit button. -->
-                        <ion-item class="ion-text-wrap" *ngIf="!showErrorStatementSubmit">
-                            <ion-label>
-                                <ion-button expand="block" class="ion-text-wrap" (click)="submitForGrading(acceptStatement)">
-                                    {{ 'addon.mod_assign.submitassignment' | translate }}
-                                </ion-button>
-                                <p>{{ 'addon.mod_assign.submitassignment_help' | translate }}</p>
-                            </ion-label>
-                        </ion-item>
-                        <!-- Error because we lack submissions statement. -->
-                        <ion-item class="ion-text-wrap" *ngIf="showErrorStatementSubmit">
-                            <ion-label>
-                                <p class="core-danger-item">
-                                    {{ 'addon.mod_assign.cannotsubmitduetostatementsubmission' | translate }}
-                                </p>
-                            </ion-label>
-                        </ion-item>
-                    </ng-container>
-
                     <!-- Team members that need to submit it too. -->
                     <ion-item-divider class="ion-text-wrap" *ngIf="membersToSubmit && membersToSubmit.length > 0">
                         <ion-label>
@@ -236,6 +163,90 @@
                             </ion-item>
                         </ng-container>
                     </ng-container>
+
+                    <!-- Add or edit submission. -->
+                    <div collapsible-footer *ngIf="loaded && !isSubmittedForGrading" [hidden]="selectedTab !== 'submission'" slot="fixed">
+                        <div class="list-item-limited-width adaptable-buttons-row" *ngIf="canEdit || canSubmit">
+                            <ng-container *ngIf="canEdit">
+                                <ng-container *ngIf=" !unsupportedEditPlugins.length && !showErrorStatementEdit">
+                                    <!-- If has offline data, show edit. -->
+                                    <ion-button expand="block" class="ion-text-wrap" *ngIf="hasOffline" (click)="goToEdit()">
+                                        {{ 'addon.mod_assign.editsubmission' | translate }}
+                                    </ion-button>
+                                    <!-- If no submission or is new, show add submission. -->
+                                    <ion-button expand="block" class="ion-text-wrap" (click)="goToEdit()" *ngIf="!hasOffline &&
+                                        (!userSubmission || !userSubmission!.status || userSubmission!.status == statusNew)">
+                                        <ng-container *ngIf="!assign?.timelimit || userSubmission?.timestarted">
+                                            {{ 'addon.mod_assign.addsubmission' | translate }}
+                                        </ng-container>
+                                        <ng-container *ngIf="assign?.timelimit && (!userSubmission || !userSubmission.timestarted)">
+                                            {{ 'addon.mod_assign.beginassignment' | translate }}
+                                        </ng-container>
+                                    </ion-button>
+                                    <!-- If reopened, show addfromprevious and addnewattempt. -->
+                                    <ng-container *ngIf="!hasOffline && userSubmission?.status == statusReopened">
+                                        <ion-button *ngIf="!isPreviousAttemptEmpty" expand="block" class="ion-text-wrap"
+                                            (click)="copyPrevious()">
+                                            {{ 'addon.mod_assign.addnewattemptfromprevious' | translate }}
+                                        </ion-button>
+                                        <ion-button expand="block" class="ion-text-wrap" (click)="goToEdit()">
+                                            {{ 'addon.mod_assign.addnewattempt' | translate }}
+                                        </ion-button>
+                                    </ng-container>
+                                    <!-- Else show editsubmission. -->
+                                    <ion-button expand="block" class="ion-text-wrap" *ngIf="!hasOffline && userSubmission &&
+                                        userSubmission!.status && userSubmission!.status != statusNew &&
+                                        userSubmission!.status != statusReopened" (click)="goToEdit()">
+                                        {{ 'addon.mod_assign.editsubmission' | translate }}
+                                    </ion-button>
+                                </ng-container>
+                                <ion-item class="core-danger-item ion-text-wrap" *ngIf="(unsupportedEditPlugins
+                                    && unsupportedEditPlugins.length && !showErrorStatementEdit)|| showErrorStatementEdit">
+                                    <ion-label>
+                                        <ng-container
+                                            *ngIf="unsupportedEditPlugins && unsupportedEditPlugins.length && !showErrorStatementEdit">
+                                            <p>{{ 'addon.mod_assign.erroreditpluginsnotsupported' | translate }}</p>
+                                            <p *ngFor="let name of unsupportedEditPlugins">{{ name }}</p>
+                                        </ng-container>
+                                        <ng-container *ngIf="showErrorStatementEdit">
+                                            <p>{{ 'addon.mod_assign.cannoteditduetostatementsubmission' | translate }}</p>
+                                        </ng-container>
+                                    </ion-label>
+                                </ion-item>
+
+                            </ng-container>
+
+                            <!-- Submit for grading form. -->
+                            <ng-container *ngIf="canSubmit">
+                                <ion-item class="ion-text-wrap" *ngIf="submissionStatement">
+                                    <ion-label>
+                                        <core-format-text [text]="submissionStatement" [filter]="false"></core-format-text>
+                                    </ion-label>
+                                    <ion-checkbox slot="end" name="submissionstatement" [(ngModel)]="acceptStatement">
+                                    </ion-checkbox>
+                                </ion-item>
+                                <!-- Submit button. -->
+                                <ion-item class="ion-text-wrap" *ngIf="!showErrorStatementSubmit">
+                                    <ion-label>
+                                        <ion-button expand="block" class="ion-text-wrap" (click)="submitForGrading(acceptStatement)">
+                                            {{ 'addon.mod_assign.submitassignment' | translate }}
+                                        </ion-button>
+                                        <p>{{ 'addon.mod_assign.submitassignment_help' | translate }}</p>
+                                    </ion-label>
+                                </ion-item>
+                                <!-- Error because we lack submissions statement. -->
+                                <ion-item class="ion-text-wrap" *ngIf="showErrorStatementSubmit">
+                                    <ion-label>
+                                        <p class="core-danger-item">
+                                            {{ 'addon.mod_assign.cannotsubmitduetostatementsubmission' | translate }}
+                                        </p>
+                                    </ion-label>
+                                </ion-item>
+                            </ng-container>
+                        </div>
+                        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="moduleId">
+                        </core-course-module-navigation>
+                    </div>
                 </ng-template>
             </core-tab>
 
