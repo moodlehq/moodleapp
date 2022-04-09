@@ -118,7 +118,7 @@
     "es6-promise-plugin": "4.2.2",
     "jszip": "3.5.0",
     "mathjax": "2.7.7",
-    "moment": "2.29.0",
+    "moment": "2.29.2",
     "nl.kingsquare.cordova.background-audio": "1.0.1",
     "phonegap-plugin-multidex": "1.0.0",
     "phonegap-plugin-push": "git+https://github.com/moodlemobile/phonegap-plugin-push.git#moodle-v3",
