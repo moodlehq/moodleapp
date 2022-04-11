@@ -41,6 +41,10 @@ const appRoutes: Routes = [
         canActivate: [CoreMainMenuAuthGuard],
         canLoad: [CoreMainMenuAuthGuard],
     },
+    {
+        path: 'reload',
+        loadChildren: () => import('./pages/reload/reload.module').then( m => m.CoreMainMenuReloadPageModule),
+    },
 ];
 
 @NgModule({
