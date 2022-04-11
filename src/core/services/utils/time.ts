@@ -76,7 +76,7 @@ export class CoreTimeUtilsProvider {
         moment.relativeTimeThreshold('s', 60);
         moment.relativeTimeThreshold('m', 60);
         moment.relativeTimeThreshold('h', 24);
-        moment.relativeTimeThreshold('d', 31);
+        moment.relativeTimeThreshold('d', 30);
         moment.relativeTimeThreshold('M', 12);
         moment.relativeTimeThreshold('y', 365);
         moment.relativeTimeThreshold('ss', 0); // To display exact number of seconds instead of just "a few seconds".
