@@ -31,6 +31,8 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 import { CoreSites } from '@services/sites';
 import { CoreDom } from '@singletons/dom';
 
+const ANIMATION_DURATION = 500;
+
 /**
  * Page that displays the main menu of the app.
  */
@@ -38,7 +40,7 @@ import { CoreDom } from '@singletons/dom';
     selector: 'page-core-mainmenu',
     templateUrl: 'menu.html',
     animations: [
-        trigger('menuShowHideAnimation', [
+        trigger('menuVisibilityAnimation', [
             state('hidden', style({
                 height: 0,
                 visibility: 'hidden',
@@ -49,11 +51,11 @@ import { CoreDom } from '@singletons/dom';
             })),
             transition('visible => hidden', [
                 style({ transform: 'translateY(0)' }),
-                animate('500ms ease-in-out', style({ transform: 'translateY(100%)' })),
+                animate(`${ANIMATION_DURATION}ms ease-in-out`, style({ transform: 'translateY(100%)' })),
             ]),
             transition('hidden => visible', [
                 style({ transform: 'translateY(100%)',  visibility: 'visible', height: '*' }),
-                animate('500ms ease-in-out', style({ transform: 'translateY(0)' })),
+                animate(`${ANIMATION_DURATION}ms ease-in-out`, style({ transform: 'translateY(0)' })),
             ]),
         ])],
     styleUrls: ['menu.scss'],
@@ -69,6 +71,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
     selectedTab?: string;
     isMainScreen = false;
     moreBadge = false;
+    visibility = 'hidden';
 
     protected subscription?: Subscription;
     protected navSubscription?: Subscription;
@@ -93,8 +96,9 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
         // Listen navigation events to show or hide tabs.
         this.navSubscription = Router.events
             .pipe(filter(event => event instanceof NavigationEnd))
-            .subscribe(async () => {
+            .subscribe(() => {
                 this.isMainScreen = !this.mainTabs?.outlet.canGoBack();
+                this.updateVisibility();
             });
     }
 
@@ -108,6 +112,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
         this.redirectOptions = CoreNavigator.getRouteParam('redirectOptions');
 
         this.isMainScreen = !this.mainTabs?.outlet.canGoBack();
+        this.updateVisibility();
 
         this.subscription = CoreMainMenuDelegate.getHandlersObservable().subscribe((handlers) => {
             // Remove the handlers that should only appear in the More menu.
@@ -151,6 +156,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
             return;
         }
         this.tabsPlacement = CoreMainMenu.getTabPlacement();
+        this.updateVisibility();
 
         const handlers = this.allHandlers
             .filter((handler) => !handler.onlyInMore)
@@ -241,6 +247,20 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
     }
 
     /**
+     * Update menu visibility.
+     */
+    protected updateVisibility(): void {
+        const visibility = this.tabsPlacement == 'side' ? '' : (this.isMainScreen ? 'visible' : 'hidden');
+
+        if (visibility === this.visibility) {
+            return;
+        }
+
+        this.visibility = visibility;
+        this.notifyVisibilityUpdated();
+    }
+
+    /**
      * Back button clicked.
      *
      * @param event Event.
@@ -288,6 +308,17 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
     protected async currentRouteIsMainMenuRoot(): Promise<boolean> {
         // Check if the current route is the root of the current main menu tab.
         return !!CoreNavigator.getCurrentRoute({ routeData: { mainMenuTabRoot: CoreNavigator.getCurrentMainMenuTab() } });
+    }
+
+    /**
+     * Notify that the menu visibility has been updated.
+     */
+    protected async notifyVisibilityUpdated(): Promise<void> {
+        await CoreUtils.nextTick();
+        await CoreUtils.wait(ANIMATION_DURATION);
+        await CoreUtils.nextTick();
+
+        CoreEvents.trigger(CoreMainMenuProvider.MAIN_MENU_VISIBILITY_UPDATED);
     }
 
 }

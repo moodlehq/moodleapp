@@ -33,6 +33,7 @@ declare module '@singletons/events' {
      */
     export interface CoreEventsData {
         [CoreMainMenuProvider.MAIN_MENU_HANDLER_BADGE_UPDATED]: CoreMainMenuHandlerBadgeUpdatedEventData;
+        [CoreMainMenuProvider.MAIN_MENU_VISIBILITY_UPDATED]: void;
     }
 
 }
@@ -47,6 +48,7 @@ export class CoreMainMenuProvider {
     static readonly ITEM_MIN_WIDTH = 72; // Min with of every item, based on 5 items on a 360 pixel wide screen.
     static readonly MORE_PAGE_NAME = 'more';
     static readonly MAIN_MENU_HANDLER_BADGE_UPDATED = 'main_menu_handler_badge_updated';
+    static readonly MAIN_MENU_VISIBILITY_UPDATED = 'main_menu_visbility_updated';
 
     /**
      * Get the current main menu handlers.
