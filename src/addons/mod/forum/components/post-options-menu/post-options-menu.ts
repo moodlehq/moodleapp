@@ -34,7 +34,6 @@ export class AddonModForumPostOptionsMenuComponent implements OnInit, OnDestroy 
     @Input() cmId!: number;
     @Input() forumId!: number; // The forum Id.
 
-    wordCount?: number | null; // Number of words when available.
     canEdit = false;
     canDelete = false;
     loaded = false;
@@ -89,7 +88,6 @@ export class AddonModForumPostOptionsMenuComponent implements OnInit, OnDestroy 
 
         this.canDelete = !!this.post.capabilities.delete && AddonModForum.isDeletePostAvailable();
         this.canEdit = !!this.post.capabilities.edit && AddonModForum.isUpdatePostAvailable();
-        this.wordCount = (this.post.haswordcount && this.post.wordcount) || null;
         this.loaded = true;
     }
 
