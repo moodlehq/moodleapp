@@ -345,8 +345,9 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         }
 
         const forum = this.forum;
+        const showDueDateMessage = !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.11');
         this.description = forum.intro || this.description;
-        this.availabilityMessage = AddonModForumHelper.getAvailabilityMessage(forum);
+        this.availabilityMessage = AddonModForumHelper.getAvailabilityMessage(forum, showDueDateMessage);
         this.descriptionNote = Translate.instant('addon.mod_forum.numdiscussions', {
             numdiscussions: forum.numdiscussions,
         });
