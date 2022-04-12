@@ -705,4 +705,16 @@ class AddonModForumDiscussionsManager extends CoreListItemsManager<AddonModForum
         }
     }
 
+    /**
+     * Check whether there is any discussion in the items.
+     *
+     * @return Whether there is a discussion.
+     */
+    get hasDiscussions(): boolean {
+        const source = this.getSource();
+        const items = source.getItems();
+
+        return items !== null && items.some(item => !source.isNewDiscussionForm(item));
+    }
+
 }
