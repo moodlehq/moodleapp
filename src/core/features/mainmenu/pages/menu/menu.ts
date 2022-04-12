@@ -30,6 +30,7 @@ import { NavigationEnd } from '@angular/router';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { CoreSites } from '@services/sites';
 import { CoreDom } from '@singletons/dom';
+import { CoreLogger } from '@singletons/logger';
 
 const ANIMATION_DURATION = 500;
 
@@ -84,6 +85,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
     protected urlToOpen?: string;
     protected redirectPath?: string;
     protected redirectOptions?: CoreNavigationOptions;
+    protected logger: CoreLogger;
 
     @ViewChild('mainTabs') mainTabs?: IonTabs;
 
@@ -92,6 +94,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
     constructor() {
         this.backButtonFunction = this.backButtonClicked.bind(this);
         this.tabAction = new CoreMainMenuRoleTab(this);
+        this.logger = CoreLogger.getInstance('CoreMainMenuPage');
 
         // Listen navigation events to show or hide tabs.
         this.navSubscription = Router.events
@@ -193,6 +196,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
 
             const tabPage = this.tabs[0] ? this.tabs[0].page : this.morePageName;
             const tabPageParams = this.tabs[0] ? this.tabs[0].pageParams : {};
+            this.logger.debug(`Select first tab: ${tabPage}.`, this.tabs);
 
             // Use navigate instead of mainTabs.select to be able to pass page params.
             CoreNavigator.navigate(tabPage, {

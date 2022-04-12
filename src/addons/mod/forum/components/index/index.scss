@@ -18,6 +18,11 @@
 
                 ion-icon {
                     @include margin(0, 6px, 0, 0);
+
+                    &.addon-mod-forum-locked-icon {
+                        @include margin-horizontal(4px, 0px);
+                        color: var(--gray-500);
+                    }
                 }
 
             }

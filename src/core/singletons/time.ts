@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import moment from 'moment';
+import { Translate } from '@singletons';
+import { CoreConstants } from '../constants';
 
 /**
  * Singleton with helper functions for time operations.
@@ -27,37 +28,54 @@ export class CoreTime {
      * @return Seconds in a human readable format.
      */
     static formatTime(seconds: number, precision = 2): string {
-        precision = precision || 6; // Use max precision if 0 is passed.
+        precision = precision || 5; // Use max precision if 0 is passed.
 
-        const eventDuration = moment.duration(Math.abs(seconds), 'seconds');
-        let durationString = '';
-
-        if (precision && eventDuration.years() > 0) {
-            durationString += ' ' + moment.duration(eventDuration.years(), 'years').humanize();
-            precision--;
-        }
-        if (precision && eventDuration.months() > 0) {
-            durationString += ' ' + moment.duration(eventDuration.months(), 'months').humanize();
-            precision--;
-        }
-        if (precision && eventDuration.days() > 0) {
-            durationString += ' ' + moment.duration(eventDuration.days(), 'days').humanize();
-            precision--;
-        }
-        if (precision && eventDuration.hours() > 0) {
-            durationString += ' ' + moment.duration(eventDuration.hours(), 'hours').humanize();
-            precision--;
-        }
-        if (precision && eventDuration.minutes() > 0) {
-            durationString += ' ' + moment.duration(eventDuration.minutes(), 'minutes').humanize();
-            precision--;
-        }
-        if (precision && (eventDuration.seconds() > 0 || !durationString)) {
-            durationString += ' ' + moment.duration(eventDuration.seconds(), 'seconds').humanize();
-            precision--;
+        const totalSecs = Math.abs(seconds);
+        if (!totalSecs) {
+            return Translate.instant('core.now');
         }
 
-        return durationString.trim();
+        const years = Math.floor(totalSecs / CoreConstants.SECONDS_YEAR);
+        let remainder = totalSecs - (years * CoreConstants.SECONDS_YEAR);
+        const days = Math.floor(remainder / CoreConstants.SECONDS_DAY);
+
+        remainder = totalSecs - (days * CoreConstants.SECONDS_DAY);
+
+        const hours = Math.floor(remainder / CoreConstants.SECONDS_HOUR);
+        remainder = remainder - (hours * CoreConstants.SECONDS_HOUR);
+
+        const mins = Math.floor(remainder / CoreConstants.SECONDS_MINUTE);
+        const secs = remainder - (mins * CoreConstants.SECONDS_MINUTE);
+
+        const secondsUnit = Translate.instant('core.' + (secs === 1 ? 'sec' : 'secs'));
+        const minutesUnit = Translate.instant('core.' + (mins === 1 ? 'min' : 'mins'));
+        const hoursUnit = Translate.instant('core.' + (hours === 1 ? 'hour' : 'hours'));
+        const daysUnit = Translate.instant('core.' + (days === 1 ? 'day' : 'days'));
+        const yearsUnit = Translate.instant('core.' + (years === 1 ? 'year' : 'years'));
+        const parts: string[] = [];
+
+        if (precision && years) {
+            parts.push(`${years} ${yearsUnit}`);
+            precision--;
+        }
+        if (precision && days) {
+            parts.push(`${days} ${daysUnit}`);
+            precision--;
+        }
+        if (precision && hours) {
+            parts.push(`${hours} ${hoursUnit}`);
+            precision--;
+        }
+        if (precision && mins) {
+            parts.push(`${mins} ${minutesUnit}`);
+            precision--;
+        }
+        if (precision && secs) {
+            parts.push(`${secs} ${secondsUnit}`);
+            precision--;
+        }
+
+        return parts.join(' ');
     }
 
     /**

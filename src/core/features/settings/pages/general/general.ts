@@ -26,6 +26,7 @@ import { Diagnostic, Translate } from '@singletons';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { AlertButton } from '@ionic/angular';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that displays the general settings.
@@ -168,7 +169,10 @@ export class CoreSettingsGeneralPage {
         await CoreUtils.ignoreErrors(Promise.all(sites.map((site) => site.invalidateWsCache())));
 
         CoreEvents.trigger(CoreEvents.LANGUAGE_CHANGED, this.selectedLanguage);
-        window.location.reload();
+
+        CoreNavigator.navigate('/reload', {
+            reset: true,
+        });
     }
 
     /**

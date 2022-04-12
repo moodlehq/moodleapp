@@ -63,6 +63,9 @@
             <core-format-text [component]="component" [componentId]="componentId" [text]="post.message" contextLevel="module"
                 [contextInstanceId]="forum && forum.cmid" [courseId]="courseId">
             </core-format-text>
+            <p *ngIf="post.haswordcount && post.wordcount">
+                <em>{{ 'core.numwords' | translate: {'$a': post.wordcount} }}</em>
+            </p>
             <div *ngIf="post.attachments && post.attachments.length > 0">
                 <core-files [files]="post.attachments" [component]="component" [componentId]="componentId" showInline="true">
                 </core-files>
