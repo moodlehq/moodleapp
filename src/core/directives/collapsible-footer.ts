@@ -254,6 +254,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
             this.page.removeEventListener('ionViewDidEnter', this.pageDidEnterListener);
         }
 
+        this.element?.remove();
         this.resizeListener?.off();
         this.slotPromise?.cancel();
         this.viewportPromise?.cancel();
