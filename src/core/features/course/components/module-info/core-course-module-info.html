@@ -34,7 +34,7 @@
     </div>
 
     <!-- Availability info space. -->
-    <div class="core-module-availabilityinfo core-module-info-box-section" *ngIf="showAvailabilityInfo">
+    <div class="core-module-availabilityinfo core-module-info-box-section" *ngIf="showAvailabilityInfo && module.availabilityinfo">
         <ion-icon name="fas-lock" [attr.aria-label]="'core.restricted' | translate"></ion-icon>
         <core-format-text [text]="module.availabilityinfo" contextLevel="module" [contextInstanceId]="module.id" [courseId]="module.course">
         </core-format-text>
