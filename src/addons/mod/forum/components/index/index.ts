@@ -85,6 +85,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     sortOrders: AddonModForumSortOrder[] = [];
     canPin = false;
     hasOfflineRatings = false;
+    showQAMessage = false;
     sortOrderSelectorModalOptions: ModalOptions = {
         component: AddonModForumSortOrderSelectorComponent,
     };
@@ -404,6 +405,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                     const cutoffDateReached = AddonModForumHelper.isCutoffDateReached(forum)
                                     && !accessInfo.cancanoverridecutoff;
                     this.canAddDiscussion = !!forum.cancreatediscussions && !cutoffDateReached;
+                    this.showQAMessage = forum.type === 'qanda' && !accessInfo.canviewqandawithoutposting;
 
                     return;
                 }),

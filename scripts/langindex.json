@@ -657,6 +657,7 @@
   "addon.mod_forum.posttoforum": "forum",
   "addon.mod_forum.posttomygroups": "forum",
   "addon.mod_forum.privatereply": "forum",
+  "addon.mod_forum.qandanotify": "forum",
   "addon.mod_forum.re": "forum",
   "addon.mod_forum.refreshposts": "local_moodlemobileapp",
   "addon.mod_forum.removefromfavourites": "forum",
