@@ -640,6 +640,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
             CoreSync.unblockOperation(AddonModForumProvider.COMPONENT, this.syncId);
         }
         this.isDestroyed = true;
+        this.discussions?.destroy();
     }
 
 }
