@@ -472,4 +472,13 @@ class AddonModGlossaryEntriesManager extends CoreListItemsManager<AddonModGlossa
         }
     }
 
+    /**
+     * Check whether there is any entry in the items.
+     *
+     * @return Whether there is an entry.
+     */
+    get hasEntries(): boolean {
+        return this.getSource().onlineEntries.length > 0 || this.getSource().offlineEntries.length > 0;
+    }
+
 }
