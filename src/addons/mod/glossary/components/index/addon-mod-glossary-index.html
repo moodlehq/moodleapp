@@ -65,7 +65,7 @@
             </ng-container>
         </ion-list>
 
-        <core-empty-box *ngIf="(!entries || entries.empty) && (!isSearch || hasSearched)" icon="fas-list"
+        <core-empty-box *ngIf="(!entries || !entries.hasEntries) && (!isSearch || hasSearched)" icon="fas-list"
             [message]="'addon.mod_glossary.noentriesfound' | translate">
         </core-empty-box>
 

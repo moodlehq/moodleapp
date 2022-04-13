@@ -127,6 +127,11 @@
                 <ion-label>{{ 'addon.mod_assign.'+summary.warnofungroupedusers | translate }}</ion-label>
             </ion-item>
         </ion-card>
+
+        <div collapsible-footer *ngIf="!showLoading" slot="fixed">
+            <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id">
+            </core-course-module-navigation>
+        </div>
     </ng-container>
 
     <!-- If it's a student, display his submission. -->

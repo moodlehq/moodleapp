@@ -105,6 +105,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
     cmId?: number;
     canPin = false;
     availabilityMessage: string | null = null;
+    showQAMessage = false;
     leavingPage = false;
 
     protected forumId?: number;
@@ -492,6 +493,11 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
                                     post.capabilities.reply = false;
                                 });
                             }
+
+                            // Show Q&A message if user hasn't posted.
+                            const currentUserId = CoreSites.getCurrentSiteUserId();
+                            this.showQAMessage = forum.type === 'qanda' && !accessInfo.canviewqandawithoutposting &&
+                                !posts.some(post => post.author.id === currentUserId);
 
                             return;
                         }),

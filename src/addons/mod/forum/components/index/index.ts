@@ -85,6 +85,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     sortOrders: AddonModForumSortOrder[] = [];
     canPin = false;
     hasOfflineRatings = false;
+    showQAMessage = false;
     sortOrderSelectorModalOptions: ModalOptions = {
         component: AddonModForumSortOrderSelectorComponent,
     };
@@ -345,8 +346,9 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         }
 
         const forum = this.forum;
+        const showDueDateMessage = !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.11');
         this.description = forum.intro || this.description;
-        this.availabilityMessage = AddonModForumHelper.getAvailabilityMessage(forum);
+        this.availabilityMessage = AddonModForumHelper.getAvailabilityMessage(forum, showDueDateMessage);
         this.descriptionNote = Translate.instant('addon.mod_forum.numdiscussions', {
             numdiscussions: forum.numdiscussions,
         });
@@ -403,6 +405,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                     const cutoffDateReached = AddonModForumHelper.isCutoffDateReached(forum)
                                     && !accessInfo.cancanoverridecutoff;
                     this.canAddDiscussion = !!forum.cancreatediscussions && !cutoffDateReached;
+                    this.showQAMessage = forum.type === 'qanda' && !accessInfo.canviewqandawithoutposting;
 
                     return;
                 }),
@@ -700,6 +703,18 @@ class AddonModForumDiscussionsManager extends CoreListItemsManager<AddonModForum
         } catch {
             // Ignore errors.
         }
+    }
+
+    /**
+     * Check whether there is any discussion in the items.
+     *
+     * @return Whether there is a discussion.
+     */
+    get hasDiscussions(): boolean {
+        const source = this.getSource();
+        const items = source.getItems();
+
+        return items !== null && items.some(item => !source.isNewDiscussionForm(item));
     }
 
 }
