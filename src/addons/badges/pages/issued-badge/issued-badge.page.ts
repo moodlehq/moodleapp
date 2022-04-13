@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -34,7 +34,7 @@ import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/
     selector: 'page-addon-badges-issued-badge',
     templateUrl: 'issued-badge.html',
 })
-export class AddonBadgesIssuedBadgePage implements OnInit {
+export class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
 
     protected badgeHash = '';
     protected userId!: number;
@@ -69,6 +69,13 @@ export class AddonBadgesIssuedBadgePage implements OnInit {
         });
 
         this.badges.start();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.badges.destroy();
     }
 
     /**

@@ -126,6 +126,7 @@ export class CoreSitePreferencesPage implements AfterViewInit, OnDestroy {
     ngOnDestroy(): void {
         this.isDestroyed = true;
         this.sitesObserver?.off();
+        this.handlers.destroy();
     }
 
 }
