@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { AsyncComponent } from '@classes/async-component';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreLogger } from './logger';
@@ -22,28 +22,28 @@ import { CoreLogger } from './logger';
  */
 export class CoreComponentsRegistry {
 
-    private static instances: WeakMap<Element, unknown> = new WeakMap();
+    protected static instances: WeakMap<Element | ActivatedRoute, unknown> = new WeakMap();
     protected static logger = CoreLogger.getInstance('CoreComponentsRegistry');
 
     /**
      * Register a component instance.
      *
-     * @param element Root element.
+     * @param key Root element or Activated route to associate with the component.
      * @param instance Component instance.
      */
-    static register(element: Element, instance: unknown): void {
-        this.instances.set(element, instance);
+    static register(key: Element | ActivatedRoute, instance: unknown): void {
+        this.instances.set(key, instance);
     }
 
     /**
      * Resolve a component instance.
      *
-     * @param element Root element.
+     * @param key Root element or Activated route associated with the component.
      * @param componentClass Component class.
      * @returns Component instance.
      */
-    static resolve<T>(element?: Element | null, componentClass?: ComponentConstructor<T>): T | null {
-        const instance = (element && this.instances.get(element) as T) ?? null;
+    static resolve<T>(key?: Element | ActivatedRoute | null, componentClass?: ComponentConstructor<T>): T | null {
+        const instance = (key && this.instances.get(key) as T) ?? null;
 
         return instance && (!componentClass || instance instanceof componentClass)
             ? instance
@@ -53,12 +53,12 @@ export class CoreComponentsRegistry {
     /**
      * Get a component instances and fail if it cannot be resolved.
      *
-     * @param element Root element.
+     * @param key Root element or Activated route associated with the component.
      * @param componentClass Component class.
      * @returns Component instance.
      */
-    static require<T>(element: Element, componentClass?: ComponentConstructor<T>): T {
-        const instance = this.resolve(element, componentClass);
+    static require<T>(key: Element | ActivatedRoute, componentClass?: ComponentConstructor<T>): T {
+        const instance = this.resolve(key, componentClass);
 
         if (!instance) {
             throw new Error('Couldn\'t resolve component instance');
@@ -70,17 +70,17 @@ export class CoreComponentsRegistry {
     /**
      * Get a component instances and wait to be ready.
      *
-     * @param element Root element.
+     * @param key Root element or Activated route associated with the component.
      * @param componentClass Component class.
      * @return Promise resolved when done.
      */
     static async waitComponentReady<T extends AsyncComponent>(
-        element: Element | null,
+        key: Element | ActivatedRoute | null,
         componentClass?: ComponentConstructor<T>,
     ): Promise<void> {
-        const instance = this.resolve(element, componentClass);
+        const instance = this.resolve<T>(key, componentClass);
         if (!instance) {
-            this.logger.error('No instance registered for element ' + componentClass, element);
+            this.logger.error('No instance registered for element ' + componentClass, key);
 
             return;
         }
@@ -126,4 +126,4 @@ export class CoreComponentsRegistry {
  * Component constructor.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type ComponentConstructor<T = Component> = { new(...args: any[]): T };
+export type ComponentConstructor<T = unknown> = { new(...args: any[]): T };

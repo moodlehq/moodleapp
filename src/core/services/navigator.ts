@@ -30,6 +30,8 @@ import { CoreScreen } from './screen';
 import { CoreApp } from './app';
 import { CoreError } from '@classes/errors/error';
 import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
+import { isCanLeave } from '@guards/can-leave';
+import { CoreComponentsRegistry } from '@singletons/components-registry';
 
 /**
  * Redirect payload.
@@ -659,12 +661,38 @@ export class CoreNavigatorService {
     }
 
     /**
-     * Check if the current route page can block leaving the route.
+     * Check if the current route can leave.
      *
-     * @return Whether the current route page can block leaving the route.
+     * @return Whether the current route can leave.
      */
-    currentRouteCanBlockLeave(): boolean {
-        return !!this.getCurrentRoute().snapshot.routeConfig?.canDeactivate?.length;
+    async currentRouteCanLeave(): Promise<boolean> {
+        let route: ActivatedRoute | null = this.getCurrentRoute();
+
+        while (route) {
+            const canLeave = await this.routeComponentCanLeave(route);
+
+            if (!canLeave) {
+                return false;
+            }
+
+            route = route.parent;
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks whether the component associated with the given route can leave.
+     *
+     * @param route Route.
+     * @returns Whether the component associated with the route can leave.
+     */
+    protected async routeComponentCanLeave(route: ActivatedRoute): Promise<boolean> {
+        const routeComponent = CoreComponentsRegistry.resolve(route);
+
+        return routeComponent && isCanLeave(routeComponent)
+            ? await CoreUtils.ignoreErrors(routeComponent.canLeave(), false)
+            : true;
     }
 
 }

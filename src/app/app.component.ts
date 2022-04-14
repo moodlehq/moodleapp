@@ -32,6 +32,7 @@ import { CoreConstants } from '@/core/constants';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreDom } from '@singletons/dom';
+import { CoreComponentsRegistry } from '@singletons/components-registry';
 
 const MOODLE_VERSION_PREFIX = 'version-';
 const MOODLEAPP_VERSION_PREFIX = 'moodleapp-';
@@ -293,11 +294,15 @@ export class AppComponent implements OnInit, AfterViewInit {
      * @inheritdoc
      */
     ngAfterViewInit(): void {
-        if (!this.outlet) {
+        const outlet = this.outlet;
+
+        if (!outlet) {
             return;
         }
 
-        CoreSubscriptions.once(this.outlet.activateEvents, () => SplashScreen.hide());
+        CoreSubscriptions.once(outlet.activateEvents, () => SplashScreen.hide());
+
+        outlet.activateEvents.subscribe(component => CoreComponentsRegistry.register(outlet.activatedRoute, component));
     }
 
     /**

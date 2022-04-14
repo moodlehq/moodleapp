@@ -16,6 +16,7 @@ import { AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild } fro
 import { ActivatedRouteSnapshot } from '@angular/router';
 import { IonContent, IonRouterOutlet } from '@ionic/angular';
 import { CoreScreen } from '@services/screen';
+import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 
 export enum CoreSplitViewMode {
@@ -66,7 +67,11 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
         this.disableScrollOnParent();
 
         this.subscriptions = [
-            this.contentOutlet.activateEvents.subscribe(() => this.updateOutletRoute()),
+            this.contentOutlet.activateEvents.subscribe(component => {
+                CoreComponentsRegistry.register(this.contentOutlet.activatedRoute, component);
+
+                this.updateOutletRoute();
+            }),
             this.contentOutlet.deactivateEvents.subscribe(() => this.updateOutletRoute()),
             CoreScreen.layoutObservable.subscribe(() => this.updateClasses()),
         ];

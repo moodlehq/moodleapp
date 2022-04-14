@@ -111,7 +111,9 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
 
             this.showHideNavBarButtons(stackEvent.enteringView.element.tagName);
         });
-        this.outletActivatedSubscription = this.ionTabs.outlet.activateEvents.subscribe(() => {
+        this.outletActivatedSubscription = this.ionTabs.outlet.activateEvents.subscribe(component => {
+            CoreComponentsRegistry.register(this.ionTabs.outlet.activatedRoute, component);
+
             this.lastActiveComponent = this.ionTabs.outlet.component;
         });
     }

@@ -28,7 +28,7 @@ import {
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { ModalController, Translate } from '@singletons';
+import { ModalController } from '@singletons';
 import { Subscription } from 'rxjs';
 
 /**
@@ -172,9 +172,9 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
      * @param event Click event
      */
     async logout(event: Event): Promise<void> {
-        if (CoreNavigator.currentRouteCanBlockLeave()) {
-            await CoreDomUtils.showAlert(undefined, Translate.instant('core.cannotlogoutpageblocks'));
+        const canLeave = await CoreNavigator.currentRouteCanLeave();
 
+        if (!canLeave) {
             return;
         }
 
@@ -206,9 +206,9 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
      * @param event Click event
      */
     async switchAccounts(event: Event): Promise<void> {
-        if (CoreNavigator.currentRouteCanBlockLeave()) {
-            await CoreDomUtils.showAlert(undefined, Translate.instant('core.cannotlogoutpageblocks'));
+        const canLeave = await CoreNavigator.currentRouteCanLeave();
 
+        if (!canLeave) {
             return;
         }
 

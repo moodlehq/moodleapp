@@ -20,17 +20,25 @@ import { CoreUtils } from '@services/utils/utils';
 export class CanLeaveGuard implements CanDeactivate<unknown> {
 
     async canDeactivate(component: unknown | null): Promise<boolean> {
-        if (!this.isCanLeave(component)) {
+        if (!isCanLeave(component)) {
             return true;
         }
 
         return CoreUtils.ignoreErrors(component.canLeave(), false);
     }
 
-    isCanLeave(component: unknown | null): component is CanLeave {
-        return component !== null && 'canLeave' in <CanLeave> component;
-    }
+}
 
+/**
+ * Type guard that checks whether the given component implements the CanLeave interface.
+ *
+ * @param component Component.
+ * @returns Whether the component implements the CanLeave interface.
+ */
+export function isCanLeave(component: unknown): component is CanLeave {
+    return typeof component === 'object'
+        && component !== null
+        && 'canLeave' in component;
 }
 
 export interface CanLeave {
