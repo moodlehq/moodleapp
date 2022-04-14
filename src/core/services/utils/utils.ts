@@ -1112,7 +1112,7 @@ export class CoreUtilsProvider {
     async openInBrowser(url: string, options: CoreUtilsOpenInBrowserOptions = {}): Promise<void> {
         if (options.showBrowserWarning || options.showBrowserWarning === undefined) {
             try {
-                await CoreWindow.confirmOpenBrowserIfNeeded(url);
+                await CoreWindow.confirmOpenBrowserIfNeeded(options.browserWarningUrl ?? url);
             } catch (error) {
                 return; // Cancelled, stop.
             }
@@ -1836,6 +1836,7 @@ export type CoreUtilsOpenFileOptions = {
  */
 export type CoreUtilsOpenInBrowserOptions = {
     showBrowserWarning?: boolean; // Whether to display a warning before opening in browser. Defaults to true.
+    browserWarningUrl?: string; // The URL to display in the warning message. Use it to hide sensitive information.
 };
 
 /**

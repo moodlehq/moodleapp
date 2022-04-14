@@ -61,6 +61,11 @@ export class CoreWindow {
             return;
         }
 
+        // Remove common sensitive information from the URL.
+        url = url
+            .replace(/token=[^&#]+/gi, 'token=secret')
+            .replace(/tokenpluginfile\.php\/[^/]+/gi, 'tokenpluginfile.php/secret');
+
         const dontShowAgain = await CoreDomUtils.showPrompt(
             Translate.instant('core.warnopeninbrowser', { url }),
             undefined,
