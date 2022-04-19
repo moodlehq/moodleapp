@@ -69,12 +69,14 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
         sectionId?: number,
         forCoursePage?: boolean,
     ): Promise<CoreCourseModuleHandlerData> {
+        const icon = module.modicon || this.handlerSchema.displaydata?.icon; // Prioritize theme icon over handler icon.
+
         if (this.shouldOnlyDisplayDescription(module, forCoursePage)) {
             const title = module.description;
             module.description = '';
 
             return {
-                icon: await CoreCourse.getModuleIconSrc(module.modname, this.handlerSchema.displaydata?.icon),
+                icon: await CoreCourse.getModuleIconSrc(module.modname, icon),
                 title: title || '',
                 a11yTitle: '',
                 class: this.handlerSchema.displaydata?.class,
@@ -85,7 +87,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
         const showDowloadButton = this.handlerSchema.downloadbutton;
         const handlerData: CoreCourseModuleHandlerData = {
             title: module.name,
-            icon: await CoreCourse.getModuleIconSrc(module.modname, this.handlerSchema.displaydata?.icon),
+            icon: await CoreCourse.getModuleIconSrc(module.modname, icon),
             class: this.handlerSchema.displaydata?.class,
             showDownloadButton: showDowloadButton !== undefined ? showDowloadButton : hasOffline,
         };
