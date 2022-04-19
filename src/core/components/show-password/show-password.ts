@@ -46,7 +46,6 @@ export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
 
     shown = false; // Whether the password is shown.
     label = ''; // Label for the button to show/hide.
-    iconName = ''; // Name of the icon of the button to show/hide.
 
     protected input?: HTMLInputElement; // Input affected.
     protected element: HTMLElement; // Current element.
@@ -99,7 +98,6 @@ export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
      */
     protected setData(input: HTMLInputElement): void {
         this.label = this.shown ? 'core.hide' : 'core.show';
-        this.iconName = this.shown ? 'fas-eye-slash' : 'fas-eye';
         input.type = this.shown ? 'text' : 'password';
     }
 
