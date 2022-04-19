@@ -61,6 +61,7 @@ export interface CoreEventsData {
     [CoreEvents.APP_LAUNCHED_URL]: CoreEventAppLaunchedData;
     [CoreEvents.ORIENTATION_CHANGE]: CoreEventOrientationData;
     [CoreEvents.COURSE_MODULE_VIEWED]: CoreEventCourseModuleViewed;
+    [CoreEvents.COMPLETE_REQUIRED_PROFILE_DATA_FINISHED]: CoreEventCompleteRequiredProfileDataFinished;
 }
 
 /*
@@ -115,6 +116,7 @@ export class CoreEvents {
     static readonly ACTIVITY_DATA_SENT = 'activity_data_sent';
     static readonly DEVICE_REGISTERED_IN_MOODLE = 'device_registered_in_moodle';
     static readonly COURSE_MODULE_VIEWED = 'course_module_viewed';
+    static readonly COMPLETE_REQUIRED_PROFILE_DATA_FINISHED = 'complete_required_profile_data_finished';
 
     protected static logger = CoreLogger.getInstance('CoreEvents');
     protected static observables: { [eventName: string]: Subject<unknown> } = {};
@@ -466,4 +468,11 @@ export type CoreEventCourseModuleViewed = {
     cmId: number;
     timeaccess: number;
     sectionId?: number;
+};
+
+/**
+ * Data passed to COMPLETE_REQUIRED_PROFILE_DATA_FINISHED event.
+ */
+export type CoreEventCompleteRequiredProfileDataFinished = {
+    path: string;
 };

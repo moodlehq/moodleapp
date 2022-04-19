@@ -20,10 +20,6 @@
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
         </ion-refresher>
         <core-loading [hideUntil]="submissions.loaded">
-            <core-empty-box *ngIf="!submissions || submissions.empty" icon="fas-file-signature"
-                [message]="'addon.mod_assign.submissionstatus_' | translate">
-            </core-empty-box>
-
             <ion-list>
                 <ion-item class="ion-text-wrap core-group-selector" *ngIf="(groupInfo.separateGroups || groupInfo.visibleGroups)">
                     <ion-label id="addon-assign-groupslabel-list">
@@ -77,6 +73,10 @@
                     </ion-item>
                 </ng-container>
             </ion-list>
+
+            <core-empty-box *ngIf="!submissions || submissions.empty" icon="fas-file-signature"
+                [message]="'addon.mod_assign.submissionstatus_' | translate">
+            </core-empty-box>
         </core-loading>
     </core-split-view>
 </ion-content>

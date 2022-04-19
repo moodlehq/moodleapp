@@ -22,13 +22,13 @@
             </ion-input>
 
             <div class="buttons" slot="end">
-                <ion-button fill="clear" *ngIf="isIOS" (click)="openFile($event, true)" [attr.aria-label]="openButtonLabel | translate">
+                <ion-button fill="clear" *ngIf="isIOS && !editMode" (click)="openFile($event, true)"
+                    [attr.aria-label]="openButtonLabel | translate">
                     <ion-icon slot="icon-only" [name]="openButtonIcon" aria-hidden="true"></ion-icon>
                 </ion-button>
 
                 <ng-container *ngIf="manage">
-                    <ion-button *ngIf="editMode" fill="clear" [attr.aria-label]="'core.save' | translate" color="success" type="submit"
-                        (click)="changeName(newFileName, $event)">
+                    <ion-button *ngIf="editMode" fill="clear" [attr.aria-label]="'core.save' | translate" color="success" type="submit">
                         <ion-icon name="fas-check" slot="icon-only" aria-hidden="true"></ion-icon>
                     </ion-button>
 

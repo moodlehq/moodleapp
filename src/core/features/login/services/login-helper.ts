@@ -37,6 +37,7 @@ import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { CoreText } from '@singletons/text';
+import { CorePromisedValue } from '@classes/promised-value';
 
 /**
  * Helper provider that provides some common features regarding authentication.
@@ -56,7 +57,7 @@ export class CoreLoginHelperProvider {
     protected logger: CoreLogger;
     protected sessionExpiredCheckingSite: Record<string, boolean> = {};
     protected isOpenEditAlertShown = false;
-    protected waitingForBrowser = false;
+    protected waitingForBrowser?: CorePromisedValue<void>;
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreLoginHelper');
@@ -768,11 +769,15 @@ export class CoreLoginHelperProvider {
 
             try {
                 await currentSite.openInAppWithAutoLogin(siteUrl + path, undefined, alertMessage);
-
-                this.waitingForBrowser = true;
             } finally {
                 this.isOpenEditAlertShown = false;
             }
+
+            await this.waitForBrowser();
+
+            CoreEvents.trigger(CoreEvents.COMPLETE_REQUIRED_PROFILE_DATA_FINISHED, {
+                path,
+            }, siteId);
         }
     }
 
@@ -917,7 +922,7 @@ export class CoreLoginHelperProvider {
                                 (currentSite.isLoggedOut() ? 'loggedoutssodescription' : 'reconnectssodescription')));
                         }
 
-                        this.waitingForBrowser = true;
+                        this.waitForBrowser();
 
                         this.openBrowserForSSOLogin(
                             result.siteUrl,
@@ -950,7 +955,7 @@ export class CoreLoginHelperProvider {
                             try {
                                 await CoreDomUtils.showConfirm(confirmMessage);
 
-                                this.waitingForBrowser = true;
+                                this.waitForBrowser();
                                 CoreSites.unsetCurrentSite(); // Unset current site to make authentication work fine.
 
                                 this.openBrowserForOAuthLogin(
@@ -1223,16 +1228,28 @@ export class CoreLoginHelperProvider {
      * @return Whether the app is waiting for browser.
      */
     isWaitingForBrowser(): boolean {
-        return this.waitingForBrowser;
+        return !!this.waitingForBrowser;
     }
 
     /**
-     * Set whether the app is waiting for browser.
+     * Start waiting when opening a browser/IAB.
      *
-     * @param value New value.
+     * @return Promise resolved when the app is resumed.
      */
-    setWaitingForBrowser(value: boolean): void {
-        this.waitingForBrowser = value;
+    async waitForBrowser(): Promise<void> {
+        if (!this.waitingForBrowser) {
+            this.waitingForBrowser = new CorePromisedValue();
+        }
+
+        await this.waitingForBrowser;
+    }
+
+    /**
+     * Stop waiting for browser.
+     */
+    stopWaitingForBrowser(): void {
+        this.waitingForBrowser?.resolve();
+        this.waitingForBrowser = undefined;
     }
 
     /**

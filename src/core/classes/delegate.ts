@@ -103,6 +103,11 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
                     this.updateHandlers();
                 }
             });
+            CoreEvents.on(CoreEvents.COMPLETE_REQUIRED_PROFILE_DATA_FINISHED, (data) => {
+                if (data.siteId === CoreSites.getCurrentSiteId()) {
+                    this.updateHandlers();
+                }
+            });
         }
     }
 

@@ -175,7 +175,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             this.lastInAppUrl = '';
 
             if (CoreLoginHelper.isWaitingForBrowser()) {
-                CoreLoginHelper.setWaitingForBrowser(false);
+                CoreLoginHelper.stopWaitingForBrowser();
                 CoreLoginHelper.checkLogout();
             }
         });
@@ -184,7 +184,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             // Wait a second before setting it to false since in iOS there could be some frozen WS calls.
             setTimeout(() => {
                 if (CoreLoginHelper.isWaitingForBrowser()) {
-                    CoreLoginHelper.setWaitingForBrowser(false);
+                    CoreLoginHelper.stopWaitingForBrowser();
                     CoreLoginHelper.checkLogout();
                 }
             }, 1000);
