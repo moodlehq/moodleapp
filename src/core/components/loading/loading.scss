@@ -101,4 +101,6 @@
 :host-context(.ios) {
     --contents-display: flex;
     flex-direction: column;
+    max-height: max-content;
+    width: 100%;
 }
