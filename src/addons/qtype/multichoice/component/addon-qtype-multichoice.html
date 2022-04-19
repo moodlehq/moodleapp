@@ -63,7 +63,7 @@
                 [attr.aria-label]="'core.question.incorrect' | translate"></ion-icon>
         </ion-item>
         <ion-button *ngIf="!multiQuestion.disabled" class="ion-text-wrap ion-margin-top" expand="block" fill="outline"
-            [disabled]="!multiQuestion.singleChoiceModel" (click)="clear()" type="reset">
+            [disabled]="!multiQuestion.singleChoiceModel" (click)="clear()" type="button">
             {{ 'addon.mod_quiz.clearchoice' | translate }}
         </ion-button>
 
