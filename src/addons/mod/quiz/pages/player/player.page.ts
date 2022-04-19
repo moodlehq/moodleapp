@@ -47,6 +47,7 @@ import { CanLeave } from '@guards/can-leave';
 import { CoreForms } from '@singletons/form';
 import { CoreDom } from '@singletons/dom';
 import { CoreTime } from '@singletons/time';
+import { CoreComponentsRegistry } from '@singletons/components-registry';
 
 /**
  * Page that allows attempting a quiz.
@@ -264,7 +265,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             return;
         } else if (page == this.attempt.currentpage && !this.showSummary && slot !== undefined) {
             // Navigating to a question in the current page.
-            this.scrollToQuestion(slot);
+            await this.scrollToQuestion(slot);
 
             return;
         } else if ((page == this.attempt.currentpage && !this.showSummary) || (fromModal && this.isSequential && page != -1)) {
@@ -320,7 +321,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
             if (slot !== undefined) {
                 // Scroll to the question.
-                this.scrollToQuestion(slot);
+                await this.scrollToQuestion(slot);
             }
         }
     }
@@ -687,8 +688,10 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
      *
      * @param slot Slot of the question to scroll to.
      */
-    protected scrollToQuestion(slot: number): void {
-        CoreDom.scrollToElement(
+    protected async scrollToQuestion(slot: number): Promise<void> {
+        await CoreUtils.nextTick();
+        await CoreComponentsRegistry.waitComponentsReady(this.elementRef.nativeElement, 'core-question');
+        await CoreDom.scrollToElement(
             this.elementRef.nativeElement,
             '#addon-mod_quiz-question-' + slot,
         );
