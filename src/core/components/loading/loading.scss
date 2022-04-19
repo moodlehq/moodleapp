@@ -3,9 +3,9 @@
 @mixin inline() {
     min-height: var(--internal-loading-inline-min-height);
     max-height: 100vh; // In order show it on the page (content will be cut).
+    position: relative;
 
     &:not(.core-loading-loaded) {
-        position: relative;
         --contents-display: flex;
         flex-direction: column;
     }
@@ -15,6 +15,7 @@
         flex-direction: row;
         height: auto;
         width: auto;
+        position: absolute;
 
         .core-loading-message {
             @include margin(0, 0, 0, 10px);
@@ -32,14 +33,14 @@
     --internal-loading-inline-min-height: var(--loading-inline-min-height);
     --loading-display: flex;
     --loading-display-message: block;
-    --contents-display: contents;
+    --contents-display: block;
 
     @include core-transition(all, 200ms);
     pointer-events: none;
     display: var(--contents-display);
 
     &.core-loading-loaded {
-        position: static;
+        --contents-display: contents;
         pointer-events: auto;
         --internal-loading-inline-min-height: 0px;
 
@@ -52,11 +53,11 @@
 
     .core-loading-container {
         pointer-events: none;
-        position: absolute;
+        position: fixed;
         @include position(0, 0, 0, 0);
         height: 100%;
         width: 100%;
-        z-index: 3;
+        z-index: 100;
         margin: 0;
         padding: 0;
         color: var(--loading-text-color);
