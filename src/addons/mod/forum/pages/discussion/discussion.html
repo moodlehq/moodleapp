@@ -53,6 +53,8 @@
             [content]="'addon.mod_forum.removefromfavourites' | translate" iconAction="fas-star" [iconSlash]="true"
             (action)="toggleFavouriteState(false)">
         </core-context-menu-item>
+        <core-context-menu-item [hidden]="!externalUrl" [priority]="100" [content]="'core.openinbrowser' | translate" [href]="externalUrl"
+            iconAction="fas-external-link-alt" [showBrowserWarning]="false"></core-context-menu-item>
     </core-context-menu>
 </core-navbar-buttons>
 <ion-content [core-swipe-navigation]="discussions" class="limited-width">
