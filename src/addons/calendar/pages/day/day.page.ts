@@ -45,6 +45,8 @@ import {
     CoreSwipeSlidesDynamicItem,
     CoreSwipeSlidesDynamicItemsManagerSource,
 } from '@classes/items-management/swipe-slides-dynamic-items-manager-source';
+import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
+import { AddonCalendarEventsSource } from '@addons/calendar/classes/events-source';
 
 /**
  * Page that displays the calendar events for a certain day.
@@ -342,9 +344,10 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
      * Navigate to a particular event.
      *
      * @param eventId Event to load.
+     * @param eventsUuid Unique identifier to scope the event within a list.
      */
-    gotoEvent(eventId: number): void {
-        CoreNavigator.navigateToSitePath(`/calendar/event/${eventId}`);
+    gotoEvent(eventId: number, eventsUuid?: string): void {
+        CoreNavigator.navigateToSitePath(`/calendar/event/${eventId}`, { params: { eventsUuid } });
     }
 
     /**
@@ -452,6 +455,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
         this.manualSyncObserver?.off();
         this.onlineObserver?.unsubscribe();
         this.filterChangedObserver?.off();
+        this.manager?.getSource().forgetRelatedSources();
         this.manager?.destroy();
         this.managerUnsubscribe && this.managerUnsubscribe();
     }
@@ -469,6 +473,7 @@ type DayBasicData = {
  * Preloaded month.
  */
 type PreloadedDay = DayBasicData & CoreSwipeSlidesDynamicItem & {
+    eventsUuid?: string; // Unique identifier for the list of events related with this day.
     events?: AddonCalendarEventToDisplay[]; // Events (both online and offline).
     onlineEvents?: AddonCalendarEventToDisplay[];
     filteredEvents?: AddonCalendarEventToDisplay[];
@@ -483,6 +488,7 @@ type PreloadedDay = DayBasicData & CoreSwipeSlidesDynamicItem & {
 class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicItemsManagerSource<PreloadedDay> {
 
     courses: Partial<CoreEnrolledCourseData>[] = [];
+    eventsSources: AddonCalendarEventsSource[] = [];
     // Offline events classified in month & day.
     offlineEvents: Record<string, Record<number, AddonCalendarEventToDisplay[]>> = {};
     offlineEditedEventsIds: number[] = []; // IDs of events edited in offline.
@@ -533,6 +539,8 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
      */
     filterEvents(day: PreloadedDay, filter: AddonCalendarFilter): void {
         day.filteredEvents = AddonCalendarHelper.getFilteredEvents(day.events || [], filter, this.categories || {});
+
+        this.rememberEventsList(day);
     }
 
     /**
@@ -814,6 +822,35 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
         } else {
             this.deletedEvents?.delete(eventId);
         }
+    }
+
+    /**
+     * Forget other sources that where created whilst using this one.
+     */
+    forgetRelatedSources(): void {
+        for (const source of this.eventsSources) {
+            CoreRoutedItemsManagerSourcesTracker.removeReference(source, this);
+        }
+    }
+
+    /**
+     * Remember the list of events in a day to be used in a different context.
+     *
+     * @param day Day containing the events list.
+     */
+    private async rememberEventsList(day: PreloadedDay): Promise<void> {
+        day.eventsUuid = Math.random().toString();
+
+        const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(AddonCalendarEventsSource, [
+            day.eventsUuid,
+            day.filteredEvents,
+        ]);
+
+        this.eventsSources.push(source);
+
+        CoreRoutedItemsManagerSourcesTracker.addReference(source, this);
+
+        await source.load();
     }
 
 }
