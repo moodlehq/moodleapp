@@ -116,8 +116,15 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
         this.defaultReplySubject = this.post.replysubject || ((this.post.subject.startsWith('Re: ') ||
             this.post.subject.startsWith(reTranslated)) ? this.post.subject : `${reTranslated} ${this.post.subject}`);
 
-        this.optionsMenuEnabled = this.post.id < 0 || (AddonModForum.isGetDiscussionPostAvailable() &&
-                    (AddonModForum.isDeletePostAvailable() || AddonModForum.isUpdatePostAvailable()));
+        if (this.post.id < 0) {
+            this.optionsMenuEnabled = true;
+        } else if (this.post.capabilities.delete !== undefined) {
+            this.optionsMenuEnabled = this.post.capabilities.delete === true || this.post.capabilities.edit === true;
+        } else {
+            // Cannot know if the user can edit/delete or not, display the menu if the WebServices are available.
+            this.optionsMenuEnabled = this.post.id < 0 || (AddonModForum.isGetDiscussionPostAvailable() &&
+                        (AddonModForum.isDeletePostAvailable() || AddonModForum.isUpdatePostAvailable()));
+        }
     }
 
     /**

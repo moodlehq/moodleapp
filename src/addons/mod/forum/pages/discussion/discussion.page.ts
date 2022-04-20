@@ -107,6 +107,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
     availabilityMessage: string | null = null;
     showQAMessage = false;
     leavingPage = false;
+    externalUrl?: string;
 
     protected forumId?: number;
     protected postId?: number;
@@ -164,6 +165,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
         }
 
         this.isOnline = CoreApp.isOnline();
+        this.externalUrl = CoreSites.getCurrentSite()?.createSiteUrl('/mod/forum/discuss.php', { d: this.discussionId.toString() });
         this.onlineObserver = Network.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             NgZone.run(() => {
