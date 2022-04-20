@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild, OnInit, OnDestroy, forwardRef } from '@angular/core';
+import { Component, ViewChild, OnInit, OnDestroy, forwardRef, ChangeDetectorRef } from '@angular/core';
 import { IonContent, IonRefresher } from '@ionic/angular';
 
 import { CoreDomUtils } from '@services/utils/dom';
@@ -72,6 +72,8 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
     protected isDestroyed = false;
     protected modulesHaveCompletion = false;
     protected debouncedUpdateCachedCompletion?: () => void; // Update the cached completion after a certain time.
+
+    constructor(protected changeDetectorRef: ChangeDetectorRef) {}
 
     /**
      * @inheritdoc
@@ -352,12 +354,8 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
      */
     protected async showLoadingAndRefresh(sync = false, invalidateData = true): Promise<void> {
         // Save scroll position to restore it once done.
-        const scrollElement = await this.content?.getScrollElement();
-        const scrollTop = scrollElement?.scrollTop || 0;
-        const scrollLeft = scrollElement?.scrollLeft || 0;
-
         this.updatingData = true;
-        this.content?.scrollToTop(0); // Scroll top so the spinner is seen.
+        this.changeDetectorRef.detectChanges();
 
         try {
             if (invalidateData) {
@@ -369,11 +367,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
             await this.formatComponent?.doRefresh(undefined, undefined, true);
         } finally {
             this.updatingData = false;
-
-            // Wait for new content height to be calculated and scroll without animation.
-            setTimeout(() => {
-                this.content?.scrollToPoint(scrollLeft, scrollTop, 0);
-            });
+            this.changeDetectorRef.detectChanges();
         }
     }
 

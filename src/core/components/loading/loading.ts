@@ -147,6 +147,10 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
      * Recovers last set scroll position.
      */
     protected async recoverScrollPosition(): Promise<void> {
+        if (this.scroll <= 0) {
+            return;
+        }
+
         const content = this.element.closest('ion-content');
         if (!content) {
             return;
