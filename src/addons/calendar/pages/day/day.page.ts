@@ -452,6 +452,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
         this.manualSyncObserver?.off();
         this.onlineObserver?.unsubscribe();
         this.filterChangedObserver?.off();
+        this.manager?.destroy();
         this.managerUnsubscribe && this.managerUnsubscribe();
     }
 

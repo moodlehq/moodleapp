@@ -324,6 +324,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
      */
     ngOnDestroy(): void {
         this.undeleteEventObserver?.off();
+        this.manager?.destroy();
         this.managerUnsubscribe && this.managerUnsubscribe();
     }
 
