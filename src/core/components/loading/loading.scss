@@ -1,21 +1,16 @@
 @import "~theme/globals";
 
 @mixin inline() {
-    min-height: var(--internal-loading-inline-min-height);
-    max-height: 100vh; // In order show it on the page (content will be cut).
-    position: relative;
-
     &:not(.core-loading-loaded) {
-        --contents-display: flex;
-        flex-direction: column;
+        min-height: var(--internal-loading-inline-min-height);
+        width: 100%;
+        position: relative;
     }
 
     .core-loading-container {
         --loading-background: rgba(var(--loading-background-inline), 0.4);
         flex-direction: row;
         height: auto;
-        width: auto;
-        position: absolute;
 
         .core-loading-message {
             @include margin(0, 0, 0, 10px);
@@ -40,8 +35,9 @@
     display: var(--contents-display);
 
     &.core-loading-loaded {
-        --contents-display: contents;
+        position: static;
         pointer-events: auto;
+        --contents-display: contents;
         --internal-loading-inline-min-height: 0px;
 
         &.has-spacer {
@@ -53,7 +49,7 @@
 
     .core-loading-container {
         pointer-events: none;
-        position: fixed;
+        position: absolute;
         @include position(0, 0, 0, 0);
         height: 100%;
         width: 100%;
@@ -92,16 +88,9 @@
 }
 
 :host-context(.limited-width > ):not([slot]) {
-    --contents-display: flex;
-    flex-direction: column;
+    &.core-loading-loaded {
+        --contents-display: flex;
+        flex-direction: column;
+    }
     min-height: 100%;
-}
-
-// There is a bug on iOs that displays inside elements in wrong order.
-// This bug seems not to affect other elements like format-text
-:host-context(.ios) {
-    --contents-display: flex;
-    flex-direction: column;
-    max-height: max-content;
-    width: 100%;
 }

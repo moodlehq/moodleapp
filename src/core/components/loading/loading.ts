@@ -55,8 +55,9 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
     @Input() fullscreen = true; // Use the whole screen.
 
     uniqueId: string;
-    loaded = false; // Only comes true once.
+    loaded = false;
 
+    protected scroll = 0;
     protected element: HTMLElement; // Current element.
     protected onReadyPromise = new CorePromisedValue<void>();
 
@@ -106,16 +107,54 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
         this.element.classList.toggle('core-loading-loaded', loaded);
         this.element.setAttribute('aria-busy', loaded ?  'false' : 'true');
 
-        if (!this.loaded && loaded) {
-            this.loaded = true; // Only comes true once.
+        if (this.loaded === loaded) {
+            return;
+        }
+
+        if (!loaded) {
+            await this.saveScrollPosition();
+        }
+        this.loaded = loaded;
+
+        if (loaded) {
             this.onReadyPromise.resolve();
+
+            // Recover last scroll.
+            await this.recoverScrollPosition();
         }
 
         // Event has been deprecated since app 4.0.
         CoreEvents.trigger(CoreEvents.CORE_LOADING_CHANGED, <CoreEventLoadingChangedData> {
-            loaded: true,
+            loaded,
             uniqueId: this.uniqueId,
         });
+    }
+
+    /**
+     * Saves current scroll position.
+     */
+    protected async saveScrollPosition(): Promise<void> {
+        const content = this.element.closest('ion-content');
+        if (!content) {
+            return;
+        }
+
+        const scrollElement = await content.getScrollElement();
+        this.scroll = scrollElement.scrollTop;
+    }
+
+    /**
+     * Recovers last set scroll position.
+     */
+    protected async recoverScrollPosition(): Promise<void> {
+        const content = this.element.closest('ion-content');
+        if (!content) {
+            return;
+        }
+
+        const scrollElement = await content.getScrollElement();
+
+        scrollElement.scrollTo(0, this.scroll);
     }
 
     /**
