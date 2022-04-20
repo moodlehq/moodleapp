@@ -822,6 +822,12 @@ body.core-iframe-fullscreen ion-router-outlet {
         }
     }
 
+    .core-iframe-fullscreen ion-card.core-#{$color-name}-card,
+    .core-iframe-fullscreen .item.core-#{$color-name}-item {
+        opacity: 0 !important;
+        height: 0 !important;
+    }
+
     ion-icon.ion-color-#{$color-name} {
         --ion-color-base: var(--ion-color-#{$color-name});
         color: var(--ion-color-base);
