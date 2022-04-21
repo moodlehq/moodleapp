@@ -509,12 +509,14 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         const moduleIdToScroll = this.moduleId && previousValue === undefined ? this.moduleId : moduleId;
         if (moduleIdToScroll) {
             this.scrollToModule(moduleIdToScroll);
-        } else {
-            this.content.scrollToTop(0);
         }
 
-        if (!previousValue || previousValue.id != newSection.id) {
-            // First load or section changed, add log in Moodle.
+        if (!previousValue || previousValue.id !== newSection.id) {
+            // First load or section changed.
+            if (!moduleIdToScroll) {
+                this.content.scrollToTop(0);
+            }
+
             CoreUtils.ignoreErrors(
                 CoreCourse.logView(this.course.id, newSection.section, undefined, this.course.fullname),
             );
