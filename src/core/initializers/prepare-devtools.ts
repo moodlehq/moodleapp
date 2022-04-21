@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CorePushNotifications, CorePushNotificationsProvider } from '@features/pushnotifications/services/pushnotifications';
 import { CoreApp, CoreAppProvider } from '@services/app';
 import { CoreConfig, CoreConfigProvider } from '@services/config';
 import { CoreDB, CoreDbProvider } from '@services/db';
@@ -25,6 +26,7 @@ type DevelopmentWindow = Window & {
     configProvider?: CoreConfigProvider;
     dbProvider?: CoreDbProvider;
     urlSchemes?: CoreCustomURLSchemesProvider;
+    pushNotifications?: CorePushNotificationsProvider;
 };
 
 function initializeDevelopmentWindow(window: DevelopmentWindow) {
@@ -33,6 +35,7 @@ function initializeDevelopmentWindow(window: DevelopmentWindow) {
     window.configProvider = CoreConfig.instance;
     window.dbProvider = CoreDB.instance;
     window.urlSchemes = CoreCustomURLSchemes.instance;
+    window.pushNotifications = CorePushNotifications.instance;
 }
 
 export default function(): void {
