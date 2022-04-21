@@ -75,7 +75,7 @@ export class AddonUserProfileFieldDatetimeComponent extends CoreUserProfileField
             this.max = field.param2;
         }
 
-        this.max = this.max || CoreTimeUtils.getDatetimeDefaultMin();
+        this.min = this.min || CoreTimeUtils.getDatetimeDefaultMin();
         this.max = this.max || CoreTimeUtils.getDatetimeDefaultMax();
     }
 
