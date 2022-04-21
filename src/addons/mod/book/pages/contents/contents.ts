@@ -315,6 +315,7 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.managerUnsubscribe && this.managerUnsubscribe();
+        this.manager?.destroy();
     }
 
 }
