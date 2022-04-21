@@ -18,6 +18,8 @@ import {
 import { CoreSwipeSlidesItemsManager } from '@classes/items-management/swipe-slides-items-manager';
 import { IonContent, IonSlides } from '@ionic/angular';
 import { CoreDomUtils, VerticalPoint } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
+import { CoreEventObserver } from '@singletons/events';
 import { CoreMath } from '@singletons/math';
 
 /**
@@ -40,12 +42,17 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
 
     protected hostElement: HTMLElement;
     protected unsubscribe?: () => void;
+    protected resizeListener: CoreEventObserver;
 
     constructor(
         elementRef: ElementRef<HTMLElement>,
         protected content?: IonContent,
     ) {
         this.hostElement = elementRef.nativeElement;
+
+        this.resizeListener = CoreDom.onWindowResize(() => {
+            this.slides?.update();
+        });
     }
 
     /**
@@ -247,6 +254,7 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
      */
     ngOnDestroy(): void {
         this.unsubscribe && this.unsubscribe();
+        this.resizeListener.off();
     }
 
 }
