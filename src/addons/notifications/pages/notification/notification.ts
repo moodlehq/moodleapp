@@ -12,18 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { AddonsNotificationsNotificationsSource } from '@addons/notifications/classes/notifications-source';
 import { AddonNotificationsNotificationData } from '@addons/notifications/services/handlers/push-click';
-import { AddonNotifications } from '@addons/notifications/services/notifications';
 import {
     AddonNotificationsHelper,
     AddonNotificationsNotificationToRender,
 } from '@addons/notifications/services/notifications-helper';
 import { Component, OnInit } from '@angular/core';
+import { CoreError } from '@classes/errors/error';
+import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreContentLinksAction, CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
 
 /**
  * Page to render a notification.
@@ -58,26 +59,12 @@ export class AddonNotificationsNotificationPage implements OnInit {
         let notification: AddonNotificationsNotification;
 
         try {
-            notification = CoreNavigator.getRequiredRouteParam('notification');
+            notification = this.getCurrentNotification();
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
-            CoreNavigator.back();
+            await CoreDomUtils.showErrorModal(error);
+            await CoreNavigator.back();
 
             return;
-        }
-
-        if (!('subject' in notification)) {
-            // Try to find the notification using the WebService, it contains a better message.
-            const notifId = Number(notification.savedmessageid);
-            const result = await CoreUtils.ignoreErrors(
-                AddonNotifications.getNotifications([], { siteId: notification.site }),
-            );
-
-            const foundNotification = result?.notifications.find(notif => notif.id === notifId);
-            if (foundNotification) {
-                notification = AddonNotificationsHelper.formatNotificationText(foundNotification);
-            }
         }
 
         if ('subject' in notification) {
@@ -89,8 +76,10 @@ export class AddonNotificationsNotificationPage implements OnInit {
             this.iconUrl = notification.iconurl;
             if (notification.moodlecomponent?.startsWith('mod_') && notification.iconurl) {
                 const modname = notification.moodlecomponent.substring(4);
-                if (notification.iconurl.match('/theme/image.php/[^/]+/' + modname + '/[-0-9]*/') ||
-                        notification.iconurl.match('/theme/image.php/[^/]+/' + notification.moodlecomponent + '/[-0-9]*/')) {
+                if (
+                    notification.iconurl.match('/theme/image.php/[^/]+/' + modname + '/[-0-9]*/') ||
+                    notification.iconurl.match('/theme/image.php/[^/]+/' + notification.moodlecomponent + '/[-0-9]*/')
+                ) {
                     this.modname = modname;
                 }
             }
@@ -108,6 +97,39 @@ export class AddonNotificationsNotificationPage implements OnInit {
         AddonNotificationsHelper.markNotificationAsRead(notification);
 
         this.loaded = true;
+    }
+
+    /**
+     * Load notifications
+     *
+     * @param notificationId Notification id.
+     * @return Found notification
+     */
+    loadNotifications(notificationId: number): AddonNotificationsNotification {
+        const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
+            AddonsNotificationsNotificationsSource,
+            [],
+        );
+        const notification = source.getItems()?.find(({ id }) => id === notificationId);
+
+        if (!notification) {
+            throw new CoreError(`Notification with id ${notificationId} not found`);
+        }
+
+        return notification;
+    }
+
+    /**
+     * Load current notification if it's found
+     *
+     * @return Found notification
+     */
+    getCurrentNotification(): AddonNotificationsNotification {
+        const pushNotification: AddonNotificationsNotificationData | undefined = CoreNavigator.getRouteParam('notification');
+
+        return this.loadNotifications(
+            pushNotification ? Number(pushNotification?.savedmessageid) : CoreNavigator.getRequiredRouteNumberParam('id'),
+        );
     }
 
     /**

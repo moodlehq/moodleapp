@@ -18,11 +18,20 @@ import { RouterModule, Routes } from '@angular/router';
 import { CoreSharedModule } from '@/core/shared.module';
 import { AddonNotificationsListPage } from './list';
 import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
+import { conditionalRoutes } from '@/app/app-routing.module';
+import { CoreScreen } from '@services/screen';
 
 const routes: Routes = [
     {
         path: '',
         component: AddonNotificationsListPage,
+        children: conditionalRoutes([
+            {
+                path: ':id',
+                loadChildren: () => import('../../pages/notification/notification.module')
+                    .then(m => m.AddonNotificationsNotificationPageModule),
+            },
+        ], () => CoreScreen.isTablet),
     },
 ];
 
