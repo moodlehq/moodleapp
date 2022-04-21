@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CoreSiteInfo } from '@classes/site';
 import { CoreUserTourDirectiveOptions } from '@directives/user-tour';
 import { CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/services/user-tours';
@@ -43,8 +43,6 @@ export class CoreMainMenuUserButtonComponent implements OnInit {
         alignment: CoreUserToursAlignment.Start,
         side: CoreScreen.isMobile ? CoreUserToursSide.Start : CoreUserToursSide.End,
     };
-
-    @ViewChild('avatar', { read: ElementRef }) avatar?: ElementRef<HTMLElement>;
 
     constructor(protected routerOutlet: IonRouterOutlet) {
         const currentSite = CoreSites.getRequiredCurrentSite();

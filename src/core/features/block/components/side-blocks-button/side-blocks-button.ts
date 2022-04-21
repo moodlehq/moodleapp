@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreUserTourDirectiveOptions } from '@directives/user-tour';
 import { CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/services/user-tours';
@@ -33,14 +33,17 @@ export class CoreBlockSideBlocksButtonComponent implements OnInit, OnDestroy {
 
     @Input() contextLevel!: string;
     @Input() instanceId!: number;
-    @ViewChild('button', { read: ElementRef }) button?: ElementRef<HTMLElement>;
 
     userTour: CoreUserTourDirectiveOptions = {
         id: 'side-blocks-button',
         component: CoreBlockSideBlocksTourComponent,
         side: CoreUserToursSide.Start,
         alignment: CoreUserToursAlignment.Center,
-        getFocusedElement: nativeButton => nativeButton.shadowRoot?.children[0] as HTMLElement,
+        getFocusedElement: nativeButton => {
+            const innerButton = Array.from(nativeButton.shadowRoot?.children ?? []).find(child => child.tagName === 'BUTTON');
+
+            return innerButton as HTMLElement ?? nativeButton;
+        },
     };
 
     protected element: HTMLElement;
