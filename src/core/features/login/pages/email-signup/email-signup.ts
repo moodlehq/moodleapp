@@ -14,7 +14,6 @@
 
 import { Component, ViewChild, ElementRef, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { IonRefresher } from '@ionic/angular';
 
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -55,7 +54,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
     siteUrl!: string;
     siteConfig?: CoreSitePublicConfigResponse;
     siteName?: string;
-    authInstructions?: string;
+    authInstructions = '';
     settings?: AuthEmailSignupSettings;
     countries?: CoreCountry[];
     categories?: AuthEmailSignupProfileFieldsCategory[];
@@ -257,17 +256,6 @@ export class CoreLoginEmailSignupPage implements OnInit {
     }
 
     /**
-     * Pull to refresh.
-     *
-     * @param event Event.
-     */
-    refreshSettings(event?: IonRefresher): void {
-        this.fetchData().finally(() => {
-            event?.complete();
-        });
-    }
-
-    /**
      * Create account.
      *
      * @param e Event.
@@ -377,7 +365,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
      * Show authentication instructions.
      */
     showAuthInstructions(): void {
-        CoreTextUtils.viewText(Translate.instant('core.login.instructions'), this.authInstructions!);
+        CoreTextUtils.viewText(Translate.instant('core.login.instructions'), this.authInstructions);
     }
 
     /**
@@ -419,7 +407,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
 
             if (!result.status) {
                 if (this.countryControl.value) {
-                    this.signUpCountryControl!.setValue(this.countryControl.value);
+                    this.signUpCountryControl?.setValue(this.countryControl.value);
                 }
 
                 // Not a minor, go ahead.
@@ -428,7 +416,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
                 // Is a minor.
                 this.isMinor = true;
             }
-        } catch (error) {
+        } catch {
             // Something wrong, redirect to the site.
             CoreDomUtils.showErrorModal('There was an error verifying your age, please try again using the browser.');
         } finally {
