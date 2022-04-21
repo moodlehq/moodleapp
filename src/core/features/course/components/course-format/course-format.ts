@@ -23,7 +23,6 @@ import {
     QueryList,
     Type,
     ElementRef,
-    ViewChild,
 } from '@angular/core';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
@@ -77,7 +76,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     @Input() moduleId?: number; // The module ID to scroll to. Must be inside the initial selected section.
 
     @ViewChildren(CoreDynamicComponent) dynamicComponents?: QueryList<CoreDynamicComponent>;
-    @ViewChild('courseIndexFab', { read: ElementRef }) courseIndexFab?: ElementRef<HTMLElement>;
 
     // All the possible component classes.
     courseFormatComponent?: Type<unknown>;
@@ -93,7 +91,11 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         component: CoreCourseCourseIndexTourComponent,
         side: CoreUserToursSide.Top,
         alignment: CoreUserToursAlignment.End,
-        getFocusedElement: nativeButton => nativeButton.shadowRoot?.children[0] as HTMLElement,
+        getFocusedElement: nativeButton => {
+            const innerButton = Array.from(nativeButton.shadowRoot?.children ?? []).find(child => child.tagName === 'BUTTON');
+
+            return innerButton as HTMLElement ?? nativeButton;
+        },
     };
 
     displayCourseIndex = false;

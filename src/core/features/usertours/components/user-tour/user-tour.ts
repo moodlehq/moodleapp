@@ -183,6 +183,11 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
      * Play animation to show that the User Tour has started.
      */
     private async playEnterAnimation(): Promise<void> {
+        if (!('animate' in this.element)) {
+            // Not supported, don't animate.
+            return;
+        }
+
         const animations = [
             this.element.animate({ opacity: ['0', '1'] }, { duration: ANIMATION_DURATION }),
             this.wrapperElement.value?.animate(
@@ -198,6 +203,11 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
      * Play animation to show that the User Tour has endd.
      */
     private async playLeaveAnimation(): Promise<void> {
+        if (!('animate' in this.element)) {
+            // Not supported, don't animate.
+            return;
+        }
+
         const animations = [
             this.element.animate({ opacity: ['1', '0'] }, { duration: ANIMATION_DURATION }),
             this.wrapperElement.value?.animate(

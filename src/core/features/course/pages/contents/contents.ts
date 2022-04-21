@@ -353,7 +353,6 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
      * @return Promise resolved when done.
      */
     protected async showLoadingAndRefresh(sync = false, invalidateData = true): Promise<void> {
-        // Save scroll position to restore it once done.
         this.updatingData = true;
         this.changeDetectorRef.detectChanges();
 

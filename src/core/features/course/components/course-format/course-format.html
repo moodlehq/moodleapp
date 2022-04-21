@@ -56,7 +56,7 @@
 <!-- Course Index button. -->
 <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="loaded && displayCourseIndex">
     <ion-fab-button (click)="openCourseIndex()" [userTour]="courseIndexTour" [attr.aria-label]="'core.course.courseindex' | translate"
-        color="secondary" #courseIndexFab>
+        color="secondary">
         <ion-icon name="fas-list-ul" aria-hidden="true"></ion-icon>
         <span class="sr-only">{{'core.course.courseindex' | translate }}</span>
     </ion-fab-button>
