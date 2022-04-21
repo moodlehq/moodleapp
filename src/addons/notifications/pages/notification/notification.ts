@@ -18,9 +18,10 @@ import {
     AddonNotificationsHelper,
     AddonNotificationsNotificationToRender,
 } from '@addons/notifications/services/notifications-helper';
-import { Component, OnInit } from '@angular/core';
-import { CoreError } from '@classes/errors/error';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRouteSnapshot } from '@angular/router';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
+import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { CoreContentLinksAction, CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
@@ -34,8 +35,9 @@ import { CoreDomUtils } from '@services/utils/dom';
     templateUrl: 'notification.html',
     styleUrls: ['../../notifications.scss', 'notification.scss'],
 })
-export class AddonNotificationsNotificationPage implements OnInit {
+export class AddonNotificationsNotificationPage implements OnInit, OnDestroy {
 
+    notifications?: AddonNotificationSwipeItemsManager;
     subject = ''; // Notification subject.
     content = ''; // Notification content.
     userIdFrom = -1; // User ID who sent the notification.
@@ -59,10 +61,10 @@ export class AddonNotificationsNotificationPage implements OnInit {
         let notification: AddonNotificationsNotification;
 
         try {
-            notification = this.getCurrentNotification();
+            notification = this.getNotification();
         } catch (error) {
-            await CoreDomUtils.showErrorModal(error);
-            await CoreNavigator.back();
+            CoreDomUtils.showErrorModal(error);
+            CoreNavigator.back();
 
             return;
         }
@@ -76,15 +78,12 @@ export class AddonNotificationsNotificationPage implements OnInit {
             this.iconUrl = notification.iconurl;
             if (notification.moodlecomponent?.startsWith('mod_') && notification.iconurl) {
                 const modname = notification.moodlecomponent.substring(4);
-                if (
-                    notification.iconurl.match('/theme/image.php/[^/]+/' + modname + '/[-0-9]*/') ||
-                    notification.iconurl.match('/theme/image.php/[^/]+/' + notification.moodlecomponent + '/[-0-9]*/')
-                ) {
+                if (notification.iconurl.match('/theme/image.php/[^/]+/' + modname + '/[-0-9]*/') ||
+                        notification.iconurl.match('/theme/image.php/[^/]+/' + notification.moodlecomponent + '/[-0-9]*/')) {
                     this.modname = modname;
                 }
             }
             this.timecreated = notification.timecreated;
-
         } else {
             this.subject = notification.title || '';
             this.content = notification.message || '';
@@ -100,12 +99,24 @@ export class AddonNotificationsNotificationPage implements OnInit {
     }
 
     /**
-     * Load notifications
+     * Get notification.
+     *
+     * @returns notification.
+     */
+    getNotification(): AddonNotificationsNotification {
+        const id = CoreNavigator.getRouteNumberParam('id');
+        const notification = id ? this.getNotificationById(id) : undefined;
+
+        return notification ?? CoreNavigator.getRequiredRouteParam('notification');
+    }
+
+    /**
+     * Obtain notification by passed id.
      *
      * @param notificationId Notification id.
-     * @return Found notification
+     * @return Found notification.
      */
-    loadNotifications(notificationId: number): AddonNotificationsNotification {
+    getNotificationById(notificationId: number): AddonNotificationsNotification | undefined {
         const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
             AddonsNotificationsNotificationsSource,
             [],
@@ -113,23 +124,23 @@ export class AddonNotificationsNotificationPage implements OnInit {
         const notification = source.getItems()?.find(({ id }) => id === notificationId);
 
         if (!notification) {
-            throw new CoreError(`Notification with id ${notificationId} not found`);
+            return;
         }
+
+        this.loadNotifications(source);
 
         return notification;
     }
 
     /**
-     * Load current notification if it's found
+     * Load notifications from source.
      *
-     * @return Found notification
+     * @param source Notifications source
      */
-    getCurrentNotification(): AddonNotificationsNotification {
-        const pushNotification: AddonNotificationsNotificationData | undefined = CoreNavigator.getRouteParam('notification');
+    async loadNotifications(source: AddonsNotificationsNotificationsSource): Promise<void> {
+        this.notifications = new AddonNotificationSwipeItemsManager(source);
 
-        return this.loadNotifications(
-            pushNotification ? Number(pushNotification?.savedmessageid) : CoreNavigator.getRequiredRouteNumberParam('id'),
-        );
+        await this.notifications.start();
     }
 
     /**
@@ -191,6 +202,27 @@ export class AddonNotificationsNotificationPage implements OnInit {
         const site = await CoreSites.getSite(siteId);
 
         site.openInBrowserWithAutoLogin(url);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.notifications?.destroy();
+    }
+
+}
+
+/**
+ * Helper to manage swiping within a collection of notifications.
+ */
+class AddonNotificationSwipeItemsManager extends CoreSwipeNavigationItemsManager {
+
+    /**
+     * @inheritdoc
+     */
+    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot): string | null {
+        return route.params.id;
     }
 
 }
