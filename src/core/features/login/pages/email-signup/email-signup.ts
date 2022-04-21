@@ -14,7 +14,6 @@
 
 import { Component, ViewChild, ElementRef, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { IonRefresher } from '@ionic/angular';
 
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -254,17 +253,6 @@ export class CoreLoginEmailSignupPage implements OnInit {
 
             return false;
         }
-    }
-
-    /**
-     * Pull to refresh.
-     *
-     * @param event Event.
-     */
-    refreshSettings(event?: IonRefresher): void {
-        this.fetchData().finally(() => {
-            event?.complete();
-        });
     }
 
     /**
