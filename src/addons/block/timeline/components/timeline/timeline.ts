@@ -164,7 +164,7 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
     protected async fetchMyOverviewTimeline(afterEventId?: number): Promise<void> {
         const events = await AddonBlockTimeline.getActionEventsByTimesort(afterEventId, this.searchText);
 
-        this.timeline.events = events.events;
+        this.timeline.events = afterEventId ? this.timeline.events.concat(events.events) : events.events;
         this.timeline.canLoadMore = events.canLoadMore;
     }
 
