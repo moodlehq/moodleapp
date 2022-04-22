@@ -174,19 +174,33 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
         this.componentId = this.module.id;
         this.externalUrl = this.module.url;
         this.courseId = this.courseId || this.module.course;
-
-        this.modicon = await CoreCourseModuleDelegate.getModuleIconSrc(this.module.modname, this.module.modicon, this.module);
         this.moduleNameTranslated = CoreCourse.translateModuleName(this.module.modname || '');
 
         this.blog = await AddonBlog.isPluginEnabled();
 
-        await Promise.all([
-            this.getPackageStatus(),
-            this.fetchGrades(),
-            this.fetchCourse(),
-        ]);
+        try {
+            await Promise.all([
+                this.loadModIcon(),
+                this.getPackageStatus(),
+                this.fetchGrades(),
+                this.fetchCourse(),
+            ]);
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+        }
 
         this.loaded = true;
+    }
+
+    /**
+     * Load the module icon.
+     */
+    protected async loadModIcon(): Promise<void> {
+        if (!this.module) {
+            return;
+        }
+
+        this.modicon = await CoreCourseModuleDelegate.getModuleIconSrc(this.module.modname, this.module.modicon, this.module);
     }
 
     /**
@@ -235,7 +249,11 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
             return;
         }
 
-        this.grades = await CoreGradesHelper.getModuleGrades(this.courseId, this.moduleId);
+        try {
+            this.grades = await CoreGradesHelper.getModuleGrades(this.courseId, this.moduleId);
+        } catch {
+            // Cannot get grades, don't display them.
+        }
     }
 
     /**

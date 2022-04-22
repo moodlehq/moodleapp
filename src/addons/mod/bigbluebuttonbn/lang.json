@@ -14,5 +14,6 @@
     "view_message_moderators": "moderators",
     "view_message_session_started_at": "This session started at",
     "view_message_viewer": "viewer",
-    "view_message_viewers": "viewers"
+    "view_message_viewers": "viewers",
+    "view_nojoin": "You do not have a role that is allowed to join this session."
 }
