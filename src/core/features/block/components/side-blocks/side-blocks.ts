@@ -34,6 +34,7 @@ export class CoreBlockSideBlocksComponent implements OnInit {
 
     @Input() contextLevel!: string;
     @Input() instanceId!: number;
+    @Input() myDashboardPage?: string;
 
     @ViewChildren(CoreBlockComponent) blocksComponents?: QueryList<CoreBlockComponent>;
 
@@ -83,7 +84,7 @@ export class CoreBlockSideBlocksComponent implements OnInit {
             if (this.contextLevel === 'course') {
                 this.blocks = await CoreBlockHelper.getCourseBlocks(this.instanceId);
             } else {
-                const blocks = await CoreCoursesDashboard.getDashboardBlocks();
+                const blocks = await CoreCoursesDashboard.getDashboardBlocks(undefined, undefined, this.myDashboardPage);
 
                 this.blocks = blocks.sideBlocks;
             }

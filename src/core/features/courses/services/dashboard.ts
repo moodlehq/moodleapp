@@ -92,10 +92,15 @@ export class CoreCoursesDashboardProvider {
      *
      * @param userId User ID. Default, current user.
      * @param siteId Site ID. If not defined, current site.
+     * @param myPage What my page to return blocks of. Default MY_PAGE_DEFAULT.
      * @return Promise resolved with the list of blocks.
      */
-    async getDashboardBlocks(userId?: number, siteId?: string): Promise<CoreCoursesDashboardBlocks> {
-        const blocks = await this.getDashboardBlocksFromWS(CoreCoursesDashboardProvider.MY_PAGE_DEFAULT, userId, siteId);
+    async getDashboardBlocks(
+        userId?: number,
+        siteId?: string,
+        myPage = CoreCoursesDashboardProvider.MY_PAGE_DEFAULT,
+    ): Promise<CoreCoursesDashboardBlocks> {
+        const blocks = await this.getDashboardBlocksFromWS(myPage, userId, siteId);
 
         let mainBlocks: CoreCourseBlock[] = [];
         let sideBlocks: CoreCourseBlock[] = [];
