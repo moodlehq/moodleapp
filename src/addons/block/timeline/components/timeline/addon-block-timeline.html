@@ -60,12 +60,12 @@
 
     <core-loading [hideUntil]="timeline.loaded" [hidden]="sort != 'sortbydates'">
         <addon-block-timeline-events [events]="timeline.events" [canLoadMore]="timeline.canLoadMore" (loadMore)="loadMore()"
-            [from]="dataFrom" [to]="dataTo"></addon-block-timeline-events>
+            [from]="dataFrom" [to]="dataTo" [overdue]="overdue"></addon-block-timeline-events>
     </core-loading>
     <core-loading [hideUntil]="timelineCourses.loaded" [hidden]="sort != 'sortbycourses'">
         <ng-container *ngFor="let course of timelineCourses.courses">
             <addon-block-timeline-events [events]="course.events" [canLoadMore]="course.canLoadMore" (loadMore)="loadMore(course)"
-                [course]="course" [from]="dataFrom" [to]="dataTo"></addon-block-timeline-events>
+                [course]="course" [from]="dataFrom" [to]="dataTo" [overdue]="overdue"></addon-block-timeline-events>
         </ng-container>
         <core-empty-box *ngIf="timelineCourses.courses.length == 0" image="assets/img/icons/courses.svg"
             [message]="'addon.block_timeline.noevents' | translate"></core-empty-box>

@@ -37,6 +37,7 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
     @Input() course?: CoreEnrolledCourseDataWithOptions; // Whether to show the course name.
     @Input() from = 0; // Number of days from today to offset the events.
     @Input() to?: number; // Number of days from today to limit the events to. If not defined, no limit.
+    @Input() overdue = false; // If filtering overdue events or not.
     @Input() canLoadMore = false; // Whether more events can be loaded.
     @Output() loadMore = new EventEmitter(); // Notify that more events should be loaded.
 
@@ -53,17 +54,12 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
 
         if (changes.events || changes.from || changes.to) {
             if (this.events) {
-                const filteredEvents = await this.filterEventsByTime(this.from, this.to);
+                const filteredEvents = await this.filterEventsByTime();
                 this.empty = !filteredEvents || filteredEvents.length <= 0;
 
-                const now = CoreTimeUtils.timestamp();
-
-                const eventsByDay: Record<number, AddonCalendarEvent[]> = {};
+                const eventsByDay: Record<number, AddonBlockTimelineEvent[]> = {};
                 filteredEvents.forEach((event) => {
                     const dayTimestamp = CoreTimeUtils.getMidnightForTimestamp(event.timesort);
-
-                    // Already calculated on 4.0 onwards but this will be live.
-                    event.overdue = event.timesort < now;
 
                     if (eventsByDay[dayTimestamp]) {
                         eventsByDay[dayTimestamp].push(event);
@@ -89,20 +85,34 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
     /**
      * Filter the events by time.
      *
-     * @param start Number of days to start getting events from today. E.g. -1 will get events from yesterday.
-     * @param end Number of days after the start.
      * @return Filtered events.
      */
-    protected async filterEventsByTime(start: number, end?: number): Promise<AddonBlockTimelineEvent[]> {
-        start = AddonBlockTimeline.getDayStart(start);
-        end = end !== undefined ? AddonBlockTimeline.getDayStart(end) : end;
+    protected async filterEventsByTime(): Promise<AddonBlockTimelineEvent[]> {
+        const start = AddonBlockTimeline.getDayStart(this.from);
+        const end = this.to !== undefined
+            ? AddonBlockTimeline.getDayStart(this.to)
+            : undefined;
+
+        const now = CoreTimeUtils.timestamp();
+        const midnight = AddonBlockTimeline.getDayStart();
 
         return await Promise.all(this.events.filter((event) => {
-            if (end) {
-                return start <= event.timesort && event.timesort < end;
+            if (start > event.timesort || (end && event.timesort >= end)) {
+                return false;
             }
 
-            return start <= event.timesort;
+            // Already calculated on 4.0 onwards but this will be live.
+            event.overdue = event.timesort < now;
+
+            if (event.eventtype === 'open' || event.eventtype === 'opensubmission') {
+                const dayTimestamp = CoreTimeUtils.getMidnightForTimestamp(event.timesort);
+
+                return dayTimestamp > midnight;
+            }
+
+            // When filtering by overdue, we fetch all events due today, in case any have elapsed already and are overdue.
+            // This means if filtering by overdue, some events fetched might not be required (eg if due later today).
+            return (!this.overdue || event.overdue);
         }).map(async (event) => {
             event.iconUrl = await CoreCourse.getModuleIconSrc(event.icon.component);
             event.modulename = event.modulename || event.icon.component;
@@ -147,7 +157,8 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
 
 }
 
-type AddonBlockTimelineEvent = AddonCalendarEvent & {
+type AddonBlockTimelineEvent = Omit<AddonCalendarEvent, 'eventtype'> & {
+    eventtype: string;
     iconUrl?: string;
     iconTitle?: string;
 };

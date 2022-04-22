@@ -58,6 +58,7 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
 
     dataFrom?: number;
     dataTo?: number;
+    overdue = false;
 
     searchEnabled = false;
     searchText = '';
@@ -200,6 +201,7 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
     switchFilter(filter: string): void {
         this.filter = filter;
         this.currentSite.setLocalSiteConfig('AddonBlockTimelineFilter', this.filter);
+        this.overdue = this.filter === 'overdue';
 
         switch (this.filter) {
             case 'overdue':
