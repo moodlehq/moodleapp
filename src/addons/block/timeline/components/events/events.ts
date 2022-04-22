@@ -76,6 +76,7 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
                         events: eventsByDay[dayTimestamp],
                     };
                 });
+                this.loadingMore = false;
             } else {
                 this.empty = true;
             }
