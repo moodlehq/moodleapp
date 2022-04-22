@@ -33,6 +33,7 @@ export class CoreBlockSideBlocksButtonComponent implements OnInit, OnDestroy {
 
     @Input() contextLevel!: string;
     @Input() instanceId!: number;
+    @Input() myDashboardPage?: string;
 
     userTour: CoreUserTourDirectiveOptions = {
         id: 'side-blocks-button',
@@ -69,6 +70,7 @@ export class CoreBlockSideBlocksButtonComponent implements OnInit, OnDestroy {
             componentProps: {
                 contextLevel: this.contextLevel,
                 instanceId: this.instanceId,
+                myDashboardPage: this.myDashboardPage,
             },
         });
     }

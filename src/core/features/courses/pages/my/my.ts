@@ -42,6 +42,8 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
     loadedBlock?: Partial<CoreCourseBlock>;
     myOverviewBlock?: AddonBlockMyOverviewComponent;
     loaded = false;
+    myPageCourses = CoreCoursesDashboardProvider.MY_PAGE_COURSES;
+    hasSideBlocks = false;
 
     protected updateSiteObserver: CoreEventObserver;
 
@@ -79,9 +81,11 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
 
         if (available && !disabled) {
             try {
-                const blocks = await CoreCoursesDashboard.getDashboardBlocksFromWS(CoreCoursesDashboardProvider.MY_PAGE_COURSES);
+                const blocks = await CoreCoursesDashboard.getDashboardBlocks(undefined, undefined, this.myPageCourses);
 
-                this.loadedBlock = blocks.find((block) => block.name == 'myoverview');
+                // My overview block should always be in main blocks, but check side blocks too just in case.
+                this.loadedBlock = blocks.mainBlocks.concat(blocks.sideBlocks).find((block) => block.name == 'myoverview');
+                this.hasSideBlocks = blocks.sideBlocks.length > 0;
 
                 await CoreUtils.nextTicks(2);
 

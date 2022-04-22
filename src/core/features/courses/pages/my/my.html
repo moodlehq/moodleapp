@@ -49,6 +49,10 @@
             <core-block *ngIf="loadedBlock?.visible" [block]="loadedBlock" contextLevel="user" [instanceId]="userId"></core-block>
         </ion-list>
 
+        <core-block-side-blocks-button slot="fixed" *ngIf="hasSideBlocks" contextLevel="user" [instanceId]="userId"
+            [myDashboardPage]="myPageCourses">
+        </core-block-side-blocks-button>
+
         <core-empty-box *ngIf="!loadedBlock" icon="fas-cubes" [message]="'core.course.nocontentavailable' | translate">
         </core-empty-box>
     </core-loading>
