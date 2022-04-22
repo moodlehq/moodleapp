@@ -23,10 +23,25 @@ import { ScrollDetail } from '@ionic/core';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreDom } from '@singletons/dom';
-import { CoreEventObserver } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreMath } from '@singletons/math';
 import { Subscription } from 'rxjs';
 import { CoreFormatTextDirective } from './format-text';
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [COLLAPSIBLE_HEADER_UPDATED]: { collapsed: boolean };
+    }
+
+}
+
+export const COLLAPSIBLE_HEADER_UPDATED = 'collapsible_header_updated';
 
 /**
  * Directive to make <ion-header> collapsible.
@@ -149,6 +164,27 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         this.resizeListener?.off();
         this.mutationObserver?.disconnect();
         this.visiblePromise?.cancel();
+    }
+
+    /**
+     * Update collapsed status of the header.
+     *
+     * @param collapsed Whether header is collapsed or not.
+     */
+    protected setCollapsed(collapsed: boolean): void {
+        if (!this.page) {
+            return;
+        }
+
+        const isCollapsed = this.page.classList.contains('collapsible-header-page-is-collapsed');
+
+        if (isCollapsed === collapsed) {
+            return;
+        }
+
+        this.page.classList.toggle('collapsible-header-page-is-collapsed', collapsed);
+
+        CoreEvents.trigger(COLLAPSIBLE_HEADER_UPDATED, { collapsed });
     }
 
     /**
@@ -458,8 +494,8 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
             }
         }
 
+        this.setCollapsed(!enable);
         this.page.style.setProperty('--collapsible-header-progress', enable ? '0' : '1');
-        this.page.classList.toggle('collapsible-header-page-is-collapsed', !enable);
     }
 
     /**
@@ -523,9 +559,9 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
                 ? 0
                 : CoreMath.clamp(contentScroll.scrollTop / scrollingHeight, 0, 1);
 
+            this.setCollapsed(progress === 1);
             page.style.setProperty('--collapsible-header-progress', `${progress}`);
             page.classList.toggle('collapsible-header-page-is-frozen', frozen);
-            page.classList.toggle('collapsible-header-page-is-collapsed', progress === 1);
 
             Object
                 .entries(progress > .5 ? collapsedFontStyles : expandedFontStyles)
@@ -547,8 +583,8 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
                 const scrollTop = contentScroll.scrollTop;
                 const collapse = progress > 0.5;
 
+                this.setCollapsed(collapse);
                 page.style.setProperty('--collapsible-header-progress', collapse ? '1' : '0');
-                page.classList.toggle('collapsible-header-page-is-collapsed', collapse);
 
                 if (collapse && this.scrollingHeight && this.scrollingHeight > 0 && scrollTop < this.scrollingHeight) {
                     this.content?.scrollToPoint(null, this.scrollingHeight);

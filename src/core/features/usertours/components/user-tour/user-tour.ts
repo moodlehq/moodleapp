@@ -34,6 +34,7 @@ import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreDom } from '@singletons/dom';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreMainMenuProvider } from '@features/mainmenu/services/mainmenu';
+import { COLLAPSIBLE_HEADER_UPDATED } from '@directives/collapsible-header';
 
 const ANIMATION_DURATION = 200;
 const USER_TOURS_BACK_BUTTON_PRIORITY = 100;
@@ -71,6 +72,7 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
     private wrapperTransform = '';
     private wrapperElement = new CorePromisedValue<HTMLElement>();
     private backButtonListener?: (event: BackButtonEvent) => void;
+    protected collapsibleHeaderListener?: CoreEventObserver;
     protected mainMenuListener?: CoreEventObserver;
     protected resizeListener?: CoreEventObserver;
     protected scrollListener?: EventListener;
@@ -252,6 +254,8 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
             return;
         }
 
+        this.collapsibleHeaderListener = this.collapsibleHeaderListener ??
+            CoreEvents.on(COLLAPSIBLE_HEADER_UPDATED, () => this.calculateStyles());
         this.mainMenuListener = this.mainMenuListener ??
             CoreEvents.on(CoreMainMenuProvider.MAIN_MENU_VISIBILITY_UPDATED, () => this.calculateStyles());
         this.resizeListener = this.resizeListener ?? CoreDom.onWindowResize(() => this.calculateStyles());
@@ -276,10 +280,12 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
 
         this.active = false;
 
+        this.collapsibleHeaderListener?.off();
         this.mainMenuListener?.off();
         this.resizeListener?.off();
         this.backButtonListener && document.removeEventListener('ionBackButton', this.backButtonListener);
         this.backButtonListener = undefined;
+        this.collapsibleHeaderListener = undefined;
         this.mainMenuListener = undefined;
         this.resizeListener = undefined;
 
