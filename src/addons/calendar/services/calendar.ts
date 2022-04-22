@@ -45,7 +45,7 @@ import { CoreText } from '@singletons/text';
 const ROOT_CACHE_KEY = 'mmaCalendar:';
 
 /**
- * Context levels enumeration.
+ * Main calendar Event types enumeration.
  */
 export enum AddonCalendarEventType {
     SITE = 'site',
