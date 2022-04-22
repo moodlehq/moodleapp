@@ -81,15 +81,23 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
             return;
         }
 
-        this.meetingInfo = await AddonModBBB.getMeetingInfo(this.bbb.id, this.groupId, {
-            cmId: this.module.id,
-        });
+        try {
+            this.meetingInfo = await AddonModBBB.getMeetingInfo(this.bbb.id, this.groupId, {
+                cmId: this.module.id,
+            });
 
-        if (this.meetingInfo.statusrunning && this.meetingInfo.userlimit > 0) {
-            const count = (this.meetingInfo.participantcount || 0) + (this.meetingInfo.moderatorcount || 0);
-            if (count === this.meetingInfo.userlimit) {
-                this.meetingInfo.statusmessage = Translate.instant('addon.mod_bigbluebuttonbn.userlimitreached');
+            if (this.meetingInfo.statusrunning && this.meetingInfo.userlimit > 0) {
+                const count = (this.meetingInfo.participantcount || 0) + (this.meetingInfo.moderatorcount || 0);
+                if (count === this.meetingInfo.userlimit) {
+                    this.meetingInfo.statusmessage = Translate.instant('addon.mod_bigbluebuttonbn.userlimitreached');
+                }
             }
+        } catch (error) {
+            if (error && error.errorcode === 'restrictedcontextexception') {
+                error.message = Translate.instant('addon.mod_bigbluebuttonbn.view_nojoin');
+            }
+
+            throw error;
         }
     }
 
