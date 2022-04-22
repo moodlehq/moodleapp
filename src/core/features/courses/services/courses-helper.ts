@@ -25,6 +25,7 @@ import {
 import { makeSingleton, Translate } from '@singletons';
 import { CoreWSExternalFile } from '@services/ws';
 import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursecompletion';
+import moment from 'moment';
 
 /**
  * Helper to gather some common courses functions.
@@ -291,6 +292,51 @@ export class CoreCoursesHelperProvider {
 
             return course;
         }));
+    }
+
+    /**
+     * Calculates if course date is past.
+     *
+     * @param course Course Object.
+     * @param gradePeriodAfter Classify past courses as in progress for these many days after the course end date.
+     * @return Wether the course is past.
+     */
+    isPastCourse(course: CoreEnrolledCourseDataWithOptions, gradePeriodAfter = 0): boolean {
+        if (course.completed) {
+            return true;
+        }
+
+        if (!course.enddate) {
+            return false;
+        }
+
+        // Calculate the end date to use for display classification purposes, incorporating the grace period, if any.
+        const endDate = moment(course.enddate * 1000).add(gradePeriodAfter, 'days').valueOf();
+
+        return endDate < Date.now();
+    }
+
+    /**
+     * Calculates if course date is future.
+     *
+     * @param course Course Object.
+     * @param gradePeriodAfter Classify past courses as in progress for these many days after the course end date.
+     * @param gradePeriodBefore Classify future courses as in progress for these many days prior to the course start date.
+     * @return Wether the course is future.
+     */
+    isFutureCourse(
+        course: CoreEnrolledCourseDataWithOptions,
+        gradePeriodAfter = 0,
+        gradePeriodBefore = 0,
+    ): boolean {
+        if (this.isPastCourse(course, gradePeriodAfter) || !course.startdate) {
+            return false;
+        }
+
+        // Calculate the start date to use for display classification purposes, incorporating the grace period, if any.
+        const startDate = moment(course.startdate * 1000).subtract(gradePeriodBefore, 'days').valueOf();
+
+        return startDate > Date.now();
     }
 
 }

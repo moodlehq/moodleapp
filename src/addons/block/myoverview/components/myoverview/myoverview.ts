@@ -27,7 +27,6 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursecompletion';
 import { IonSearchbar } from '@ionic/angular';
-import moment from 'moment';
 import { CoreNavigator } from '@services/navigator';
 
 const FILTER_PRIORITY: AddonBlockMyOverviewTimeFilters[] =
@@ -478,13 +477,19 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
                     break;
                 case 'inprogress':
                     this.filteredCourses = this.filteredCourses.filter((course) =>
-                        !course.hidden && !this.isPastCourse(course) && !this.isFutureCourse(course));
+                        !course.hidden &&
+                        !CoreCoursesHelper.isPastCourse(course, this.gradePeriodAfter) &&
+                        !CoreCoursesHelper.isFutureCourse(course, this.gradePeriodAfter, this.gradePeriodBefore));
                     break;
                 case 'future':
-                    this.filteredCourses = this.filteredCourses.filter((course) => !course.hidden && this.isFutureCourse(course));
+                    this.filteredCourses = this.filteredCourses.filter((course) =>
+                        !course.hidden &&
+                        CoreCoursesHelper.isFutureCourse(course, this.gradePeriodAfter, this.gradePeriodBefore));
                     break;
                 case 'past':
-                    this.filteredCourses = this.filteredCourses.filter((course) => !course.hidden && this.isPastCourse(course));
+                    this.filteredCourses = this.filteredCourses.filter((course) =>
+                        !course.hidden &&
+                        CoreCoursesHelper.isPastCourse(course, this.gradePeriodAfter));
                     break;
                 case 'favourite':
                     this.filteredCourses = this.filteredCourses.filter((course) => !course.hidden && course.isfavourite);
@@ -513,44 +518,6 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         // Refresh prefetch data (if enabled).
         this.prefetchIconsInitialized = false;
         this.initPrefetchCoursesIcons();
-    }
-
-    /**
-     * Calculates if course date is past.
-     *
-     * @param course Course Object.
-     * @return Wether the course is past.
-     */
-    protected isPastCourse(course: CoreEnrolledCourseDataWithOptions): boolean {
-        if (course.completed) {
-            return true;
-        }
-
-        if (!course.enddate) {
-            return false;
-        }
-
-        // Calculate the end date to use for display classification purposes, incorporating the grace period, if any.
-        const endDate = moment(course.enddate * 1000).add(this.gradePeriodAfter, 'days').valueOf();
-
-        return endDate < this.today;
-    }
-
-    /**
-     * Calculates if course date is future.
-     *
-     * @param course Course Object.
-     * @return Wether the course is future.
-     */
-    protected isFutureCourse(course: CoreEnrolledCourseDataWithOptions): boolean {
-        if (this.isPastCourse(course) || !course.startdate) {
-            return false;
-        }
-
-        // Calculate the start date to use for display classification purposes, incorporating the grace period, if any.
-        const startDate = moment(course.startdate * 1000).subtract(this.gradePeriodBefore, 'days').valueOf();
-
-        return startDate > this.today;
     }
 
     /**

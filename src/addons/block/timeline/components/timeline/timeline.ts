@@ -63,8 +63,10 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
     searchEnabled = false;
     searchText = '';
 
-    protected courseIds: number[] = [];
+    protected courseIdsToInvalidate: number[] = [];
     protected fetchContentDefaultError = 'Error getting timeline data.';
+    protected gradePeriodAfter = 0;
+    protected gradePeriodBefore = 0;
 
     constructor() {
         super('AddonBlockTimelineComponent');
@@ -106,8 +108,8 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
         promises.push(AddonBlockTimeline.invalidateActionEventsByCourses());
         promises.push(CoreCourses.invalidateUserCourses());
         promises.push(CoreCourseOptionsDelegate.clearAndInvalidateCoursesOptions());
-        if (this.courseIds.length > 0) {
-            promises.push(CoreCourses.invalidateCoursesByField('ids', this.courseIds.join(',')));
+        if (this.courseIdsToInvalidate.length > 0) {
+            promises.push(CoreCourses.invalidateCoursesByField('ids', this.courseIdsToInvalidate.join(',')));
         }
 
         return CoreUtils.allPromises(promises);
@@ -172,13 +174,26 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
      * @return Promise resolved when done.
      */
     protected async fetchMyOverviewTimelineByCourses(): Promise<void> {
+        try {
+            this.gradePeriodAfter = parseInt(await this.currentSite.getConfig('coursegraceperiodafter'), 10);
+            this.gradePeriodBefore = parseInt(await this.currentSite.getConfig('coursegraceperiodbefore'), 10);
+        } catch {
+            this.gradePeriodAfter = 0;
+            this.gradePeriodBefore = 0;
+        }
+
         // Do not filter courses by date because they can contain activities due.
         this.timelineCourses.courses = await CoreCoursesHelper.getUserCoursesWithOptions();
+        this.courseIdsToInvalidate = this.timelineCourses.courses.map((course) => course.id);
+
+        // Filter only in progress courses.
+        this.timelineCourses.courses = this.timelineCourses.courses.filter((course) =>
+            !course.hidden &&
+            !CoreCoursesHelper.isPastCourse(course, this.gradePeriodAfter) &&
+            !CoreCoursesHelper.isFutureCourse(course, this.gradePeriodAfter, this.gradePeriodBefore));
 
         if (this.timelineCourses.courses.length > 0) {
-            this.courseIds = this.timelineCourses.courses.map((course) => course.id);
-
-            const courseEvents = await AddonBlockTimeline.getActionEventsByCourses(this.courseIds, this.searchText);
+            const courseEvents = await AddonBlockTimeline.getActionEventsByCourses(this.courseIdsToInvalidate, this.searchText);
 
             this.timelineCourses.courses = this.timelineCourses.courses.filter((course) => {
                 if (courseEvents[course.id].events.length == 0) {
