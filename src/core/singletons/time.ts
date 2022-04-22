@@ -81,7 +81,7 @@ export class CoreTime {
     /**
      * Converts a number of seconds into a short human readable format: minutes and seconds, in fromat: 3' 27''.
      *
-     * @param seconds Seconds
+     * @param duration Duration in seconds.
      * @return Short human readable text.
      */
     static formatTimeShort(duration: number): string {

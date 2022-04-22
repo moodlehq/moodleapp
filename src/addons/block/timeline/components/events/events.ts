@@ -18,10 +18,10 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreCourse } from '@features/course/services/course';
-import moment from 'moment';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { AddonCalendarEvent } from '@addons/calendar/services/calendar';
 import { CoreEnrolledCourseDataWithOptions } from '@features/courses/services/courses-helper';
+import { AddonBlockTimeline } from '../../services/timeline';
 
 /**
  * Directive to render a list of events in course overview.
@@ -94,8 +94,8 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
      * @return Filtered events.
      */
     protected async filterEventsByTime(start: number, end?: number): Promise<AddonBlockTimelineEvent[]> {
-        start = moment().add(start, 'days').startOf('day').unix();
-        end = end !== undefined ? moment().add(end, 'days').startOf('day').unix() : end;
+        start = AddonBlockTimeline.getDayStart(start);
+        end = end !== undefined ? AddonBlockTimeline.getDayStart(end) : end;
 
         return await Promise.all(this.events.filter((event) => {
             if (end) {
