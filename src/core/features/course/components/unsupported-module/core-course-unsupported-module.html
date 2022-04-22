@@ -1,25 +1,25 @@
-<div class="ion-padding">
-    <core-course-module-description [description]="module?.description" contextLevel="module"
-        [contextInstanceId]="module?.id" [courseId]="courseId">
-    </core-course-module-description>
-
-    <h2 *ngIf="!isDisabledInSite && isSupportedByTheApp">{{ 'core.whoops' | translate }}</h2>
-    <h2 *ngIf="isDisabledInSite || !isSupportedByTheApp">{{ 'core.uhoh' | translate }}</h2>
-
-    <p class="core-big" *ngIf="isDisabledInSite">{{ 'core.course.activitydisabled' | translate }}</p>
-    <p class="core-big" *ngIf="!isDisabledInSite && isSupportedByTheApp">
-        {{ 'core.course.activitynotyetviewablesiteupgradeneeded' | translate }}
-    </p>
-    <p class="core-big" *ngIf="!isDisabledInSite && !isSupportedByTheApp">
-        {{ 'core.course.activitynotyetviewableremoteaddon' | translate }}
-    </p>
-    <p *ngIf="isDisabledInSite || !isSupportedByTheApp"><strong>{{ 'core.course.askadmintosupport' | translate }}</strong></p>
-
-    <div *ngIf="module && module.url">
-        <p><strong>{{ 'core.course.useactivityonbrowser' | translate }}</strong></p>
-        <ion-button expand="block" [href]="module.url" core-link>
-            {{ 'core.openinbrowser' | translate }}
-            <ion-icon name="fas-external-link-alt" slot="end" aria-hidden="true"></ion-icon>
-        </ion-button>
-    </div>
+<div class="has-spacer">
+    <ion-card class="core-danger-card">
+        <ion-item>
+            <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>
+                <p><strong>{{ 'core.uhoh' | translate }} </strong>
+                    <ng-container *ngIf="isDisabledInSite">{{ 'core.course.activitydisabled' | translate }}</ng-container>
+                    <ng-container *ngIf="!isDisabledInSite">
+                        {{ 'core.course.activitynotyetviewableremoteaddon' | translate }}
+                    </ng-container>
+                </p>
+            </ion-label>
+        </ion-item>
+    </ion-card>
+    <div class="spacer"></div>
+    <ion-item lines="none" class="ion-text-wrap" *ngIf="module?.url && module?.uservisible">
+        <ion-label>
+            <p>{{ 'core.course.useactivityonbrowser' | translate }}</p>
+            <ion-button expand="block" [href]="module?.url" core-link [showBrowserWarning]="false">
+                {{ 'core.openinbrowser' | translate }}
+                <ion-icon name="fas-external-link-alt" slot="end" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-label>
+    </ion-item>
 </div>

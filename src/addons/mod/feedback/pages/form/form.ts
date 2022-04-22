@@ -15,8 +15,8 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CoreSite } from '@classes/site';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
-import { CoreCourse, CoreCourseCommonModWSOptions, CoreCourseWSModule } from '@features/course/services/course';
-import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { CoreCourse, CoreCourseCommonModWSOptions } from '@features/course/services/course';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CanLeave } from '@guards/can-leave';
 import { IonContent } from '@ionic/angular';
 import { CoreApp } from '@services/app';
@@ -51,9 +51,8 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
 
     @ViewChild(IonContent) content?: IonContent;
 
-    protected module?: CoreCourseWSModule;
+    protected module?: CoreCourseModuleData;
     protected currentPage?: number;
-    protected siteAfterSubmit?: string;
     protected onlineObserver: Subscription;
     protected originalData?: Record<string, AddonModFeedbackResponseValue>;
     protected currentSite: CoreSite;
@@ -75,9 +74,10 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
     hasNextPage = false;
     completed = false;
     completedOffline = false;
+    siteAfterSubmit?: string;
 
     constructor() {
-        this.currentSite = CoreSites.getCurrentSite()!;
+        this.currentSite = CoreSites.getRequiredCurrentSite();
 
         // Refresh online status when changes.
         this.onlineObserver = Network.onChange().subscribe(() => {
@@ -92,12 +92,20 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.cmId = CoreNavigator.getRouteNumberParam('cmId')!;
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.currentPage = CoreNavigator.getRouteNumberParam('page');
-        this.title = CoreNavigator.getRouteParam('title');
-        this.preview = !!CoreNavigator.getRouteBooleanParam('preview');
-        this.fromIndex = !!CoreNavigator.getRouteBooleanParam('fromIndex');
+        try {
+            this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.currentPage = CoreNavigator.getRouteNumberParam('page');
+            this.title = CoreNavigator.getRouteParam('title');
+            this.preview = !!CoreNavigator.getRouteBooleanParam('preview');
+            this.fromIndex = !!CoreNavigator.getRouteBooleanParam('fromIndex');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
 
         await this.fetchData();
 
@@ -401,7 +409,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
      */
     async continue(): Promise<void> {
         if (!this.siteAfterSubmit) {
-            return CoreCourseHelper.getAndOpenCourse(this.courseId, {}, this.currentSite.getId());
+            return CoreNavigator.back();
         }
 
         const modal = await CoreDomUtils.showModalLoading();

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Optional } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { IonRefresher } from '@ionic/angular';
 import { CoreEvents } from '@singletons/events';
@@ -23,7 +23,6 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreCategoryData, CoreCourses, CoreCourseSearchedData, CoreEnrolledCourseData } from '@features/courses/services/courses';
-import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
 import {
     AddonCalendarProvider,
@@ -34,7 +33,7 @@ import {
     AddonCalendarSubmitCreateUpdateFormDataWSParams,
 } from '../../services/calendar';
 import { AddonCalendarOffline } from '../../services/calendar-offline';
-import { AddonCalendarEventTypeOption, AddonCalendarHelper } from '../../services/calendar-helper';
+import { AddonCalendarEventReminder, AddonCalendarEventTypeOption, AddonCalendarHelper } from '../../services/calendar-helper';
 import { AddonCalendarSync, AddonCalendarSyncProvider } from '../../services/calendar-sync';
 import { CoreSite } from '@classes/site';
 import { Translate } from '@singletons';
@@ -44,6 +43,8 @@ import { CoreError } from '@classes/errors/error';
 import { CoreNavigator } from '@services/navigator';
 import { CanLeave } from '@guards/can-leave';
 import { CoreForms } from '@singletons/form';
+import { CoreLocalNotifications } from '@services/local-notifications';
+import { AddonCalendarReminderTimeModalComponent } from '@addons/calendar/components/reminder-time-modal/reminder-time-modal';
 
 /**
  * Page that displays a form to create/edit an event.
@@ -69,7 +70,6 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
     groups: CoreGroup[] = [];
     loadingGroups = false;
     courseGroupSet = false;
-    advanced = false;
     errors: Record<string, string>;
     error = false;
     eventRepeatId?: number;
@@ -84,6 +84,10 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
     groupControl: FormControl;
     descriptionControl: FormControl;
 
+    // Reminders.
+    notificationsEnabled = false;
+    reminders: AddonCalendarEventCandidateReminder[] = [];
+
     protected courseId!: number;
     protected originalData?: AddonCalendarOfflineEventDBRecord;
     protected currentSite: CoreSite;
@@ -94,9 +98,9 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
     constructor(
         protected fb: FormBuilder,
-        @Optional() protected svComponent: CoreSplitViewComponent,
     ) {
-        this.currentSite = CoreSites.getCurrentSite()!;
+        this.currentSite = CoreSites.getRequiredCurrentSite();
+        this.notificationsEnabled = CoreLocalNotifications.isAvailable();
         this.errors = {
             required: Translate.instant('core.required'),
         };
@@ -142,6 +146,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
         this.form.addControl('timedurationuntil', this.fb.control(currentDate));
         this.form.addControl('courseid', this.fb.control(this.courseId));
 
+        this.initReminders();
         this.fetchData().finally(() => {
             this.originalData = CoreUtils.clone(this.form.value);
             this.loaded = true;
@@ -173,17 +178,19 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
             if (this.eventId && !this.gotEventData) {
                 // Editing an event, get the event data. Wait for sync first.
+                const eventId = this.eventId;
+
                 promises.push(AddonCalendarSync.waitForSync(AddonCalendarSyncProvider.SYNC_ID).then(async () => {
                     // Do not block if the scope is already destroyed.
                     if (!this.isDestroyed && this.eventId) {
-                        CoreSync.blockOperation(AddonCalendarProvider.COMPONENT, this.eventId);
+                        CoreSync.blockOperation(AddonCalendarProvider.COMPONENT, eventId);
                     }
 
                     let eventForm: AddonCalendarEvent | AddonCalendarOfflineEventDBRecord | undefined;
 
                     // Get the event offline data if there's any.
                     try {
-                        eventForm = await AddonCalendarOffline.getEvent(this.eventId!);
+                        eventForm = await AddonCalendarOffline.getEvent(eventId);
 
                         this.hasOffline = true;
                     } catch {
@@ -191,9 +198,9 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
                         this.hasOffline = false;
                     }
 
-                    if (this.eventId! > 0) {
+                    if (eventId > 0) {
                         // It's an online event. get its data from server.
-                        const event = await AddonCalendar.getEventById(this.eventId!);
+                        const event = await AddonCalendar.getEventById(eventId);
 
                         if (!eventForm) {
                             eventForm = event; // Use offline data first.
@@ -433,13 +440,6 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
         }
     }
 
-    /**
-     * Show or hide advanced form fields.
-     */
-    toggleAdvanced(): void {
-        this.advanced = !this.advanced;
-    }
-
     selectDuration(duration: string): void {
         this.form.controls.duration.setValue(duration);
     }
@@ -519,7 +519,9 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
         let event: AddonCalendarEvent | AddonCalendarOfflineEventDBRecord;
 
         try {
-            const result = await AddonCalendar.submitEvent(this.eventId, data);
+            const result = await AddonCalendar.submitEvent(this.eventId, data, {
+                reminders: this.eventId ? [] : this.reminders, // Only allow adding reminders for new events.
+            });
             event = result.event;
 
             CoreForms.triggerFormSubmittedEvent(this.formElement, result.sent, this.currentSite.getId());
@@ -564,7 +566,10 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
             if (event) {
                 CoreEvents.trigger(
                     AddonCalendarProvider.NEW_EVENT_EVENT,
-                    { eventId: event.id! },
+                    {
+                        eventId: event.id,
+                        oldEventId: this.eventId,
+                    },
                     this.currentSite.getId(),
                 );
             } else {
@@ -572,25 +577,23 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
             }
         }
 
-        if (this.svComponent?.outletActivated) {
-            // Empty form.
-            this.hasOffline = false;
-            this.form.reset(this.originalData);
-            this.originalData = CoreUtils.clone(this.form.value);
-        } else {
-            this.originalData = undefined; // Avoid asking for confirmation.
-            CoreNavigator.back();
-        }
+        this.originalData = undefined; // Avoid asking for confirmation.
+        CoreNavigator.back();
     }
 
     /**
      * Discard an offline saved discussion.
      */
     async discard(): Promise<void> {
+        if (!this.eventId) {
+            return;
+        }
+
         try {
             await CoreDomUtils.showConfirm(Translate.instant('core.areyousure'));
+
             try {
-                await AddonCalendarOffline.deleteEvent(this.eventId!);
+                await AddonCalendarOffline.deleteEvent(this.eventId);
 
                 CoreForms.triggerFormCancelledEvent(this.formElement, this.currentSite.getId());
 
@@ -630,6 +633,70 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
     }
 
     /**
+     * Init reminders.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async initReminders(): Promise<void> {
+        // Don't init reminders when editing an event. Right now, only allow adding reminders for new events.
+        if (!this.notificationsEnabled || this.eventId) {
+            return;
+        }
+
+        // Check if default reminders are enabled.
+        const defaultTime = await AddonCalendar.getDefaultNotificationTime(this.currentSite.getId());
+        if (defaultTime === 0) {
+            return;
+        }
+
+        const data = AddonCalendarProvider.convertSecondsToValueAndUnit(defaultTime);
+
+        // Add default reminder.
+        this.reminders.push({
+            time: null,
+            value: data.value,
+            unit: data.unit,
+            label: AddonCalendar.getUnitValueLabel(data.value, data.unit, true),
+        });
+    }
+
+    /**
+     * Add a reminder.
+     */
+    async addReminder(): Promise<void> {
+        const reminderTime = await CoreDomUtils.openModal<number>({
+            component: AddonCalendarReminderTimeModalComponent,
+        });
+
+        if (reminderTime === undefined) {
+            // User canceled.
+            return;
+        }
+
+        const data = AddonCalendarProvider.convertSecondsToValueAndUnit(reminderTime);
+
+        // Add reminder.
+        this.reminders.push({
+            time: reminderTime,
+            value: data.value,
+            unit: data.unit,
+            label: AddonCalendar.getUnitValueLabel(data.value, data.unit),
+        });
+    }
+
+    /**
+     * Remove a reminder.
+     *
+     * @param reminder The reminder to remove.
+     */
+    removeReminder(reminder: AddonCalendarEventCandidateReminder): void {
+        const index = this.reminders.indexOf(reminder);
+        if (index != -1) {
+            this.reminders.splice(index, 1);
+        }
+    }
+
+    /**
      * Page destroyed.
      */
     ngOnDestroy(): void {
@@ -638,3 +705,5 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
     }
 
 }
+
+type AddonCalendarEventCandidateReminder = Omit<AddonCalendarEventReminder, 'id'|'eventid'>;

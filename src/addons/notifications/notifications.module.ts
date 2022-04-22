@@ -28,6 +28,9 @@ import { AddonNotificationsSettingsHandler, AddonNotificationsSettingsHandlerSer
 import { CoreSitePreferencesRoutingModule } from '@features/settings/pages/site/site-routing';
 import { AddonNotificationsProvider } from './services/notifications';
 import { AddonNotificationsHelperProvider } from './services/notifications-helper';
+import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
+import { AddonNotificationsPreferencesLinkHandler } from './services/handlers/preferences-link';
+import { AddonNotificationsLinkHandler } from './services/handlers/notifications-link';
 
 export const ADDON_NOTIFICATIONS_SERVICES: Type<unknown>[] = [
     AddonNotificationsProvider,
@@ -37,7 +40,7 @@ export const ADDON_NOTIFICATIONS_SERVICES: Type<unknown>[] = [
 const routes: Routes = [
     {
         path: AddonNotificationsMainMenuHandlerService.PAGE_NAME,
-        loadChildren: () => import('@/addons/notifications/notifications-lazy.module').then(m => m.AddonNotificationsLazyModule),
+        loadChildren: () => import('@addons/notifications/notifications-lazy.module').then(m => m.AddonNotificationsLazyModule),
     },
 ];
 const preferencesRoutes: Routes = [
@@ -58,12 +61,13 @@ const preferencesRoutes: Routes = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreMainMenuDelegate.registerHandler(AddonNotificationsMainMenuHandler.instance);
                 CoreCronDelegate.register(AddonNotificationsCronHandler.instance);
                 CorePushNotificationsDelegate.registerClickHandler(AddonNotificationsPushClickHandler.instance);
                 CoreSettingsDelegate.registerHandler(AddonNotificationsSettingsHandler.instance);
+                CoreContentLinksDelegate.registerHandler(AddonNotificationsLinkHandler.instance);
+                CoreContentLinksDelegate.registerHandler(AddonNotificationsPreferencesLinkHandler.instance);
 
                 AddonNotificationsMainMenuHandler.initialize();
             },

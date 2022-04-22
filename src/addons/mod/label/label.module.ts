@@ -25,8 +25,7 @@ import { AddonModLabelPrefetchHandler } from './services/handlers/prefetch';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreCourseModuleDelegate.registerHandler(AddonModLabelModuleHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModLabelIndexLinkHandler.instance);
                 CoreCourseModulePrefetchDelegate.registerHandler(AddonModLabelPrefetchHandler.instance);

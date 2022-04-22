@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseSection } from '@features/course/services/course-helper';
@@ -28,8 +28,6 @@ import { CoreBlockBaseComponent } from '@features/block/classes/base-block-compo
     templateUrl: 'addon-block-sitemainmenu.html',
 })
 export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent implements OnInit {
-
-    @Input() downloadEnabled = false;
 
     component = 'AddonBlockSiteMainMenu';
     mainMenuBlock?: CoreCourseSection;
@@ -91,7 +89,7 @@ export class AddonBlockSiteMainMenuComponent extends CoreBlockBaseComponent impl
         const items = config.frontpageloggedin.split(',');
         const hasNewsItem = items.find((item) => parseInt(item, 10) == FrontPageItemNames['NEWS_ITEMS']);
 
-        const result = CoreCourseHelper.addHandlerDataForModules(
+        const result = await CoreCourseHelper.addHandlerDataForModules(
             [mainMenuBlock],
             this.siteHomeId,
             undefined,

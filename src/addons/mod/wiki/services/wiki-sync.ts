@@ -167,10 +167,11 @@ export class AddonModWikiSyncProvider extends CoreSyncBaseProvider<AddonModWikiS
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         const subwikiBlockId = this.getSubwikiBlockId(subwikiId, wikiId, userId, groupId);
+        const currentSyncPromise = this.getOngoingSync(subwikiBlockId, siteId);
 
-        if (this.isSyncing(subwikiBlockId, siteId)) {
+        if (currentSyncPromise) {
             // There's already a sync ongoing for this subwiki, return the promise.
-            return this.getOngoingSync(subwikiBlockId, siteId)!;
+            return currentSyncPromise;
         }
 
         // Verify that subwiki isn't blocked.

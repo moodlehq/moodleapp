@@ -14,10 +14,10 @@
 
 import { Component, OnInit } from '@angular/core';
 import { CoreNavigator } from '@services/navigator';
-import { CoreCourseAnyModuleData } from '../services/course';
+import { CoreDomUtils } from '@services/utils/dom';
+import { CoreCourseModuleData } from '../services/course-helper';
 import { CoreCourseModuleMainResourceComponent } from './main-resource-component';
 
-/**
 /**
  * Template class to easily create CoreCourseModuleMainComponent of resources (or activities without syncing).
  */
@@ -29,16 +29,25 @@ export class CoreCourseModuleMainActivityPage<ActivityType extends CoreCourseMod
     activityComponent?: ActivityType;
 
     title!: string;
-    module!: CoreCourseAnyModuleData;
+    module!: CoreCourseModuleData;
     courseId!: number;
 
     /**
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.module = CoreNavigator.getRouteParam<CoreCourseAnyModuleData>('module')!;
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.title = this.module?.name;
+        try {
+            this.module = CoreNavigator.getRequiredRouteParam<CoreCourseModuleData>('module');
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
+
+        this.title = this.module.name;
     }
 
     /**

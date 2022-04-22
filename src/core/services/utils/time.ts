@@ -15,8 +15,8 @@
 import { Injectable } from '@angular/core';
 
 import moment, { LongDateFormatKey } from 'moment';
-import { CoreConstants } from '@/core/constants';
 import { makeSingleton, Translate } from '@singletons';
+import { CoreTime } from '@singletons/time';
 
 /*
  * "Utils" service with helper functions for date and time.
@@ -69,6 +69,20 @@ export class CoreTimeUtilsProvider {
     };
 
     /**
+     * Initialize.
+     */
+    initialize(): void {
+        // Set relative time thresholds for humanize(), otherwise for example 47 minutes were converted to 'an hour'.
+        moment.relativeTimeThreshold('s', 60);
+        moment.relativeTimeThreshold('m', 60);
+        moment.relativeTimeThreshold('h', 24);
+        moment.relativeTimeThreshold('d', 30);
+        moment.relativeTimeThreshold('M', 12);
+        moment.relativeTimeThreshold('y', 365);
+        moment.relativeTimeThreshold('ss', 0); // To display exact number of seconds instead of just "a few seconds".
+    }
+
+    /**
      * Convert a PHP format to a Moment format.
      *
      * @param format PHP format.
@@ -97,7 +111,7 @@ export class CoreTimeUtilsProvider {
                     converted += ']';
                 }
 
-                converted += typeof CoreTimeUtilsProvider.FORMAT_REPLACEMENTS[char] != 'undefined' ?
+                converted += CoreTimeUtilsProvider.FORMAT_REPLACEMENTS[char] !== undefined ?
                     CoreTimeUtilsProvider.FORMAT_REPLACEMENTS[char] : char;
             } else {
                 // Not a PHP format. We need to escape them, otherwise the letters could be confused with Moment formats.
@@ -142,69 +156,26 @@ export class CoreTimeUtilsProvider {
     }
 
     /**
-     * Returns hours, minutes and seconds in a human readable format
+     * Returns years, months, days, hours, minutes and seconds in a human readable format.
      *
      * @param seconds A number of seconds
+     * @param precision Number of elements to have in precision.
      * @return Seconds in a human readable format.
+     * @deprecated since app 4.0. Use CoreTime.formatTime instead.
      */
-    formatTime(seconds: number): string {
-        const totalSecs = Math.abs(seconds);
-        const years = Math.floor(totalSecs / CoreConstants.SECONDS_YEAR);
-        let remainder = totalSecs - (years * CoreConstants.SECONDS_YEAR);
-        const days = Math.floor(remainder / CoreConstants.SECONDS_DAY);
+    formatTime(seconds: number, precision = 2): string {
+        return CoreTime.formatTime(seconds, precision);
+    }
 
-        remainder = totalSecs - (days * CoreConstants.SECONDS_DAY);
-
-        const hours = Math.floor(remainder / CoreConstants.SECONDS_HOUR);
-        remainder = remainder - (hours * CoreConstants.SECONDS_HOUR);
-
-        const mins = Math.floor(remainder / CoreConstants.SECONDS_MINUTE);
-        const secs = remainder - (mins * CoreConstants.SECONDS_MINUTE);
-
-        const ss = Translate.instant('core.' + (secs == 1 ? 'sec' : 'secs'));
-        const sm = Translate.instant('core.' + (mins == 1 ? 'min' : 'mins'));
-        const sh = Translate.instant('core.' + (hours == 1 ? 'hour' : 'hours'));
-        const sd = Translate.instant('core.' + (days == 1 ? 'day' : 'days'));
-        const sy = Translate.instant('core.' + (years == 1 ? 'year' : 'years'));
-        let oyears = '';
-        let odays = '';
-        let ohours = '';
-        let omins = '';
-        let osecs = '';
-
-        if (years) {
-            oyears = years + ' ' + sy;
-        }
-        if (days) {
-            odays = days + ' ' + sd;
-        }
-        if (hours) {
-            ohours = hours + ' ' + sh;
-        }
-        if (mins) {
-            omins = mins + ' ' + sm;
-        }
-        if (secs) {
-            osecs = secs + ' ' + ss;
-        }
-
-        if (years) {
-            return oyears + ' ' + odays;
-        }
-        if (days) {
-            return odays + ' ' + ohours;
-        }
-        if (hours) {
-            return ohours + ' ' + omins;
-        }
-        if (mins) {
-            return omins + ' ' + osecs;
-        }
-        if (secs) {
-            return osecs;
-        }
-
-        return Translate.instant('core.now');
+    /**
+     * Converts a number of seconds into a short human readable format: minutes and seconds, in fromat: 3' 27''.
+     *
+     * @param seconds Seconds
+     * @return Short human readable text.
+     * @deprecated since app 4.0. Use CoreTime.formatTimeShort instead.
+     */
+    formatTimeShort(duration: number): string {
+        return CoreTime.formatTimeShort(duration);
     }
 
     /**
@@ -213,35 +184,10 @@ export class CoreTimeUtilsProvider {
      * @param duration Duration in seconds
      * @param precision Number of elements to have in precision. 0 or undefined to full precission.
      * @return Duration in a human readable format.
+     * @deprecated since app 4.0. Use CoreTime.formatTime instead.
      */
     formatDuration(duration: number, precision?: number): string {
-        precision = precision || 5;
-
-        const eventDuration = moment.duration(duration, 'seconds');
-        let durationString = '';
-
-        if (precision && eventDuration.years() > 0) {
-            durationString += ' ' + moment.duration(eventDuration.years(), 'years').humanize();
-            precision--;
-        }
-        if (precision && eventDuration.months() > 0) {
-            durationString += ' ' + moment.duration(eventDuration.months(), 'months').humanize();
-            precision--;
-        }
-        if (precision && eventDuration.days() > 0) {
-            durationString += ' ' + moment.duration(eventDuration.days(), 'days').humanize();
-            precision--;
-        }
-        if (precision && eventDuration.hours() > 0) {
-            durationString += ' ' + moment.duration(eventDuration.hours(), 'hours').humanize();
-            precision--;
-        }
-        if (precision && eventDuration.minutes() > 0) {
-            durationString += ' ' + moment.duration(eventDuration.minutes(), 'minutes').humanize();
-            precision--;
-        }
-
-        return durationString.trim();
+        return CoreTime.formatTime(duration, precision);
     }
 
     /**
@@ -249,21 +195,10 @@ export class CoreTimeUtilsProvider {
      *
      * @param duration Duration in seconds
      * @return Duration in a short human readable format.
+     * @deprecated since app 4.0. Use CoreTime.formatTimeShort instead.
      */
     formatDurationShort(duration: number): string {
-        const minutes = Math.floor(duration / 60);
-        const seconds = duration - minutes * 60;
-        const durations = <string[]>[];
-
-        if (minutes > 0) {
-            durations.push(minutes + '\'');
-        }
-
-        if (seconds > 0 || minutes === 0) {
-            durations.push(seconds + '\'\'');
-        }
-
-        return durations.join(' ');
+        return CoreTime.formatTimeShort(duration);
     }
 
     /**
@@ -295,19 +230,19 @@ export class CoreTimeUtilsProvider {
      * @return Readable date.
      */
     userDate(timestamp: number, format?: string, convert: boolean = true, fixDay: boolean = true, fixHour: boolean = true): string {
-        format = Translate.instant(format ? format : 'core.strftimedaydatetime');
+        format = Translate.instant(format ? format : 'core.strftimedaydatetime') as string;
 
         if (fixDay) {
-            format = format!.replace(/%d/g, '%e');
+            format = format.replace(/%d/g, '%e');
         }
 
         if (fixHour) {
-            format = format!.replace('%I', '%l');
+            format = format.replace('%I', '%l');
         }
 
         // Format could be in PHP format, convert it to moment.
         if (convert) {
-            format = this.convertPHPToMoment(format!);
+            format = this.convertPHPToMoment(format);
         }
 
         return moment(timestamp).format(format);
@@ -338,7 +273,7 @@ export class CoreTimeUtilsProvider {
     convertToTimestamp(date: string, applyOffset?: boolean): number {
         const timestamp = moment(date).unix();
 
-        if (typeof applyOffset !== 'undefined') {
+        if (applyOffset !== undefined) {
             return applyOffset ? timestamp - moment().utcOffset() * 60 : timestamp;
         }
 

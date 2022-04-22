@@ -23,6 +23,9 @@ import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { Subscription } from 'rxjs';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
+import { CoreConfig } from '@services/config';
+import { CoreDomUtils } from '@services/utils/dom';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Device Info to be shown and copied to clipboard.
@@ -69,6 +72,10 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
     deviceOsTranslated?: string;
     currentLangName?: string;
     fsClickable = false;
+    showDevOptions = false;
+    protected devOptionsClickCounter = 0;
+    protected devOptionsForced = false;
+    protected devOptionsClickTimeout?: number;
 
     protected onlineObserver?: Subscription;
 
@@ -93,7 +100,7 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
 
         if (window.location && window.location.href) {
             const url = window.location.href;
-            this.deviceInfo.locationHref = url.indexOf('#') > 0 ? url.substr(0, url.indexOf('#')) : url;
+            this.deviceInfo.locationHref = url.indexOf('#') > 0 ? url.substring(0, url.indexOf('#')) : url;
         }
 
         if (window.screen) {
@@ -171,7 +178,7 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
         this.onlineObserver = Network.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             NgZone.run(() => {
-                this.deviceInfo!.networkStatus = appProvider.isOnline() ? 'online' : 'offline';
+                this.deviceInfo.networkStatus = appProvider.isOnline() ? 'online' : 'offline';
             });
         });
 
@@ -193,6 +200,10 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
             this.deviceInfo.fileSystemRoot = basepath;
             this.fsClickable = fileProvider.usesHTMLAPI();
         }
+
+        const showDevOptionsOnConfig = await CoreConfig.get('showDevOptions', 0);
+        this.devOptionsForced = CoreConstants.BUILD.isDevelopment || CoreConstants.BUILD.isTesting;
+        this.showDevOptions = this.devOptionsForced || showDevOptionsOnConfig == 1;
     }
 
     /**
@@ -219,6 +230,46 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
      */
     ngOnDestroy(): void {
         this.onlineObserver && this.onlineObserver.unsubscribe();
+    }
+
+    /**
+     * 5 clicks will enable dev options.
+     */
+    async enableDevOptions(): Promise<void> {
+        if (this.devOptionsForced) {
+            return;
+        }
+
+        clearTimeout(this.devOptionsClickTimeout);
+        this.devOptionsClickCounter++;
+
+        if (this.devOptionsClickCounter == 5) {
+            if (!this.showDevOptions) {
+                this.showDevOptions = true;
+                await CoreConfig.set('showDevOptions', 1);
+
+                CoreDomUtils.showToast('core.settings.youradev', true);
+            } else {
+                this.showDevOptions = false;
+                await CoreConfig.delete('showDevOptions');
+            }
+
+            this.devOptionsClickCounter = 0;
+
+            return;
+        }
+
+        this.devOptionsClickTimeout = window.setTimeout(() => {
+            this.devOptionsClickTimeout = undefined;
+            this.devOptionsClickCounter = 0;
+        }, 500);
+    }
+
+    /**
+     * Navigate to dev options.
+     */
+    gotoDevOptions(): void {
+        CoreNavigator.navigate('dev');
     }
 
 }

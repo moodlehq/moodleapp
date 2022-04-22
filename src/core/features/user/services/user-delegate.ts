@@ -47,15 +47,17 @@ export interface CoreUserProfileHandler extends CoreDelegateHandler {
     cacheEnabled?: boolean;
 
     /**
-     * Whether or not the handler is enabled for a course.
+     * Whether or not the handler is enabled for a context.
      *
-     * @param courseId Course ID where to show.
+     * @param context Context.
+     * @param contextId Context ID.
      * @param navOptions Navigation options for the course.
      * @param admOptions Admin options for the course.
      * @return Whether or not the handler is enabled for a user.
      */
-    isEnabledForCourse?(
-        courseId?: number,
+    isEnabledForContext?(
+        context: CoreUserDelegateContext,
+        contextId: number,
         navOptions?: CoreCourseUserAdminOrNavOptionIndexed,
         admOptions?: CoreCourseUserAdminOrNavOptionIndexed,
     ): Promise<boolean>;
@@ -64,22 +66,21 @@ export interface CoreUserProfileHandler extends CoreDelegateHandler {
      * Whether or not the handler is enabled for a user.
      *
      * @param user User object.
-     * @param courseId Course ID where to show.
+     * @param context Context.
+     * @param contextId Context ID.
      * @return Whether or not the handler is enabled for a user.
      */
-    isEnabledForUser?(
-        user: CoreUserProfile,
-        courseId?: number,
-    ): Promise<boolean>;
+    isEnabledForUser?(user: CoreUserProfile, context: CoreUserDelegateContext, contextId: number): Promise<boolean>;
 
     /**
      * Returns the data needed to render the handler.
      *
      * @param user User object.
-     * @param courseId Course ID where to show.
+     * @param context Context.
+     * @param contextId Context ID.
      * @return Data to be shown.
      */
-    getDisplayData(user: CoreUserProfile, courseId?: number): CoreUserProfileHandlerData;
+    getDisplayData(user: CoreUserProfile, context: CoreUserDelegateContext, contextId: number): CoreUserProfileHandlerData;
 }
 
 /**
@@ -112,13 +113,34 @@ export interface CoreUserProfileHandlerData {
     spinner?: boolean;
 
     /**
+     * If the handler has badge to show or not. Only for TYPE_NEW_PAGE.
+     */
+    showBadge?: boolean;
+
+    /**
+     * Text to display on the badge. Only used if showBadge is true and only for TYPE_NEW_PAGE.
+     */
+    badge?: string;
+
+    /**
+     * Accessibility text to add on the badge. Only used if showBadge is true and only for TYPE_NEW_PAGE.
+     */
+    badgeA11yText?: string;
+
+    /**
+     * If true, the badge number is being loaded. Only used if showBadge is true and only for TYPE_NEW_PAGE.
+     */
+    loading?: boolean;
+
+    /**
      * Action to do when clicked.
      *
      * @param event Click event.
      * @param user User object.
-     * @param courseId Course ID being viewed. If not defined, site context.
+     * @param context Context.
+     * @param contextId Context ID.
      */
-    action(event: Event, user: CoreUserProfile, courseId?: number): void;
+    action(event: Event, user: CoreUserProfile, context: CoreUserDelegateContext, contextId?: number): void;
 }
 
 /**
@@ -179,24 +201,16 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
     protected featurePrefix = 'CoreUserDelegate_';
 
     // Hold the handlers and the observable to notify them for each user.
-    protected userHandlers: {
-        [userId: number]: {
-            loaded: boolean; // Whether the handlers are loaded.
-            handlers: CoreUserProfileHandlerToDisplay[]; // List of handlers.
-            observable: Subject<CoreUserProfileHandlerToDisplay[]>; // Observale to notify the handlers.
-        };
-    } = {};
+    protected userHandlers: Record<number, Record<string, CoreUserDelegateHandlersData>> = {};
 
     constructor() {
         super('CoreUserDelegate', true);
 
         CoreEvents.on(CoreUserDelegateService.UPDATE_HANDLER_EVENT, (data) => {
-            if (!data || !data.handler || !this.userHandlers[data.userId]) {
-                return;
-            }
+            const handlersData = this.getHandlersData(data.userId, data.context, data.contextId);
 
             // Search the handler.
-            const handler = this.userHandlers[data.userId].handlers.find((userHandler) => userHandler.name == data.handler);
+            const handler = handlersData.handlers.find((userHandler) => userHandler.name == data.handler);
 
             if (!handler) {
                 return;
@@ -204,7 +218,7 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
 
             // Update the data and notify.
             Object.assign(handler.data, data.data);
-            this.userHandlers[data.userId].observable.next(this.userHandlers[data.userId].handlers);
+            handlersData.observable.next(handlersData.handlers);
         });
 
         CoreEvents.on(CoreEvents.LOGOUT, () => {
@@ -212,31 +226,41 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
         });
 
         CoreEvents.on(CoreUserProvider.PROFILE_REFRESHED, (data) => {
-            this.clearHandlerCache(data.courseId, data.userId);
+            const context = data.courseId ? CoreUserDelegateContext.COURSE : CoreUserDelegateContext.SITE;
+            this.clearHandlerCache(data.userId, context, data.courseId);
         });
     }
 
     /**
-     * Check if handlers are loaded.
+     * Check if handlers are loaded for a certain user and context.
      *
+     * @param userId User ID.
+     * @param context Context.
+     * @param contextId Context ID.
      * @return True if handlers are loaded, false otherwise.
      */
-    areHandlersLoaded(userId: number): boolean {
-        return this.userHandlers[userId]?.loaded;
+    areHandlersLoaded(userId: number, context: CoreUserDelegateContext, contextId?: number): boolean {
+        return this.getHandlersData(userId, context, contextId).loaded;
     }
 
     /**
      * Clear current user handlers.
      *
-     * @param userId The user to clear.
+     * @param userId The user to clear. Undefined for all users.
+     * @param context Context.
+     * @param contextId Context ID.
      */
-    clearUserHandlers(userId: number): void {
-        const userData = this.userHandlers[userId];
+    clearUserHandlers(userId?: number, context?: CoreUserDelegateContext, contextId?: number): void {
+        if (!userId) {
+            this.userHandlers = {};
+        } else if (!context) {
+            delete this.userHandlers[userId];
+        } else {
+            const handlersData = this.getHandlersData(userId, context, contextId);
 
-        if (userData) {
-            userData.handlers = [];
-            userData.observable.next([]);
-            userData.loaded = false;
+            handlersData.handlers = [];
+            handlersData.observable.next([]);
+            handlersData.loaded = false;
         }
     }
 
@@ -244,63 +268,65 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
      * Get the profile handlers for a user.
      *
      * @param user The user object.
-     * @param courseId The course ID.
+     * @param context Context.
+     * @param contextId Context ID.
      * @return Resolved with the handlers.
      */
-    getProfileHandlersFor(user: CoreUserProfile, courseId?: number): Subject<CoreUserProfileHandlerToDisplay[]> {
-        // Initialize the user handlers if it isn't initialized already.
-        if (!this.userHandlers[user.id]) {
-            this.userHandlers[user.id] = {
-                loaded: false,
-                handlers: [],
-                observable: new BehaviorSubject<CoreUserProfileHandlerToDisplay[]>([]),
-            };
-        }
+    getProfileHandlersFor(
+        user: CoreUserProfile,
+        context: CoreUserDelegateContext,
+        contextId?: number,
+    ): Subject<CoreUserProfileHandlerToDisplay[]> {
+        this.calculateUserHandlers(user, context, contextId);
 
-        this.calculateUserHandlers(user, courseId);
-
-        return this.userHandlers[user.id].observable;
+        return this.getHandlersData(user.id, context, contextId).observable;
     }
 
     /**
      * Get the profile handlers for a user.
      *
      * @param user The user object.
-     * @param courseId The course ID.
+     * @param context Context.
+     * @param contextId Context ID.
      * @return Promise resolved when done.
      */
-    protected async calculateUserHandlers(user: CoreUserProfile, courseId?: number): Promise<void> {
-        let navOptions: CoreCourseUserAdminOrNavOptionIndexed | undefined;
-        let admOptions: CoreCourseUserAdminOrNavOptionIndexed | undefined;
+    protected async calculateUserHandlers(
+        user: CoreUserProfile,
+        context: CoreUserDelegateContext,
+        contextId?: number,
+    ): Promise<void> {
+        // Get course options.
+        const courses = await CoreCourses.getUserCourses(true);
+        const courseIds = courses.map((course) => course.id);
 
-        if (CoreCourses.canGetAdminAndNavOptions()) {
-            // Get course options.
-            const courses = await CoreCourses.getUserCourses(true);
-            const courseIds = courses.map((course) => course.id);
+        const options = await CoreCourses.getCoursesAdminAndNavOptions(courseIds);
 
-            const options = await CoreCourses.getCoursesAdminAndNavOptions(courseIds);
+        const courseId = context === CoreUserDelegateContext.COURSE && contextId ? contextId : CoreSites.getCurrentSiteHomeId();
 
-            // For backwards compatibility we don't modify the courseId.
-            const courseIdForOptions = courseId || CoreSites.getCurrentSiteHomeId();
+        const navOptions = options.navOptions[courseId];
+        const admOptions = options.admOptions[courseId];
 
-            navOptions = options.navOptions[courseIdForOptions];
-            admOptions = options.admOptions[courseIdForOptions];
-        }
-
-        const userData = this.userHandlers[user.id];
-        userData.handlers = [];
+        const handlersData = this.getHandlersData(user.id, context, contextId);
+        handlersData.handlers = [];
 
         await CoreUtils.allPromises(Object.keys(this.enabledHandlers).map(async (name) => {
             // Checks if the handler is enabled for the user.
             const handler = this.handlers[name];
 
             try {
-                const enabled = await this.getAndCacheEnabledForUserFromHandler(handler, user, courseId, navOptions, admOptions);
+                const enabled = await this.getAndCacheEnabledForUserFromHandler(
+                    handler,
+                    user,
+                    context,
+                    courseId,
+                    navOptions,
+                    admOptions,
+                );
 
                 if (enabled) {
-                    userData.handlers.push({
+                    handlersData.handlers.push({
                         name: name,
-                        data: handler.getDisplayData(user, courseId),
+                        data: handler.getDisplayData(user, context, courseId),
                         priority: handler.priority || 0,
                         type: handler.type || CoreUserDelegateService.TYPE_NEW_PAGE,
                     });
@@ -311,9 +337,9 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
         }));
 
         // Sort them by priority.
-        userData.handlers.sort((a, b) => b.priority! - a.priority!);
-        userData.loaded = true;
-        userData.observable.next(userData.handlers);
+        handlersData.handlers.sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0));
+        handlersData.loaded = true;
+        handlersData.observable.next(handlersData.handlers);
     }
 
     /**
@@ -321,7 +347,8 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
      *
      * @param handler Handler object.
      * @param user User object.
-     * @param courseId Course ID where to show.
+     * @param context Context.
+     * @param contextId Context ID.
      * @param navOptions Navigation options for the course.
      * @param admOptions Admin options for the course.
      * @return Whether or not the handler is enabled for a user.
@@ -329,12 +356,13 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
     protected async getAndCacheEnabledForUserFromHandler(
         handler: CoreUserProfileHandler,
         user: CoreUserProfile,
-        courseId?: number,
-        navOptions?: CoreCourseUserAdminOrNavOptionIndexed,
-        admOptions?: CoreCourseUserAdminOrNavOptionIndexed,
+        context: CoreUserDelegateContext,
+        contextId: number,
+        navOptions: CoreCourseUserAdminOrNavOptionIndexed = {},
+        admOptions: CoreCourseUserAdminOrNavOptionIndexed = {},
     ): Promise<boolean> {
-        if (handler.isEnabledForCourse) {
-            const enabledOnCourse = await handler.isEnabledForCourse(courseId, navOptions, admOptions);
+        if (handler.isEnabledForContext) {
+            const enabledOnCourse = await handler.isEnabledForContext(context, contextId, navOptions, admOptions);
 
             if (!enabledOnCourse) {
                 // If is not enabled in the course, is not enabled for the user.
@@ -349,23 +377,23 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
                 return true;
             }
 
-            return handler.isEnabledForUser(user, courseId);
+            return handler.isEnabledForUser(user, context, contextId);
         }
 
-        if (typeof this.enabledForUserCache[handler.name] == 'undefined') {
+        if (this.enabledForUserCache[handler.name] === undefined) {
             this.enabledForUserCache[handler.name] = {};
         }
 
-        const cacheKey = this.getCacheKey(courseId, user.id);
+        const cacheKey = this.getCacheKey(user.id, context, contextId);
         const cache = this.enabledForUserCache[handler.name][cacheKey];
 
-        if (typeof cache != 'undefined') {
+        if (cache !== undefined) {
             return cache;
         }
 
         let enabled = true; // Default value.
         if (handler.isEnabledForUser) {
-            enabled = await handler.isEnabledForUser(user, courseId);
+            enabled = await handler.isEnabledForUser(user, context, contextId);
         }
 
         this.enabledForUserCache[handler.name][cacheKey] = enabled;
@@ -375,15 +403,22 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
 
     /**
      * Clear handler enabled for user cache.
-     * If a courseId and userId are specified, it will only delete the entry for that user and course.
+     * If a userId and context are specified, it will only delete the entry for that user and context.
      *
-     * @param courseId Course ID.
      * @param userId User ID.
+     * @param context Context.
+     * @param contextId Context ID.
      */
-    protected clearHandlerCache(courseId?: number, userId?: number): void {
-        if (courseId && userId) {
+    protected clearHandlerCache(userId?: number, context?: CoreUserDelegateContext, contextId?: number): void {
+        if (userId && context) {
+            const cacheKey = this.getCacheKey(userId, context, contextId);
+
             Object.keys(this.enabledHandlers).forEach((name) => {
-                delete this.enabledForUserCache[name][this.getCacheKey(courseId, userId)];
+                const cache = this.enabledForUserCache[name];
+
+                if (cache) {
+                    delete cache[cacheKey];
+                }
             });
         } else {
             this.enabledForUserCache = {};
@@ -391,14 +426,50 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
     }
 
     /**
-     * Get a cache key to identify a course and a user.
+     * Get a cache key to identify a user and context.
      *
-     * @param courseId Course ID.
      * @param userId User ID.
+     * @param context Context.
+     * @param contextId Context ID.
      * @return Cache key.
      */
-    protected getCacheKey(courseId = 0, userId = 0): string {
-        return courseId + '#' + userId;
+    protected getCacheKey(userId: number, context: CoreUserDelegateContext, contextId?: number): string {
+        return `${userId}#${this.getContextKey(context, contextId)}`;
+    }
+
+    /**
+     * Get a string to identify a context.
+     *
+     * @param context Context.
+     * @param contextId Context ID.
+     * @return String to identify the context.
+     */
+    protected getContextKey(context: CoreUserDelegateContext, contextId?: number): string {
+        return `${context}#${contextId ?? 0}`;
+    }
+
+    /**
+     * Get handlers data for a user and context.
+     *
+     * @param userId User ID.
+     * @param context Context.
+     * @param contextId Context ID.
+     * @return Handlers data.
+     */
+    protected getHandlersData(userId: number, context: CoreUserDelegateContext, contextId?: number): CoreUserDelegateHandlersData {
+        // Initialize the data if it doesn't exist.
+        const contextKey = this.getContextKey(context, contextId);
+        this.userHandlers[userId] = this.userHandlers[userId] || {};
+
+        if (!this.userHandlers[userId][contextKey]) {
+            this.userHandlers[userId][contextKey] = {
+                loaded: false,
+                handlers: [],
+                observable: new BehaviorSubject<CoreUserProfileHandlerToDisplay[]>([]),
+            };
+        }
+
+        return this.userHandlers[userId][contextKey];
     }
 
 }
@@ -406,10 +477,30 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
 export const CoreUserDelegate = makeSingleton(CoreUserDelegateService);
 
 /**
+ * Handlers data for a user and context.
+ */
+type CoreUserDelegateHandlersData = {
+    loaded: boolean; // Whether the handlers are loaded.
+    handlers: CoreUserProfileHandlerToDisplay[]; // List of handlers.
+    observable: Subject<CoreUserProfileHandlerToDisplay[]>; // Observable to notify the handlers.
+};
+
+/**
+ * Context levels enumeration.
+ */
+export enum CoreUserDelegateContext {
+    SITE = 'site',
+    COURSE = 'course',
+    USER_MENU = 'user_menu',
+}
+
+/**
  * Data passed to UPDATE_HANDLER_EVENT event.
  */
 export type CoreUserUpdateHandlerData = {
     handler: string; // Name of the handler.
     userId: number; // User affected.
+    context: CoreUserDelegateContext; // Context affected.
+    contextId?: number; // ID related to the context.
     data: Record<string, unknown>; // Data to set to the handler.
 };

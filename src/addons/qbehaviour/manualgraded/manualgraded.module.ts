@@ -24,8 +24,7 @@ import { AddonQbehaviourManualGradedHandler } from './services/handlers/manualgr
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreQuestionBehaviourDelegate.registerHandler(AddonQbehaviourManualGradedHandler.instance);
             },
         },

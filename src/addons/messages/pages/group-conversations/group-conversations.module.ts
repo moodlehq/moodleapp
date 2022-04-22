@@ -22,6 +22,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 
 import { AddonMessagesGroupConversationsPage } from './group-conversations.page';
 import { AddonMessagesMainMenuHandlerService } from '@addons/messages/services/handlers/mainmenu';
+import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 
 const mobileRoutes: Routes = [
     {
@@ -56,6 +57,7 @@ const routes: Routes = [
     imports: [
         RouterModule.forChild(routes),
         CoreSharedModule,
+        CoreMainMenuComponentsModule,
     ],
     declarations: [
         AddonMessagesGroupConversationsPage,

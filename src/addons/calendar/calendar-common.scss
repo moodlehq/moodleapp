@@ -1,28 +1,27 @@
+@import "~theme/globals";
+
 :host {
 
-    --addon-calendar-blank-day-background-color: var(--gray-lighter);
+    --addon-calendar-blank-day-background-color: var(--light);
 
     .item.addon-calendar-event {
         > ion-icon {
             color: white;
             border-radius: 50%;
-            padding: 6px;
+            padding: 0.7rem;
+            --margin-vertical: 12px;
+            --margin-end: 12px;
+            margin-top: var(--margin-vertical);
+            margin-bottom: var(--margin-vertical);
+            @include margin-horizontal(null, var(--margin-end));
+
         }
 
-        &.addon-calendar-eventtype-category > ion-icon {
-            background-color: var(--addon-calendar-event-category-color);
-        }
-        &.addon-calendar-eventtype-course > ion-icon {
-            background-color: var(--addon-calendar-event-course-color);
-        }
-        &.addon-calendar-eventtype-group > ion-icon {
-            background-color: var(--addon-calendar-event-group-color);
-        }
-        &.addon-calendar-eventtype-user > ion-icon {
-            background-color: var(--addon-calendar-event-user-color);
-        }
-        &.addon-calendar-eventtype-site > ion-icon {
-            background-color: var(--addon-calendar-event-site-color);
+        @each $category, $value in $calendar-event-category-colors {
+            &.addon-calendar-eventtype-#{$category} > ion-icon {
+                background-color: $value;
+            }
         }
     }
+
 }

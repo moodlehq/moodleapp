@@ -74,7 +74,7 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent impleme
         this.ddQuestion.answers = answerContainer.outerHTML;
 
         this.ddQuestion.text = CoreDomUtils.getContentsOfElement(element, '.qtext');
-        if (typeof this.ddQuestion.text == 'undefined') {
+        if (this.ddQuestion.text === undefined) {
             this.logger.warn('Aborting because of an error parsing question.', this.ddQuestion.slot);
 
             return CoreQuestionHelper.showComponentError(this.onAbort);

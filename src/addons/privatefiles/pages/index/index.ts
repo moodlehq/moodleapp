@@ -28,8 +28,8 @@ import {
     AddonPrivateFilesFile,
     AddonPrivateFilesGetUserInfoWSResult,
     AddonPrivateFilesGetFilesWSParams,
-} from '@/addons/privatefiles/services/privatefiles';
-import { AddonPrivateFilesHelper } from '@/addons/privatefiles/services/privatefiles-helper';
+} from '@addons/privatefiles/services/privatefiles';
+import { AddonPrivateFilesHelper } from '@addons/privatefiles/services/privatefiles-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreNavigator } from '@services/navigator';
 
@@ -69,19 +69,27 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.root = CoreNavigator.getRouteParam('root');
-        const contextId = CoreNavigator.getRouteNumberParam('contextid');
+        try {
+            this.root = CoreNavigator.getRouteParam('root');
+            const contextId = CoreNavigator.getRouteNumberParam('contextid');
 
-        if (contextId) {
-            // Loading a certain folder.
-            this.path = {
-                contextid: contextId,
-                component: CoreNavigator.getRouteParam<string>('component')!,
-                filearea: CoreNavigator.getRouteParam<string>('filearea')!,
-                itemid: CoreNavigator.getRouteNumberParam('itemid')!,
-                filepath: CoreNavigator.getRouteParam<string>('filepath')!,
-                filename: CoreNavigator.getRouteParam<string>('filename')!,
-            };
+            if (contextId) {
+                // Loading a certain folder.
+                this.path = {
+                    contextid: contextId,
+                    component: CoreNavigator.getRequiredRouteParam<string>('component'),
+                    filearea: CoreNavigator.getRequiredRouteParam<string>('filearea'),
+                    itemid: CoreNavigator.getRequiredRouteNumberParam('itemid'),
+                    filepath: CoreNavigator.getRequiredRouteParam<string>('filepath'),
+                    filename: CoreNavigator.getRequiredRouteParam<string>('filename'),
+                };
+            }
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
         }
 
         this.title = this.path?.filename || Translate.instant('addon.privatefiles.files');
@@ -146,14 +154,6 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
      * Upload a new file.
      */
     async uploadFile(): Promise<void> {
-        const canUpload = await AddonPrivateFiles.versionCanUploadFiles();
-
-        if (!canUpload) {
-            CoreDomUtils.showAlertTranslated('core.notice', 'addon.privatefiles.erroruploadnotworking');
-
-            return;
-        }
-
         if (!CoreApp.isOnline()) {
             CoreDomUtils.showErrorModal('core.fileuploader.errormustbeonlinetoupload', true);
 
@@ -198,8 +198,7 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
 
                 this.files = await AddonPrivateFiles.getPrivateFiles();
 
-                if (this.showUpload && AddonPrivateFiles.canGetPrivateFilesInfo() && this.userQuota &&
-                    this.userQuota > 0) {
+                if (this.showUpload && this.userQuota && this.userQuota > 0) {
                     // Get the info to calculate the available size.
                     this.filesInfo = await AddonPrivateFiles.getPrivateFilesInfo();
 

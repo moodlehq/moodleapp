@@ -19,7 +19,6 @@ import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifi
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
-import { AddonModFeedback } from '../feedback';
 import { AddonModFeedbackHelper } from '../feedback-helper';
 
 /**
@@ -39,7 +38,7 @@ export class AddonModFeedbackPushClickHandlerService implements CorePushNotifica
         if (CoreUtils.isTrueOrOne(notification.notif) && notification.moodlecomponent == 'mod_feedback' &&
                 (notification.name == 'submission' || notification.name == 'message')) {
 
-            return AddonModFeedback.isPluginEnabled(notification.site);
+            return true;
         }
 
         return false;
@@ -56,7 +55,10 @@ export class AddonModFeedbackPushClickHandlerService implements CorePushNotifica
         if (notification.name == 'submission') {
             return AddonModFeedbackHelper.handleShowEntriesLink(contextUrlParams, notification.site);
         } else {
-            return CoreCourseHelper.navigateToModule(moduleId, notification.site, courseId);
+            return CoreCourseHelper.navigateToModule(moduleId, {
+                courseId,
+                siteId: notification.site,
+            });
         }
     }
 

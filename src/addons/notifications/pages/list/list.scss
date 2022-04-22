@@ -1,61 +1,74 @@
-:host {
-    .core-notification-icon {
-        width: 34px;
-        height: 34px;
-        margin: 10px !important;
-    }
+@import "~theme/globals";
 
-    .item core-format-text ::ng-deep {
-        .forumpost {
-            border: 1px solid var(--gray-light);
-            width: 100%;
-            margin: 0 0 1em 0;
-
-            td {
-                padding: 10px;
-            }
-
-            .header {
-                background-color: var(--gray-lighter);
-            }
-
-            .picture {
-                width: auto;
-                text-align: center;
-            }
-
-            .subject {
-                font-weight: 700;
-                margin-bottom: 1rem;
-            }
+ion-item {
+    ion-label {
+        margin-top: 8px;
+        margin-bottom: 8px;
+        p.item-heading {
+            font-size: var(--text-size);
+            -webkit-line-clamp: 3;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            -webkit-box-orient: vertical;
+            display: -webkit-box;
         }
-
-        a {
-            text-decoration: none;
-        }
-
-        .userpicture {
-            border-radius: 50%;
-        }
-
-        .mdl-right {
-            text-align: end;
-            a {
-                display: none;
-            }
-            font {
-                font-size: 0.9em;
-            }
-        }
-
-        .commands {
-            display: none;
-        }
-
-        hr {
-            margin-top: 1.5rem;
-            margin-bottom: 1.5rem;
-            background-color: var(--gray-light);
+        p {
+            font-size: 12px;
         }
     }
+
+    ion-note {
+        margin: 0;
+        @include padding-horizontal(8px, 0);
+        padding-top: 12px;
+
+        ion-icon {
+            font-size: 6px;
+            vertical-align: middle;
+        }
+    }
+
+    [slot=start] {
+        align-self: start;
+        margin-top: 16px;
+    }
+
+    --icon-size: 16px;
+    --extra-icon-size: 12px;
+    --core-avatar-size: 32px;
+
+    div.core-notification-icon,
+    core-mod-icon.core-notification-icon {
+        padding: 8px;
+        max-width: var(--core-avatar-size);
+        max-height:  var(--core-avatar-size);
+    }
+}
+
+.mark-all-as-read {
+    padding-bottom: 16px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    background: transparent;
+    box-shadow: none;
+    pointer-events: none;
+
+    ion-chip.ion-color {
+        pointer-events: all;
+        margin: 0 auto;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, .4);
+
+        ion-spinner {
+            width: 16px;
+            height: 16px;
+            @include margin-horizontal(0, 8px);
+        }
+    }
+}
+
+
+ion-content::part(scroll) {
+    padding-bottom: 44px;
 }

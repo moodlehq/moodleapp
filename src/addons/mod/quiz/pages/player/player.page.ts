@@ -24,7 +24,6 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { ModalController, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -46,6 +45,9 @@ import { AddonModQuizAttempt, AddonModQuizHelper } from '../../services/quiz-hel
 import { AddonModQuizSync } from '../../services/quiz-sync';
 import { CanLeave } from '@guards/can-leave';
 import { CoreForms } from '@singletons/form';
+import { CoreDom } from '@singletons/dom';
+import { CoreTime } from '@singletons/time';
+import { CoreComponentsRegistry } from '@singletons/components-registry';
 
 /**
  * Page that allows attempting a quiz.
@@ -106,9 +108,17 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.cmId = CoreNavigator.getRouteNumberParam('cmId')!;
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.moduleUrl = CoreNavigator.getRouteParam('moduleUrl');
+        try {
+            this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.moduleUrl = CoreNavigator.getRouteParam('moduleUrl');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
 
         // Create the auto save instance.
         this.autoSave = new AddonModQuizAutoSave(
@@ -253,9 +263,9 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
         if (page != -1 && (this.attempt.state == AddonModQuizProvider.ATTEMPT_OVERDUE || this.attempt.finishedOffline)) {
             // We can't load a page if overdue or the local attempt is finished.
             return;
-        } else if (page == this.attempt.currentpage && !this.showSummary && typeof slot != 'undefined') {
+        } else if (page == this.attempt.currentpage && !this.showSummary && slot !== undefined) {
             // Navigating to a question in the current page.
-            this.scrollToQuestion(slot);
+            await this.scrollToQuestion(slot);
 
             return;
         } else if ((page == this.attempt.currentpage && !this.showSummary) || (fromModal && this.isSequential && page != -1)) {
@@ -309,11 +319,9 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
         } finally {
             this.loaded = true;
 
-            if (typeof slot != 'undefined') {
-                // Scroll to the question. Give some time to the questions to render.
-                setTimeout(() => {
-                    this.scrollToQuestion(slot);
-                }, 2000);
+            if (slot !== undefined) {
+                // Scroll to the question.
+                await this.scrollToQuestion(slot);
             }
         }
     }
@@ -345,7 +353,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             }
 
             if (this.quiz!.timelimit && this.quiz!.timelimit > 0) {
-                this.readableTimeLimit = CoreTimeUtils.formatTime(this.quiz.timelimit);
+                this.readableTimeLimit = CoreTime.formatTime(this.quiz.timelimit);
             }
 
             // Get access information for the quiz.
@@ -594,9 +602,11 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             },
         });
 
-        if (modalData && modalData.action == AddonModQuizNavigationModalComponent.CHANGE_PAGE) {
-            this.changePage(modalData.page!, true, modalData.slot);
+        if (!modalData) {
+            return;
         }
+
+        this.changePage(modalData.page!, true, modalData.slot);
     }
 
     /**
@@ -678,10 +688,11 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
      *
      * @param slot Slot of the question to scroll to.
      */
-    protected scrollToQuestion(slot: number): void {
-        CoreDomUtils.scrollToElementBySelector(
+    protected async scrollToQuestion(slot: number): Promise<void> {
+        await CoreUtils.nextTick();
+        await CoreComponentsRegistry.waitComponentsReady(this.elementRef.nativeElement, 'core-question');
+        await CoreDom.scrollToElement(
             this.elementRef.nativeElement,
-            this.content,
             '#addon-mod_quiz-question-' + slot,
         );
     }

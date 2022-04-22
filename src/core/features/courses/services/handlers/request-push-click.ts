@@ -20,9 +20,9 @@ import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifi
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
+import { CoreText } from '@singletons/text';
 import { CoreCourses } from '../courses';
 
 /**
@@ -58,7 +58,7 @@ export class CoreCoursesRequestPushClickHandlerService implements CorePushNotifi
         if (notification.name == 'courserequested') {
             // Feature not supported in the app, open in browser.
             const site = await CoreSites.getSite(notification.site);
-            const url = CoreTextUtils.concatenatePaths(site.getURL(), 'course/pending.php');
+            const url = CoreText.concatenatePaths(site.getURL(), 'course/pending.php');
 
             await site.openInBrowserWithAutoLogin(url);
 
@@ -79,7 +79,7 @@ export class CoreCoursesRequestPushClickHandlerService implements CorePushNotifi
 
             if (!result.enrolled) {
                 // User not enrolled (shouldn't happen), open the preview page.
-                page += '/preview';
+                page += '/summary';
             }
 
             await CoreNavigator.navigateToSitePath(page, { params, siteId: notification.site });

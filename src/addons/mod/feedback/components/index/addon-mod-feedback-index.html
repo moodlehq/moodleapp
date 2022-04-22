@@ -1,41 +1,17 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
-    <core-context-menu>
-        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate"
-            [href]="externalUrl" iconAction="fas-external-link-alt">
-        </core-context-menu-item>
-        <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate"
-            (action)="expandDescription()" iconAction="fas-arrow-right">
-        </core-context-menu-item>
-        <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}"
-            iconAction="far-newspaper" (action)="gotoBlog()">
-        </core-context-menu-item>
-        <core-context-menu-item *ngIf="loaded && !hasOffline && isOnline" [priority]="700" [content]="'core.refresh' | translate"
-            (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false">
-        </core-context-menu-item>
-        <core-context-menu-item *ngIf="loaded && hasOffline && isOnline" [priority]="600" (action)="doRefresh(null, $event, true)"
-            [content]="'core.settings.synchronizenow' | translate" [iconAction]="syncIcon" [closeOnClick]="false">
-        </core-context-menu-item>
-        <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="500" [content]="prefetchText" (action)="prefetch($event)"
-            [iconAction]="prefetchStatusIcon" [closeOnClick]="false">
-        </core-context-menu-item>
-        <core-context-menu-item *ngIf="size" [priority]="400" [content]="'core.clearstoreddata' | translate:{$a: size}"
-            iconDescription="fas-archive" (action)="removeFiles($event)" iconAction="fas-trash" [closeOnClick]="false">
-        </core-context-menu-item>
-    </core-context-menu>
+    <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [attr.aria-label]="'core.info' | translate">
+        <ion-icon name="fas-info-circle" slot="icon-only" aria-hidden="true"></ion-icon>
+    </ion-button>
 </core-navbar-buttons>
 
 <!-- Content. -->
-<core-loading [hideUntil]="loaded">
+<core-loading [hideUntil]="!showLoading">
 
     <!-- Activity info. -->
-    <core-course-module-info *ngIf="showCompletion" [module]="module" [showManualCompletion]="true"
-        (completionChanged)="onCompletionChange()">
+    <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
+        [courseId]="courseId" [hasDataToSync]="hasOffline" (completionChanged)="onCompletionChange()">
     </core-course-module-info>
-
-    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"
-        contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
-    </core-course-module-description>
 
     <core-tabs [hideUntil]="tabsReady" [selectedIndex]="firstSelectedTab">
         <core-tab [title]="'addon.mod_feedback.overview' | translate" id="overview" (ionSelect)="tabChanged('overview')">
@@ -43,8 +19,8 @@
                 <ng-container *ngTemplateOutlet="tabOverview"></ng-container>
             </ng-template>
         </core-tab>
-        <core-tab *ngIf="showAnalysis && access && access.canviewreports" id="analysis"
-            [title]="'addon.mod_feedback.analysis' | translate" (ionSelect)="tabChanged('analysis')">
+        <core-tab *ngIf="showAnalysis && access && access.canviewreports" id="analysis" [title]="'addon.mod_feedback.analysis' | translate"
+            (ionSelect)="tabChanged('analysis')">
             <ng-template>
                 <ng-container *ngTemplateOutlet="tabAnalysis"></ng-container>
             </ng-template>
@@ -57,14 +33,36 @@
             </ng-template>
         </core-tab>
     </core-tabs>
+
+    <div collapsible-footer *ngIf="!showLoading" slot="fixed">
+        <div class="list-item-limited-width adaptable-buttons-row"
+            *ngIf="access && (access.canedititems || access.canviewreports || !access.isempty)">
+            <ion-button expand="block" fill="outline" (click)="gotoAnswerQuestions(true)" class="ion-margin ion-text-wrap">
+                <ion-icon name="fas-search" slot="start" aria-hidden="true"></ion-icon>
+                {{ 'addon.mod_feedback.preview' | translate }}
+            </ion-button>
+            <ion-button *ngIf="access.cancomplete && access.cansubmit && access.isopen" expand="block" (click)="gotoAnswerQuestions()"
+                class="ion-margin ion-text-wrap">
+                <ng-container *ngIf="!goPage">
+                    {{ 'addon.mod_feedback.complete_the_form' | translate }}
+                </ng-container>
+                <ng-container *ngIf="goPage">
+                    {{ 'addon.mod_feedback.continue_the_form' | translate }}
+                </ng-container>
+            </ion-button>
+        </div>
+
+        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id">
+        </core-course-module-navigation>
+    </div>
 </core-loading>
 
 <ng-template #basicInfo>
     <ion-list *ngIf="access && access.canviewanalysis && !access.isempty">
-        <ion-item class="ion-text-wrap" *ngIf="groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)">
+        <ion-item class="ion-text-wrap core-group-selector" *ngIf="groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)">
             <ion-label id="addon-feedback-groupslabel">
-                <ng-container *ngIf="groupInfo.separateGroups">{{'core.groupsseparate' | translate }}</ng-container>
-                <ng-container *ngIf="groupInfo.visibleGroups">{{'core.groupsvisible' | translate }}</ng-container>
+                <ng-container *ngIf="groupInfo.separateGroups">{{ 'core.groupsseparate' | translate }}</ng-container>
+                <ng-container *ngIf="groupInfo.visibleGroups">{{ 'core.groupsvisible' | translate }}</ng-container>
             </ion-label>
             <ion-select [(ngModel)]="group" (ionChange)="setGroup(group)" aria-labelledby="addon-feedback-groupslabel"
                 interface="action-sheet" [interfaceOptions]="{header: 'core.group' | translate}">
@@ -73,9 +71,7 @@
                 </ion-select-option>
             </ion-select>
         </ion-item>
-        <ion-item class="ion-text-wrap" (click)="openRespondents()"
-            [class.hide-detail]="!(access.canviewreports && completedCount > 0)"
-            detail="true"
+        <ion-item class="ion-text-wrap" (click)="openAttempts()" [detail]="access.canviewreports && completedCount > 0"
             [button]="access.canviewreports && completedCount > 0">
             <ion-label>
                 <h2>{{ 'addon.mod_feedback.completed_feedbacks' | translate }}</h2>
@@ -87,8 +83,8 @@
                 </span>
             </ion-badge>
         </ion-item>
-        <ion-item class="ion-text-wrap" *ngIf="!access.isanonymous && access.canviewreports" (click)="openNonRespondents()"
-            detail="true" button>
+        <ion-item class="ion-text-wrap" *ngIf="!access.isanonymous && access.canviewreports" (click)="openNonRespondents()" detail="true"
+            button>
             <ion-label>
                 <h2>{{ 'addon.mod_feedback.show_nonrespondents' | translate }}</h2>
             </ion-label>
@@ -111,14 +107,6 @@
 <ng-template #tabOverview>
     <core-loading [hideUntil]="tabsLoaded.overview">
         <ng-container *ngTemplateOutlet="basicInfo"></ng-container>
-
-        <!-- Feedback done in offline but not synchronized -->
-        <ion-card class="core-warning-card" *ngIf="hasOffline">
-            <ion-item>
-                <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
-                <ion-label>{{ 'core.hasdatatosync' | translate:{$a: moduleName} }}</ion-label>
-            </ion-item>
-        </ion-card>
 
         <ion-card class="core-info-card" *ngIf="access && access.cancomplete && !access.isopen">
             <ion-item>
@@ -163,28 +151,6 @@
                         <p *ngIf="!access.isanonymous">{{ 'addon.mod_feedback.non_anonymous' | translate }}</p>
                     </ion-label>
                 </ion-item>
-                <ion-grid>
-                    <ion-row class="ion-align-items-center">
-                        <ion-col>
-                            <ion-button expand="block" fill="outline" (click)="gotoAnswerQuestions(true)" class="ion-text-wrap">
-                                <ion-icon name="fas-search" slot="start" aria-hidden="true"></ion-icon>
-                                {{ 'addon.mod_feedback.preview' | translate }}
-                            </ion-button>
-                        </ion-col>
-                        <ion-col *ngIf="access.cancomplete && access.cansubmit && access.isopen">
-                            <ion-button expand="block" (click)="gotoAnswerQuestions()" class="ion-text-wrap">
-                                <ng-container *ngIf="!goPage">
-                                    {{ 'addon.mod_feedback.complete_the_form' | translate }}
-                                </ng-container>
-                                <ng-container *ngIf="goPage">
-                                    {{ 'addon.mod_feedback.continue_the_form' | translate }}
-                                </ng-container>
-                                <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true"></ion-icon>
-                            </ion-button>
-                        </ion-col>
-                    </ion-row>
-                </ion-grid>
-
             </ng-container>
         </ion-list>
     </core-loading>
@@ -208,12 +174,12 @@
                     <ion-label>
                         <p class="item-heading">
                             {{item.num}}. <core-format-text [component]="component" [componentId]="componentId" [text]="item.name"
-                            contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
+                                contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
                             </core-format-text>
                         </p>
                         <p>
-                            <core-format-text [component]="component" [componentId]="componentId" [text]="item.label"
-                                contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
+                            <core-format-text [component]="component" [componentId]="componentId" [text]="item.label" contextLevel="module"
+                                [contextInstanceId]="module.id" [courseId]="courseId">
                             </core-format-text>
                         </p>
                         <ng-container [ngSwitch]="item.templateName">
@@ -232,8 +198,7 @@
                             </ng-container>
                             <ng-container *ngSwitchCase="'chart'">
                                 <core-chart [type]="item.chartType" [data]="item.chartData" [labels]="item.labels" height="300"
-                                    contextLevel="module" [contextInstanceId]="module.id" [wsNotFiltered]="true"
-                                    [courseId]="courseId">
+                                    contextLevel="module" [contextInstanceId]="module.id" [wsNotFiltered]="true" [courseId]="courseId">
                                 </core-chart>
                                 <p *ngIf="item.average">
                                     {{ 'addon.mod_feedback.average' | translate }}: {{item.average | number : '1.2-2'}}

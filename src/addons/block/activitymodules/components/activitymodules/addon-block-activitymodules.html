@@ -1,12 +1,12 @@
 <ion-item-divider sticky="true">
     <ion-label>
-        <h2>{{ 'addon.block_activitymodules.pluginname' | translate }}</h2>
+        <h2>{{ 'addon.block_activitymodules.pluginname' | translate }}</h2>
     </ion-label>
 </ion-item-divider>
-<core-loading [hideUntil]="loaded" [fullscreen]="false" class="margin">
-    <ion-item class="ion-text-wrap item-media" *ngFor="let entry of entries" detail="true" button
-        (click)="gotoCoureListModType(entry)">
-        <img slot="start" [src]="entry.icon" alt="" role="presentation" class="core-module-icon">
+<core-loading [hideUntil]="loaded">
+    <ion-item class="ion-text-wrap" *ngFor="let entry of entries" detail="true" button (click)="gotoCoureListModType(entry)">
+        <core-mod-icon slot="start" [modicon]="entry.icon" [modname]="entry.iconModName" [showAlt]="false">
+        </core-mod-icon>
         <ion-label>{{ entry.name }}</ion-label>
     </ion-item>
 </core-loading>

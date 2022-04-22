@@ -2,7 +2,7 @@
 
 :host {
     .core-warning-item {
-        --inner-border-width: 0;
+        --inner-border-width: 0px;
     }
 
     .addon-mod_h5pactivity-attempt-result-summary {
@@ -27,7 +27,7 @@
     }
 
     .addon-mod_h5pactivity-result-table-row.item:nth-child(even) {
-        --background: var(--gray-lighter);
+        --background: var(--light);
     }
 
     .addon-mod_h5pactivity-result-score {
@@ -37,6 +37,6 @@
 
 :host-context(body.dark) {
     .addon-mod_h5pactivity-result-table-row.item:nth-child(even) {
-        --background: var(--black);
+        --background: var(--gray-900);
     }
 }

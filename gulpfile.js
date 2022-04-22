@@ -69,3 +69,7 @@ gulp.task('watch', () => {
         gulp.watch(['./tests/behat'], { interval: 500 }, gulp.parallel('behat'));
     }
 });
+
+gulp.task('watch-behat', () => {
+    gulp.watch(['./tests/behat'], { interval: 500 }, gulp.parallel('behat'));
+});

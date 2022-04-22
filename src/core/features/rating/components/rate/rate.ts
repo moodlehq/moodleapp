@@ -36,15 +36,15 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 })
 export class CoreRatingRateComponent implements OnChanges, OnDestroy {
 
-    @Input() protected ratingInfo!: CoreRatingInfo;
-    @Input() protected contextLevel!: ContextLevel; // Context level: course, module, user, etc.
-    @Input() protected instanceId!: number; // Context instance id.
-    @Input() protected itemId!: number; // Item id. Example: forum post id.
-    @Input() protected itemSetId!: number; // Item set id. Example: forum discussion id.
-    @Input() protected courseId!: number;
-    @Input() protected aggregateMethod!: number;
-    @Input() protected scaleId!: number;
-    @Input() protected userId!: number;
+    @Input() ratingInfo!: CoreRatingInfo;
+    @Input() contextLevel!: ContextLevel; // Context level: course, module, user, etc.
+    @Input() instanceId!: number; // Context instance id.
+    @Input() itemId!: number; // Item id. Example: forum post id.
+    @Input() itemSetId!: number; // Item set id. Example: forum discussion id.
+    @Input() courseId!: number;
+    @Input() aggregateMethod!: number;
+    @Input() scaleId!: number;
+    @Input() userId!: number;
     @Output() protected onLoading: EventEmitter<boolean>; // Eevent that indicates whether the component is loading data.
     @Output() protected onUpdate: EventEmitter<void>; // Event emitted when the rating is updated online.
 
@@ -75,7 +75,7 @@ export class CoreRatingRateComponent implements OnChanges, OnDestroy {
         this.item = (this.ratingInfo.ratings || []).find((rating) => rating.itemid == this.itemId);
         this.scale = (this.ratingInfo.scales || []).find((scale) => scale.id == this.scaleId);
 
-        if (!this.item || !this.scale || !CoreRating.isAddRatingWSAvailable()) {
+        if (!this.item || !this.scale) {
             this.item = undefined;
 
             return;
@@ -142,7 +142,7 @@ export class CoreRatingRateComponent implements OnChanges, OnDestroy {
                 this.aggregateMethod,
             );
 
-            if (typeof response == 'undefined') {
+            if (response === undefined) {
                 CoreDomUtils.showToast('core.datastoredoffline', true, 3000);
             } else {
                 this.onUpdate.emit();

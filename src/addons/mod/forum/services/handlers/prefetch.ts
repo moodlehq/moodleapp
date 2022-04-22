@@ -24,6 +24,7 @@ import { CoreGroups, CoreGroupsProvider } from '@services/groups';
 import { CoreUtils } from '@services/utils/utils';
 import { AddonModForumSync } from '../forum-sync';
 import { makeSingleton } from '@singletons';
+import { CoreCourses } from '@features/courses/services/courses';
 
 /**
  * Handler to prefetch forums.
@@ -229,6 +230,9 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
             promises.push(CoreUser.getUserPreference(AddonModForumProvider.PREFERENCE_SORTORDER, siteId));
         }
 
+        // Get course data, needed to determine upload max size if it's configured to be course limit.
+        promises.push(CoreUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));
+
         await Promise.all(promises);
     }
 
@@ -316,8 +320,8 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
     ): Promise<AddonModForumSyncResult> {
         const promises: Promise<AddonModForumSyncResult>[] = [];
 
-        promises.push(AddonModForumSync.syncForumDiscussions(module.instance!, undefined, siteId));
-        promises.push(AddonModForumSync.syncForumReplies(module.instance!, undefined, siteId));
+        promises.push(AddonModForumSync.syncForumDiscussions(module.instance, undefined, siteId));
+        promises.push(AddonModForumSync.syncForumReplies(module.instance, undefined, siteId));
         promises.push(AddonModForumSync.syncRatings(module.id, undefined, true, siteId));
 
         const results = await Promise.all(promises);

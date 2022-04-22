@@ -143,7 +143,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
      */
     getPreventSubmitMessage(question: CoreQuestionQuestionParsed): string | undefined {
         const element = CoreDomUtils.convertToElement(question.html);
-        const uploadFilesSupported = typeof question.responsefileareas != 'undefined';
+        const uploadFilesSupported = question.responsefileareas !== undefined;
 
         if (!uploadFilesSupported && element.querySelector('div[id*=filemanager]')) {
             // The question allows attachments. Since the app cannot attach files yet we will prevent submitting the question.
@@ -229,7 +229,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
     ): number {
 
         const hasTextAnswer = !!answers.answer;
-        const uploadFilesSupported = typeof question.responsefileareas != 'undefined';
+        const uploadFilesSupported = question.responsefileareas !== undefined;
         const allowedOptions = this.getAllowedOptions(question);
 
         if (hasTextAnswer && this.checkInputWordCount(question, <string> answers.answer, undefined)) {
@@ -281,7 +281,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
         component: string,
         componentId: string | number,
     ): number {
-        if (typeof question.responsefileareas == 'undefined') {
+        if (question.responsefileareas === undefined) {
             return -1;
         }
 
@@ -309,7 +309,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
         component: string,
         componentId: string | number,
     ): boolean {
-        const uploadFilesSupported = typeof question.responsefileareas != 'undefined';
+        const uploadFilesSupported = question.responsefileareas !== undefined;
         const allowedOptions = this.getAllowedOptions(question);
 
         // First check the inline text.
@@ -355,7 +355,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
         // Search the textarea to get its name.
         const textarea = <HTMLTextAreaElement> element.querySelector('textarea[name*=_answer]');
 
-        if (textarea && typeof answers[textarea.name] != 'undefined') {
+        if (textarea && answers[textarea.name] !== undefined) {
             await this.prepareTextAnswer(question, answers, textarea, siteId);
         }
 
@@ -516,7 +516,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
 
         if (!isPlainText) {
             // Add some HTML to the text if needed.
-            answers[textarea.name] = CoreTextUtils.formatHtmlLines(<string> answers[textarea.name]);
+            answers[textarea.name] = CoreTextUtils.formatHtmlLines(<string> answers[textarea.name] || '');
         }
     }
 

@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseActivitySyncBaseProvider } from '@features/course/classes/activity-sync';
-import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
+import { CoreCourse, CoreCourseModuleBasicInfo } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreQuestion, CoreQuestionQuestionParsed } from '@features/question/services/question';
@@ -92,9 +92,9 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
         if (options.updated) {
             try {
                 // Data has been sent. Update prefetched data.
-                const module = await CoreCourse.getModuleBasicInfoByInstance(quiz.id, 'quiz', siteId);
+                const module = await CoreCourse.getModuleBasicInfoByInstance(quiz.id, 'quiz', { siteId });
 
-                await this.prefetchAfterUpdateQuiz(module, quiz, courseId, undefined, siteId);
+                await this.prefetchAfterUpdateQuiz(module, quiz, courseId, siteId);
             } catch {
                 // Ignore errors.
             }
@@ -139,27 +139,25 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
      * @param module Module.
      * @param quiz Quiz.
      * @param courseId Course ID.
-     * @param regex If regex matches, don't download the data. Defaults to check files.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
-    async prefetchAfterUpdateQuiz(
-        module: CoreCourseAnyModuleData,
+    protected async prefetchAfterUpdateQuiz(
+        module: CoreCourseModuleBasicInfo,
         quiz: AddonModQuizQuizWSData,
         courseId: number,
-        regex?: RegExp,
         siteId?: string,
     ): Promise<void> {
-        regex = regex || /^.*files$/;
-
         let shouldDownload = false;
 
         // Get the module updates to check if the data was updated or not.
         const result = await CoreCourseModulePrefetchDelegate.getModuleUpdates(module, courseId, true, siteId);
 
         if (result?.updates?.length) {
+            const regex = /^.*files$/;
+
             // Only prefetch if files haven't changed.
-            shouldDownload = !result.updates.find((entry) => entry.name.match(regex!));
+            shouldDownload = !result.updates.find((entry) => entry.name.match(regex));
 
             if (shouldDownload) {
                 await AddonModQuizPrefetchHandler.download(module, courseId, undefined, false, false);
@@ -263,9 +261,10 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
     syncQuiz(quiz: AddonModQuizQuizWSData, askPreflight?: boolean, siteId?: string): Promise<AddonModQuizSyncResult> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        if (this.isSyncing(quiz.id, siteId)) {
+        const currentSyncPromise = this.getOngoingSync(quiz.id, siteId);
+        if (currentSyncPromise) {
             // There's already a sync ongoing for this quiz, return the promise.
-            return this.getOngoingSync(quiz.id, siteId)!;
+            return currentSyncPromise;
         }
 
         // Verify that quiz isn't blocked.

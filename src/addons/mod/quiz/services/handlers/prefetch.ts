@@ -18,6 +18,7 @@ import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/activity-prefetch-handler';
 import { CoreCourseAnyModuleData, CoreCourseCommonModWSOptions } from '@features/course/services/course';
+import { CoreCourses } from '@features/courses/services/courses';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
@@ -110,7 +111,6 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         attempts: AddonModQuizAttemptWSData[],
         siteId?: string,
     ): Promise<CoreWSFile[]> {
-        const getInlineFiles = CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.2');
         let files: CoreWSFile[] = [];
 
         await Promise.all(attempts.map(async (attempt) => {
@@ -120,7 +120,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
             }
 
             const attemptGrade = AddonModQuiz.rescaleGrade(attempt.sumgrades, quiz, false);
-            if (typeof attemptGrade == 'undefined') {
+            if (attemptGrade === undefined) {
                 return;
             }
 
@@ -130,12 +130,8 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
                 siteId,
             });
 
-            if (getInlineFiles && feedback.feedbackinlinefiles?.length) {
+            if (feedback.feedbackinlinefiles?.length) {
                 files = files.concat(feedback.feedbackinlinefiles);
-            } else if (feedback.feedbacktext && !getInlineFiles) {
-                files = files.concat(
-                    CoreFilepool.extractDownloadableFilesFromHtmlAsFakeFileObjects(feedback.feedbacktext),
-                );
             }
         }));
 
@@ -212,7 +208,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         // Invalidate the calls required to check if a quiz is downloadable.
         await Promise.all([
             AddonModQuiz.invalidateQuizData(courseId),
-            AddonModQuiz.invalidateUserAttemptsForUser(module.instance!),
+            AddonModQuiz.invalidateUserAttemptsForUser(module.instance),
         ]);
     }
 
@@ -374,6 +370,9 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         promises.push(this.prefetchGradeAndFeedback(quiz, modOptions, siteId));
         promises.push(AddonModQuiz.getAttemptAccessInformation(quiz.id, 0, modOptions)); // Last attempt.
 
+        // Get course data, needed to determine upload max size if it's configured to be course limit.
+        promises.push(CoreUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));
+
         await Promise.all(promises);
 
         // We have quiz data, now we'll get specific data for each attempt.
@@ -422,7 +421,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         if (AddonModQuiz.isAttemptFinished(attempt.state)) {
             // Attempt is finished, get feedback and review data.
             const attemptGrade = AddonModQuiz.rescaleGrade(attempt.sumgrades, quiz, false);
-            if (typeof attemptGrade != 'undefined') {
+            if (attemptGrade !== undefined) {
                 promises.push(AddonModQuiz.getFeedbackForGrade(quiz.id, Number(attemptGrade), modOptions));
             }
 
@@ -522,7 +521,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         try {
             const gradebookData = await AddonModQuiz.getGradeFromGradebook(quiz.course, quiz.coursemodule, true, siteId);
 
-            if (gradebookData && 'graderaw' in gradebookData && gradebookData.graderaw !== undefined) {
+            if (gradebookData && gradebookData.graderaw !== undefined) {
                 await AddonModQuiz.getFeedbackForGrade(quiz.id, gradebookData.graderaw, modOptions);
             }
         } catch {

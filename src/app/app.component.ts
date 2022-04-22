@@ -14,12 +14,12 @@
 
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { IonRouterOutlet } from '@ionic/angular';
-import { BackButtonEvent } from '@ionic/core';
+import { BackButtonEvent, ScrollDetail } from '@ionic/core';
 
 import { CoreLang } from '@services/lang';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreEvents } from '@singletons/events';
-import { Network, NgZone, Platform, SplashScreen } from '@singletons';
+import { Network, NgZone, Platform, SplashScreen, Translate } from '@singletons';
 import { CoreApp, CoreAppProvider } from '@services/app';
 import { CoreSites } from '@services/sites';
 import { CoreNavigator } from '@services/navigator';
@@ -30,6 +30,8 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreConstants } from '@/core/constants';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
+import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 
 const MOODLE_VERSION_PREFIX = 'version-';
 const MOODLEAPP_VERSION_PREFIX = 'moodleapp-';
@@ -63,7 +65,6 @@ export class AppComponent implements OnInit, AfterViewInit {
      * - IAB events listening.
      * - Platform pause/resume subscriptions.
      * - handleOpenURL and openWindowSafely.
-     * - Screen orientation events (probably it can be removed).
      * - Back button registering to close modal first.
      * - Note: HideKeyboardFormAccessoryBar has been moved to config.xml.
      */
@@ -89,6 +90,24 @@ export class AppComponent implements OnInit, AfterViewInit {
             }
         });
 
+        // Listen to scroll to add style when scroll is not 0.
+        win.addEventListener('ionScroll', async ({ detail, target }: CustomEvent<ScrollDetail>) => {
+            if ((target as HTMLElement).tagName != 'ION-CONTENT') {
+                return;
+            }
+            const content = (target as HTMLIonContentElement);
+
+            const page = content.closest('.ion-page');
+            if (!page) {
+                return;
+            }
+
+            page.querySelector<HTMLIonHeaderElement>('ion-header')?.classList.toggle('core-header-shadow', detail.scrollTop > 0);
+
+            const scrollElement = await content.getScrollElement();
+            content.classList.toggle('core-footer-shadow', !CoreDom.scrollIsBottom(scrollElement));
+        });
+
         // Listen for session expired events.
         CoreEvents.on(CoreEvents.SESSION_EXPIRED, (data) => {
             CoreLoginHelper.sessionExpired(data);
@@ -110,7 +129,10 @@ export class AppComponent implements OnInit, AfterViewInit {
         // Check URLs loaded in any InAppBrowser.
         CoreEvents.on(CoreEvents.IAB_LOAD_START, (event) => {
             // URLs with a custom scheme can be prefixed with "http://" or "https://", we need to remove this.
+            const protocol = CoreUrlUtils.getUrlProtocol(event.url);
             const url = event.url.replace(/^https?:\/\//, '');
+            const urlScheme = CoreUrlUtils.getUrlProtocol(url);
+            const isExternalApp = urlScheme && urlScheme !== 'file' && urlScheme !== 'cdvfile';
 
             if (CoreCustomURLSchemes.isCustomURL(url)) {
                 // Close the browser if it's a valid SSO URL.
@@ -119,12 +141,20 @@ export class AppComponent implements OnInit, AfterViewInit {
                 });
                 CoreUtils.closeInAppBrowser();
 
-            } else if (CoreApp.instance.isAndroid()) {
+            } else if (isExternalApp && url.includes('://token=')) {
+                // It's an SSO token for another app. Close the IAB and show an error.
+                CoreUtils.closeInAppBrowser();
+                CoreDomUtils.showErrorModal(Translate.instant('core.login.contactyouradministratorissue', {
+                    $a: '<br><br>' + Translate.instant('core.errorurlschemeinvalidscheme', {
+                        $a: urlScheme,
+                    }),
+                }));
+
+            } else if (CoreApp.isAndroid()) {
                 // Check if the URL has a custom URL scheme. In Android they need to be opened manually.
-                const urlScheme = CoreUrlUtils.getUrlProtocol(url);
-                if (urlScheme && urlScheme !== 'file' && urlScheme !== 'cdvfile') {
+                if (isExternalApp) {
                     // Open in browser should launch the right app if found and do nothing if not found.
-                    CoreUtils.openInBrowser(url);
+                    CoreUtils.openInBrowser(url, { showBrowserWarning: false });
 
                     // At this point the InAppBrowser is showing a "Webpage not available" error message.
                     // Try to navigate to last loaded URL so this error message isn't found.
@@ -135,7 +165,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                         CoreUtils.closeInAppBrowser();
                     }
                 } else {
-                    this.lastInAppUrl = url;
+                    this.lastInAppUrl = protocol ? `${protocol}://${url}` : url;
                 }
             }
         });
@@ -145,7 +175,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             this.lastInAppUrl = '';
 
             if (CoreLoginHelper.isWaitingForBrowser()) {
-                CoreLoginHelper.setWaitingForBrowser(false);
+                CoreLoginHelper.stopWaitingForBrowser();
                 CoreLoginHelper.checkLogout();
             }
         });
@@ -154,7 +184,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             // Wait a second before setting it to false since in iOS there could be some frozen WS calls.
             setTimeout(() => {
                 if (CoreLoginHelper.isWaitingForBrowser()) {
-                    CoreLoginHelper.setWaitingForBrowser(false);
+                    CoreLoginHelper.stopWaitingForBrowser();
                     CoreLoginHelper.checkLogout();
                 }
             }, 1000);
@@ -296,6 +326,9 @@ export class AppComponent implements OnInit, AfterViewInit {
                 }
             });
         });
+
+        const isOnline = CoreApp.isOnline();
+        document.body.classList.toggle('core-offline', !isOnline);
 
         // Set StatusBar properties.
         CoreApp.setStatusBarColor();

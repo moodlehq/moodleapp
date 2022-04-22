@@ -30,7 +30,7 @@ export class CoreAjaxWSError extends CoreError {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(error: any, available?: number) {
-        super(error.message);
+        super(error.message || error.error);
 
         this.exception = error.exception;
         this.errorcode = error.errorcode;
@@ -41,7 +41,7 @@ export class CoreAjaxWSError extends CoreError {
         this.backtrace = error.backtrace;
 
         this.available = available;
-        if (typeof this.available == 'undefined') {
+        if (this.available === undefined) {
             if (this.errorcode) {
                 this.available = this.errorcode == 'invalidrecord' ? -1 : 1;
             } else {

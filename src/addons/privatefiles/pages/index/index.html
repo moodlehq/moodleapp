@@ -3,10 +3,12 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>{{ title }}</h1>
+        <ion-title>
+            <h1>{{ title }}</h1>
+        </ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content>
+<ion-content class="limited-width">
     <ion-refresher slot="fixed" [disabled]="!filesLoaded || (!showPrivateFiles && !showSiteFiles)"
         (ionRefresh)="refreshData($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
@@ -25,18 +27,18 @@
 
         <!-- Display info about space used and space left. -->
         <ion-card class="core-info-card" *ngIf="userQuota && filesInfo && filesInfo.filecount > 0">
-            <ion-item><ion-label>
-            {{ 'core.quotausage' | translate:{$a: {used: spaceUsed, total: userQuotaReadable} } }}
-            </ion-label></ion-item>
+            <ion-item>
+                <ion-label>
+                    {{ 'core.quotausage' | translate:{$a: {used: spaceUsed, total: userQuotaReadable} } }}
+                </ion-label>
+            </ion-item>
         </ion-card>
 
         <!-- List of files. -->
         <ion-list *ngIf="files && files.length > 0">
             <ng-container *ngFor="let file of files">
-                <ion-item button *ngIf="file.isdir" class="item-file" (click)="openFolder(file)" detail="true">
-                    <ion-thumbnail slot="start">
-                        <img [src]="file.imgPath" alt="" role="presentation">
-                    </ion-thumbnail>
+                <ion-item button *ngIf="file.isdir" class="ion-text-wrap item-file item-directory" (click)="openFolder(file)" detail="true">
+                    <ion-icon name="fas-folder" slot="start" [attr.aria-label]="'core.folder' | translate"></ion-icon>
                     <ion-label>{{file.filename}}</ion-label>
                 </ion-item>
                 <core-file *ngIf="!file.isdir" [file]="file" [component]="component" [componentId]="file.contextid"></core-file>

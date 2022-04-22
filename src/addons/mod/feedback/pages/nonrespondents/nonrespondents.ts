@@ -47,9 +47,17 @@ export class AddonModFeedbackNonRespondentsPage implements OnInit {
      * @inheritdoc
      */
     ngOnInit(): void {
-        this.cmId = CoreNavigator.getRouteNumberParam('cmId')!;
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.selectedGroup = CoreNavigator.getRouteNumberParam('group') || 0;
+        try {
+            this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.selectedGroup = CoreNavigator.getRouteNumberParam('group') || 0;
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
 
         this.fetchData();
     }
@@ -92,7 +100,7 @@ export class AddonModFeedbackNonRespondentsPage implements OnInit {
     protected async loadGroupUsers(groupId?: number): Promise<void> {
         this.loadMoreError = false;
 
-        if (typeof groupId == 'undefined') {
+        if (groupId === undefined) {
             this.page++;
         } else {
             this.selectedGroup = groupId;

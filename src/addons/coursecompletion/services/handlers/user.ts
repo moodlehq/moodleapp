@@ -14,7 +14,12 @@
 
 import { Injectable } from '@angular/core';
 import { CoreUserProfile } from '@features/user/services/user';
-import { CoreUserProfileHandler, CoreUserDelegateService, CoreUserProfileHandlerData } from '@features/user/services/user-delegate';
+import {
+    CoreUserProfileHandler,
+    CoreUserDelegateService,
+    CoreUserProfileHandlerData,
+    CoreUserDelegateContext,
+} from '@features/user/services/user-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 import { AddonCourseCompletion } from '../coursecompletion';
@@ -25,9 +30,9 @@ import { AddonCourseCompletion } from '../coursecompletion';
 @Injectable({ providedIn: 'root' })
 export class AddonCourseCompletionUserHandlerService implements CoreUserProfileHandler {
 
-    name = 'AddonCourseCompletion';
+    name = 'AddonCourseCompletion:viewCompletion';
     type = CoreUserDelegateService.TYPE_NEW_PAGE;
-    priority = 200;
+    priority = 350;
     cacheEnabled = true;
 
     /**
@@ -40,15 +45,19 @@ export class AddonCourseCompletionUserHandlerService implements CoreUserProfileH
     /**
      * @inheritdoc
      */
-    async isEnabledForCourse(courseId?: number): Promise<boolean> {
+    async isEnabledForContext(context: CoreUserDelegateContext, courseId: number): Promise<boolean> {
+        if (context !== CoreUserDelegateContext.COURSE) {
+            return false;
+        }
+
         return AddonCourseCompletion.isPluginViewEnabledForCourse(courseId);
     }
 
     /**
      * @inheritdoc
      */
-    async isEnabledForUser(user: CoreUserProfile, courseId?: number): Promise<boolean> {
-        return await AddonCourseCompletion.isPluginViewEnabledForUser(courseId!, user.id);
+    async isEnabledForUser(user: CoreUserProfile, context: CoreUserDelegateContext,  contextId: number): Promise<boolean> {
+        return await AddonCourseCompletion.isPluginViewEnabledForUser(contextId, user.id);
     }
 
     /**
@@ -59,11 +68,11 @@ export class AddonCourseCompletionUserHandlerService implements CoreUserProfileH
             icon: 'fas-tasks',
             title: 'addon.coursecompletion.coursecompletion',
             class: 'addon-coursecompletion-handler',
-            action: (event, user, courseId): void => {
+            action: (event, user, context, contextId): void => {
                 event.preventDefault();
                 event.stopPropagation();
                 CoreNavigator.navigateToSitePath('/coursecompletion', {
-                    params: { courseId, userId: user.id },
+                    params: { courseId: contextId, userId: user.id },
                 });
             },
         };

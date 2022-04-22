@@ -25,7 +25,7 @@ import { CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/service
 import { CoreEnrolledCourseDataWithExtraInfoAndOptions } from '@features/courses/services/courses-helper';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { ContextLevel } from '@/core/constants';
-import { AddonCompetencyMainMenuHandlerService } from './mainmenu';
+import { ADDON_COMPETENCY_COMPETENCIES_PAGE } from '@addons/competency/competency.module';
 
 /**
  * Course nav handler.
@@ -55,7 +55,7 @@ export class AddonCompetencyCourseOptionHandlerService implements CoreCourseOpti
             return false; // Not enabled for guests.
         }
 
-        if (navOptions && typeof navOptions.competencies != 'undefined') {
+        if (navOptions && navOptions.competencies !== undefined) {
             return navOptions.competencies;
         }
 
@@ -75,7 +75,7 @@ export class AddonCompetencyCourseOptionHandlerService implements CoreCourseOpti
         return {
             title: 'addon.competency.competencies',
             class: 'addon-competency-course-handler',
-            page: AddonCompetencyMainMenuHandlerService.PAGE_NAME,
+            page: ADDON_COMPETENCY_COMPETENCIES_PAGE,
         };
     }
 
@@ -83,7 +83,7 @@ export class AddonCompetencyCourseOptionHandlerService implements CoreCourseOpti
      * @inheritdoc
      */
     async invalidateEnabledForCourse(courseId: number, navOptions?: CoreCourseUserAdminOrNavOptionIndexed): Promise<void> {
-        if (navOptions && typeof navOptions.competencies != 'undefined') {
+        if (navOptions && navOptions.competencies !== undefined) {
             // No need to invalidate anything.
             return;
         }

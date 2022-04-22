@@ -115,7 +115,11 @@ export class AddonModWikiCreateLinkHandlerService extends CoreContentLinksHandle
                         path = path + `/${route!.snapshot.params.courseId}/${route!.snapshot.params.cmId}/edit`;
                     } else if (wikiId) {
                         // The URL specifies which wiki it belongs to. Get the module.
-                        const module = await CoreCourse.getModuleBasicInfoByInstance(wikiId, 'wiki', siteId);
+                        const module = await CoreCourse.getModuleBasicInfoByInstance(
+                            wikiId,
+                            'wiki',
+                            { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+                        );
 
                         path = path + `/${module.course}/${module.id}/edit`;
                     } else {

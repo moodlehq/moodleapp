@@ -24,6 +24,9 @@ export class NetworkMock extends Network {
 
     type!: string;
 
+    protected connectObservable = new Subject<'connected'>();
+    protected disconnectObservable = new Subject<'disconnected'>();
+
     constructor() {
         super();
 
@@ -38,6 +41,14 @@ export class NetworkMock extends Network {
             CELL: 'cellular', // eslint-disable-line @typescript-eslint/naming-convention
             NONE: 'none', // eslint-disable-line @typescript-eslint/naming-convention
         };
+
+        window.addEventListener('online', () => {
+            this.connectObservable.next('connected');
+        }, false);
+
+        window.addEventListener('offline', () => {
+            this.disconnectObservable.next('disconnected');
+        }, false);
     }
 
     /**
@@ -45,8 +56,8 @@ export class NetworkMock extends Network {
      *
      * @return Observable.
      */
-    onchange(): Observable<unknown> {
-        return merge(this.onConnect(), this.onDisconnect());
+    onChange(): Observable<'connected' | 'disconnected'> {
+        return merge(this.connectObservable, this.disconnectObservable);
     }
 
     /**
@@ -54,14 +65,8 @@ export class NetworkMock extends Network {
      *
      * @return Observable.
      */
-    onConnect(): Observable<unknown> {
-        const observable = new Subject<unknown>();
-
-        window.addEventListener('online', (ev) => {
-            observable.next(ev);
-        }, false);
-
-        return observable;
+    onConnect(): Observable<'connected'> {
+        return this.connectObservable;
     }
 
     /**
@@ -69,14 +74,8 @@ export class NetworkMock extends Network {
      *
      * @return Observable.
      */
-    onDisconnect(): Observable<unknown> {
-        const observable = new Subject<unknown>();
-
-        window.addEventListener('offline', (ev) => {
-            observable.next(ev);
-        }, false);
-
-        return observable;
+    onDisconnect(): Observable<'disconnected'> {
+        return this.disconnectObservable;
     }
 
 }

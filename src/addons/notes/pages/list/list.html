@@ -4,7 +4,9 @@
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
 
-        <h1>{{ 'addon.notes.notes' | translate }}</h1>
+        <ion-title>
+            <h1>{{ 'addon.notes.notes' | translate }}</h1>
+        </ion-title>
         <ion-buttons slot="end">
         </ion-buttons>
     </ion-toolbar>
@@ -15,16 +17,15 @@
         <ion-icon name="fas-pen" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
     <core-context-menu>
-        <core-context-menu-item [hidden]="!(notesLoaded && !hasOffline)" [priority]="100"
-            [content]="'core.refresh' | translate" (action)="refreshNotes(false)"
-            [iconAction]="refreshIcon" [closeOnClick]="true">
+        <core-context-menu-item [hidden]="!(notesLoaded && !hasOffline)" [priority]="100" [content]="'core.refresh' | translate"
+            (action)="refreshNotes(false)" [iconAction]="refreshIcon" [closeOnClick]="true">
         </core-context-menu-item>
         <core-context-menu-item [hidden]="!(notesLoaded && hasOffline)" [priority]="100"
-            [content]="'core.settings.synchronizenow' | translate" (action)="refreshNotes(true)"
-            [iconAction]="syncIcon" [closeOnClick]="false"></core-context-menu-item>
+            [content]="'core.settings.synchronizenow' | translate" (action)="refreshNotes(true)" [iconAction]="syncIcon"
+            [closeOnClick]="false"></core-context-menu-item>
     </core-context-menu>
 </core-navbar-buttons>
-<ion-content>
+<ion-content class="limited-width">
     <ion-refresher slot="fixed" [disabled]="!notesLoaded" (ionRefresh)="refreshNotes(false, $event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
@@ -32,7 +33,9 @@
     <core-loading [hideUntil]="notesLoaded">
         <ion-item class="ion-text-wrap" *ngIf="user">
             <core-user-avatar [user]="user" [courseId]="courseId" slot="start" [linkProfile]="false"></core-user-avatar>
-            <ion-label><h2>{{user!.fullname}}</h2></ion-label>
+            <ion-label>
+                <h2>{{user!.fullname}}</h2>
+            </ion-label>
         </ion-item>
 
         <core-combobox [selection]="type" (onChange)="typeChanged($event)">
@@ -83,14 +86,16 @@
                         [attr.aria-label]="'core.restore' | translate">
                         <ion-icon name="fas-undo-alt" slot="icon-only" aria-hidden="true"></ion-icon>
                     </ion-button>
-                    <ion-button *ngIf="showDelete && !note.deleted && (type != 'personal' || note.usermodified == currentUserId)"
-                        slot="end" fill="clear" [@coreSlideInOut]="'fromRight'" color="danger" (click)="deleteNote($event, note)"
+                    <ion-button *ngIf="showDelete && !note.deleted && (type != 'personal' || note.usermodified == currentUserId)" slot="end"
+                        fill="clear" [@coreSlideInOut]="'fromRight'" color="danger" (click)="deleteNote($event, note)"
                         [attr.aria-label]="'core.delete' | translate">
                         <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
                     </ion-button>
                 </ion-item>
                 <ion-item class="ion-text-wrap">
-                    <ion-label><core-format-text [text]="note.content" [filter]="false"></core-format-text></ion-label>
+                    <ion-label>
+                        <core-format-text [text]="note.content" [filter]="false"></core-format-text>
+                    </ion-label>
                 </ion-item>
             </ion-card>
         </ng-container>

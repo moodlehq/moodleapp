@@ -59,7 +59,7 @@ export class AddonQtypeDdImageOrTextComponent extends CoreQuestionBaseComponent 
         const ddArea = element.querySelector('.ddarea');
 
         this.ddQuestion.text = CoreDomUtils.getContentsOfElement(element, '.qtext');
-        if (!ddArea || typeof this.ddQuestion.text == 'undefined') {
+        if (!ddArea || this.ddQuestion.text === undefined) {
             this.logger.warn('Aborting because of an error parsing question.', this.ddQuestion.slot);
 
             return CoreQuestionHelper.showComponentError(this.onAbort);
@@ -70,19 +70,19 @@ export class AddonQtypeDdImageOrTextComponent extends CoreQuestionBaseComponent 
         this.ddQuestion.readOnly = false;
 
         if (this.ddQuestion.initObjects) {
-            // Moodle version <= 3.5.
-            if (typeof this.ddQuestion.initObjects.drops != 'undefined') {
+            // Moodle version = 3.5.
+            if (this.ddQuestion.initObjects.drops !== undefined) {
                 this.drops = <unknown[]> this.ddQuestion.initObjects.drops;
             }
-            if (typeof this.ddQuestion.initObjects.readonly != 'undefined') {
+            if (this.ddQuestion.initObjects.readonly !== undefined) {
                 this.ddQuestion.readOnly = !!this.ddQuestion.initObjects.readonly;
             }
         } else if (this.ddQuestion.amdArgs) {
             // Moodle version >= 3.6.
-            if (typeof this.ddQuestion.amdArgs[1] != 'undefined') {
+            if (this.ddQuestion.amdArgs[1] !== undefined) {
                 this.ddQuestion.readOnly = !!this.ddQuestion.amdArgs[1];
             }
-            if (typeof this.ddQuestion.amdArgs[2] != 'undefined') {
+            if (this.ddQuestion.amdArgs[2] !== undefined) {
                 this.drops = <unknown[]> this.ddQuestion.amdArgs[2];
             }
         }

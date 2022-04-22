@@ -30,8 +30,7 @@ import { AddonQtypeDdMarkerHandler } from './services/handlers/ddmarker';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreQuestionDelegate.registerHandler(AddonQtypeDdMarkerHandler.instance);
             },
         },

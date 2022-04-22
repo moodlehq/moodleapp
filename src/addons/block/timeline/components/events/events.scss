@@ -1,6 +1,81 @@
-.events-info {
+@import "~theme/globals";
+
+h3 {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+h4 {
+    font-size: 15px;
+}
+
+h4.core-bold {
+    font-weight: bold;
+}
+
+.addon-block-timeline-activity {
+    ion-badge {
+        @include margin-horizontal(0.25rem, 0.5rem);
+    }
+
+    small {
+        @include margin-horizontal(null, 0.5rem);
+    }
+
+    core-mod-icon {
+        padding: 8px;
+        --margin-end: 0.5rem;
+        --margin-vertical: 0;
+    }
+}
+
+.addon-block-timeline-activity-time {
+    flex-grow: 0;
+}
+
+.addon-block-timeline-activity-action {
     display: flex;
-    flex-direction: column;
-    text-align: end;
-    padding: 10px 0;
+    justify-content: flex-end;
+}
+
+.addon-block-timeline-activity-name-with-status {
+    display: flex;
+    flex-wrap: wrap;
+    span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+.addon-block-timeline-activity-course-activity {
+    display: flex;
+    flex-wrap: wrap;
+    span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    span::after {
+        content: "·";
+        display: inline;
+        padding-left: .3rem;
+        padding-right: .3rem;
+    }
+
+    span:last-child::after {
+        display: none;
+    }
+}
+
+.addon-block-timeline-activity-main,
+.addon-block-timeline-activity-name {
+    flex-grow: 1;
+    p {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+.addon-block-timeline-activity-name {
+    flex-grow: 1;
+    overflow: hidden;
 }

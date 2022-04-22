@@ -1,0 +1,14 @@
+@import "~theme/globals";
+
+:host {
+    ion-item {
+        ion-icon, ion-radio {
+            @include margin-horizontal(null, 8px);
+        }
+
+        > ion-icon {
+            padding: 4px;
+            font-size: 20px;
+        }
+    }
+}

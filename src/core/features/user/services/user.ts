@@ -22,7 +22,7 @@ import { CoreUserOffline } from './user-offline';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents, CoreEventSiteData, CoreEventUserDeletedData, CoreEventUserSuspendedData } from '@singletons/events';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalWarning } from '@services/ws';
 import { CoreError } from '@classes/errors/error';
 import { USERS_TABLE_NAME, CoreUserDBRecord } from './database/user';
@@ -61,24 +61,9 @@ export class CoreUserProvider {
     constructor() {
         this.logger = CoreLogger.getInstance('CoreUserProvider');
 
-        CoreEvents.on(CoreEvents.USER_DELETED, (data) => {
-            // Search for userid in params.
-            let userId = 0;
-
-            if (data.params.userid) {
-                userId = data.params.userid;
-            } else if (data.params.userids) {
-                userId = data.params.userids[0];
-            } else if (data.params.field === 'id' && data.params.values && data.params.values.length) {
-                userId = data.params.values[0];
-            } else if (data.params.userlist && data.params.userlist.length) {
-                userId = data.params.userlist[0].userid;
-            }
-
-            if (userId > 0) {
-                this.deleteStoredUser(userId, data.siteId);
-            }
-        });
+        CoreEvents.on(CoreEvents.USER_DELETED, data => this.handleUserKickedOutEvent(data));
+        CoreEvents.on(CoreEvents.USER_SUSPENDED, data => this.handleUserKickedOutEvent(data));
+        CoreEvents.on(CoreEvents.USER_NO_LOGIN, data => this.handleUserKickedOutEvent(data));
     }
 
     /**
@@ -110,27 +95,21 @@ export class CoreUserProvider {
     /**
      * Check if WS to update profile picture is available in site.
      *
-     * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with boolean: whether it's available.
-     * @since 3.2
+     * @deprecated since app 4.0
      */
-    async canUpdatePicture(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.getSite(siteId);
-
-        return this.canUpdatePictureInSite(site);
+    async canUpdatePicture(): Promise<boolean> {
+        return true;
     }
 
     /**
      * Check if WS to search participants is available in site.
      *
-     * @param site Site. If not defined, current site.
      * @return Whether it's available.
-     * @since 3.2
+     * @deprecated since app 4.0
      */
-    canUpdatePictureInSite(site?: CoreSite): boolean {
-        site = site || CoreSites.getCurrentSite();
-
-        return !!site?.wsAvailable('core_user_update_picture');
+    canUpdatePictureInSite(): boolean {
+        return true;
     }
 
     /**
@@ -157,6 +136,32 @@ export class CoreUserProvider {
         }
 
         return result.profileimageurl!;
+    }
+
+    /**
+     * Handle an event where a user was kicked out of the site.
+     *
+     * @param data Event data.
+     */
+    async handleUserKickedOutEvent(
+        data: CoreEventSiteData & (CoreEventUserDeletedData | CoreEventUserSuspendedData),
+    ): Promise<void> {
+        // Search for userid in params.
+        let userId = 0;
+
+        if (data.params.userid) {
+            userId = data.params.userid;
+        } else if (data.params.userids) {
+            userId = data.params.userids[0];
+        } else if (data.params.field === 'id' && data.params.values && data.params.values.length) {
+            userId = data.params.values[0];
+        } else if (data.params.userlist && data.params.userlist.length) {
+            userId = data.params.userlist[0].userid;
+        }
+
+        if (userId > 0) {
+            await this.deleteStoredUser(userId, data.siteId);
+        }
     }
 
     /**
@@ -826,7 +831,7 @@ export class CoreUserProvider {
             responseExpected: false,
         };
 
-        if (typeof disableNotifications != 'undefined') {
+        if (disableNotifications !== undefined) {
             params.emailstop = disableNotifications ? 1 : 0;
         }
 

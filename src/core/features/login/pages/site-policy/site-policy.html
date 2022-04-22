@@ -4,27 +4,33 @@
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
 
-        <h1>{{ 'core.login.policyagreement' | translate }}</h1>
+        <ion-title>
+            <h1>{{ 'core.login.policyagreement' | translate }}</h1>
+        </ion-title>
     </ion-toolbar>
 </ion-header>
 <ion-content>
     <core-loading [hideUntil]="policyLoaded">
         <ion-list *ngIf="sitePolicy">
             <ion-item class="ion-text-wrap">
-                <ion-label><p>{{ 'core.login.policyagree' | translate }}</p></ion-label>
+                <ion-label>
+                    <p>{{ 'core.login.policyagree' | translate }}</p>
+                </ion-label>
             </ion-item>
             <ion-item class="ion-text-wrap">
-                <ion-label><p>
-                    <a [href]="sitePolicy" core-link [capture]="false">{{ 'core.login.policyagreementclick' | translate }}</a>
-                </p></ion-label>
+                <ion-label>
+                    <p>
+                        <a [href]="sitePolicy" core-link [capture]="false">{{ 'core.login.policyagreementclick' | translate }}</a>
+                    </p>
+                </ion-label>
             </ion-item>
-            <ion-card *ngIf="showInline">
+            <ion-card *ngIf="showInline" class="core-site-policy-iframe-container">
                 <core-iframe [src]="sitePolicy"></core-iframe>
             </ion-card>
-            <ion-button class="ion-text-wrap ion-margin" expand="block" (click)="accept()">
-                {{ 'core.login.policyaccept' | translate }}
+            <ion-button class="ion-text-wrap ion-margin-horizontal" expand="block" (click)="accept()">
+                {{ 'core.login.policyacceptmandatory' | translate }}
             </ion-button>
-            <ion-button class="ion-text-wrap ion-margin" expand="block" color="light" (click)="cancel()">
+            <ion-button class="ion-text-wrap ion-margin-horizontal ion-margin-bottom" expand="block" fill="outline" (click)="cancel()">
                 {{ 'core.login.cancel' | translate }}
             </ion-button>
         </ion-list>

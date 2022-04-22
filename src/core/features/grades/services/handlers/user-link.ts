@@ -27,7 +27,7 @@ import { makeSingleton } from '@singletons';
 export class CoreGradesUserLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'CoreGradesUserLinkHandler';
-    pattern = /\/grade\/report(\/user)?\/index.php/;
+    pattern = /\/course\/user\.php.*[?&]mode=grade/;
 
     /**
      * Get the list of actions for a link (url).
@@ -51,7 +51,7 @@ export class CoreGradesUserLinkHandlerService extends CoreContentLinksHandlerBas
 
         return [{
             action: (siteId): void => {
-                const userId = params.userid ? parseInt(params.userid, 10) : undefined;
+                const userId = params.user ? parseInt(params.user, 10) : undefined;
                 const moduleId = data?.cmid && parseInt(data.cmid, 10) || undefined;
 
                 CoreGradesHelper.goToGrades(courseId!, userId, moduleId, siteId);

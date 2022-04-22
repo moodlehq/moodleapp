@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 import { AddonQtypeDdMarkerQuestion } from './ddmarker';
 
 /**
@@ -23,12 +23,6 @@ export class AddonQtypeDdMarkerGraphicsApi {
     protected readonly NS = 'http://www.w3.org/2000/svg';
     protected dropZone?: SVGSVGElement;
 
-    /**
-     * Create the instance.
-     *
-     * @param instance Question instance.
-     * @param domUtils Dom Utils provider.
-     */
     constructor(protected instance: AddonQtypeDdMarkerQuestion) { }
 
     /**
@@ -60,20 +54,20 @@ export class AddonQtypeDdMarkerGraphicsApi {
         const bgImg = this.instance.doc?.bgImg();
         const dropZones = this.instance.doc?.topNode?.querySelector<HTMLElement>('div.ddarea div.dropzones');
         const markerTexts = this.instance.doc?.markerTexts();
-
-        if (!bgImg || !dropZones || !markerTexts) {
+        const ddArea = this.instance.doc?.topNode?.querySelector<HTMLElement>('.ddarea');
+        if (!bgImg || !dropZones || !markerTexts || !ddArea) {
             return;
         }
 
-        const position = CoreDomUtils.getElementXY(bgImg, undefined, 'ddarea');
+        const position = CoreDom.getRelativeElementPosition(bgImg, ddArea);
 
-        dropZones.style.left = position[0] + 'px';
-        dropZones.style.top = position[1] + 'px';
+        dropZones.style.left = position.x + 'px';
+        dropZones.style.top = position.y + 'px';
         dropZones.style.width = bgImg.width + 'px';
         dropZones.style.height = bgImg.height + 'px';
 
-        markerTexts.style.left = position[0] + 'px';
-        markerTexts.style.top = position[1] + 'px';
+        markerTexts.style.left = position.x + 'px';
+        markerTexts.style.top = position.y + 'px';
         markerTexts.style.width = bgImg.width + 'px';
         markerTexts.style.height = bgImg.height + 'px';
 

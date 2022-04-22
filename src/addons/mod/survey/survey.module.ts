@@ -61,8 +61,7 @@ const routes: Routes = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreCourseModuleDelegate.registerHandler(AddonModSurveyModuleHandler.instance);
                 CoreCourseModulePrefetchDelegate.registerHandler(AddonModSurveyPrefetchHandler.instance);
                 CoreCronDelegate.register(AddonModSurveySyncCronHandler.instance);

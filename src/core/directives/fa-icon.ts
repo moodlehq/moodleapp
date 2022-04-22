@@ -45,47 +45,58 @@ export class CoreFaIconDirective implements AfterViewInit, OnChanges {
      * Detect icon name and use svg.
      */
     async setIcon(): Promise<void> {
-        let library = 'ionic';
+        let library = '';
         let iconName = this.name;
+        let font = 'ionicons';
         const parts = iconName.split('-', 2);
         if (parts.length == 2) {
             switch (parts[0]) {
                 case 'far':
                     library = 'regular';
-                    iconName = iconName.substr(4);
+                    font = 'font-awesome';
                     break;
                 case 'fa':
                 case 'fas':
                     library = 'solid';
-                    iconName = iconName.substr(parts[0].length + 1);
+                    font = 'font-awesome';
                     break;
                 case 'fab':
                     library = 'brands';
-                    iconName = iconName.substr(4);
+                    font = 'font-awesome';
+                    break;
+                case 'moodle':
+                    library = 'moodle';
+                    font = 'moodle';
+                    break;
+                case 'fam':
+                    library = 'font-awesome';
+                    font = 'moodle';
                     break;
                 default:
                     break;
             }
         }
 
-        if (library != 'ionic') {
-            const src = `assets/fonts/font-awesome/${library}/${iconName}.svg`;
-            this.element.setAttribute('src', src);
-            this.element.classList.add('faicon');
-
-            if (CoreConstants.BUILD.isDevelopment || CoreConstants.BUILD.isTesting) {
-                try {
-                    await Http.get(src, { responseType: 'text' }).toPromise();
-                } catch (error) {
-                    this.logger.error(`Icon ${this.name} not found`);
-                }
-            }
-        } else {
+        if (font == 'ionicons') {
             this.element.removeAttribute('src');
             this.logger.warn(`Ionic icon ${this.name} detected`);
+
+            return;
         }
 
-        return;
+        iconName = iconName.substring(parts[0].length + 1);
+
+        const src = `assets/fonts/${font}/${library}/${iconName}.svg`;
+        this.element.setAttribute('src', src);
+        this.element.classList.add('faicon');
+
+        if (CoreConstants.BUILD.isDevelopment || CoreConstants.BUILD.isTesting) {
+            try {
+                await Http.get(src, { responseType: 'text' }).toPromise();
+            } catch (error) {
+                this.logger.error(`Icon ${this.name} not found`);
+            }
+        }
     }
 
     /**

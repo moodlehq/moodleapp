@@ -1,0 +1,48 @@
+:host {
+    ion-row.addon-block-myoverview-filter {
+        margin: 8px;
+        padding: 0;
+
+        ion-col {
+            padding: 0;
+            margin-right: 2px;
+            margin-left: 2px;
+        }
+
+        ion-button,
+        core-combobox ::ng-deep ion-button {
+            --border-width: 0;
+            --a11y-min-target-size: 40px;
+            margin: 0;
+
+            .select-icon {
+                display: none;
+            }
+            ion-icon {
+                font-size: 20px;
+            }
+        }
+
+        core-combobox ::ng-deep ion-select {
+            margin: 0;
+            --a11y-min-target-size: 40px;
+        }
+
+       ion-searchbar {
+            padding: 0;
+            --height: 40px;
+        }
+    }
+
+    core-empty-box {
+        .item-heading {
+            font-weight: bold;
+            margin-bottom: 0;
+            font-size: 16px;
+        }
+
+        .subdued {
+            color: var(--subdued-text-color);
+        }
+    }
+}

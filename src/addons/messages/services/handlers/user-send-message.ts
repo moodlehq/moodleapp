@@ -32,9 +32,7 @@ export class AddonMessagesSendMessageUserHandlerService implements CoreUserProfi
     type = CoreUserDelegateService.TYPE_COMMUNICATION;
 
     /**
-     * Check if handler is enabled.
-     *
-     * @return Promise resolved with true if enabled, rejected or resolved with false otherwise.
+     * @inheritdoc
      */
     isEnabled(): Promise<boolean> {
         return AddonMessages.isPluginEnabled();
@@ -43,18 +41,15 @@ export class AddonMessagesSendMessageUserHandlerService implements CoreUserProfi
     /**
      * @inheritdoc
      */
-    async isEnabledForCourse(): Promise<boolean> {
+    async isEnabledForContext(): Promise<boolean> {
         return !!CoreSites.getCurrentSite();
     }
 
     /**
-     * Check if handler is enabled for this user in this context.
-     *
-     * @param user User to check.
-     * @return Promise resolved with true if enabled, resolved with false otherwise.
+     * @inheritdoc
      */
     async isEnabledForUser(user: CoreUserProfile): Promise<boolean> {
-        const currentSite = CoreSites.getCurrentSite()!;
+        const currentSite = CoreSites.getRequiredCurrentSite();
 
         // From 3.7 you can send messages to yourself.
         return user.id != CoreSites.getCurrentSiteUserId() || currentSite.isVersionGreaterEqualThan('3.7');

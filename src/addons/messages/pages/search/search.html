@@ -3,11 +3,10 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>{{ 'addon.messages.searchcombined' | translate }}</h1>
+        <ion-title>
+            <h1>{{ 'addon.messages.searchcombined' | translate }}</h1>
+        </ion-title>
         <ion-buttons slot="end">
-            <!-- Add an empty context menu so discussion page can add items in split view,
-                otherwise the menu disappears in some cases. -->
-            <core-context-menu></core-context-menu>
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
@@ -26,8 +25,7 @@
                     [error]="messages.loadMoreError"></core-infinite-loading>
             </ion-list>
 
-            <core-empty-box
-                *ngIf="displayResults && !contacts.results.length && !nonContacts.results.length && !messages.results.length"
+            <core-empty-box *ngIf="displayResults && !contacts.results.length && !nonContacts.results.length && !messages.results.length"
                 icon="fas-search" [message]="'core.noresults' | translate">
             </core-empty-box>
         </core-loading>
@@ -38,20 +36,20 @@
 <ng-template #resultsTemplate let-item="item">
     <ng-container *ngIf="item.results.length > 0">
         <ion-item-divider class="ion-text-wrap">
-            <ion-label><h2>{{ item.titleString | translate }}</h2></ion-label>
+            <ion-label>
+                <h2>{{ item.titleString | translate }}</h2>
+            </ion-label>
         </ion-item-divider>
 
         <!-- List of results -->
         <ion-item class="addon-message-discussion ion-text-wrap" *ngFor="let result of item.results" [attr.aria-label]="result.fullname"
-            (click)="openConversation(result)" [attr.aria-current]="result == selectedResult ? 'page' : 'false'" detail="true"
-            button>
+            (click)="openConversation(result)" [attr.aria-current]="result == selectedResult ? 'page' : 'false'" detail="true" button>
             <core-user-avatar slot="start" [user]="result" [checkOnline]="true" [linkProfile]="false"></core-user-avatar>
             <ion-label>
                 <p class="item-heading">
                     <core-format-text [text]="result.fullname" [highlight]="result.highlightName" [filter]="false">
                     </core-format-text>
-                    <ion-icon name="fas-ban" *ngIf="result.isblocked"
-                        [attr.aria-label]="'addon.messages.contactblocked' | translate">
+                    <ion-icon name="fas-ban" *ngIf="result.isblocked" [attr.aria-label]="'addon.messages.contactblocked' | translate">
                     </ion-icon>
                 </p>
                 <ion-note *ngIf="result.lastmessagedate > 0">
@@ -61,9 +59,8 @@
                     <span *ngIf="result.sentfromcurrentuser" class="addon-message-last-message-user">
                         {{ 'addon.messages.you' | translate }}
                     </span>
-                    <core-format-text clean="true" singleLine="true" [text]="result.lastmessage"
-                        [highlight]="result.highlightMessage" contextLevel="system" [contextInstanceId]="0"
-                        class="addon-message-last-message-text"></core-format-text>
+                    <core-format-text clean="true" singleLine="true" [text]="result.lastmessage" [highlight]="result.highlightMessage"
+                        contextLevel="system" [contextInstanceId]="0" class="addon-message-last-message-text"></core-format-text>
                 </p>
             </ion-label>
         </ion-item>
@@ -71,7 +68,7 @@
         <!-- Load more button for contacts and non-contacts -->
         <ng-container *ngIf="item.type != 'messages'">
             <div class="ion-padding-horizontal" *ngIf="item.canLoadMore && !item.loadingMore">
-                <ion-button expand="block" color="light" (click)="search(query, item.type)">
+                <ion-button expand="block" fill="outline" (click)="search(query, item.type)">
                     {{ 'core.loadmore' | translate }}
                 </ion-button>
             </div>

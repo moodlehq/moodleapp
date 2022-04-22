@@ -52,7 +52,7 @@ export class AddonModDataFieldDateHandlerService implements AddonModDataFieldHan
         const enabledName = 'f_' + field.id + '_z';
 
         if (inputData[enabledName] && typeof inputData[fieldName] == 'string') {
-            const date = inputData[fieldName].substr(0, 10).split('-');
+            const date = inputData[fieldName].substring(0, 10).split('-');
 
             return [
                 {
@@ -87,7 +87,7 @@ export class AddonModDataFieldDateHandlerService implements AddonModDataFieldHan
             return [];
         }
 
-        const date = inputData[fieldName].substr(0, 10).split('-');
+        const date = inputData[fieldName].substring(0, 10).split('-');
 
         return [
             {
@@ -117,10 +117,10 @@ export class AddonModDataFieldDateHandlerService implements AddonModDataFieldHan
         originalFieldData: AddonModDataEntryField,
     ): boolean {
         const fieldName = 'f_' + field.id;
-        const input = inputData[fieldName] && inputData[fieldName].substr(0, 10) || '';
+        const input = inputData[fieldName] && inputData[fieldName].substring(0, 10) || '';
 
         const content = (originalFieldData && originalFieldData?.content &&
-                CoreTimeUtils.toDatetimeFormat(parseInt(originalFieldData.content, 10) * 1000).substr(0, 10)) || '';
+                CoreTimeUtils.toDatetimeFormat(parseInt(originalFieldData.content, 10) * 1000).substring(0, 10)) || '';
 
         return input != content;
     }

@@ -14,7 +14,6 @@
 
 import { Component, OnInit, Input } from '@angular/core';
 import { Params } from '@angular/router';
-import { CoreCourseModule } from '@features/course/services/course-helper';
 import { CoreTag } from '@features/tag/services/tag';
 import { CoreUser } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
@@ -44,8 +43,8 @@ export class AddonModDataActionComponent implements OnInit {
     @Input() action!: AddonModDataAction; // The field to render.
     @Input() entry!: AddonModDataEntry; // The value of the field.
     @Input() database!: AddonModDataData; // Database object.
-    @Input() module!: CoreCourseModule; // Module object.
-    @Input() group = 0; // Module object.
+    @Input() title = ''; // Name of the module.
+    @Input() group = 0; // Module group.
     @Input() offset?: number; // Offset of the entry.
 
     siteId: string;
@@ -92,13 +91,13 @@ export class AddonModDataActionComponent implements OnInit {
      * Go to the edit page of the entry.
      */
     editEntry(): void {
-        const params = {
-            courseId: this.database.course,
-            module: this.module,
+        const params: Params = {
+            title: this.title,
         };
 
+        const basePath = AddonModDataModuleHandlerService.PAGE_NAME;
         CoreNavigator.navigateToSitePath(
-            `${AddonModDataModuleHandlerService.PAGE_NAME}/${this.module.course}/${this.module.id}/edit/${this.entry.id}`,
+            `${basePath}/${this.database.course}/${this.database.coursemodule}/edit/${this.entry.id}`,
             { params },
         );
     }
@@ -108,15 +107,14 @@ export class AddonModDataActionComponent implements OnInit {
      */
     viewEntry(): void {
         const params: Params = {
-            courseId: this.database.course,
-            module: this.module,
-            entryId: this.entry.id,
+            title: this.title,
             group: this.group,
             offset: this.offset,
         };
 
+        const basePath = AddonModDataModuleHandlerService.PAGE_NAME;
         CoreNavigator.navigateToSitePath(
-            `${AddonModDataModuleHandlerService.PAGE_NAME}/${this.module.course}/${this.module.id}/${this.entry.id}`,
+            `${basePath}/${this.database.course}/${this.database.coursemodule}/${this.entry.id}`,
             { params },
         );
     }

@@ -1,7 +1,19 @@
-.core-navigation-bar-arrow {
-    text-transform: none;
-    max-width: 100%;
-    ion-icon {
-        flex-shrink: 0;
+@import "~theme/globals";
+
+:host {
+    --height: var(--core-navigation-max-height);
+    --background: var(--core-navigation-background);
+    --button-vertical-margin: 2px;
+
+    height: var(--height);
+    width: 100%;
+    background-color: var(--background);
+    display: block;
+    border-top: 1px solid var(--stroke);
+
+    ion-button,
+    ::ng-deep ion-button {
+        margin-top: var(--button-vertical-margin);
+        margin-bottom: var(--button-vertical-margin);
     }
 }

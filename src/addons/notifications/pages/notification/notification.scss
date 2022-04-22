@@ -1,0 +1,87 @@
+@import "~theme/globals";
+
+:host {
+
+    .core-notification-title {
+        [slot=start] {
+            align-self: start;
+            margin-top: 16px;
+        }
+        p.item-heading {
+            font-size: 16px;
+        }
+        p {
+            font-size: 12px;
+        }
+    }
+
+    .core-notification-body {
+        core-format-text {
+            font-size: var(--text-size);
+        }
+
+        h2 {
+            font-weight: bold;
+        }
+
+        core-format-text ::ng-deep {
+            .forumpost {
+                border: 1px solid var(--gray-200);
+                width: 100%;
+                margin: 0 0 1em 0;
+
+                td {
+                    padding: 10px;
+                }
+
+                .header {
+                    background-color: var(--light);
+
+                    .picture {
+                        width: 48px;
+                        text-align: center;
+                        @include padding-horizontal(4px, 0px);
+                        padding-top: 8px;
+
+                        img {
+                            width: 44px !important;
+                        }
+                    }
+                }
+
+                .subject {
+                    font-weight: 700;
+                    margin-bottom: 1rem;
+                }
+            }
+
+            a {
+                text-decoration: none;
+            }
+
+            .userpicture {
+                border-radius: 50%;
+            }
+
+            .mdl-right {
+                text-align: end;
+                a {
+                    display: none;
+                }
+                font {
+                    font-size: 0.9em;
+                }
+            }
+
+            .commands {
+                display: none;
+            }
+
+            hr {
+                margin-top: 1.5rem;
+                margin-bottom: 1.5rem;
+                background-color: var(--gray-200);
+            }
+        }
+    }
+}

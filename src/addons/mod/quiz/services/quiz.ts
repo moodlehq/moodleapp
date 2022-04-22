@@ -19,7 +19,7 @@ import { CoreWSError } from '@classes/errors/wserror';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
-import { CoreGradesFormattedItem, CoreGradesFormattedRow, CoreGradesHelper } from '@features/grades/services/grades-helper';
+import { CoreGradesFormattedItem, CoreGradesHelper } from '@features/grades/services/grades-helper';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import {
     CoreQuestion,
@@ -425,7 +425,7 @@ export class AddonModQuizProvider {
         attemptId: number,
         options: AddonModQuizGetAttemptReviewOptions = {},
     ): Promise<AddonModQuizGetAttemptReviewResponse> {
-        const page = typeof options.page == 'undefined' ? -1 : options.page;
+        const page = options.page === undefined ? -1 : options.page;
 
         const site = await CoreSites.getSite(options.siteId);
 
@@ -620,7 +620,7 @@ export class AddonModQuizProvider {
      * @return Number of decimals.
      */
     getGradeDecimals(quiz: AddonModQuizQuizWSData): number {
-        if (typeof quiz.questiondecimalpoints == 'undefined') {
+        if (quiz.questiondecimalpoints === undefined) {
             quiz.questiondecimalpoints = -1;
         }
 
@@ -647,7 +647,7 @@ export class AddonModQuizProvider {
         ignoreCache?: boolean,
         siteId?: string,
         userId?: number,
-    ): Promise<CoreGradesFormattedItem | CoreGradesFormattedRow | undefined> {
+    ): Promise<CoreGradesFormattedItem | undefined> {
 
         const items = await CoreGradesHelper.getGradeModuleItems(
             courseId,
@@ -664,11 +664,21 @@ export class AddonModQuizProvider {
     /**
      * Given a list of attempts, returns the last finished attempt.
      *
-     * @param attempts Attempts.
+     * @param attempts Attempts sorted. First attempt should be the first on the list.
      * @return Last finished attempt.
      */
     getLastFinishedAttemptFromList(attempts?: AddonModQuizAttemptWSData[]): AddonModQuizAttemptWSData | undefined {
-        return attempts?.find(attempt => this.isAttemptFinished(attempt.state));
+        if (!attempts) {
+            return;
+        }
+
+        for (let i = attempts.length - 1; i >= 0; i--) {
+            const attempt = attempts[i];
+
+            if (this.isAttemptFinished(attempt.state)) {
+                return attempt;
+            }
+        }
     }
 
     /**
@@ -748,7 +758,7 @@ export class AddonModQuizProvider {
         const quiz = response.quizzes.find(quiz => quiz[key] == value);
 
         if (!quiz) {
-            throw new CoreError('Quiz not found.');
+            throw new CoreError(Translate.instant('core.course.modulenotfound'));
         }
 
         return quiz;
@@ -1019,7 +1029,7 @@ export class AddonModQuizProvider {
     ): Promise<AddonModQuizAttemptWSData[]> {
 
         const status = options.status || 'all';
-        const includePreviews = typeof options.includePreviews == 'undefined' ? true : options.includePreviews;
+        const includePreviews = options.includePreviews === undefined ? true : options.includePreviews;
 
         const site = await CoreSites.getSite(options.siteId);
 

@@ -14,10 +14,11 @@
 
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { Routes } from '@angular/router';
-import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { AddonStorageManagerCourseMenuHandler } from './services/handlers/course-menu';
+import { CoreSitePreferencesRoutingModule } from '@features/settings/pages/site/site-routing';
+import { CoreSettingsDelegate } from '@features/settings/services/settings-delegate';
+import { AddonStorageManagerSettingsHandler } from './services/handlers/settings';
 
 const routes: Routes = [
     {
@@ -30,15 +31,15 @@ const routes: Routes = [
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
         CoreMainMenuRoutingModule.forChild({ children: routes }),
+        CoreSitePreferencesRoutingModule.forChild(routes),
     ],
     exports: [CoreMainMenuRoutingModule],
     providers: [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => async () => {
-                CoreCourseOptionsDelegate.registerHandler(AddonStorageManagerCourseMenuHandler.instance);
+            useValue: () => {
+                CoreSettingsDelegate.registerHandler(AddonStorageManagerSettingsHandler.instance);
             },
         },
     ],

@@ -21,6 +21,8 @@ import { CoreLogger } from '@singletons/logger';
  * Filter to format a timestamp to a locale string. Timestamp can be in seconds or milliseconds.
  *
  * @deprecated since 3.6. Use coreFormatDate instead.
+ * This pipe wasn't removed in app 4.0 because some site plugins still used it. It will be removed in future versions
+ * (see MOBILE-2823).
  */
 @Pipe({
     name: 'coreToLocaleString',

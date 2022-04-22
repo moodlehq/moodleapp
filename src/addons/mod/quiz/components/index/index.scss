@@ -14,8 +14,8 @@
         .item.addon-mod_quiz-highlighted,
         .addon-mod_quiz-highlighted p,
         .item.addon-mod_quiz-highlighted p {
-            --background: var(--blue-light);
-            color: var(--blue-dark);
+            --background: var(--primary-tint);
+            color: var(--primary-shade);
         }
     }
 }
@@ -26,8 +26,8 @@
         .item.addon-mod_quiz-highlighted,
         .addon-mod_quiz-highlighted p,
         .item.addon-mod_quiz-highlighted p {
-            --background: var(--blue-dark);
-            color: var(--blue-light);
+            --background: var(--primary-shade);
+            color: var(--primary-tint);
         }
     }
 }

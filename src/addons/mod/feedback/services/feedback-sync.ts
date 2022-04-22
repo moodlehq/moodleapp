@@ -130,9 +130,10 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
     syncFeedback(feedbackId: number, siteId?: string): Promise<AddonModFeedbackSyncResult> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        if (this.isSyncing(feedbackId, siteId)) {
+        const currentSyncPromise = this.getOngoingSync(feedbackId, siteId);
+        if (currentSyncPromise) {
             // There's already a sync ongoing for this feedback, return the promise.
-            return this.getOngoingSync(feedbackId, siteId)!;
+            return currentSyncPromise;
         }
 
         // Verify that feedback isn't blocked.
@@ -222,7 +223,7 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
         if (result.updated) {
             // Data has been sent to server, update data.
             try {
-                const module = await CoreCourse.getModuleBasicInfoByInstance(feedbackId, 'feedback', siteId);
+                const module = await CoreCourse.getModuleBasicInfoByInstance(feedbackId, 'feedback', { siteId });
 
                 await this.prefetchAfterUpdate(AddonModFeedbackPrefetchHandler.instance, module, courseId, undefined, siteId);
             } catch {

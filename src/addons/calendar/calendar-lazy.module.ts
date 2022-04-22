@@ -13,21 +13,10 @@
 // limitations under the License.
 
 import { Injector, NgModule } from '@angular/core';
-import { Route, RouterModule, ROUTES, Routes } from '@angular/router';
+import { RouterModule, ROUTES, Routes } from '@angular/router';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { AddonCalendarMainMenuHandlerService } from './services/handlers/mainmenu';
-
-export const AddonCalendarEditRoute: Route = {
-    path: 'edit/:eventId',
-    loadChildren: () =>
-        import('@/addons/calendar/pages/edit-event/edit-event.module').then(m => m.AddonCalendarEditEventPageModule),
-};
-
-export const AddonCalendarEventRoute: Route ={
-    path: 'event/:id',
-    loadChildren: () => import('@/addons/calendar/pages/event/event.module').then(m => m.AddonCalendarEventPageModule),
-};
 
 function buildRoutes(injector: Injector): Routes {
     return [
@@ -36,27 +25,27 @@ function buildRoutes(injector: Injector): Routes {
             data: {
                 mainMenuTabRoot: AddonCalendarMainMenuHandlerService.PAGE_NAME,
             },
-            loadChildren: () => import('@/addons/calendar/pages/index/index.module').then(m => m.AddonCalendarIndexPageModule),
+            loadChildren: () => import('@addons/calendar/pages/index/index.module').then(m => m.AddonCalendarIndexPageModule),
         },
         {
-            path: 'list',
-            data: {
-                mainMenuTabRoot: AddonCalendarMainMenuHandlerService.PAGE_NAME,
-            },
-            loadChildren: () => import('@/addons/calendar/pages/list/list.module').then(m => m.AddonCalendarListPageModule),
-        },
-        {
-            path: 'settings',
+            path: 'calendar-settings',
             loadChildren: () =>
-                import('@/addons/calendar/pages/settings/settings.module').then(m => m.AddonCalendarSettingsPageModule),
+                import('@addons/calendar/pages/settings/settings.module').then(m => m.AddonCalendarSettingsPageModule),
         },
         {
             path: 'day',
             loadChildren: () =>
-                import('@/addons/calendar/pages/day/day.module').then(m => m.AddonCalendarDayPageModule),
+                import('@addons/calendar/pages/day/day.module').then(m => m.AddonCalendarDayPageModule),
         },
-        AddonCalendarEventRoute,
-        AddonCalendarEditRoute,
+        {
+            path: 'event/:id',
+            loadChildren: () => import('@addons/calendar/pages/event/event.module').then(m => m.AddonCalendarEventPageModule),
+        },
+        {
+            path: 'edit/:eventId',
+            loadChildren: () =>
+                import('@addons/calendar/pages/edit-event/edit-event.module').then(m => m.AddonCalendarEditEventPageModule),
+        },
         ...buildTabMainRoutes(injector, {
             redirectTo: 'index',
             pathMatch: 'full',

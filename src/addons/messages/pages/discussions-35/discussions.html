@@ -3,11 +3,11 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>{{ 'addon.messages.messages' | translate }}</h1>
+        <ion-title>
+            <h1>{{ 'addon.messages.messages' | translate }}</h1>
+        </ion-title>
         <ion-buttons slot="end">
-            <!-- Add an empty context menu so discussion page can add items in split view,
-                otherwise the menu disappears in some cases. -->
-            <core-context-menu></core-context-menu>
+            <core-user-menu-button></core-user-menu-button>
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
@@ -17,9 +17,9 @@
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
         </ion-refresher>
 
-        <core-search-box *ngIf="search.enabled" (onSubmit)="searchMessage($event)" (onClear)="clearSearch()"
-            [placeholder]=" 'addon.messages.message' | translate" autocorrect="off" spellcheck="false" lengthCheck="2"
-            [disabled]="!loaded" searchArea="AddonMessagesDiscussions" [autoFocus]="false"></core-search-box>
+        <core-search-box (onSubmit)="searchMessage($event)" (onClear)="clearSearch()" [placeholder]=" 'addon.messages.message' | translate"
+            autocorrect="off" spellcheck="false" lengthCheck="2" [disabled]="!loaded" searchArea="AddonMessagesDiscussions"
+            [autoFocus]="false"></core-search-box>
 
         <core-loading [hideUntil]="loaded" [message]="loadingMessage">
 
@@ -28,7 +28,9 @@
                 <ion-item class="ion-text-wrap addon-message-discussion" (click)="gotoContacts()"
                     [attr.aria-label]="'addon.messages.contacts' | translate" detail="true" button>
                     <ion-icon name="fas-address-book" slot="start" aria-hidden="true"></ion-icon>
-                    <ion-label><h2>{{ 'addon.messages.contacts' | translate }}</h2></ion-label>
+                    <ion-label>
+                        <h2>{{ 'addon.messages.contacts' | translate }}</h2>
+                    </ion-label>
                 </ion-item>
 
                 <ng-container *ngIf="search.showResults">
@@ -36,7 +38,9 @@
                         <ion-label>
                             <h2>{{ 'core.searchresults' | translate }}</h2>
                         </ion-label>
-                        <ion-note slot="end" class="ion-padding-end"><ion-badge>{{ search.results.length }}</ion-badge></ion-note>
+                        <ion-note slot="end" class="ion-padding-end">
+                            <ion-badge>{{ search.results.length }}</ion-badge>
+                        </ion-note>
                     </ion-item-divider>
                     <ion-item class="ion-text-wrap addon-message-discussion" *ngFor="let result of search.results" button
                         [attr.aria-label]="result.fullname" (click)="gotoDiscussion(result.userid, result.messageid)"
@@ -44,8 +48,10 @@
                         <core-user-avatar [user]="result" slot="start" [checkOnline]="result.showonlinestatus"></core-user-avatar>
                         <ion-label>
                             <p class="item-heading">{{ result.fullname }}</p>
-                            <p><core-format-text clean="true" singleLine="true" [text]="result.lastmessage" contextLevel="system"
-                                [contextInstanceId]="0"></core-format-text></p>
+                            <p>
+                                <core-format-text clean="true" singleLine="true" [text]="result.lastmessage" contextLevel="system"
+                                    [contextInstanceId]="0"></core-format-text>
+                            </p>
                         </ion-label>
                     </ion-item>
                 </ng-container>
@@ -69,8 +75,8 @@
                                 </ion-note>
                             </div>
                             <p>
-                                <core-format-text clean="true" singleLine="true" [text]="discussion.message!.message"
-                                    contextLevel="system" [contextInstanceId]="0">
+                                <core-format-text clean="true" singleLine="true" [text]="discussion.message!.message" contextLevel="system"
+                                    [contextInstanceId]="0">
                                 </core-format-text>
                             </p>
                         </ion-label>

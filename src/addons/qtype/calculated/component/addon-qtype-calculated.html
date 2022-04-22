@@ -1,8 +1,8 @@
 <ion-list class="addon-qtype-calculated-container" *ngIf="calcQuestion && (calcQuestion.text || calcQuestion.text === '')">
     <ion-item class="ion-text-wrap">
         <ion-label>
-            <core-format-text [component]="component" [componentId]="componentId" [text]="calcQuestion.text"
-                [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">
+            <core-format-text [component]="component" [componentId]="componentId" [text]="calcQuestion.text" [contextLevel]="contextLevel"
+                [contextInstanceId]="contextInstanceId" [courseId]="courseId">
             </core-format-text>
         </ion-label>
     </ion-item>
@@ -23,8 +23,8 @@
 
             <!-- Input to enter the answer. -->
             <ion-input type="text" [attr.name]="calcQuestion.input.name"
-                [placeholder]="calcQuestion.input.readOnly ? '' : 'core.question.answer' | translate"
-                [value]="calcQuestion.input.value" [disabled]="calcQuestion.input.readOnly" autocorrect="off">
+                [placeholder]="calcQuestion.input.readOnly ? '' : 'core.question.answer' | translate" [value]="calcQuestion.input.value"
+                [disabled]="calcQuestion.input.readOnly" autocorrect="off">
             </ion-input>
 
             <!-- Display unit select after the answer input. -->
@@ -48,9 +48,9 @@
     <label *ngIf="calcQuestion!.select!.accessibilityLabel" class="accesshide" for="{{calcQuestion!.select!.id}}">
         {{ calcQuestion!.select!.accessibilityLabel }}
     </label>
-    <ion-select id="{{calcQuestion!.select!.id}}" [name]="calcQuestion!.select!.name"
-        [(ngModel)]="calcQuestion!.select!.selected" interface="action-sheet" [disabled]="calcQuestion!.select!.disabled"
-        [slot]="calcQuestion?.selectFirst ? 'start' : 'end'" [interfaceOptions]="{header: 'addon.mod_quiz.unit' | translate}">
+    <ion-select id="{{calcQuestion!.select!.id}}" [name]="calcQuestion!.select!.name" [(ngModel)]="calcQuestion!.select!.selected"
+        interface="action-sheet" [disabled]="calcQuestion!.select!.disabled" [slot]="calcQuestion?.selectFirst ? 'start' : 'end'"
+        [interfaceOptions]="{header: 'addon.mod_quiz.unit' | translate}">
         <ion-select-option *ngFor="let option of calcQuestion!.select!.options" [value]="option.value">
             {{option.label}}
         </ion-select-option>

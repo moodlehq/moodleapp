@@ -150,7 +150,7 @@ export class CorePushNotificationsDelegateService {
      * @return Observer to subscribe.
      */
     on<T = CorePushNotificationsNotificationBasicData>(eventName: string): Subject<T> {
-        if (typeof this.observables[eventName] == 'undefined') {
+        if (this.observables[eventName] === undefined) {
             const eventNames = Object.keys(this.observables).join(', ');
             this.logger.warn(`'${eventName}' event name is not allowed. Use one of the following: '${eventNames}'.`);
 
@@ -167,7 +167,7 @@ export class CorePushNotificationsDelegateService {
      * @return True if registered successfully, false otherwise.
      */
     registerClickHandler(handler: CorePushNotificationsClickHandler): boolean {
-        if (typeof this.clickHandlers[handler.name] !== 'undefined') {
+        if (this.clickHandlers[handler.name] !== undefined) {
             this.logger.log(`Addon '${handler.name}' already registered`);
 
             return false;
@@ -186,7 +186,7 @@ export class CorePushNotificationsDelegateService {
      * @param name Handler's name.
      */
     registerCounterHandler(name: string): void {
-        if (typeof this.counterHandlers[name] == 'undefined') {
+        if (this.counterHandlers[name] === undefined) {
             this.logger.debug(`Registered handler '${name}' as badge counter handler.`);
             this.counterHandlers[name] = name;
         } else {
@@ -201,7 +201,7 @@ export class CorePushNotificationsDelegateService {
      * @return If handler name is present.
      */
     isCounterHandlerRegistered(name: string): boolean {
-        return typeof this.counterHandlers[name] != 'undefined';
+        return this.counterHandlers[name] !== undefined;
     }
 
     /**

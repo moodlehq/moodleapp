@@ -37,12 +37,10 @@ export class CoreLangProvider {
     protected customStringsRaw?: string;
     protected sitePluginsStrings: CoreLanguageObject = {}; // Strings defined by site plugins.
 
-    constructor() {
+    async initialize(): Promise<void> {
         // Set fallback language and language to use until the app determines the right language to use.
         Translate.setDefaultLang(this.fallbackLanguage);
         Translate.use(this.defaultLanguage);
-
-        this.initLanguage();
 
         Translate.onLangChange.subscribe((event: LangChangeEvent) => {
             document.documentElement.setAttribute('lang', event.lang);
@@ -51,12 +49,14 @@ export class CoreLangProvider {
             dir = dir.indexOf('rtl') != -1 ? 'rtl' : 'ltr';
             document.documentElement.setAttribute('dir', dir);
         });
+
+        this.initializeCurrentLanguage();
     }
 
     /**
      * Init language.
      */
-    protected async initLanguage(): Promise<void> {
+    protected async initializeCurrentLanguage(): Promise<void> {
         await Platform.ready();
 
         let language: string;
@@ -68,7 +68,7 @@ export class CoreLangProvider {
             language = await this.getCurrentLanguage();
         }
 
-        return this.changeCurrentLanguage(language);
+        await this.changeCurrentLanguage(language);
     }
 
     /**
@@ -223,7 +223,7 @@ export class CoreLangProvider {
      * @return Promise resolved with the current language.
      */
     async getCurrentLanguage(): Promise<string> {
-        if (typeof this.currentLanguage != 'undefined') {
+        if (this.currentLanguage !== undefined) {
             return this.currentLanguage;
         }
 
@@ -254,13 +254,13 @@ export class CoreLangProvider {
         let preferredLanguage = navigator.language.toLowerCase();
         if (preferredLanguage.indexOf('-') > -1) {
             // Language code defined by locale has a dash, like en-US or es-ES. Check if it's supported.
-            if (CoreConstants.CONFIG.languages && typeof CoreConstants.CONFIG.languages[preferredLanguage] == 'undefined') {
+            if (CoreConstants.CONFIG.languages && CoreConstants.CONFIG.languages[preferredLanguage] === undefined) {
                 // Code is NOT supported. Fallback to language without dash. E.g. 'en-US' would fallback to 'en'.
-                preferredLanguage = preferredLanguage.substr(0, preferredLanguage.indexOf('-'));
+                preferredLanguage = preferredLanguage.substring(0, preferredLanguage.indexOf('-'));
             }
         }
 
-        if (typeof CoreConstants.CONFIG.languages[preferredLanguage] == 'undefined') {
+        if (CoreConstants.CONFIG.languages[preferredLanguage] === undefined) {
             // Language not supported, use default language.
             return this.defaultLanguage;
         }
@@ -349,7 +349,7 @@ export class CoreLangProvider {
     loadCustomStringsFromSite(currentSite: CoreSite): void {
         const customStrings = currentSite.getStoredConfig('tool_mobile_customlangstrings');
 
-        if (typeof customStrings != 'undefined') {
+        if (customStrings !== undefined) {
             this.loadCustomStrings(customStrings);
         }
     }
@@ -403,11 +403,11 @@ export class CoreLangProvider {
 
         this.customStringsRaw = strings;
 
-        if (currentLangChanged) {
+        if (currentLangChanged && this.currentLanguage) {
             // Some lang strings have changed, emit an event to update the pipes.
             Translate.onLangChange.emit({
-                lang: this.currentLanguage!,
-                translations: Translate.translations[this.currentLanguage!],
+                lang: this.currentLanguage,
+                translations: Translate.translations[this.currentLanguage],
             });
         }
     }

@@ -1,6 +1,6 @@
 os: linux
 dist: trusty
-node_js: 12
+node_js: 14
 
 git:
   depth: 3
@@ -18,12 +18,12 @@ cache:
     - $HOME/.android/build-cache
 
 before_install:
-  - nvm install 12
+  - nvm install
+  - npm install npm@^7 -g
   - node --version
   - npm --version
   - nvm --version
   - npm ci
-  - npm install npm@^6 -g
 
 before_script:
   - npx gulp
@@ -46,16 +46,30 @@ jobs:
       - extra-google-google_play_services
       - extra-google-m2repository
       - extra-android-m2repository
+    before_install:
+      - nvm install
+      - npm install npm@^7 -g
+      - node --version
+      - npm --version
+      - nvm --version
+      - npm ci
+      - yes | sdkmanager "build-tools;30.0.3"
     addons:
       apt:
         packages:
         - libsecret-1-dev
+        - php5-cli
+        - php5-common
   - stage: build
     name: "Build iOS"
     language: node_js
     if: env(BUILD_IOS) = 1 AND (env(DEPLOY) = 1 OR (env(DEPLOY) = 2 AND tag IS NOT blank))
     os: osx
-    osx_image: xcode12.5
+    osx_image: xcode13.1
+    addons:
+      homebrew:
+        packages:
+        - jq
   - stage: test
     name: "End to end tests (mod_forum and mod_messages)"
     services:

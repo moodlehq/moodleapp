@@ -15,10 +15,10 @@
 import { Component, OnInit, Optional } from '@angular/core';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { CoreCourse } from '@features/course/services/course';
 import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { AddonModChat, AddonModChatChat, AddonModChatProvider } from '../../services/chat';
 import { AddonModChatModuleHandlerService } from '../../services/handlers/module';
 
@@ -34,7 +34,6 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
     component = AddonModChatProvider.COMPONENT;
     moduleName = 'chat';
     chat?: AddonModChatChat;
-    sessionsAvailable = false;
     chatInfo?: {
         date: string;
         fromnow: string;
@@ -54,46 +53,39 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
         super.ngOnInit();
 
         await this.loadContent();
-
-        if (!this.chat) {
-            return;
-        }
-
-        try {
-            await AddonModChat.logView(this.chat.id, this.chat.name);
-
-            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
-        } catch {
-            // Ignore errors.
-        }
     }
 
     /**
      * @inheritdoc
      */
-    protected async fetchContent(refresh: boolean = false): Promise<void> {
-        try {
-            this.chat = await AddonModChat.getChat(this.courseId, this.module.id);
+    protected async fetchContent(): Promise<void> {
+        this.chat = await AddonModChat.getChat(this.courseId, this.module.id);
 
-            this.description = this.chat.intro;
-            const now = CoreTimeUtils.timestamp();
-            const span = (this.chat.chattime || 0) - now;
+        this.description = this.chat.intro;
+        const now = CoreTimeUtils.timestamp();
+        const span = (this.chat.chattime || 0) - now;
 
-            if (this.chat.chattime && this.chat.schedule && span > 0) {
-                this.chatInfo = {
-                    date: CoreTimeUtils.userDate(this.chat.chattime * 1000),
-                    fromnow: CoreTimeUtils.formatTime(span),
-                };
-            } else {
-                this.chatInfo = undefined;
-            }
-
-            this.dataRetrieved.emit(this.chat);
-
-            this.sessionsAvailable = await AddonModChat.areSessionsAvailable();
-        } finally {
-            this.fillContextMenu(refresh);
+        if (this.chat.chattime && this.chat.schedule && span > 0) {
+            this.chatInfo = {
+                date: CoreTimeUtils.userDate(this.chat.chattime * 1000),
+                fromnow: CoreTime.formatTime(span),
+            };
+        } else {
+            this.chatInfo = undefined;
         }
+
+        this.dataRetrieved.emit(this.chat);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected async logActivity(): Promise<void> {
+        if (!this.chat) {
+            return; // Shouldn't happen.
+        }
+
+        await AddonModChat.logView(this.chat.id, this.chat.name);
     }
 
     /**

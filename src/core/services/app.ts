@@ -24,15 +24,10 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreColors } from '@singletons/colors';
 import { DBNAME, SCHEMA_VERSIONS_TABLE_NAME, SCHEMA_VERSIONS_TABLE_SCHEMA, SchemaVersionsDBEntry } from '@services/database/app';
 import { CoreObject } from '@singletons/object';
-import { CoreNavigationOptions } from './navigator';
-
-/**
- * Object responsible of managing schema versions.
- */
-type SchemaVersionsManager = {
-    get(schemaName: string): Promise<number>;
-    set(schemaName: string, version: number): Promise<void>;
-};
+import { CoreRedirectPayload } from './navigator';
+import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
+import { asyncInstance } from '../utils/async-instance';
+import { CoreDatabaseTable } from '@classes/database/database-table';
 
 /**
  * Factory to provide some global functionalities, like access to the global app database.
@@ -50,7 +45,7 @@ type SchemaVersionsManager = {
 @Injectable({ providedIn: 'root' })
 export class CoreAppProvider {
 
-    protected db: SQLiteDB;
+    protected db?: SQLiteDB;
     protected logger: CoreLogger;
     protected ssoAuthenticationDeferred?: PromiseDefer<void>;
     protected isKeyboardShown = false;
@@ -58,14 +53,9 @@ export class CoreAppProvider {
     protected keyboardClosing = false;
     protected forceOffline = false;
     protected redirect?: CoreRedirectData;
-
-    // Variables for DB.
-    protected schemaVersionsManager: Promise<SchemaVersionsManager>;
-    protected resolveSchemaVersionsManager!: (schemaVersionsManager: SchemaVersionsManager) => void;
+    protected schemaVersionsTable = asyncInstance<CoreDatabaseTable<SchemaVersionsDBEntry, 'name'>>();
 
     constructor() {
-        this.schemaVersionsManager = new Promise(resolve => this.resolveSchemaVersionsManager = resolve);
-        this.db = CoreDB.getDB(DBNAME);
         this.logger = CoreLogger.getInstance('CoreAppProvider');
     }
 
@@ -82,24 +72,20 @@ export class CoreAppProvider {
      * Initialize database.
      */
     async initializeDatabase(): Promise<void> {
-        await this.db.createTableFromSchema(SCHEMA_VERSIONS_TABLE_SCHEMA);
+        const database = this.getDB();
 
-        this.resolveSchemaVersionsManager({
-            get: async name => {
-                try {
-                    // Fetch installed version of the schema.
-                    const entry = await this.db.getRecord<SchemaVersionsDBEntry>(SCHEMA_VERSIONS_TABLE_NAME, { name });
+        await database.createTableFromSchema(SCHEMA_VERSIONS_TABLE_SCHEMA);
 
-                    return entry.version;
-                } catch (error) {
-                    // No installed version yet.
-                    return 0;
-                }
-            },
-            set: async (name, version) => {
-                await this.db.insertRecord(SCHEMA_VERSIONS_TABLE_NAME, { name, version });
-            },
-        });
+        const schemaVersionsTable = new CoreDatabaseTableProxy<SchemaVersionsDBEntry, 'name'>(
+            { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
+            database,
+            SCHEMA_VERSIONS_TABLE_NAME,
+            ['name'],
+        );
+
+        await schemaVersionsTable.initialize();
+
+        this.schemaVersionsTable.setInstance(schemaVersionsTable);
     }
 
     /**
@@ -138,8 +124,7 @@ export class CoreAppProvider {
     async createTablesFromSchema(schema: CoreAppSchema): Promise<void> {
         this.logger.debug(`Apply schema to app DB: ${schema.name}`);
 
-        const schemaVersionsManager = await this.schemaVersionsManager;
-        const oldVersion = await schemaVersionsManager.get(schema.name);
+        const oldVersion = await this.getInstalledSchemaVersion(schema);
 
         if (oldVersion >= schema.version) {
             // Version already installed, nothing else to do.
@@ -149,14 +134,23 @@ export class CoreAppProvider {
         this.logger.debug(`Migrating schema '${schema.name}' of app DB from version ${oldVersion} to ${schema.version}`);
 
         if (schema.tables) {
-            await this.db.createTablesFromSchema(schema.tables);
+            await this.getDB().createTablesFromSchema(schema.tables);
         }
         if (schema.migrate && oldVersion > 0) {
-            await schema.migrate(this.db, oldVersion);
+            await schema.migrate(this.getDB(), oldVersion);
         }
 
         // Set installed version.
-        schemaVersionsManager.set(schema.name, schema.version);
+        await this.schemaVersionsTable.insert({ name: schema.name, version: schema.version });
+    }
+
+    /**
+     * Delete table schema.
+     *
+     * @param name Schema name.
+     */
+    async deleteTableSchema(name: string): Promise<void> {
+        await this.schemaVersionsTable.deleteByPrimaryKey({ name });
     }
 
     /**
@@ -165,6 +159,10 @@ export class CoreAppProvider {
      * @return App's DB.
      */
     getDB(): SQLiteDB {
+        if (!this.db) {
+            this.db = CoreDB.getDB(DBNAME);
+        }
+
         return this.db;
     }
 
@@ -439,7 +437,7 @@ export class CoreAppProvider {
     /**
      * Set keyboard shown or hidden.
      *
-     * @param Whether the keyboard is shown or hidden.
+     * @param shown Whether the keyboard is shown or hidden.
      */
     protected setKeyboardShown(shown: boolean): void {
         this.isKeyboardShown = shown;
@@ -590,20 +588,22 @@ export class CoreAppProvider {
      * Store redirect params.
      *
      * @param siteId Site ID.
-     * @param page Page to go.
-     * @param options Navigation options.
+     * @param redirectData Redirect data.
      */
-    storeRedirect(siteId: string, page: string, options: CoreNavigationOptions): void {
+    storeRedirect(siteId: string, redirectData: CoreRedirectPayload = {}): void {
+        if (!redirectData.redirectPath && !redirectData.urlToOpen) {
+            return;
+        }
+
         try {
             const redirect: CoreRedirectData = {
                 siteId,
-                page,
-                options,
                 timemodified: Date.now(),
+                ...redirectData,
             };
 
             localStorage.setItem('CoreRedirect', JSON.stringify(redirect));
-        } catch (ex) {
+        } catch {
             // Ignore errors.
         }
     }
@@ -635,46 +635,27 @@ export class CoreAppProvider {
 
         if (!color) {
             // Get the default color to change it.
-            const element = document.querySelector('ion-header ion-toolbar');
-            if (element) {
-                color = getComputedStyle(element).getPropertyValue('--background').trim();
-            } else {
-                // Fallback, it won't always work.
-                color = getComputedStyle(document.body).getPropertyValue('--core-header-toolbar-background').trim();
-            }
-
-            color = CoreColors.getColorHex(color);
-        }
-
-        // Make darker on Android, except white.
-        if (this.isAndroid()) {
-            const rgb = CoreColors.hexToRGB(color);
-            if (rgb.red != 255 || rgb.green != 255 || rgb.blue != 255) {
-                color = CoreColors.darker(color);
-            }
+            color = CoreColors.getToolbarBackgroundColor();
         }
 
         this.logger.debug(`Set status bar color ${color}`);
 
         const useLightText = CoreColors.isWhiteContrastingBetter(color);
-        const statusBar = StatusBar.instance;
-
-        this.isIOS() && statusBar.overlaysWebView(false);
 
         // styleDefault will use white text on iOS when darkmode is on. Force the background to black.
         if (this.isIOS() && !useLightText && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            statusBar.backgroundColorByHexString('#000000');
-            statusBar.styleLightContent();
+            StatusBar.backgroundColorByHexString('#000000');
+            StatusBar.styleLightContent();
         } else {
-            statusBar.backgroundColorByHexString(color);
-            useLightText ? statusBar.styleLightContent() : statusBar.styleDefault();
+            StatusBar.backgroundColorByHexString(color);
+            useLightText ? StatusBar.styleLightContent() : StatusBar.styleDefault();
         }
     }
 
     /**
      * Reset StatusBar color if any was set.
      *
-     * @deprecated Use setStatusBarColor passing the color of the new statusbar color loaded on remote theme or no color to reset.
+     * @deprecated since 3.9.5. Use setStatusBarColor passing the color of the new statusbar color, or no color to reset.
      */
     resetStatusBarColor(): void {
         this.setStatusBarColor();
@@ -689,6 +670,24 @@ export class CoreAppProvider {
         this.forceOffline = !!value;
     }
 
+    /**
+     * Get the installed version for the given schema.
+     *
+     * @param schema App schema.
+     * @returns Installed version number, or 0 if the schema is not installed.
+     */
+    protected async getInstalledSchemaVersion(schema: CoreAppSchema): Promise<number> {
+        try {
+            // Fetch installed version of the schema.
+            const entry = await this.schemaVersionsTable.getOneByPrimaryKey({ name: schema.name });
+
+            return entry.version;
+        } catch (error) {
+            // No installed version yet.
+            return 0;
+        }
+    }
+
 }
 
 export const CoreApp = makeSingleton(CoreAppProvider);
@@ -696,26 +695,9 @@ export const CoreApp = makeSingleton(CoreAppProvider);
 /**
  * Data stored for a redirect to another page/site.
  */
-export type CoreRedirectData = {
-    /**
-     * ID of the site to load.
-     */
-    siteId?: string;
-
-    /**
-     * Path of the page to redirect to.
-     */
-    page?: string;
-
-    /**
-     * Options of the navigation.
-     */
-    options?: CoreNavigationOptions;
-
-    /**
-     * Timestamp when this redirect was last modified.
-     */
-    timemodified?: number;
+export type CoreRedirectData = CoreRedirectPayload & {
+    siteId?: string; // ID of the site to load.
+    timemodified?: number; // Timestamp when this redirect was last modified.
 };
 
 /**

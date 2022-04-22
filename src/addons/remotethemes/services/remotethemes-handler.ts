@@ -90,7 +90,7 @@ export class AddonRemoteThemesHandlerService implements CoreStyleHandler {
         if (style != '') {
             // Treat the CSS.
             CoreUtils.ignoreErrors(
-                CoreFilepool.treatCSSCode(siteId, fileUrl, style, COMPONENT, 2),
+                CoreFilepool.treatCSSCode(siteId, infos.mobilecssurl, style, COMPONENT, 1),
             );
         }
 

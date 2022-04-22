@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 import { CoreApp } from '@services/app';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTimeUtils } from '@services/utils/time';
@@ -32,7 +31,7 @@ import { AddonCalendarFilter, AddonCalendarHelper } from '../../services/calenda
 import { AddonCalendarSync, AddonCalendarSyncProvider } from '../../services/calendar-sync';
 import { CoreCategoryData, CoreCourses, CoreEnrolledCourseData } from '@features/courses/services/courses';
 import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
-import { AddonCalendarFilterPopoverComponent } from '../../components/filter/filter';
+import { AddonCalendarFilterComponent } from '../../components/filter/filter';
 import moment from 'moment';
 import { Network, NgZone } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
@@ -40,6 +39,12 @@ import { Params } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
+import { CoreSwipeSlidesDynamicItemsManager } from '@classes/items-management/swipe-slides-dynamic-items-manager';
+import { CoreSwipeSlidesComponent } from '@components/swipe-slides/swipe-slides';
+import {
+    CoreSwipeSlidesDynamicItem,
+    CoreSwipeSlidesDynamicItemsManagerSource,
+} from '@classes/items-management/swipe-slides-dynamic-items-manager-source';
 
 /**
  * Page that displays the calendar events for a certain day.
@@ -51,20 +56,9 @@ import { CoreConstants } from '@/core/constants';
 })
 export class AddonCalendarDayPage implements OnInit, OnDestroy {
 
-    protected currentSiteId: string;
-    protected year!: number;
-    protected month!: number;
-    protected day!: number;
-    protected categories: { [id: number]: CoreCategoryData } = {};
-    protected events: AddonCalendarEventToDisplay[] = []; // Events (both online and offline).
-    protected onlineEvents: AddonCalendarEventToDisplay[] = [];
-    protected offlineEvents: { [monthId: string]: { [day: number]: AddonCalendarEventToDisplay[] } } =
-        {}; // Offline events classified in month & day.
+    @ViewChild(CoreSwipeSlidesComponent) slides?: CoreSwipeSlidesComponent<PreloadedDay>;
 
-    protected offlineEditedEventsIds: number[] = []; // IDs of events edited in offline.
-    protected deletedEvents: number[] = []; // Events deleted in offline.
-    protected timeFormat?: string;
-    protected currentTime!: number;
+    protected currentSiteId: string;
 
     // Observers.
     protected newEventObserver: CoreEventObserver;
@@ -75,20 +69,14 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     protected syncObserver: CoreEventObserver;
     protected manualSyncObserver: CoreEventObserver;
     protected onlineObserver: Subscription;
-    protected obsDefaultTimeChange?: CoreEventObserver;
     protected filterChangedObserver: CoreEventObserver;
+    protected managerUnsubscribe?: () => void;
 
     periodName?: string;
-    filteredEvents: AddonCalendarEventToDisplay [] = [];
-    canCreate = false;
-    courses: Partial<CoreEnrolledCourseData>[] = [];
+    manager?: CoreSwipeSlidesDynamicItemsManager<PreloadedDay, AddonCalendarDaySlidesItemsManagerSource>;
     loaded = false;
-    hasOffline = false;
     isOnline = false;
     syncIcon = CoreConstants.ICON_LOADING;
-    isCurrentDay = false;
-    isPastDay = false;
-    currentMoment!: moment.Moment;
     filter: AddonCalendarFilter = {
         filtered: false,
         courseId: undefined,
@@ -103,19 +91,12 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     constructor() {
         this.currentSiteId = CoreSites.getCurrentSiteId();
 
-        if (CoreLocalNotifications.isAvailable()) {
-            // Re-schedule events if default time changes.
-            this.obsDefaultTimeChange = CoreEvents.on(AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_CHANGED, () => {
-                AddonCalendar.scheduleEventsNotifications(this.onlineEvents);
-            }, this.currentSiteId);
-        }
-
         // Listen for events added. When an event is added, reload the data.
         this.newEventObserver = CoreEvents.on(
             AddonCalendarProvider.NEW_EVENT_EVENT,
             (data) => {
                 if (data && data.eventId) {
-                    this.loaded = false;
+                    this.manager?.getSource().markAllItemsUnloaded();
                     this.refreshData(true, true);
                 }
             },
@@ -124,7 +105,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
 
         // Listen for new event discarded event. When it does, reload the data.
         this.discardedObserver = CoreEvents.on(AddonCalendarProvider.NEW_EVENT_DISCARDED_EVENT, () => {
-            this.loaded = false;
+            this.manager?.getSource().markAllItemsUnloaded();
             this.refreshData(true, true);
         }, this.currentSiteId);
 
@@ -133,7 +114,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
             AddonCalendarProvider.EDIT_EVENT_EVENT,
             (data) => {
                 if (data && data.eventId) {
-                    this.loaded = false;
+                    this.manager?.getSource().markAllItemsUnloaded();
                     this.refreshData(true, true);
                 }
             },
@@ -142,14 +123,15 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
 
         // Refresh data if calendar events are synchronized automatically.
         this.syncObserver = CoreEvents.on(AddonCalendarSyncProvider.AUTO_SYNCED, () => {
-            this.loaded = false;
+            this.manager?.getSource().markAllItemsUnloaded();
             this.refreshData(false, true);
         }, this.currentSiteId);
 
         // Refresh data if calendar events are synchronized manually but not by this page.
         this.manualSyncObserver = CoreEvents.on(AddonCalendarSyncProvider.MANUAL_SYNCED, (data) => {
-            if (data && (data.source != 'day' || data.year != this.year || data.month != this.month || data.day != this.day)) {
-                this.loaded = false;
+            const selectedDay = this.manager?.getSelectedItem();
+            if (data && (data.source != 'day' || !selectedDay || !data.moment || !selectedDay.moment.isSame(data.moment, 'day'))) {
+                this.manager?.getSource().markAllItemsUnloaded();
                 this.refreshData(false, true);
             }
         }, this.currentSiteId);
@@ -160,10 +142,9 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
             (data) => {
                 if (data && !data.sent) {
                     // Event was deleted in offline. Just mark it as deleted, no need to refresh.
-                    this.hasOffline = this.markAsDeleted(data.eventId, true) || this.hasOffline;
-                    this.deletedEvents.push(data.eventId);
+                    this.manager?.getSource().markAsDeleted(data.eventId, true);
                 } else {
-                    this.loaded = false;
+                    this.manager?.getSource().markAllItemsUnloaded();
                     this.refreshData(false, true);
                 }
             },
@@ -179,26 +160,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
                 }
 
                 // Mark it as undeleted, no need to refresh.
-                const found = this.markAsDeleted(data.eventId, false);
-
-                // Remove it from the list of deleted events if it's there.
-                const index = this.deletedEvents.indexOf(data.eventId);
-                if (index != -1) {
-                    this.deletedEvents.splice(index, 1);
-                }
-
-                if (found) {
-                // The deleted event belongs to current list. Re-calculate "hasOffline".
-                    this.hasOffline = false;
-
-                    if (this.events.length != this.onlineEvents.length) {
-                        this.hasOffline = true;
-                    } else {
-                        const event = this.events.find((event) => event.deleted || event.offline);
-
-                        this.hasOffline = !!event;
-                    }
-                }
+                this.manager?.getSource().markAsDeleted(data.eventId, false);
             },
             this.currentSiteId,
         );
@@ -209,9 +171,9 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
                 this.filter = data;
 
                 // Course viewed has changed, check if the user can create events for this course calendar.
-                this.canCreate = await AddonCalendarHelper.canEditEvents(this.filter.courseId);
+                await this.manager?.getSource().loadCanCreate(this.filter.courseId);
 
-                this.filterEvents();
+                this.manager?.getSource().filterAllDayEvents(this.filter);
             },
         );
 
@@ -238,17 +200,30 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
         this.filter.courseId = CoreNavigator.getRouteNumberParam('courseId');
         this.filter.categoryId = CoreNavigator.getRouteNumberParam('categoryId');
 
-        this.filter.filtered = typeof this.filter.courseId != 'undefined' || types.some((name) => !this.filter[name]);
+        this.filter.filtered = this.filter.courseId !== undefined || types.some((name) => !this.filter[name]);
 
-        const now = new Date();
-        this.year = CoreNavigator.getRouteNumberParam('year') || now.getFullYear();
-        this.month = CoreNavigator.getRouteNumberParam('month') || (now.getMonth() + 1);
-        this.day = CoreNavigator.getRouteNumberParam('day') || now.getDate();
-
-        this.calculateCurrentMoment();
-        this.calculateIsCurrentDay();
+        const month = CoreNavigator.getRouteNumberParam('month');
+        const source = new AddonCalendarDaySlidesItemsManagerSource(this, moment({
+            year: CoreNavigator.getRouteNumberParam('year'),
+            month: month ? month - 1 : undefined,
+            date: CoreNavigator.getRouteNumberParam('day'),
+        }));
+        this.manager = new CoreSwipeSlidesDynamicItemsManager(source);
+        this.managerUnsubscribe = this.manager.addListener({
+            onSelectedItemUpdated: (item) => {
+                this.onDayViewed(item);
+            },
+        });
 
         this.fetchData(true);
+    }
+
+    get canCreate(): boolean {
+        return this.manager?.getSource().canCreate || false;
+    }
+
+    get timeFormat(): string {
+        return this.manager?.getSource().timeFormat || 'core.strftimetime';
     }
 
     /**
@@ -259,7 +234,6 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     async fetchData(sync?: boolean): Promise<void> {
-
         this.syncIcon = CoreConstants.ICON_LOADING;
         this.isOnline = CoreApp.isOnline();
 
@@ -268,53 +242,9 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
         }
 
         try {
-            const promises: Promise<void>[] = [];
+            await this.manager?.getSource().fetchData(this.filter.courseId);
 
-            // Load courses for the popover.
-            promises.push(CoreCoursesHelper.getCoursesForPopover(this.filter.courseId).then((data) => {
-                this.courses = data.courses;
-
-                return;
-            }));
-
-            // Get categories.
-            promises.push(this.loadCategories());
-
-            // Get offline events.
-            promises.push(AddonCalendarOffline.getAllEditedEvents().then((offlineEvents) => {
-                // Classify them by month & day.
-                this.offlineEvents = AddonCalendarHelper.classifyIntoMonths(offlineEvents);
-
-                // Get the IDs of events edited in offline.
-                this.offlineEditedEventsIds = offlineEvents.filter((event) => event.id! > 0).map((event) => event.id!);
-
-                return;
-            }));
-
-            // Get events deleted in offline.
-            promises.push(AddonCalendarOffline.getAllDeletedEventsIds().then((ids) => {
-                this.deletedEvents = ids;
-
-                return;
-            }));
-
-            // Check if user can create events.
-            promises.push(AddonCalendarHelper.canEditEvents(this.filter.courseId).then((canEdit) => {
-                this.canCreate = canEdit;
-
-                return;
-            }));
-
-            // Get user preferences.
-            promises.push(AddonCalendar.getCalendarTimeFormat().then((value) => {
-                this.timeFormat = value;
-
-                return;
-            }));
-
-            await Promise.all(promises);
-
-            await this.fetchEvents();
+            await this.manager?.getSource().load(this.manager?.getSelectedItem());
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
         }
@@ -324,104 +254,15 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Fetch the events for current day.
+     * Update data related to day being viewed.
      *
-     * @return Promise resolved when done.
+     * @param day Day viewed.
      */
-    async fetchEvents(): Promise<void> {
-        let result: AddonCalendarCalendarDay;
-        try {
-            // Don't pass courseId and categoryId, we'll filter them locally.
-            result = await AddonCalendar.getDayEvents(this.year, this.month, this.day);
-            this.onlineEvents = result.events.map((event) => AddonCalendarHelper.formatEventData(event));
-        } catch (error) {
-            if (CoreApp.isOnline()) {
-                throw error;
-            }
-            // Allow navigating to non-cached days in offline (behave as if using emergency cache).
-            this.onlineEvents = [];
-        }
-
-        // Calculate the period name. We don't use the one in result because it's in server's language.
+    onDayViewed(day: DayBasicData): void {
         this.periodName = CoreTimeUtils.userDate(
-            new Date(this.year, this.month - 1, this.day).getTime(),
+            day.moment.unix() * 1000,
             'core.strftimedaydate',
         );
-
-        // Schedule notifications for the events retrieved (only future events will be scheduled).
-        AddonCalendar.scheduleEventsNotifications(this.onlineEvents);
-        // Merge the online events with offline data.
-        this.events = this.mergeEvents();
-        // Filter events by course.
-        this.filterEvents();
-        this.calculateIsCurrentDay();
-        // Re-calculate the formatted time so it uses the device date.
-        const dayTime = this.currentMoment.unix() * 1000;
-
-        const promises = this.events.map((event) => {
-            event.ispast = this.isPastDay || (this.isCurrentDay && this.isEventPast(event));
-
-            return AddonCalendar.formatEventTime(event, this.timeFormat!, true, dayTime).then((time) => {
-                event.formattedtime = time;
-
-                return;
-            });
-        });
-
-        await Promise.all(promises);
-    }
-
-    /**
-     * Merge online events with the offline events of that period.
-     *
-     * @return Merged events.
-     */
-    protected mergeEvents(): AddonCalendarEventToDisplay[] {
-        this.hasOffline = false;
-
-        if (!Object.keys(this.offlineEvents).length && !this.deletedEvents.length) {
-            // No offline events, nothing to merge.
-            return this.onlineEvents;
-        }
-
-        const monthOfflineEvents = this.offlineEvents[AddonCalendarHelper.getMonthId(this.year, this.month)];
-        const dayOfflineEvents = monthOfflineEvents && monthOfflineEvents[this.day];
-        let result = this.onlineEvents;
-
-        if (this.deletedEvents.length) {
-            // Mark as deleted the events that were deleted in offline.
-            result.forEach((event) => {
-                event.deleted = this.deletedEvents.indexOf(event.id) != -1;
-
-                if (event.deleted) {
-                    this.hasOffline = true;
-                }
-            });
-        }
-
-        if (this.offlineEditedEventsIds.length) {
-            // Remove the online events that were modified in offline.
-            result = result.filter((event) => this.offlineEditedEventsIds.indexOf(event.id) == -1);
-
-            if (result.length != this.onlineEvents.length) {
-                this.hasOffline = true;
-            }
-        }
-
-        if (dayOfflineEvents && dayOfflineEvents.length) {
-            // Add the offline events (either new or edited).
-            this.hasOffline = true;
-            result = AddonCalendarHelper.sortEvents(result.concat(dayOfflineEvents));
-        }
-
-        return result;
-    }
-
-    /**
-     * Filter events based on the filter popover.
-     */
-    protected filterEvents(): void {
-        this.filteredEvents = AddonCalendarHelper.getFilteredEvents(this.events, this.filter, this.categories);
     }
 
     /**
@@ -452,37 +293,12 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     async refreshData(sync?: boolean, afterChange?: boolean): Promise<void> {
         this.syncIcon = CoreConstants.ICON_LOADING;
 
-        const promises: Promise<void>[] = [];
+        const selectedDay = this.manager?.getSelectedItem() || null;
 
         // Don't invalidate day events after a change, it has already been handled.
-        if (!afterChange) {
-            promises.push(AddonCalendar.invalidateDayEvents(this.year, this.month, this.day));
-        }
-        promises.push(AddonCalendar.invalidateAllowedEventTypes());
-        promises.push(CoreCourses.invalidateCategories(0, true));
-        promises.push(AddonCalendar.invalidateTimeFormat());
+        await this.manager?.getSource().invalidateContent(selectedDay, !afterChange);
 
-        await Promise.all(promises).finally(() =>
-            this.fetchData(sync));
-    }
-
-    /**
-     * Load categories to be able to filter events.
-     *
-     * @return Promise resolved when done.
-     */
-    protected async loadCategories(): Promise<void> {
-        try {
-            const cats = await CoreCourses.getCategories(0, true);
-            this.categories = {};
-
-            // Index categories by ID.
-            cats.forEach((category) => {
-                this.categories[category.id] = category;
-            });
-        } catch {
-            // Ignore errors.
-        }
+        await this.fetchData(sync);
     }
 
     /**
@@ -501,11 +317,11 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
 
             if (result.updated) {
                 // Trigger a manual sync event.
+                const selectedDay = this.manager?.getSelectedItem();
                 result.source = 'day';
-                result.day = this.day;
-                result.month = this.month;
-                result.year = this.year;
+                result.moment = selectedDay?.moment;
 
+                this.manager?.getSource().markAllItemsUnloaded();
                 CoreEvents.trigger(AddonCalendarSyncProvider.MANUAL_SYNCED, result, this.currentSiteId);
             }
         } catch (error) {
@@ -516,32 +332,31 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     }
 
     /**
+     * Check whether selected day is current day.
+     */
+    selectedDayIsCurrent(): boolean {
+        return !!this.manager?.getSelectedItem()?.isCurrentDay;
+    }
+
+    /**
      * Navigate to a particular event.
      *
      * @param eventId Event to load.
      */
     gotoEvent(eventId: number): void {
-        if (eventId < 0) {
-            // It's an offline event, go to the edit page.
-            this.openEdit(eventId);
-        } else {
-            CoreNavigator.navigateToSitePath(`/calendar/event/${eventId}`);
-        }
+        CoreNavigator.navigateToSitePath(`/calendar/event/${eventId}`);
     }
 
     /**
-     * Show the context menu.
-     *
-     * @param event Event.
+     * Show the filter menu.
      */
-    async openFilter(event: MouseEvent): Promise<void> {
-        await CoreDomUtils.openPopover({
-            component: AddonCalendarFilterPopoverComponent,
+    async openFilter(): Promise<void> {
+        await CoreDomUtils.openSideModal({
+            component: AddonCalendarFilterComponent,
             componentProps: {
-                courses: this.courses,
+                courses: this.manager?.getSource().courses,
                 filter: this.filter,
             },
-            event,
         });
     }
 
@@ -556,7 +371,13 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
         if (!eventId) {
             // It's a new event, set the time.
             eventId = 0;
-            params.timestamp = moment().year(this.year).month(this.month - 1).date(this.day).unix() * 1000;
+
+            const selectedDay = this.manager?.getSelectedItem();
+            if (selectedDay) {
+                // Use current time but in the specified day.
+                const now = moment();
+                params.timestamp = selectedDay.moment.clone().set({ hour: now.hour(), minute: now.minute() }).unix() * 1000;
+            }
         }
 
         if (this.filter.courseId) {
@@ -567,140 +388,55 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Calculate current moment.
+     * Check whether selected day has offline data.
+     *
+     * @return Whether selected day has offline data.
      */
-    calculateCurrentMoment(): void {
-        this.currentMoment = moment().year(this.year).month(this.month - 1).date(this.day);
-    }
+    selectedDayHasOffline(): boolean {
+        const selectedDay = this.manager?.getSelectedItem();
 
-    /**
-     * Check if user is viewing the current day.
-     */
-    calculateIsCurrentDay(): void {
-        const now = new Date();
-
-        this.currentTime = CoreTimeUtils.timestamp();
-
-        this.isCurrentDay = this.year == now.getFullYear() && this.month == now.getMonth() + 1 && this.day == now.getDate();
-        this.isPastDay = this.year < now.getFullYear() || (this.year == now.getFullYear() && this.month < now.getMonth()) ||
-            (this.year == now.getFullYear() && this.month == now.getMonth() + 1 && this.day < now.getDate());
+        return !!(selectedDay?.hasOffline);
     }
 
     /**
      * Go to current day.
      */
     async goToCurrentDay(): Promise<void> {
-        const now = new Date();
-        const initialDay = this.day;
-        const initialMonth = this.month;
-        const initialYear = this.year;
+        const manager = this.manager;
+        const slides = this.slides;
+        if (!manager || !slides) {
+            return;
+        }
 
-        this.day = now.getDate();
-        this.month = now.getMonth() + 1;
-        this.year = now.getFullYear();
-        this.calculateCurrentMoment();
-
+        const currentDay = {
+            moment: moment(),
+        };
         this.loaded = false;
 
         try {
-            await this.fetchEvents();
+            // Make sure the day is loaded.
+            await manager.getSource().loadItem(currentDay);
 
-            this.isCurrentDay = true;
+            slides.slideToItem(currentDay);
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
-
-            this.year = initialYear;
-            this.month = initialMonth;
-            this.day = initialDay;
-            this.calculateCurrentMoment();
+        } finally {
+            this.loaded = true;
         }
-
-        this.loaded = true;
     }
 
     /**
      * Load next day.
      */
     async loadNext(): Promise<void> {
-        this.increaseDay();
-
-        this.loaded = false;
-
-        try {
-            await this.fetchEvents();
-        } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
-            this.decreaseDay();
-        }
-        this.loaded = true;
+        this.slides?.slideNext();
     }
 
     /**
      * Load previous day.
      */
     async loadPrevious(): Promise<void> {
-        this.decreaseDay();
-
-        this.loaded = false;
-
-        try {
-            await this.fetchEvents();
-        } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
-            this.increaseDay();
-        }
-        this.loaded = true;
-    }
-
-    /**
-     * Decrease the current day.
-     */
-    protected decreaseDay(): void {
-        this.currentMoment.subtract(1, 'day');
-
-        this.year = this.currentMoment.year();
-        this.month = this.currentMoment.month() + 1;
-        this.day = this.currentMoment.date();
-    }
-
-    /**
-     * Increase the current day.
-     */
-    protected increaseDay(): void {
-        this.currentMoment.add(1, 'day');
-
-        this.year = this.currentMoment.year();
-        this.month = this.currentMoment.month() + 1;
-        this.day = this.currentMoment.date();
-    }
-
-    /**
-     * Find an event and mark it as deleted.
-     *
-     * @param eventId Event ID.
-     * @param deleted Whether to mark it as deleted or not.
-     * @return Whether the event was found.
-     */
-    protected markAsDeleted(eventId: number, deleted: boolean): boolean {
-        const event = this.onlineEvents.find((event) => event.id == eventId);
-
-        if (event) {
-            event.deleted = deleted;
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Returns if the event is in the past or not.
-     *
-     * @param event Event object.
-     * @return True if it's in the past.
-     */
-    isEventPast(event: AddonCalendarEventToDisplay): boolean {
-        return (event.timestart + event.timeduration) < this.currentTime;
+        this.slides?.slidePrev();
     }
 
     /**
@@ -716,7 +452,368 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
         this.manualSyncObserver?.off();
         this.onlineObserver?.unsubscribe();
         this.filterChangedObserver?.off();
-        this.obsDefaultTimeChange?.off();
+        this.manager?.destroy();
+        this.managerUnsubscribe && this.managerUnsubscribe();
+    }
+
+}
+
+/**
+ * Basic data to identify a day.
+ */
+type DayBasicData = {
+    moment: moment.Moment;
+};
+
+/**
+ * Preloaded month.
+ */
+type PreloadedDay = DayBasicData & CoreSwipeSlidesDynamicItem & {
+    events?: AddonCalendarEventToDisplay[]; // Events (both online and offline).
+    onlineEvents?: AddonCalendarEventToDisplay[];
+    filteredEvents?: AddonCalendarEventToDisplay[];
+    isCurrentDay?: boolean;
+    isPastDay?: boolean;
+    hasOffline?: boolean; // Whether the day has offline data.
+};
+
+/**
+ * Helper to manage swiping within days.
+ */
+class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicItemsManagerSource<PreloadedDay> {
+
+    courses: Partial<CoreEnrolledCourseData>[] = [];
+    // Offline events classified in month & day.
+    offlineEvents: Record<string, Record<number, AddonCalendarEventToDisplay[]>> = {};
+    offlineEditedEventsIds: number[] = []; // IDs of events edited in offline.
+    categories?: { [id: number]: CoreCategoryData };
+    deletedEvents?: Set<number>; // Events deleted in offline.
+    timeFormat?: string;
+    canCreate = false;
+
+    protected dayPage: AddonCalendarDayPage;
+
+    constructor(page: AddonCalendarDayPage, initialMoment: moment.Moment) {
+        super({ moment: initialMoment });
+
+        this.dayPage = page;
+    }
+
+    /**
+     * Fetch data.
+     *
+     * @param courseId Current selected course id (if any).
+     * @return Promise resolved when done.
+     */
+    async fetchData(courseId?: number): Promise<void> {
+        await Promise.all([
+            this.loadCourses(courseId),
+            this.loadCanCreate(courseId),
+            this.loadCategories(),
+            this.loadOfflineEvents(),
+            this.loadOfflineDeletedEvents(),
+            this.loadTimeFormat(),
+        ]);
+    }
+
+    /**
+     * Filter all loaded days events based on the filter popover.
+     *
+     * @param filter Filter to apply.
+     */
+    filterAllDayEvents(filter: AddonCalendarFilter): void {
+        this.getItems()?.forEach(day => this.filterEvents(day, filter));
+    }
+
+    /**
+     * Filter events of a certain day based on the filter popover.
+     *
+     * @param day Day with the events.
+     * @param filter Filter to apply.
+     */
+    filterEvents(day: PreloadedDay, filter: AddonCalendarFilter): void {
+        day.filteredEvents = AddonCalendarHelper.getFilteredEvents(day.events || [], filter, this.categories || {});
+    }
+
+    /**
+     * Load courses.
+     *
+     * @param courseId Current selected course id (if any).
+     * @return Promise resolved when done.
+     */
+    async loadCourses(courseId?: number): Promise<void> {
+        const data = await CoreCoursesHelper.getCoursesForPopover(courseId);
+
+        this.courses = data.courses;
+    }
+
+    /**
+     * Load whether user can create events.
+     *
+     * @param courseId Current selected course id (if any).
+     * @return Promise resolved when done.
+     */
+    async loadCanCreate(courseId?: number): Promise<void> {
+        this.canCreate = await AddonCalendarHelper.canEditEvents(courseId);
+    }
+
+    /**
+     * Load categories to be able to filter events.
+     *
+     * @return Promise resolved when done.
+     */
+    async loadCategories(): Promise<void> {
+        if (this.categories) {
+            // Already retrieved, stop.
+            return;
+        }
+
+        try {
+            const categories = await CoreCourses.getCategories(0, true);
+
+            // Index categories by ID.
+            this.categories = CoreUtils.arrayToObject(categories, 'id');
+        } catch {
+            // Ignore errors.
+        }
+    }
+
+    /**
+     * Load events created or edited in offline.
+     *
+     * @return Promise resolved when done.
+     */
+    async loadOfflineEvents(): Promise<void> {
+        // Get offline events.
+        const events = await AddonCalendarOffline.getAllEditedEvents();
+
+        // Classify them by month & day.
+        this.offlineEvents = AddonCalendarHelper.classifyIntoMonths(events);
+
+        // Get the IDs of events edited in offline.
+        this.offlineEditedEventsIds = events.filter((event) => event.id > 0).map((event) => event.id);
+    }
+
+    /**
+     * Load events deleted in offline.
+     *
+     * @return Promise resolved when done.
+     */
+    async loadOfflineDeletedEvents(): Promise<void> {
+        const deletedEventsIds = await AddonCalendarOffline.getAllDeletedEventsIds();
+
+        this.deletedEvents = new Set(deletedEventsIds);
+    }
+
+    /**
+     * Load time format.
+     *
+     * @return Promise resolved when done.
+     */
+    async loadTimeFormat(): Promise<void> {
+        this.timeFormat = await AddonCalendar.getCalendarTimeFormat();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getItemId(item: DayBasicData): string | number {
+        return AddonCalendarHelper.getDayId(item.moment);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getPreviousItem(item: DayBasicData): DayBasicData | null {
+        return {
+            moment: item.moment.clone().subtract(1, 'day'),
+        };
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getNextItem(item: DayBasicData): DayBasicData | null {
+        return {
+            moment: item.moment.clone().add(1, 'day'),
+        };
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async loadItemData(day: DayBasicData, preload = false): Promise<PreloadedDay | null> {
+        const preloadedDay: PreloadedDay = {
+            ...day,
+            hasOffline: false,
+            events: [],
+            onlineEvents: [],
+            filteredEvents: [],
+            isCurrentDay: day.moment.isSame(moment(), 'day'),
+            isPastDay: day.moment.isBefore(moment(), 'day'),
+        };
+
+        if (preload) {
+            return preloadedDay;
+        }
+
+        let result: AddonCalendarCalendarDay;
+
+        try {
+            // Don't pass courseId and categoryId, we'll filter them locally.
+            result = await AddonCalendar.getDayEvents(day.moment.year(), day.moment.month() + 1, day.moment.date());
+            preloadedDay.onlineEvents = await Promise.all(
+                result.events.map((event) => AddonCalendarHelper.formatEventData(event)),
+            );
+        } catch (error) {
+            // Allow navigating to non-cached days in offline (behave as if using emergency cache).
+            if (CoreApp.isOnline()) {
+                throw error;
+            }
+        }
+
+        // Merge the online events with offline data.
+        preloadedDay.events = this.mergeEvents(preloadedDay);
+
+        // Filter events by course.
+        this.filterEvents(preloadedDay, this.dayPage.filter);
+
+        // Re-calculate the formatted time so it uses the device date.
+        const dayTime = day.moment.unix() * 1000;
+        const currentTime = CoreTimeUtils.timestamp();
+
+        const promises = preloadedDay.events.map(async (event) => {
+            event.ispast = preloadedDay.isPastDay || (preloadedDay.isCurrentDay && this.isEventPast(event, currentTime));
+            event.formattedtime = await AddonCalendar.formatEventTime(event, this.dayPage.timeFormat, true, dayTime);
+        });
+
+        await Promise.all(promises);
+
+        return preloadedDay;
+    }
+
+    /**
+     * Returns if the event is in the past or not.
+     *
+     * @param event Event object.
+     * @param currentTime Current time.
+     * @return True if it's in the past.
+     */
+    isEventPast(event: AddonCalendarEventToDisplay, currentTime: number): boolean {
+        return (event.timestart + event.timeduration) < currentTime;
+    }
+
+    /**
+     * Merge online events with the offline events of that period.
+     *
+     * @param day Day with the events.
+     * @return Merged events.
+     */
+    mergeEvents(day: PreloadedDay): AddonCalendarEventToDisplay[] {
+        day.hasOffline = false;
+
+        if (!Object.keys(this.offlineEvents).length && !this.deletedEvents?.size) {
+            // No offline events, nothing to merge.
+            return day.onlineEvents || [];
+        }
+
+        const monthOfflineEvents = this.offlineEvents[AddonCalendarHelper.getMonthId(day.moment)];
+        const dayOfflineEvents = monthOfflineEvents && monthOfflineEvents[day.moment.date()];
+        let result = day.onlineEvents || [];
+
+        if (this.deletedEvents?.size) {
+            // Mark as deleted the events that were deleted in offline.
+            result.forEach((event) => {
+                event.deleted = this.deletedEvents?.has(event.id);
+
+                if (event.deleted) {
+                    day.hasOffline = true;
+                }
+            });
+        }
+
+        if (this.offlineEditedEventsIds.length) {
+            // Remove the online events that were modified in offline.
+            result = result.filter((event) => this.offlineEditedEventsIds.indexOf(event.id) == -1);
+
+            if (result.length != day.onlineEvents?.length) {
+                day.hasOffline = true;
+            }
+        }
+
+        if (dayOfflineEvents && dayOfflineEvents.length) {
+            // Add the offline events (either new or edited).
+            day.hasOffline = true;
+            result = AddonCalendarHelper.sortEvents(result.concat(dayOfflineEvents));
+        }
+
+        return result;
+    }
+
+    /**
+     * Invalidate content.
+     *
+     * @param selectedDay The current selected day.
+     * @param invalidateDayEvents Whether to invalidate selected day events.
+     * @return Promise resolved when done.
+     */
+    async invalidateContent(selectedDay: PreloadedDay | null, invalidateDayEvents?: boolean): Promise<void> {
+        const promises: Promise<void>[] = [];
+
+        if (invalidateDayEvents && selectedDay) {
+            promises.push(AddonCalendar.invalidateDayEvents(
+                selectedDay.moment.year(),
+                selectedDay.moment.month() + 1,
+                selectedDay.moment.date(),
+            ));
+        }
+        promises.push(AddonCalendar.invalidateAllowedEventTypes());
+        promises.push(CoreCourses.invalidateCategories(0, true));
+        promises.push(AddonCalendar.invalidateTimeFormat());
+
+        this.categories = undefined; // Get categories again.
+
+        if (selectedDay) {
+            selectedDay.dirty = true;
+        }
+
+        await Promise.all(promises);
+    }
+
+    /**
+     * Find an event and mark it as deleted.
+     *
+     * @param eventId Event ID.
+     * @param deleted Whether to mark it as deleted or not.
+     */
+    markAsDeleted(eventId: number, deleted: boolean): void {
+        // Mark the event as deleted or not.
+        this.getItems()?.some(day => {
+            const event = day.onlineEvents?.find((event) => event.id == eventId);
+
+            if (!event) {
+                return false;
+            }
+
+            event.deleted = deleted;
+
+            if (deleted) {
+                day.hasOffline = true;
+            } else {
+                // Re-calculate "hasOffline".
+                day.hasOffline = day.events?.length != day.onlineEvents?.length ||
+                    day.events?.some((event) => event.deleted || event.offline);
+            }
+
+            return true;
+        });
+
+        // Add it or remove it from the list of deleted events.
+        if (deleted) {
+            this.deletedEvents?.add(eventId);
+        } else {
+            this.deletedEvents?.delete(eventId);
+        }
     }
 
 }

@@ -18,7 +18,6 @@ import { Component, Input, ViewChild, ElementRef, OnInit, OnDestroy, Optional } 
 import { CoreTabsComponent } from '@components/tabs/tabs';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { CoreCourse } from '@features/course/services/course';
 import { CoreUser } from '@features/user/services/user';
 import { IonContent, IonInput } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
@@ -26,7 +25,6 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreForms } from '@singletons/form';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { AddonModLessonRetakeFinishedInSyncDBRecord } from '../../services/database/lesson';
@@ -48,6 +46,7 @@ import {
     AddonModLessonSyncResult,
 } from '../../services/lesson-sync';
 import { AddonModLessonModuleHandlerService } from '../../services/handlers/module';
+import { CoreTime } from '@singletons/time';
 
 /**
  * Component that displays a lesson entry page.
@@ -73,7 +72,6 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     canManage?: boolean; // Whether the user can manage the lesson.
     canViewReports?: boolean; // Whether the user can view the lesson reports.
     showSpinner?: boolean; // Whether to display a spinner.
-    hasOffline?: boolean; // Whether there's offline data.
     retakeToReview?: AddonModLessonRetakeFinishedInSyncDBRecord; // A retake to review.
     preventReasons: AddonModLessonPreventAccessReason[] = []; // List of reasons that prevent the lesson from being seen.
     leftDuringTimed?: boolean; // Whether the user has started and left a retake.
@@ -109,12 +107,6 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         this.selectedTab = this.action == 'report' ? 1 : 0;
 
         await this.loadContent(false, true);
-
-        if (!this.lesson || this.preventReasons.length) {
-            return;
-        }
-
-        this.logView();
     }
 
     /**
@@ -136,85 +128,76 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     }
 
     /**
-     * Get the lesson data.
-     *
-     * @param refresh If it's refreshing content.
-     * @param sync If it should try to sync.
-     * @param showErrors If show errors to the user of hide them.
-     * @return Promise resolved when done.
+     * @inheritdoc
      */
-    protected async fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<void> {
-        try {
-            let lessonReady = true;
-            this.askPassword = false;
+    protected async fetchContent(refresh?: boolean, sync = false, showErrors = false): Promise<void> {
+        let lessonReady = true;
+        this.askPassword = false;
 
-            this.lesson = await AddonModLesson.getLesson(this.courseId, this.module.id);
+        this.lesson = await AddonModLesson.getLesson(this.courseId, this.module.id);
 
-            this.dataRetrieved.emit(this.lesson);
-            this.description = this.lesson.intro; // Show description only if intro is present.
+        this.dataRetrieved.emit(this.lesson);
+        this.description = this.lesson.intro; // Show description only if intro is present.
 
-            if (sync) {
-                // Try to synchronize the lesson.
-                await this.syncActivity(showErrors);
-            }
+        if (sync) {
+            // Try to synchronize the lesson.
+            await this.syncActivity(showErrors);
+        }
 
-            this.accessInfo = await AddonModLesson.getAccessInformation(this.lesson.id, { cmId: this.module.id });
-            this.canManage = this.accessInfo.canmanage;
-            this.canViewReports = this.accessInfo.canviewreports;
-            this.preventReasons = [];
-            const promises: Promise<void>[] = [];
+        this.accessInfo = await AddonModLesson.getAccessInformation(this.lesson.id, { cmId: this.module.id });
+        this.canManage = this.accessInfo.canmanage;
+        this.canViewReports = this.accessInfo.canviewreports;
+        this.preventReasons = [];
+        const promises: Promise<void>[] = [];
 
-            if (AddonModLesson.isLessonOffline(this.lesson)) {
-                // Handle status.
-                this.setStatusListener();
+        if (AddonModLesson.isLessonOffline(this.lesson)) {
+            // Handle status.
+            this.setStatusListener();
 
-                promises.push(this.loadOfflineData());
-            }
+            promises.push(this.loadOfflineData());
+        }
 
-            if (this.accessInfo.preventaccessreasons.length) {
-                let preventReason = AddonModLesson.getPreventAccessReason(this.accessInfo, false);
-                const askPassword = preventReason?.reason == 'passwordprotectedlesson';
+        if (this.accessInfo.preventaccessreasons.length) {
+            let preventReason = AddonModLesson.getPreventAccessReason(this.accessInfo, false);
+            const askPassword = preventReason?.reason == 'passwordprotectedlesson';
 
-                if (askPassword) {
-                    try {
-                        // The lesson requires a password. Check if there is one in memory or DB.
-                        const password = this.password ?
-                            this.password :
-                            await AddonModLesson.getStoredPassword(this.lesson.id);
+            if (askPassword) {
+                try {
+                    // The lesson requires a password. Check if there is one in memory or DB.
+                    const password = this.password ?
+                        this.password :
+                        await AddonModLesson.getStoredPassword(this.lesson.id);
 
-                        await this.validatePassword(password);
+                    await this.validatePassword(password);
 
-                        // Now that we have the password, get the access reason again ignoring the password.
-                        preventReason = AddonModLesson.getPreventAccessReason(this.accessInfo, true);
-                        if (preventReason) {
-                            this.preventReasons = [preventReason];
-                        }
-                    } catch {
-                        // No password or the validation failed. Show password form.
-                        this.askPassword = true;
-                        this.preventReasons = [preventReason!];
-                        lessonReady = false;
+                    // Now that we have the password, get the access reason again ignoring the password.
+                    preventReason = AddonModLesson.getPreventAccessReason(this.accessInfo, true);
+                    if (preventReason) {
+                        this.preventReasons = [preventReason];
                     }
-                } else {
-                    // Lesson cannot be started.
+                } catch {
+                    // No password or the validation failed. Show password form.
+                    this.askPassword = true;
                     this.preventReasons = [preventReason!];
                     lessonReady = false;
                 }
+            } else {
+                // Lesson cannot be started.
+                this.preventReasons = [preventReason!];
+                lessonReady = false;
             }
+        }
 
-            if (this.selectedTab == 1 && this.canViewReports) {
-                // Only fetch the report data if the tab is selected.
-                promises.push(this.fetchReportData());
-            }
+        if (this.selectedTab == 1 && this.canViewReports) {
+            // Only fetch the report data if the tab is selected.
+            promises.push(this.fetchReportData());
+        }
 
-            await Promise.all(promises);
+        await Promise.all(promises);
 
-            if (lessonReady) {
-                // Lesson can be started, don't ask the password and don't show prevent messages.
-                this.lessonReady();
-            }
-        } finally {
-            this.fillContextMenu(refresh);
+        if (lessonReady) {
+            // Lesson can be started, don't ask the password and don't show prevent messages.
+            this.lessonReady();
         }
     }
 
@@ -295,7 +278,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     protected hasSyncSucceed(result: AddonModLessonSyncResult): boolean {
         if (result.updated || this.dataSent) {
             // Check completion status if something was sent.
-            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
+            this.checkCompletion();
         }
 
         this.dataSent = false;
@@ -383,20 +366,14 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     }
 
     /**
-     * Log viewing the lesson.
-     *
-     * @return Promise resolved when done.
+     * @inheritdoc
      */
-    protected async logView(): Promise<void> {
-        if (!this.lesson) {
+    protected async logActivity(): Promise<void> {
+        if (!this.lesson || this.preventReasons.length) {
             return;
         }
 
-        await CoreUtils.ignoreErrors(
-            AddonModLesson.logViewLesson(this.lesson.id, this.password, this.lesson.name),
-        );
-
-        CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
+        await AddonModLesson.logViewLesson(this.lesson.id, this.password, this.lesson.name);
     }
 
     /**
@@ -528,15 +505,15 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         // Format times and grades.
         if (formattedData.avetime != null && formattedData.numofattempts) {
             formattedData.avetime = Math.floor(formattedData.avetime / formattedData.numofattempts);
-            this.avetimeReadable = CoreTimeUtils.formatTime(formattedData.avetime);
+            this.avetimeReadable = CoreTime.formatTime(formattedData.avetime);
         }
 
         if (formattedData.hightime != null) {
-            this.hightimeReadable = CoreTimeUtils.formatTime(formattedData.hightime);
+            this.hightimeReadable = CoreTime.formatTime(formattedData.hightime);
         }
 
         if (formattedData.lowtime != null) {
-            this.lowtimeReadable = CoreTimeUtils.formatTime(formattedData.lowtime);
+            this.lowtimeReadable = CoreTime.formatTime(formattedData.lowtime);
         }
 
         if (formattedData.lessonscored) {
@@ -567,13 +544,9 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     }
 
     /**
-     * Displays some data based on the current status.
-     *
-     * @param status The current status.
-     * @param previousStatus The previous status. If not defined, there is no previous status.
+     * @inheritdoc
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    protected showStatus(status: string, previousStatus?: string): void {
+    protected showStatus(status: string): void {
         this.showSpinner = status == CoreConstants.DOWNLOADING;
     }
 
@@ -632,9 +605,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             return;
         }
 
-        this.loaded = false;
-        this.refreshIcon = CoreConstants.ICON_LOADING;
-        this.syncIcon = CoreConstants.ICON_LOADING;
+        this.showLoading = true;
 
         try {
             await this.validatePassword(<string> password);
@@ -647,13 +618,11 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             this.preventReasons = preventReason ? [preventReason] : [];
 
             // Log view now that we have the password.
-            this.logView();
+            this.logActivity();
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
         } finally {
-            this.loaded = true;
-            this.refreshIcon = CoreConstants.ICON_REFRESH;
-            this.syncIcon = CoreConstants.ICON_SYNC;
+            this.showLoading = false;
 
             CoreForms.triggerFormSubmittedEvent(this.formElement, true, this.siteId);
         }

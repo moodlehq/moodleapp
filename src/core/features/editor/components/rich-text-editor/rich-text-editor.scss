@@ -3,20 +3,20 @@
     --placeholder-color: var(--ion-placeholder-color);
     --toobar-background: var(--white);
     --button-color: var(--ion-text-color);
-    --button-active-color: var(--gray);
+    --button-active-color: var(--gray-300);
     --background: var(--ion-item-background);
 }
 
 :host-context(body.dark) {
-    --background: var(--gray-darker);
+    --background: var(--medium);
     --color: var(--white);
-    --button-color: var(--gray-light);
-    --button-active-color: var(--gray-dark);
-    --toobar-background: var(--black);
+    --button-color: var(--gray-200);
+    --button-active-color: var(--gray-500);
+    --toobar-background: var(--gray-900);
 }
 
 :host {
-    height: 40vh;
+    height: var(--core-rte-height, auto);
     overflow: hidden;
     min-height: 200px; /* Just in case vh is not supported */
     min-height: 40vh;
@@ -37,13 +37,13 @@
 
         .core-rte-info-message {
             padding: 5px;
-            border-top: 1px solid var(--ion-color-info);
+            border-top: 1px solid var(--info);
             background: var(--background);
             flex-shrink: 1;
             font-size: 1.1rem;
 
             .icon {
-                color: var(--ion-color-info);
+                color: var(--info);
             }
         }
     }
@@ -107,7 +107,7 @@
         flex-shrink: 0;
         background-color: var(--toobar-background);
         padding-top: 5px;
-        border-top: 1px solid var(--gray);
+        border-top: 1px solid var(--stroke);
 
         ion-slides {
             width: 240px;
@@ -126,7 +126,7 @@
             margin: 0 auto;
             font-size: 18px;
             background-color: var(--toobar-background);
-            border-radius: 4px;
+            border-radius: var(--small-radius);
             @include core-transition(background-color, 200ms);
             color: var(--button-color);
             cursor: pointer;

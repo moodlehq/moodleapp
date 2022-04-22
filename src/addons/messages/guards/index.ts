@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CanActivate, UrlTree } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, UrlTree } from '@angular/router';
 import { Router } from '@singletons';
 import { AddonMessagesMainMenuHandlerService } from '../services/handlers/mainmenu';
 import { AddonMessages } from '../services/messages';
@@ -27,18 +27,22 @@ export class AddonMessagesIndexGuard implements CanActivate {
     /**
      * @inheritdoc
      */
-    canActivate(): UrlTree {
-        return this.guard();
+    canActivate(route: ActivatedRouteSnapshot): UrlTree {
+        return this.guard(route);
     }
 
     /**
      * Check if there is a pending redirect and trigger it.
      */
-    private guard(): UrlTree {
+    private guard(route: ActivatedRouteSnapshot): UrlTree {
         const enabled = AddonMessages.isGroupMessagingEnabled();
         const path = `/main/${AddonMessagesMainMenuHandlerService.PAGE_NAME}/` + ( enabled ? 'group-conversations' : 'index');
 
-        return Router.parseUrl(path);
+        const newRoute = Router.parseUrl(path);
+
+        newRoute.queryParams = route.queryParams;
+
+        return newRoute;
     }
 
 }

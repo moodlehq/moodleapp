@@ -105,7 +105,7 @@ export class CoreSyncBaseProvider<T = void> {
         try {
             return await promise;
         } finally {
-            delete this.syncPromises[siteId!][uniqueId];
+            delete this.syncPromises[siteId][uniqueId];
         }
     }
 
@@ -133,15 +133,11 @@ export class CoreSyncBaseProvider<T = void> {
      */
     getOngoingSync(id: string | number, siteId?: string): Promise<T> | undefined {
         siteId = siteId || CoreSites.getCurrentSiteId();
-
-        if (!this.isSyncing(id, siteId)) {
-            return;
-        }
-
-        // There's already a sync ongoing for this id, return the promise.
         const uniqueId = this.getUniqueSyncId(id);
 
-        return this.syncPromises[siteId][uniqueId];
+        if (this.syncPromises[siteId] && this.syncPromises[siteId][uniqueId] !== undefined) {
+            return this.syncPromises[siteId][uniqueId];
+        }
     }
 
     /**
@@ -223,11 +219,7 @@ export class CoreSyncBaseProvider<T = void> {
      * @return Whether it's synchronizing.
      */
     isSyncing(id: string | number, siteId?: string): boolean {
-        siteId = siteId || CoreSites.getCurrentSiteId();
-
-        const uniqueId = this.getUniqueSyncId(id);
-
-        return !!(this.syncPromises[siteId] && this.syncPromises[siteId][uniqueId]);
+        return !!this.getOngoingSync(id, siteId);
     }
 
     /**
@@ -252,7 +244,7 @@ export class CoreSyncBaseProvider<T = void> {
      * @return Promise resolved when the time is set.
      */
     async setSyncTime(id: string | number, siteId?: string, time?: number): Promise<void> {
-        time = typeof time != 'undefined' ? time : Date.now();
+        time = time !== undefined ? time : Date.now();
 
         await CoreSync.insertOrUpdateSyncRecord(this.component, id, { time: time }, siteId);
     }
@@ -331,10 +323,10 @@ export class CoreSyncBaseProvider<T = void> {
      */
     protected get componentTranslate(): string {
         if (!this.componentTranslateInternal) {
-            this.componentTranslateInternal = Translate.instant(this.componentTranslatableString);
+            this.componentTranslateInternal = <string> Translate.instant(this.componentTranslatableString);
         }
 
-        return this.componentTranslateInternal!;
+        return this.componentTranslateInternal;
     }
 
 }

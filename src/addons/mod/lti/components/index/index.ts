@@ -31,6 +31,7 @@ export class AddonModLtiIndexComponent extends CoreCourseModuleMainActivityCompo
 
     component = AddonModLtiProvider.COMPONENT;
     moduleName = 'lti';
+    displayDescription = false;
 
     lti?: AddonModLtiLti; // The LTI object.
 
@@ -55,15 +56,13 @@ export class AddonModLtiIndexComponent extends CoreCourseModuleMainActivityCompo
     /**
      * @inheritdoc
      */
-    protected async fetchContent(refresh: boolean = false): Promise<void> {
-        try {
-            this.lti = await AddonModLti.getLti(this.courseId, this.module.id);
+    protected async fetchContent(): Promise<void> {
+        this.lti = await AddonModLti.getLti(this.courseId, this.module.id);
 
-            this.description = this.lti.intro;
-            this.dataRetrieved.emit(this.lti);
-        } finally {
-            this.fillContextMenu(refresh);
-        }
+        this.description = this.lti.intro;
+
+        this.displayDescription = this.lti && !!this.lti.showdescriptionlaunch;
+        this.dataRetrieved.emit(this.lti);
     }
 
     /**

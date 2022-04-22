@@ -17,7 +17,9 @@
         <ion-card *ngIf="assessmentStrategyLoaded && overallFeedkback &&
             (edit || data.assessment?.feedbackauthor || data.assessment?.feedbackattachmentfiles?.length) ">
             <ion-item class="ion-text-wrap">
-                <ion-label><h2>{{ 'addon.mod_workshop.overallfeedback' | translate }}</h2></ion-label>
+                <ion-label>
+                    <h2>{{ 'addon.mod_workshop.overallfeedback' | translate }}</h2>
+                </ion-label>
             </ion-item>
             <ion-item position="stacked" *ngIf="edit">
                 <ion-label position="stacked">
@@ -25,19 +27,17 @@
                         {{ 'addon.mod_workshop.feedbackauthor' | translate }}
                     </span>
                 </ion-label>
-                <core-rich-text-editor [control]="feedbackControl" [component]="component"
-                    [componentId]="workshop.coursemodule" [autoSave]="true" contextLevel="module"
-                    [contextInstanceId]="workshop.coursemodule" elementId="feedbackauthor_editor"
+                <core-rich-text-editor [control]="feedbackControl" [component]="component" [componentId]="workshop.coursemodule"
+                    [autoSave]="true" contextLevel="module" [contextInstanceId]="workshop.coursemodule" elementId="feedbackauthor_editor"
                     [draftExtraParams]="{asid: assessmentId}" (contentChanged)="onFeedbackChange($event)">
                 </core-rich-text-editor>
-                <core-input-errors
-                    *ngIf="overallFeedkbackRequired && data.fieldErrors && data.fieldErrors['feedbackauthor']"
+                <core-input-errors *ngIf="overallFeedkbackRequired && data.fieldErrors && data.fieldErrors['feedbackauthor']"
                     [errorText]="data.fieldErrors['feedbackauthor']">
                 </core-input-errors>
             </ion-item>
             <core-attachments *ngIf="edit && workshop.overallfeedbackfiles" [files]="data.assessment?.feedbackattachmentfiles"
-                [maxSize]="workshop.overallfeedbackmaxbytes" [maxSubmissions]="workshop.overallfeedbackfiles"
-                [component]="component" [componentId]="componentId" [allowOffline]="true">
+                [maxSize]="workshop.overallfeedbackmaxbytes" [maxSubmissions]="workshop.overallfeedbackfiles" [component]="component"
+                [componentId]="componentId" [allowOffline]="true" [courseId]="workshop.course">
             </core-attachments>
             <ion-item *ngIf="edit && access && access.canallocate">
                 <ion-label position="stacked">
@@ -57,11 +57,10 @@
                     </core-format-text>
                 </ion-label>
             </ion-item>
-            <ion-item *ngIf="!edit && workshop.overallfeedbackfiles && data.assessment?.feedbackattachmentfiles?.length"
-                lines="none">
+            <ion-item *ngIf="!edit && workshop.overallfeedbackfiles && data.assessment?.feedbackattachmentfiles?.length">
                 <ion-label>
-                    <core-files [files]="data.assessment?.feedbackattachmentfiles" [component]="component"
-                        [componentId]="componentId"></core-files>
+                    <core-files [files]="data.assessment?.feedbackattachmentfiles" [component]="component" [componentId]="componentId">
+                    </core-files>
                 </ion-label>
             </ion-item>
         </ion-card>

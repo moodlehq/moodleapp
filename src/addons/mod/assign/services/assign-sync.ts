@@ -37,7 +37,7 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreApp } from '@services/app';
 import { CoreNetworkError } from '@classes/errors/network-error';
-import { CoreGradesFormattedItem, CoreGradesFormattedRow, CoreGradesHelper } from '@features/grades/services/grades-helper';
+import { CoreGradesFormattedItem, CoreGradesHelper } from '@features/grades/services/grades-helper';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
 import { AddonModAssignFeedbackDelegate } from './feedback-delegate';
 
@@ -163,9 +163,10 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
     async syncAssign(assignId: number, siteId?: string): Promise<AddonModAssignSyncResult> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        if (this.isSyncing(assignId, siteId)) {
+        const currentSyncPromise = this.getOngoingSync(assignId, siteId);
+        if (currentSyncPromise) {
             // There's already a sync ongoing for this assign, return the promise.
-            return this.getOngoingSync(assignId, siteId)!;
+            return currentSyncPromise;
         }
 
         // Verify that assign isn't blocked.
@@ -457,21 +458,20 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
         }
 
         // If grade has been modified from gradebook, do not use offline.
-        const grades: CoreGradesFormattedItem[] | CoreGradesFormattedRow[] =
-            await CoreGradesHelper.getGradeModuleItems(courseId, assign.cmid, userId, undefined, siteId, true);
+        const grades = await CoreGradesHelper.getGradeModuleItems(courseId, assign.cmid, userId, undefined, siteId, true);
 
         const gradeInfo = await CoreCourse.getModuleBasicGradeInfo(assign.cmid, siteId);
 
         // Override offline grade and outcomes based on the gradebook data.
-        grades.forEach((grade: CoreGradesFormattedItem | CoreGradesFormattedRow) => {
-            if ('gradedategraded' in grade && (grade.gradedategraded || 0) >= offlineData.timemodified) {
+        grades.forEach((grade: CoreGradesFormattedItem) => {
+            if ((grade.gradedategraded || 0) >= offlineData.timemodified) {
                 if (!grade.outcomeid && !grade.scaleid) {
                     if (gradeInfo && gradeInfo.scale) {
                         offlineData.grade = this.getSelectedScaleId(gradeInfo.scale, grade.grade || '');
                     } else {
                         offlineData.grade = parseFloat(grade.grade || '');
                     }
-                } else if (gradeInfo && grade.outcomeid && AddonModAssign.isOutcomesEditEnabled() && gradeInfo.outcomes) {
+                } else if (gradeInfo && grade.outcomeid && gradeInfo.outcomes) {
                     gradeInfo.outcomes.forEach((outcome, index) => {
                         if (outcome.scale && grade.itemnumber == index) {
                             offlineData.outcomes[grade.itemnumber] = this.getSelectedScaleId(

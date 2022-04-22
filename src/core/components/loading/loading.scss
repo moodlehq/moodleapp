@@ -1,84 +1,96 @@
 @import "~theme/globals";
 
-:host {
-    --loading-background: var(--ion-background-color);
-    --loading-background-inline: var(--ion-background-color-rgb);
-    --loading-spinner: var(--ion-color-primary);
-    --loading-text-color: var(--ion-text-color);
-    --loading-inline-margin: 0;
-    --loading-inline-min-height: 28px;
-    --internal-loading-inline-min-height: var(--loading-inline-min-height);
-
-    position: static;
-    color: var(--loading-text-color);
-    @include core-transition(all, 200ms);
-
-    &.margin {
-        --loading-inline-margin: 10px;
-        --internal-loading-inline-min-height: calc(var(--loading-inline-min-height) + var(--loading-inline-margin) + var(--loading-inline-margin));
-    }
-
-    &.core-loading-loaded {
-        --internal-loading-inline-min-height: 0;
-    }
-
-    ion-spinner {
-        --color: var(--loading-spinner);
-        color: var(--color);
+@mixin inline() {
+    &:not(.core-loading-loaded) {
+        min-height: var(--internal-loading-inline-min-height);
+        width: 100%;
+        position: relative;
     }
 
     .core-loading-container {
-        position: absolute;
-        @include position(0, 0, 0, 0);
-        height: 100%;
-        width: 100%;
-        z-index: 3;
-        margin: 0;
-        padding: 0;
-        background-color: var(--loading-background);
-        @include core-transition(all, 200ms);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-    }
-
-    .core-loading-content {
-        @include core-transition(opacity, 200ms);
-    }
-
-    .core-loading-message {
-        @include margin(10px, 0, 0, 0);
-    }
-
-    &.core-loading-fullheight .core-loading-content {
-        height: 100%;
-    }
-
-    &.core-loading-loaded {
-        position: unset;
-        display: contents;
-    }
-
-    &.core-loading-inline {
-        --loading-background: rgba(var(--loading-background-inline), 0.5);
-        position: relative;
-        display: block;
-        min-height: var(--internal-loading-inline-min-height);
+        --loading-background: rgba(var(--loading-background-inline), 0.4);
+        flex-direction: row;
+        height: auto;
 
         .core-loading-message {
             @include margin(0, 0, 0, 10px);
         }
-
-        .core-loading-container {
-            flex-direction: row;
-        }
     }
 }
 
-:host-context(ion-item) {
-    &.core-loading-inline {
+:host {
+    --loading-background: var(--ion-background-color);
+    --loading-background-inline: var(--ion-background-color-rgb);
+    --loading-spinner: var(--core-loading-spinner);
+    --loading-text-color: var(--ion-text-color);
+    --loading-inline-margin: 0px;
+    --loading-inline-min-height: 28px;
+    --internal-loading-inline-min-height: var(--loading-inline-min-height);
+    --loading-display: flex;
+    --loading-display-message: block;
+    --contents-display: block;
+
+    @include core-transition(all, 200ms);
+    pointer-events: none;
+    display: var(--contents-display);
+
+    &.core-loading-loaded {
         position: static;
-        display: block;
+        pointer-events: auto;
+        --contents-display: contents;
+        --internal-loading-inline-min-height: 0px;
+
+        &.has-spacer {
+            --contents-display: flex;
+            min-height: 100%;
+            flex-direction: column;
+        }
     }
+
+    .core-loading-container {
+        pointer-events: none;
+        position: absolute;
+        @include position(0, 0, 0, 0);
+        height: 100%;
+        width: 100%;
+        z-index: 100;
+        margin: 0;
+        padding: 0;
+        color: var(--loading-text-color);
+        background-color: var(--loading-background);
+        @include core-transition(all, 200ms);
+        display: var(--loading-display);
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+
+        .core-loading-message {
+            @include margin(10px, 0, 0, 0);
+            display: var(--loading-display-message);
+        }
+
+        ion-spinner {
+            --color: var(--loading-spinner);
+            color: var(--color);
+        }
+    }
+
+    &.core-loading-inline {
+       @include inline();
+    }
+}
+
+// Force inline on some contexts.
+:host-context(ion-item),
+:host-context(core-block) {
+    // Implicit Inline.
+    @include inline();
+}
+
+:host-context(.limited-width > ):not([slot]) {
+    &.core-loading-loaded {
+        --contents-display: flex;
+        flex-direction: column;
+    }
+    min-height: 100%;
 }

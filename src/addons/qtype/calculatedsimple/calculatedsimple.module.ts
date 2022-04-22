@@ -24,8 +24,7 @@ import { AddonQtypeCalculatedSimpleHandler } from './services/handlers/calculate
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreQuestionDelegate.registerHandler(AddonQtypeCalculatedSimpleHandler.instance);
             },
         },

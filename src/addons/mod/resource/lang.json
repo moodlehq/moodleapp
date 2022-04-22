@@ -3,5 +3,7 @@
     "modifieddate": "Modified {{$a}}",
     "modulenameplural": "Files",
     "openthefile": "Open",
+    "resourcestatusoutdated": "This file has changed since you last opened it.",
+    "resourcestatusoutdatedconfirm": "There is a newer version of this file. To see it, please connect your device to the internet.",
     "uploadeddate": "Uploaded {{$a}}"
 }

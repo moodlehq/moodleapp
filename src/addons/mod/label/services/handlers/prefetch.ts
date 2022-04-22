@@ -19,7 +19,7 @@ import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
-import { AddonModLabel, AddonModLabelLabel, AddonModLabelProvider } from '../label';
+import { AddonModLabel, AddonModLabelProvider } from '../label';
 
 /**
  * Handler to prefetch labels.
@@ -31,19 +31,14 @@ export class AddonModLabelPrefetchHandlerService extends CoreCourseResourcePrefe
     modName = 'label';
     component = AddonModLabelProvider.COMPONENT;
     updatesNames = /^.*files$/;
-    skipListStatus = true;
 
     /**
      * @inheritdoc
      */
     async getIntroFiles(module: CoreCourseAnyModuleData, courseId: number, ignoreCache?: boolean): Promise<CoreWSFile[]> {
-        let label: AddonModLabelLabel | undefined;
-
-        if (AddonModLabel.isGetLabelAvailableForSite()) {
-            label = await AddonModLabel.getLabel(courseId, module.id, {
-                readingStrategy: ignoreCache ? CoreSitesReadingStrategy.ONLY_NETWORK : undefined,
-            });
-        }
+        const label = await AddonModLabel.getLabel(courseId, module.id, {
+            readingStrategy: ignoreCache ? CoreSitesReadingStrategy.ONLY_NETWORK : undefined,
+        });
 
         return this.getIntroFilesFromInstance(module, label);
     }
@@ -65,6 +60,14 @@ export class AddonModLabelPrefetchHandlerService extends CoreCourseResourcePrefe
         promises.push(CoreCourse.invalidateModule(module.id));
 
         await CoreUtils.allPromises(promises);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async loadContents(module: CoreCourseAnyModuleData): Promise<void> {
+        // Labels don't have contents.
+        module.contents = [];
     }
 
 }

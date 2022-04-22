@@ -17,15 +17,12 @@ import { IonContent } from '@ionic/angular';
 
 import { CoreCourseModuleMainResourceComponent } from './main-resource-component';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { Network, NgZone } from '@singletons';
-import { Subscription } from 'rxjs';
-import { CoreApp } from '@services/app';
 import { CoreCourse } from '../services/course';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreCourseContentsPage } from '../pages/contents/contents';
-import { CoreConstants } from '@/core/constants';
+import { CoreSites } from '@services/sites';
 
 /**
  * Template class to easily create CoreCourseModuleMainComponent of activities.
@@ -39,13 +36,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
 
     moduleName?: string; // Raw module name to be translated. It will be translated on init.
 
-    // Data for context menu.
-    syncIcon?: string; // Sync icon.
-    hasOffline?: boolean; // If it has offline data to be synced.
-    isOnline?: boolean; // If the app is online or not.
-
     protected syncObserver?: CoreEventObserver; // It will observe the sync auto event.
-    protected onlineSubscription: Subscription; // It will observe the status of the network connection.
     protected syncEventName?: string; // Auto sync event name.
 
     constructor(
@@ -54,14 +45,6 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
         courseContentsPage?: CoreCourseContentsPage,
     ) {
         super(loggerName, courseContentsPage);
-
-        // Refresh online status when changes.
-        this.onlineSubscription = Network.onChange().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            NgZone.run(() => {
-                this.isOnline = CoreApp.isOnline();
-            });
-        });
     }
 
     /**
@@ -71,7 +54,6 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
         await super.ngOnInit();
 
         this.hasOffline = false;
-        this.syncIcon = CoreConstants.ICON_LOADING;
         this.moduleName = CoreCourse.translateModuleName(this.moduleName || '');
 
         if (this.syncEventName) {
@@ -118,20 +100,12 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
             return;
         }
 
-        this.refreshIcon = CoreConstants.ICON_LOADING;
-        this.syncIcon = CoreConstants.ICON_LOADING;
+        await CoreUtils.ignoreErrors(Promise.all([
+            this.invalidateContent(),
+            this.showCompletion ? CoreCourse.invalidateModule(this.module.id) : undefined,
+        ]));
 
-        try {
-            await CoreUtils.ignoreErrors(Promise.all([
-                this.invalidateContent(),
-                this.showCompletion ? CoreCourse.invalidateModule(this.module.id) : undefined,
-            ]));
-
-            await this.loadContent(true, sync, showErrors);
-        } finally {
-            this.refreshIcon = CoreConstants.ICON_REFRESH;
-            this.syncIcon = CoreConstants.ICON_SYNC;
-        }
+        await this.loadContent(true, sync, showErrors);
     }
 
     /**
@@ -142,17 +116,10 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      * @return Resolved when done.
      */
     protected async showLoadingAndFetch(sync: boolean = false, showErrors: boolean = false): Promise<void> {
-        this.refreshIcon = CoreConstants.ICON_LOADING;
-        this.syncIcon = CoreConstants.ICON_LOADING;
-        this.loaded = false;
+        this.showLoading = true;
         this.content?.scrollToTop();
 
-        try {
-            await this.loadContent(false, sync, showErrors);
-        } finally {
-            this.refreshIcon = CoreConstants.ICON_REFRESH;
-            this.syncIcon = CoreConstants.ICON_REFRESH;
-        }
+        await this.loadContent(false, sync, showErrors);
     }
 
     /**
@@ -163,9 +130,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      * @return Resolved when done.
      */
     protected showLoadingAndRefresh(sync: boolean = false, showErrors: boolean = false): Promise<void> {
-        this.refreshIcon = CoreConstants.ICON_LOADING;
-        this.syncIcon = CoreConstants.ICON_LOADING;
-        this.loaded = false;
+        this.showLoading = true;
         this.content?.scrollToTop();
 
         return this.refreshContent(sync, showErrors);
@@ -193,8 +158,6 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      * @return Promise resolved when done.
      */
     protected async loadContent(refresh?: boolean, sync: boolean = false, showErrors: boolean = false): Promise<void> {
-        this.isOnline = CoreApp.isOnline();
-
         if (!this.module) {
             // This can happen if course format changes from single activity to weekly/topics.
             return;
@@ -202,25 +165,21 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
 
         try {
             if (refresh && this.showCompletion) {
-                try {
-                    this.module = await CoreCourse.getModule(this.module.id, this.courseId);
-                } catch {
-                    // Ignore errors.
-                }
+                await CoreUtils.ignoreErrors(this.fetchModule());
             }
 
             await this.fetchContent(refresh, sync, showErrors);
+
+            this.finishSuccessfulFetch();
         } catch (error) {
-            if (!refresh) {
-                // Some call failed, retry without using cache since it might be a new activity.
+            if (!refresh && !CoreSites.getCurrentSite()?.isOfflineDisabled() && this.isNotFoundError(error)) {
+                // Module not found, retry without using cache.
                 return await this.refreshContent(sync);
             }
 
             CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError, true);
         } finally {
-            this.loaded = true;
-            this.refreshIcon = CoreConstants.ICON_REFRESH;
-            this.syncIcon = CoreConstants.ICON_REFRESH;
+            this.showLoading = false;
         }
     }
 
@@ -273,8 +232,6 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      */
     ngOnDestroy(): void {
         super.ngOnDestroy();
-
-        this.onlineSubscription?.unsubscribe();
         this.syncObserver?.off();
     }
 

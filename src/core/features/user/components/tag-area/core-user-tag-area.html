@@ -1,6 +1,9 @@
-<ion-item class="ion-text-wrap" *ngFor="let item of items" core-user-link [userId]="item.user.id">
-    <core-user-avatar [user]="item.user" slot="start"></core-user-avatar>
-    <ion-label>
-        <h2>{{ item.heading }}</h2>
-    </ion-label>
-</ion-item>
+<ion-card *ngFor="let item of items">
+    <ion-item class="ion-text-wrap" core-user-link [userId]="item.user.id">
+        <core-user-avatar [user]="item.user" slot="start" [linkProfile]="false"></core-user-avatar>
+        <ion-label>
+            <h2>{{ item.heading }}</h2>
+        </ion-label>
+    </ion-item>
+
+</ion-card>

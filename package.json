@@ -1,6 +1,6 @@
 {
   "name": "moodlemobile",
-  "version": "3.9.5",
+  "version": "4.0.0",
   "description": "The official app for Moodle.",
   "author": {
     "name": "Moodle Pty Ltd.",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/moodlehq/moodlemobile2.git"
+    "url": "https://github.com/moodlehq/moodleapp.git"
   },
   "license": "Apache-2.0",
   "licenses": [
@@ -19,21 +19,22 @@
   ],
   "scripts": {
     "ng": "ng",
-    "start": "ionic serve",
+    "start": "ionic serve --browser=$MOODLE_APP_BROWSER",
+    "serve:test": "NODE_ENV=testing ionic serve --no-open",
     "build": "ionic build",
     "build:prod": "NODE_ENV=production ionic build --prod",
-    "build:test": "NODE_ENV=testing ionic build",
+    "build:test": "NODE_ENV=testing ionic build --configuration=testing",
     "dev:android": "ionic cordova run android --livereload",
-    "dev:ios": "ionic cordova run ios --livereload",
-    "prod:android": "NODE_ENV=production ionic cordova run android --aot",
-    "prod:ios": "NODE_ENV=production ionic cordova run ios --aot",
+    "dev:ios": "ionic cordova run ios",
+    "prod:android": "NODE_ENV=production ionic cordova run android --prod",
+    "prod:ios": "NODE_ENV=production ionic cordova run ios --prod",
     "test": "NODE_ENV=testing gulp && jest --verbose",
     "test:ci": "NODE_ENV=testing gulp && jest -ci --runInBand --verbose",
     "test:watch": "NODE_ENV=testing gulp watch & jest --watch",
     "test:coverage": "NODE_ENV=testing gulp && jest --coverage",
     "lint": "NODE_OPTIONS=--max-old-space-size=4096 ng lint",
     "ionic:serve:before": "gulp",
-    "ionic:serve": "gulp watch & NODE_OPTIONS=--max-old-space-size=4096 ng serve",
+    "ionic:serve": "cross-env-shell ./scripts/serve.sh",
     "ionic:build:before": "gulp"
   },
   "dependencies": {
@@ -70,65 +71,61 @@
     "@ionic-native/status-bar": "5.33.0",
     "@ionic-native/web-intent": "5.33.0",
     "@ionic-native/zip": "5.33.0",
-    "@ionic/angular": "5.6.6",
+    "@ionic/angular": "5.9.2",
+    "@moodlehq/cordova-plugin-file-transfer": "1.7.1-moodle.5",
+    "@moodlehq/cordova-plugin-inappbrowser": "5.0.0-moodle.3",
+    "@moodlehq/cordova-plugin-ionic-webview": "5.0.0-moodle.1",
+    "@moodlehq/cordova-plugin-local-notification": "0.9.0-moodle.3",
+    "@moodlehq/cordova-plugin-qrscanner": "3.0.1-moodle.2",
+    "@moodlehq/cordova-plugin-zip": "3.1.0-moodle.1",
+    "@moodlehq/phonegap-plugin-push": "2.0.0-moodle.4",
     "@ngx-translate/core": "13.0.0",
     "@ngx-translate/http-loader": "6.0.0",
     "@types/chart.js": "2.9.31",
     "@types/cordova": "0.0.34",
-    "@types/cordova-plugin-file-transfer": "1.6.2",
     "@types/dom-mediacapture-record": "1.0.7",
     "chart.js": "2.9.4",
-    "com-darryncampbell-cordova-plugin-intent": "1.3.0",
-    "cordova": "10.0.0",
-    "cordova-android": "9.1.0",
-    "cordova-android-support-gradle-release": "3.0.1",
+    "com-darryncampbell-cordova-plugin-intent": "2.2.0",
+    "cordova": "11.0.0",
+    "cordova-android": "10.1.1",
     "cordova-clipboard": "1.3.0",
     "cordova-ios": "6.2.0",
     "cordova-plugin-add-swift-support": "2.0.2",
-    "cordova-plugin-advanced-http": "3.1.0",
+    "cordova-plugin-advanced-http": "3.2.2",
     "cordova-plugin-badge": "0.8.8",
-    "cordova-plugin-camera": "5.0.1",
+    "cordova-plugin-camera": "6.0.0",
     "cordova-plugin-chooser": "1.3.2",
     "cordova-plugin-customurlscheme": "5.0.2",
     "cordova-plugin-device": "2.0.3",
     "cordova-plugin-file": "6.0.2",
     "cordova-plugin-file-opener2": "3.0.5",
-    "cordova-plugin-file-transfer": "git+https://github.com/moodlemobile/cordova-plugin-file-transfer.git",
     "cordova-plugin-geolocation": "4.1.0",
-    "cordova-plugin-globalization": "1.11.0",
-    "cordova-plugin-inappbrowser": "git+https://github.com/moodlemobile/cordova-plugin-inappbrowser.git#moodle-ionic5",
     "cordova-plugin-ionic-keyboard": "2.2.0",
-    "cordova-plugin-ionic-webview": "5.0.0",
-    "cordova-plugin-local-notification": "git+https://github.com/moodlemobile/cordova-plugin-local-notification.git#moodle",
-    "cordova-plugin-media": "5.0.3",
+    "cordova-plugin-media": "5.0.4",
     "cordova-plugin-media-capture": "3.0.3",
-    "cordova-plugin-network-information": "2.0.2",
-    "cordova-plugin-qrscanner": "git+https://github.com/moodlemobile/cordova-plugin-qrscanner.git#dist",
-    "cordova-plugin-screen-orientation": "3.0.2",
+    "cordova-plugin-network-information": "3.0.0",
+    "cordova-plugin-prevent-override": "1.0.1",
     "cordova-plugin-splashscreen": "6.0.0",
-    "cordova-plugin-statusbar": "2.4.3",
-    "cordova-plugin-whitelist": "1.3.4",
-    "cordova-plugin-wkuserscript": "git+https://github.com/moodlemobile/cordova-plugin-wkuserscript.git",
-    "cordova-plugin-wkwebview-cookies": "git+https://github.com/moodlemobile/cordova-plugin-wkwebview-cookies.git",
-    "cordova-plugin-zip": "3.1.0",
+    "cordova-plugin-statusbar": "3.0.0",
+    "cordova-plugin-wkuserscript": "1.0.1",
+    "cordova-plugin-wkwebview-cookies": "1.0.1",
     "cordova-sqlite-storage": "6.0.0",
-    "cordova-support-google-services": "1.3.2",
-    "cordova.plugins.diagnostic": "5.0.2",
+    "cordova.plugins.diagnostic": "6.1.1",
     "core-js": "3.9.1",
     "es6-promise-plugin": "4.2.2",
-    "jszip": "3.5.0",
+    "hammerjs": "2.0.8",
+    "jszip": "3.7.1",
     "mathjax": "2.7.7",
-    "moment": "2.29.0",
+    "moment": "2.29.2",
     "nl.kingsquare.cordova.background-audio": "1.0.1",
-    "phonegap-plugin-multidex": "1.0.0",
-    "phonegap-plugin-push": "git+https://github.com/moodlemobile/phonegap-plugin-push.git#moodle-v3",
     "rxjs": "6.5.5",
     "ts-md5": "1.2.7",
-    "tslib": "2.0.1",
+    "tslib": "2.3.1",
     "zone.js": "0.10.3"
   },
   "devDependencies": {
-    "@angular-devkit/architect": "0.1101.2",
+    "@angular-builders/custom-webpack": "10.0.1",
+    "@angular-devkit/architect": "0.1202.7",
     "@angular-devkit/build-angular": "0.1000.8",
     "@angular-eslint/builder": "4.2.0",
     "@angular-eslint/eslint-plugin": "4.2.0",
@@ -140,7 +137,7 @@
     "@angular/compiler-cli": "10.0.14",
     "@angular/language-service": "10.0.14",
     "@ionic/angular-toolkit": "2.3.3",
-    "@ionic/cli": "6.14.1",
+    "@ionic/cli": "6.19.0",
     "@types/faker": "5.1.3",
     "@types/node": "12.12.64",
     "@types/resize-observer-browser": "0.1.5",
@@ -148,7 +145,9 @@
     "@typescript-eslint/eslint-plugin": "4.22.0",
     "@typescript-eslint/parser": "4.22.0",
     "check-es-compat": "1.1.1",
-    "cordova-plugin-prevent-override": "git+https://github.com/moodlemobile/cordova-plugin-prevent-override.git",
+    "cordova-plugin-androidx-adapter": "1.1.3",
+    "cordova-plugin-screen-orientation": "^3.0.2",
+    "cross-env": "7.0.3",
     "eslint": "7.25.0",
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-header": "3.1.1",
@@ -169,13 +168,14 @@
     "jest": "26.5.2",
     "jest-preset-angular": "8.3.1",
     "jsonc-parser": "2.3.1",
-    "native-run": "^1.4.0",
+    "native-run": "1.4.0",
+    "terser-webpack-plugin": "4.2.3",
     "ts-jest": "26.4.1",
     "ts-node": "8.3.0",
     "typescript": "3.9.9"
   },
   "engines": {
-    "node": ">=12.x"
+    "node": ">=14.15.0 <15"
   },
   "cordova": {
     "platforms": [
@@ -183,11 +183,14 @@
       "ios"
     ],
     "plugins": {
-      "cordova-plugin-advanced-http": {},
+      "cordova-plugin-advanced-http": {
+        "ANDROIDBLACKLISTSECURESOCKETPROTOCOLS": "SSLv3,TLSv1"
+      },
       "cordova-clipboard": {},
       "cordova-plugin-badge": {},
       "cordova-plugin-camera": {
-        "ANDROID_SUPPORT_V4_VERSION": "27.+"
+        "ANDROID_SUPPORT_V4_VERSION": "27.+",
+        "ANDROIDX_CORE_VERSION": "1.6.+"
       },
       "cordova-plugin-chooser": {},
       "cordova-plugin-customurlscheme": {
@@ -203,10 +206,10 @@
       "cordova-plugin-geolocation": {
         "GPS_REQUIRED": "false"
       },
-      "cordova-plugin-inappbrowser": {},
+      "@moodlehq/cordova-plugin-inappbrowser": {},
       "cordova-plugin-ionic-keyboard": {},
-      "cordova-plugin-ionic-webview": {},
-      "cordova-plugin-local-notification": {
+      "@moodlehq/cordova-plugin-ionic-webview": {},
+      "@moodlehq/cordova-plugin-local-notification": {
         "ANDROID_SUPPORT_V4_VERSION": "26.+"
       },
       "cordova-plugin-media-capture": {},
@@ -214,30 +217,29 @@
         "KEEP_AVAUDIOSESSION_ALWAYS_ACTIVE": "NO"
       },
       "cordova-plugin-network-information": {},
-      "cordova-plugin-qrscanner": {},
-      "cordova-plugin-screen-orientation": {},
+      "@moodlehq/cordova-plugin-qrscanner": {},
       "cordova-plugin-splashscreen": {},
       "cordova-plugin-statusbar": {},
-      "cordova-plugin-whitelist": {},
       "cordova-plugin-wkuserscript": {},
       "cordova-plugin-wkwebview-cookies": {},
-      "cordova-plugin-zip": {},
+      "@moodlehq/cordova-plugin-zip": {},
       "cordova-sqlite-storage": {},
-      "phonegap-plugin-push": {
-        "ANDROID_SUPPORT_V13_VERSION": "27.+",
-        "FCM_VERSION": "17.0.+"
+      "@moodlehq/phonegap-plugin-push": {
+        "ANDROID_SUPPORT_V13_VERSION": "28.0.0",
+        "FCM_VERSION": "18.+",
+        "IOS_FIREBASE_MESSAGING_VERSION": "~> 6.32.2"
       },
       "com-darryncampbell-cordova-plugin-intent": {},
       "nl.kingsquare.cordova.background-audio": {},
-      "cordova-android-support-gradle-release": {
-        "ANDROID_SUPPORT_VERSION": "27.+"
-      },
       "cordova.plugins.diagnostic": {
-        "ANDROID_SUPPORT_VERSION": "28.+"
+        "ANDROID_SUPPORT_VERSION": "28.+",
+        "ANDROIDX_VERSION": "1.0.0",
+        "ANDROIDX_APPCOMPAT_VERSION": "1.3.1"
       },
-      "cordova-plugin-globalization": {},
-      "cordova-plugin-file-transfer": {},
-      "cordova-plugin-prevent-override": {}
+      "@moodlehq/cordova-plugin-file-transfer": {},
+      "cordova-plugin-prevent-override": {},
+      "cordova-plugin-androidx-adapter": {},
+      "cordova-plugin-screen-orientation": {}
     }
   },
   "optionalDependencies": {

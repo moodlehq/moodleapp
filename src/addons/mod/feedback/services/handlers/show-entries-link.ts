@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { makeSingleton } from '@singletons';
-import { AddonModFeedback } from '../feedback';
 import { AddonModFeedbackHelper } from '../feedback-helper';
 
 /**
@@ -45,12 +44,12 @@ export class AddonModFeedbackShowEntriesLinkHandlerService extends CoreContentLi
      * @inheritdoc
      */
     async isEnabled(siteId: string, url: string, params: Record<string, string>): Promise<boolean> {
-        if (typeof params.id == 'undefined') {
+        if (params.id === undefined) {
             // Cannot treat the URL.
             return false;
         }
 
-        return AddonModFeedback.isPluginEnabled(siteId);
+        return true;
     }
 
 }

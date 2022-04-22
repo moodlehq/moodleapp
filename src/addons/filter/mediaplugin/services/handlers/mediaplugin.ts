@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 
 import { CoreFilterDefaultHandler } from '@features/filter/services/handlers/default-filter';
-import { CoreFilterFilter, CoreFilterFormatTextOptions } from '@features/filter/services/filter';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlUtils } from '@services/utils/url';
 import { makeSingleton } from '@singletons';
@@ -32,19 +31,10 @@ export class AddonFilterMediaPluginHandlerService extends CoreFilterDefaultHandl
     protected template = document.createElement('template'); // A template element to convert HTML to element.
 
     /**
-     * Filter some text.
-     *
-     * @param text The text to filter.
-     * @param filter The filter.
-     * @param options Options passed to the filters.
-     * @param siteId Site ID. If not defined, current site.
-     * @return Filtered text (or promise resolved with the filtered text).
+     * @inheritdoc
      */
     filter(
         text: string,
-        filter: CoreFilterFilter, // eslint-disable-line @typescript-eslint/no-unused-vars
-        options: CoreFilterFormatTextOptions, // eslint-disable-line @typescript-eslint/no-unused-vars
-        siteId?: string, // eslint-disable-line @typescript-eslint/no-unused-vars
     ): string | Promise<string> {
         this.template.innerHTML = text;
 
@@ -60,7 +50,7 @@ export class AddonFilterMediaPluginHandlerService extends CoreFilterDefaultHandl
     /**
      * Treat video filters. Currently only treating youtube video using video JS.
      *
-     * @param el Video element.
+     * @param video Video element.
      */
     protected treatVideoFilters(video: HTMLElement): void {
         // Treat Video JS Youtube video links and translate them to iframes.

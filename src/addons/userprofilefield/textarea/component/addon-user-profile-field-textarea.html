@@ -2,9 +2,10 @@
 <ion-item *ngIf="!edit && field && field.name">
     <ion-label>
         <h2>{{ field.name }}</h2>
-        <p><core-format-text [text]="value" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
-            [courseId]="courseId">
-        </core-format-text></p>
+        <p>
+            <core-format-text [text]="value" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">
+            </core-format-text>
+        </p>
     </ion-label>
 </ion-item>
 
@@ -14,7 +15,7 @@
         <span [core-mark-required]="required">{{ field.name }}</span>
         <core-input-errors [control]="control"></core-input-errors>
     </ion-label>
-    <core-rich-text-editor [control]="control" [placeholder]="field.name" [autoSave]="true"
-        [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [elementId]="modelName">
+    <core-rich-text-editor [control]="control" [placeholder]="field.name" [autoSave]="true" [contextLevel]="contextLevel"
+        [contextInstanceId]="contextInstanceId" [elementId]="modelName">
     </core-rich-text-editor>
 </ion-item>

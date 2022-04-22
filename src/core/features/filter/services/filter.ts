@@ -63,27 +63,21 @@ export class CoreFilterProvider {
     /**
      * Returns whether or not WS get available in context is available.
      *
-     * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with true if ws is available, false otherwise.
-     * @since 3.4
+     * @deprecated since app 4.0
      */
-    async canGetAvailableInContext(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.getSite(siteId);
-
-        return this.canGetAvailableInContextInSite(site);
+    async canGetAvailableInContext(): Promise<boolean> {
+        return true;
     }
 
     /**
      * Returns whether or not WS get available in context is available in a certain site.
      *
-     * @param site Site. If not defined, current site.
      * @return Promise resolved with true if ws is available, false otherwise.
-     * @since 3.4
+     * @deprecated since app 4.0
      */
-    canGetAvailableInContextInSite(site?: CoreSite): boolean {
-        site = site || CoreSites.getCurrentSite();
-
-        return !!(site?.wsAvailable('core_filters_get_available_in_context'));
+    canGetAvailableInContextInSite(): boolean {
+        return true;
     }
 
     /**
@@ -93,10 +87,9 @@ export class CoreFilterProvider {
      * @return Promise resolved with boolean: whethe can get filters.
      */
     async canGetFilters(siteId?: string): Promise<boolean> {
-        const wsAvailable = await this.canGetAvailableInContext(siteId);
         const disabled = await this.checkFiltersDisabled(siteId);
 
-        return wsAvailable && !disabled;
+        return !disabled;
     }
 
     /**
@@ -106,7 +99,7 @@ export class CoreFilterProvider {
      * @return Promise resolved with boolean: whethe can get filters.
      */
     canGetFiltersInSite(site?: CoreSite): boolean {
-        return this.canGetAvailableInContextInSite(site) && this.checkFiltersDisabledInSite(site);
+        return this.checkFiltersDisabledInSite(site);
     }
 
     /**
@@ -212,11 +205,11 @@ export class CoreFilterProvider {
         // Clone object if needed so we can modify it.
         options = options ? Object.assign({}, options) : {};
 
-        if (typeof options.clean == 'undefined') {
+        if (options.clean === undefined) {
             options.clean = false;
         }
 
-        if (typeof options.filter == 'undefined') {
+        if (options.filter === undefined) {
             options.filter = true;
         }
 

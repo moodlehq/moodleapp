@@ -18,12 +18,12 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
-import { CoreEvents } from '@singletons/events';
 import { CorePushNotificationsClickHandler } from '@features/pushnotifications/services/push-delegate';
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
-import { AddonNotifications, AddonNotificationsProvider } from '../notifications';
+import { AddonNotifications } from '../notifications';
 import { AddonNotificationsMainMenuHandlerService } from './mainmenu';
+import { AddonNotificationsHelper } from '../notifications-helper';
 
 /**
  * Handler for non-messaging push notifications clicks.
@@ -64,15 +64,7 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
      * @return Promise resolved when done.
      */
     protected async markAsRead(notification: AddonNotificationsNotificationData): Promise<void> {
-        const notifId = notification.savedmessageid || notification.id;
-
-        if (!notifId) {
-            return;
-        }
-
-        await CoreUtils.ignoreErrors(AddonNotifications.markNotificationRead(notifId, notification.site));
-
-        CoreEvents.trigger(AddonNotificationsProvider.READ_CHANGED_EVENT, {}, notification.site);
+        await CoreUtils.ignoreErrors(AddonNotificationsHelper.markNotificationAsRead(notification));
     }
 
     /**
@@ -104,17 +96,20 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
                 case 'browser':
                     return CoreUtils.openInBrowser(url);
 
-                default:
-                    if (CoreContentLinksHelper.handleLink(url, undefined, undefined, true)) {
+                default: {
+                    const treated = await CoreContentLinksHelper.handleLink(url, undefined, undefined, true);
+                    if (treated) {
                         // Link treated, stop.
                         return;
                     }
+                }
             }
         }
 
         // No appurl or cannot be handled by the app. Try to handle the contexturl now.
         if (notification.contexturl) {
-            if (CoreContentLinksHelper.handleLink(notification.contexturl)) {
+            const treated = await CoreContentLinksHelper.handleLink(notification.contexturl);
+            if (treated) {
                 // Link treated, stop.
                 return;
             }
@@ -124,10 +119,16 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
         await CoreUtils.ignoreErrors(AddonNotifications.invalidateNotificationsList(notification.site));
 
         await CoreNavigator.navigateToSitePath(
-            AddonNotificationsMainMenuHandlerService.PAGE_NAME,
+            `${AddonNotificationsMainMenuHandlerService.PAGE_NAME}/list`,
             {
                 siteId: notification.site,
                 preferCurrentTab: false,
+                nextNavigation: {
+                    path: '../notification',
+                    options: {
+                        params: { notification },
+                    },
+                },
             },
         );
     }
@@ -136,7 +137,7 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
 
 export const AddonNotificationsPushClickHandler = makeSingleton(AddonNotificationsPushClickHandlerService);
 
-type AddonNotificationsNotificationData = CorePushNotificationsNotificationBasicData & {
+export type AddonNotificationsNotificationData = CorePushNotificationsNotificationBasicData & {
     contexturl?: string; // URL related to the notification.
     savedmessageid?: number; // Notification ID (optional).
     id?: number; // Notification ID (optional).

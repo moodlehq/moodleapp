@@ -26,6 +26,9 @@ import { CoreConstants } from '@/core/constants';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { DomSanitizer } from '@singletons';
+import { CoreFilepool } from '@services/filepool';
+import { CoreUrl } from '@singletons/url';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Directive to open a link in external browser or in the app.
@@ -43,8 +46,9 @@ export class CoreLinkDirective implements OnInit {
        "no" -> Never auto-login.
        "check" -> Auto-login only if it points to the current site. Default value. */
     @Input() autoLogin = 'check';
+    @Input() showBrowserWarning = true; // Whether to show a warning before opening browser. Defaults to true.
 
-    protected element: Element;
+    protected element: HTMLElement;
 
     constructor(
         element: ElementRef,
@@ -57,29 +61,14 @@ export class CoreLinkDirective implements OnInit {
      * Function executed when the component is initialized.
      */
     ngOnInit(): void {
-        this.inApp = typeof this.inApp == 'undefined' ? this.inApp : CoreUtils.isTrueOrOne(this.inApp);
+        this.inApp = this.inApp === undefined ? this.inApp : CoreUtils.isTrueOrOne(this.inApp);
 
         if (this.element.tagName != 'BUTTON' && this.element.tagName != 'A') {
             this.element.setAttribute('tabindex', '0');
             this.element.setAttribute('role', 'button');
         }
 
-        this.element.addEventListener('click', async (event) => {
-            this.performAction(event);
-        });
-
-        this.element.addEventListener('keydown', (event: KeyboardEvent) => {
-            if ((event.key == ' ' || event.key == 'Enter')) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-        });
-
-        this.element.addEventListener('keyup', (event: KeyboardEvent) => {
-            if ((event.key == ' ' || event.key == 'Enter')) {
-                this.performAction(event);
-            }
-        });
+        CoreDom.onActivate(this.element, (event) => this.performAction(event));
     }
 
     /**
@@ -136,14 +125,16 @@ export class CoreLinkDirective implements OnInit {
             return this.openLocalFile(href);
         }
 
-        if (href.charAt(0) == '#') {
+        if (href.charAt(0) === '#') {
             // Look for id or name.
-            href = href.substr(1);
-            CoreDomUtils.scrollToElementBySelector(
-                this.element.closest('ion-content'),
-                this.content,
-                `#${href}, [name='${href}']`,
-            );
+            href = href.substring(1);
+            const container = this.element.closest<HTMLIonContentElement>('ion-content');
+            if (container) {
+                CoreDom.scrollToElement(
+                    container,
+                    `#${href}, [name='${href}']`,
+                );
+            }
 
             return;
         }
@@ -168,7 +159,7 @@ export class CoreLinkDirective implements OnInit {
      * @return Promise resolved when done.
      */
     protected async openLocalFile(path: string): Promise<void> {
-        const filename = path.substr(path.lastIndexOf('/') + 1);
+        const filename = path.substring(path.lastIndexOf('/') + 1);
 
         if (!CoreFileHelper.isOpenableInApp({ filename })) {
             try {
@@ -199,38 +190,53 @@ export class CoreLinkDirective implements OnInit {
             if (this.inApp) {
                 CoreUtils.openInApp(href);
             } else {
-                CoreUtils.openInBrowser(href);
+                CoreUtils.openInBrowser(href, { showBrowserWarning: this.showBrowserWarning });
             }
 
             return;
         }
 
-        // Check if URL does not have any protocol, so it's a relative URL.
-        if (!CoreUrlUtils.isAbsoluteURL(href)) {
-            // Add the site URL at the begining.
-            if (href.charAt(0) == '/') {
-                href = CoreSites.getCurrentSite()!.getURL() + href;
-            } else {
-                href = CoreSites.getCurrentSite()!.getURL() + '/' + href;
+        const currentSite = CoreSites.getRequiredCurrentSite();
+
+        // Make sure it's an absolute URL.
+        href = CoreUrl.toAbsoluteURL(currentSite.getURL(), href);
+
+        if (currentSite.isSitePluginFileUrl(href)) {
+            // It's a site file. Check if it's being downloaded right now.
+            const isDownloading = await CoreFilepool.isFileDownloadingByUrl(currentSite.getId(), href);
+
+            if (isDownloading) {
+                // Wait for the download to finish before opening the file to prevent downloading it twice.
+                const modal = await CoreDomUtils.showModalLoading();
+
+                try {
+                    const path = await CoreFilepool.downloadUrl(currentSite.getId(), href);
+
+                    return this.openLocalFile(path);
+                } catch {
+                    // Error downloading, just open the original URL.
+                } finally {
+                    modal.dismiss();
+                }
             }
         }
 
         if (this.autoLogin == 'yes') {
             if (this.inApp) {
-                await CoreSites.getCurrentSite()!.openInAppWithAutoLogin(href);
+                await currentSite.openInAppWithAutoLogin(href);
             } else {
-                await CoreSites.getCurrentSite()!.openInBrowserWithAutoLogin(href);
+                await currentSite.openInBrowserWithAutoLogin(href, undefined, { showBrowserWarning: this.showBrowserWarning });
             }
         } else if (this.autoLogin == 'no') {
             if (this.inApp) {
                 CoreUtils.openInApp(href);
             } else {
-                CoreUtils.openInBrowser(href);
+                CoreUtils.openInBrowser(href, { showBrowserWarning: this.showBrowserWarning });
             }
         } else {
             // Priority order is: core-link inApp attribute > forceOpenLinksIn setting > data-open-in HTML attribute.
             let openInApp = this.inApp;
-            if (typeof this.inApp == 'undefined') {
+            if (this.inApp === undefined) {
                 if (CoreConstants.CONFIG.forceOpenLinksIn == 'browser') {
                     openInApp = false;
                 } else if (CoreConstants.CONFIG.forceOpenLinksIn == 'app' || openIn == 'app') {
@@ -239,9 +245,13 @@ export class CoreLinkDirective implements OnInit {
             }
 
             if (openInApp) {
-                await CoreSites.getCurrentSite()!.openInAppWithAutoLoginIfSameSite(href);
+                await currentSite.openInAppWithAutoLoginIfSameSite(href);
             } else {
-                await CoreSites.getCurrentSite()!.openInBrowserWithAutoLoginIfSameSite(href);
+                await currentSite.openInBrowserWithAutoLoginIfSameSite(
+                    href,
+                    undefined,
+                    { showBrowserWarning: this.showBrowserWarning },
+                );
             }
         }
     }

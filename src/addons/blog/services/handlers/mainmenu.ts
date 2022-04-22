@@ -26,7 +26,7 @@ export class AddonBlogMainMenuHandlerService implements CoreMainMenuHandler {
     static readonly PAGE_NAME = 'blog';
 
     name = 'AddonBlog';
-    priority = 450;
+    priority = 500;
 
     /**
      * @inheritdoc

@@ -20,6 +20,7 @@ import { makeSingleton } from '@singletons';
 import { CoreCourse } from '../../course/services/course';
 import { CoreCourses } from '../../courses/services/courses';
 import { AddonModForum, AddonModForumData } from '@addons/mod/forum/services/forum';
+import { CoreError } from '@classes/errors/error';
 
 /**
  * Items with index 1 and 3 were removed on 2.5 and not being supported in the app.
@@ -57,7 +58,7 @@ export class CoreSiteHomeProvider {
             return forum;
         }
 
-        throw null;
+        throw new CoreError('No news forum found');
     }
 
     /**
@@ -168,20 +169,12 @@ export class CoreSiteHomeProvider {
                     // Get number of news items to show.
                     add = !!CoreSites.getCurrentSite()?.getStoredConfig('newsitems');
                     break;
-                case FrontPageItemNames['LIST_OF_CATEGORIES']:
                 case FrontPageItemNames['COMBO_LIST']:
+                    itemNumber = FrontPageItemNames['LIST_OF_CATEGORIES']; // Do not break here.
+                case FrontPageItemNames['LIST_OF_CATEGORIES']:
                 case FrontPageItemNames['LIST_OF_COURSE']:
-                    add = CoreCourses.isGetCoursesByFieldAvailable();
-                    if (add && itemNumber == FrontPageItemNames['COMBO_LIST']) {
-                        itemNumber = FrontPageItemNames['LIST_OF_CATEGORIES'];
-                    }
-                    break;
                 case FrontPageItemNames['ENROLLED_COURSES']:
-                    if (!CoreCourses.isMyCoursesDisabledInSite()) {
-                        const courses = await CoreCourses.getUserCourses();
-
-                        add = courses.length > 0;
-                    }
+                    add = true;
                     break;
                 case FrontPageItemNames['COURSE_SEARCH_BOX']:
                     add = !CoreCourses.isSearchCoursesDisabledInSite();

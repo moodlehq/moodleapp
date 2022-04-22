@@ -3,7 +3,9 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>{{ 'addon.coursecompletion.coursecompletion' | translate }}</h1>
+        <ion-title>
+            <h1>{{ 'addon.coursecompletion.coursecompletion' | translate }}</h1>
+        </ion-title>
     </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -28,14 +30,18 @@
         </ion-card>
         <ion-card *ngIf="completion && tracked">
             <ion-item-divider>
-                <ion-label><h2>{{ 'addon.coursecompletion.requiredcriteria' | translate }}</h2></ion-label>
+                <ion-label>
+                    <h2>{{ 'addon.coursecompletion.requiredcriteria' | translate }}</h2>
+                </ion-label>
             </ion-item-divider>
             <ion-item class="ion-hide-md-up ion-text-wrap" *ngFor="let criteria of completion.completions">
                 <ion-label>
                     <p class="item-heading">
                         <core-format-text clean="true" [text]="criteria.details.criteria" [filter]="false"></core-format-text>
                     </p>
-                    <p><core-format-text clean="true" [text]="criteria.details.requirement" [filter]="false"></core-format-text></p>
+                    <p>
+                        <core-format-text clean="true" [text]="criteria.details.requirement" [filter]="false"></core-format-text>
+                    </p>
                 </ion-label>
                 <strong slot="end">{{ criteria.status }}</strong>
             </ion-item>
@@ -73,7 +79,9 @@
         </ion-card>
         <ion-card *ngIf="showSelfComplete && tracked">
             <ion-item-divider>
-                <ion-label><h2>{{ 'addon.coursecompletion.manualselfcompletion' | translate }}</h2></ion-label>
+                <ion-label>
+                    <h2>{{ 'addon.coursecompletion.manualselfcompletion' | translate }}</h2>
+                </ion-label>
             </ion-item-divider>
             <ion-item>
                 <ion-label>

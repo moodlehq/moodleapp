@@ -15,6 +15,11 @@
             color: var(--color);
         }
     }
+
+    form div {
+        color: var(--color);
+    }
+
     ion-button.core-button-as-link {
         --color: var(--core-login-text-color);
         text-decoration-color: var(--core-login-text-color);
@@ -27,6 +32,10 @@
     form .item.item-input,
     form .core-username.item {
         margin-bottom: 16px;
+    }
+
+    form .core-username.ios {
+        --inner-border-width: 0 0 1px 0;
     }
 
     form .item,
@@ -72,11 +81,6 @@
         }
     }
 
-    .core-login-reconnect-warning ion-item {
-        font-size: 0.9em;
-        --background: var(--core-login-input-background);
-    }
-
     @if ($core-fixed-url) {
         .core-sitename, .core-siteurl {
             display: none;
@@ -101,7 +105,7 @@
 
 :host-context(body.dark) {
     @if ($core-login-button-outline-dark) {
-        form ion-button-dark {
+        form ion-button {
             --background: white;
             --color: var(--core-login-background-dark);
         }

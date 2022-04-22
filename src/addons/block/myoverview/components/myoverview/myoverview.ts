@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Input, OnDestroy, ViewChild, OnChanges, SimpleChange } from '@angular/core';
-import { IonSearchbar } from '@ionic/angular';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreSites } from '@services/sites';
-import { CoreCoursesProvider, CoreCourses } from '@features/courses/services/courses';
+import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
+import { CoreCoursesProvider, CoreCourses, CoreCoursesMyCoursesUpdatedEventData } from '@features/courses/services/courses';
 import { CoreCoursesHelper, CoreEnrolledCourseDataWithOptions } from '@features/courses/services/courses-helper';
 import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
@@ -26,9 +25,12 @@ import { CoreSite } from '@classes/site';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
-import { AddonCourseCompletion } from '@/addons/coursecompletion/services/coursecompletion';
+import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursecompletion';
+import { IonSearchbar } from '@ionic/angular';
+import { CoreNavigator } from '@services/navigator';
 
-const FILTER_PRIORITY = ['all', 'allincludinghidden', 'inprogress', 'future', 'past', 'favourite', 'hidden', 'custom'];
+const FILTER_PRIORITY: AddonBlockMyOverviewTimeFilters[] =
+    ['all', 'inprogress', 'future', 'past', 'favourite', 'allincludinghidden', 'hidden'];
 
 /**
  * Component to render a my overview block.
@@ -36,154 +38,120 @@ const FILTER_PRIORITY = ['all', 'allincludinghidden', 'inprogress', 'future', 'p
 @Component({
     selector: 'addon-block-myoverview',
     templateUrl: 'addon-block-myoverview.html',
+    styleUrls: ['myoverview.scss'],
 })
-export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implements OnInit, OnChanges, OnDestroy {
+export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implements OnInit, OnDestroy {
 
-    @ViewChild('searchbar') searchbar?: IonSearchbar;
-    @Input() downloadEnabled = false;
-
-    courses = {
-        filter: '',
-        all: <CoreEnrolledCourseDataWithOptions[]> [],
-        allincludinghidden: <CoreEnrolledCourseDataWithOptions[]> [],
-        past: <CoreEnrolledCourseDataWithOptions[]> [],
-        inprogress: <CoreEnrolledCourseDataWithOptions[]> [],
-        future: <CoreEnrolledCourseDataWithOptions[]> [],
-        favourite: <CoreEnrolledCourseDataWithOptions[]> [],
-        hidden: <CoreEnrolledCourseDataWithOptions[]> [],
-        custom: <CoreEnrolledCourseDataWithOptions[]> [], // Leave it empty to avoid download all those courses.
-    };
-
-    customFilter: {
-        name: string;
-        value: string;
-    }[] = [];
-
-    selectedFilter = 'inprogress';
-    sort = 'fullname';
-    currentSite?: CoreSite;
     filteredCourses: CoreEnrolledCourseDataWithOptions[] = [];
-    prefetchCoursesData = {
-        all: <CorePrefetchStatusInfo> {
-            icon: '',
-            statusTranslatable: 'core.loading',
-            status: '',
-            loading: true,
-        },
-        allincludinghidden: <CorePrefetchStatusInfo> {
-            icon: '',
-            statusTranslatable: 'core.loading',
-            status: '',
-            loading: true,
-        },
-        inprogress: <CorePrefetchStatusInfo> {
-            icon: '',
-            statusTranslatable: 'core.loading',
-            status: '',
-            loading: true,
-        },
-        past: <CorePrefetchStatusInfo> {
-            icon: '',
-            statusTranslatable: 'core.loading',
-            status: '',
-            loading: true,
-        },
-        future: <CorePrefetchStatusInfo> {
-            icon: '',
-            statusTranslatable: 'core.loading',
-            status: '',
-            loading: true,
-        },
-        favourite: <CorePrefetchStatusInfo> {
-            icon: '',
-            statusTranslatable: 'core.loading',
-            status: '',
-            loading: true,
-        },
-        hidden: <CorePrefetchStatusInfo> {
-            icon: '',
-            statusTranslatable: 'core.loading',
-            status: '',
-            loading: true,
-        },
-        custom: <CorePrefetchStatusInfo> {
-            icon: '',
-            statusTranslatable: '',
-            status: '',
-            loading: false,
-        }, // Leave it empty to avoid download all those courses.
+
+    prefetchCoursesData: CorePrefetchStatusInfo = {
+        icon: '',
+        statusTranslatable: 'core.loading',
+        status: '',
+        loading: true,
     };
 
-    showFilters = { // Options are show, disabled, hidden.
-        all: 'show',
-        allincludinghidden: 'show',
-        past: 'show',
-        inprogress: 'show',
-        future: 'show',
-        favourite: 'show',
-        hidden: 'show',
-        custom: 'hidden',
-    };
-
-    showFilter = false;
-    showSelectorFilter = false;
-    showSortFilter = false;
     downloadCourseEnabled = false;
     downloadCoursesEnabled = false;
-    showSortByShortName = false;
 
+    filters: AddonBlockMyOverviewFilterOptions = {
+        enabled: false,
+        show: { // Options are visible, disabled, hidden.
+            allincludinghidden: true,
+            all: true,
+            past: true,
+            inprogress: true,
+            future: true,
+            favourite: true,
+            hidden: true,
+            custom: false,
+        },
+        timeFilterSelected: 'inprogress',
+        customFilters: [],
+    };
+
+    isLayoutSwitcherAvailable = false;
+    layout: AddonBlockMyOverviewLayouts = 'list';
+
+    sort: AddonBlockMyOverviewSortOptions = {
+        shortnameEnabled: false,
+        selected: 'fullname',
+        enabled: false,
+    };
+
+    textFilter = '';
+    hasCourses = false;
+    searchEnabled = false;
+
+    protected currentSite!: CoreSite;
+    protected allCourses: CoreEnrolledCourseDataWithOptions[] = [];
     protected prefetchIconsInitialized = false;
     protected isDestroyed = false;
     protected coursesObserver?: CoreEventObserver;
     protected updateSiteObserver?: CoreEventObserver;
-    protected courseIds: number[] = [];
     protected fetchContentDefaultError = 'Error getting my overview data.';
+    protected gradePeriodAfter = 0;
+    protected gradePeriodBefore = 0;
+    protected today = 0;
 
     constructor() {
         super('AddonBlockMyOverviewComponent');
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         // Refresh the enabled flags if enabled.
         this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
         this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
+        this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
 
         // Refresh the enabled flags if site is updated.
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
             this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
-
+            this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
         }, CoreSites.getCurrentSiteId());
 
         this.coursesObserver = CoreEvents.on(
             CoreCoursesProvider.EVENT_MY_COURSES_UPDATED,
             (data) => {
-
-                if (data.action == CoreCoursesProvider.ACTION_ENROL || data.action == CoreCoursesProvider.ACTION_STATE_CHANGED) {
-                    this.refreshCourseList();
-                }
+                this.refreshCourseList(data);
             },
             CoreSites.getCurrentSiteId(),
         );
 
-        this.currentSite = CoreSites.getCurrentSite();
+        this.currentSite = CoreSites.getRequiredCurrentSite();
 
         const promises: Promise<void>[] = [];
-        if (this.currentSite) {
-            promises.push(this.currentSite.getLocalSiteConfig('AddonBlockMyOverviewSort', this.sort).then((value) => {
-                this.sort = value;
 
-                return;
-            }));
-            promises.push(this.currentSite.getLocalSiteConfig('AddonBlockMyOverviewFilter', this.selectedFilter).then((value) => {
-                this.selectedFilter = value;
+        promises.push(this.currentSite.getLocalSiteConfig(
+            'AddonBlockMyOverviewSort',
+            this.sort.selected,
+        ).then((value) => {
+            this.sort.selected = value;
 
-                return;
-            }));
-        }
+            return;
+        }));
+
+        promises.push(this.currentSite.getLocalSiteConfig(
+            'AddonBlockMyOverviewLayout',
+            this.layout,
+        ).then((value) => {
+            this.layout = value;
+
+            return;
+        }));
+
+        promises.push(this.currentSite.getLocalSiteConfig(
+            'AddonBlockMyOverviewFilter',
+            this.filters.timeFilterSelected,
+        ).then((value) => {
+            this.filters.timeFilterSelected = value;
+
+            return;
+        }));
 
         Promise.all(promises).finally(() => {
             super.ngOnInit();
@@ -191,31 +159,44 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     }
 
     /**
-     * Detect changes on input properties.
+     * @inheritdoc
      */
-    ngOnChanges(changes: {[name: string]: SimpleChange}): void {
-        if (changes.downloadEnabled && !changes.downloadEnabled.previousValue && this.downloadEnabled && this.loaded) {
-            // Download all courses is enabled now, initialize it.
-            this.initPrefetchCoursesIcons();
-        }
+    protected async invalidateContent(): Promise<void> {
+        const courseIds = this.allCourses.map((course) => course.id);
+
+        await this.invalidateCourses(courseIds);
     }
 
     /**
-     * Perform the invalidate content function.
+     * Invalidate list of courses.
      *
-     * @return Resolved when done.
+     * @return Promise resolved when done.
      */
-    protected async invalidateContent(): Promise<void> {
+    protected invalidateCourseList(): Promise<void> {
+        return CoreCourses.invalidateUserCourses();
+    }
+
+    /**
+     * Helper function to invalidate only selected courses.
+     *
+     * @param courseIds Course Id array.
+     * @return Promise resolved when done.
+     */
+    protected async invalidateCourses(courseIds: number[]): Promise<void> {
         const promises: Promise<void>[] = [];
 
         // Invalidate course completion data.
-        promises.push(CoreCourses.invalidateUserCourses().finally(() =>
-            CoreUtils.allPromises(this.courseIds.map((courseId) =>
+        promises.push(this.invalidateCourseList().finally(() =>
+            CoreUtils.allPromises(courseIds.map((courseId) =>
                 AddonCourseCompletion.invalidateCourseCompletion(courseId)))));
 
-        promises.push(CoreCourseOptionsDelegate.clearAndInvalidateCoursesOptions());
-        if (this.courseIds.length > 0) {
-            promises.push(CoreCourses.invalidateCoursesByField('ids', this.courseIds.join(',')));
+        if (courseIds.length  == 1) {
+            promises.push(CoreCourseOptionsDelegate.clearAndInvalidateCoursesOptions(courseIds[0]));
+        } else {
+            promises.push(CoreCourseOptionsDelegate.clearAndInvalidateCoursesOptions());
+        }
+        if (courseIds.length > 0) {
+            promises.push(CoreCourses.invalidateCoursesByField('ids', courseIds.join(',')));
         }
 
         await CoreUtils.allPromises(promises).finally(() => {
@@ -224,156 +205,199 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     }
 
     /**
-     * Fetch the courses for my overview.
-     *
-     * @return Promise resolved when done.
+     * @inheritdoc
      */
-    protected async fetchContent(): Promise<void> {
-        const config = this.block.configsRecord || {};
+    protected async fetchContent(refresh?: boolean): Promise<void> {
+        const config = this.block.configsRecord;
 
         const showCategories = config?.displaycategories?.value == '1';
 
-        const courses = await CoreCoursesHelper.getUserCoursesWithOptions(this.sort, undefined, undefined, showCategories);
+        this.allCourses = await CoreCoursesHelper.getUserCoursesWithOptions(
+            this.sort.selected,
+            undefined,
+            undefined,
+            showCategories,
+            {
+                readingStrategy: refresh ? CoreSitesReadingStrategy.PREFER_NETWORK : undefined,
+            },
+        );
+
+        this.hasCourses = this.allCourses.length > 0;
+
+        try {
+            this.gradePeriodAfter = parseInt(await this.currentSite.getConfig('coursegraceperiodafter', refresh), 10);
+            this.gradePeriodBefore = parseInt(await this.currentSite.getConfig('coursegraceperiodbefore', refresh), 10);
+        } catch {
+            this.gradePeriodAfter = 0;
+            this.gradePeriodBefore = 0;
+        }
+
+        this.loadSort();
+        this.loadLayouts(config?.layouts?.value.split(','));
+        this.loadFilters(config);
+    }
+
+    /**
+     * Load sort.
+     */
+    protected loadSort(): void {
+        const sampleCourse = this.allCourses[0];
 
         // Check to show sort by short name only if the text is visible.
-        if (courses.length > 0) {
-            const sampleCourse = courses[0];
-            this.showSortByShortName = !!sampleCourse.displayname && !!sampleCourse.shortname &&
-                sampleCourse.fullname != sampleCourse.displayname;
-        }
+        this.sort.shortnameEnabled = !!sampleCourse?.displayname && !!sampleCourse?.shortname &&
+            sampleCourse?.fullname != sampleCourse?.displayname;
 
         // Rollback to sort by full name if user is sorting by short name then Moodle web change the config.
-        if (!this.showSortByShortName && this.sort === 'shortname') {
-            this.switchSort('fullname');
+        if (!this.sort.shortnameEnabled && this.sort.selected === 'shortname') {
+            this.saveSort('fullname');
         }
 
-        this.courseIds = courses.map((course) => course.id);
-
-        this.showSortFilter = courses.length > 0 && typeof courses[0].lastaccess != 'undefined';
-
-        this.initCourseFilters(courses);
-
-        this.courses.filter = '';
-        this.showFilter = false;
-
-        this.showFilters.all = this.getShowFilterValue(
-            !config || config.displaygroupingall?.value == '1',
-            this.courses.all.length === 0,
-        );
-        // Do not show allincludinghiddenif config it's not present (before 3.8).
-        this.showFilters.allincludinghidden =
-            this.getShowFilterValue(
-                config?.displaygroupingallincludinghidden?.value == '1',
-                this.courses.allincludinghidden.length === 0,
-            );
-
-        this.showFilters.inprogress = this.getShowFilterValue(
-            !config || config.displaygroupinginprogress?.value == '1',
-            this.courses.inprogress.length === 0,
-        );
-        this.showFilters.past = this.getShowFilterValue(
-            !config || config.displaygroupingpast?.value == '1',
-            this.courses.past.length === 0,
-        );
-        this.showFilters.future = this.getShowFilterValue(
-            !config || config.displaygroupingfuture?.value == '1',
-            this.courses.future.length === 0,
-        );
-
-        this.showSelectorFilter = courses.length > 0 && (this.courses.past.length > 0 || this.courses.future.length > 0 ||
-                typeof courses[0].enddate != 'undefined');
-
-        this.showFilters.hidden = this.getShowFilterValue(
-            this.showSelectorFilter && typeof courses[0].hidden != 'undefined' &&
-                (!config || config.displaygroupinghidden?.value == '1'),
-            this.courses.hidden.length === 0,
-        );
-
-        this.showFilters.favourite = this.getShowFilterValue(
-            this.showSelectorFilter && typeof courses[0].isfavourite != 'undefined' &&
-                (!config || config.displaygroupingstarred?.value == '1' || config.displaygroupingfavourites?.value == '1'),
-            this.courses.favourite.length === 0,
-        );
-
-        this.showFilters.custom = this.getShowFilterValue(
-            this.showSelectorFilter && config?.displaygroupingcustomfield?.value == '1' && !!config?.customfieldsexport?.value,
-            false,
-        );
-        if (this.showFilters.custom == 'show') {
-            this.customFilter = CoreTextUtils.parseJSON(config?.customfieldsexport?.value, []);
-        } else {
-            this.customFilter = [];
-        }
-
-        if (this.showSelectorFilter) {
-            // Check if any selector is shown and not disabled.
-            this.showSelectorFilter = Object.keys(this.showFilters).some((key) => this.showFilters[key] == 'show');
-
-            if (!this.showSelectorFilter) {
-                // All filters disabled, display all the courses.
-                this.showFilters.all = 'show';
-            }
-        }
-
-        if (!this.showSelectorFilter) {
-            // No selector, display all the courses.
-            this.selectedFilter = 'all';
-        }
-        this.setCourseFilter(this.selectedFilter);
-
-        this.initPrefetchCoursesIcons();
+        this.sort.enabled = sampleCourse?.lastaccess !== undefined;
     }
 
     /**
-     * Helper function to help with filter values.
+     * Load filters.
      *
-     * @param showCondition     If true, filter will be shown.
-     * @param disabledCondition If true, and showCondition is also met, it will be shown as disabled.
-     * @return                   show / disabled / hidden value.
+     * @param config Block configuration.
      */
-    protected getShowFilterValue(showCondition: boolean, disabledCondition: boolean): string {
-        return showCondition ? (disabledCondition ? 'disabled' : 'show') : 'hidden';
+    protected loadFilters(
+        config?: Record<string, { name: string; value: string; type: string }>,
+    ): void {
+        if (!this.hasCourses) {
+            return;
+        }
+
+        this.textFilter = '';
+
+        const sampleCourse = this.allCourses[0];
+
+        // Do not show hidden if config it's not present (before 3.8) but if hidden is enabled.
+        this.filters.show.hidden =
+            config?.displaygroupingallincludinghidden?.value == '1' ||
+            sampleCourse.hidden !== undefined && (!config || config.displaygroupinghidden?.value == '1');
+
+        this.filters.show.allincludinghidden =  !config || config.displaygroupingallincludinghidden?.value == '1';
+        this.filters.show.all =  !config || config.displaygroupingall?.value == '1';
+        this.filters.show.inprogress = !config || config.displaygroupinginprogress?.value == '1';
+        this.filters.show.past = !config || config.displaygroupingpast?.value == '1';
+        this.filters.show.future = !config || config.displaygroupingfuture?.value == '1';
+
+        this.filters.show.favourite = sampleCourse.isfavourite !== undefined &&
+            (!config || config.displaygroupingstarred?.value == '1' || config.displaygroupingfavourites?.value == '1');
+
+        this.filters.show.custom = config?.displaygroupingcustomfield?.value == '1' && !!config?.customfieldsexport?.value;
+
+        this.filters.customFilters = this.filters.show.custom
+            ? CoreTextUtils.parseJSON(config?.customfieldsexport?.value || '[]', [])
+            : [];
+
+        // Check if any selector is shown and not disabled.
+        this.filters.enabled = Object.keys(this.filters.show).some((key) => this.filters.show[key]);
+
+        if (!this.filters.enabled) {
+            // All filters disabled, display all the courses.
+            this.filters.show.all = true;
+            this.saveFilters('all');
+        }
+
+        this.filterCourses();
     }
 
     /**
-     * The filter has changed.
+     * Load block layouts.
      *
-     * @param Received Event.
+     * @param layouts Config available layouts.
      */
-    filterChanged(event: Event): void {
-        const target = <HTMLInputElement>event?.target || null;
+    protected loadLayouts(layouts?: string[]): void {
+        const layoutsOptions: AddonBlockMyOverviewLayouts[] = [];
 
-        const newValue = target?.value.trim().toLowerCase();
-        if (!newValue || this.courses.allincludinghidden.length <= 0) {
-            this.filteredCourses = this.courses.allincludinghidden;
-        } else {
-            // Use displayname if available, or fullname if not.
-            if (this.courses.allincludinghidden.length > 0 &&
-                    typeof this.courses.allincludinghidden[0].displayname != 'undefined') {
-                this.filteredCourses = this.courses.allincludinghidden.filter((course) =>
-                    course.displayname && course.displayname.toLowerCase().indexOf(newValue) > -1);
-            } else {
-                this.filteredCourses = this.courses.allincludinghidden.filter((course) =>
-                    course.fullname.toLowerCase().indexOf(newValue) > -1);
+        if (layouts === undefined) {
+            this.isLayoutSwitcherAvailable = true;
+
+            return;
+        }
+
+        layouts.forEach((layout) => {
+            if (layout == '') {
+                return;
             }
+
+            const validLayout: AddonBlockMyOverviewLayouts = layout == 'summary' ? 'list' : layout as AddonBlockMyOverviewLayouts;
+            if (!layoutsOptions.includes(validLayout)) {
+                layoutsOptions.push(validLayout);
+            }
+        });
+
+        // If no layout is available use list.
+        if (layoutsOptions.length == 0) {
+            layoutsOptions.push('list');
+        }
+
+        if (!layoutsOptions.includes(this.layout)) {
+            this.layout = layoutsOptions[0];
+        }
+
+        this.isLayoutSwitcherAvailable = layoutsOptions.length > 1;
+    }
+
+    /**
+     * Refresh course list based on a EVENT_MY_COURSES_UPDATED event.
+     *
+     * @param data Event data.
+     * @return Promise resolved when done.
+     */
+    protected async refreshCourseList(data: CoreCoursesMyCoursesUpdatedEventData): Promise<void> {
+        if (data.action == CoreCoursesProvider.ACTION_ENROL) {
+            // Always update if user enrolled in a course.
+            return await this.refreshContent();
+        }
+
+        const course = this.allCourses.find((course) => course.id == data.courseId);
+        if (data.action == CoreCoursesProvider.ACTION_STATE_CHANGED) {
+            if (!course) {
+                // Not found, use WS update.
+                return await this.refreshContent();
+            }
+
+            if (data.state == CoreCoursesProvider.STATE_FAVOURITE) {
+                course.isfavourite = !!data.value;
+            }
+
+            if (data.state == CoreCoursesProvider.STATE_HIDDEN) {
+                course.hidden = !!data.value;
+            }
+
+            await this.invalidateCourseList();
+            await this.filterCourses();
+        }
+
+        if (data.action == CoreCoursesProvider.ACTION_VIEW && data.courseId != CoreSites.getCurrentSiteHomeId()) {
+            if (!course) {
+                // Not found, use WS update.
+                return await this.refreshContent();
+            }
+
+            course.lastaccess = CoreTimeUtils.timestamp();
+
+            await this.invalidateCourseList();
+            await this.filterCourses();
         }
     }
 
     /**
      * Initialize the prefetch icon for selected courses.
+     *
+     * @return Promise resolved when done.
      */
-    protected initPrefetchCoursesIcons(): void {
-        if (this.prefetchIconsInitialized || !this.downloadEnabled) {
+    async initPrefetchCoursesIcons(): Promise<void> {
+        if (this.prefetchIconsInitialized) {
             // Already initialized.
             return;
         }
 
         this.prefetchIconsInitialized = true;
 
-        Object.keys(this.prefetchCoursesData).forEach(async (filter) => {
-            this.prefetchCoursesData[filter] =
-                await CoreCourseHelper.initPrefetchCoursesIcons(this.courses[filter], this.prefetchCoursesData[filter]);
-        });
+        this.prefetchCoursesData = await CoreCourseHelper.initPrefetchCoursesIcons(this.filteredCourses, this.prefetchCoursesData);
     }
 
     /**
@@ -382,201 +406,208 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * @return Promise resolved when done.
      */
     async prefetchCourses(): Promise<void> {
-        const selected = this.selectedFilter;
-        const initialIcon = this.prefetchCoursesData[selected].icon;
+        const initialIcon = this.prefetchCoursesData.icon;
 
         try {
-            await CoreCourseHelper.prefetchCourses(this.courses[selected], this.prefetchCoursesData[selected]);
+            await CoreCourseHelper.prefetchCourses(this.filteredCourses, this.prefetchCoursesData);
         } catch (error) {
             if (!this.isDestroyed) {
                 CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
-                this.prefetchCoursesData[selected].icon = initialIcon;
+                this.prefetchCoursesData.icon = initialIcon;
             }
         }
     }
 
     /**
-     * Refresh the list of courses.
+     * Text filter changed.
      *
-     * @return Promise resolved when done.
+     * @param target Searchbar element.
      */
-    protected async refreshCourseList(): Promise<void> {
-        CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_REFRESHED);
+    filterTextChanged(target: IonSearchbar): void {
+        this.textFilter = target.value || '';
 
-        try {
-            await CoreCourses.invalidateUserCourses();
-        } catch (error) {
-            // Ignore errors.
-        }
-
-        await this.loadContent(true);
-    }
-
-    /**
-     * The selected courses filter have changed.
-     *
-     * @param filter New filter
-     */
-    selectedChanged(filter: string): void {
-        this.selectedFilter = filter;
-        this.setCourseFilter(this.selectedFilter);
+        this.filterCourses();
     }
 
     /**
      * Set selected courses filter.
-     *
-     * @param filter Filter name to set.
      */
-    protected async setCourseFilter(filter: string): Promise<void> {
-        this.selectedFilter = filter;
+    protected async filterCourses(): Promise<void> {
+        let timeFilter = this.filters.timeFilterSelected;
 
-        if (this.showFilters.custom == 'show' && filter.startsWith('custom-') &&
-            typeof this.customFilter[filter.substr(7)] != 'undefined') {
+        this.filteredCourses = this.allCourses;
 
-            const filterName = this.block.configsRecord!.customfiltergrouping.value;
-            const filterValue = this.customFilter[filter.substr(7)].value;
+        if (this.filters.show.custom && timeFilter.startsWith('custom-')) {
+            // Custom filter.
+            const customFilterName = this.block.configsRecord?.customfiltergrouping.value;
+            const customFilterValue = this.filters.customFilters[timeFilter.substring(7)]?.value;
 
-            this.loaded = false;
-            try {
-                const courses = await CoreCourses.getEnrolledCoursesByCustomField(filterName, filterValue);
+            if (customFilterName !== undefined && customFilterValue !== undefined) {
+                this.loaded = false;
+                try {
+                    const courses = await CoreCourses.getEnrolledCoursesByCustomField(customFilterName, customFilterValue);
 
-                // Get the courses information from allincludinghidden to get the max info about the course.
-                const courseIds = courses.map((course) => course.id);
+                    // Get the courses information from allincludinghidden to get the max info about the course.
+                    const courseIds = courses.map((course) => course.id);
 
-                this.filteredCourses = this.courses.allincludinghidden.filter((allCourse) =>
-                    courseIds.indexOf(allCourse.id) !== -1);
-            } catch (error) {
-                CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError);
-            } finally {
-                this.loaded = true;
+                    this.filteredCourses = this.filteredCourses.filter((course) => courseIds.includes(course.id));
+                } catch (error) {
+                    CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError);
+                } finally {
+                    this.loaded = true;
+                }
             }
+        } else {
+            // Filter is not active, take the first active or all. Custom is never saved.
+            if (!this.filters.show[timeFilter]) {
+                timeFilter = FILTER_PRIORITY.find((name) => this.filters.show[name]) || 'all';
+            }
+            this.saveFilters(timeFilter);
 
+            // Update today date.
+            this.today = Date.now();
+
+            // Apply filters.
+            switch(timeFilter) {
+                case 'allincludinghidden':
+                    // No nothing, it's all courses.
+                    break;
+                case 'all':
+                    this.filteredCourses = this.filteredCourses.filter((course) => !course.hidden);
+                    break;
+                case 'inprogress':
+                    this.filteredCourses = this.filteredCourses.filter((course) =>
+                        !course.hidden &&
+                        !CoreCoursesHelper.isPastCourse(course, this.gradePeriodAfter) &&
+                        !CoreCoursesHelper.isFutureCourse(course, this.gradePeriodAfter, this.gradePeriodBefore));
+                    break;
+                case 'future':
+                    this.filteredCourses = this.filteredCourses.filter((course) =>
+                        !course.hidden &&
+                        CoreCoursesHelper.isFutureCourse(course, this.gradePeriodAfter, this.gradePeriodBefore));
+                    break;
+                case 'past':
+                    this.filteredCourses = this.filteredCourses.filter((course) =>
+                        !course.hidden &&
+                        CoreCoursesHelper.isPastCourse(course, this.gradePeriodAfter));
+                    break;
+                case 'favourite':
+                    this.filteredCourses = this.filteredCourses.filter((course) => !course.hidden && course.isfavourite);
+                    break;
+                case 'hidden':
+                    this.filteredCourses = this.filteredCourses.filter((course) => course.hidden);
+                    break;
+            }
+        }
+
+        // Text filter.
+        const value = this.textFilter.trim().toLowerCase();
+        if (value != '' && this.filteredCourses.length > 0) {
+            // Use displayname if available, or fullname if not.
+            if (this.filteredCourses[0].displayname !== undefined) {
+                this.filteredCourses = this.filteredCourses.filter((course) =>
+                    course.displayname && course.displayname.toLowerCase().indexOf(value) > -1);
+            } else {
+                this.filteredCourses = this.filteredCourses.filter((course) =>
+                    course.fullname.toLowerCase().indexOf(value) > -1);
+            }
+        }
+
+        this.sortCourses(this.sort.selected);
+
+        // Refresh prefetch data (if enabled).
+        this.prefetchIconsInitialized = false;
+        this.initPrefetchCoursesIcons();
+    }
+
+    /**
+     * Sort courses
+     *
+     * @param sort Sort by value.
+     */
+    sortCourses(sort: string): void {
+        if (!this.sort.enabled) {
             return;
         }
 
-        // Only save the filter if not a custom one.
-        this.currentSite?.setLocalSiteConfig('AddonBlockMyOverviewFilter', filter);
-
-        if (this.showFilters[filter] == 'show') {
-            this.filteredCourses = this.courses[filter];
-        } else {
-            const activeFilter = FILTER_PRIORITY.find((name) => this.showFilters[name] == 'show');
-
-            if (activeFilter) {
-                this.setCourseFilter(activeFilter);
-            }
-        }
-    }
-
-    /**
-     * Init courses filters.
-     *
-     * @param courses Courses to filter.
-     */
-    initCourseFilters(courses: CoreEnrolledCourseDataWithOptions[]): void {
-        this.courses.allincludinghidden = courses;
-
-        if (this.showSortFilter) {
-            if (this.sort == 'lastaccess') {
-                courses.sort((a, b) => (b.lastaccess || 0) - (a.lastaccess || 0));
-            } else if (this.sort == 'fullname') {
-                courses.sort((a, b) => {
-                    const compareA = a.fullname.toLowerCase();
-                    const compareB = b.fullname.toLowerCase();
-
-                    return compareA.localeCompare(compareB);
-                });
-            } else if (this.sort == 'shortname') {
-                courses.sort((a, b) => {
-                    const compareA = a.shortname.toLowerCase();
-                    const compareB = b.shortname.toLowerCase();
-
-                    return compareA.localeCompare(compareB);
-                });
-            }
+        if (this.sort.selected != sort) {
+            this.saveSort(sort);
         }
 
-        this.courses.all = [];
-        this.courses.past = [];
-        this.courses.inprogress = [];
-        this.courses.future = [];
-        this.courses.favourite = [];
-        this.courses.hidden = [];
+        if (this.sort.selected == 'lastaccess') {
+            this.filteredCourses.sort((a, b) => (b.lastaccess || 0) - (a.lastaccess || 0));
+        } else if (this.sort.selected == 'fullname') {
+            this.filteredCourses.sort((a, b) => {
+                const compareA = a.fullname.toLowerCase();
+                const compareB = b.fullname.toLowerCase();
 
-        const today = CoreTimeUtils.timestamp();
-        courses.forEach((course) => {
-            if (course.hidden) {
-                this.courses.hidden.push(course);
-            } else {
-                this.courses.all.push(course);
+                return compareA.localeCompare(compareB);
+            });
+        } else if (this.sort.selected == 'shortname') {
+            this.filteredCourses.sort((a, b) => {
+                const compareA = a.shortname.toLowerCase();
+                const compareB = b.shortname.toLowerCase();
 
-                if ((course.enddate && course.enddate < today) || course.completed) {
-                    // Courses that have already ended.
-                    this.courses.past.push(course);
-                } else if (course.startdate && course.startdate > today) {
-                    // Courses that have not started yet.
-                    this.courses.future.push(course);
-                } else {
-                    // Courses still in progress.
-                    this.courses.inprogress.push(course);
-                }
-
-                if (course.isfavourite) {
-                    this.courses.favourite.push(course);
-                }
-            }
-        });
-
-        this.setCourseFilter(this.selectedFilter);
-    }
-
-    /**
-     * The selected courses sort filter have changed.
-     *
-     * @param sort New sorting.
-     */
-    switchSort(sort: string): void {
-        this.sort = sort;
-        this.currentSite?.setLocalSiteConfig('AddonBlockMyOverviewSort', this.sort);
-        this.initCourseFilters(this.courses.allincludinghidden);
-    }
-
-    /**
-     * Show or hide the filter.
-     */
-    switchFilter(): void {
-        this.showFilter = !this.showFilter;
-        this.courses.filter = '';
-
-        if (this.showFilter) {
-            this.filteredCourses = this.courses.allincludinghidden;
-        } else {
-            this.setCourseFilter(this.selectedFilter);
-        }
-    }
-
-    /**
-     * Popover closed after clicking switch filter.
-     */
-    switchFilterClosed(): void {
-        if (this.showFilter) {
-            setTimeout(() => {
-                this.searchbar?.setFocus();
+                return compareA.localeCompare(compareB);
             });
         }
     }
 
     /**
-     * If switch button that enables the filter input is shown or not.
+     * Saves filters value.
      *
-     * @return If switch button that enables the filter input is shown or not.
+     * @param timeFilter New time filter.
+     * @return Promise resolved when done.
      */
-    showFilterSwitchButton(): boolean {
-        return this.loaded && this.courses.allincludinghidden && this.courses.allincludinghidden.length > 5;
+    async saveFilters(timeFilter: string): Promise<void> {
+        this.filters.timeFilterSelected = timeFilter;
+        await this.currentSite.setLocalSiteConfig('AddonBlockMyOverviewFilter', timeFilter);
     }
 
     /**
-     * Component being destroyed.
+     * Toggle layout value.
+     *
+     * @param layout New layout.
+     * @return Promise resolved when done.
+     */
+    async toggleLayout(layout: AddonBlockMyOverviewLayouts): Promise<void> {
+        this.layout = layout;
+
+        await this.currentSite.setLocalSiteConfig('AddonBlockMyOverviewLayout', this.layout);
+    }
+
+    /**
+     * Saves sort courses value.
+     *
+     * @param sort New sorting.
+     * @return Promise resolved when done.
+     */
+    async saveSort(sort: string): Promise<void> {
+        this.sort.selected = sort;
+
+        await this.currentSite.setLocalSiteConfig('AddonBlockMyOverviewSort', this.sort.selected);
+    }
+
+    /**
+     * Option selected save and apply filter.
+     *
+     * @param selected Option selected.
+     * @return Promise resolved when done.
+     */
+    async filterOptionsChanged(selected: AddonBlockMyOverviewTimeFilters): Promise<void> {
+        this.filters.timeFilterSelected = selected;
+        this.filterCourses();
+    }
+
+    /**
+     * Go to search courses.
+     */
+    async openSearch(): Promise<void> {
+        CoreNavigator.navigateToSitePath('courses/list', { params : { mode: 'search' } });
+    }
+
+    /**
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.isDestroyed = true;
@@ -585,3 +616,31 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     }
 
 }
+
+type AddonBlockMyOverviewLayouts = 'card'|'list';
+type AddonBlockMyOverviewTimeFilters = 'allincludinghidden'|'all'|'inprogress'|'future'|'past'|'favourite'|'hidden';
+
+export type AddonBlockMyOverviewFilterOptions = {
+    enabled: boolean;
+    show: {
+        allincludinghidden: boolean;
+        all: boolean;
+        inprogress: boolean;
+        future: boolean;
+        past: boolean;
+        favourite: boolean;
+        hidden: boolean;
+        custom: boolean;
+    };
+    timeFilterSelected: string;
+    customFilters: {
+        name: string;
+        value: string;
+    }[];
+};
+
+type AddonBlockMyOverviewSortOptions = {
+    shortnameEnabled: boolean;
+    selected: string;
+    enabled: boolean;
+};

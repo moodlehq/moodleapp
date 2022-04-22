@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { Translate } from '@singletons';
 import { ModalOptions } from '@ionic/core';
 import { CoreDomUtils } from '@services/utils/dom';
+import { IonSelect } from '@ionic/angular';
 
 /**
  * Component that show a combo select button (combobox).
@@ -39,9 +40,10 @@ import { CoreDomUtils } from '@services/utils/dom';
     selector: 'core-combobox',
     templateUrl: 'core-combobox.html',
     styleUrls: ['combobox.scss'],
-    encapsulation: ViewEncapsulation.ShadowDom,
 })
 export class CoreComboboxComponent {
+
+    @ViewChild(IonSelect) select!: IonSelect;
 
     @Input() interface: 'popover' | 'modal' = 'popover';
     @Input() label = Translate.instant('core.show'); // Aria label.
@@ -51,26 +53,36 @@ export class CoreComboboxComponent {
 
     // Additional options when interface modal is selected.
     @Input() icon?: string; // Icon for modal interface.
-    @Input() protected modalOptions?: ModalOptions; // Will emit an event the value changed.
+    @Input() modalOptions?: ModalOptions; // Will emit an event the value changed.
     @Input() listboxId = '';
 
     expanded = false;
 
-    async showModal(): Promise<void> {
-        if (this.expanded || !this.modalOptions) {
-            return;
-        }
-        this.expanded = true;
+    /**
+     * Shows combobox modal.
+     *
+     * @param event Event.
+     * @return Promise resolved when done.
+     */
+    async openSelect(event?: UIEvent): Promise<void> {
+        if (this.interface == 'modal') {
+            if (this.expanded || !this.modalOptions) {
+                return;
+            }
+            this.expanded = true;
 
-        if (this.listboxId) {
-            this.modalOptions.id = this.listboxId;
-        }
+            if (this.listboxId) {
+                this.modalOptions.id = this.listboxId;
+            }
 
-        const data = await CoreDomUtils.openModal(this.modalOptions);
-        this.expanded = false;
+            const data = await CoreDomUtils.openModal(this.modalOptions);
+            this.expanded = false;
 
-        if (data) {
-            this.onChange.emit(data);
+            if (data) {
+                this.onChange.emit(data);
+            }
+        } else if (this.select) {
+            this.select.open(event);
         }
     }
 

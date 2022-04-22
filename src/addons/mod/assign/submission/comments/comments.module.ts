@@ -31,8 +31,7 @@ import { CoreCommentsComponentsModule } from '@features/comments/components/comp
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 AddonModAssignSubmissionDelegate.registerHandler(AddonModAssignSubmissionCommentsHandler.instance);
             },
         },

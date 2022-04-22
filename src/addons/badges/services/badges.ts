@@ -39,7 +39,7 @@ export class AddonBadgesProvider {
     async isPluginEnabled(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
 
-        return site.canUseAdvancedFeature('enablebadges') && site.wsAvailable('core_course_get_user_navigation_options');
+        return site.canUseAdvancedFeature('enablebadges');
     }
 
     /**
@@ -83,7 +83,7 @@ export class AddonBadgesProvider {
             badge.alignment = badge.alignment || badge.competencies;
 
             // Check that the alignment is valid, they were broken in 3.7.
-            if (badge.alignment && badge.alignment[0] && typeof badge.alignment[0].targetname == 'undefined') {
+            if (badge.alignment && badge.alignment[0] && badge.alignment[0].targetname === undefined) {
                 // If any badge lacks targetname it means they are affected by the Moodle bug, don't display them.
                 delete badge.alignment;
             }
@@ -194,7 +194,7 @@ export type AddonBadgesUserBadge = {
         targetframework?: string; // Target framework.
         targetcode?: string; // Target code.
     }[];
-    competencies?: { // @deprecated from 3.7. @since 3.6. In 3.7 it was renamed to alignment.
+    competencies?: { // @deprecatedonmoodle from 3.7. @since 3.6. In 3.7 it was renamed to alignment.
         id?: number; // Alignment id.
         badgeid?: number; // Badge id.
         targetname?: string; // Target name.

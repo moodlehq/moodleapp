@@ -1,4 +1,9 @@
 :host {
+    .core-swipe-slides-container ion-grid {
+        flex: none;
+        width: 100%;
+    }
+
     .addon-calendar-period {
         flex-grow: 3;
         h3 {

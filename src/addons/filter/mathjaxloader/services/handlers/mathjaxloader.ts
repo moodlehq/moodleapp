@@ -86,7 +86,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
 
         // Update MathJax locale if app language changes.
         CoreEvents.on(CoreEvents.LANGUAGE_CHANGED, (lang: string) => {
-            if (typeof this.window.MathJax == 'undefined') {
+            if (this.window.MathJax === undefined) {
                 return;
             }
 
@@ -190,7 +190,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
     protected insertSpan(text: string, start: number, end: number): string {
         return CoreTextUtils.substrReplace(
             text,
-            '<span class="nolink">' + text.substr(start, end - start + 1) + '</span>',
+            '<span class="nolink">' + text.substring(start, end + 1) + '</span>',
             start,
             end - start + 1,
         );
@@ -223,7 +223,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
                 if (!this._configured) {
                     const lang = this._lang;
 
-                    if (typeof that.window.MathJax != 'undefined') {
+                    if (that.window.MathJax !== undefined) {
                         that.window.MathJax.Hub.Queue(() => {
                             that.window.MathJax.Localization.setLocale(lang);
                         });
@@ -238,7 +238,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
                     this._setLocale();
                 }
 
-                if (typeof that.window.MathJax != 'undefined') {
+                if (that.window.MathJax !== undefined) {
                     const processDelay = that.window.MathJax.Hub.processSectionDelay;
                     // Set the process section delay to 0 when updating the formula.
                     that.window.MathJax.Hub.processSectionDelay = 0;
@@ -265,7 +265,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
      */
     protected fixUseUrls(node: Element): void {
         Array.from(node.querySelectorAll('use')).forEach((useElem) => {
-            useElem.setAttribute('href', useElem.href.baseVal.substr(useElem.href.baseVal.indexOf('#')));
+            useElem.setAttribute('href', useElem.href.baseVal.substring(useElem.href.baseVal.indexOf('#')));
         });
     }
 

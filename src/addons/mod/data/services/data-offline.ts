@@ -19,6 +19,7 @@ import { CoreSites } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
+import { CoreText } from '@singletons/text';
 import { AddonModDataAction, AddonModDataEntryWSField } from './data';
 import { AddonModDataEntryDBRecord, DATA_ENTRY_TABLE } from './database/data';
 
@@ -206,7 +207,7 @@ export class AddonModDataOfflineProvider {
         const siteFolderPath = CoreFile.getSiteFolder(site.getId());
         const folderPath = 'offlinedatabase/' + dataId;
 
-        return CoreTextUtils.concatenatePaths(siteFolderPath, folderPath);
+        return CoreText.concatenatePaths(siteFolderPath, folderPath);
     }
 
     /**
@@ -221,7 +222,7 @@ export class AddonModDataOfflineProvider {
     async getEntryFieldFolder(dataId: number, entryId: number, fieldId: number, siteId?: string): Promise<string> {
         const folderPath = await this.getDatabaseFolder(dataId, siteId);
 
-        return CoreTextUtils.concatenatePaths(folderPath, entryId + '_' + fieldId);
+        return CoreText.concatenatePaths(folderPath, entryId + '_' + fieldId);
     }
 
     /**
@@ -262,7 +263,7 @@ export class AddonModDataOfflineProvider {
         const site = await CoreSites.getSite(siteId);
 
         timemodified = timemodified || new Date().getTime();
-        entryId = typeof entryId == 'undefined' || entryId === null ? -timemodified : entryId;
+        entryId = entryId === undefined || entryId === null ? -timemodified : entryId;
 
         const entry: AddonModDataEntryDBRecord = {
             dataid: dataId,

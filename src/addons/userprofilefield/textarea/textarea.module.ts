@@ -32,9 +32,9 @@ import { CoreEditorComponentsModule } from '@features/editor/components/componen
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () =>
-                CoreUserProfileFieldDelegate.registerHandler(AddonUserProfileFieldTextareaHandler.instance),
+            useValue: () => {
+                CoreUserProfileFieldDelegate.registerHandler(AddonUserProfileFieldTextareaHandler.instance);
+            },
         },
     ],
     exports: [

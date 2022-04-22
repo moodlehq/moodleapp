@@ -17,6 +17,7 @@ import { CoreSites } from '@services/sites';
 import { CoreMainMenuHomeHandler, CoreMainMenuHomeHandlerToDisplay } from '@features/mainmenu/services/home-delegate';
 import { CoreSiteHome } from '../sitehome';
 import { makeSingleton } from '@singletons';
+import { CoreSiteInfoUserHomepage } from '@classes/site';
 
 /**
  * Handler to add site home into home page.
@@ -27,7 +28,7 @@ export class CoreSiteHomeHomeHandlerService implements CoreMainMenuHomeHandler {
     static readonly PAGE_NAME = 'site';
 
     name = 'CoreSiteHomeDashboard';
-    priority = 1200;
+    priority = 1100;
 
     /**
      * Check if the handler is enabled on a site level.
@@ -55,14 +56,15 @@ export class CoreSiteHomeHomeHandlerService implements CoreMainMenuHomeHandler {
      */
     getDisplayData(): CoreMainMenuHomeHandlerToDisplay {
         const site = CoreSites.getCurrentSite();
-        const displaySiteHome = site?.getInfo() && site?.getInfo()?.userhomepage === 0;
+
+        const displaySiteHome = site?.getInfo() && site?.getInfo()?.userhomepage === CoreSiteInfoUserHomepage.HOMEPAGE_SITE;
 
         return {
             title: 'core.sitehome.sitehome',
             page: CoreSiteHomeHomeHandlerService.PAGE_NAME,
             class: 'core-sitehome-dashboard-handler',
             icon: 'fas-home',
-            selectPriority: displaySiteHome ? 1100 : 900,
+            priority: displaySiteHome ? this.priority + 200 : this.priority,
         };
     }
 

@@ -31,8 +31,7 @@ import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 AddonModAssignFeedbackDelegate.registerHandler(AddonModAssignFeedbackCommentsHandler.instance);
             },
         },

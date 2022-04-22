@@ -27,6 +27,13 @@ import { CoreUserLinkDirective } from './user-link';
 import { CoreAriaButtonClickDirective } from './aria-button';
 import { CoreOnResizeDirective } from './on-resize';
 import { CoreDownloadFileDirective } from './download-file';
+import { CoreCollapsibleHeaderDirective } from './collapsible-header';
+import { CoreSwipeNavigationDirective } from './swipe-navigation';
+import { CoreCollapsibleItemDirective } from './collapsible-item';
+import { CoreCollapsibleFooterDirective } from './collapsible-footer';
+import { CoreContentDirective } from './content';
+import { CoreUpdateNonReactiveAttributesDirective } from './update-non-reactive-attributes';
+import { CoreUserTourDirective } from './user-tour';
 
 @NgModule({
     declarations: [
@@ -43,6 +50,13 @@ import { CoreDownloadFileDirective } from './download-file';
         CoreAriaButtonClickDirective,
         CoreOnResizeDirective,
         CoreDownloadFileDirective,
+        CoreCollapsibleHeaderDirective,
+        CoreSwipeNavigationDirective,
+        CoreCollapsibleItemDirective,
+        CoreCollapsibleFooterDirective,
+        CoreContentDirective,
+        CoreUpdateNonReactiveAttributesDirective,
+        CoreUserTourDirective,
     ],
     exports: [
         CoreAutoFocusDirective,
@@ -58,6 +72,13 @@ import { CoreDownloadFileDirective } from './download-file';
         CoreAriaButtonClickDirective,
         CoreOnResizeDirective,
         CoreDownloadFileDirective,
+        CoreCollapsibleHeaderDirective,
+        CoreSwipeNavigationDirective,
+        CoreCollapsibleItemDirective,
+        CoreCollapsibleFooterDirective,
+        CoreContentDirective,
+        CoreUpdateNonReactiveAttributesDirective,
+        CoreUserTourDirective,
     ],
 })
 export class CoreDirectivesModule {}

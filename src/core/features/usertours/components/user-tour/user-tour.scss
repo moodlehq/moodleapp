@@ -1,0 +1,62 @@
+:host {
+    --popover-background: var(--ion-overlay-background-color, var(--ion-background-color, #fff));
+
+    z-index: 99;
+    width: 100%;
+    height: 100%;
+    display: none;
+    color: white;
+
+    .user-tour-focus {
+        position: absolute;
+        box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.75);
+    }
+
+    .user-tour-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.75);
+    }
+
+    .user-tour-wrapper {
+        position: absolute;
+    }
+
+    &.is-active {
+        display: block;
+    }
+
+    &.is-popover .user-tour-wrapper {
+        color: var(--ion-text-color, #000);
+        background: var(--popover-background);
+        width: 70vw;
+        max-width: 400px;
+        padding: 16px;
+        border-radius: 8px;
+
+        .user-tour-wrapper-arrow {
+            position: absolute;
+            border-style: solid;
+            border-color: transparent;
+        }
+
+    }
+
+    &:not(.is-popover) .user-tour-wrapper {
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+}
+
+:host-context(body.dark) {
+    --popover-background: var(--gray-700);
+}

@@ -3,21 +3,24 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>{{ title | translate }}</h1>
-        <ion-buttons slot="end"></ion-buttons>
+        <ion-title>
+            <h1>{{ title | translate }}</h1>
+        </ion-title>
+        <ion-buttons slot="end">
+            <core-user-menu-button></core-user-menu-button>
+        </ion-buttons>
     </ion-toolbar>
 </ion-header>
-<ion-content>
+<ion-content class="limited-width">
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refresh($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
         <ion-item *ngIf="showMyEntriesToggle">
-            <ion-label>{{ 'addon.blog.showonlyyourentries' | translate }}</ion-label>
+            <ion-label>{{ 'addon.blog.showonlyyourentries' | translate }}</ion-label>
             <ion-toggle [(ngModel)]="onlyMyEntries" (ionChange)="onlyMyEntriesToggleChanged(onlyMyEntries)"></ion-toggle>
         </ion-item>
-        <core-empty-box *ngIf="entries && entries.length == 0" icon="far-newspaper"
-            [message]="'addon.blog.noentriesyet' | translate">
+        <core-empty-box *ngIf="entries && entries.length == 0" icon="far-newspaper" [message]="'addon.blog.noentriesyet' | translate">
         </core-empty-box>
         <ng-container *ngFor="let entry of entries">
             <ion-card *ngIf="!onlyMyEntries || entry.userid == currentUserId">
@@ -25,8 +28,7 @@
                     <core-user-avatar [user]="entry.user" slot="start" [courseId]="entry.courseid"></core-user-avatar>
                     <ion-label>
                         <p class="item-heading">
-                            <core-format-text [text]="entry.subject" [contextLevel]="contextLevel"
-                                [contextInstanceId]="contextInstanceId">
+                            <core-format-text [text]="entry.subject" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId">
                             </core-format-text>
                             <ion-note class="ion-float-end ion-padding-start ion-text-end">
                                 {{ 'addon.blog.' + entry.publishTranslated! | translate}}
@@ -66,8 +68,9 @@
                 </ion-card-content>
                 <div class="ion-text-center ion-margin-bottom" *ngIf="entry.lastmodified > entry.created">
                     <ion-note>
-                        <ion-icon name="fas-clock"
-                            [attr.aria-label]="'core.lastmodified' | translate"></ion-icon> {{entry.lastmodified | coreTimeAgo}}
+                        <ion-icon name="fas-clock" [attr.aria-label]="'core.lastmodified' | translate"></ion-icon> {{entry.lastmodified
+                        |
+                        coreTimeAgo}}
                     </ion-note>
                 </div>
             </ion-card>

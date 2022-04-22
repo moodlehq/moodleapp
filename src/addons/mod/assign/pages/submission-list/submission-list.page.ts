@@ -13,29 +13,24 @@
 // limitations under the License.
 
 import { Component, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
-import { Params } from '@angular/router';
-import { CorePageItemsListManager } from '@classes/page-items-list-manager';
+import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
+import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { IonRefresher } from '@ionic/angular';
-import { CoreGroupInfo, CoreGroups } from '@services/groups';
+import { CoreGroupInfo } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
-    AddonModAssignAssign,
-    AddonModAssignSubmission,
-    AddonModAssignProvider,
-    AddonModAssign,
-    AddonModAssignGrade,
-} from '../../services/assign';
-import { AddonModAssignHelper, AddonModAssignSubmissionFormatted } from '../../services/assign-helper';
-import { AddonModAssignOffline } from '../../services/assign-offline';
+    AddonModAssignListFilterName,
+    AddonModAssignSubmissionForList,
+    AddonModAssignSubmissionsSource,
+} from '../../classes/submissions-source';
+import { AddonModAssignAssign, AddonModAssignProvider } from '../../services/assign';
 import {
     AddonModAssignSyncProvider,
-    AddonModAssignSync,
     AddonModAssignManualSyncData,
     AddonModAssignAutoSyncData,
 } from '../../services/assign-sync';
@@ -51,48 +46,26 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
-    title = ''; // Title to display.
-    assign?: AddonModAssignAssign; // Assignment.
-    submissions: AddonModAssignSubmissionListManager; // List of submissions
-    loaded = false; // Whether data has been loaded.
-    haveAllParticipants = true; // Whether all participants have been loaded.
-    groupId = 0; // Group ID to show.
-    courseId!: number; // Course ID the assignment belongs to.
-    moduleId!: number; // Module ID the submission belongs to.
+    title = '';
+    submissions!: CoreListItemsManager<AddonModAssignSubmissionForList, AddonModAssignSubmissionsSource>; // List of submissions
 
-    groupInfo: CoreGroupInfo = {
-        groups: [],
-        separateGroups: false,
-        visibleGroups: false,
-        defaultGroupId: 0,
-    };
-
-    protected selectedStatus?: string; // The status to see.
     protected gradedObserver: CoreEventObserver; // Observer to refresh data when a grade changes.
     protected syncObserver: CoreEventObserver; // Observer to refresh data when the async is synchronized.
-    protected submissionsData: { canviewsubmissions: boolean; submissions?: AddonModAssignSubmission[] } = {
-        canviewsubmissions: false,
-    };
+    protected sourceUnsubscribe?: () => void;
 
     constructor() {
-        this.submissions = new AddonModAssignSubmissionListManager(AddonModAssignSubmissionListPage);
-
         // Update data if some grade changes.
         this.gradedObserver = CoreEvents.on(
             AddonModAssignProvider.GRADED_EVENT,
             (data) => {
                 if (
-                    this.loaded &&
-                    this.assign &&
-                    data.assignmentId == this.assign.id &&
+                    this.submissions.loaded &&
+                    this.submissions.getSource().assign &&
+                    data.assignmentId == this.submissions.getSource().assign?.id &&
                     data.userId == CoreSites.getCurrentSiteUserId()
                 ) {
                     // Grade changed, refresh the data.
-                    this.loaded = false;
-
-                    this.refreshAllData(true).finally(() => {
-                        this.loaded = true;
-                    });
+                    this.refreshAllData(true);
                 }
             },
             CoreSites.getCurrentSiteId(),
@@ -103,40 +76,85 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
         this.syncObserver = CoreEvents.onMultiple<AddonModAssignAutoSyncData | AddonModAssignManualSyncData>(
             events,
             (data) => {
-                if (!this.loaded || ('context' in data && data.context == 'submission-list')) {
+                if (!this.submissions.loaded || ('context' in data && data.context == 'submission-list')) {
                     return;
                 }
 
-                this.loaded = false;
-
-                this.refreshAllData(false).finally(() => {
-                    this.loaded = true;
-                });
+                this.refreshAllData(false);
             },
             CoreSites.getCurrentSiteId(),
         );
+
+        try {
+            const moduleId = CoreNavigator.getRequiredRouteNumberParam('cmId');
+            const courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            const groupId = CoreNavigator.getRouteNumberParam('groupId') || 0;
+            const selectedStatus = CoreNavigator.getRouteParam<AddonModAssignListFilterName>('status');
+            const submissionsSource = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
+                AddonModAssignSubmissionsSource,
+                [courseId, moduleId, selectedStatus],
+            );
+
+            submissionsSource.groupId = groupId;
+            this.sourceUnsubscribe = submissionsSource.addListener({
+                onItemsUpdated: () => {
+                    this.title = this.submissions.getSource().assign?.name || this.title;
+                },
+            });
+
+            this.submissions = new CoreListItemsManager(
+                submissionsSource,
+                AddonModAssignSubmissionListPage,
+            );
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
+    }
+
+    get assign(): AddonModAssignAssign | undefined {
+        return this.submissions.getSource().assign;
+    }
+
+    get groupInfo(): CoreGroupInfo {
+        return this.submissions.getSource().groupInfo;
+    }
+
+    get moduleId(): number {
+        return this.submissions.getSource().MODULE_ID;
+    }
+
+    get courseId(): number {
+        return this.submissions.getSource().COURSE_ID;
+    }
+
+    get groupId(): number {
+        return this.submissions.getSource().groupId;
+    }
+
+    set groupId(value: number) {
+        this.submissions.getSource().groupId = value;
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngAfterViewInit(): void {
-        this.moduleId = CoreNavigator.getRouteNumberParam('cmId')!;
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.groupId = CoreNavigator.getRouteNumberParam('groupId') || 0;
-        this.selectedStatus = CoreNavigator.getRouteParam('status');
+        const selectedStatus = this.submissions.getSource().SELECTED_STATUS;
+        this.title = Translate.instant(
+            selectedStatus
+                ? (
+                    selectedStatus === AddonModAssignListFilterName.NEED_GRADING
+                        ? 'addon.mod_assign.numberofsubmissionsneedgrading'
+                        : `addon.mod_assign.submissionstatus_${selectedStatus}`
+                )
+                : 'addon.mod_assign.numberofparticipants',
+        );
 
-        if (this.selectedStatus) {
-            if (this.selectedStatus == AddonModAssignProvider.NEED_GRADING) {
-                this.title = Translate.instant('addon.mod_assign.numberofsubmissionsneedgrading');
-            } else {
-                this.title = Translate.instant('addon.mod_assign.submissionstatus_' + this.selectedStatus);
-            }
-        } else {
-            this.title = Translate.instant('addon.mod_assign.numberofparticipants');
-        }
         this.fetchAssignment(true).finally(() => {
-            this.loaded = true;
             this.submissions.start(this.splitView);
         });
     }
@@ -149,156 +167,10 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
      */
     protected async fetchAssignment(sync = false): Promise<void> {
         try {
-            // Get assignment data.
-            this.assign = await AddonModAssign.getAssignment(this.courseId, this.moduleId);
-
-            this.title = this.assign.name || this.title;
-
-            if (sync) {
-                try {
-                    // Try to synchronize data.
-                    const result = await AddonModAssignSync.syncAssign(this.assign.id);
-
-                    if (result && result.updated) {
-                        CoreEvents.trigger(
-                            AddonModAssignSyncProvider.MANUAL_SYNCED,
-                            {
-                                assignId: this.assign.id,
-                                warnings: result.warnings,
-                                gradesBlocked: result.gradesBlocked,
-                                context: 'submission-list',
-                            },
-                            CoreSites.getCurrentSiteId(),
-                        );
-                    }
-                } catch (error) {
-                    // Ignore errors, probably user is offline or sync is blocked.
-                }
-            }
-
-            // Get assignment submissions.
-            this.submissionsData = await AddonModAssign.getSubmissions(this.assign.id, { cmId: this.assign.cmid });
-
-            if (!this.submissionsData.canviewsubmissions) {
-                // User shouldn't be able to reach here.
-                throw new Error('Cannot view submissions.');
-            }
-
-            // Check if groupmode is enabled to avoid showing wrong numbers.
-            this.groupInfo = await CoreGroups.getActivityGroupInfo(this.assign.cmid, false);
-
-            await this.setGroup(CoreGroups.validateGroupId(this.groupId, this.groupInfo));
+            await this.submissions.getSource().loadAssignment(sync);
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error getting assigment data.');
         }
-    }
-
-    /**
-     * Set group to see the summary.
-     *
-     * @param groupId Group ID.
-     * @return Resolved when done.
-     */
-    async setGroup(groupId: number): Promise<void> {
-        this.groupId = groupId;
-
-        this.haveAllParticipants = true;
-
-        if (!CoreSites.getCurrentSite()?.wsAvailable('mod_assign_list_participants')) {
-            // Submissions are not displayed in Moodle 3.1 without the local plugin, see MOBILE-2968.
-            this.haveAllParticipants = false;
-            this.submissions.resetItems();
-
-            return;
-        }
-
-        // Fetch submissions and grades.
-        const submissions =
-            await AddonModAssignHelper.getSubmissionsUserData(
-                this.assign!,
-                this.submissionsData.submissions,
-                this.groupId,
-            );
-        // Get assignment grades only if workflow is not enabled to check grading date.
-        const grades = !this.assign!.markingworkflow
-            ? await AddonModAssign.getAssignmentGrades(this.assign!.id, { cmId: this.assign!.cmid })
-            : [];
-
-        // Filter the submissions to get only the ones with the right status and add some extra data.
-        const getNeedGrading = this.selectedStatus == AddonModAssignProvider.NEED_GRADING;
-        const searchStatus = getNeedGrading ? AddonModAssignProvider.SUBMISSION_STATUS_SUBMITTED : this.selectedStatus;
-
-        const promises: Promise<void>[] = [];
-        const showSubmissions: AddonModAssignSubmissionForList[] = [];
-
-        submissions.forEach((submission: AddonModAssignSubmissionForList) => {
-            if (!searchStatus || searchStatus == submission.status) {
-                promises.push(
-                    CoreUtils.ignoreErrors(
-                        AddonModAssignOffline.getSubmissionGrade(this.assign!.id, submission.userid),
-                    ).then(async (data) => {
-                        if (getNeedGrading) {
-                            // Only show the submissions that need to be graded.
-                            const add = await AddonModAssign.needsSubmissionToBeGraded(submission, this.assign!.id);
-
-                            if (!add) {
-                                return;
-                            }
-                        }
-
-                        // Load offline grades.
-                        const notSynced = !!data && submission.timemodified < data.timemodified;
-
-                        if (submission.gradingstatus == 'graded' && !this.assign!.markingworkflow) {
-                            // Get the last grade of the submission.
-                            const grade = grades
-                                .filter((grade) => grade.userid == submission.userid)
-                                .reduce(
-                                    (a, b) => (a && a.timemodified > b.timemodified ? a : b),
-                                    <AddonModAssignGrade | undefined> undefined,
-                                );
-
-                            if (grade && grade.timemodified < submission.timemodified) {
-                                submission.gradingstatus = AddonModAssignProvider.GRADED_FOLLOWUP_SUBMIT;
-                            }
-                        }
-                        submission.statusColor = AddonModAssign.getSubmissionStatusColor(submission.status);
-                        submission.gradingColor = AddonModAssign.getSubmissionGradingStatusColor(
-                            submission.gradingstatus,
-                        );
-
-                        // Show submission status if not submitted for grading.
-                        if (submission.statusColor != 'success' || !submission.gradingstatus) {
-                            submission.statusTranslated = Translate.instant(
-                                'addon.mod_assign.submissionstatus_' + submission.status,
-                            );
-                        } else {
-                            submission.statusTranslated = '';
-                        }
-
-                        if (notSynced) {
-                            submission.gradingStatusTranslationId = 'addon.mod_assign.gradenotsynced';
-                            submission.gradingColor = '';
-                        } else if (submission.statusColor != 'danger' || submission.gradingColor != 'danger') {
-                            // Show grading status if one of the statuses is not done.
-                            submission.gradingStatusTranslationId = AddonModAssign.getSubmissionGradingStatusTranslationId(
-                                submission.gradingstatus,
-                            );
-                        } else {
-                            submission.gradingStatusTranslationId = '';
-                        }
-
-                        showSubmissions.push(submission);
-
-                        return;
-                    }),
-                );
-            }
-        });
-
-        await Promise.all(promises);
-
-        this.submissions.setItems(showSubmissions);
     }
 
     /**
@@ -308,18 +180,8 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
      * @return Promise resolved when done.
      */
     protected async refreshAllData(sync?: boolean): Promise<void> {
-        const promises: Promise<void>[] = [];
-
-        promises.push(AddonModAssign.invalidateAssignmentData(this.courseId));
-        if (this.assign) {
-            promises.push(AddonModAssign.invalidateAllSubmissionData(this.assign.id));
-            promises.push(AddonModAssign.invalidateAssignmentUserMappingsData(this.assign.id));
-            promises.push(AddonModAssign.invalidateAssignmentGradesData(this.assign.id));
-            promises.push(AddonModAssign.invalidateListParticipantsData(this.assign.id));
-        }
-
         try {
-            await Promise.all(promises);
+            await this.submissions.getSource().invalidateCache();
         } finally {
             this.fetchAssignment(sync);
         }
@@ -337,49 +199,20 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
     }
 
     /**
+     * Reload submissions list.
+     */
+    async reloadSubmissions(): Promise<void> {
+        await this.submissions.reload();
+    }
+
+    /**
      * Component being destroyed.
      */
     ngOnDestroy(): void {
         this.gradedObserver?.off();
         this.syncObserver?.off();
         this.submissions.destroy();
+        this.sourceUnsubscribe && this.sourceUnsubscribe();
     }
 
 }
-
-/**
- * Helper class to manage submissions.
- */
-class AddonModAssignSubmissionListManager extends CorePageItemsListManager<AddonModAssignSubmissionForList> {
-
-    constructor(pageComponent: unknown) {
-        super(pageComponent);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getItemPath(submission: AddonModAssignSubmissionForList): string {
-        return String(submission.submitid);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getItemQueryParams(submission: AddonModAssignSubmissionForList): Params {
-        return {
-            blindId: submission.blindid,
-        };
-    }
-
-}
-
-/**
- * Calculated data for an assign submission.
- */
-type AddonModAssignSubmissionForList = AddonModAssignSubmissionFormatted & {
-    statusColor?: string; // Calculated in the app. Color of the submission status.
-    gradingColor?: string; // Calculated in the app. Color of the submission grading status.
-    statusTranslated?: string; // Calculated in the app. Translated text of the submission status.
-    gradingStatusTranslationId?: string; // Calculated in the app. Key of the text of the submission grading status.
-};

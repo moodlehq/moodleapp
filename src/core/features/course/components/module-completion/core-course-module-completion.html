@@ -1,32 +1,66 @@
-<div *ngIf="showCompletionConditions && completion && completion.isautomatic" class="core-module-automatic-completion-conditions"
-    role="list" [attr.aria-label]="'core.course.completionrequirements' | translate:{ $a: moduleName }">
+<ng-container *ngIf="completion">
+    <ng-container *ngIf="showCompletionConditions && completion.isautomatic">
+        <div *ngIf="mode == 'full'" class="core-module-automatic-completion-conditions" role="list"
+            [attr.aria-label]="'core.course.completionrequirements' | translate:{ $a: moduleName }">
 
-    <ng-container *ngIf="completion.istrackeduser">
-        <ng-container *ngFor="let rule of details">
-            <ion-badge *ngIf="rule.statuscomplete" color="success" role="listitem"
-                [attr.aria-label]="rule.accessibleDescription">
-                <strong>{{ 'core.course.completion_automatic:done' | translate }}</strong> {{ rule.rulevalue.description }}
-            </ion-badge>
+            <ng-container *ngIf="completion.istrackeduser">
+                <ng-container *ngFor="let rule of details">
+                    <ion-chip *ngIf="rule.statuscomplete" color="success" role="listitem" [attr.aria-label]="rule.accessibleDescription"
+                        class="completioninfo completion_complete">
+                        <ion-icon name="fas-check" [attr.aria-label]="'core.course.completion_automatic:done' | translate "></ion-icon>
+                        <ion-label>
+                            {{ rule.rulevalue.description }}
+                        </ion-label>
+                    </ion-chip>
 
-            <ion-badge *ngIf="rule.statuscompletefail" color="danger" role="listitem"
-                [attr.aria-label]="rule.accessibleDescription">
-                <strong>{{ 'core.course.completion_automatic:failed' | translate }}</strong> {{ rule.rulevalue.description }}
-            </ion-badge>
+                    <ion-chip *ngIf="rule.statuscompletefail" color="danger" role="listitem" [attr.aria-label]="rule.accessibleDescription"
+                        class="completioninfo completion_fail">
+                        <ion-icon name="fas-times" [attr.aria-label]="'core.course.completion_automatic:failed' | translate "></ion-icon>
+                        <ion-label>
+                            {{ rule.rulevalue.description }}
+                        </ion-label>
+                    </ion-chip>
 
-            <ion-badge *ngIf="rule.statusincomplete" color="medium" role="listitem"
-                [attr.aria-label]="rule.accessibleDescription">
-                <strong>{{ 'core.course.completion_automatic:todo' | translate }}</strong> {{ rule.rulevalue.description }}
-            </ion-badge>
+                    <ion-chip *ngIf="rule.statusincomplete" color="secondary" role="listitem" [attr.aria-label]="rule.accessibleDescription"
+                        class="completioninfo completion_incomplete">
+                        <ion-icon name="fas-edit" [attr.aria-label]="'core.course.completion_automatic:todo' | translate "></ion-icon>
+                        <ion-label>
+                            {{ rule.rulevalue.description }}
+                        </ion-label>
+                    </ion-chip>
+                </ng-container>
+            </ng-container>
+
+            <ng-container *ngIf="!completion.istrackeduser">
+                <ion-chip *ngFor="let rule of details" role="listitem" class="core-module-completion-todo">
+                    <ion-icon name="fas-edit" [attr.aria-label]="'core.course.completion_automatic:todo' | translate "></ion-icon>
+                    <ion-label>
+                        {{ rule.rulevalue.description }}
+                    </ion-label>
+                </ion-chip>
+            </ng-container>
+        </div>
+
+        <ng-container *ngIf="mode == 'basic' && completion.istrackeduser">
+            <ion-chip class="completioninfo completion_incomplete" *ngIf="completionStatus === 0" color="secondary">
+                <ion-icon name="fas-edit" aria-hidden="true"></ion-icon>
+                <ion-label>
+                    {{ 'core.course.todo' | translate }}
+                </ion-label>
+            </ion-chip>
+            <ion-chip class="completioninfo completion_complete" *ngIf="completionStatus === 1 || completionStatus === 2" color="success">
+                <ion-icon name="fas-check" aria-hidden="true"></ion-icon>
+                <ion-label>{{'core.course.done' | translate }}</ion-label>
+            </ion-chip>
+            <ion-chip class="completioninfo completion_fail" *ngIf="completionStatus === 3" color="danger">
+                <ion-icon name="fas-times" aria-hidden="true"></ion-icon>
+                <ion-label>{{'core.course.failed' | translate }}</ion-label>
+            </ion-chip>
         </ng-container>
     </ng-container>
 
-    <ng-container *ngIf="!completion.istrackeduser">
-        <ion-badge *ngFor="let rule of details" color="light" role="listitem">
-            {{ rule.rulevalue.description }}
-        </ion-badge>
-    </ng-container>
-</div>
 
-<core-course-module-manual-completion *ngIf="showManualCompletion" [completion]="completion" [moduleName]="moduleName"
-    (completionChanged)="completionChanged.emit($event)">
-</core-course-module-manual-completion>
+    <core-course-module-manual-completion *ngIf="showManualCompletion" [completion]="completion" [moduleName]="moduleName"
+        (completionChanged)="completionChanged.emit($event)" [mode]="mode">
+    </core-course-module-manual-completion>
+</ng-container>

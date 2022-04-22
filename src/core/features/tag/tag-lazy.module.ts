@@ -35,7 +35,7 @@ function buildRoutes(injector: Injector): Routes {
             data: {
                 mainMenuTabRoot: CoreTagMainMenuHandlerService.PAGE_NAME,
             },
-            loadChildren: () => import('@features/tag//pages/search/search.page.module').then(m => m.CoreTagSearchPageModule),
+            loadChildren: () => import('@features/tag/pages/search/search.page.module').then(m => m.CoreTagSearchPageModule),
         },
         CoreTagIndexAreaRoute,
         ...buildTabMainRoutes(injector, {

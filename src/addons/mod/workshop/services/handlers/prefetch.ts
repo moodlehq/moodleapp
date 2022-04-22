@@ -16,6 +16,7 @@ import { AddonModDataSyncResult } from '@addons/mod/data/services/data-sync';
 import { Injectable } from '@angular/core';
 import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/activity-prefetch-handler';
 import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
+import { CoreCourses } from '@features/courses/services/courses';
 import { CoreUser } from '@features/user/services/user';
 import { CoreFilepool } from '@services/filepool';
 import { CoreGroup, CoreGroups } from '@services/groups';
@@ -159,7 +160,7 @@ export class AddonModWorkshopPrefetchHandlerService extends CoreCourseActivityPr
             return {
                 workshop,
                 groups,
-                files: files.filter((file) => typeof file !== 'undefined'),
+                files: files.filter((file) => file !== undefined),
             };
         } catch (error) {
             if (options.omitFail) {
@@ -167,7 +168,7 @@ export class AddonModWorkshopPrefetchHandlerService extends CoreCourseActivityPr
                 return {
                     workshop,
                     groups,
-                    files: files.filter((file) => typeof file !== 'undefined'),
+                    files: files.filter((file) => file !== undefined),
                 };
             }
 
@@ -198,13 +199,6 @@ export class AddonModWorkshopPrefetchHandlerService extends CoreCourseActivityPr
 
         // Check if workshop is setup by phase.
         return accessData.canswitchphase || workshop.phase > AddonModWorkshopPhase.PHASE_SETUP;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    async isEnabled(): Promise<boolean> {
-        return AddonModWorkshop.isPluginEnabled();
     }
 
     /**
@@ -369,8 +363,11 @@ export class AddonModWorkshopPrefetchHandlerService extends CoreCourseActivityPr
         }));
 
         // Add Basic Info to manage links.
-        promises.push(CoreCourse.getModuleBasicInfoByInstance(workshop.id, 'workshop', siteId));
+        promises.push(CoreCourse.getModuleBasicInfoByInstance(workshop.id, 'workshop', { siteId }));
         promises.push(CoreCourse.getModuleBasicGradeInfo(module.id, siteId));
+
+        // Get course data, needed to determine upload max size if it's configured to be course limit.
+        promises.push(CoreUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));
 
         await Promise.all(promises);
 
@@ -382,7 +379,7 @@ export class AddonModWorkshopPrefetchHandlerService extends CoreCourseActivityPr
      * @inheritdoc
      */
     async sync(module: CoreCourseAnyModuleData, courseId: number, siteId?: string): Promise<AddonModDataSyncResult> {
-        return AddonModWorkshopSync.syncWorkshop(module.instance!, siteId);
+        return AddonModWorkshopSync.syncWorkshop(module.instance, siteId);
     }
 
 }

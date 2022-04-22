@@ -176,12 +176,15 @@ export class AddonModFeedbackHelperProvider {
         const modal = await CoreDomUtils.showModalLoading();
 
         try {
-            const module = await CoreCourse.getModuleBasicInfo(Number(params.id), siteId);
+            const module = await CoreCourse.getModuleBasicInfo(
+                Number(params.id),
+                { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+            );
 
-            if (typeof params.showcompleted == 'undefined') {
+            if (params.showcompleted === undefined) {
                 // Param showcompleted not defined. Show entry list.
                 await CoreNavigator.navigateToSitePath(
-                    AddonModFeedbackModuleHandlerService.PAGE_NAME + `/${module.course}/${module.id}/respondents`,
+                    AddonModFeedbackModuleHandlerService.PAGE_NAME + `/${module.course}/${module.id}/attempts`,
                     { siteId },
                 );
 
@@ -269,7 +272,7 @@ export class AddonModFeedbackHelperProvider {
 
         if (type == MODE_COURSE || type == MODE_CATEGORY) {
             formItem.presentation = formItem.otherdata;
-            formItem.value = typeof formItem.rawValue != 'undefined' ? formItem.rawValue : formItem.otherdata;
+            formItem.value = formItem.rawValue !== undefined ? formItem.rawValue : formItem.otherdata;
         } else if (type == MODE_RESPONSETIME) {
             formItem.value = '__CURRENT__TIMESTAMP__';
 
@@ -298,7 +301,7 @@ export class AddonModFeedbackHelperProvider {
 
         const formItem: AddonModFeedbackNumericItem = Object.assign(item, {
             templateName: 'numeric',
-            value: typeof item.rawValue != 'undefined' ? Number(item.rawValue) : '',
+            value: item.rawValue !== undefined ? Number(item.rawValue) : '',
             rangefrom: typeof rangeFrom == 'number' && !isNaN(rangeFrom) ? range[0] : '',
             rangeto: typeof rangeTo == 'number' && !isNaN(rangeTo) ? rangeTo : '',
             hasTextInput: true,
@@ -318,7 +321,7 @@ export class AddonModFeedbackHelperProvider {
         return Object.assign(item, {
             templateName: 'textfield',
             length: Number(item.presentation.split(AddonModFeedbackProvider.LINE_SEP)[1]) || 255,
-            value: typeof item.rawValue != 'undefined' ? item.rawValue : '',
+            value: item.rawValue !== undefined ? item.rawValue : '',
             hasTextInput: true,
         });
     }
@@ -332,7 +335,7 @@ export class AddonModFeedbackHelperProvider {
     protected getItemFormTextarea(item: AddonModFeedbackItem): AddonModFeedbackFormBasicItem {
         return Object.assign(item, {
             templateName: 'textarea',
-            value: typeof item.rawValue != 'undefined' ? item.rawValue : '',
+            value: item.rawValue !== undefined ? item.rawValue : '',
             hasTextInput: true,
         });
     }
@@ -373,12 +376,12 @@ export class AddonModFeedbackHelperProvider {
 
         if (formItem.subtype === 'r' && formItem.options.search(AddonModFeedbackProvider.MULTICHOICE_HIDENOSELECT) == -1) {
             formItem.choices.unshift({ value: 0, label: Translate.instant('addon.mod_feedback.not_selected') });
-            formItem.value = typeof formItem.rawValue != 'undefined' ? Number(formItem.rawValue) : 0;
+            formItem.value = formItem.rawValue !== undefined ? Number(formItem.rawValue) : 0;
         } else if (formItem.subtype === 'd') {
             formItem.choices.unshift({ value: 0, label: '' });
-            formItem.value = typeof formItem.rawValue != 'undefined' ? Number(formItem.rawValue) : 0;
+            formItem.value = formItem.rawValue !== undefined ? Number(formItem.rawValue) : 0;
         } else if (formItem.subtype === 'c') {
-            if (typeof formItem.rawValue != 'undefined') {
+            if (formItem.rawValue !== undefined) {
                 formItem.rawValue = String(formItem.rawValue);
                 const values = formItem.rawValue.split(AddonModFeedbackProvider.LINE_SEP);
                 formItem.choices.forEach((choice) => {
@@ -392,7 +395,7 @@ export class AddonModFeedbackHelperProvider {
                 });
             }
         } else {
-            formItem.value = typeof formItem.rawValue != 'undefined' ? Number(formItem.rawValue) : '';
+            formItem.value = formItem.rawValue !== undefined ? Number(formItem.rawValue) : '';
         }
 
         return formItem;

@@ -87,7 +87,6 @@ export class CoreGradesProvider {
 
     /**
      * Get the grade items for a certain module. Keep in mind that may have more than one item to include outcomes and scales.
-     * Fallback function only used if 'gradereport_user_get_grade_items' WS is not available Moodle < 3.2.
      *
      * @param courseId ID of the course to get the grades from.
      * @param userId ID of the user to get the grades from. If not defined use site's current user.
@@ -102,26 +101,14 @@ export class CoreGradesProvider {
         groupId?: number,
         siteId?: string,
         ignoreCache: boolean = false,
-    ): Promise<CoreGradesGradeItem[] | CoreGradesTable> {
+    ): Promise<CoreGradesGradeItem[]> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         const site = await CoreSites.getSite(siteId);
 
         userId = userId || site.getUserId();
 
-        const enabled = await this.isGradeItemsAvailable(siteId);
-
-        if (enabled) {
-            try {
-                const items = await this.getCourseGradesItems(courseId, userId, groupId, siteId, ignoreCache);
-
-                return items;
-            } catch {
-                // Ignore while solving MDL-57255 (fixed on 3.2.1)
-            }
-        }
-
-        return this.getCourseGradesTable(courseId, userId, siteId, ignoreCache);
+        return await this.getCourseGradesItems(courseId, userId, groupId, siteId, ignoreCache);
     }
 
     /**
@@ -212,7 +199,7 @@ export class CoreGradesProvider {
         const table = await site.read<CoreGradesGetUserGradesTableWSResponse>('gradereport_user_get_grades_table', params, preSets);
 
         if (!table?.tables?.[0]) {
-            throw new CoreError('Coudln\'t get course grades table');
+            throw new CoreError('Couldn\'t get course grades table');
         }
 
         return table.tables[0];
@@ -307,16 +294,11 @@ export class CoreGradesProvider {
      *
      * @param siteId Site ID. If not defined, current site.
      * @return Resolve with true if plugin is enabled, false otherwise.
-     * @since Moodle 3.2
      */
     async isCourseGradesEnabled(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
 
-        if (!site.wsAvailable('gradereport_overview_get_course_grades')) {
-            return false;
-        }
-
-        // Now check that the configurable mygradesurl is pointing to the gradereport_overview plugin.
+        // Check that the configurable mygradesurl is pointing to the gradereport_overview plugin.
         const url = site.getStoredConfig('mygradesurl') || '';
 
         return url.indexOf('/grade/report/overview/') !== -1;
@@ -336,7 +318,7 @@ export class CoreGradesProvider {
 
         const course = await CoreCourses.getUserCourse(courseId, true, siteId);
 
-        return !(course && typeof course.showgrades != 'undefined' && !course.showgrades);
+        return !(course && course.showgrades !== undefined && !course.showgrades);
     }
 
     /**
@@ -344,12 +326,10 @@ export class CoreGradesProvider {
      *
      * @param siteId Site ID. If not defined, current site.
      * @return True if ws is available, false otherwise.
-     * @since Moodle 3.2
+     * @deprecated since app 4.0
      */
-    async isGradeItemsAvailable(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.getSite(siteId);
-
-        return site.wsAvailable('gradereport_user_get_grade_items');
+    async isGradeItemsAvailable(): Promise<boolean> {
+        return true;
     }
 
     /**

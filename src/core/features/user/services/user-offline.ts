@@ -61,7 +61,7 @@ export class CoreUserOfflineProvider {
     async setPreference(name: string, value: string, onlineValue?: string, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
-        if (typeof onlineValue == 'undefined') {
+        if (onlineValue === undefined) {
             const preference = await this.getPreference(name, site.id);
 
             onlineValue = preference.onlinevalue;

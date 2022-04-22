@@ -16,9 +16,8 @@ import { Injectable, Type } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '../module-delegate';
-import { CoreCourse, CoreCourseAnyModuleData, CoreCourseWSModule } from '../course';
-import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
-import { CoreCourseModule } from '../course-helper';
+import { CoreCourse } from '../course';
+import { CoreCourseModuleData } from '../course-helper';
 import { CoreCourseUnsupportedModuleComponent } from '@features/course/components/unsupported-module/unsupported-module';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 
@@ -30,47 +29,37 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
 
     name = 'CoreCourseModuleDefault';
     modName = 'default';
+    protected pageName = '';
 
     /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @return True or promise resolved with true if enabled.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         return true;
     }
 
     /**
-     * Get the data required to display the module in the course contents view.
-     *
-     * @param module The module object.
-     * @param courseId The course ID.
-     * @param sectionId The section ID.
-     * @return Data to render the module.
+     * @inheritdoc
      */
-    getData(
-        module: CoreCourseAnyModuleData,
-        courseId: number, // eslint-disable-line @typescript-eslint/no-unused-vars
-        sectionId?: number, // eslint-disable-line @typescript-eslint/no-unused-vars
-        forCoursePage?: boolean, // eslint-disable-line @typescript-eslint/no-unused-vars
-    ): CoreCourseModuleHandlerData {
+    async getData(
+        module: CoreCourseModuleData,
+    ): Promise<CoreCourseModuleHandlerData> {
         // Return the default data.
         const defaultData: CoreCourseModuleHandlerData = {
-            icon: CoreCourse.getModuleIconSrc(module.modname, 'modicon' in module ? module.modicon : undefined),
+            icon: await CoreCourse.getModuleIconSrc(module.modname, module.modicon),
             title: module.name,
             class: 'core-course-default-handler core-course-module-' + module.modname + '-handler',
-            action: (event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions) => {
+            action: async (event: Event, module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions) => {
                 event.preventDefault();
                 event.stopPropagation();
 
-                options = options || {};
-                options.params = { module };
-
-                CoreNavigator.navigateToSitePath('course/' + courseId + '/unsupported-module', options);
+                await this.openActivityPage(module, courseId, options);
             },
         };
 
         if ('url' in module && module.url) {
+            const url = module.url;
+
             defaultData.buttons = [{
                 icon: 'fas-external-link-alt',
                 label: 'core.openinbrowser',
@@ -78,7 +67,7 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
                     e.preventDefault();
                     e.stopPropagation();
 
-                    CoreSites.getCurrentSite()!.openInBrowserWithAutoLoginIfSameSite(module.url!);
+                    CoreSites.getRequiredCurrentSite().openInBrowserWithAutoLoginIfSameSite(url);
                 },
             }];
         }
@@ -87,27 +76,28 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
     }
 
     /**
-     * Get the component to render the module. This is needed to support singleactivity course format.
-     * The component returned must implement CoreCourseModuleMainComponent.
-     * It's recommended to return the class of the component, but you can also return an instance of the component.
-     *
-     * @param course The course object.
-     * @param module The module object.
-     * @return The component (or promise resolved with component) to use, undefined if not found.
+     * @inheritdoc
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async getMainComponent(course: CoreCourseAnyCourseData, module: CoreCourseWSModule): Promise<Type<unknown> | undefined> {
+    async getMainComponent(): Promise<Type<unknown>> {
         return CoreCourseUnsupportedModuleComponent;
     }
 
     /**
-     * Whether to display the course refresher in single activity course format. If it returns false, a refresher must be
-     * included in the template that calls the doRefresh method of the component. Defaults to true.
-     *
-     * @return Whether the refresher should be displayed.
+     * @inheritdoc
      */
     displayRefresherInSingleActivity(): boolean {
         return true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async openActivityPage(module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions): Promise<void> {
+        options = options || {};
+        options.params = options.params || {};
+        Object.assign(options.params, { module });
+
+        await CoreNavigator.navigateToSitePath('course/' + courseId + '/' + module.id +'/module-preview', options);
     }
 
 }

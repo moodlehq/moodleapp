@@ -107,7 +107,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
         // Sync all conversations.
         conversationIds.forEach((conversationId) => {
             promises.push(this.syncDiscussion(conversationId, undefined, siteId).then((result) => {
-                if (typeof result == 'undefined') {
+                if (result === undefined) {
                     return;
                 }
 
@@ -120,7 +120,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
 
         userIds.forEach((userId) => {
             promises.push(this.syncDiscussion(undefined, userId, siteId).then((result) => {
-                if (typeof result == 'undefined') {
+                if (result === undefined) {
                     return;
                 }
 
@@ -147,9 +147,10 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
 
         const syncId = this.getSyncId(conversationId, userId);
 
-        if (this.isSyncing(syncId, siteId)) {
+        const currentSyncPromise = this.getOngoingSync(syncId, siteId);
+        if (currentSyncPromise) {
             // There's already a sync ongoing for this conversation, return the promise.
-            return this.getOngoingSync(syncId, siteId)!;
+            return currentSyncPromise;
         }
 
         return this.addOngoingSync(syncId, this.performSyncDiscussion(conversationId, userId, siteId), siteId);

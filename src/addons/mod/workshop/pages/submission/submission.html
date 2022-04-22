@@ -3,10 +3,12 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>
-            <core-format-text *ngIf="title" [text]="title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
-            </core-format-text>
-        </h1>
+        <ion-title>
+            <h1>
+                <core-format-text *ngIf="title" [text]="title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
+                </core-format-text>
+            </h1>
+        </ion-title>
         <ion-buttons slot="end" [hidden]="!loaded">
             <ion-button *ngIf="assessmentId && access.assessingallowed" fill="clear" (click)="saveAssessment()"
                 [attr.aria-label]="'core.save' | translate">
@@ -18,7 +20,7 @@
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
-<ion-content>
+<ion-content class="limited-width">
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshSubmission($event.target)"
         *ngIf="!((assessmentId && access.assessingallowed) || canAddFeedback)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
@@ -55,8 +57,7 @@
                     <h2 *ngIf="evaluateByProfile && evaluateByProfile.fullname">
                         {{ 'addon.mod_workshop.feedbackby' | translate : {$a: evaluateByProfile.fullname} }}
                     </h2>
-                    <core-format-text [text]="evaluate?.text" contextLevel="module" [contextInstanceId]="module.id"
-                        [courseId]="courseId">
+                    <core-format-text [text]="evaluate?.text" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
                     </core-format-text>
                 </ion-label>
             </ion-item>
@@ -68,8 +69,8 @@
                     <h2>{{ 'addon.mod_workshop.yourassessment' | translate }}</h2>
                 </ion-label>
             </ion-item>
-            <addon-mod-workshop-assessment [submission]="submission" [assessment]="ownAssessment" [courseId]="courseId"
-                [access]="access" [module]="module" [workshop]="workshop">
+            <addon-mod-workshop-assessment [submission]="submission" [assessment]="ownAssessment" [courseId]="courseId" [access]="access"
+                [module]="module" [workshop]="workshop">
             </addon-mod-workshop-assessment>
         </ion-list>
 
@@ -92,8 +93,8 @@
                     <h2>{{ 'addon.mod_workshop.givengrades' | translate }}</h2>
                 </ion-label>
             </ion-item>
-            <addon-mod-workshop-assessment *ngFor="let reviewer of submissionInfo.reviewerof" [assessment]="reviewer"
-                [courseId]="courseId" [module]="module" [workshop]="workshop" [access]="access">
+            <addon-mod-workshop-assessment *ngFor="let reviewer of submissionInfo.reviewerof" [assessment]="reviewer" [courseId]="courseId"
+                [module]="module" [workshop]="workshop" [access]="access">
             </addon-mod-workshop-assessment>
         </ion-list>
 
@@ -126,21 +127,20 @@
             </ion-item>
             <ion-item>
                 <ion-label position="stacked">{{ 'addon.mod_workshop.feedbackauthor' | translate }}</ion-label>
-                <core-rich-text-editor [control]="feedbackForm.controls['text']" name="text"
-                    [autoSave]="true" contextLevel="module" [contextInstanceId]="module.id" elementId="feedbackauthor_editor"
-                    [draftExtraParams]="{id: submissionId}">
+                <core-rich-text-editor [control]="feedbackForm.controls['text']" name="text" [autoSave]="true" contextLevel="module"
+                    [contextInstanceId]="module.id" elementId="feedbackauthor_editor" [draftExtraParams]="{id: submissionId}">
                 </core-rich-text-editor>
             </ion-item>
         </form>
 
-        <addon-mod-workshop-assessment-strategy *ngIf="assessmentId" [workshop]="workshop" [access]="access"
-            [assessmentId]="assessmentId" [userId]="assessmentUserId" [strategy]="strategy" [edit]="access.assessingallowed">
+        <addon-mod-workshop-assessment-strategy *ngIf="assessmentId" [workshop]="workshop" [access]="access" [assessmentId]="assessmentId"
+            [userId]="assessmentUserId" [strategy]="strategy" [edit]="access.assessingallowed">
         </addon-mod-workshop-assessment-strategy>
 
         <ion-list *ngIf="assessmentId && !access.assessingallowed && assessment?.feedbackreviewer">
             <ion-item class="ion-text-wrap">
-                <core-user-avatar *ngIf="evaluateGradingByProfile" [user]="evaluateGradingByProfile" slot="start"
-                    [courseId]="courseId" [userId]="evaluateGradingByProfile.id"></core-user-avatar>
+                <core-user-avatar *ngIf="evaluateGradingByProfile" [user]="evaluateGradingByProfile" slot="start" [courseId]="courseId"
+                    [userId]="evaluateGradingByProfile.id"></core-user-avatar>
                 <ion-label>
                     <h2 *ngIf="evaluateGradingByProfile && evaluateGradingByProfile.fullname">
                         {{ 'addon.mod_workshop.feedbackby' | translate : {$a: evaluateGradingByProfile.fullname} }}

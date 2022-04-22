@@ -22,7 +22,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning, CoreWSStoredFile } from '@services/ws';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { AddonModFeedbackOffline } from './feedback-offline';
 import { AddonModFeedbackAutoSyncData, AddonModFeedbackSyncProvider } from './feedback-sync';
 
@@ -87,7 +87,7 @@ export class AddonModFeedbackProvider {
         let values: AddonModFeedbackResponseValue[];
 
         if (subtype === 'c') {
-            if (typeof item.rawValue == 'undefined') {
+            if (item.rawValue === undefined) {
                 values = [''];
             } else {
                 item.rawValue = '' + item.rawValue;
@@ -146,7 +146,7 @@ export class AddonModFeedbackProvider {
             });
 
             filledItems.forEach((itemData) => {
-                if (itemData.hasvalue && typeof values[itemData.id] != 'undefined') {
+                if (itemData.hasvalue && values[itemData.id] !== undefined) {
                     itemData.rawValue = values[itemData.id];
                 }
             });
@@ -182,7 +182,7 @@ export class AddonModFeedbackProvider {
         });
 
         offlineValuesArray.forEach((value) => {
-            if (typeof offlineValues[value.item] == 'undefined') {
+            if (offlineValues[value.item] === undefined) {
                 offlineValues[value.item] = [];
             }
             offlineValues[value.item].push(value.value);
@@ -605,7 +605,7 @@ export class AddonModFeedbackProvider {
             return currentFeedback;
         }
 
-        throw new CoreError('Feedback not found.');
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
     /**
@@ -1087,20 +1087,6 @@ export class AddonModFeedbackProvider {
         };
 
         return CoreUtils.promiseWorks(site.read('mod_feedback_get_last_completed', params, preSets));
-    }
-
-    /**
-     * Return whether or not the plugin is enabled in a certain site. Plugin is enabled if the feedback WS are available.
-     *
-     * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
-     * @since 3.3
-     */
-    async isPluginEnabled(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.getSite(siteId);
-
-        return site.wsAvailable('mod_feedback_get_feedbacks_by_courses') &&
-                site.wsAvailable('mod_feedback_get_feedback_access_information');
     }
 
     /**

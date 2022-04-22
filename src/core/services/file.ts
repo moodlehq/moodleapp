@@ -26,6 +26,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreLogger } from '@singletons/logger';
 import { makeSingleton, File, Zip, Platform, WebView } from '@singletons';
 import { CoreFileEntry } from '@services/file-helper';
+import { CoreText } from '@singletons/text';
 
 /**
  * Progress event used when writing a file data into a file.
@@ -104,8 +105,6 @@ export class CoreFileProvider {
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreFileProvider');
-
-        // @todo: Check if redefining FileReader getters and setters is still needed in Android.
     }
 
     /**
@@ -159,7 +158,7 @@ export class CoreFileProvider {
      * @return Whether the plugin is available.
      */
     isAvailable(): boolean {
-        return typeof window.resolveLocalFileSystemURL !== 'undefined';
+        return window.resolveLocalFileSystemURL !== undefined;
     }
 
     /**
@@ -234,8 +233,8 @@ export class CoreFileProvider {
         } else {
             // The file plugin doesn't allow creating more than 1 level at a time (e.g. tmp/folder).
             // We need to create them 1 by 1.
-            const firstDir = path.substr(0, path.indexOf('/'));
-            const restOfPath = path.substr(path.indexOf('/') + 1);
+            const firstDir = path.substring(0, path.indexOf('/'));
+            const restOfPath = path.substring(path.indexOf('/') + 1);
 
             this.logger.debug('Create dir ' + firstDir + ' in ' + base);
 
@@ -694,7 +693,7 @@ export class CoreFileProvider {
      */
     async removeExternalFile(fullPath: string): Promise<void> {
         const directory = fullPath.substring(0, fullPath.lastIndexOf('/'));
-        const filename = fullPath.substr(fullPath.lastIndexOf('/') + 1);
+        const filename = fullPath.substring(fullPath.lastIndexOf('/') + 1);
 
         await File.removeFile(directory, filename);
     }
@@ -887,7 +886,7 @@ export class CoreFileProvider {
         };
 
         file.directory = path.substring(0, path.lastIndexOf('/'));
-        file.name = path.substr(path.lastIndexOf('/') + 1);
+        file.name = path.substring(path.lastIndexOf('/') + 1);
 
         return file;
     }
@@ -918,7 +917,7 @@ export class CoreFileProvider {
         if (path.indexOf(this.basePath) > -1) {
             return path;
         } else {
-            return CoreTextUtils.concatenatePaths(this.basePath, path);
+            return CoreText.concatenatePaths(this.basePath, path);
         }
     }
 
@@ -984,7 +983,7 @@ export class CoreFileProvider {
     async replaceInFile(path: string, search: string | RegExp, newValue: string): Promise<void> {
         let content = <string> await this.readFile(path);
 
-        if (typeof content == 'undefined' || content === null || !content.replace) {
+        if (content === undefined || content === null || !content.replace) {
             throw new CoreError(`Error reading file ${path}`);
         }
 
@@ -1037,7 +1036,7 @@ export class CoreFileProvider {
      */
     removeStartingSlash(path: string): string {
         if (path[0] == '/') {
-            return path.substr(1);
+            return path.substring(1);
         }
 
         return path;
@@ -1141,7 +1140,7 @@ export class CoreFileProvider {
      * @return Unique name.
      */
     calculateUniqueName(usedNames: Record<string, unknown>, name: string): string {
-        if (typeof usedNames[name.toLowerCase()] == 'undefined') {
+        if (usedNames[name.toLowerCase()] === undefined) {
             // No file with the same name.
             return name;
         }
@@ -1155,7 +1154,7 @@ export class CoreFileProvider {
         do {
             name = nameWithoutExtension + '(' + num + ')' + extension;
             num++;
-        } while (typeof usedNames[name.toLowerCase()] != 'undefined');
+        } while (usedNames[name.toLowerCase()] !== undefined);
 
         return name;
     }
@@ -1234,7 +1233,7 @@ export class CoreFileProvider {
         const position = window.location.href.indexOf(window.location.pathname);
 
         if (position != -1) {
-            return window.location.href.substr(0, position);
+            return window.location.href.substring(0, position);
         }
 
         return window.location.href;
@@ -1247,7 +1246,7 @@ export class CoreFileProvider {
      */
     getWWWAbsolutePath(): string {
         if (window.cordova && cordova.file && cordova.file.applicationDirectory) {
-            return CoreTextUtils.concatenatePaths(cordova.file.applicationDirectory, 'www');
+            return CoreText.concatenatePaths(cordova.file.applicationDirectory, 'www');
         }
 
         // Cannot use Cordova to get it, use the WebView URL.
@@ -1276,9 +1275,11 @@ export class CoreFileProvider {
             return src;
         }
 
-        const scheme = CoreApp.isIOS() ? CoreConstants.CONFIG.ioswebviewscheme : 'http';
+        if (CoreApp.isIOS()) {
+            return src.replace(CoreConstants.CONFIG.ioswebviewscheme + '://localhost/_app_file_', 'file://');
+        }
 
-        return src.replace(scheme + '://localhost/_app_file_', 'file://');
+        return src.replace('http://localhost/_app_file_', 'file://');
     }
 
     /**

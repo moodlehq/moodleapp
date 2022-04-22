@@ -14,8 +14,8 @@
 
 import { CoreFile, CoreFileProvider } from '@services/file';
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreText } from '@singletons/text';
 import { CoreH5PCore, CoreH5PLibraryBasicData } from './core';
 import { CoreH5PFramework } from './framework';
 import { CoreH5PMetadata } from './metadata';
@@ -94,7 +94,7 @@ export class CoreH5PStorage {
                 throw error;
             }
 
-            if (typeof libraryData.libraryId != 'undefined') {
+            if (libraryData.libraryId !== undefined) {
                 const promises: Promise<void>[] = [];
 
                 // Remove all indexes of contents that use this library.
@@ -119,24 +119,26 @@ export class CoreH5PStorage {
                 return;
             }
 
-            const libId = libraryData.libraryId;
-
-            libraryIds.push(libId);
+            libraryIds.push(libraryData.libraryId);
 
             // Remove any old dependencies.
-            await this.h5pFramework.deleteLibraryDependencies(libId, siteId);
+            await this.h5pFramework.deleteLibraryDependencies(libraryData.libraryId, siteId);
 
             // Insert the different new ones.
             const promises: Promise<void>[] = [];
 
-            if (typeof libraryData.preloadedDependencies != 'undefined') {
-                promises.push(this.h5pFramework.saveLibraryDependencies(libId, libraryData.preloadedDependencies, 'preloaded'));
+            if (libraryData.preloadedDependencies !== undefined) {
+                promises.push(this.h5pFramework.saveLibraryDependencies(
+                    libraryData,
+                    libraryData.preloadedDependencies,
+                    'preloaded',
+                ));
             }
-            if (typeof libraryData.dynamicDependencies != 'undefined') {
-                promises.push(this.h5pFramework.saveLibraryDependencies(libId, libraryData.dynamicDependencies, 'dynamic'));
+            if (libraryData.dynamicDependencies !== undefined) {
+                promises.push(this.h5pFramework.saveLibraryDependencies(libraryData, libraryData.dynamicDependencies, 'dynamic'));
             }
-            if (typeof libraryData.editorDependencies != 'undefined') {
-                promises.push(this.h5pFramework.saveLibraryDependencies(libId, libraryData.editorDependencies, 'editor'));
+            if (libraryData.editorDependencies !== undefined) {
+                promises.push(this.h5pFramework.saveLibraryDependencies(libraryData, libraryData.editorDependencies, 'editor'));
             }
 
             await Promise.all(promises);
@@ -173,6 +175,11 @@ export class CoreH5PStorage {
 
         const content: CoreH5PContentBeingSaved = {};
 
+        // Add the 'title' if exists from 'h5p.json' data to be able to add it to metadata later.
+        if (typeof data.mainJsonData.title === 'string') {
+            content.title = data.mainJsonData.title;
+        }
+
         if (!skipContent) {
             // Find main library version.
             if (data.mainJsonData.preloadedDependencies) {
@@ -192,8 +199,8 @@ export class CoreH5PStorage {
             await this.h5pCore.saveContent(content, folderName, fileUrl, siteId);
 
             // Save the content files in their right place in FS.
-            const destFolder = CoreTextUtils.concatenatePaths(CoreFileProvider.TMPFOLDER, 'h5p/' + folderName);
-            const contentPath = CoreTextUtils.concatenatePaths(destFolder, 'content');
+            const destFolder = CoreText.concatenatePaths(CoreFileProvider.TMPFOLDER, 'h5p/' + folderName);
+            const contentPath = CoreText.concatenatePaths(destFolder, 'content');
 
             try {
                 await this.h5pCore.h5pFS.saveContent(contentPath, folderName, siteId);
@@ -226,6 +233,7 @@ export type CoreH5PContentBeingSaved = {
     id?: number;
     params?: string;
     library?: CoreH5PContentLibrary;
+    title?: string;
 };
 
 export type CoreH5PContentLibrary = CoreH5PLibraryBasicData & {

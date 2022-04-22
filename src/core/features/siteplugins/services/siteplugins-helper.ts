@@ -38,7 +38,6 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreLang } from '@services/lang';
 import { CoreSites } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWS } from '@services/ws';
 import { CoreEvents } from '@singletons/events';
@@ -81,6 +80,11 @@ import { CoreMainMenuHomeDelegate } from '@features/mainmenu/services/home-deleg
 import { CoreSitePluginsMainMenuHomeHandler } from '../classes/handlers/main-menu-home-handler';
 import { AddonWorkshopAssessmentStrategyDelegate } from '@addons/mod/workshop/services/assessment-strategy-delegate';
 import { CoreSitePluginsWorkshopAssessmentStrategyHandler } from '../classes/handlers/workshop-assessment-strategy-handler';
+import { CoreContentLinksModuleIndexHandler } from '@features/contentlinks/classes/module-index-handler';
+import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
+import { CoreContentLinksModuleListHandler } from '@features/contentlinks/classes/module-list-handler';
+import { CoreObject } from '@singletons/object';
+import { CoreUrl } from '@singletons/url';
 
 const HANDLER_DISABLED = 'core_site_plugins_helper_handler_disabled';
 
@@ -160,11 +164,8 @@ export class CoreSitePluginsHelperProvider {
     ): Promise<string> {
         const site = await CoreSites.getSite(siteId);
 
-        // Get the absolute URL. If it's a relative URL, add the site URL to it.
-        let url = handlerSchema.styles?.url;
-        if (url && !CoreUrlUtils.isAbsoluteURL(url)) {
-            url = CoreTextUtils.concatenatePaths(site.getURL(), url);
-        }
+        // Make sure it's an absolute URL.
+        let url = handlerSchema.styles?.url ? CoreUrl.toAbsoluteURL(site.getURL(), handlerSchema.styles.url) : undefined;
 
         if (url && handlerSchema.styles?.version) {
             // Add the version to the URL to prevent getting a cached file.
@@ -191,6 +192,11 @@ export class CoreSitePluginsHelperProvider {
             return '';
         }
 
+        // Update the schema with the final CSS URL.
+        if (handlerSchema.styles) {
+            handlerSchema.styles.url = url;
+        }
+
         // Download the file if not downloaded or the version changed.
         const path = await CoreFilepool.downloadUrl(
             site.getId(),
@@ -202,7 +208,7 @@ export class CoreSitePluginsHelperProvider {
             undefined,
             undefined,
             undefined,
-            handlerSchema.styles!.version,
+            handlerSchema.styles?.version,
         );
 
         // File is downloaded, get the contents.
@@ -375,8 +381,9 @@ export class CoreSitePluginsHelperProvider {
 
         if (plugin.parsedHandlers) {
             // Register all the handlers.
-            await CoreUtils.allPromises(Object.keys(plugin.parsedHandlers).map(async (name) => {
-                await this.registerHandler(plugin, name, plugin.parsedHandlers![name]);
+            const parsedHandlers = plugin.parsedHandlers;
+            await CoreUtils.allPromises(Object.keys(parsedHandlers).map(async (name) => {
+                await this.registerHandler(plugin, name, parsedHandlers[name]);
             }));
         }
     }
@@ -611,9 +618,11 @@ export class CoreSitePluginsHelperProvider {
             if (result.jsResult) {
                 // Override default handler functions with the result of the method JS.
                 const jsResult = <Record<string, unknown>> result.jsResult;
-                for (const property in handler) {
-                    if (property != 'constructor' && typeof handler[property] == 'function' &&
-                            typeof jsResult[property] == 'function') {
+                const handlerProperties = CoreObject.getAllPropertyNames(handler);
+
+                for (const property of handlerProperties) {
+                    if (property !== 'constructor' && typeof handler[property] === 'function' &&
+                            typeof jsResult[property] === 'function') {
                         // eslint-disable-next-line @typescript-eslint/ban-types
                         handler[property] = (<Function> jsResult[property]).bind(handler);
                     }
@@ -886,15 +895,28 @@ export class CoreSitePluginsHelperProvider {
         const uniqueName = CoreSitePlugins.getHandlerUniqueName(plugin, handlerName);
         const modName = (handlerSchema.moodlecomponent || plugin.component).replace('mod_', '');
 
-        CoreCourseModuleDelegate.registerHandler(
-            new CoreSitePluginsModuleHandler(uniqueName, modName, plugin, handlerSchema, initResult),
-        );
+        const moduleHandler = new CoreSitePluginsModuleHandler(uniqueName, modName, plugin, handlerSchema, initResult);
+        CoreCourseModuleDelegate.registerHandler(moduleHandler);
+        CoreSitePlugins.setModuleHandlerInstance(modName, moduleHandler);
 
         if (handlerSchema.offlinefunctions && Object.keys(handlerSchema.offlinefunctions).length) {
             // Register the prefetch handler.
             CoreCourseModulePrefetchDelegate.registerHandler(
                 new CoreSitePluginsModulePrefetchHandler(plugin.component, uniqueName, modName, handlerSchema),
             );
+        }
+
+        // Create default link handlers if needed.
+        if (!moduleHandler.supportsNoViewLink() && handlerSchema.method && !handlerSchema.nolinkhandlers) {
+            const indexLinkHandler = new CoreContentLinksModuleIndexHandler(uniqueName, modName);
+            indexLinkHandler.name = uniqueName + '_indexlink';
+            indexLinkHandler.priority = -1; // Use -1 to give more priority to the plugins link handlers if any.
+            CoreContentLinksDelegate.registerHandler(indexLinkHandler);
+
+            const listLinkHandler = new CoreContentLinksModuleListHandler(uniqueName, modName);
+            listLinkHandler.name = uniqueName + '_listlink';
+            listLinkHandler.priority = -1; // Use -1 to give more priority to the plugins link handlers if any.
+            CoreContentLinksDelegate.registerHandler(listLinkHandler);
         }
 
         return uniqueName;

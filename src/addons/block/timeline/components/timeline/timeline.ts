@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { CoreTimeUtils } from '@services/utils/time';
 import { CoreSites } from '@services/sites';
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
 import { AddonBlockTimeline } from '../../services/timeline';
@@ -24,6 +23,7 @@ import { CoreCoursesHelper, CoreEnrolledCourseDataWithOptions } from '@features/
 import { CoreSite } from '@classes/site';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Component to render a timeline block.
@@ -31,12 +31,13 @@ import { CoreCourseOptionsDelegate } from '@features/course/services/course-opti
 @Component({
     selector: 'addon-block-timeline',
     templateUrl: 'addon-block-timeline.html',
+    styleUrls: ['timeline.scss'],
 })
 export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implements OnInit {
 
     sort = 'sortbydates';
     filter = 'next30days';
-    currentSite?: CoreSite;
+    currentSite!: CoreSite;
     timeline: {
         events: AddonCalendarEvent[];
         loaded: boolean;
@@ -57,24 +58,40 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
 
     dataFrom?: number;
     dataTo?: number;
+    overdue = false;
 
-    protected courseIds: number[] = [];
+    searchEnabled = false;
+    searchText = '';
+
+    protected courseIdsToInvalidate: number[] = [];
     protected fetchContentDefaultError = 'Error getting timeline data.';
+    protected gradePeriodAfter = 0;
+    protected gradePeriodBefore = 0;
 
     constructor() {
         super('AddonBlockTimelineComponent');
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.currentSite = CoreSites.getCurrentSite();
+        try {
+            this.currentSite = CoreSites.getRequiredCurrentSite();
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
 
-        this.filter = await this.currentSite!.getLocalSiteConfig('AddonBlockTimelineFilter', this.filter);
+            CoreNavigator.back();
+
+            return;
+        }
+
+        this.filter = await this.currentSite.getLocalSiteConfig('AddonBlockTimelineFilter', this.filter);
         this.switchFilter(this.filter);
 
-        this.sort = await this.currentSite!.getLocalSiteConfig('AddonBlockTimelineSort', this.sort);
+        this.sort = await this.currentSite.getLocalSiteConfig('AddonBlockTimelineSort', this.sort);
+
+        this.searchEnabled = this.currentSite.isVersionGreaterEqualThan('4.0');
 
         super.ngOnInit();
     }
@@ -91,8 +108,8 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
         promises.push(AddonBlockTimeline.invalidateActionEventsByCourses());
         promises.push(CoreCourses.invalidateUserCourses());
         promises.push(CoreCourseOptionsDelegate.clearAndInvalidateCoursesOptions());
-        if (this.courseIds.length > 0) {
-            promises.push(CoreCourses.invalidateCoursesByField('ids', this.courseIds.join(',')));
+        if (this.courseIdsToInvalidate.length > 0) {
+            promises.push(CoreCourses.invalidateCoursesByField('ids', this.courseIdsToInvalidate.join(',')));
         }
 
         return CoreUtils.allPromises(promises);
@@ -119,26 +136,20 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
 
     /**
      * Load more events.
-     */
-    async loadMoreTimeline(): Promise<void> {
-        try {
-            await this.fetchMyOverviewTimeline(this.timeline.canLoadMore);
-        } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError);
-        }
-    }
-
-    /**
-     * Load more events.
      *
-     * @param course Course.
+     * @param course Course. If defined, it will update the course events, timeline otherwise.
      * @return Promise resolved when done.
      */
-    async loadMoreCourse(course: AddonBlockTimelineCourse): Promise<void> {
+    async loadMore(course?: AddonBlockTimelineCourse): Promise<void> {
         try {
-            const courseEvents = await AddonBlockTimeline.getActionEventsByCourse(course.id, course.canLoadMore);
-            course.events = course.events?.concat(courseEvents.events);
-            course.canLoadMore = courseEvents.canLoadMore;
+            if (course) {
+                const courseEvents =
+                    await AddonBlockTimeline.getActionEventsByCourse(course.id, course.canLoadMore, this.searchText);
+                course.events = course.events?.concat(courseEvents.events);
+                course.canLoadMore = courseEvents.canLoadMore;
+            } else {
+                await this.fetchMyOverviewTimeline(this.timeline.canLoadMore);
+            }
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError);
         }
@@ -151,9 +162,9 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
      * @return Promise resolved when done.
      */
     protected async fetchMyOverviewTimeline(afterEventId?: number): Promise<void> {
-        const events = await AddonBlockTimeline.getActionEventsByTimesort(afterEventId);
+        const events = await AddonBlockTimeline.getActionEventsByTimesort(afterEventId, this.searchText);
 
-        this.timeline.events = events.events;
+        this.timeline.events = afterEventId ? this.timeline.events.concat(events.events) : events.events;
         this.timeline.canLoadMore = events.canLoadMore;
     }
 
@@ -163,20 +174,36 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
      * @return Promise resolved when done.
      */
     protected async fetchMyOverviewTimelineByCourses(): Promise<void> {
-        const courses = await CoreCoursesHelper.getUserCoursesWithOptions();
-        const today = CoreTimeUtils.timestamp();
+        try {
+            this.gradePeriodAfter = parseInt(await this.currentSite.getConfig('coursegraceperiodafter'), 10);
+            this.gradePeriodBefore = parseInt(await this.currentSite.getConfig('coursegraceperiodbefore'), 10);
+        } catch {
+            this.gradePeriodAfter = 0;
+            this.gradePeriodBefore = 0;
+        }
 
-        this.timelineCourses.courses = courses.filter((course) =>
-            (course.startdate || 0) <= today && (!course.enddate || course.enddate >= today));
+        // Do not filter courses by date because they can contain activities due.
+        this.timelineCourses.courses = await CoreCoursesHelper.getUserCoursesWithOptions();
+        this.courseIdsToInvalidate = this.timelineCourses.courses.map((course) => course.id);
+
+        // Filter only in progress courses.
+        this.timelineCourses.courses = this.timelineCourses.courses.filter((course) =>
+            !course.hidden &&
+            !CoreCoursesHelper.isPastCourse(course, this.gradePeriodAfter) &&
+            !CoreCoursesHelper.isFutureCourse(course, this.gradePeriodAfter, this.gradePeriodBefore));
 
         if (this.timelineCourses.courses.length > 0) {
-            this.courseIds = this.timelineCourses.courses.map((course) => course.id);
+            const courseEvents = await AddonBlockTimeline.getActionEventsByCourses(this.courseIdsToInvalidate, this.searchText);
 
-            const courseEvents = await AddonBlockTimeline.getActionEventsByCourses(this.courseIds);
+            this.timelineCourses.courses = this.timelineCourses.courses.filter((course) => {
+                if (courseEvents[course.id].events.length == 0) {
+                    return false;
+                }
 
-            this.timelineCourses.courses.forEach((course) => {
                 course.events = courseEvents[course.id].events;
                 course.canLoadMore = courseEvents[course.id].canLoadMore;
+
+                return true;
             });
         }
     }
@@ -188,12 +215,13 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
      */
     switchFilter(filter: string): void {
         this.filter = filter;
-        this.currentSite?.setLocalSiteConfig('AddonBlockTimelineFilter', this.filter);
+        this.currentSite.setLocalSiteConfig('AddonBlockTimelineFilter', this.filter);
+        this.overdue = this.filter === 'overdue';
 
         switch (this.filter) {
             case 'overdue':
                 this.dataFrom = -14;
-                this.dataTo = 0;
+                this.dataTo = 1;
                 break;
             case 'next7days':
                 this.dataFrom = 0;
@@ -226,7 +254,7 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
      */
     switchSort(sort: string): void {
         this.sort = sort;
-        this.currentSite?.setLocalSiteConfig('AddonBlockTimelineSort', this.sort);
+        this.currentSite.setLocalSiteConfig('AddonBlockTimelineSort', this.sort);
 
         if (!this.timeline.loaded && this.sort == 'sortbydates') {
             this.fetchContent();
@@ -235,9 +263,20 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
         }
     }
 
+    /**
+     * Search text changed.
+     *
+     * @param searchValue Search value
+     */
+    searchTextChanged(searchValue = ''): void {
+        this.searchText = searchValue || '';
+
+        this.fetchContent();
+    }
+
 }
 
-type AddonBlockTimelineCourse = CoreEnrolledCourseDataWithOptions & {
+export type AddonBlockTimelineCourse = CoreEnrolledCourseDataWithOptions & {
     events?: AddonCalendarEvent[];
     canLoadMore?: number;
 };

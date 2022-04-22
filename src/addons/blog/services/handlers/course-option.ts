@@ -62,7 +62,7 @@ export class AddonBlogCourseOptionHandlerService implements CoreCourseOptionsHan
     ): Promise<boolean> {
         const enabled = await CoreCourseHelper.hasABlockNamed(courseId, 'blog_menu');
 
-        if (enabled && navOptions && typeof navOptions.blogs != 'undefined') {
+        if (enabled && navOptions && navOptions.blogs !== undefined) {
             return navOptions.blogs;
         }
 

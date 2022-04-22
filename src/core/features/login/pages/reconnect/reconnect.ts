@@ -16,14 +16,14 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/co
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { CoreApp } from '@services/app';
-import { CoreSites } from '@services/sites';
+import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
-import { CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@classes/site';
+import { CoreSite, CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@classes/site';
 import { CoreEvents } from '@singletons/events';
 import { CoreError } from '@classes/errors/error';
-import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
+import { CoreNavigator, CoreRedirectPayload } from '@services/navigator';
 import { CoreForms } from '@singletons/form';
 
 /**
@@ -53,18 +53,18 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
     siteId!: string;
     showScanQR = false;
 
-    protected page?: string;
-    protected pageOptions?: CoreNavigationOptions;
     protected siteConfig?: CoreSitePublicConfigResponse;
     protected viewLeft = false;
     protected eventThrown = false;
+    protected redirectData?: CoreRedirectPayload;
+    protected loginSuccessful = false;
 
     constructor(
         protected fb: FormBuilder,
     ) {
         const currentSite = CoreSites.getCurrentSite();
 
-        this.isLoggedOut = !!currentSite?.isLoggedOut();
+        this.isLoggedOut = !currentSite || currentSite.isLoggedOut();
         this.credForm = fb.group({
             password: ['', Validators.required],
         });
@@ -74,17 +74,19 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
      * Initialize the component.
      */
     async ngOnInit(): Promise<void> {
-        const siteId = CoreNavigator.getRouteParam<string>('siteId');
-        if (!siteId) {
-            return this.cancel();
-        }
-
-        this.siteId = siteId;
-        this.page = CoreNavigator.getRouteParam('pageName');
-        this.pageOptions = CoreNavigator.getRouteParam('pageOptions');
-        this.showScanQR = CoreLoginHelper.displayQRInSiteScreen() || CoreLoginHelper.displayQRInCredentialsScreen();
-
         try {
+            this.siteId = CoreNavigator.getRequiredRouteParam<string>('siteId');
+
+            const redirectPath = CoreNavigator.getRouteParam('redirectPath');
+            const urlToOpen = CoreNavigator.getRouteParam('urlToOpen');
+            if (redirectPath || urlToOpen) {
+                this.redirectData = {
+                    redirectPath,
+                    redirectOptions: CoreNavigator.getRouteParam('redirectOptions'),
+                    urlToOpen,
+                };
+            }
+
             const site = await CoreSites.getSite(this.siteId);
 
             if (!site.infos) {
@@ -103,26 +105,11 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             // Show logo instead of avatar if it's a fixed site.
             this.showSiteAvatar = !!this.userAvatar && !CoreLoginHelper.getFixedSites();
 
-            const config = await CoreUtils.ignoreErrors(site.getPublicConfig());
-
-            if (!config) {
-                return;
-            }
-
-            this.siteConfig = config;
-
-            await CoreSites.checkApplication(config);
-
-            // Check logoURL if user avatar is not set.
-            if (this.userAvatar.startsWith(this.siteUrl + '/theme/image.php')) {
-                this.showSiteAvatar = false;
-            }
-            this.logoUrl = CoreLoginHelper.getLogoUrl(config);
-
-            this.getDataFromConfig(this.siteConfig);
+            this.checkSiteConfig(site);
         } catch (error) {
-            // Just leave the view.
-            this.cancel();
+            CoreDomUtils.showErrorModal(error);
+
+            return this.cancel();
         }
     }
 
@@ -131,24 +118,48 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.viewLeft = true;
-        CoreEvents.trigger(CoreEvents.LOGIN_SITE_UNCHECKED, { config: this.siteConfig }, this.siteId);
+        CoreEvents.trigger(
+            CoreEvents.LOGIN_SITE_UNCHECKED,
+            {
+                config: this.siteConfig,
+                loginSuccessful: this.loginSuccessful,
+            },
+            this.siteId,
+        );
     }
 
     /**
      * Get some data (like identity providers) from the site config.
-     *
-     * @param config Config to use.
      */
-    protected getDataFromConfig(config: CoreSitePublicConfigResponse): void {
-        const disabledFeatures = CoreLoginHelper.getDisabledFeatures(config);
+    protected async checkSiteConfig(site: CoreSite): Promise<void> {
+        this.siteConfig = await CoreUtils.ignoreErrors(site.getPublicConfig({
+            readingStrategy: CoreSitesReadingStrategy.PREFER_NETWORK,
+        }));
 
-        this.identityProviders = CoreLoginHelper.getValidIdentityProviders(config, disabledFeatures);
-        this.showForgottenPassword = !CoreLoginHelper.isForgottenPasswordDisabled(config);
+        if (!this.siteConfig) {
+            return;
+        }
+
+        const disabledFeatures = CoreLoginHelper.getDisabledFeatures(this.siteConfig);
+
+        this.identityProviders = CoreLoginHelper.getValidIdentityProviders(this.siteConfig, disabledFeatures);
+        this.showForgottenPassword = !CoreLoginHelper.isForgottenPasswordDisabled(this.siteConfig);
 
         if (!this.eventThrown && !this.viewLeft) {
             this.eventThrown = true;
-            CoreEvents.trigger(CoreEvents.LOGIN_SITE_CHECKED, { config: config });
+            CoreEvents.trigger(CoreEvents.LOGIN_SITE_CHECKED, { config: this.siteConfig });
         }
+
+        this.showScanQR = CoreLoginHelper.displayQRInSiteScreen() ||
+            CoreLoginHelper.displayQRInCredentialsScreen(this.siteConfig.tool_mobile_qrcodetype);
+
+        await CoreSites.checkApplication(this.siteConfig);
+
+        // Check logoURL if user avatar is not set.
+        if (this.userAvatar?.startsWith(this.siteUrl + '/theme/image.php')) {
+            this.showSiteAvatar = false;
+        }
+        this.logoUrl = CoreLoginHelper.getLogoUrl(this.siteConfig);
     }
 
     /**
@@ -160,6 +171,11 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
         if (e) {
             e.preventDefault();
             e.stopPropagation();
+        }
+
+        if (this.isLoggedOut) {
+            // Go to sites page when user is logged out.
+            CoreNavigator.navigate('/login/sites', { reset: true });
         }
 
         CoreSites.logout();
@@ -208,9 +224,11 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             this.credForm.controls['password'].reset();
 
             // Go to the site initial page.
-            this.page
-                ? await CoreNavigator.navigateToSitePath(this.page, { params: this.pageOptions })
-                : await CoreNavigator.navigateToSiteHome();
+            this.loginSuccessful = true;
+
+            await CoreNavigator.navigateToSiteHome({
+                params: this.redirectData,
+            });
         } catch (error) {
             CoreLoginHelper.treatUserTokenError(this.siteUrl, error, this.username, password);
 
@@ -242,8 +260,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             this.siteUrl,
             provider,
             this.siteConfig?.launchurl,
-            this.page,
-            this.pageOptions,
+            this.redirectData,
         );
 
         if (!result) {

@@ -20,7 +20,7 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 
 const ROOT_CACHE_KEY = 'mmaModFolder:';
 
@@ -80,7 +80,7 @@ export class AddonModFolderProvider {
             return currentFolder;
         }
 
-        throw new CoreError('Folder not found');
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
     /**
@@ -120,16 +120,6 @@ export class AddonModFolderProvider {
         const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getFolderCacheKey(courseId));
-    }
-
-    /**
-     * Returns whether or not getFolder WS available or not.
-     *
-     * @return If WS is available.
-     * @since 3.3
-     */
-    isGetFolderWSAvailable(): boolean {
-        return CoreSites.wsAvailableInCurrentSite('mod_folder_get_folders_by_courses');
     }
 
     /**

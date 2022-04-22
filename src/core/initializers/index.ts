@@ -20,7 +20,7 @@ export function getInitializerProviders(): Provider[] {
     return context.keys().reduce((providers, fileName) => {
         const name = (fileName.match(/^(?:\.\/)?(.+)\.ts$/) || [])[1];
 
-        if (typeof name !== 'undefined' && name !== 'index') {
+        if (name !== undefined && name !== 'index') {
             providers.push({
                 provide: APP_INITIALIZER,
                 useValue: context(fileName).default,

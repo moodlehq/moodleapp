@@ -37,8 +37,7 @@ import { SITE_SCHEMA } from './services/database/password';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 AddonModQuizAccessRuleDelegate.registerHandler(AddonModQuizAccessPasswordHandler.instance);
             },
         },

@@ -585,8 +585,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
      * @return Promise resolved when done.
      */
     protected async loadCourseOptions(course: CoreCourseAnyCourseDataWithOptions, refresh = false): Promise<void> {
-        if (CoreCourses.canGetAdminAndNavOptions() &&
-                (typeof course.navOptions == 'undefined' || typeof course.admOptions == 'undefined' || refresh)) {
+        if (course.navOptions === undefined || course.admOptions === undefined || refresh) {
 
             const options = await CoreCourses.getCoursesAdminAndNavOptions([course.id]);
             course.navOptions = options.navOptions[course.id];

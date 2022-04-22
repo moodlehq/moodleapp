@@ -29,8 +29,7 @@ import { AddonModWorkshopAssessmentStrategyCommentsHandler } from './services/ha
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 AddonWorkshopAssessmentStrategyDelegate.registerHandler(
                     AddonModWorkshopAssessmentStrategyCommentsHandler.instance,
                 );

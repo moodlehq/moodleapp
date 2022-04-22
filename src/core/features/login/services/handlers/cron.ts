@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreCronHandler } from '@services/cron';
-import { CoreSites } from '@services/sites';
+import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 
@@ -39,7 +39,9 @@ export class CoreLoginCronHandlerService implements CoreCronHandler {
         // Do not check twice in the same 10 minutes.
         const site = await CoreSites.getSite(siteId);
 
-        const config = await CoreUtils.ignoreErrors(site.getPublicConfig());
+        const config = await CoreUtils.ignoreErrors(site.getPublicConfig({
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
+        }));
 
         CoreUtils.ignoreErrors(CoreSites.checkApplication(config));
     }

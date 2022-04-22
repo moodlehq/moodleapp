@@ -215,12 +215,11 @@ export class AddonModQuizHelperProvider {
      *
      * @param attemptId Attempt ID.
      * @param page Page to load, -1 to all questions in same page.
-     * @param courseId Course ID.
      * @param quizId Quiz ID.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
-    async handleReviewLink(attemptId: number, page?: number, courseId?: number, quizId?: number, siteId?: string): Promise<void> {
+    async handleReviewLink(attemptId: number, page?: number, quizId?: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         const modal = await CoreDomUtils.showModalLoading();
@@ -230,13 +229,15 @@ export class AddonModQuizHelperProvider {
                 quizId = await this.getQuizIdByAttemptId(attemptId, { siteId });
             }
 
-            const module = await CoreCourse.getModuleBasicInfoByInstance(quizId, 'quiz', siteId);
-
-            courseId = courseId || module.course;
+            const module = await CoreCourse.getModuleBasicInfoByInstance(
+                quizId,
+                'quiz',
+                { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+            );
 
             // Go to the review page.
             await CoreNavigator.navigateToSitePath(
-                `${AddonModQuizModuleHandlerService.PAGE_NAME}/${courseId}/${module.id}/review/${attemptId}`,
+                `${AddonModQuizModuleHandlerService.PAGE_NAME}/${module.course}/${module.id}/review/${attemptId}`,
                 {
                     params: {
                         page: page == undefined || isNaN(page) ? -1 : page,

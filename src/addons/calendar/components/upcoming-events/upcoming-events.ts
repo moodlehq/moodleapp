@@ -25,7 +25,6 @@ import { AddonCalendarHelper, AddonCalendarFilter } from '../../services/calenda
 import { AddonCalendarOffline } from '../../services/calendar-offline';
 import { CoreCategoryData, CoreCourses } from '@features/courses/services/courses';
 import { CoreConstants } from '@/core/constants';
-import { CoreLocalNotifications } from '@services/local-notifications';
 
 /**
  * Component that displays upcoming events.
@@ -58,18 +57,11 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
 
     // Observers.
     protected undeleteEventObserver: CoreEventObserver;
-    protected obsDefaultTimeChange?: CoreEventObserver;
 
     constructor(
         differs: KeyValueDiffers,
     ) {
         this.currentSiteId = CoreSites.getCurrentSiteId();
-
-        if (CoreLocalNotifications.isAvailable()) {            // Re-schedule events if default time changes.
-            this.obsDefaultTimeChange = CoreEvents.on(AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_CHANGED, () => {
-                AddonCalendar.scheduleEventsNotifications(this.onlineEvents);
-            }, this.currentSiteId);
-        }
 
         // Listen for events "undeleted" (offline).
         this.undeleteEventObserver = CoreEvents.on(
@@ -106,7 +98,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
      */
     ngDoCheck(): void {
         // Check if there's any change in the filter object.
-        const changes = this.differ.diff(this.filter!);
+        const changes = this.differ.diff(this.filter || {});
         if (changes) {
             this.filterEvents();
         }
@@ -173,9 +165,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
     async fetchEvents(): Promise<void> {
         // Don't pass courseId and categoryId, we'll filter them locally.
         const result = await AddonCalendar.getUpcomingEvents();
-        this.onlineEvents = result.events.map((event) => AddonCalendarHelper.formatEventData(event));
-        // Schedule notifications for the events retrieved.
-        AddonCalendar.scheduleEventsNotifications(this.onlineEvents);
+        this.onlineEvents = await Promise.all(result.events.map((event) => AddonCalendarHelper.formatEventData(event)));
         // Merge the online events with offline data.
         this.events = this.mergeEvents();
         // Filter events by course.
@@ -183,7 +173,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
 
         // Re-calculate the formatted time so it uses the device date.
         const promises = this.events.map((event) =>
-            AddonCalendar.formatEventTime(event, this.timeFormat!).then((time) => {
+            AddonCalendar.formatEventTime(event, this.timeFormat).then((time) => {
                 event.formattedtime = time;
 
                 return;
@@ -221,22 +211,18 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
      * Filter events based on the filter popover.
      */
     protected filterEvents(): void {
-        this.filteredEvents = AddonCalendarHelper.getFilteredEvents(this.events, this.filter!, this.categories);
+        this.filteredEvents = AddonCalendarHelper.getFilteredEvents(this.events, this.filter, this.categories);
     }
 
     /**
      * Refresh events.
      *
-     * @param afterChange Whether the refresh is done after an event has changed or has been synced.
      * @return Promise resolved when done.
      */
-    async refreshData(afterChange?: boolean): Promise<void> {
+    async refreshData(): Promise<void> {
         const promises: Promise<void>[] = [];
 
-        // Don't invalidate upcoming events after a change, it has already been handled.
-        if (!afterChange) {
-            promises.push(AddonCalendar.invalidateAllUpcomingEvents());
-        }
+        promises.push(AddonCalendar.invalidateAllUpcomingEvents());
         promises.push(CoreCourses.invalidateCategories(0, true));
         promises.push(AddonCalendar.invalidateLookAhead());
         promises.push(AddonCalendar.invalidateTimeFormat());
@@ -317,7 +303,6 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
      */
     ngOnDestroy(): void {
         this.undeleteEventObserver?.off();
-        this.obsDefaultTimeChange?.off();
     }
 
 }

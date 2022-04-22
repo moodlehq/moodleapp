@@ -201,7 +201,7 @@ export class AddonModScormDataModel12 {
 
         for (const element in this.currentUserData[this.scoId].userdata) {
             // Ommit for example the nav. elements and the session time element.
-            if (element.substr(0, 3) != 'cmi' || element == 'cmi.core.session_time') {
+            if (element.substring(0, 3) != 'cmi' || element == 'cmi.core.session_time') {
                 continue;
             }
 
@@ -748,16 +748,16 @@ export class AddonModScormDataModel12 {
                     const childrenStr = '._children';
                     const countStr = '._count';
 
-                    if (elementModel.substr(elementModel.length - childrenStr.length, elementModel.length) == childrenStr) {
-                        const parentModel = elementModel.substr(0, elementModel.length - childrenStr.length);
+                    if (elementModel.substring(elementModel.length - childrenStr.length) == childrenStr) {
+                        const parentModel = elementModel.substring(0, elementModel.length - childrenStr.length);
 
                         if (this.dataModel[this.scoId][parentModel] !== undefined) {
                             this.errorCode = '202';
                         } else {
                             this.errorCode = '201';
                         }
-                    } else if (elementModel.substr(elementModel.length - countStr.length, elementModel.length) == countStr) {
-                        const parentModel = elementModel.substr(0, elementModel.length - countStr.length);
+                    } else if (elementModel.substring(elementModel.length - countStr.length) == countStr) {
+                        const parentModel = elementModel.substring(0, elementModel.length - countStr.length);
 
                         if (this.dataModel[this.scoId][parentModel] !== undefined) {
                             this.errorCode = '203';

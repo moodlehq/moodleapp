@@ -3,27 +3,28 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1 *ngIf="glossary">
-            <core-format-text [text]="glossary.name" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
-            </core-format-text>
-        </h1>
+        <ion-title>
+            <h1 *ngIf="glossary">
+                <core-format-text [text]="glossary.name" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
+                </core-format-text>
+            </h1>
+        </ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content>
+<ion-content [core-swipe-navigation]="entries">
     <core-loading [hideUntil]="loaded">
         <form #editFormEl *ngIf="glossary">
             <ion-item>
                 <ion-label position="stacked">{{ 'addon.mod_glossary.concept' | translate }}</ion-label>
-                <ion-input type="text" [placeholder]="'addon.mod_glossary.concept' | translate" [(ngModel)]="entry.concept"
-                    name="concept">
+                <ion-input type="text" [placeholder]="'addon.mod_glossary.concept' | translate" [(ngModel)]="entry.concept" name="concept">
                 </ion-input>
             </ion-item>
             <ion-item>
                 <ion-label position="stacked">{{ 'addon.mod_glossary.definition' | translate }}</ion-label>
                 <core-rich-text-editor [control]="definitionControl" (contentChanged)="onDefinitionChange($event)"
-                    [placeholder]="'addon.mod_glossary.definition' | translate" name="addon_mod_glossary_edit"
-                    [component]="component" [componentId]="cmId" [autoSave]="true" contextLevel="module"
-                    [contextInstanceId]="cmId" elementId="definition_editor" [draftExtraParams]="editorExtraParams">
+                    [placeholder]="'addon.mod_glossary.definition' | translate" name="addon_mod_glossary_edit" [component]="component"
+                    [componentId]="cmId" [autoSave]="true" contextLevel="module" [contextInstanceId]="cmId" elementId="definition_editor"
+                    [draftExtraParams]="editorExtraParams">
                 </core-rich-text-editor>
             </ion-item>
             <ion-item *ngIf="categories.length > 0">
@@ -47,14 +48,18 @@
                 </ion-textarea>
             </ion-item>
             <ion-item-divider>
-                <ion-label><h2>{{ 'addon.mod_glossary.attachment' | translate }}</h2></ion-label>
+                <ion-label>
+                    <h2>{{ 'addon.mod_glossary.attachment' | translate }}</h2>
+                </ion-label>
             </ion-item-divider>
-            <core-attachments [files]="attachments" [component]="component" [componentId]="glossary.coursemodule"
-                [allowOffline]="true">
+            <core-attachments [files]="attachments" [component]="component" [componentId]="glossary.coursemodule" [allowOffline]="true"
+                [courseId]="courseId">
             </core-attachments>
             <ng-container *ngIf="glossary.usedynalink">
                 <ion-item-divider>
-                    <ion-label><h2>{{ 'addon.mod_glossary.linking' | translate }}</h2></ion-label>
+                    <ion-label>
+                        <h2>{{ 'addon.mod_glossary.linking' | translate }}</h2>
+                    </ion-label>
                 </ion-item-divider>
                 <ion-item class="ion-text-wrap">
                     <ion-label>{{ 'addon.mod_glossary.entryusedynalink' | translate }}</ion-label>

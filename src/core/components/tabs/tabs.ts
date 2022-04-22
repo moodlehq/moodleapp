@@ -51,12 +51,6 @@ export class CoreTabsComponent extends CoreTabsBaseComponent<CoreTabComponent> i
 
     protected originalTabsContainer?: HTMLElement; // The container of the original tabs. It will include each tab's content.
 
-    constructor(
-        element: ElementRef,
-    ) {
-        super(element);
-    }
-
     /**
      * View has been initialized.
      */
@@ -67,7 +61,6 @@ export class CoreTabsComponent extends CoreTabsBaseComponent<CoreTabComponent> i
             return;
         }
 
-        this.tabsElement = this.element.nativeElement;
         this.originalTabsContainer = this.originalTabsRef?.nativeElement;
     }
 
@@ -76,19 +69,6 @@ export class CoreTabsComponent extends CoreTabsBaseComponent<CoreTabComponent> i
      */
     protected async initializeTabs(): Promise<void> {
         await super.initializeTabs();
-
-        // @todo: Is this still needed?
-        // if (this.content) {
-        //     if (!this.parentScrollable) {
-        //         // Parent scroll element (if core-tabs is inside a ion-content).
-        //         const scroll = await this.content.getScrollElement();
-        //         if (scroll) {
-        //             scroll.classList.add('no-scroll');
-        //         }
-        //     } else {
-        //         this.originalTabsContainer?.classList.add('no-scroll');
-        //     }
-        // }
     }
 
     /**
@@ -98,21 +78,13 @@ export class CoreTabsComponent extends CoreTabsBaseComponent<CoreTabComponent> i
      */
     addTab(tab: CoreTabComponent): void {
         // Check if tab is already in the list.
-        if (this.getTabIndex(tab.id!) == -1) {
+        if (this.getTabIndex(tab.id) === -1) {
             this.tabs.push(tab);
             this.sortTabs();
 
             setTimeout(() => {
                 this.calculateSlides();
             });
-
-            if (this.initialized && this.tabs.length > 1 && this.tabBarHeight == 0) {
-                // Calculate the tabBarHeight again now that there is more than 1 tab and the bar will be seen.
-                // Use timeout to wait for the view to be rendered. 0 ms should be enough, use 50 to be sure.
-                setTimeout(() => {
-                    this.calculateTabBarHeight();
-                }, 50);
-            }
         }
     }
 
@@ -122,7 +94,7 @@ export class CoreTabsComponent extends CoreTabsBaseComponent<CoreTabComponent> i
      * @param tab The tab to remove.
      */
     removeTab(tab: CoreTabComponent): void {
-        const index = this.getTabIndex(tab.id!);
+        const index = this.getTabIndex(tab.id);
         this.tabs.splice(index, 1);
 
         this.calculateSlides();

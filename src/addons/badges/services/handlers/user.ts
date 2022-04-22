@@ -14,8 +14,14 @@
 
 import { Injectable } from '@angular/core';
 import { CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/services/courses';
-import { CoreUserDelegateService, CoreUserProfileHandler, CoreUserProfileHandlerData } from '@features/user/services/user-delegate';
+import {
+    CoreUserDelegateContext,
+    CoreUserDelegateService,
+    CoreUserProfileHandler,
+    CoreUserProfileHandlerData,
+} from '@features/user/services/user-delegate';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 import { AddonBadges } from '../badges';
 
@@ -25,52 +31,58 @@ import { AddonBadges } from '../badges';
 @Injectable({ providedIn: 'root' })
 export class AddonBadgesUserHandlerService implements CoreUserProfileHandler {
 
-    name = 'AddonBadges';
-    priority = 50;
+    name = 'AddonBadges:fakename'; // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
+    priority = 300;
     type = CoreUserDelegateService.TYPE_NEW_PAGE;
 
     /**
-     * Check if handler is enabled.
-     *
-     * @return Always enabled.
+     * @inheritdoc
      */
     isEnabled(): Promise<boolean> {
         return AddonBadges.isPluginEnabled();
     }
 
     /**
-     * Check if handler is enabled for this user in this context.
-     *
-     * @param courseId Course ID.
-     * @param navOptions Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
-     * @return True if enabled, false otherwise.
+     * @inheritdoc
      */
-    async isEnabledForCourse(
+    async isEnabledForContext(
+        context: CoreUserDelegateContext,
         courseId: number,
         navOptions?: CoreCourseUserAdminOrNavOptionIndexed,
     ): Promise<boolean> {
-        if (navOptions && typeof navOptions.badges != 'undefined') {
+        // Check if feature is disabled.
+        const currentSite = CoreSites.getCurrentSite();
+        if (!currentSite) {
+            return false;
+        }
+
+        if (context === CoreUserDelegateContext.USER_MENU) {
+            if (currentSite.isFeatureDisabled('CoreUserDelegate_AddonBadges:account')) {
+                return false;
+            }
+        } else if (currentSite.isFeatureDisabled('CoreUserDelegate_AddonBadges')) {
+            return false;
+        }
+
+        if (navOptions && navOptions.badges !== undefined) {
             return navOptions.badges;
         }
 
-        // If we reach here, it means we are opening the user site profile.
         return true;
     }
 
     /**
-     * Returns the data needed to render the handler.
-     *
-     * @return Data needed to render the handler.
+     * @inheritdoc
      */
     getDisplayData(): CoreUserProfileHandlerData {
         return {
             icon: 'fas-trophy',
             title: 'addon.badges.badges',
-            action: (event, user, courseId): void => {
+            action: (event, user, context, contextId): void => {
                 event.preventDefault();
                 event.stopPropagation();
                 CoreNavigator.navigateToSitePath('/badges', {
-                    params: { courseId, userId: user.id },
+                    params: { courseId: contextId, userId: user.id },
                 });
             },
         };

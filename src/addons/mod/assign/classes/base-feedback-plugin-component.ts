@@ -57,7 +57,7 @@ export class AddonModAssignFeedbackPluginBaseComponent {
             },
         });
 
-        if (typeof modalData == 'undefined') {
+        if (modalData === undefined) {
             throw new CoreCanceledError(); // User cancelled.
         }
 

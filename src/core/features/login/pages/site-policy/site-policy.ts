@@ -21,6 +21,7 @@ import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSite } from '@classes/site';
 import { CoreNavigator } from '@services/navigator';
+import { CoreEvents } from '@singletons/events';
 
 /**
  * Page to accept a site policy.
@@ -28,6 +29,7 @@ import { CoreNavigator } from '@services/navigator';
 @Component({
     selector: 'page-core-login-site-policy',
     templateUrl: 'site-policy.html',
+    styleUrls: ['site-policy.scss'],
 })
 export class CoreLoginSitePolicyPage implements OnInit {
 
@@ -35,17 +37,17 @@ export class CoreLoginSitePolicyPage implements OnInit {
     showInline?: boolean;
     policyLoaded?: boolean;
     protected siteId?: string;
-    protected currentSite?: CoreSite;
+    protected currentSite!: CoreSite;
 
     /**
-     * Component initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
-
         this.siteId = CoreNavigator.getRouteParam('siteId');
-        this.currentSite = CoreSites.getCurrentSite();
 
-        if (!this.currentSite) {
+        try {
+            this.currentSite = CoreSites.getRequiredCurrentSite();
+        } catch {
             // Not logged in, stop.
             this.cancel();
 
@@ -55,8 +57,8 @@ export class CoreLoginSitePolicyPage implements OnInit {
         const currentSiteId = this.currentSite.id;
         this.siteId = this.siteId || currentSiteId;
 
-        if (this.siteId != currentSiteId || !this.currentSite.wsAvailable('core_user_agree_site_policy')) {
-            // Not current site or WS not available, stop.
+        if (this.siteId != currentSiteId) {
+            // Not current site, stop.
             this.cancel();
 
             return;
@@ -86,7 +88,7 @@ export class CoreLoginSitePolicyPage implements OnInit {
 
             const extension = CoreMimetypeUtils.getExtension(mimeType, this.sitePolicy);
             this.showInline = extension == 'html' || extension == 'htm';
-        } catch (error) {
+        } catch {
             // Unable to get mime type, assume it's not supported.
             this.showInline = false;
         } finally {
@@ -118,7 +120,9 @@ export class CoreLoginSitePolicyPage implements OnInit {
 
             // Success accepting, go to site initial page.
             // Invalidate cache since some WS don't return error if site policy is not accepted.
-            await CoreUtils.ignoreErrors(this.currentSite!.invalidateWsCache());
+            await CoreUtils.ignoreErrors(this.currentSite.invalidateWsCache());
+
+            CoreEvents.trigger(CoreEvents.SITE_POLICY_AGREED, {}, this.siteId);
 
             await CoreNavigator.navigateToSiteHome();
         } catch (error) {

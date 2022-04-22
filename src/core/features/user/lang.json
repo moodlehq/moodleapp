@@ -1,5 +1,6 @@
 {
     "address": "Address",
+    "useraccount": "User account",
     "city": "City/town",
     "contact": "Contact",
     "country": "Country",
@@ -19,6 +20,7 @@
     "participants": "Participants",
     "phone1": "Phone",
     "phone2": "Mobile phone",
+    "profile": "Profile",
     "roles": "Roles",
     "sendemail": "Email",
     "student": "Student",

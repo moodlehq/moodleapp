@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
+import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreCommentsCommentsComponent } from '@features/comments/components/comments/comments';
 import { CoreComments } from '@features/comments/services/comments';
 import { CoreRatingInfo } from '@features/rating/services/rating';
@@ -21,6 +23,8 @@ import { IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
+import { AddonModGlossaryEntriesSource } from '../../classes/glossary-entries-source';
+import { AddonModGlossaryEntriesSwipeManager } from '../../classes/glossary-entries-swipe-manager';
 import {
     AddonModGlossary,
     AddonModGlossaryEntry,
@@ -35,13 +39,14 @@ import {
     selector: 'page-addon-mod-glossary-entry',
     templateUrl: 'entry.html',
 })
-export class AddonModGlossaryEntryPage implements OnInit {
+export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
 
     @ViewChild(CoreCommentsCommentsComponent) comments?: CoreCommentsCommentsComponent;
 
     component = AddonModGlossaryProvider.COMPONENT;
     componentId?: number;
     entry?: AddonModGlossaryEntry;
+    entries?: AddonModGlossaryEntryEntriesSwipeManager;
     glossary?: AddonModGlossaryGlossary;
     loaded = false;
     showAuthor = false;
@@ -50,29 +55,62 @@ export class AddonModGlossaryEntryPage implements OnInit {
     tagsEnabled = false;
     commentsEnabled = false;
     courseId!: number;
+    cmId?: number;
 
     protected entryId!: number;
+
+    constructor(protected route: ActivatedRoute) {}
 
     /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.entryId = CoreNavigator.getRouteNumberParam('entryId')!;
-        this.tagsEnabled = CoreTag.areTagsAvailableInSite();
-        this.commentsEnabled = !CoreComments.areCommentsDisabledInSite();
+        try {
+            const routeData = this.route.snapshot.data;
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.entryId = CoreNavigator.getRequiredRouteNumberParam('entryId');
+            this.tagsEnabled = CoreTag.areTagsAvailableInSite();
+            this.commentsEnabled = !CoreComments.areCommentsDisabledInSite();
+
+            if (routeData.swipeEnabled ?? true) {
+                this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
+                const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
+                    AddonModGlossaryEntriesSource,
+                    [this.courseId, this.cmId, routeData.glossaryPathPrefix ?? ''],
+                );
+
+                this.entries = new AddonModGlossaryEntryEntriesSwipeManager(source);
+
+                await this.entries.start();
+            } else {
+                this.cmId = CoreNavigator.getRouteNumberParam('cmId');
+            }
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
 
         try {
             await this.fetchEntry();
 
-            if (!this.glossary) {
+            if (!this.glossary || !this.componentId) {
                 return;
             }
 
-            await CoreUtils.ignoreErrors(AddonModGlossary.logEntryView(this.entryId, this.componentId!, this.glossary.name));
+            await CoreUtils.ignoreErrors(AddonModGlossary.logEntryView(this.entryId, this.componentId, this.glossary.name));
         } finally {
             this.loaded = true;
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.entries?.destroy();
     }
 
     /**
@@ -141,6 +179,20 @@ export class AddonModGlossaryEntryPage implements OnInit {
      */
     ratingUpdated(): void {
         AddonModGlossary.invalidateEntry(this.entryId);
+    }
+
+}
+
+/**
+ * Helper to manage swiping within a collection of glossary entries.
+ */
+class AddonModGlossaryEntryEntriesSwipeManager extends AddonModGlossaryEntriesSwipeManager {
+
+    /**
+     * @inheritdoc
+     */
+    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot): string | null {
+        return `${this.getSource().GLOSSARY_PATH_PREFIX}entry/${route.params.entryId}`;
     }
 
 }

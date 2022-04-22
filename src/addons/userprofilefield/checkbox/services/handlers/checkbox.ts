@@ -56,7 +56,7 @@ export class AddonUserProfileFieldCheckboxHandlerService implements CoreUserProf
     ): Promise<CoreUserProfileFieldHandlerData | undefined> {
         const name = 'profile_field_' + field.shortname;
 
-        if (typeof formValues[name] != 'undefined') {
+        if (formValues[name] !== undefined) {
             return {
                 type: 'checkbox',
                 name: name,

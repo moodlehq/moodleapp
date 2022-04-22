@@ -13,7 +13,7 @@ $grid-column-paddings: (
 ) !default;
 
 :host {
-    --border-color: var(--gray);
+    --border-color: var(--stroke);
 }
 
 .addon-data-contents {
@@ -57,14 +57,17 @@ $grid-column-paddings: (
         // Do not let block elements to define widths or heights.
         address, article, aside, blockquote, canvas, dd, div, dl, dt, fieldset, figcaption, figure, footer, form,
         h1, h2, h3, h4, h5, h6,
-        header, hr, li, main, nav, noscript, ol, p, pre, section, table, tfoot, ul, video {
+        header, li, main, nav, noscript, ol, p, pre, section, table, tfoot, ul, video {
             width: auto !important;
             height: auto !important;
             min-width: auto !important;
             min-height: auto !important;
             // Avoid having one entry over another.
             max-height: none !important;
+        }
 
+        hr {
+            border-top: 1px solid var(--stroke);
         }
     }
 }

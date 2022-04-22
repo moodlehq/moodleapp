@@ -21,7 +21,6 @@ import { CoreSite } from '@classes/site';
  * Database variables for CoreSites service.
  */
 export const SITES_TABLE_NAME = 'sites_2';
-export const CURRENT_SITE_TABLE_NAME = 'current_site';
 export const SCHEMA_VERSIONS_TABLE_NAME = 'schema_versions';
 
 // Schema to register in App DB.
@@ -68,22 +67,6 @@ export const APP_SCHEMA: CoreAppSchema = {
                 },
             ],
         },
-        {
-            name: CURRENT_SITE_TABLE_NAME,
-            columns: [
-                {
-                    name: 'id',
-                    type: 'INTEGER',
-                    primaryKey: true,
-                },
-                {
-                    name: 'siteId',
-                    type: 'TEXT',
-                    notNull: true,
-                    unique: true,
-                },
-            ],
-        },
     ],
     async migrate(db: SQLiteDB, oldVersion: number): Promise<void> {
         if (oldVersion < 2) {
@@ -95,7 +78,7 @@ export const APP_SCHEMA: CoreAppSchema = {
 // Schema to register for Site DB.
 export const SITE_SCHEMA: CoreSiteSchema = {
     name: 'CoreSitesProvider',
-    version: 2,
+    version: 3,
     canBeCleared: [CoreSite.WS_CACHE_TABLE],
     tables: [
         {
@@ -142,6 +125,33 @@ export const SITE_SCHEMA: CoreSiteSchema = {
                 },
             ],
         },
+        {
+            name: CoreSite.LAST_VIEWED_TABLE,
+            columns: [
+                {
+                    name: 'component',
+                    type: 'TEXT',
+                },
+                {
+                    name: 'id',
+                    type: 'INTEGER',
+                },
+                {
+                    name: 'value',
+                    type: 'TEXT',
+                    notNull: true,
+                },
+                {
+                    name: 'data',
+                    type: 'TEXT',
+                },
+                {
+                    name: 'timeaccess',
+                    type: 'INTEGER',
+                },
+            ],
+            primaryKeys: ['component', 'id'],
+        },
     ],
     async migrate(db: SQLiteDB, oldVersion: number): Promise<void> {
         if (oldVersion < 2) {
@@ -182,11 +192,6 @@ export type SiteDBEntry = {
     config?: string | null;
     loggedOut: number;
     oauthId?: number | null;
-};
-
-export type CurrentSiteDBEntry = {
-    id: number;
-    siteId: string;
 };
 
 export type SchemaVersionsDBEntry = {

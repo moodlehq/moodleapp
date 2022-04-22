@@ -14,7 +14,8 @@
 
 import { Injectable } from '@angular/core';
 import { CoreCourseResourcePrefetchHandlerBase } from '@features/course/classes/resource-prefetch-handler';
-import { CoreCourse, CoreCourseAnyModuleData, CoreCourseWSModule } from '@features/course/services/course';
+import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { AddonModPage, AddonModPageProvider } from '../page';
@@ -38,14 +39,11 @@ export class AddonModPagePrefetchHandlerService extends CoreCourseResourcePrefet
      * @param prefetch True to prefetch, false to download right away.
      * @return Promise resolved when all content is downloaded. Data returned is not reliable.
      */
-    async downloadOrPrefetch(module: CoreCourseWSModule, courseId: number, prefetch?: boolean): Promise<void> {
+    async downloadOrPrefetch(module: CoreCourseModuleData, courseId: number, prefetch?: boolean): Promise<void> {
         const promises: Promise<unknown>[] = [];
 
         promises.push(super.downloadOrPrefetch(module, courseId, prefetch));
-
-        if (AddonModPage.isGetPageWSAvailable()) {
-            promises.push(AddonModPage.getPageData(courseId, module.id));
-        }
+        promises.push(AddonModPage.getPageData(courseId, module.id));
 
         await Promise.all(promises);
     }

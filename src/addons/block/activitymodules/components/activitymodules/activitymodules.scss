@@ -1,0 +1,13 @@
+:host {
+    --mod-icon-filter: brightness(0);
+
+    core-mod-icon {
+        background: transparent;
+        margin: 0;
+        --filter: var(--mod-icon-filter);
+    }
+}
+
+:host-context(body.dark) {
+    --mod-icon-filter: brightness(0) invert(1);
+}

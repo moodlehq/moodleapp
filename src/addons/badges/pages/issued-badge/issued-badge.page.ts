@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -23,6 +23,9 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreCourses, CoreEnrolledCourseData } from '@features/courses/services/courses';
 import { CoreNavigator } from '@services/navigator';
 import { ActivatedRoute } from '@angular/router';
+import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
+import { AddonBadgesUserBadgesSource } from '@addons/badges/classes/user-badges-source';
+import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 
 /**
  * Page that displays the list of calendar events.
@@ -31,7 +34,7 @@ import { ActivatedRoute } from '@angular/router';
     selector: 'page-addon-badges-issued-badge',
     templateUrl: 'issued-badge.html',
 })
-export class AddonBadgesIssuedBadgePage implements OnInit {
+export class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
 
     protected badgeHash = '';
     protected userId!: number;
@@ -40,24 +43,39 @@ export class AddonBadgesIssuedBadgePage implements OnInit {
     user?: CoreUserProfile;
     course?: CoreEnrolledCourseData;
     badge?: AddonBadgesUserBadge;
+    badges: CoreSwipeNavigationItemsManager;
     badgeLoaded = false;
     currentTime = 0;
 
-    constructor(
-        protected route: ActivatedRoute,
-    ) { }
+    constructor(protected route: ActivatedRoute) {
+        this.courseId = CoreNavigator.getRouteNumberParam('courseId') || this.courseId; // Use 0 for site badges.
+        this.userId = CoreNavigator.getRouteNumberParam('userId') || CoreSites.getRequiredCurrentSite().getUserId();
+        this.badgeHash = CoreNavigator.getRouteParam('badgeHash') || '';
+
+        const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
+            AddonBadgesUserBadgesSource,
+            [this.courseId, this.userId],
+        );
+
+        this.badges = new CoreSwipeNavigationItemsManager(source);
+    }
 
     /**
      * View loaded.
      */
     ngOnInit(): void {
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId') || this.courseId; // Use 0 for site badges.
-        this.userId = CoreNavigator.getRouteNumberParam('userId') || CoreSites.getCurrentSite()!.getUserId();
-        this.badgeHash = CoreNavigator.getRouteParam('badgeHash') || '';
-
         this.fetchIssuedBadge().finally(() => {
             this.badgeLoaded = true;
         });
+
+        this.badges.start();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.badges.destroy();
     }
 
     /**

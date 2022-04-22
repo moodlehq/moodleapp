@@ -1,0 +1,299 @@
+@use "sass:math" as math;
+
+/**
+ * App custom mixins for SCSS
+ * ----------------------------------------------------------------------------
+ * Place here our custom mixins.
+ */
+
+// Mixes a color with black to create its shade.
+// Default to bootstrap level 6.
+// --------------------------------------------------------------------------------------------
+@function get-color-shade-percent($color, $percent: 48%) {
+    @return mix(#000, $color, $percent);
+  }
+
+  // Mixes a color with white to create its tint.
+  // Default to bootstrap level -10.
+  // --------------------------------------------------------------------------------------------
+  @function get-color-tint-percent($color, $percent: 80%) {
+    @return mix(#fff, $color, $percent);
+  }
+
+  // Ionic Colors
+  // --------------------------------------------------
+  // Generates the color classes and variables based on the
+  // colors map
+
+  @mixin generate-color($color-name, $colors) {
+      $base: map-get($colors, $color-name);
+      $light: map-get($base, 'light');
+
+      @include generate-color-variants($color-name, $light);
+
+      body.dark {
+          $dark: map-get($base, 'dark');
+          $dark: mix($light, white, 80%) !default;
+          @include generate-color-variants($color-name, $dark);
+      }
+  }
+
+  @mixin generate-color-variants($color-name, $base) {
+      $contrast: get_contrast_color($base);
+      $shade: get-color-shade-percent($base);
+      $tint: get-color-tint-percent($base);
+
+      --#{$color-name}: #{$base};
+      --#{$color-name}-shade: #{$shade};
+      --#{$color-name}-tint: #{$tint};
+      --#{$color-name}-contrast: #{$contrast};
+
+      // Internal ionic use only.
+      --ion-color-#{$color-name}: var(--#{$color-name});
+      --ion-color-#{$color-name}-base: var(--ion-color-#{$color-name});
+      --ion-color-#{$color-name}-rgb: #{color-to-rgb-list($base)};
+      --ion-color-#{$color-name}-contrast: #{$contrast};
+      --ion-color-#{$color-name}-contrast-rgb: #{color-to-rgb-list($contrast)};
+      --ion-color-#{$color-name}-shade: #{$shade};
+      --ion-color-#{$color-name}-tint: #{$tint};
+
+      .ion-color-#{$color-name} {
+          --ion-color: var(--ion-color-#{$color-name});
+          --ion-color-base: var(--ion-color-#{$color-name}-base);
+          --ion-color-rgb: var(--ion-color-#{$color-name}-rgb);
+          --ion-color-contrast: var(--ion-color-#{$color-name}-contrast);
+          --ion-color-contrast-rgb: var(--ion-color-#{$color-name}-contrast-rgb);
+          --ion-color-shade: var(--ion-color-#{$color-name}-shade);
+          --ion-color-tint: var(--ion-color-#{$color-name}-tint);
+      }
+  }
+
+
+ @mixin core-focus() {
+    outline: none;
+    position: relative;
+    &::after {
+        @include position(0, 0, 0, 0);
+        position: absolute;
+        content: "";
+        opacity: 1;
+        z-index: 1;
+        @include core-focus-style();
+    }
+ }
+
+ @mixin core-focus-style() {
+    box-shadow: inset 0 0 var(--a11y-focus-width) 1px var(--a11y-focus-color);
+    // Thicker option:
+    // border: var(--a11y-focus-width) solid var(--a11y-focus-color);
+}
+
+@mixin core-transition($properties: all, $duration: 500ms, $timing-function: ease-in-out) {
+    $transitions: ();
+    @each $property in $properties {
+      $transitions: append($transitions, $property $duration $timing-function, comma);
+    }
+
+    -webkit-transition: $transitions;
+    transition: $transitions;
+}
+
+/**
+ * Same as item-push-svg-url but admits flip-rtl
+ */
+@mixin push-arrow-color($fill: 626262, $flip-rtl: false) {
+    $item-detail-push-svg: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 20'><path d='M2,20l-2-2l8-8L0,2l2-2l10,10L2,20z' fill='#{$fill}'/></svg>";
+
+    @include svg-background-image($item-detail-push-svg, $flip-rtl);
+}
+
+@mixin border-start($px, $type: null, $color: null) {
+    @include property-horizontal(border, $px $type $color, null);
+}
+
+@mixin border-end($px, $type: null, $color: null) {
+    @include property-horizontal(border, null, $px $type $color);
+}
+
+@mixin safe-area-border-start($px, $type, $color) {
+    $safe-area-position: calc(var(--ion-safe-area-left) + #{$px});
+
+    @include border-start($safe-area-position, $type, $color);
+}
+
+@mixin safe-area-border-end($px, $type, $color) {
+    $safe-area-position: calc(var(--ion-safe-area-right) + #{$px});
+
+    @include border-end($safe-area-position, $type, $color);
+}
+
+@mixin safe-area-margin-horizontal($start, $end: $start) {
+    $safe-area-end: null;
+    $safe-area-start: null;
+
+    @if ($end) {
+        $safe-area-end: calc(var(--ion-safe-area-right) + #{$end});
+    }
+    @if ($start) {
+        $safe-area-start: calc(var(--ion-safe-area-left) + #{$start});
+    }
+
+    @include margin-horizontal($safe-area-start, $safe-area-end);
+}
+
+@mixin safe-area-margin-start($start, $end) {
+    $safe-area-start: calc(var(--ion-safe-area-left) + #{$start});
+
+    @include margin-horizontal($safe-area-start, $end);
+}
+
+@mixin safe-area-margin-end($start, $end) {
+    $safe-area-end: calc(var(--ion-safe-area-right) + #{$end});
+
+    @include margin-horizontal($start, $safe-area-end);
+}
+
+@mixin safe-area-padding-horizontal($start, $end: $start) {
+    $safe-area-end: null;
+    $safe-area-start: null;
+
+    @if ($end) {
+        $safe-area-end: calc(var(--ion-safe-area-right) + #{$end});
+    }
+    @if ($start) {
+        $safe-area-start: calc(var(--ion-safe-area-left) + #{$start});
+    }
+
+    @include padding-horizontal($safe-area-start, $safe-area-end);
+}
+
+@mixin safe-area-padding-start($start, $end) {
+    $safe-area-start: calc(var(--ion-safe-area-left) + #{$start});
+
+    @include padding-horizontal($safe-area-start, $end);
+}
+
+@mixin safe-area-padding-end($start, $end) {
+    $safe-area-end: calc(var(--ion-safe-area-right) + #{$end});
+
+    @include padding-horizontal($start, $safe-area-end);
+}
+
+@mixin safe-area-position($top: null, $end: null, $bottom: null, $start: null) {
+    $safe-area-start: calc(var(--ion-safe-area-left) + #{$start});
+    $safe-area-end: calc(var(--ion-safe-area-right) + #{$end});
+
+    @include position($top, $safe-area-end, $bottom, $safe-area-start);
+}
+
+@mixin core-headings() {
+    h1 {
+        font-size: 26px;
+    }
+    h2, .item-heading {
+        font-size: 24px;
+    }
+    h3 {
+        font-size: 22px;
+    }
+    h4 {
+        font-size: 20px;
+    }
+    h5 {
+        font-size: 18px;
+    }
+    h6 {
+        font-size: 16px;
+    }
+}
+
+@mixin darkmode() {
+    $root: #{&};
+
+    @at-root #{add-root-selector($root, "body.dark")} {
+        @content;
+    }
+}
+
+@mixin horizontal_scroll_item($width, $min-width, $max-width) {
+    flex: 0 0 $width;
+    min-width: $min-width;
+    max-width: $max-width;
+    align-self: stretch;
+    display: block;
+
+    ion-card {
+        --vertical-margin: 10px;
+        --horizontal-margin: 10px;
+
+        width: calc(100% - var(--horizontal-margin) - var(--horizontal-margin));
+        height: calc(100% - var(--vertical-margin) - var(--vertical-margin));
+        margin: var(--vertical-margin) var(--horizontal-margin);
+
+        @media (max-width: 360px) {
+            --horizontal-margin: 6px;
+        }
+    }
+}
+
+// Color mixins.
+@function get_brightness($color) {
+    @return (red($color) + green($color) + blue($color)) / 3;
+}
+
+// Get the better color contrast using WCAG algorythm.
+@function get_contrast_color($color) {
+    $lumiance: luminance($color);
+
+    // White lumiance is 1.
+    $whiteContrast: ($lumiance + 0.05) / (1 + 0.05);
+    // White lumiance is 0.
+    $blackContrast: (0.05) / ($lumiance + 0.05);
+
+    @return if($whiteContrast < $blackContrast, white, black);
+}
+
+// Color contrast using yiq aproximation with 150 threshold.
+@function get_contrast_color_yiq($color, $dark: black, $light: white) {
+    $r: red($color);
+    $g: green($color);
+    $b: blue($color);
+
+    $yiq: (($r * 299) + ($g * 587) + ($b * 114)) / 1000;
+
+    @return if($yiq >= 128, $dark, $light);
+}
+
+// WCAG contrast algorythm
+@function check-contrast($foreground, $background) {
+    $foregroundLumiance: luminance($foreground);
+    $backgroundLuminance: luminance($background);
+
+    @if ($backgroundLuminance < $foregroundLumiance) {
+        @return ($backgroundLuminance + 0.05) / ($foregroundLumiance + 0.05);
+    } @else {
+        @return ($foregroundLumiance + 0.05) / ($backgroundLuminance + 0.05);
+    }
+}
+
+@function luminance($color) {
+    $r: red($color);
+    $g: green($color);
+    $b: blue($color);
+
+    $r: component-luminance($r);
+    $g: component-luminance($g);
+    $b: component-luminance($b);
+
+    @return $r * 0.2126 + $g * 0.7152 + $b * 0.0722;
+}
+
+@function component-luminance($value) {
+    $value: $value / 255;
+
+    @if ($value <= 0.03928) {
+        @return $value / 12.92;
+    } @else {
+        @return math.pow(($value + 0.055) / 1.055, 2.4);
+    }
+}

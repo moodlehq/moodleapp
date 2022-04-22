@@ -17,6 +17,7 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
 import { AddonModWiki } from '../wiki';
@@ -39,7 +40,6 @@ export class AddonModWikiEditLinkHandlerService extends CoreContentLinksHandlerB
         siteIds: string[],
         url: string,
         params: Record<string, string>,
-        courseId?: number,
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
 
         return [{
@@ -51,17 +51,19 @@ export class AddonModWikiEditLinkHandlerService extends CoreContentLinksHandlerB
 
                     const pageContents = await AddonModWiki.getPageContents(pageId, { siteId });
 
-                    const module = await CoreCourse.getModuleBasicInfoByInstance(pageContents.wikiid, 'wiki', siteId);
+                    const module = await CoreCourse.getModuleBasicInfoByInstance(
+                        pageContents.wikiid,
+                        'wiki',
+                        { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+                    );
 
                     let section = '';
-                    if (typeof params.section != 'undefined') {
+                    if (params.section !== undefined) {
                         section = params.section.replace(/\+/g, ' ');
                     }
 
-                    courseId = module.course || courseId || Number(params.courseid || params.cid);
-
                     CoreNavigator.navigateToSitePath(
-                        AddonModWikiModuleHandlerService.PAGE_NAME + `/${courseId}/${module.id}/edit`,
+                        AddonModWikiModuleHandlerService.PAGE_NAME + `/${module.course}/${module.id}/edit`,
                         {
                             params: {
                                 section: section,

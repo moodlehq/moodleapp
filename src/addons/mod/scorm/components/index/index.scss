@@ -2,7 +2,7 @@
 
 :host {
     .addon-mod_scorm-attempt-summary ion-item > p {
-        font-size: 14px;
+        font-size: var(--text-size);
     }
 
     .addon-mod_scorm-toc {

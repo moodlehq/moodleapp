@@ -40,11 +40,12 @@ export class AddonBlogProvider {
      *
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with true if enabled, resolved with false or rejected otherwise.
+     * @since 3.6
      */
     async isPluginEnabled(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
 
-        return site.wsAvailable('core_blog_get_entries') &&site.canUseAdvancedFeature('enableblogs');
+        return site.wsAvailable('core_blog_get_entries') && site.canUseAdvancedFeature('enableblogs');
     }
 
     /**

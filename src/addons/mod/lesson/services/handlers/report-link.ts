@@ -18,9 +18,9 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
-import { AddonModLesson } from '../lesson';
 import { AddonModLessonModuleHandlerService } from './module';
 
 /**
@@ -39,26 +39,20 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
      * @param siteIds List of sites the URL belongs to.
      * @param url The URL to treat.
      * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
-     * @param courseId Course ID related to the URL. Optional but recommended.
-     * @param data Extra data to handle the URL.
      * @return List of (or promise resolved with list of) actions.
      */
     getActions(
         siteIds: string[],
         url: string,
         params: Record<string, string>,
-        courseId?: number,
-        data?: unknown, // eslint-disable-line @typescript-eslint/no-unused-vars
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
-        courseId = Number(courseId || params.courseid || params.cid);
-
         return [{
             action: (siteId) => {
                 if (!params.action || params.action == 'reportoverview') {
                     // Go to overview.
-                    this.openReportOverview(Number(params.id), courseId, Number(params.group), siteId);
+                    this.openReportOverview(Number(params.id), Number(params.group), siteId);
                 } else if (params.action == 'reportdetail') {
-                    this.openUserRetake(Number(params.id), Number(params.userid), Number(params.try), siteId, courseId);
+                    this.openUserRetake(Number(params.id), Number(params.userid), Number(params.try), siteId);
                 }
             },
         }];
@@ -71,46 +65,48 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
      * @param siteId The site ID.
      * @param url The URL to treat.
      * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
-     * @param courseId Course ID related to the URL. Optional but recommended.
      * @return Whether the handler is enabled for the URL and site.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async isEnabled(siteId: string, url: string, params: Record<string, string>, courseId?: number): Promise<boolean> {
+    async isEnabled(siteId: string, url: string, params: Record<string, string>): Promise<boolean> {
         if (params.action == 'reportdetail' && !params.userid) {
             // Individual details are only available if the teacher is seeing a certain user.
             return false;
         }
 
-        return AddonModLesson.isPluginEnabled(siteId);
+        return true;
     }
 
     /**
      * Open report overview.
      *
      * @param moduleId Module ID.
-     * @param courseId Course ID.
      * @param groupId Group ID.
      * @param siteId Site ID.
-     * @param navCtrl The NavController to use to navigate.
      * @return Promise resolved when done.
      */
-    protected async openReportOverview(moduleId: number, courseId?: number, groupId?: number, siteId?: string): Promise<void> {
+    protected async openReportOverview(moduleId: number, groupId?: number, siteId?: string): Promise<void> {
 
         const modal = await CoreDomUtils.showModalLoading();
 
         try {
             // Get the module object.
-            const module = await CoreCourse.getModuleBasicInfo(moduleId, siteId);
+            const module = await CoreCourse.getModule(
+                moduleId,
+                undefined,
+                undefined,
+                false,
+                false,
+                siteId,
+            );
 
-            courseId = courseId || module.course;
             const params = {
-                module: module,
+                module,
                 action: 'report',
                 group: groupId === undefined || isNaN(groupId) ? null : groupId,
             };
 
             CoreNavigator.navigateToSitePath(
-                `${AddonModLessonModuleHandlerService.PAGE_NAME}/${courseId}/${module.id}`,
+                `${AddonModLessonModuleHandlerService.PAGE_NAME}/${module.course}/${module.id}`,
                 { params, siteId },
             );
         } catch (error) {
@@ -127,7 +123,6 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
      * @param userId User ID.
      * @param retake Retake to open.
      * @param siteId Site ID.
-     * @param courseId Course ID.
      * @return Promise resolved when done.
      */
     protected async openUserRetake(
@@ -135,22 +130,22 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
         userId: number,
         retake: number,
         siteId: string,
-        courseId?: number,
     ): Promise<void> {
 
         const modal = await CoreDomUtils.showModalLoading();
 
         try {
             // Get the module object.
-            const module = await CoreCourse.getModuleBasicInfo(moduleId, siteId);
-
-            courseId = courseId || module.course;
+            const module = await CoreCourse.getModuleBasicInfo(
+                moduleId,
+                { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+            );
             const params = {
                 retake: retake || 0,
             };
 
             CoreNavigator.navigateToSitePath(
-                AddonModLessonModuleHandlerService.PAGE_NAME + `/${courseId}/${module.id}/user-retake/${userId}`,
+                AddonModLessonModuleHandlerService.PAGE_NAME + `/${module.course}/${module.id}/user-retake/${userId}`,
                 { params, siteId },
             );
         } catch (error) {

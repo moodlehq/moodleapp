@@ -1,0 +1,51 @@
+@import '~theme/globals.scss';
+
+:host {
+    .core-format-progress-list {
+        width: 100%;
+    }
+
+    .core-course-thumb {
+        height: var(--core-courseimage-on-course-size);
+        min-height: var(--core-courseimage-on-course-size);
+        width: var(--core-courseimage-on-course-size);
+        min-width: var(--core-courseimage-on-course-size);
+        --border-radius: var(--core-courseimage-radius);
+        @include margin(8px, 16px, 8px, 0px);
+
+        @for $i from 0 to length($core-course-image-background) {
+            &.course-color-#{$i} {
+                --course-color: var(--core-course-color-#{$i});
+                --course-color-tint: var(--core-course-color-#{$i}-tint);
+            }
+        }
+
+        ion-icon.course-icon {
+            padding: 12px;
+            font-size: calc(var(--core-courseimage-on-course-size) - 24px);
+            border-radius: var(--border-radius);
+            color: var(--course-color-tint);
+            background: var(--course-color, transparent);
+        }
+    }
+
+    @if ($core-hide-courseimage-on-course) {
+        .core-course-thumb {
+            display: none;
+        }
+    }
+
+    @if ($core-hide-progress-on-course) {
+        .core-course-progress {
+            display: none;
+        }
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    .core-course-header {
+        background: var(--ion-item-background);
+    }
+}

@@ -12,12 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, OnChanges, SimpleChange, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChange, ElementRef, AfterViewInit } from '@angular/core';
 
 import { CoreEventLoadingChangedData, CoreEvents } from '@singletons/events';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreAnimations } from '@components/animations';
 import { Translate } from '@singletons';
+import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CorePromisedValue } from '@classes/promised-value';
+import { AsyncComponent } from '@classes/async-component';
 
 /**
  * Component to show a loading spinner and message while data is being loaded.
@@ -45,82 +48,124 @@ import { Translate } from '@singletons';
     styleUrls: ['loading.scss'],
     animations: [CoreAnimations.SHOW_HIDE],
 })
-export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit {
+export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, AsyncComponent {
 
-    @Input() hideUntil: unknown; // Determine when should the contents be shown.
+    @Input() hideUntil = false; // Determine when should the contents be shown.
     @Input() message?: string; // Message to show while loading.
-    @Input() protected fullscreen = true; // Use the whole screen.
-
-    @ViewChild('content') content?: ElementRef;
+    @Input() fullscreen = true; // Use the whole screen.
 
     uniqueId: string;
+    loaded = false;
+
+    protected scroll = 0;
     protected element: HTMLElement; // Current element.
-    loaded = false; // Only comes true once.
+    protected onReadyPromise = new CorePromisedValue<void>();
 
     constructor(element: ElementRef) {
         this.element = element.nativeElement;
+        CoreComponentsRegistry.register(this.element, this);
 
         // Calculate the unique ID.
         this.uniqueId = 'core-loading-content-' + CoreUtils.getUniqueId('CoreLoadingComponent');
+        this.element.setAttribute('id', this.uniqueId);
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         if (!this.message) {
             // Default loading message.
             this.message = Translate.instant('core.loading');
         }
-
         this.element.classList.toggle('core-loading-inline', !this.fullscreen);
     }
 
     /**
-     * View has been initialized.
+     * @inheritdoc
      */
     ngAfterViewInit(): void {
-        // Add class if loaded on init.
-        if (this.hideUntil) {
-            this.element.classList.add('core-loading-loaded');
-        }
-        this.loaded = !!this.hideUntil;
-
-        this.content?.nativeElement.classList.toggle('core-loading-content', !!this.hideUntil);
+        this.changeState(this.hideUntil);
     }
 
     /**
-     * Component input changed.
-     *
-     * @param changes Changes.
+     * @inheritdoc
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if (changes.hideUntil) {
-            if (!this.loaded) {
-                this.loaded = !!this.hideUntil; // Only comes true once.
-            }
-
-            if (this.hideUntil) {
-                setTimeout(() => {
-                    // Content is loaded so, center the spinner on the content itself.
-                    this.element.classList.add('core-loading-loaded');
-                    // Change CSS to force calculate height.
-                    // Removed 500ms timeout to avoid reallocating html.
-                    this.content?.nativeElement.classList.add('core-loading-content');
-                });
-            } else {
-                this.element.classList.remove('core-loading-loaded');
-                this.content?.nativeElement.classList.remove('core-loading-content');
-            }
-
-            // Trigger the event after a timeout since the elements inside ngIf haven't been added to DOM yet.
-            setTimeout(() => {
-                CoreEvents.trigger(CoreEvents.CORE_LOADING_CHANGED, <CoreEventLoadingChangedData> {
-                    loaded: !!this.hideUntil,
-                    uniqueId: this.uniqueId,
-                });
-            });
+            this.changeState(this.hideUntil);
         }
+    }
+
+    /**
+     * Change loaded state.
+     *
+     * @param loaded True to load, false otherwise.
+     * @return Promise resolved when done.
+     */
+    async changeState(loaded: boolean): Promise<void> {
+        this.element.classList.toggle('core-loading-loaded', loaded);
+        this.element.setAttribute('aria-busy', loaded ?  'false' : 'true');
+
+        if (this.loaded === loaded) {
+            return;
+        }
+
+        if (!loaded) {
+            await this.saveScrollPosition();
+        }
+        this.loaded = loaded;
+
+        if (loaded) {
+            this.onReadyPromise.resolve();
+
+            // Recover last scroll.
+            await this.recoverScrollPosition();
+        }
+
+        // Event has been deprecated since app 4.0.
+        CoreEvents.trigger(CoreEvents.CORE_LOADING_CHANGED, <CoreEventLoadingChangedData> {
+            loaded,
+            uniqueId: this.uniqueId,
+        });
+    }
+
+    /**
+     * Saves current scroll position.
+     */
+    protected async saveScrollPosition(): Promise<void> {
+        const content = this.element.closest('ion-content');
+        if (!content) {
+            return;
+        }
+
+        const scrollElement = await content.getScrollElement();
+        this.scroll = scrollElement.scrollTop;
+    }
+
+    /**
+     * Recovers last set scroll position.
+     */
+    protected async recoverScrollPosition(): Promise<void> {
+        if (this.scroll <= 0) {
+            return;
+        }
+
+        const content = this.element.closest('ion-content');
+        if (!content) {
+            return;
+        }
+
+        const scrollElement = await content.getScrollElement();
+
+        scrollElement.scrollTo(0, this.scroll);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async ready(): Promise<void> {
+        return await this.onReadyPromise;
     }
 
 }

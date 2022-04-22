@@ -14,7 +14,7 @@
 
 import { Injectable, SimpleChange, ElementRef, KeyValueChanges } from '@angular/core';
 import { IonContent } from '@ionic/angular';
-import { ModalOptions, PopoverOptions, AlertOptions, AlertButton, TextFieldTypes, getMode } from '@ionic/core';
+import { ModalOptions, PopoverOptions, AlertOptions, AlertButton, TextFieldTypes, getMode, ToastOptions } from '@ionic/core';
 import { Md5 } from 'ts-md5';
 
 import { CoreApp } from '@services/app';
@@ -29,7 +29,15 @@ import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreAnyError, CoreError } from '@classes/errors/error';
 import { CoreSilentError } from '@classes/errors/silenterror';
-import { makeSingleton, Translate, AlertController, ToastController, PopoverController, ModalController } from '@singletons';
+import {
+    makeSingleton,
+    Translate,
+    AlertController,
+    ToastController,
+    PopoverController,
+    ModalController,
+    Router,
+} from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreNetworkError } from '@classes/errors/network-error';
@@ -38,6 +46,14 @@ import { CoreViewerImageComponent } from '@features/viewer/components/image/imag
 import { CoreFormFields, CoreForms } from '../../singletons/form';
 import { CoreModalLateralTransitionEnter, CoreModalLateralTransitionLeave } from '@classes/modal-lateral-transition';
 import { CoreZoomLevel } from '@features/settings/services/settings-helper';
+import { CoreErrorWithTitle } from '@classes/errors/errorwithtitle';
+import { AddonFilterMultilangHandler } from '@addons/filter/multilang/services/handlers/multilang';
+import { CoreSites } from '@services/sites';
+import { NavigationStart } from '@angular/router';
+import { filter } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreDom } from '@singletons/dom';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -54,9 +70,9 @@ export class CoreDomUtilsProvider {
     protected template: HTMLTemplateElement = document.createElement('template'); // A template element to convert HTML to element.
 
     protected matchesFunctionName?: string; // Name of the "matches" function to use when simulating a closest call.
-    protected instances: WeakMap<Element, unknown> = new WeakMap(); // Store component/directive instances indexed by element.
     protected debugDisplay = false; // Whether to display debug messages. Store it in a variable to make it synchronous.
     protected displayedAlerts: Record<string, HTMLIonAlertElement> = {}; // To prevent duplicated alerts.
+    protected displayedModals: Record<string, HTMLIonModalElement> = {}; // To prevent duplicated modals.
     protected activeLoadingModals: CoreIonLoadingElement[] = [];
     protected logger: CoreLogger;
 
@@ -84,45 +100,10 @@ export class CoreDomUtilsProvider {
      * @param element DOM Element.
      * @param selector Selector to search.
      * @return Closest ancestor.
+     * @deprecated since app 4.0 Not needed anymore since it's supported on both Android and iOS. Use closest instead.
      */
     closest(element: Element | undefined | null, selector: string): Element | null {
-        if (!element) {
-            return null;
-        }
-
-        // Try to use closest if the browser supports it.
-        if (typeof element.closest == 'function') {
-            return element.closest(selector);
-        }
-
-        if (!this.matchesFunctionName) {
-            // Find the matches function supported by the browser.
-            ['matches', 'webkitMatchesSelector', 'mozMatchesSelector', 'msMatchesSelector', 'oMatchesSelector'].some((fn) => {
-                if (typeof document.body[fn] == 'function') {
-                    this.matchesFunctionName = fn;
-
-                    return true;
-                }
-
-                return false;
-            });
-
-            if (!this.matchesFunctionName) {
-                return null;
-            }
-        }
-
-        // Traverse parents.
-        let elementToTreat: Element | null = element;
-
-        while (elementToTreat) {
-            if (elementToTreat[this.matchesFunctionName](selector)) {
-                return elementToTreat;
-            }
-            elementToTreat = elementToTreat.parentElement;
-        }
-
-        return null;
+        return element?.closest(selector) ?? null;
     }
 
     /**
@@ -185,8 +166,8 @@ export class CoreDomUtilsProvider {
 
         const availableSpace = getAvailableSpace(availableBytes);
 
-        wifiThreshold = typeof wifiThreshold == 'undefined' ? CoreConstants.WIFI_DOWNLOAD_THRESHOLD : wifiThreshold;
-        limitedThreshold = typeof limitedThreshold == 'undefined' ? CoreConstants.DOWNLOAD_THRESHOLD : limitedThreshold;
+        wifiThreshold = wifiThreshold === undefined ? CoreConstants.WIFI_DOWNLOAD_THRESHOLD : wifiThreshold;
+        limitedThreshold = limitedThreshold === undefined ? CoreConstants.DOWNLOAD_THRESHOLD : limitedThreshold;
 
         let wifiPrefix = '';
         if (CoreApp.isNetworkAccessLimited()) {
@@ -275,58 +256,6 @@ export class CoreDomUtilsProvider {
     }
 
     /**
-     * Extract the downloadable URLs from an HTML code.
-     *
-     * @param html HTML code.
-     * @return List of file urls.
-     * @deprecated since 3.8. Use CoreFilepoolProvider.extractDownloadableFilesFromHtml instead.
-     */
-    extractDownloadableFilesFromHtml(html: string): string[] {
-        this.logger.error('The function extractDownloadableFilesFromHtml has been moved to CoreFilepoolProvider.' +
-                ' Please use that function instead of this one.');
-
-        const urls: string[] = [];
-
-        const element = this.convertToElement(html);
-        const elements: AnchorOrMediaElement[] = Array.from(element.querySelectorAll('a, img, audio, video, source, track'));
-
-        for (let i = 0; i < elements.length; i++) {
-            const element = elements[i];
-            let url = 'href' in element ? element.href : element.src;
-
-            if (url && CoreUrlUtils.isDownloadableUrl(url) && urls.indexOf(url) == -1) {
-                urls.push(url);
-            }
-
-            // Treat video poster.
-            if (element.tagName == 'VIDEO' && element.getAttribute('poster')) {
-                url = element.getAttribute('poster') || '';
-                if (url && CoreUrlUtils.isDownloadableUrl(url) && urls.indexOf(url) == -1) {
-                    urls.push(url);
-                }
-            }
-        }
-
-        return urls;
-    }
-
-    /**
-     * Extract the downloadable URLs from an HTML code and returns them in fake file objects.
-     *
-     * @param html HTML code.
-     * @return List of fake file objects with file URLs.
-     * @deprecated since 3.8. Use CoreFilepoolProvider.extractDownloadableFilesFromHtmlAsFakeFileObjects instead.
-     */
-    extractDownloadableFilesFromHtmlAsFakeFileObjects(html: string): {fileurl: string}[] {
-        const urls = this.extractDownloadableFilesFromHtml(html);
-
-        // Convert them to fake file objects.
-        return urls.map((url) => ({
-            fileurl: url,
-        }));
-    }
-
-    /**
      * Search all the URLs in a CSS file content.
      *
      * @param code CSS code.
@@ -382,15 +311,40 @@ export class CoreDomUtilsProvider {
     /**
      * Focus an element and open keyboard.
      *
-     * @param el HTML element to focus.
+     * @param element HTML element to focus.
      */
-    focusElement(el: HTMLElement): void {
-        if (el?.focus) {
-            el.focus();
-            if (CoreApp.isAndroid() && this.supportsInputKeyboard(el)) {
-                // On some Android versions the keyboard doesn't open automatically.
-                CoreApp.openKeyboard();
+    async focusElement(
+        element: HTMLIonInputElement | HTMLIonTextareaElement | HTMLIonSearchbarElement | HTMLElement,
+    ): Promise<void> {
+        let retries = 10;
+
+        let focusElement = element;
+
+        if ('getInputElement' in focusElement) {
+            // If it's an Ionic element get the right input to use.
+            focusElement.componentOnReady && await focusElement.componentOnReady();
+            focusElement = await focusElement.getInputElement();
+        }
+
+        if (!focusElement || !focusElement.focus) {
+            throw new CoreError('Element to focus cannot be focused');
+        }
+
+        while (retries > 0 && focusElement !== document.activeElement) {
+            focusElement.focus();
+
+            if (focusElement === document.activeElement) {
+                await CoreUtils.nextTick();
+                if (CoreApp.isAndroid() && this.supportsInputKeyboard(focusElement)) {
+                    // On some Android versions the keyboard doesn't open automatically.
+                    CoreApp.openKeyboard();
+                }
+                break;
             }
+
+            // @TODO Probably a Mutation Observer would get this working.
+            await CoreUtils.wait(50);
+            retries--;
         }
     }
 
@@ -428,11 +382,9 @@ export class CoreDomUtilsProvider {
      * @return Selection contents. Undefined if not found.
      */
     getContentsOfElement(element: HTMLElement, selector: string): string | undefined {
-        if (element) {
-            const selected = element.querySelector(selector);
-            if (selected) {
-                return selected.innerHTML;
-            }
+        const selected = element.querySelector(selector);
+        if (selected) {
+            return selected.innerHTML;
         }
     }
 
@@ -467,6 +419,7 @@ export class CoreDomUtilsProvider {
      * @param useBorder Whether to use borders to calculate the measure.
      * @param innerMeasure If inner measure is needed: padding, margin or borders will be substracted.
      * @return Height in pixels.
+     * @deprecated since app 4.0 Use getBoundingClientRect.height instead.
      */
     getElementHeight(
         element: HTMLElement,
@@ -488,6 +441,7 @@ export class CoreDomUtilsProvider {
      * @param useBorder Whether to use borders to calculate the measure.
      * @param innerMeasure If inner measure is needed: padding, margin or borders will be substracted.
      * @return Measure in pixels.
+     * @deprecated since app 4.0 Use getBoundingClientRect.height or width instead.
      */
     getElementMeasure(
         element: HTMLElement,
@@ -560,6 +514,7 @@ export class CoreDomUtilsProvider {
      * @param useBorder Whether to use borders to calculate the measure.
      * @param innerMeasure If inner measure is needed: padding, margin or borders will be substracted.
      * @return Width in pixels.
+     * @deprecated since app 4.0 Use getBoundingClientRect.width instead.
      */
     getElementWidth(
         element: HTMLElement,
@@ -574,50 +529,35 @@ export class CoreDomUtilsProvider {
     /**
      * Retrieve the position of a element relative to another element.
      *
-     * @param container Element to search in.
+     * @param element Element to search in.
      * @param selector Selector to find the element to gets the position.
      * @param positionParentClass Parent Class where to stop calculating the position. Default inner-scroll.
      * @return positionLeft, positionTop of the element relative to.
+     * @deprecated since app 4.0. Use CoreDom.getRelativeElementPosition instead.
      */
-    getElementXY(container: HTMLElement, selector: undefined, positionParentClass?: string): number[];
-    getElementXY(container: HTMLElement, selector: string, positionParentClass?: string): number[] | null;
-    getElementXY(container: HTMLElement, selector?: string, positionParentClass?: string): number[] | null {
-        let element: HTMLElement | null = <HTMLElement> (selector ? container.querySelector(selector) : container);
-        let positionTop = 0;
-        let positionLeft = 0;
+    getElementXY(element: HTMLElement, selector?: string, positionParentClass = 'inner-scroll'): [number, number] | null {
+        if (selector) {
+            const foundElement = element.querySelector<HTMLElement>(selector);
+            if (!foundElement) {
+                // Element not found.
+                return null;
+            }
 
-        if (!positionParentClass) {
-            positionParentClass = 'inner-scroll';
+            element = foundElement;
         }
 
-        if (!element) {
+        const parent = element.closest<HTMLElement>(`.${positionParentClass}`);
+        if (!parent) {
             return null;
         }
 
-        while (element) {
-            positionLeft += (element.offsetLeft - element.scrollLeft + element.clientLeft);
-            positionTop += (element.offsetTop - element.scrollTop + element.clientTop);
+        const position = CoreDom.getRelativeElementPosition(element, parent);
 
-            const offsetElement = element.offsetParent;
-            element = element.parentElement;
-
-            // Every parent class has to be checked but the position has to be got form offsetParent.
-            while (offsetElement != element && element) {
-                // If positionParentClass element is reached, stop adding tops.
-                if (element.className.indexOf(positionParentClass) != -1) {
-                    element = null;
-                } else {
-                    element = element.parentElement;
-                }
-            }
-
-            // Finally, check again.
-            if (element?.className.indexOf(positionParentClass) != -1) {
-                element = null;
-            }
-        }
-
-        return [positionLeft, positionTop];
+        // Calculate the top and left positions.
+        return [
+            Math.ceil(position.x),
+            Math.ceil(position.y),
+        ];
     }
 
     /**
@@ -708,9 +648,10 @@ export class CoreDomUtilsProvider {
      *
      * @param element The root element of the component/directive.
      * @return The instance, undefined if not found.
+     * @deprecated since 4.0.0. Use CoreComponentsRegistry instead.
      */
     getInstanceByElement<T = unknown>(element: Element): T | undefined {
-        return this.instances.get(element) as T;
+        return CoreComponentsRegistry.resolve<T>(element) ?? undefined;
     }
 
     /**
@@ -738,6 +679,7 @@ export class CoreDomUtilsProvider {
      *
      * @param findFunction The function used to find the element.
      * @return Resolved if found, rejected if too many tries.
+     * @deprecated since app 4.0 Use CoreDom.waitToBeInsideElement instead.
      */
     waitElementToExist(findFunction: () => HTMLElement | null): Promise<HTMLElement> {
         const promiseInterval = CoreUtils.promiseDefer<HTMLElement>();
@@ -806,21 +748,39 @@ export class CoreDomUtilsProvider {
      *
      * @param scrollEl The element that must be scrolled.
      * @param element DOM element to check.
+     * @param point The point of the element to check.
      * @return Whether the element is outside of the viewport.
      */
-    isElementOutsideOfScreen(scrollEl: HTMLElement, element: HTMLElement): boolean {
+    isElementOutsideOfScreen(
+        scrollEl: HTMLElement,
+        element: HTMLElement,
+        point: VerticalPoint = VerticalPoint.MID,
+    ): boolean {
         const elementRect = element.getBoundingClientRect();
 
         if (!elementRect) {
             return false;
         }
 
-        const elementMidPoint = Math.round((elementRect.bottom + elementRect.top) / 2);
+        let elementPoint: number;
+        switch (point) {
+            case VerticalPoint.TOP:
+                elementPoint = elementRect.top;
+                break;
+
+            case VerticalPoint.BOTTOM:
+                elementPoint = elementRect.bottom;
+                break;
+
+            case VerticalPoint.MID:
+                elementPoint = Math.round((elementRect.bottom + elementRect.top) / 2);
+                break;
+        }
 
         const scrollElRect = scrollEl.getBoundingClientRect();
         const scrollTopPos = scrollElRect?.top || 0;
 
-        return elementMidPoint > window.innerHeight || elementMidPoint < scrollTopPos;
+        return elementPoint > window.innerHeight || elementPoint < scrollTopPos;
     }
 
     /**
@@ -873,11 +833,9 @@ export class CoreDomUtilsProvider {
      * @param selector Selector to search.
      */
     removeElement(element: HTMLElement, selector: string): void {
-        if (element) {
-            const selected = element.querySelector(selector);
-            if (selected) {
-                selected.remove();
-            }
+        const selected = element.querySelector(selector);
+        if (selected) {
+            selected.remove();
         }
     }
 
@@ -911,19 +869,22 @@ export class CoreDomUtilsProvider {
      * Remove a component/directive instance using the DOM Element.
      *
      * @param element The root element of the component/directive.
+     * @deprecated since 4.0.0. It's no longer necessary to remove instances.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     removeInstanceByElement(element: Element): void {
-        const id = element.getAttribute(this.INSTANCE_ID_ATTR_NAME);
-        id && delete this.instances[id];
+        //
     }
 
     /**
      * Remove a component/directive instance using the ID.
      *
      * @param id The ID to remove.
+     * @deprecated since 4.0.0. It's no longer necessary to remove instances.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     removeInstanceById(id: string): void {
-        delete this.instances[id];
+        //
     }
 
     /**
@@ -967,15 +928,15 @@ export class CoreDomUtilsProvider {
                 paths[CoreUrlUtils.removeUrlParams(CoreTextUtils.decodeURIComponent(currentSrc))] :
                 undefined;
 
-            if (typeof newSrc != 'undefined') {
+            if (newSrc !== undefined) {
                 media.setAttribute('src', newSrc);
             }
 
             // Treat video posters.
-            if (media.tagName == 'VIDEO' && media.getAttribute('poster')) {
-                const currentPoster = media.getAttribute('poster');
-                const newPoster = paths[CoreTextUtils.decodeURIComponent(currentPoster!)];
-                if (typeof newPoster !== 'undefined') {
+            const currentPoster = media.getAttribute('poster');
+            if (media.tagName == 'VIDEO' && currentPoster) {
+                const newPoster = paths[CoreTextUtils.decodeURIComponent(currentPoster)];
+                if (newPoster !== undefined) {
                     media.setAttribute('poster', newPoster);
                 }
             }
@@ -989,7 +950,7 @@ export class CoreDomUtilsProvider {
                 paths[CoreUrlUtils.removeUrlParams(CoreTextUtils.decodeURIComponent(currentHref))] :
                 undefined;
 
-            if (typeof newHref != 'undefined') {
+            if (newHref !== undefined) {
                 anchor.setAttribute('href', newHref);
 
                 if (typeof anchorFn == 'function') {
@@ -1011,8 +972,8 @@ export class CoreDomUtilsProvider {
      * @return Returns a promise which is resolved when the scroll has completed.
      * @deprecated since 3.9.5. Use directly the IonContent class.
      */
-    scrollTo(content: IonContent, x: number, y: number, duration?: number): Promise<void> {
-        return content?.scrollToPoint(x, y, duration || 0);
+    scrollTo(content: IonContent, x: number, y: number, duration = 0): Promise<void> {
+        return content.scrollToPoint(x, y, duration);
     }
 
     /**
@@ -1023,8 +984,8 @@ export class CoreDomUtilsProvider {
      * @return Returns a promise which is resolved when the scroll has completed.
      * @deprecated since 3.9.5. Use directly the IonContent class.
      */
-    scrollToBottom(content: IonContent, duration?: number): Promise<void> {
-        return content?.scrollToBottom(duration);
+    scrollToBottom(content: IonContent, duration = 0): Promise<void> {
+        return content.scrollToBottom(duration);
     }
 
     /**
@@ -1035,8 +996,8 @@ export class CoreDomUtilsProvider {
      * @return Returns a promise which is resolved when the scroll has completed.
      * @deprecated since 3.9.5. Use directly the IonContent class.
      */
-    scrollToTop(content: IonContent, duration?: number): Promise<void> {
-        return content?.scrollToTop(duration);
+    scrollToTop(content: IonContent, duration = 0): Promise<void> {
+        return content.scrollToTop(duration);
     }
 
     /**
@@ -1047,10 +1008,10 @@ export class CoreDomUtilsProvider {
      */
     async getContentHeight(content: IonContent): Promise<number> {
         try {
-            const scrollElement = await content?.getScrollElement();
+            const scrollElement = await content.getScrollElement();
 
-            return scrollElement?.clientHeight || 0;
-        } catch (error) {
+            return scrollElement.clientHeight || 0;
+        } catch {
             return 0;
         }
     }
@@ -1063,10 +1024,10 @@ export class CoreDomUtilsProvider {
      */
     async getScrollHeight(content: IonContent): Promise<number> {
         try {
-            const scrollElement = await content?.getScrollElement();
+            const scrollElement = await content.getScrollElement();
 
-            return scrollElement?.scrollHeight || 0;
-        } catch (error) {
+            return scrollElement.scrollHeight || 0;
+        } catch {
             return 0;
         }
     }
@@ -1079,10 +1040,10 @@ export class CoreDomUtilsProvider {
      */
     async getScrollTop(content: IonContent): Promise<number> {
         try {
-            const scrollElement = await content?.getScrollElement();
+            const scrollElement = await content.getScrollElement();
 
-            return scrollElement?.scrollTop || 0;
-        } catch (error) {
+            return scrollElement.scrollTop || 0;
+        } catch {
             return 0;
         }
     }
@@ -1090,19 +1051,15 @@ export class CoreDomUtilsProvider {
     /**
      * Scroll to a certain element.
      *
-     * @param content The content that must be scrolled.
+     * @param content Not used anymore.
      * @param element The element to scroll to.
-     * @param scrollParentClass Parent class where to stop calculating the position. Default inner-scroll.
+     * @param scrollParentClass Not used anymore.
      * @param duration Duration of the scroll animation in milliseconds.
      * @return True if the element is found, false otherwise.
+     * @deprecated since app 4.0 Use CoreDom.scrollToElement instead.
      */
     scrollToElement(content: IonContent, element: HTMLElement, scrollParentClass?: string, duration?: number): boolean {
-        const position = this.getElementXY(element, undefined, scrollParentClass);
-        if (!position) {
-            return false;
-        }
-
-        content?.scrollToPoint(position[0], position[1], duration || 0);
+        CoreDom.scrollToElement(element, undefined, { duration });
 
         return true;
     }
@@ -1111,15 +1068,16 @@ export class CoreDomUtilsProvider {
      * Scroll to a certain element using a selector to find it.
      *
      * @param container The element that contains the element that must be scrolled.
-     * @param content The content that must be scrolled.
+     * @param content Not used anymore.
      * @param selector Selector to find the element to scroll to.
-     * @param scrollParentClass Parent class where to stop calculating the position. Default inner-scroll.
+     * @param scrollParentClass Not used anymore.
      * @param duration Duration of the scroll animation in milliseconds.
      * @return True if the element is found, false otherwise.
+     * @deprecated since app 4.0 Use CoreDom.scrollToElement instead.
      */
     scrollToElementBySelector(
         container: HTMLElement | null,
-        content: IonContent | undefined,
+        content: unknown | null,
         selector: string,
         scrollParentClass?: string,
         duration?: number,
@@ -1128,30 +1086,27 @@ export class CoreDomUtilsProvider {
             return false;
         }
 
-        try {
-            const position = this.getElementXY(container, selector, scrollParentClass);
-            if (!position) {
-                return false;
-            }
+        CoreDom.scrollToElement(container, selector, { duration });
 
-            content?.scrollToPoint(position[0], position[1], duration || 0);
+        return true;
 
-            return true;
-        } catch (error) {
-            return false;
-        }
     }
 
     /**
      * Search for an input with error (core-input-error directive) and scrolls to it if found.
      *
      * @param container The element that contains the element that must be scrolled.
-     * @param content The content that must be scrolled.
-     * @param scrollParentClass Parent class where to stop calculating the position. Default inner-scroll.
      * @return True if the element is found, false otherwise.
+     * @deprecated since app 4.0 Use CoreDom.scrollToInputError instead.
      */
-    scrollToInputError(container: HTMLElement | null, content?: IonContent, scrollParentClass?: string): boolean {
-        return this.scrollToElementBySelector(container, content, '.core-input-error', scrollParentClass);
+    scrollToInputError(container: HTMLElement | null): boolean {
+        if (!container) {
+            return false;
+        }
+
+        CoreDom.scrollToInputError(container);
+
+        return true;
     }
 
     /**
@@ -1195,9 +1150,9 @@ export class CoreDomUtilsProvider {
     async showAlertWithOptions(options: AlertOptions = {}, autocloseTime?: number): Promise<HTMLIonAlertElement> {
         const hasHTMLTags = CoreTextUtils.hasHTMLTags(<string> options.message || '');
 
-        if (hasHTMLTags) {
-            // Format the text.
-            options.message = await CoreTextUtils.formatText(<string> options.message);
+        if (hasHTMLTags && !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.7')) {
+            // Treat multilang.
+            options.message = await AddonFilterMultilangHandler.filter(<string> options.message);
         }
 
         const alertId = <string> Md5.hashAsciiStr((options.header || '') + '#' + (options.message || ''));
@@ -1244,10 +1199,10 @@ export class CoreDomUtilsProvider {
 
                 if (options.buttons) {
                     // Execute dismiss function if any.
-                    const cancelButton = <AlertButton> options.buttons.find(
-                        (button) => typeof button != 'string' && typeof button.handler != 'undefined' && button.role == 'cancel',
+                    const cancelButton = <AlertButton | undefined> options.buttons.find(
+                        (button) => typeof button != 'string' && button.handler !== undefined && button.role == 'cancel',
                     );
-                    cancelButton.handler?.(null);
+                    cancelButton?.handler?.(null);
                 }
             }, autocloseTime);
         }
@@ -1288,15 +1243,34 @@ export class CoreDomUtilsProvider {
     showDeleteConfirm(
         translateMessage: string = 'core.areyousure',
         translateArgs: Record<string, unknown> = {},
-        options?: AlertOptions,
+        options: AlertOptions = {},
     ): Promise<void> {
-        return this.showConfirm(
-            Translate.instant(translateMessage, translateArgs),
-            undefined,
-            Translate.instant('core.delete'),
-            undefined,
-            options,
-        );
+        return new Promise((resolve, reject): void => {
+            options.message = Translate.instant(translateMessage, translateArgs);
+
+            options.buttons = [
+                {
+                    text: Translate.instant('core.cancel'),
+                    role: 'cancel',
+                    handler: () => {
+                        reject(new CoreCanceledError(''));
+                    },
+                },
+                {
+                    text: Translate.instant('core.delete'),
+                    role: 'destructive',
+                    handler: () => {
+                        resolve();
+                    },
+                },
+            ];
+
+            if (!options.header) {
+                options.cssClass = (options.cssClass || '') + ' core-nohead';
+            }
+
+            this.showAlertWithOptions(options, 0);
+        });
     }
 
     /**
@@ -1376,6 +1350,8 @@ export class CoreDomUtilsProvider {
 
         if (this.isNetworkError(message, error)) {
             alertOptions.cssClass = 'core-alert-network-error';
+        } else if (error instanceof CoreErrorWithTitle) {
+            alertOptions.header = error.title || undefined;
         } else {
             alertOptions.header = Translate.instant('core.error');
         }
@@ -1487,7 +1463,7 @@ export class CoreDomUtilsProvider {
             buttons.push({
                 text: Translate.instant('core.download'),
                 handler: (): void => {
-                    CoreUtils.openInBrowser(link);
+                    CoreUtils.openInBrowser(link, { showBrowserWarning: false });
                 },
             });
         }
@@ -1512,19 +1488,34 @@ export class CoreDomUtilsProvider {
      *
      * @param message Modal message.
      * @param header Modal header.
-     * @param placeholder Placeholder of the input element. By default, "Password".
+     * @param placeholderOrLabel Placeholder (for textual/numeric inputs) or label (for radio/checkbox). By default, "Password".
      * @param type Type of the input element. By default, password.
-     * @param options More options to pass to the alert.
-     * @return Promise resolved with the input data if the user clicks OK, rejected if cancels.
+     * @param buttons Buttons. If not provided, OK and Cancel buttons will be displayed.
+     * @return Promise resolved with the input data (true for checkbox/radio) if the user clicks OK, rejected if cancels.
      */
     showPrompt(
         message: string,
         header?: string,
-        placeholder?: string,
+        placeholderOrLabel?: string,
         type: TextFieldTypes | 'checkbox' | 'radio' | 'textarea' = 'password',
+        buttons?: PromptButton[],
     ): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
         return new Promise((resolve, reject) => {
-            placeholder = placeholder ?? Translate.instant('core.login.password');
+            placeholderOrLabel = placeholderOrLabel ?? Translate.instant('core.login.password');
+
+            const isCheckbox = type === 'checkbox';
+            const isRadio = type === 'radio';
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const resolvePromise = (data: any) => {
+                if (isCheckbox) {
+                    resolve(data[0]);
+                } else if (isRadio) {
+                    resolve(data);
+                } else {
+                    resolve(data.promptinput);
+                }
+            };
 
             const options: AlertOptions = {
                 header,
@@ -1532,11 +1523,31 @@ export class CoreDomUtilsProvider {
                 inputs: [
                     {
                         name: 'promptinput',
-                        placeholder: placeholder,
+                        placeholder: placeholderOrLabel,
+                        label: placeholderOrLabel,
                         type,
+                        value: (isCheckbox || isRadio) ? true : undefined,
                     },
                 ],
-                buttons: [
+            };
+
+            if (buttons?.length) {
+                options.buttons = buttons.map((button) => ({
+                    ...button,
+                    handler: (data) => {
+                        if (!button.handler) {
+                            // Just resolve the promise.
+                            resolvePromise(data);
+
+                            return;
+                        }
+
+                        button.handler(data, resolve, reject);
+                    },
+                }));
+            } else {
+                // Default buttons.
+                options.buttons = [
                     {
                         text: Translate.instant('core.cancel'),
                         role: 'cancel',
@@ -1546,12 +1557,10 @@ export class CoreDomUtilsProvider {
                     },
                     {
                         text: Translate.instant('core.ok'),
-                        handler: (data) => {
-                            resolve(data.promptinput);
-                        },
+                        handler: resolvePromise,
                     },
-                ],
-            };
+                ];
+            }
 
             this.showAlertWithOptions(options);
         });
@@ -1625,13 +1634,32 @@ export class CoreDomUtilsProvider {
     }
 
     /**
+     * Show toast with some options.
+     *
+     * @param options Options.
+     * @return Promise resolved with Toast instance.
+     */
+    async showToastWithOptions(options: ToastOptions): Promise<HTMLIonToastElement> {
+        // Set some default values.
+        options.duration = options.duration ?? 2000;
+        options.position = options.position ?? 'bottom';
+
+        const loader = await ToastController.create(options);
+
+        await loader.present();
+
+        return loader;
+    }
+
+    /**
      * Stores a component/directive instance.
      *
      * @param element The root element of the component/directive.
      * @param instance The instance to store.
+     * @deprecated since 4.0.0. Use CoreComponentsRegistry instead.
      */
     storeInstanceByElement(element: Element, instance: unknown): void {
-        this.instances.set(element, instance);
+        CoreComponentsRegistry.register(element, instance);
     }
 
     /**
@@ -1688,18 +1716,47 @@ export class CoreDomUtilsProvider {
     /**
      * Opens a Modal.
      *
-     * @param modalOptions Modal Options.
+     * @param options Modal Options.
      */
     async openModal<T = unknown>(
-        modalOptions: ModalOptions,
+        options: OpenModalOptions,
     ): Promise<T | undefined> {
+        const { waitForDismissCompleted, closeOnNavigate, ...modalOptions } = options;
+        const listenCloseEvents = closeOnNavigate ?? true; // Default to true.
 
-        const modal = await ModalController.create(modalOptions);
+        // TODO: Improve this if we need two modals with same component open at the same time.
+        const modalId = <string> Md5.hashAsciiStr(options.component?.toString() || '');
 
-        await modal.present();
+        const modal = this.displayedModals[modalId]
+            ? this.displayedModals[modalId]
+            : await ModalController.create(modalOptions);
 
-        // If onDidDismiss is nedded we can add a new param to the function to wait one function or the other.
-        const result = await modal.onWillDismiss<T>();
+        let navSubscription: Subscription | undefined;
+
+        // Get the promise before presenting to get result if modal is suddenly hidden.
+        const resultPromise = waitForDismissCompleted ? modal.onDidDismiss<T>() : modal.onWillDismiss<T>();
+
+        if (!this.displayedModals[modalId]) {
+            // Store the modal and remove it when dismissed.
+            this.displayedModals[modalId] = modal;
+
+            if (listenCloseEvents) {
+                // Listen navigation events to close modals.
+                navSubscription = Router.events
+                    .pipe(filter(event => event instanceof NavigationStart))
+                    .subscribe(async () => {
+                        modal.dismiss();
+                    });
+            }
+
+            await modal.present();
+        }
+
+        const result = await resultPromise;
+
+        navSubscription?.unsubscribe();
+        delete this.displayedModals[modalId];
+
         if (result?.data) {
             return result?.data;
         }
@@ -1708,32 +1765,32 @@ export class CoreDomUtilsProvider {
     /**
      * Opens a side Modal.
      *
-     * @param modalOptions Modal Options.
+     * @param options Modal Options.
      */
     async openSideModal<T = unknown>(
-        modalOptions: ModalOptions,
+        options: OpenModalOptions,
     ): Promise<T | undefined> {
 
-        modalOptions = Object.assign(modalOptions, {
+        options = Object.assign({
             cssClass: 'core-modal-lateral',
             showBackdrop: true,
             backdropDismiss: true,
             enterAnimation: CoreModalLateralTransitionEnter,
             leaveAnimation: CoreModalLateralTransitionLeave,
-        });
+        }, options);
 
-        return await this.openModal<T>(modalOptions);
+        return await this.openModal<T>(options);
     }
 
     /**
      * Opens a popover.
      *
-     * @param popoverOptions Modal Options.
+     * @param options Options.
+     * @return Promise resolved when the popover is dismissed or will be dismissed.
      */
-    async openPopover<T = void>(
-        popoverOptions: PopoverOptions,
-    ): Promise<T | undefined> {
+    async openPopover<T = void>(options: OpenPopoverOptions): Promise<T | undefined> {
 
+        const { waitForDismissCompleted, ...popoverOptions } = options;
         const popover = await PopoverController.create(popoverOptions);
         const zoomLevel = await CoreConfig.get(CoreConstants.SETTINGS_ZOOM_LEVEL, CoreZoomLevel.NORMAL);
 
@@ -1743,16 +1800,15 @@ export class CoreDomUtilsProvider {
         if (zoomLevel !== CoreZoomLevel.NORMAL) {
             switch (getMode()) {
                 case 'ios':
-                    fixIOSPopoverPosition(popover, popoverOptions.event);
+                    fixIOSPopoverPosition(popover, options.event);
                     break;
                 case 'md':
-                    fixMDPopoverPosition(popover, popoverOptions.event);
+                    fixMDPopoverPosition(popover, options.event);
                     break;
             }
         }
 
-        // If onDidDismiss is nedded we can add a new param to the function to wait one function or the other.
-        const result = await popover.onWillDismiss<T>();
+        const result = waitForDismissCompleted ? await popover.onDidDismiss<T>() : await popover.onWillDismiss<T>();
         if (result?.data) {
             return result?.data;
         }
@@ -1765,14 +1821,12 @@ export class CoreDomUtilsProvider {
      * @param title Title of the page or modal.
      * @param component Component to link the image to if needed.
      * @param componentId An ID to use in conjunction with the component.
-     * @param fullScreen Whether the modal should be full screen.
      */
     async viewImage(
         image: string,
         title?: string | null,
         component?: string,
         componentId?: string | number,
-        fullScreen?: boolean,
     ): Promise<void> {
         if (!image) {
             return;
@@ -1786,7 +1840,7 @@ export class CoreDomUtilsProvider {
                 component,
                 componentId,
             },
-            cssClass: fullScreen ? 'core-modal-fullscreen' : '',
+            cssClass: 'core-modal-transparent',
         });
 
     }
@@ -1841,7 +1895,7 @@ export class CoreDomUtilsProvider {
     /**
      * Trigger form cancelled event.
      *
-     * @param form Form element.
+     * @param formRef Form element.
      * @param siteId The site affected. If not provided, no site affected.
      * @deprecated since 3.9.5. Function has been moved to CoreForms.
      */
@@ -1852,7 +1906,7 @@ export class CoreDomUtilsProvider {
     /**
      * Trigger form submitted event.
      *
-     * @param form Form element.
+     * @param formRef Form element.
      * @param online Whether the action was done in offline or not.
      * @param siteId The site affected. If not provided, no site affected.
      * @deprecated since 3.9.5. Function has been moved to CoreForms.
@@ -1863,6 +1917,7 @@ export class CoreDomUtilsProvider {
 
     /**
      * In iOS the resize event is triggered before the window size changes. Wait for the size to change.
+     * Use of this function is discouraged. Please use CoreDom.onWindowResize to check window resize event.
      *
      * @param windowWidth Initial window width.
      * @param windowHeight Initial window height.
@@ -1986,7 +2041,7 @@ function fixIOSPopoverPosition(baseEl: HTMLElement, ev?: Event): void {
  * which doesn't return the correct dimensions when the `zoom` CSS property is being used. This is only a temporary solution
  * in Android because system zooming is already supported, so it won't be necessary to do it at an app level.
  *
- * @todo remove the ability to zoom in Android.
+ * @todo MOBILE-3790 remove the ability to zoom in Android.
  *
  * This function has been copied in its entirety from Ionic's source code, only changing the aforementioned calculation
  * of the body dimensions with `document.body.clientXXX`.
@@ -2044,5 +2099,34 @@ function fixMDPopoverPosition(baseEl: HTMLElement, ev?: Event): void {
 
 export const CoreDomUtils = makeSingleton(CoreDomUtilsProvider);
 
-type AnchorOrMediaElement =
-    HTMLAnchorElement | HTMLImageElement | HTMLAudioElement | HTMLVideoElement | HTMLSourceElement | HTMLTrackElement;
+/**
+ * Options for the openPopover function.
+ */
+export type OpenPopoverOptions = PopoverOptions & {
+    waitForDismissCompleted?: boolean;
+};
+
+/**
+ * Options for the openModal function.
+ */
+export type OpenModalOptions = ModalOptions & {
+    waitForDismissCompleted?: boolean;
+    closeOnNavigate?: boolean; // Default true.
+};
+
+/**
+ * Buttons for prompt alert.
+ */
+export type PromptButton = Omit<AlertButton, 'handler'> & {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    handler?: (value: any, resolve: (value: any) => void, reject: (reason: any) => void) => void;
+};
+
+/**
+ * Vertical points for an element.
+ */
+export enum VerticalPoint {
+    TOP = 'top',
+    MID = 'mid',
+    BOTTOM = 'bottom',
+}

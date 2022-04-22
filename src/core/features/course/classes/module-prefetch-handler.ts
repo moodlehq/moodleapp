@@ -48,12 +48,6 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
     updatesNames = /^.*files$/;
 
     /**
-     * If true, this module will be ignored when determining the status of a list of modules. The module will
-     * still be downloaded when downloading the section/course, it only affects whether the button should be displayed.
-     */
-    skipListStatus = false;
-
-    /**
      * List of download promises to prevent downloading the module twice at the same time.
      */
     protected downloadPromises: { [s: string]: { [s: string]: Promise<void> } } = {};
@@ -181,7 +175,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      */
     getIntroFilesFromInstance(module: CoreCourseAnyModuleData, instance?: ModuleInstance): CoreWSFile[] {
         if (instance) {
-            if (typeof instance.introfiles != 'undefined') {
+            if (instance.introfiles !== undefined) {
                 return instance.introfiles;
             } else if (instance.intro) {
                 return CoreFilepool.extractDownloadableFilesFromHtmlAsFakeFileObjects(instance.intro);

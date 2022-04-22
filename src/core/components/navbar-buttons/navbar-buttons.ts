@@ -12,10 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, OnDestroy, ElementRef } from '@angular/core';
+import {
+    Component,
+    Input,
+    OnInit,
+    OnDestroy,
+    ElementRef,
+    ViewContainerRef,
+    ViewChild,
+    ComponentFactoryResolver,
+} from '@angular/core';
 import { CoreLogger } from '@singletons/logger';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreContextMenuComponent } from '../context-menu/context-menu';
+import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreDom } from '@singletons/dom';
 
 const BUTTON_HIDDEN_CLASS = 'core-navbar-button-hidden';
 
@@ -42,10 +53,12 @@ const BUTTON_HIDDEN_CLASS = 'core-navbar-button-hidden';
  */
 @Component({
     selector: 'core-navbar-buttons',
-    template: '<ng-content></ng-content>',
+    template: '<ng-content></ng-content><template #contextMenuContainer></template>',
     styleUrls: ['navbar-buttons.scss'],
 })
 export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
+
+    @ViewChild('contextMenuContainer', { read: ViewContainerRef }) container!: ViewContainerRef;
 
     // If the hidden input is true, hide all buttons.
     // eslint-disable-next-line @angular-eslint/no-input-rename
@@ -63,16 +76,17 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
     protected logger: CoreLogger;
     protected movedChildren?: Node[];
     protected mergedContextMenu?: CoreContextMenuComponent;
+    protected createdMainContextMenuElement?: HTMLElement;
 
-    constructor(element: ElementRef) {
+    constructor(element: ElementRef, protected factoryResolver: ComponentFactoryResolver) {
         this.element = element.nativeElement;
         this.logger = CoreLogger.getInstance('CoreNavBarButtonsComponent');
 
-        CoreDomUtils.storeInstanceByElement(this.element, this);
+        CoreComponentsRegistry.register(this.element, this);
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         try {
@@ -90,7 +104,7 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
                     selector += '[slot="' + slot + '"]';
                 }
 
-                const buttonsContainer = <HTMLElement> header.querySelector(selector);
+                const buttonsContainer = header.querySelector<HTMLIonButtonsElement>(selector);
                 if (buttonsContainer) {
                     this.mergeContextMenus(buttonsContainer);
 
@@ -99,13 +113,22 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
                     this.movedChildren = CoreDomUtils.moveChildren(this.element, buttonsContainer, prepend);
                     this.showHideAllElements();
 
+                    // Make sure that context-menu is always at the end of buttons if any.
+                    const contextMenu = buttonsContainer.querySelector('core-context-menu');
+                    const userMenu = buttonsContainer.querySelector('core-user-menu-button');
+
+                    if (userMenu) {
+                        contextMenu?.parentElement?.insertBefore(contextMenu, userMenu);
+                    } else {
+                        contextMenu?.parentElement?.appendChild(contextMenu);
+                    }
                 } else {
                     this.logger.warn('The header was found, but it didn\'t have the right ion-buttons.', selector);
                 }
             }
         } catch (error) {
             // Header not found.
-            this.logger.warn(error);
+            this.logger.error(error);
         }
     }
 
@@ -125,21 +148,24 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
      *
      * @param buttonsContainer The container where the buttons will be moved.
      */
-    protected mergeContextMenus(buttonsContainer: HTMLElement): void {
+    protected mergeContextMenus(buttonsContainer: HTMLIonButtonsElement): void {
         // Check if both button containers have a context menu.
-        const mainContextMenu = buttonsContainer.querySelector('core-context-menu');
-        if (!mainContextMenu) {
-            return;
-        }
-
         const secondaryContextMenu = this.element.querySelector('core-context-menu');
         if (!secondaryContextMenu) {
             return;
         }
 
-        // Both containers have a context menu. Merge them to prevent having 2 menus at the same time.
-        const mainContextMenuInstance = CoreDomUtils.getInstanceByElement<CoreContextMenuComponent>(mainContextMenu);
-        const secondaryContextMenuInstance = CoreDomUtils.getInstanceByElement<CoreContextMenuComponent>(secondaryContextMenu);
+        const mainContextMenu = buttonsContainer.querySelector('core-context-menu');
+        const secondaryContextMenuInstance = CoreComponentsRegistry.resolve(secondaryContextMenu, CoreContextMenuComponent);
+        let mainContextMenuInstance: CoreContextMenuComponent | null;
+        if (mainContextMenu) {
+            // Both containers have a context menu. Merge them to prevent having 2 menus at the same time.
+            mainContextMenuInstance = CoreComponentsRegistry.resolve(mainContextMenu, CoreContextMenuComponent);
+        } else {
+            // There is a context-menu in these buttons, but there is no main context menu in the header.
+            // Create one main context menu dynamically.
+            mainContextMenuInstance = this.createMainContextMenu();
+        }
 
         // Check that both context menus belong to the same core-tab. We shouldn't merge menus from different tabs.
         if (mainContextMenuInstance && secondaryContextMenuInstance) {
@@ -153,60 +179,47 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Search the ion-header where the buttons should be added.
+     * Create a new and empty context menu to be used as a "parent".
      *
-     * @param retries Number of retries so far.
-     * @return Promise resolved with the header element.
+     * @return Created component.
      */
-    protected async searchHeader(retries: number = 0): Promise<HTMLElement> {
-        let parentPage: HTMLElement = this.element;
+    protected createMainContextMenu(): CoreContextMenuComponent {
+        const factory = this.factoryResolver.resolveComponentFactory(CoreContextMenuComponent);
+        const componentRef = this.container.createComponent<CoreContextMenuComponent>(factory);
 
-        while (parentPage) {
-            if (!parentPage.parentElement) {
-                // No parent, stop.
-                break;
-            }
+        this.createdMainContextMenuElement = componentRef.location.nativeElement;
 
-            // Get the next parent page.
-            parentPage = <HTMLElement> CoreDomUtils.closest(parentPage.parentElement, '.ion-page');
-            if (parentPage) {
-                // Check if the page has a header. If it doesn't, search the next parent page.
-                const header = this.searchHeaderInPage(parentPage);
-                if (header && getComputedStyle(header, null).display != 'none') {
-                    return header;
-                }
-            }
-        }
-
-        // Header not found.
-        if (retries < 5) {
-            // If the component or any of its parent is inside a ng-content or similar it can be detached when it's initialized.
-            // Try again after a while.
-            return new Promise((resolve, reject): void => {
-                setTimeout(() => {
-                    // eslint-disable-next-line promise/catch-or-return
-                    this.searchHeader(retries + 1).then(resolve, reject);
-                }, 200);
-            });
-        }
-
-        // We've waited enough time, reject.
-        throw Error('Header not found.');
+        return componentRef.instance;
     }
 
     /**
-     * Search ion-header inside a page. The header should be a direct child.
+     * Search the ion-header where the buttons should be added.
      *
-     * @param page Page to search in.
-     * @return Header element. Undefined if not found.
+     * @return Promise resolved with the header element.
      */
-    protected searchHeaderInPage(page: HTMLElement): HTMLElement | undefined {
-        for (let i = 0; i < page.children.length; i++) {
-            const child = page.children[i];
-            if (child.tagName == 'ION-HEADER') {
-                return <HTMLElement> child;
+    protected async searchHeader(): Promise<HTMLIonHeaderElement> {
+        await CoreDom.waitToBeInDOM(this.element);
+        let parentPage: HTMLElement | null = this.element;
+
+        while (parentPage && parentPage.parentElement) {
+            const content = parentPage.closest<HTMLIonContentElement>('ion-content');
+            if (content) {
+                // Sometimes ion-page class is not yet added by the ViewController, wait for content to render.
+                await content.componentOnReady();
+            }
+
+            parentPage = parentPage.parentElement.closest('.ion-page');
+
+            // Check if the page has a header. If it doesn't, search the next parent page.
+            const header  = parentPage?.querySelector<HTMLIonHeaderElement>(':scope > ion-header');
+
+            if (header && getComputedStyle(header).display !== 'none') {
+                return header;
             }
         }
+
+        // Header not found, reject.
+        throw Error('Header not found.');
     }
 
     /**
@@ -214,11 +227,9 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
      */
     protected showHideAllElements(): void {
         // Show or hide all moved children.
-        if (this.movedChildren) {
-            this.movedChildren.forEach((child: Node) => {
-                this.showHideElement(child);
-            });
-        }
+        this.movedChildren?.forEach((child: Node) => {
+            this.showHideElement(child);
+        });
 
         // Show or hide all the context menu items that were merged to another context menu.
         if (this.mergedContextMenu) {
@@ -236,30 +247,26 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
      * @param element Element to show or hide.
      */
     protected showHideElement(element: Node): void {
-        // Check if it's an HTML Element
-        if (element instanceof Element) {
+        // Check if it's an HTML Element and it's not a created context menu. Never hide created context menus.
+        if (element instanceof Element && element !== this.createdMainContextMenuElement) {
             element.classList.toggle(BUTTON_HIDDEN_CLASS, !!this.forceHidden || !!this.allButtonsHidden);
         }
     }
 
     /**
-     * Component destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         // This component was destroyed, remove all the buttons that were moved.
         // The buttons can be moved outside of the current page, that's why we need to manually destroy them.
         // There's no need to destroy context menu items that were merged because they weren't moved from their DOM position.
-        if (this.movedChildren) {
-            this.movedChildren.forEach((child) => {
-                if (child.parentElement) {
-                    child.parentElement.removeChild(child);
-                }
-            });
-        }
+        this.movedChildren?.forEach((child) => {
+            if (child.parentElement && child !== this.createdMainContextMenuElement) {
+                child.parentElement.removeChild(child);
+            }
+        });
 
-        if (this.mergedContextMenu) {
-            this.mergedContextMenu.removeMergedItems();
-        }
+        this.mergedContextMenu?.removeMergedItems();
     }
 
 }

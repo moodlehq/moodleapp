@@ -1,3 +1,8 @@
+@import "~theme/globals";
+
+$quiz-timer-warn-color: $red !default;
+$quiz-timer-iterations: 15 !default;
+
 :host {
     .addon-mod_quiz-question-note p {
         margin-top: 2px;
@@ -5,6 +10,21 @@
     }
 
     ion-content ion-toolbar {
-        border-bottom: 1px solid var(--gray);
+        border-bottom: 1px solid var(--stroke);
+    }
+
+    core-timer .core-timer {
+        // Make the timer go red when it's reaching 0.
+        @for $i from 0 through $quiz-timer-iterations {
+            &.core-timer-timeleft-#{$i} {
+                background-color: rgba($quiz-timer-warn-color, 1 - ($i / $quiz-timer-iterations)) !important;
+
+                @if $i <= $quiz-timer-iterations / 2 {
+                    label, span, ion-icon {
+                        color: var(--white);
+                    }
+                }
+            }
+        }
     }
 }

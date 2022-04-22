@@ -20,7 +20,8 @@ import { CoreAnimations } from '@components/animations';
  * Component to show a download button with refresh option, the spinner and the status of it.
  *
  * Usage:
- * <core-download-refresh [status]="status" enabled="true" canTrustDownload="true" action="download()"></core-download-refresh>
+ * <core-download-refresh [status]="status" [enabled]="true" [canTrustDownload]="true" (action)="download()">
+ * </core-download-refresh>
  */
 @Component({
     selector: 'core-download-refresh',
@@ -34,7 +35,10 @@ export class CoreDownloadRefreshComponent {
     @Input() statusTranslatable?: string; // Download status translatable string.
     @Input() enabled = false; // Whether the download is enabled.
     @Input() loading = true; // Force loading status when is not downloading.
-    @Input() size: 'small' | 'default' | 'large' = 'default'; // Size of the buttons.
+    /**
+     * @deprecated since 4.0. It has no effect.
+     */
+    @Input() size = ''; // Size of the buttons.
     @Input() canTrustDownload = false; // If false, refresh will be shown if downloaded.
     @Output() action: EventEmitter<boolean>; // Will emit an event when the item clicked.
 

@@ -45,7 +45,7 @@ export class AddonQtypeEssayComponent extends CoreQuestionBaseComponent implemen
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.uploadFilesSupported = typeof this.question?.responsefileareas != 'undefined';
+        this.uploadFilesSupported = this.question?.responsefileareas !== undefined;
         this.initEssayComponent(this.review);
         this.essayQuestion = this.question;
 

@@ -30,7 +30,7 @@ import {
 import { IonContent, IonRefresher } from '@ionic/angular';
 import { ContextLevel, CoreConstants } from '@/core/constants';
 import { CoreNavigator } from '@services/navigator';
-import { Translate } from '@singletons';
+import { Network, NgZone, Translate } from '@singletons';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUser } from '@features/user/services/user';
@@ -41,6 +41,7 @@ import { CoreCommentsDBRecord } from '@features/comments/services/database/comme
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreApp } from '@services/app';
 import moment from 'moment';
+import { Subscription } from 'rxjs';
 
 /**
  * Page that displays comments.
@@ -77,9 +78,11 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
     currentUserId: number;
     sending = false;
     newComment = '';
+    isOnline: boolean;
 
     protected addDeleteCommentsAvailable = false;
     protected syncObserver?: CoreEventObserver;
+    protected onlineObserver: Subscription;
     protected viewDestroyed = false;
 
     constructor(
@@ -104,25 +107,42 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
                 this.fetchComments(false);
             }
         }, CoreSites.getCurrentSiteId());
+
+        this.isOnline = CoreApp.isOnline();
+        this.onlineObserver = Network.onChange().subscribe(() => {
+            // Execute the callback in the Angular zone, so change detection doesn't stop working.
+            NgZone.run(() => {
+                this.isOnline = CoreApp.isOnline();
+            });
+        });
     }
 
     /**
      * View loaded.
      */
     async ngOnInit(): Promise<void> {
+        try {
+            this.contextLevel = CoreNavigator.getRequiredRouteParam<ContextLevel>('contextLevel');
+            this.instanceId = CoreNavigator.getRequiredRouteNumberParam('instanceId');
+            this.componentName = CoreNavigator.getRequiredRouteParam<string>('componentName');
+            this.itemId = CoreNavigator.getRequiredRouteNumberParam('itemId');
+            this.area = CoreNavigator.getRouteParam('area') || '';
+            this.title = CoreNavigator.getRouteNumberParam('title') ||
+                Translate.instant('core.comments.comments');
+            this.courseId = CoreNavigator.getRouteNumberParam('courseId');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
+
         // Is implicit the user can delete if he can add.
         this.addDeleteCommentsAvailable = await CoreComments.isAddCommentsAvailable();
         this.currentUserId = CoreSites.getCurrentSiteUserId();
 
         this.commentsLoaded = false;
-        this.contextLevel = CoreNavigator.getRouteParam<ContextLevel>('contextLevel')!;
-        this.instanceId = CoreNavigator.getRouteNumberParam('instanceId')!;
-        this.componentName = CoreNavigator.getRouteParam<string>('componentName')!;
-        this.itemId = CoreNavigator.getRouteNumberParam('itemId')!;
-        this.area = CoreNavigator.getRouteParam('area') || '';
-        this.title = CoreNavigator.getRouteNumberParam('title') ||
-            Translate.instant('core.comments.comments');
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId');
 
         await this.fetchComments(true);
     }
@@ -154,7 +174,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
             this.canAddComments = this.addDeleteCommentsAvailable && !!commentsResponse.canpost;
 
             let comments = commentsResponse.comments.sort((a, b) => a.timecreated - b.timecreated);
-            if (typeof commentsResponse.count != 'undefined') {
+            if (commentsResponse.count !== undefined) {
                 this.canLoadMore = (this.comments.length + comments.length) < commentsResponse.count;
             } else {
                 // Old style.
@@ -587,6 +607,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.syncObserver?.off();
+        this.onlineObserver.unsubscribe();
         this.viewDestroyed = true;
     }
 

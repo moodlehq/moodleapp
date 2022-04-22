@@ -14,26 +14,23 @@
 
 import { Injectable, Type } from '@angular/core';
 
-import { CoreConstants } from '@/core/constants';
-import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
-import { CoreCourse, CoreCourseAnyModuleData, CoreCourseWSModule } from '@features/course/services/course';
-import { CoreCourseModule } from '@features/course/services/course-helper';
-import { AddonModLesson } from '../lesson';
+import { CoreConstants, ModPurpose } from '@/core/constants';
+import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { AddonModLessonIndexComponent } from '../../components/index';
-import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
-import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
+import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 
 /**
- * Handler to support quiz modules.
+ * Handler to support lesson modules.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonModLessonModuleHandlerService implements CoreCourseModuleHandler {
+export class AddonModLessonModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
     static readonly PAGE_NAME = 'mod_lesson';
 
     name = 'AddonModLesson';
     modName = 'lesson';
+    protected pageName = AddonModLessonModuleHandlerService.PAGE_NAME;
 
     supportedFeatures = {
         [CoreConstants.FEATURE_GROUPS]: true,
@@ -45,58 +42,13 @@ export class AddonModLessonModuleHandlerService implements CoreCourseModuleHandl
         [CoreConstants.FEATURE_GRADE_OUTCOMES]: true,
         [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
         [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true,
+        [CoreConstants.FEATURE_MOD_PURPOSE]: ModPurpose.MOD_PURPOSE_CONTENT,
     };
 
     /**
-     * Check if the handler is enabled on a site level.
-     *
-     * @return Promise resolved with boolean: whether or not the handler is enabled on a site level.
+     * @inheritdoc
      */
-    isEnabled(): Promise<boolean> {
-        return AddonModLesson.isPluginEnabled();
-    }
-
-    /**
-     * Get the data required to display the module in the course contents view.
-     *
-     * @param module The module object.
-     * @param courseId The course ID.
-     * @param sectionId The section ID.
-     * @param forCoursePage Whether the data will be used to render the course page.
-     * @return Data to render the module.
-     */
-    getData(
-        module: CoreCourseAnyModuleData,
-        courseId: number, // eslint-disable-line @typescript-eslint/no-unused-vars
-        sectionId: number, // eslint-disable-line @typescript-eslint/no-unused-vars
-        forCoursePage?: boolean, // eslint-disable-line @typescript-eslint/no-unused-vars
-    ): CoreCourseModuleHandlerData {
-        return {
-            icon: CoreCourse.getModuleIconSrc(this.modName, 'modicon' in module ? module.modicon : undefined),
-            title: module.name,
-            class: 'addon-mod_lesson-handler',
-            showDownloadButton: true,
-            action: (event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions) => {
-                options = options || {};
-                options.params = options.params || {};
-                Object.assign(options.params, { module });
-                const routeParams = '/' + courseId + '/' + module.id;
-
-                CoreNavigator.navigateToSitePath(AddonModLessonModuleHandlerService.PAGE_NAME + routeParams, options);
-            },
-        };
-    }
-
-    /**
-     * Get the component to render the module. This is needed to support singleactivity course format.
-     * The component returned must implement CoreCourseModuleMainComponent.
-     *
-     * @param course The course object.
-     * @param module The module object.
-     * @return The component to use, undefined if not found.
-     */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async getMainComponent(course: CoreCourseAnyCourseData, module: CoreCourseWSModule): Promise<Type<unknown> | undefined> {
+    async getMainComponent(): Promise<Type<unknown>> {
         return AddonModLessonIndexComponent;
     }
 

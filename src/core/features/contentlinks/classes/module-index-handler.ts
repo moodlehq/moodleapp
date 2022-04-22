@@ -16,6 +16,7 @@ import { CoreContentLinksHandlerBase } from './base-handler';
 import { Params } from '@angular/router';
 import { CoreContentLinksAction } from '../services/contentlinks-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { CoreNavigationOptions } from '@services/navigator';
 
 /**
  * Handler to handle URLs pointing to the index of a module.
@@ -42,11 +43,11 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
     ) {
         super();
 
+        // Match the view.php URL with an id or instance id param.
         const pattern = instanceIdParam ?
             '/mod/' + modName + '/view.php.*([&?](' + instanceIdParam + '|id)=\\d+)' :
             '/mod/' + modName + '/view.php.*([&?]id=\\d+)';
 
-        // Match the view.php URL with an id param.
         this.pattern = new RegExp(pattern);
         this.featureName = 'CoreCourseModuleDelegate_' + addon;
     }
@@ -58,9 +59,24 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
      * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
      * @param courseId Course ID related to the URL. Optional but recommended.
      * @return List of params to pass to navigateToModule / navigateToModuleByInstance.
+     * @deprecated since 4.0
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     getPageParams(url: string, params: Record<string, string>, courseId?: number): Params {
+        return {};
+    }
+
+    /**
+     * Get the navigation options to open the module.
+     *
+     * @param url The URL to treat.
+     * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
+     * @param siteId The site ID.
+     * @param courseId Course ID related to the URL. Optional but recommended.
+     * @return Navigation options to open the module.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    getModNavOptions(url: string, params: Record<string, string>, siteId: string, courseId?: number): CoreNavigationOptions {
         return {};
     }
 
@@ -81,9 +97,20 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
 
         courseId = Number(courseId || params.courseid || params.cid);
-        const pageParams = this.getPageParams(url, params, courseId);
+        const getModNavOptions = (siteId: string): CoreNavigationOptions => {
+            let modNavOptions = this.getModNavOptions(url, params, siteId, courseId);
+            if (!modNavOptions) {
+                // Use the old function, currently deprecated.
+                const pageParams = this.getPageParams(url, params, courseId);
+                if (pageParams && Object.keys(pageParams).length > 0) {
+                    modNavOptions = { params: pageParams };
+                }
+            }
 
-        if (this.instanceIdParam && typeof params[this.instanceIdParam] != 'undefined') {
+            return modNavOptions;
+        };
+
+        if (this.instanceIdParam && params[this.instanceIdParam] !== undefined) {
             const instanceId = parseInt(params[this.instanceIdParam], 10);
 
             return [{
@@ -91,11 +118,12 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
                     CoreCourseHelper.navigateToModuleByInstance(
                         instanceId,
                         this.modName,
-                        siteId,
-                        courseId,
-                        undefined,
-                        this.useModNameToGetModule,
-                        pageParams,
+                        {
+                            courseId,
+                            useModNameToGetModule: this.useModNameToGetModule,
+                            modNavOptions: getModNavOptions(siteId),
+                            siteId,
+                        },
                     );
                 },
             }];
@@ -105,11 +133,12 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
             action: (siteId) => {
                 CoreCourseHelper.navigateToModule(
                     parseInt(params.id, 10),
-                    siteId,
-                    courseId,
-                    undefined,
-                    this.useModNameToGetModule ? this.modName : undefined,
-                    pageParams,
+                    {
+                        courseId,
+                        modName: this.useModNameToGetModule ? this.modName : undefined,
+                        modNavOptions: getModNavOptions(siteId),
+                        siteId,
+                    },
                 );
             },
         }];

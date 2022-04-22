@@ -13,8 +13,14 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreUserProfileHandler, CoreUserProfileHandlerData, CoreUserDelegateService } from '@features/user/services/user-delegate';
+import {
+    CoreUserProfileHandler,
+    CoreUserProfileHandlerData,
+    CoreUserDelegateService,
+    CoreUserDelegateContext,
+} from '@features/user/services/user-delegate';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 import { AddonBlog } from '../blog';
 
@@ -24,8 +30,8 @@ import { AddonBlog } from '../blog';
 @Injectable({ providedIn: 'root' })
 export class AddonBlogUserHandlerService implements CoreUserProfileHandler {
 
-    name = 'AddonBlog:blogs';
-    priority = 300;
+    name = 'AddonBlog'; // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
+    priority = 200;
     type = CoreUserDelegateService.TYPE_NEW_PAGE;
 
     /**
@@ -38,16 +44,37 @@ export class AddonBlogUserHandlerService implements CoreUserProfileHandler {
     /**
      * @inheritdoc
      */
+    async isEnabledForContext(context: CoreUserDelegateContext): Promise<boolean> {
+        // Check if feature is disabled.
+        const currentSite = CoreSites.getCurrentSite();
+        if (!currentSite) {
+            return false;
+        }
+
+        if (context === CoreUserDelegateContext.USER_MENU) {
+            if (currentSite.isFeatureDisabled('CoreUserDelegate_AddonBlog:account')) {
+                return false;
+            }
+        } else if (currentSite.isFeatureDisabled('CoreUserDelegate_AddonBlog:blogs')) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @inheritdoc
+     */
     getDisplayData(): CoreUserProfileHandlerData {
         return {
             icon: 'far-newspaper',
             title: 'addon.blog.blogentries',
             class: 'addon-blog-handler',
-            action: (event, user, courseId): void => {
+            action: (event, user, context, contextId): void => {
                 event.preventDefault();
                 event.stopPropagation();
                 CoreNavigator.navigateToSitePath('/blog', {
-                    params: { courseId, userId: user.id },
+                    params: { courseId: contextId, userId: user.id },
                 });
             },
         };

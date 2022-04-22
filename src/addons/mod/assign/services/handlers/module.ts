@@ -12,26 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants } from '@/core/constants';
+import { CoreConstants, ModPurpose } from '@/core/constants';
 import { Injectable, Type } from '@angular/core';
-import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
+import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { AddonModAssignIndexComponent } from '../../components/index';
 import { makeSingleton } from '@singletons';
-import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
-import { CoreCourseModule } from '@features/course/services/course-helper';
-import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
-import { AddonModAssign } from '../assign';
+import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 
 /**
  * Handler to support assign modules.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonModAssignModuleHandlerService implements CoreCourseModuleHandler {
+export class AddonModAssignModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
     static readonly PAGE_NAME = 'mod_assign';
 
     name = 'AddonModAssign';
     modName = 'assign';
+    protected pageName = AddonModAssignModuleHandlerService.PAGE_NAME;
 
     supportedFeatures = {
         [CoreConstants.FEATURE_GROUPS]: true,
@@ -46,45 +44,11 @@ export class AddonModAssignModuleHandlerService implements CoreCourseModuleHandl
         [CoreConstants.FEATURE_ADVANCED_GRADING]: true,
         [CoreConstants.FEATURE_PLAGIARISM]: true,
         [CoreConstants.FEATURE_COMMENT]: true,
+        [CoreConstants.FEATURE_MOD_PURPOSE]: ModPurpose.MOD_PURPOSE_ASSESSMENT,
     };
 
     /**
-     * Check if the handler is enabled on a site level.
-     *
-     * @return Whether or not the handler is enabled on a site level.
-     */
-    async isEnabled(): Promise<boolean> {
-        return AddonModAssign.isPluginEnabled();
-    }
-
-    /**
-     * Get the data required to display the module in the course contents view.
-     *
-     * @param module The module object.
-     * @return Data to render the module.
-     */
-    getData(module: CoreCourseAnyModuleData): CoreCourseModuleHandlerData {
-        return {
-            icon: CoreCourse.getModuleIconSrc(this.modName, 'modicon' in module ? module.modicon : undefined),
-            title: module.name,
-            class: 'addon-mod_assign-handler',
-            showDownloadButton: true,
-            action(event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions): void {
-                options = options || {};
-                options.params = options.params || {};
-                Object.assign(options.params, { module });
-                const routeParams = '/' + courseId + '/' + module.id;
-
-                CoreNavigator.navigateToSitePath(AddonModAssignModuleHandlerService.PAGE_NAME + routeParams, options);
-            },
-        };
-    }
-
-    /**
-     * Get the component to render the module. This is needed to support singleactivity course format.
-     * The component returned must implement CoreCourseModuleMainComponent.
-     *
-     * @return The component to use, undefined if not found.
+     * @inheritdoc
      */
     async getMainComponent(): Promise<Type<unknown> | undefined> {
         return AddonModAssignIndexComponent;

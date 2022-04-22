@@ -12,17 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Input, OnChanges, SimpleChange } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
-import { CoreCoursesProvider, CoreCoursesMyCoursesUpdatedEventData, CoreCourses } from '@features/courses/services/courses';
-import { CoreCoursesHelper, CoreEnrolledCourseDataWithOptions } from '@features/courses/services/courses-helper';
-import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
+import {
+    CoreCoursesProvider,
+    CoreCoursesMyCoursesUpdatedEventData,
+    CoreCourses,
+    CoreCourseSummaryData,
+} from '@features/courses/services/courses';
+import {
+    CoreCourseSearchedDataWithExtraInfoAndOptions,
+    CoreCoursesHelper,
+    CoreEnrolledCourseDataWithOptions,
+} from '@features/courses/services/courses-helper';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
-import { AddonCourseCompletion } from '@/addons/coursecompletion/services/coursecompletion';
+import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursecompletion';
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreSite } from '@classes/site';
 
 /**
  * Component to render a recent courses block.
@@ -31,36 +39,25 @@ import { CoreDomUtils } from '@services/utils/dom';
     selector: 'addon-block-recentlyaccessedcourses',
     templateUrl: 'addon-block-recentlyaccessedcourses.html',
 })
-export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseComponent implements OnInit, OnChanges, OnDestroy {
+export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseComponent implements OnInit, OnDestroy {
 
-    @Input() downloadEnabled = false;
+    courses: AddonBlockRecentlyAccessedCourse[] = [];
 
-    courses: CoreEnrolledCourseDataWithOptions [] = [];
-    prefetchCoursesData: CorePrefetchStatusInfo = {
-        icon: '',
-        statusTranslatable: 'core.loading',
-        status: '',
-        loading: true,
-        badge: '',
-    };
-
-    downloadCourseEnabled = false;
-    downloadCoursesEnabled = false;
     scrollElementId!: string;
 
-    protected prefetchIconsInitialized = false;
+    protected site!: CoreSite;
     protected isDestroyed = false;
     protected coursesObserver?: CoreEventObserver;
-    protected updateSiteObserver?: CoreEventObserver;
-    protected courseIds = [];
     protected fetchContentDefaultError = 'Error getting recent courses data.';
 
     constructor() {
         super('AddonBlockRecentlyAccessedCoursesComponent');
+
+        this.site = CoreSites.getRequiredCurrentSite();
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         // Generate unique id for scroll element.
@@ -68,175 +65,149 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
 
         this.scrollElementId = `addon-block-recentlyaccessedcourses-scroll-${scrollId}`;
 
-        // Refresh the enabled flags if enabled.
-        this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
-        this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
-
-        // Refresh the enabled flags if site is updated.
-        this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
-            this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
-            this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
-
-        }, CoreSites.getCurrentSiteId());
-
         this.coursesObserver = CoreEvents.on(
             CoreCoursesProvider.EVENT_MY_COURSES_UPDATED,
             (data) => {
-
-                if (this.shouldRefreshOnUpdatedEvent(data)) {
-                    this.refreshCourseList();
-                }
+                this.refreshCourseList(data);
             },
-
-            CoreSites.getCurrentSiteId(),
+            this.site.getId(),
         );
 
         super.ngOnInit();
     }
 
     /**
-     * Detect changes on input properties.
-     */
-    ngOnChanges(changes: {[name: string]: SimpleChange}): void {
-        if (changes.downloadEnabled && !changes.downloadEnabled.previousValue && this.downloadEnabled && this.loaded) {
-            // Download all courses is enabled now, initialize it.
-            this.initPrefetchCoursesIcons();
-        }
-    }
-
-    /**
-     * Perform the invalidate content function.
-     *
-     * @return Resolved when done.
+     * @inheritdoc
      */
     protected async invalidateContent(): Promise<void> {
-        const promises: Promise<void>[] = [];
+        const courseIds = this.courses.map((course) => course.id);
 
-        promises.push(CoreCourses.invalidateUserCourses().finally(() =>
-            // Invalidate course completion data.
-            CoreUtils.allPromises(this.courseIds.map((courseId) =>
-                AddonCourseCompletion.invalidateCourseCompletion(courseId)))));
-
-        promises.push(CoreCourseOptionsDelegate.clearAndInvalidateCoursesOptions());
-        if (this.courseIds.length > 0) {
-            promises.push(CoreCourses.invalidateCoursesByField('ids', this.courseIds.join(',')));
-        }
-
-        await CoreUtils.allPromises(promises).finally(() => {
-            this.prefetchIconsInitialized = false;
-        });
+        await this.invalidateCourses(courseIds);
     }
 
     /**
-     * Fetch the courses for recent courses.
+     * Invalidate list of courses.
      *
      * @return Promise resolved when done.
+     */
+    protected async invalidateCourseList(): Promise<void> {
+        return this.site.isVersionGreaterEqualThan('3.8')
+            ? CoreCourses.invalidateRecentCourses()
+            : CoreCourses.invalidateUserCourses();
+    }
+
+    /**
+     * Helper function to invalidate only selected courses.
+     *
+     * @param courseIds Course Id array.
+     * @return Promise resolved when done.
+     */
+    protected async invalidateCourses(courseIds: number[]): Promise<void> {
+        const promises: Promise<void>[] = [];
+
+        // Invalidate course completion data.
+        promises.push(this.invalidateCourseList().finally(() =>
+            CoreUtils.allPromises(courseIds.map((courseId) =>
+                AddonCourseCompletion.invalidateCourseCompletion(courseId)))));
+
+        if (courseIds.length  == 1) {
+            promises.push(CoreCourseOptionsDelegate.clearAndInvalidateCoursesOptions(courseIds[0]));
+        } else {
+            promises.push(CoreCourseOptionsDelegate.clearAndInvalidateCoursesOptions());
+        }
+        if (courseIds.length > 0) {
+            promises.push(CoreCourses.invalidateCoursesByField('ids', courseIds.join(',')));
+        }
+
+        await CoreUtils.allPromises(promises);
+    }
+
+    /**
+     * @inheritdoc
      */
     protected async fetchContent(): Promise<void> {
         const showCategories = this.block.configsRecord && this.block.configsRecord.displaycategories &&
             this.block.configsRecord.displaycategories.value == '1';
 
-        this.courses = await CoreCoursesHelper.getUserCoursesWithOptions('lastaccess', 10, undefined, showCategories);
-        this.initPrefetchCoursesIcons();
-    }
-
-    /**
-     * Refresh the list of courses.
-     *
-     * @return Promise resolved when done.
-     */
-    protected async refreshCourseList(): Promise<void> {
-        CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_REFRESHED);
-
+        let recentCourses: CoreCourseSummaryData[] = [];
         try {
-            await CoreCourses.invalidateUserCourses();
-        } catch (error) {
-            // Ignore errors.
-        }
+            recentCourses = await CoreCourses.getRecentCourses();
+        } catch {
+            // WS is failing on 3.7 and bellow, use a fallback.
+            this.courses = await CoreCoursesHelper.getUserCoursesWithOptions('lastaccess', 10, undefined, showCategories);
 
-        await this.loadContent(true);
-    }
-
-    /**
-     * Initialize the prefetch icon for selected courses.
-     */
-    protected async initPrefetchCoursesIcons(): Promise<void> {
-        if (this.prefetchIconsInitialized || !this.downloadEnabled) {
-            // Already initialized.
             return;
         }
 
-        this.prefetchIconsInitialized = true;
+        const courseIds = recentCourses.map((course) => course.id);
 
-        this.prefetchCoursesData = await CoreCourseHelper.initPrefetchCoursesIcons(this.courses, this.prefetchCoursesData);
+        // Get the courses using getCoursesByField to get more info about each course.
+        const courses = await CoreCourses.getCoursesByField('ids', courseIds.join(','));
+
+        this.courses = recentCourses.map((recentCourse) => {
+            const course = courses.find((course) => recentCourse.id == course.id);
+
+            return Object.assign(recentCourse, course);
+        });
+
+        // Get course options and extra info.
+        const options = await CoreCourses.getCoursesAdminAndNavOptions(courseIds);
+        this.courses.forEach((course) => {
+            course.navOptions = options.navOptions[course.id];
+            course.admOptions = options.admOptions[course.id];
+
+            if (!showCategories) {
+                course.categoryname = '';
+            }
+        });
     }
 
     /**
-     * Whether list should be refreshed based on a EVENT_MY_COURSES_UPDATED event.
+     * Refresh course list based on a EVENT_MY_COURSES_UPDATED event.
      *
      * @param data Event data.
-     * @return Whether to refresh.
-     */
-    protected shouldRefreshOnUpdatedEvent(data: CoreCoursesMyCoursesUpdatedEventData): boolean {
-        if (data.action == CoreCoursesProvider.ACTION_ENROL) {
-            // Always update if user enrolled in a course.
-            return true;
-        }
-
-        if (data.action == CoreCoursesProvider.ACTION_VIEW && data.courseId != CoreSites.getCurrentSiteHomeId() &&
-                this.courses[0] && data.courseId != this.courses[0].id) {
-            // Update list if user viewed a course that isn't the most recent one and isn't site home.
-            return true;
-        }
-
-        if (data.action == CoreCoursesProvider.ACTION_STATE_CHANGED && data.state == CoreCoursesProvider.STATE_FAVOURITE &&
-                data.courseId && this.hasCourse(data.courseId)) {
-            // Update list if a visible course is now favourite or unfavourite.
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Check if a certain course is in the list of courses.
-     *
-     * @param courseId Course ID to search.
-     * @return Whether it's in the list.
-     */
-    protected hasCourse(courseId: number): boolean {
-        if (!this.courses) {
-            return false;
-        }
-
-        return !!this.courses.find((course) => course.id == courseId);
-    }
-
-    /**
-     * Prefetch all the shown courses.
-     *
      * @return Promise resolved when done.
      */
-    async prefetchCourses(): Promise<void> {
-        const initialIcon = this.prefetchCoursesData.icon;
+    protected async refreshCourseList(data: CoreCoursesMyCoursesUpdatedEventData): Promise<void> {
+        if (data.action == CoreCoursesProvider.ACTION_ENROL) {
+            // Always update if user enrolled in a course.
+            return await this.refreshContent();
+        }
 
-        try {
-            await CoreCourseHelper.prefetchCourses(this.courses, this.prefetchCoursesData);
-        } catch (error) {
-            if (!this.isDestroyed) {
-                CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
-                this.prefetchCoursesData.icon = initialIcon;
+        const courseIndex = this.courses.findIndex((course) => course.id == data.courseId);
+        const course = this.courses[courseIndex];
+        if (data.action == CoreCoursesProvider.ACTION_VIEW && data.courseId != CoreSites.getCurrentSiteHomeId()) {
+            if (!course) {
+                // Not found, use WS update.
+                return await this.refreshContent();
             }
+
+            // Place at the begining.
+            this.courses.splice(courseIndex, 1);
+            this.courses.unshift(course);
+
+            await this.invalidateCourseList();
+        }
+
+        if (data.action == CoreCoursesProvider.ACTION_STATE_CHANGED &&
+            data.state == CoreCoursesProvider.STATE_FAVOURITE && course) {
+            course.isfavourite = !!data.value;
+            await this.invalidateCourseList();
         }
     }
 
     /**
-     * Component being destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.isDestroyed = true;
         this.coursesObserver?.off();
-        this.updateSiteObserver?.off();
     }
 
 }
+
+type AddonBlockRecentlyAccessedCourse =
+    (Omit<CoreCourseSummaryData, 'visible'> & CoreCourseSearchedDataWithExtraInfoAndOptions) |
+    (CoreEnrolledCourseDataWithOptions & {
+        categoryname?: string; // Category name,
+    });

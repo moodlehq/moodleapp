@@ -24,6 +24,7 @@ import { CoreH5PContentValidator, CoreH5PSemantics } from './content-validator';
 import { Translate } from '@singletons';
 import { CoreH5PContentBeingSaved } from './storage';
 import { CoreH5PLibraryAddTo } from './validator';
+import { CoreText } from '@singletons/text';
 
 /**
  * Equivalent to H5P's H5PCore class.
@@ -148,7 +149,7 @@ export class CoreH5PCore {
             urls.push(libUrl + script);
         });
 
-        urls.push(CoreTextUtils.concatenatePaths(libUrl, 'moodle/js/h5p_overrides.js'));
+        urls.push(CoreText.concatenatePaths(libUrl, 'moodle/js/h5p_overrides.js'));
 
         return urls;
     }
@@ -216,7 +217,7 @@ export class CoreH5PCore {
 
         // Prevent too long slug.
         if (newInput.length > 91) {
-            newInput = newInput.substr(0, 92);
+            newInput = newInput.substring(0, 92);
         }
 
         // Prevent empty slug
@@ -241,7 +242,7 @@ export class CoreH5PCore {
             return content.filtered;
         }
 
-        if (typeof content.library == 'undefined' || typeof content.params == 'undefined') {
+        if (content.library === undefined || content.params === undefined) {
             return null;
         }
 
@@ -456,7 +457,7 @@ export class CoreH5PCore {
 
             // Add URL prefix if not external.
             if (asset.path.indexOf('://') == -1 && assetsFolderPath) {
-                url = CoreTextUtils.concatenatePaths(assetsFolderPath, url);
+                url = CoreText.concatenatePaths(assetsFolderPath, url);
             }
 
             // Add version if set.
@@ -985,6 +986,13 @@ export type CoreH5PLibraryBasicData = {
     machineName: string; // The library machine name.
     majorVersion: number; // Major version.
     minorVersion: number; // Minor version.
+};
+
+/**
+ * Data about a missing library.
+ */
+export type CoreH5PMissingLibrary = CoreH5PLibraryBasicData & {
+    libString: string; // Library that has the dependency.
 };
 
 /**

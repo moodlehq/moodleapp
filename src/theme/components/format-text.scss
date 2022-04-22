@@ -4,153 +4,62 @@
 
 core-format-text {
     --core-format-text-background: var(--background, var(--ion-item-background));
-    --core-format-text-background-gradient-rgb: var(--background-rgb, #{$ion-item-background-rgb});
     --core-format-text-viewer-icon-background: rgba(255, 255, 255, .5);
-    --core-format-text-loader-shine: 251,251,251;
 }
 
 body.dark core-format-text {
-    --core-format-text-background-gradient-rgb: var(--background-rgb, #{$ion-item-background-dark-rgb});
     --core-format-text-viewer-icon-background: rgba(0, 0, 0, .5);
-    --core-format-text-loader-shine: 90,90,90;
 }
 
 core-format-text {
-    display: block;
+    display: contents;
+    user-select: text;
+    word-break: break-word;
+    word-wrap: break-word;
 
-    .core-format-text-loader {
-        opacity: 0;
-        @include core-transition(opacity, 200ms);
-    }
-
-    &.core-format-text-loading {
-        position: relative;
+    @include core-transition(background-color color, 200ms);
+    &.core-loading {
         width: 100%;
-        height: 100%;
-        opacity: 1;
-        background-color: rgba(0,0,0,.1);
-        overflow: hidden;
-        border-radius: 5px;
-
-        .core-format-text-loader {
-            position: absolute;
-            left: -45%;
-            height: 100%;
-            width: 45%;
-            background-image: -webkit-linear-gradient(to left, rgba(var(--core-format-text-loader-shine), .05), rgba(var(--core-format-text-loader-shine), .3), rgba(var(--core-format-text-loader-shine), .6), rgba(var(--core-format-text-loader-shine), .3), rgba(var(--core-format-text-loader-shine), .05));
-            background-image: linear-gradient(to left, rgba(var(--core-format-text-loader-shine), .05), rgba(var(--core-format-text-loader-shine), .3), rgba(var(--core-format-text-loader-shine), .6), rgba(var(--core-format-text-loader-shine), .3), rgba(var(--core-format-text-loader-shine), .05));
-            animation: loading 1s infinite;
-            opacity: 1;
-            display: inline;
-        }
-
-        .core-format-text-content {
+        &:empty:before {
+            content: 'E'; // Set a minimum empty text to have a minimum height of one line.
             opacity: 0;
-            display: inline;
-        }
-
-        .core-show-more {
-            display: none !important;
         }
     }
 
-    .core-format-text-content {
-        opacity: 1;
-        @include core-transition(opacity, 200ms);
-
-        display: contents;
-        user-select: text;
-        word-break: break-word;
-        word-wrap: break-word;
-    }
-
-    &[maxHeight],
-    &[ng-reflect-max-height] {
-        position: relative;
-        width: 100%;
-        overflow: hidden;
-
-        /* Force display inline */
-        &.inline {
-            display: inline-block;
-            width: auto;
-        }
-
+    &.collapsible-item {
+        display: block;
         // This is to allow clicks in radio/checkbox content.
-        &.core-text-formatted {
-            cursor: pointer;
-            pointer-events: auto;
+        cursor: pointer;
+        pointer-events: auto;
 
-            .core-show-more {
-                display: none;
-            }
+        &.collapsible-enabled {
+            display: block;
+            max-height: none;
 
-            &:not(.core-shortened) {
-                max-height: none !important;
-            }
-
-            &.core-shortened {
+            &.collapsible-collapsed {
                 overflow: hidden;
-                min-height: 50px;
-
-                .core-show-more {
-                    text-transform: none;
-                    text-align: end;
-                    font-size: 14px;
-                    display: block;
-                    position: absolute;
-                    @include position(null, 0, 0, null);
-                    z-index: 7;
-                    background-color: var(--core-format-text-background);
-                    color: var(--text-color);
-                    @include padding(null, null, null, 10px);
-                    margin: 0;
-                }
-
-                &:before {
-                    content: '';
-                    height: 100%;
-                    position: absolute;
-                    @include position(null, 0, 0, 0);
-                    background: -webkit-linear-gradient(top, rgba(var(--core-format-text-background-gradient-rgb), 0) calc(100% - 50px), rgba(var(--core-format-text-background-gradient-rgb), 1) calc(100% - 15px));
-                    background: linear-gradient(to bottom, rgba(var(--core-format-text-background-gradient-rgb), 0) calc(100% - 50px), rgba(var(--core-format-text-background-gradient-rgb), 1) calc(100% - 15px));
-                    z-index: 6;
-                }
             }
         }
 
-        &.core-expand-in-fullview {
-            cursor: pointer;
+        @if ($core-format-text-never-shorten) {
+            &.collapsible-enabled {
+                --display-toggle: none !important;
+                --collapsible-height: auto !important;
 
-            .core-show-more {
-                @include push-arrow-color(626262, true);
-                @include padding-horizontal(null, 5px);
-                @include background-position(end, 5px, center);
+                .collapsible-toggle {
+                    display: none !important;
+                }
 
-                background-repeat: no-repeat;
-                background-size: 14px 14px;
-
-                @include darkmode() {
-                    @include push-arrow-color(ffffff, true);
+                &:before {
+                    display: none !important;
                 }
             }
         }
     }
-
-    @if ($core-format-text-never-shorten) {
-        &[maxHeight],
-        &[ng-reflect-max-height] {
-            &.core-text-formatted.core-shortened {
-                max-height: none !important;
-
-                .core-show-more {
-                    display: none !important;
-                }
-
-                &:before {
-                    display: none !important;
-                }
-            }
+    &.collapsible-item.inline {
+        display: inline-block;
+        &.collapsible-enabled {
+           display: inline-block;
         }
     }
 
@@ -164,7 +73,7 @@ core-format-text {
         position: absolute;
         @include position(null, 10px, 10px, null);
         color: var(--ion-text-color);
-        border-radius: 5px;
+        border-radius: var(--huge-radius);
         background-color: var(--core-format-text-viewer-icon-background);
         display: flex;
 
@@ -191,18 +100,17 @@ core-format-text {
             display: none;
         }
     }
-}
 
-// Erase if core-format-text display is contents again.
-.flex > core-format-text {
-    display: flex;
-}
-.core-course-title > p.item-heading > core-format-text {
-    display: inline;
-}
+    // Disable clicks in links inside MathJax equations.
+    .filter_mathjaxloader_equation .MathJax_Preview a {
+        pointer-events: none;
+    }
 
-ion-header h1 > core-format-text {
-    display: inline;
+    .MathJax_SVG_Display {
+        overflow-x: auto;
+        margin: 0;
+        padding: 10px 0;
+    }
 }
 
 @keyframes loading {
@@ -296,13 +204,22 @@ core-format-text {
 
 }
 
-core-format-text .core-format-text-content,
+core-format-text,
 core-rich-text-editor .core-rte-editor {
     @include core-headings();
+
+    p, ul, ol, li {
+        // Normalize font-size inside formatted text.
+        font-size: var(--text-size);
+    }
 
     p {
         margin-bottom: 1rem;
         margin-block-start: 0;
+    }
+
+    hr {
+        border-top: 1px solid var(--stroke);
     }
 
     .no-overflow {
@@ -321,6 +238,10 @@ core-rich-text-editor .core-rte-editor {
         ul, ol {
             @include margin(null, null, null, 15px);
         }
+    }
+
+    sub, sup {
+        overflow: visible !important;
     }
 
     .badge {
@@ -353,17 +274,17 @@ core-rich-text-editor .core-rte-editor {
     input:not([type=checkbox]):not([type=radio]):not([type=hidden]) {
         height: 30px;
         display: inline-block;
-        border: 1px solid var(--gray-dark);
-        background: var(--background-contrast);
+        border: 1px solid var(--gray-500);
+        background: var(--contrast-background);
         padding: 6px 8px;
-        border-radius: 4px;
+        border-radius: var(--small-radius);
         margin-left: 2px;
         margin-right: 2px;
         margin-bottom: 10px;
     }
 
     select {
-        background-color: var(--background-contrast);
+        background-color: var(--contrast-background);
         background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23000000%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
         background-repeat: no-repeat, repeat;
         background-position: right .7em top 50%, 0 0;
@@ -525,6 +446,7 @@ core-rich-text-editor .core-rte-editor {
         padding: .75rem 1.25rem;
         margin-bottom: 1rem;
         border: 0 solid transparent;
+        border-radius: .5rem;
     }
 
     // Headings for larger alerts
@@ -538,16 +460,15 @@ core-rich-text-editor .core-rte-editor {
         font-weight: 400;
     }
 
-    @each $color-name, $base in $colors {
-
+    @each $color-name, $unused in $colors {
         .alert-#{$color-name} {
-            --color-base: var(--ion-color-#{$color-name});
-            color: var(--color-base);
+            --color-base: var(--#{$color-name});
+            color: var(--#{$color-name}-shade);
             border-color: var(--color-base);
-            background-color: var(--ion-color-#{$color-name}-tint);
+            background-color: var(--#{$color-name}-tint);
 
-            .alert-link {
-                color: var(--ion-color-#{$color-name}-shade);
+            .alert-link, a {
+                color: var(--#{$color-name}-shade);
             }
         }
         .alert-#{$color-name} p {
@@ -564,11 +485,11 @@ core-rich-text-editor .core-rte-editor {
     .align-text-top    { vertical-align: text-top !important; }
 
     // utilities/_border.scss
-    .border         { border: 1px solid var(--gray-dark) !important; }
-    .border-top     { border-top: 1px solid var(--gray-dark) !important; }
-    .border-right   { border-right: 1px solid var(--gray-dark) !important; }
-    .border-bottom  { border-bottom: 1px solid var(--gray-dark) !important; }
-    .border-left    { border-left: 1px solid var(--gray-dark) !important; }
+    .border         { border: 1px solid var(--gray-500) !important; }
+    .border-top     { border-top: 1px solid var(--gray-500) !important; }
+    .border-right   { border-right: 1px solid var(--gray-500) !important; }
+    .border-bottom  { border-bottom: 1px solid var(--gray-500) !important; }
+    .border-left    { border-left: 1px solid var(--gray-500) !important; }
 
     .border-0        { border: 0 !important; }
     .border-top-0    { border-top: 0 !important; }
@@ -576,9 +497,9 @@ core-rich-text-editor .core-rte-editor {
     .border-bottom-0 { border-bottom: 0 !important; }
     .border-left-0   { border-left: 0 !important; }
 
-    @each $color-name, $base in $colors {
+    @each $color-name, $unused in $colors {
         .border-#{$color-name} {
-            border-color: var(--ion-color-#{$color-name}) !important;
+            border-color: var(--#{$color-name}) !important;
         }
     }
 
@@ -660,9 +581,9 @@ core-rich-text-editor .core-rte-editor {
     .font-italic         { font-style: italic !important; }
     .text-white { color: var(--white) !important; }
 
-    @each $color-name, $base in $colors {
+    @each $color-name, $unused in $colors {
         .text-#{$color-name} {
-            color: var(--ion-color-#{$color-name});
+            color: var(--#{$color-name});
         }
     }
 
@@ -682,37 +603,33 @@ core-rich-text-editor .core-rte-editor {
         padding: .25em .4em;
         font-size: 75%;
         font-weight: 700;
-        line-height: 1;
+        line-height: 1.1;
         text-align: center;
         white-space: nowrap;
         vertical-align: baseline;
         transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
         color: var(--white);
-        background-color: var(--gray-darker);
+        background-color: var(--medium);
     }
 
     .label-important {
-        color: var(--ion-color-danger-contrast);
-        background-color: var(--ion-color-danger);
+        color: var(--danger-contrast);
+        background-color: var(--danger);
     }
 
-    @each $color-name, $base in $colors {
+    @each $color-name, $unused in $colors {
         .label-#{$color-name} {
-            color: var(--ion-color-#{$color-name}-contrast);
-            background-color: var(--ion-color-#{$color-name});
+            color: var(--#{$color-name}-contrast);
+            background-color: var(--#{$color-name});
         }
     }
 }
 
 // h1 is too big and ugly, reduce size when loading.
 ion-header.ios h1 core-format-text {
-    &.core-format-text-loading {
+    &.core-loading {
         max-height: 30px;
         margin-top: 10px;
-    }
-    &.core-format-text-content {
-        display: block;
-        margin-top: -10px;
     }
 }
 

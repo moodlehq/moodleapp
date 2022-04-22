@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChange } from '@angular/core';
-
+import { CoreCourseCompletionMode } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleCompletionData } from '@features/course/services/course-helper';
 import { CoreUser } from '@features/user/services/user';
 import { Translate } from '@singletons';
@@ -30,17 +30,18 @@ export class CoreCourseModuleManualCompletionComponent implements OnInit, OnChan
 
     @Input() completion?: CoreCourseModuleCompletionData; // The completion status.
     @Input() moduleName?: string; // The name of the module this completion affects.
+    @Input() mode: CoreCourseCompletionMode = CoreCourseCompletionMode.FULL; // Show full completion status or a basic mode.
     @Output() completionChanged = new EventEmitter<CoreCourseModuleCompletionData>(); // Notify when completion changes.
 
     accessibleDescription: string | null = null;
 
-    protected manualChangedObserver?: CoreEventObserver;
+    protected completionObserver?: CoreEventObserver;
 
     /**
      * @inheritdoc
      */
     ngOnInit(): void {
-        this.manualChangedObserver = CoreEvents.on(CoreEvents.MANUAL_COMPLETION_CHANGED, (data) => {
+        this.completionObserver = CoreEvents.on(CoreEvents.MANUAL_COMPLETION_CHANGED, (data) => {
             if (!this.completion || this.completion.cmid != data.completion.cmid) {
                 return;
             }
@@ -96,6 +97,9 @@ export class CoreCourseModuleManualCompletionComponent implements OnInit, OnChan
             return;
         }
 
+        event.stopPropagation();
+        event.preventDefault();
+
         await CoreCourseHelper.changeManualCompletion(this.completion, event);
 
         CoreEvents.trigger(CoreEvents.MANUAL_COMPLETION_CHANGED, { completion: this.completion });
@@ -105,7 +109,7 @@ export class CoreCourseModuleManualCompletionComponent implements OnInit, OnChan
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.manualChangedObserver?.off();
+        this.completionObserver?.off();
     }
 
 }

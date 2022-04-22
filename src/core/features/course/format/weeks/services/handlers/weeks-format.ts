@@ -15,8 +15,8 @@
 import { Injectable } from '@angular/core';
 
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreCourseFormatHandler } from '@features/course/services/format-delegate';
-import { makeSingleton } from '@singletons';
+import { CoreCourseFormatCurrentSectionData, CoreCourseFormatHandler } from '@features/course/services/format-delegate';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreCourseWSSection } from '@features/course/services/course';
 import { CoreConstants } from '@/core/constants';
@@ -32,43 +32,56 @@ export class CoreCourseFormatWeeksHandlerService implements CoreCourseFormatHand
     format = 'weeks';
 
     /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @return True or promise resolved with true if enabled.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         return true;
     }
 
     /**
-     * Given a list of sections, get the "current" section that should be displayed first.
-     *
-     * @param course The course to get the title.
-     * @param sections List of sections.
-     * @return Current section (or promise resolved with current section).
+     * @inheritdoc
      */
-    async getCurrentSection(course: CoreCourseAnyCourseData, sections: CoreCourseSection[]): Promise<CoreCourseSection> {
+    async getCurrentSection(
+        course: CoreCourseAnyCourseData,
+        sections: CoreCourseSection[],
+    ): Promise<CoreCourseFormatCurrentSectionData<CoreCourseSection>> {
         const now = CoreTimeUtils.timestamp();
 
         if ((course.startdate && now < course.startdate) || (course.enddate && now > course.enddate)) {
             // Course hasn't started yet or it has ended already. Return all sections.
-            return sections[0];
+            return {
+                section: sections[0],
+                forceSelected: false,
+            };
         }
 
         for (let i = 0; i < sections.length; i++) {
             const section = sections[i];
-            if (typeof section.section == 'undefined' || section.section < 1) {
+            if (section.section === undefined || section.section < 1) {
                 continue;
             }
 
             const dates = this.getSectionDates(section, course.startdate || 0);
             if (now >= dates.start && now < dates.end) {
-                return section;
+                return {
+                    section,
+                    forceSelected: false,
+                };
             }
         }
 
         // The section wasn't found, return all sections.
-        return sections[0];
+        return {
+            section: sections[0],
+            forceSelected: false,
+        };
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getSectionHightlightedName(): string {
+        return Translate.instant('core.course.thisweek');
     }
 
     /**
@@ -83,7 +96,7 @@ export class CoreCourseFormatWeeksHandlerService implements CoreCourseFormatHand
         startDate = startDate + 7200;
 
         const dates = {
-            start: startDate + (CoreConstants.SECONDS_WEEK * (section.section! - 1)),
+            start: startDate + (CoreConstants.SECONDS_WEEK * ((section.section || 0) - 1)),
             end: 0,
         };
         dates.end = dates.start + CoreConstants.SECONDS_WEEK;

@@ -23,18 +23,18 @@ const routes: Routes = [
         loadChildren: () => import('./pages/index/index.module').then( m => m.CoreCourseIndexPageModule),
     },
     {
-        path: ':courseId/unsupported-module',
-        loadChildren: () => import('./pages/unsupported-module/unsupported-module.module')
-            .then( m => m.CoreCourseUnsupportedModulePageModule),
+        path: ':courseId/:cmId/module-preview',
+        loadChildren: () => import('./pages/module-preview/module-preview.module')
+            .then( m => m.CoreCourseModulePreviewPageModule),
     },
     {
         path: ':courseId/list-mod-type',
         loadChildren: () => import('./pages/list-mod-type/list-mod-type.module').then(m => m.CoreCourseListModTypePageModule),
     },
     {
-        path: ':courseId/preview',
+        path: ':courseId/summary',
         loadChildren: () =>
-            import('./pages/preview/preview.module').then(m => m.CoreCoursePreviewPageModule),
+            import('./pages/course-summary/course-summary.module').then(m => m.CoreCourseSummaryPageModule),
     },
 ];
 

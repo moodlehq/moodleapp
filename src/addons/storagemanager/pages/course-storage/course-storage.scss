@@ -1,11 +1,62 @@
+@import "~theme/globals";
+
 :host {
-    ion-card.section ion-card-header {
-        margin-bottom: 8px;
-        padding-top: 8px;
-        padding-bottom: 8px;
+    --course-storage-max-activity-height: 120px;
+
+    ion-card ion-item.size {
+        --inner-padding-end: 0px;
     }
-    ion-card.section .item-heading {
-        font-weight: bold;
-        font-size: 1.2rem;
+
+    ion-card.section {
+        ion-card-header {
+            padding: 0;
+        }
+        ion-card-content {
+            padding: 0;
+
+            .core-course-storage-activity ion-label {
+                h3 {
+                    position: relative;
+                    max-height: var(--course-storage-max-activity-height);
+                    overflow: hidden;
+                    ::ng-deep * {
+                        pointer-events: none !important;
+                    }
+
+                    &:before {
+                        content: '';
+                        height: var(--course-storage-max-activity-height);
+                        position: absolute;
+                        @include position(0, 0, null, 0);
+                        background: linear-gradient(to bottom, rgba(var(--background-gradient-rgb), 0) calc(100% - 30px), rgba(var(--background-gradient-rgb), 1) calc(100% - 20px));
+                        z-index: 6;
+                        pointer-events: none;
+                    }
+                }
+            }
+        }
+        .item-heading {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
     }
+}
+
+ion-badge {
+    margin-top: 8px;
+    ion-icon {
+        @include margin-horizontal(null, 8px);
+    }
+}
+
+ion-item core-mod-icon {
+    --size: 18px;
+    padding: 9px;
+    --margin-vertical: 8px;
+    --margin-end: 8px;
+}
+
+.storage-buttons {
+    display: flex;
+    align-items: center;
 }

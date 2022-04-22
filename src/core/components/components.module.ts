@@ -40,6 +40,7 @@ import { CoreInputErrorsComponent } from './input-errors/input-errors';
 import { CoreLoadingComponent } from './loading/loading';
 import { CoreLocalFileComponent } from './local-file/local-file';
 import { CoreMarkRequiredComponent } from './mark-required/mark-required';
+import { CoreModIconComponent } from './mod-icon/mod-icon';
 import { CoreNavBarButtonsComponent } from './navbar-buttons/navbar-buttons';
 import { CoreNavigationBarComponent } from './navigation-bar/navigation-bar';
 import { CoreProgressBarComponent } from './progress-bar/progress-bar';
@@ -58,6 +59,8 @@ import { CoreComboboxComponent } from './combobox/combobox';
 import { CoreSpacerComponent } from './spacer/spacer';
 import { CoreHorizontalScrollControlsComponent } from './horizontal-scroll-controls/horizontal-scroll-controls';
 import { CoreButtonWithSpinnerComponent } from './button-with-spinner/button-with-spinner';
+import { CoreSwipeSlidesComponent } from './swipe-slides/swipe-slides';
+import { CoreSwipeNavigationTourComponent } from './swipe-navigation-tour/swipe-navigation-tour';
 
 @NgModule({
     declarations: [
@@ -81,6 +84,7 @@ import { CoreButtonWithSpinnerComponent } from './button-with-spinner/button-wit
         CoreLoadingComponent,
         CoreLocalFileComponent,
         CoreMarkRequiredComponent,
+        CoreModIconComponent,
         CoreNavBarButtonsComponent,
         CoreNavigationBarComponent,
         CoreProgressBarComponent,
@@ -90,6 +94,7 @@ import { CoreButtonWithSpinnerComponent } from './button-with-spinner/button-wit
         CoreSitePickerComponent,
         CoreSplitViewComponent,
         CoreStyleComponent,
+        CoreSwipeSlidesComponent,
         CoreTabComponent,
         CoreTabsComponent,
         CoreTabsOutletComponent,
@@ -98,6 +103,7 @@ import { CoreButtonWithSpinnerComponent } from './button-with-spinner/button-wit
         CoreComboboxComponent,
         CoreSpacerComponent,
         CoreHorizontalScrollControlsComponent,
+        CoreSwipeNavigationTourComponent,
     ],
     imports: [
         CommonModule,
@@ -128,6 +134,7 @@ import { CoreButtonWithSpinnerComponent } from './button-with-spinner/button-wit
         CoreLoadingComponent,
         CoreLocalFileComponent,
         CoreMarkRequiredComponent,
+        CoreModIconComponent,
         CoreNavBarButtonsComponent,
         CoreNavigationBarComponent,
         CoreProgressBarComponent,
@@ -137,6 +144,7 @@ import { CoreButtonWithSpinnerComponent } from './button-with-spinner/button-wit
         CoreSitePickerComponent,
         CoreSplitViewComponent,
         CoreStyleComponent,
+        CoreSwipeSlidesComponent,
         CoreTabComponent,
         CoreTabsComponent,
         CoreTabsOutletComponent,
@@ -145,6 +153,7 @@ import { CoreButtonWithSpinnerComponent } from './button-with-spinner/button-wit
         CoreComboboxComponent,
         CoreSpacerComponent,
         CoreHorizontalScrollControlsComponent,
+        CoreSwipeNavigationTourComponent,
     ],
 })
 export class CoreComponentsModule {}

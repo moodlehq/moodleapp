@@ -40,6 +40,10 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CanLeave } from '@guards/can-leave';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreForms } from '@singletons/form';
+import { AddonModForumDiscussionsSwipeManager } from '../../classes/forum-discussions-swipe-manager';
+import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
+import { AddonModForumDiscussionsSource } from '../../classes/forum-discussions-source';
+import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 
 type NewDiscussionData = {
     subject: string;
@@ -86,8 +90,10 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
 
     advanced = false; // Display all form fields.
     accessInfo: AddonModForumAccessInformation = {};
+    courseId!: number;
 
-    protected courseId!: number;
+    discussions?: AddonModForumNewDiscussionDiscussionsSwipeManager;
+
     protected cmId!: number;
     protected forumId!: number;
     protected timeCreated!: number;
@@ -97,16 +103,36 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
     protected originalData?: Partial<NewDiscussionData>;
     protected forceLeave = false;
 
-    constructor(@Optional() protected splitView: CoreSplitViewComponent) {}
+    constructor(protected route: ActivatedRoute, @Optional() protected splitView: CoreSplitViewComponent) {}
 
     /**
      * Component being initialized.
      */
-    ngOnInit(): void {
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.cmId = CoreNavigator.getRouteNumberParam('cmId')!;
-        this.forumId = CoreNavigator.getRouteNumberParam('forumId')!;
-        this.timeCreated = CoreNavigator.getRouteNumberParam('timeCreated')!;
+    async ngOnInit(): Promise<void> {
+        try {
+            const routeData = this.route.snapshot.data;
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
+            this.forumId = CoreNavigator.getRequiredRouteNumberParam('forumId');
+            this.timeCreated = CoreNavigator.getRequiredRouteNumberParam('timeCreated');
+
+            if (this.timeCreated !== 0 && (routeData.swipeEnabled ?? true)) {
+                const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
+                    AddonModForumDiscussionsSource,
+                    [this.courseId, this.cmId, routeData.discussionsPathPrefix ?? ''],
+                );
+
+                this.discussions = new AddonModForumNewDiscussionDiscussionsSwipeManager(source);
+
+                await this.discussions.start();
+            }
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            this.goBack();
+
+            return;
+        }
 
         this.fetchDiscussionData().finally(() => {
             this.groupsLoaded = true;
@@ -359,12 +385,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
      * @return Promise resolved with the list of groups.
      */
     protected addAllParticipantsOption(groups: CoreGroup[], check: boolean): Promise<CoreGroup[]> {
-        if (!AddonModForum.isAllParticipantsFixed()) {
-            // All participants has a bug, don't add it.
-            return Promise.resolve(groups);
-        }
-
-        let promise;
+        let promise: Promise<boolean>;
 
         if (check) {
             // We need to check if the user can add a discussion to all participants.
@@ -601,6 +622,17 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
     }
 
     /**
+     * Helper function to go back.
+     */
+    protected goBack(): void {
+        if (this.splitView?.outletActivated) {
+            CoreNavigator.navigate('../../');
+        } else {
+            CoreNavigator.back();
+        }
+    }
+
+    /**
      * Page destroyed.
      */
     ngOnDestroy(): void {
@@ -608,6 +640,21 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
             CoreSync.unblockOperation(AddonModForumProvider.COMPONENT, this.syncId);
         }
         this.isDestroyed = true;
+        this.discussions?.destroy();
+    }
+
+}
+
+/**
+ * Helper to manage swiping within a collection of discussions.
+ */
+class AddonModForumNewDiscussionDiscussionsSwipeManager extends AddonModForumDiscussionsSwipeManager {
+
+    /**
+     * @inheritdoc
+     */
+    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot): string | null {
+        return `${this.getSource().DISCUSSIONS_PATH_PREFIX}new/${route.params.timeCreated}`;
     }
 
 }

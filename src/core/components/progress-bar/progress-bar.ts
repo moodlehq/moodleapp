@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnChanges, SimpleChange, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChange, ChangeDetectionStrategy, ElementRef, OnInit } from '@angular/core';
 import { SafeStyle } from '@angular/platform-browser';
 import { DomSanitizer, Translate } from '@singletons';
 
@@ -28,23 +28,45 @@ import { DomSanitizer, Translate } from '@singletons';
     styleUrls: ['progress-bar.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CoreProgressBarComponent implements OnChanges {
+export class CoreProgressBarComponent implements OnInit, OnChanges {
 
-    @Input() progress!: number | string; // Percentage from 0 to 100.
+    @Input() progress!: number | string; // Percentage from 0 to 100. Negative number will show an indeterminate progress bar.
     @Input() text?: string; // Percentage in text to be shown at the right. If not defined, progress will be used.
     @Input() a11yText?: string; // Accessibility text to read before the percentage.
     @Input() ariaDescribedBy?: string; // ID of the element that described the progress, if any.
+    @Input() color = '';
 
     width?: SafeStyle;
     progressBarValueText?: string;
 
     protected textSupplied = false;
+    protected element: HTMLElement;
+
+    constructor(elementRef: ElementRef) {
+        this.element = elementRef.nativeElement;
+    }
 
     /**
-     * Detect changes on input properties.
+     * @inheritdoc
+     */
+    ngOnInit(): void {
+        if (this.color) {
+            this.element.classList.add('ion-color', 'ion-color-' + this.color);
+        }
+    }
+
+    /**
+     * @inheritdoc
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
-        if (changes.text && typeof changes.text.currentValue != 'undefined') {
+        if (changes.color) {
+            this.element.classList.remove('ion-color', 'ion-color-' + changes.color.previousValue);
+            if (changes.color.currentValue) {
+                this.element.classList.add('ion-color', 'ion-color-' + changes.color.currentValue);
+            }
+        }
+
+        if (changes.text && changes.text.currentValue !== undefined) {
             // User provided a custom text, don't use default.
             this.textSupplied = true;
         }
@@ -64,7 +86,7 @@ export class CoreProgressBarComponent implements OnChanges {
                 this.progress = Math.floor(this.progress);
 
                 if (!this.textSupplied) {
-                    this.text = String(this.progress);
+                    this.text = Translate.instant('core.percentagenumber', { $a: this.progress });
                 }
 
                 this.width = DomSanitizer.bypassSecurityTrustStyle(this.progress + '%');
@@ -72,8 +94,7 @@ export class CoreProgressBarComponent implements OnChanges {
         }
 
         if (changes.text || changes.progress || changes.a11yText) {
-            this.progressBarValueText = (this.a11yText ? Translate.instant(this.a11yText) + ' ' : '') +
-                Translate.instant('core.percentagenumber', { $a: this.text });
+            this.progressBarValueText = (this.a11yText ? Translate.instant(this.a11yText) + ' ' : '') + this.text;
         }
     }
 

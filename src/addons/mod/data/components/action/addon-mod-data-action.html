@@ -1,30 +1,33 @@
-<ion-button *ngIf="action == 'more'" fill="clear" (click)="viewEntry()" [attr.aria-label]="'addon.mod_data.more' | translate">
-    <ion-icon name="fas-search" slot="icon-only" aria-hidden="true"></ion-icon>
+<ion-button size="small" *ngIf="action == 'more'" fill="clear" (click)="viewEntry()" [attr.aria-label]="'addon.mod_data.more' | translate">
+    <ion-icon name="fas-search-plus" slot="icon-only" aria-hidden="true"></ion-icon>
 </ion-button>
 
-<ion-button *ngIf="action == 'edit'" fill="clear" (click)="editEntry()" [attr.aria-label]="'core.edit' | translate">
+<ion-button size="small" *ngIf="action == 'edit'" fill="clear" (click)="editEntry()" [attr.aria-label]="'core.edit' | translate">
     <ion-icon name="fas-cog" slot="icon-only" aria-hidden="true"></ion-icon>
 </ion-button>
 
-<ion-button *ngIf="action == 'delete' && !entry.deleted" fill="clear" (click)="deleteEntry()" [attr.aria-label]="'core.delete' | translate">
+<ion-button size="small" *ngIf="action == 'delete' && !entry.deleted" fill="clear" color="danger" (click)="deleteEntry()"
+    [attr.aria-label]="'core.delete' | translate">
     <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
 </ion-button>
 
-<ion-button *ngIf="action == 'delete' && entry.deleted" fill="clear" (click)="undoDelete()" [attr.aria-label]="'core.restore' | translate">
+<ion-button size="small" *ngIf="action == 'delete' && entry.deleted" fill="clear" color="danger" (click)="undoDelete()"
+    [attr.aria-label]="'core.restore' | translate">
     <ion-icon name="fas-undo-alt" slot="icon-only" aria-hidden="true"></ion-icon>
 </ion-button>
 
-<ion-button *ngIf="action == 'approve'" fill="clear" (click)="approveEntry()" [attr.aria-label]="'addon.mod_data.approve' | translate">
+<ion-button size="small" *ngIf="action == 'approve'" fill="clear" (click)="approveEntry()"
+    [attr.aria-label]="'addon.mod_data.approve' | translate">
     <ion-icon name="fas-thumbs-up" slot="icon-only" aria-hidden="true"></ion-icon>
 </ion-button>
 
-<ion-button *ngIf="action == 'disapprove'" fill="clear" (click)="disapproveEntry()"
+<ion-button size="small" *ngIf="action == 'disapprove'" fill="clear" (click)="disapproveEntry()"
     [attr.aria-label]="'addon.mod_data.disapprove' | translate">
     <ion-icon name="far-thumbs-down" slot="icon-only" aria-hidden="true"></ion-icon>
 </ion-button>
 
 <core-comments *ngIf="action == 'comments' && mode == 'list'" contextLevel="module" [instanceId]="database.coursemodule"
-component="mod_data" [itemId]="entry.id" area="database_entry" [courseId]="database.course">
+    component="mod_data" [itemId]="entry.id" area="database_entry" [courseId]="database.course">
 </core-comments>
 
 <span *ngIf="action == 'timeadded'">{{ entry.timecreated * 1000 | coreFormatDate }}</span>
@@ -32,7 +35,7 @@ component="mod_data" [itemId]="entry.id" area="database_entry" [courseId]="datab
 
 <a *ngIf="action == 'userpicture'" core-user-link [courseId]="database.course" [userId]="entry.userid" [title]="entry.fullname">
     <img class="avatar-round" [src]="userPicture" [alt]="'core.pictureof' | translate:{$a: entry.fullname}" core-external-content
-    onError="this.src='assets/img/user-avatar.png'">
+        onError="this.src='assets/img/user-avatar.png'">
 </a>
 
 <a *ngIf="action == 'user' && entry" core-user-link [courseId]="database.course" [userId]="entry.userid" [title]="entry.fullname">

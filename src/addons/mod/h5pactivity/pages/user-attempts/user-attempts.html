@@ -3,11 +3,13 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>
-            <core-format-text *ngIf="h5pActivity" [text]="h5pActivity.name" contextLevel="module"
-                [contextInstanceId]="h5pActivity.coursemodule" [courseId]="courseId">
-            </core-format-text>
-        </h1>
+        <ion-title>
+            <h1>
+                <core-format-text *ngIf="h5pActivity" [text]="h5pActivity.name" contextLevel="module"
+                    [contextInstanceId]="h5pActivity.coursemodule" [courseId]="courseId">
+                </core-format-text>
+            </h1>
+        </ion-title>
     </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -17,8 +19,8 @@
     <core-loading [hideUntil]="loaded">
         <!-- User viewed. -->
         <ion-item class="ion-text-wrap" *ngIf="user && !isCurrentUser" core-user-link [userId]="user.id" [courseId]="courseId"
-            [attr.aria-label]="user.fullname">
-            <core-user-avatar [user]="user" slot="start" [courseId]="courseId"></core-user-avatar>
+            [attr.aria-label]="user.fullname" button detail="true">
+            <core-user-avatar [user]="user" slot="start" [courseId]="courseId" [linkProfile]="false"></core-user-avatar>
             <ion-label>
                 <h2>{{ user.fullname }}</h2>
             </ion-label>
@@ -63,7 +65,7 @@
 <!-- Template to render a list of conversations. -->
 <ng-template #attemptsTemplate let-attempts="attempts">
     <!-- "Header" of the table -->
-    <ion-item class="ion-text-wrap addon-mod_h5pactivity-table-header hide-detail" detail="true">
+    <ion-item class="ion-text-wrap addon-mod_h5pactivity-table-header" [detail]="false">
         <ion-label>
             <ion-row class="ion-align-items-center">
                 <ion-col class="ion-text-center">#</ion-col>

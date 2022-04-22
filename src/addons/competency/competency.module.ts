@@ -15,14 +15,12 @@
 import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
-import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { CoreUserDelegate } from '@features/user/services/user-delegate';
 import { AddonCompetencyProvider } from './services/competency';
 import { AddonCompetencyHelperProvider } from './services/competency-helper';
 import { AddonCompetencyCompetencyLinkHandler } from './services/handlers/competency-link';
 import { AddonCompetencyCourseOptionHandler } from './services/handlers/course-option';
-import { AddonCompetencyMainMenuHandler, AddonCompetencyMainMenuHandlerService } from './services/handlers/mainmenu';
 import { AddonCompetencyPlanLinkHandler } from './services/handlers/plan-link';
 import { AddonCompetencyPlansLinkHandler } from './services/handlers/plans-link';
 import { AddonCompetencyPushClickHandler } from './services/handlers/push-click';
@@ -32,6 +30,8 @@ import { Routes } from '@angular/router';
 import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreCourseIndexRoutingModule } from '@features/course/pages/index/index-routing.module';
+import { COURSE_PAGE_NAME } from '@features/course/course.module';
+import { PARTICIPANTS_PAGE_NAME } from '@features/user/user.module';
 
 // List of providers (without handlers).
 export const ADDON_COMPETENCY_SERVICES: Type<unknown>[] = [
@@ -39,24 +39,35 @@ export const ADDON_COMPETENCY_SERVICES: Type<unknown>[] = [
     AddonCompetencyHelperProvider,
 ];
 
+export const ADDON_COMPETENCY_LEARNING_PLANS_PAGE = 'learning-plans';
+export const ADDON_COMPETENCY_COMPETENCIES_PAGE = 'competencies';
+export const ADDON_COMPETENCY_SUMMARY_PAGE = 'summary';
+
 const mainMenuChildrenRoutes: Routes = [
     {
-        path: AddonCompetencyMainMenuHandlerService.PAGE_NAME,
-        loadChildren: () => import('./competency-lazy.module').then(m => m.AddonCompetencyLazyModule),
+        path: ADDON_COMPETENCY_LEARNING_PLANS_PAGE,
+        loadChildren: () => import('./competency-learning-plans-lazy.module').then(m => m.AddonCompetencyLearningPlansLazyModule),
+    },
+    {
+        path: `${COURSE_PAGE_NAME}/:courseId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
+        loadChildren: () => import('./competency-course-details-lazy.module').then(m => m.AddonCompetencyCourseDetailsLazyModule),
+    },
+    {
+        path: `${COURSE_PAGE_NAME}/:courseId/${PARTICIPANTS_PAGE_NAME}/:userId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
+        loadChildren: () => import('./competency-course-details-lazy.module').then(m => m.AddonCompetencyCourseDetailsLazyModule),
     },
 ];
 
 const courseIndexRoutes: Routes = [
     {
-        path: AddonCompetencyMainMenuHandlerService.PAGE_NAME,
-        loadChildren: () => import('@addons/competency/competency-course-lazy.module').then(m => m.AddonCompetencyCourseLazyModule),
+        path: ADDON_COMPETENCY_COMPETENCIES_PAGE,
+        loadChildren: () => import('./competency-course-contents-lazy.module').then(m => m.AddonCompetencyCourseContentsLazyModule),
     },
 ];
 
 @NgModule({
     imports: [
         CoreMainMenuTabRoutingModule.forChild(mainMenuChildrenRoutes),
-        CoreMainMenuRoutingModule.forChild({ children: mainMenuChildrenRoutes }),
         CoreCourseIndexRoutingModule.forChild({ children: courseIndexRoutes }),
     ],
     exports: [CoreMainMenuRoutingModule],
@@ -64,13 +75,11 @@ const courseIndexRoutes: Routes = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => async () => {
+            useValue: () => {
                 CoreContentLinksDelegate.registerHandler(AddonCompetencyCompetencyLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonCompetencyPlanLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonCompetencyPlansLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonCompetencyUserCompetencyLinkHandler.instance);
-                CoreMainMenuDelegate.registerHandler(AddonCompetencyMainMenuHandler.instance);
                 CoreUserDelegate.registerHandler(AddonCompetencyUserHandler.instance);
                 CoreCourseOptionsDelegate.registerHandler(AddonCompetencyCourseOptionHandler.instance);
                 CorePushNotificationsDelegate.registerClickHandler(AddonCompetencyPushClickHandler.instance);

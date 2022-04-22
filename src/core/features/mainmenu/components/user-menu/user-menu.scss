@@ -1,0 +1,55 @@
+@import "~theme/globals";
+
+:host {
+    .core-user-menu-preferences {
+        --inner-border-width: 0;
+        --border-width: 1px 0 0 0;
+    }
+}
+
+.core-usermenu-siteinfo {
+    text-align: center;
+    ion-label {
+        margin: 0;
+    }
+    --padding-top: 10px;
+    --padding-bottom: 10px;
+}
+
+@if ($core-user-hide-siteinfo) {
+    .core-usermenu-siteinfo {
+        display: none;
+    }
+}
+
+.core-usermenu-sitename {
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 24px;
+}
+
+img.core-usermenu-site-logo {
+    margin-bottom: 8px;
+    max-height: var(--core-user-menu-site-logo-max-height);
+}
+
+img.image-not-found {
+    display: none;
+}
+
+
+@if ($core-user-hide-sitename) {
+    .core-usermenu-sitename {
+        display: none;
+    }
+}
+
+@if ($core-user-hide-siteurl) {
+    .core-usermenu-siteurl {
+        display: none;
+    }
+}
+
+ion-footer {
+    background: var(--contrast-background);
+}

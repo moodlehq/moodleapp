@@ -124,7 +124,7 @@ export class CoreSitePluginsCallWSBaseDirective implements OnInit, OnDestroy {
     invalidate(): Promise<void> {
         const params = this.getParamsForWS();
 
-        return CoreSitePlugins.instance.invalidateCallWS(this.name, params, this.preSets);
+        return CoreSitePlugins.invalidateCallWS(this.name, params, this.preSets);
     }
 
     /**

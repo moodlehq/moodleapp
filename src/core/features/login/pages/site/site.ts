@@ -33,9 +33,10 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreCustomURLSchemes, CoreCustomURLSchemesHandleError } from '@services/urlschemes';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreForms } from '@singletons/form';
+import { AlertButton } from '@ionic/core';
 
 /**
- * Page that displays a "splash screen" while the app is being initialized.
+ * Site (url) chooser when adding a new site.
  */
 @Component({
     selector: 'page-core-login-site',
@@ -339,10 +340,6 @@ export class CoreLoginSitePage implements OnInit {
 
             CoreForms.triggerFormSubmittedEvent(this.formElement, true);
 
-            if (response.warning) {
-                CoreDomUtils.showErrorModal(response.warning, true, 4000);
-            }
-
             if (CoreLoginHelper.isSSOLoginNeeded(response.code)) {
                 // SSO. User needs to authenticate in a browser.
                 CoreLoginHelper.confirmAndOpenBrowserForSSOLogin(
@@ -390,9 +387,10 @@ export class CoreLoginSitePage implements OnInit {
             message += '<p padding><a href="' + fullUrl + '" core-link>' + url + '</a></p>';
         }
 
-        const buttons = [
+        const buttons: AlertButton[] = [
             {
                 text: Translate.instant('core.needhelp'),
+                cssClass: 'core-login-need-help',
                 handler: (): void => {
                     this.showHelp();
                 },
@@ -502,7 +500,12 @@ export class CoreLoginSitePage implements OnInit {
 
         if (scheme && scheme != 'http' && scheme != 'https') {
             CoreDomUtils.showErrorModal(Translate.instant('core.errorurlschemeinvalidscheme', { $a: text }));
-        } else if (CoreLoginHelper.isSiteUrlAllowed(text)) {
+
+            return;
+        }
+
+        const allowed = await CoreLoginHelper.isSiteUrlAllowed(text);
+        if (allowed) {
             // Put the text in the field (if present).
             this.siteForm.controls.siteUrl.setValue(text);
 

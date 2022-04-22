@@ -79,6 +79,9 @@ import { Md5 } from 'ts-md5/dist/md5';
 // Import core classes that can be useful for site plugins.
 import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { CoreArray } from '@singletons/array';
+import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreDom } from '@singletons/dom';
+import { CoreForms } from '@singletons/form';
 import { CoreText } from '@singletons/text';
 import { CoreUrl } from '@singletons/url';
 import { CoreWindow } from '@singletons/window';
@@ -322,7 +325,7 @@ export class CoreCompileProvider {
                     // Inject the provider to the instance. We use the class name as the property name.
                     instance[providerDef.name.replace(/DelegateService$/, 'Delegate')] = this.injector.get(providerDef);
                 } catch (ex) {
-                    this.logger.warn('Error injecting provider', providerDef.name, ex);
+                    this.logger.error('Error injecting provider', providerDef.name, ex);
                 }
             }
         }
@@ -341,6 +344,9 @@ export class CoreCompileProvider {
         instance['Md5'] = Md5;
         instance['CoreSyncBaseProvider'] = CoreSyncBaseProvider;
         instance['CoreArray'] = CoreArray;
+        instance['CoreComponentsRegistry'] = CoreComponentsRegistry;
+        instance['CoreDom'] = CoreDom;
+        instance['CoreForms'] = CoreForms;
         instance['CoreText'] = CoreText;
         instance['CoreUrl'] = CoreUrl;
         instance['CoreWindow'] = CoreWindow;

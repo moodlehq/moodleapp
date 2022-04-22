@@ -17,7 +17,6 @@ import { Params } from '@angular/router';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { makeSingleton } from '@singletons';
-import { AddonModData } from '../data';
 import { AddonModDataHelper } from '../data-helper';
 
 /**
@@ -51,12 +50,12 @@ export class AddonModDataApproveLinkHandlerService extends CoreContentLinksHandl
      * @inheritdoc
      */
     async isEnabled(siteId: string, url: string, params: Params): Promise<boolean> {
-        if (typeof params.d == 'undefined' || (typeof params.approve == 'undefined' && typeof params.disapprove == 'undefined')) {
+        if (params.d === undefined || (params.approve === undefined && params.disapprove === undefined)) {
             // Required fields not defined. Cannot treat the URL.
             return false;
         }
 
-        return AddonModData.isPluginEnabled(siteId);
+        return true;
     }
 
 }

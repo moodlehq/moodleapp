@@ -1,41 +1,16 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
-    <core-context-menu>
-        <core-context-menu-item *ngIf="externalUrl" [priority]="900" [content]="'core.openinbrowser' | translate"
-            [href]="externalUrl" iconAction="fas-external-link-alt">
-        </core-context-menu-item>
-        <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate"
-            (action)="expandDescription()" iconAction="fas-arrow-right">
-        </core-context-menu-item>
-        <core-context-menu-item *ngIf="blog" [priority]="750" content="{{'addon.blog.blog' | translate}}"
-            iconAction="far-newspaper" (action)="gotoBlog()">
-        </core-context-menu-item>
-        <core-context-menu-item *ngIf="loaded && !hasOffline && isOnline" [priority]="700" [content]="'core.refresh' | translate"
-            (action)="doRefresh(null, $event)" [iconAction]="refreshIcon" [closeOnClick]="false">
-        </core-context-menu-item>
-        <core-context-menu-item *ngIf="loaded && hasOffline && isOnline" [priority]="600" (action)="doRefresh(null, $event, true)"
-            [content]="'core.settings.synchronizenow' | translate" [iconAction]="syncIcon" [closeOnClick]="false">
-        </core-context-menu-item>
-        <core-context-menu-item *ngIf="prefetchStatusIcon" [priority]="500" [content]="prefetchText" (action)="prefetch($event)"
-            [iconAction]="prefetchStatusIcon" [closeOnClick]="false">
-        </core-context-menu-item>
-        <core-context-menu-item *ngIf="size" [priority]="400" [content]="'core.clearstoreddata' | translate:{$a: size}"
-            iconDescription="fas-archive" (action)="removeFiles($event)" iconAction="fas-trash" [closeOnClick]="false">
-        </core-context-menu-item>
-    </core-context-menu>
+    <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [attr.aria-label]="'core.info' | translate">
+        <ion-icon name="fas-info-circle" slot="icon-only" aria-hidden="true"></ion-icon>
+    </ion-button>
 </core-navbar-buttons>
 
 <!-- Content. -->
-<core-loading [hideUntil]="loaded">
-
+<core-loading [hideUntil]="!showLoading">
     <!-- Activity info. -->
-    <core-course-module-info *ngIf="showCompletion" [module]="module" [showManualCompletion]="true"
-        (completionChanged)="onCompletionChange()">
+    <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
+        [courseId]="courseId" [hasDataToSync]="hasOffline" (completionChanged)="onCompletionChange()">
     </core-course-module-info>
-
-    <core-course-module-description [description]="description" [component]="component" [componentId]="componentId"
-        contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
-    </core-course-module-description>
 
     <!-- Activity availability messages -->
     <ion-card class="core-info-card" *ngIf="choiceNotOpenYet">
@@ -54,20 +29,11 @@
             <ion-label>
                 <p *ngIf="options.length">
                     {{ 'addon.mod_choice.yourselection' | translate }}
-                    <core-format-text [text]="options[0].text" contextLevel="module" [contextInstanceId]="module.id"
-                        [courseId]="courseId">
+                    <core-format-text [text]="options[0].text" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
                     </core-format-text>
                 </p>
                 <p>{{ 'addon.mod_choice.expired' | translate:{$a: closeTimeReadable} }}</p>
             </ion-label>
-        </ion-item>
-    </ion-card>
-
-    <!-- Choice done in offline but not synchronized -->
-    <ion-card class="core-warning-card" *ngIf="hasOffline">
-        <ion-item>
-            <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
-            <ion-label>{{ 'core.hasdatatosync' | translate:{$a: moduleName} }}</ion-label>
         </ion-item>
     </ion-card>
 
@@ -97,14 +63,7 @@
                 <ion-radio slot="end" [value]="option.id" [disabled]="option.disabled || !canEdit"></ion-radio>
             </ion-item>
         </ion-radio-group>
-        <ion-button *ngIf="canEdit" expand="block" (click)="save()" [disabled]="!canSave()" class="ion-margin">
-            {{ 'addon.mod_choice.savemychoice' | translate }}
-        </ion-button>
-        <ion-button *ngIf="canDelete" expand="block" color="light" (click)="delete()" class="ion-margin">
-            {{ 'addon.mod_choice.removemychoice' | translate }}
-        </ion-button>
     </ion-card>
-
     <!-- Choice results -->
     <div *ngIf="canSeeResults && choice">
         <ion-item-divider>
@@ -129,7 +88,11 @@
                 </ion-col>
                 <ion-col *ngIf="choice.publish && results" size="12" size-lg="7">
                     <ion-item-group *ngFor="let result of results">
-                        <ion-item-divider class="ion-text-wrap">
+                        <ion-item [button]="result.numberofuser > 0" class="divider ion-text-wrap" (click)="toggle(result)"
+                            [attr.aria-label]="(result.expanded ? 'core.collapse' : 'core.expand') | translate" detail="false">
+                            <ion-icon [name]="result.numberofuser > 0 ? 'fas-chevron-right' : ''" flip-rtl slot="start" aria-hidden="true"
+                                class="expandable-status-icon" [class.expandable-status-icon-expanded]="result.expanded">
+                            </ion-icon>
                             <ion-label>
                                 <h3 class="item-heading">
                                     <core-format-text [text]="result.text" contextLevel="module" [contextInstanceId]="module.id"
@@ -144,12 +107,16 @@
                                     {{ 'addon.mod_choice.limita' | translate:{$a: result.maxanswer} }}
                                 </p>
                             </ion-label>
-                        </ion-item-divider>
-                        <ion-item *ngFor="let user of result.userresponses" core-user-link [courseId]="courseId"
-                            [userId]="user.userid" [attr.aria-label]="user.fullname" class="ion-text-wrap">
-                            <core-user-avatar [user]="user" slot="start" [courseId]="courseId"></core-user-avatar>
-                            <ion-label><p>{{user.fullname}}</p></ion-label>
                         </ion-item>
+                        <ng-container *ngIf="result.expanded">
+                            <ion-item *ngFor="let user of result.userresponses" core-user-link [courseId]="courseId" [userId]="user.userid"
+                                [attr.aria-label]="user.fullname" class="ion-text-wrap">
+                                <core-user-avatar [user]="user" slot="start" [courseId]="courseId" [linkProfile]="false"></core-user-avatar>
+                                <ion-label>
+                                    <p>{{user.fullname}}</p>
+                                </ion-label>
+                            </ion-item>
+                        </ng-container>
                     </ion-item-group>
                 </ion-col>
             </ion-row>
@@ -159,10 +126,29 @@
     <ion-card class="core-info-card" *ngIf="!canSeeResults && !choiceNotOpenYet">
         <ion-item>
             <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
-            <ion-label><p>{{ 'addon.mod_choice.noresultsviewable' | translate }}</p></ion-label>
+            <ion-label>
+                <p>{{ 'addon.mod_choice.noresultsviewable' | translate }}</p>
+            </ion-label>
         </ion-item>
     </ion-card>
+
+
+    <div collapsible-footer *ngIf="!showLoading" slot="fixed">
+        <div class="list-item-limited-width adaptable-buttons-row" *ngIf="options.length && choice && (canEdit || canDelete)">
+            <ion-button *ngIf="canDelete" expand="block" fill="outline" (click)="delete()" class="ion-margin ion-text-wrap">
+                {{ 'addon.mod_choice.removemychoice' | translate }}
+            </ion-button>
+            <ion-button *ngIf="canEdit" expand="block" (click)="save()" [disabled]="!canSave()" class="ion-margin ion-text-wrap">
+                {{ 'addon.mod_choice.savemychoice' | translate }}
+            </ion-button>
+        </div>
+
+        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id">
+        </core-course-module-navigation>
+    </div>
 </core-loading>
+
+
 
 <!-- Template to render a choice option label. -->
 <ng-template #optionLabelTemplate let-option="option">

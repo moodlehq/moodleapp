@@ -51,10 +51,12 @@ const mainMenuRoutes: Routes = [
     {
         path: `${AddonModGlossaryModuleHandlerService.PAGE_NAME}/entry/:entryId`,
         loadChildren: () => import('./pages/entry/entry.module').then(m => m.AddonModGlossaryEntryPageModule),
+        data: { swipeEnabled: false },
     },
     {
         path: `${AddonModGlossaryModuleHandlerService.PAGE_NAME}/edit/:timecreated`,
         loadChildren: () => import('./pages/edit/edit.module').then(m => m.AddonModGlossaryEditPageModule),
+        data: { swipeEnabled: false },
     },
     {
         path: AddonModGlossaryModuleHandlerService.PAGE_NAME,
@@ -65,10 +67,12 @@ const mainMenuRoutes: Routes = [
             {
                 path: `${COURSE_CONTENTS_PATH}/${AddonModGlossaryModuleHandlerService.PAGE_NAME}/entry/:entryId`,
                 loadChildren: () => import('./pages/entry/entry.module').then(m => m.AddonModGlossaryEntryPageModule),
+                data: { glossaryPathPrefix: `${AddonModGlossaryModuleHandlerService.PAGE_NAME}/` },
             },
             {
                 path: `${COURSE_CONTENTS_PATH}/${AddonModGlossaryModuleHandlerService.PAGE_NAME}/edit/:timecreated`,
                 loadChildren: () => import('./pages/edit/edit.module').then(m => m.AddonModGlossaryEditPageModule),
+                data: { glossaryPathPrefix: `${AddonModGlossaryModuleHandlerService.PAGE_NAME}/` },
             },
         ],
         () => CoreScreen.isMobile,
@@ -80,10 +84,12 @@ const courseContentsRoutes: Routes = conditionalRoutes(
         {
             path: `${AddonModGlossaryModuleHandlerService.PAGE_NAME}/entry/:entryId`,
             loadChildren: () => import('./pages/entry/entry.module').then(m => m.AddonModGlossaryEntryPageModule),
+            data: { glossaryPathPrefix: `${AddonModGlossaryModuleHandlerService.PAGE_NAME}/` },
         },
         {
             path: `${AddonModGlossaryModuleHandlerService.PAGE_NAME}/edit/:timecreated`,
             loadChildren: () => import('./pages/edit/edit.module').then(m => m.AddonModGlossaryEditPageModule),
+            data: { glossaryPathPrefix: `${AddonModGlossaryModuleHandlerService.PAGE_NAME}/` },
         },
     ],
     () => CoreScreen.isTablet,
@@ -104,8 +110,7 @@ const courseContentsRoutes: Routes = conditionalRoutes(
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreCourseModuleDelegate.registerHandler(AddonModGlossaryModuleHandler.instance);
                 CoreCourseModulePrefetchDelegate.registerHandler(AddonModGlossaryPrefetchHandler.instance);
                 CoreCronDelegate.register(AddonModGlossarySyncCronHandler.instance);

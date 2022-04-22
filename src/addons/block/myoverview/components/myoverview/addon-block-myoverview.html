@@ -4,97 +4,132 @@
     </ion-label>
     <div slot="end" class="flex-row">
         <!-- Download all courses. -->
-        <div *ngIf="downloadCoursesEnabled && downloadEnabled && filteredCourses.length > 1 && !showFilter"
-            class="core-button-spinner">
-            <ion-button *ngIf="!prefetchCoursesData[selectedFilter].loading" fill="clear" color="dark" (click)="prefetchCourses()"
-                [attr.aria-label]="'core.courses.downloadcourses' | translate">
-                <ion-icon [name]="prefetchCoursesData[selectedFilter].icon" slot="icon-only" aria-hidden="true">
+        <div *ngIf="downloadCoursesEnabled && filteredCourses.length > 0" class="core-button-spinner">
+            <ion-button *ngIf="!prefetchCoursesData.loading" fill="clear" (click)="prefetchCourses()"
+                [attr.aria-label]="prefetchCoursesData.statusTranslatable | translate">
+                <ion-icon [name]="prefetchCoursesData.icon" slot="icon-only" aria-hidden="true">
                 </ion-icon>
             </ion-button>
-            <ion-badge class="core-course-download-courses-progress" *ngIf="prefetchCoursesData[selectedFilter].badge"
-                role="progressbar" [attr.aria-valuemax]="prefetchCoursesData[selectedFilter].total"
-                [attr.aria-valuenow]="prefetchCoursesData[selectedFilter].count"
-                [attr.aria-valuetext]="prefetchCoursesData[selectedFilter].badgeA11yText">
-                {{prefetchCoursesData[selectedFilter].badge}}
+            <ion-badge class="core-course-download-courses-progress" *ngIf="prefetchCoursesData.badge" role="progressbar"
+                [attr.aria-valuemax]="prefetchCoursesData.total" [attr.aria-valuenow]="prefetchCoursesData.count"
+                [attr.aria-valuetext]="prefetchCoursesData.badgeA11yText">
+                {{prefetchCoursesData.badge}}
             </ion-badge>
-            <ion-spinner *ngIf="prefetchCoursesData[selectedFilter].loading" [attr.aria-label]="'core.loading' | translate">
+            <ion-spinner *ngIf="prefetchCoursesData.loading" [attr.aria-label]="'core.loading' | translate">
             </ion-spinner>
         </div>
-        <core-context-menu>
-            <core-context-menu-item *ngIf="loaded && showFilterSwitchButton()" [priority]="1000"
-                [content]="'core.courses.filtermycourses' | translate" (action)="switchFilter()" iconAction="fas-filter"
-                (onClosed)="switchFilterClosed()"></core-context-menu-item>
-            <core-context-menu-item *ngIf="loaded && showSortFilter" [priority]="900"
-                content="{{('core.sortby' | translate) + ' ' + ('addon.block_myoverview.title' | translate)}}"
-                (action)="switchSort('fullname')" [iconAction]="sort == 'fullname' ? 'far-dot-circle' : 'far-circle'">
-            </core-context-menu-item>
-            <core-context-menu-item *ngIf="loaded && showSortFilter && showSortByShortName" [priority]="800"
-                content="{{('core.sortby' | translate) + ' ' + ('addon.block_myoverview.shortname' | translate)}}"
-                (action)="switchSort('shortname')" [iconAction]="sort == 'shortname' ? 'far-dot-circle' : 'far-circle'">
-            </core-context-menu-item>
-            <core-context-menu-item *ngIf="loaded && showSortFilter" [priority]="700"
-                content="{{('core.sortby' | translate) + ' ' + ('addon.block_myoverview.lastaccessed' | translate)}}"
-                (action)="switchSort('lastaccess')" [iconAction]="sort == 'lastaccess' ? 'far-dot-circle' : 'far-circle'">
-            </core-context-menu-item>
-        </core-context-menu>
     </div>
 </ion-item-divider>
-<core-loading [hideUntil]="loaded" [fullscreen]="false" class="margin">
-    <div class="safe-padding-horizontal" [hidden]="showFilter || !showSelectorFilter">
-        <!-- "Time" selector. -->
-        <core-combobox [label]="'core.show' | translate" [selection]="selectedFilter" (onChange)="selectedChanged($event)">
-            <ion-select-option class="ion-text-wrap" value="allincludinghidden" *ngIf="showFilters.allincludinghidden != 'hidden'">
-                {{ 'addon.block_myoverview.allincludinghidden' | translate }}
-            </ion-select-option>
-            <ion-select-option class="ion-text-wrap" value="all" *ngIf="showFilters.all != 'hidden'">
-                {{ 'addon.block_myoverview.all' | translate }}
-            </ion-select-option>
-            <ion-select-option class="ion-text-wrap" value="inprogress" *ngIf="showFilters.inprogress != 'hidden'"
-                [disabled]="showFilters.inprogress == 'disabled'">
-                {{ 'addon.block_myoverview.inprogress' | translate }}
-            </ion-select-option>
-            <ion-select-option class="ion-text-wrap" value="future" *ngIf="showFilters.future != 'hidden'"
-                [disabled]="showFilters.future == 'disabled'">
-                {{ 'addon.block_myoverview.future' | translate }}
-            </ion-select-option>
-            <ion-select-option class="ion-text-wrap" value="past" *ngIf="showFilters.past != 'hidden'"
-                [disabled]="showFilters.past == 'disabled'">
-                {{ 'addon.block_myoverview.past' | translate }}
-            </ion-select-option>
-            <ng-container *ngIf="showFilters.custom != 'hidden'">
-                <ng-container *ngFor="let customOption of customFilter; let index = index">
-                    <ion-select-option class="ion-text-wrap" value="custom-{{index}}">{{ customOption.name }}</ion-select-option>
+<core-loading [hideUntil]="loaded">
+
+    <ion-row class="ion-hide-md-up addon-block-myoverview-filter" *ngIf="hasCourses">
+        <ion-col>
+            <!-- Filter courses. -->
+            <ion-searchbar [(ngModel)]="textFilter" (ionInput)="filterTextChanged($event.target)"
+                (ionCancel)="filterTextChanged($event.target)" [placeholder]="'core.courses.filtermycourses' | translate">
+            </ion-searchbar>
+        </ion-col>
+    </ion-row>
+    <ion-row class="ion-justify-content-between ion-align-items-center addon-block-myoverview-filter" *ngIf="hasCourses">
+        <ion-col size="auto" *ngIf="filters.enabled">
+            <core-combobox [label]="'core.courses.filtermycourses' | translate" [selection]="filters.timeFilterSelected"
+                (onChange)="filterOptionsChanged($event)">
+                <ion-select-option class="ion-text-wrap core-select-option-border-bottom" value="allincludinghidden"
+                    *ngIf="filters.show.allincludinghidden">
+                    {{ 'addon.block_myoverview.allincludinghidden' | translate }}
+                </ion-select-option>
+                <ion-select-option class="ion-text-wrap core-select-option-border-bottom" value="all" *ngIf="filters.show.all">
+                    {{ 'addon.block_myoverview.all' | translate }}
+                </ion-select-option>
+                <ion-select-option class="ion-text-wrap"
+                    [class.core-select-option-border-bottom]="!filters.show.past && !filters.show.future" value="inprogress"
+                    *ngIf="filters.show.inprogress">
+                    {{ 'addon.block_myoverview.inprogress' | translate }}
+                </ion-select-option>
+                <ion-select-option class="ion-text-wrap" [class.core-select-option-border-bottom]="!filters.show.past" value="future"
+                    *ngIf="filters.show.future">
+                    {{ 'addon.block_myoverview.future' | translate }}
+                </ion-select-option>
+                <ion-select-option class="ion-text-wrap core-select-option-border-bottom" value="past" *ngIf="filters.show.past">
+                    {{ 'addon.block_myoverview.past' | translate }}
+                </ion-select-option>
+                <ng-container *ngIf="filters.show.custom">
+                    <ng-container *ngFor="let customOption of filters.customFilters; let index = index; let last = last">
+                        <ion-select-option class="ion-text-wrap" value="custom-{{index}}" [class.core-select-option-border-bottom]="last">
+                            {{ customOption.name }}</ion-select-option>
+                    </ng-container>
                 </ng-container>
-            </ng-container>
-            <ion-select-option class="ion-text-wrap" value="favourite" *ngIf="showFilters.favourite != 'hidden'"
-                [disabled]="showFilters.favourite == 'disabled'">
-                {{ 'addon.block_myoverview.favourites' | translate }}
-            </ion-select-option>
-            <ion-select-option class="ion-text-wrap" value="hidden" *ngIf="showFilters.hidden != 'hidden'"
-                [disabled]="showFilters.hidden == 'disabled'">
-                {{ 'addon.block_myoverview.hiddencourses' | translate }}
-            </ion-select-option>
-        </core-combobox>
-    </div>
+                <ion-select-option class="ion-text-wrap core-select-option-border-bottom" value="favourite" *ngIf="filters.show.favourite">
+                    {{ 'addon.block_myoverview.favourites' | translate }}
+                </ion-select-option>
+                <ion-select-option class="ion-text-wrap" value="hidden" *ngIf="filters.show.hidden">
+                    {{ 'addon.block_myoverview.hiddencourses' | translate }}
+                </ion-select-option>
+            </core-combobox>
+        </ion-col>
+        <ion-col>
+            <!-- Filter courses. -->
+            <ion-searchbar class="ion-hide-md-down" [(ngModel)]="textFilter" (ionInput)="filterTextChanged($event.target)"
+                (ionCancel)="filterTextChanged($event.target)" [placeholder]="'core.courses.filtermycourses' | translate">
+            </ion-searchbar>
+        </ion-col>
+        <ion-col size="auto" *ngIf="sort.enabled">
+            <core-combobox [label]="'core.sortby' | translate" [selection]="sort.selected" (onChange)="sortCourses($event)"
+                icon="fas-sort-amount-down-alt">
+                <ion-select-option class="ion-text-wrap" value="fullname">
+                    {{'addon.block_myoverview.title' | translate}}
+                </ion-select-option>
+                <ion-select-option class="ion-text-wrap" value="shortname" *ngIf="sort.shortnameEnabled">
+                    {{'addon.block_myoverview.shortname' | translate}}
+                </ion-select-option>
+                <ion-select-option class="ion-text-wrap" value="lastaccess">
+                    {{'addon.block_myoverview.lastaccessed' | translate}}
+                </ion-select-option>
+            </core-combobox>
+        </ion-col>
+        <ion-col size="auto" *ngIf="isLayoutSwitcherAvailable">
+            <ion-button *ngIf="layout == 'card'" fill="outline" (click)="toggleLayout('list')"
+                [attr.aria-label]="'addon.block_myoverview.list' | translate">
+                <ion-icon slot="icon-only" name="fas-list" aria-hidden="true"></ion-icon>
+            </ion-button>
+            <ion-button *ngIf="layout == 'list'" fill="outline" (click)="toggleLayout('card')"
+                [attr.aria-label]="'addon.block_myoverview.card' | translate">
+                <ion-icon slot="icon-only" name="fas-th" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-col>
+    </ion-row>
 
-    <!-- Filter courses. -->
-    <ion-searchbar #searchbar *ngIf="showFilter" [(ngModel)]="courses.filter" (ionInput)="filterChanged($event)"
-        (ionCancel)="filterChanged($event)" [placeholder]="'core.courses.filtermycourses' | translate">
-    </ion-searchbar>
-
-    <core-empty-box *ngIf="filteredCourses.length == 0" image="assets/img/icons/courses.svg"
-        [message]="'addon.block_myoverview.nocourses' | translate" inline="true">
+    <core-empty-box *ngIf="filteredCourses.length == 0" image="assets/img/icons/courses.svg">
+        <p *ngIf="hasCourses" class="item-heading">
+            {{'addon.block_myoverview.noresult' | translate}}
+        </p>
+        <p *ngIf="!hasCourses" class="item-heading">
+            {{'addon.block_myoverview.nocoursesenrolled' | translate}}
+        </p>
+        <ng-container *ngIf="searchEnabled">
+            <p *ngIf="hasCourses" class="subdued">
+                {{'addon.block_myoverview.noresultdescription' | translate}}
+            </p>
+            <p *ngIf="!hasCourses" class="subdued">
+                {{'addon.block_myoverview.nocoursesenrolleddescription' | translate}}
+            </p>
+            <ion-button (click)="openSearch()" fill="outline">
+                <ion-icon name="fas-search" slot="start" aria-hidden="true">
+                </ion-icon>
+                {{'addon.block_myoverview.browseallcourses' | translate}}
+            </ion-button>
+        </ng-container>
     </core-empty-box>
 
     <!-- List of courses. -->
-    <div class="safe-area-page">
-        <ion-grid class="ion-no-padding">
+    <div class="safe-area-padding" *ngIf="hasCourses">
+        <ion-grid class="ion-no-padding" [class.core-no-grid]="layout != 'card'" [class.list-item-limited-width]="layout != 'card'">
             <ion-row class="ion-no-padding">
-                <ion-col *ngFor="let course of filteredCourses" class="ion-no-padding"
-                    size="12" size-sm="6" size-md="6" size-lg="4" size-xl="3">
-                    <core-courses-course-progress [course]="course" class="core-courseoverview" showAll="true"
-                        [showDownload]="downloadCourseEnabled && downloadEnabled">
-                    </core-courses-course-progress>
+                <ion-col *ngFor="let course of filteredCourses" class="ion-no-padding" size="12" size-sm="6" size-md="6" size-lg="4"
+                    size-xl="3">
+                    <core-courses-course-list-item [course]="course" class="core-courseoverview" [showDownload]="downloadCourseEnabled"
+                        [layout]="layout">
+                    </core-courses-course-list-item>
                 </ion-col>
             </ion-row>
         </ion-grid>

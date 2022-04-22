@@ -1,0 +1,32 @@
+@import "~theme/globals";
+
+:host {
+    @include position(50%, 0px, null, null);
+    position: fixed;
+    z-index: 10;
+    transform: translateY(-50%);
+
+    ion-button {
+        margin: 0;
+        --padding-start: 0.5em;
+        --padding-end: 0;
+        --border-radius: 2em 0 0 2em;
+        height: 56px;
+        --box-shadow: 0 3px 5px -1px rgba(0, 0, 0, .2), 0 6px 10px 0 rgba(0, 0, 0, .14), 0 1px 18px 0 rgba(0, 0, 0, .12);
+
+        &::part(native) {
+            @include core-transition(padding, 200ms);
+        }
+
+        &:hover {
+            --padding-end: 1.2em;
+            --padding-start: 1em;
+        }
+    }
+}
+
+:host-context([dir=rtl]) {
+    ion-button {
+        --border-radius: 0 2em 2em 0;
+    }
+}

@@ -21,6 +21,7 @@ import {
 } from '@features/course/services/course-options-delegate';
 import { CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/services/courses';
 import { CoreEnrolledCourseDataWithExtraInfoAndOptions } from '@features/courses/services/courses-helper';
+import { PARTICIPANTS_PAGE_NAME } from '@features/user/user.module';
 import { makeSingleton } from '@singletons';
 import { CoreUser } from '../user';
 
@@ -41,7 +42,7 @@ export class CoreUserCourseOptionHandlerService implements CoreCourseOptionsHand
      * @return Promise resolved when done.
      */
     invalidateEnabledForCourse(courseId: number, navOptions?: CoreCourseUserAdminOrNavOptionIndexed): Promise<void> {
-        if (navOptions && typeof navOptions.participants != 'undefined') {
+        if (navOptions && navOptions.participants !== undefined) {
             // No need to invalidate anything.
             return Promise.resolve();
         }
@@ -75,7 +76,7 @@ export class CoreUserCourseOptionHandlerService implements CoreCourseOptionsHand
             return false; // Not enabled for guests.
         }
 
-        if (navOptions && typeof navOptions.participants != 'undefined') {
+        if (navOptions && navOptions.participants !== undefined) {
             return navOptions.participants;
         }
 
@@ -89,7 +90,7 @@ export class CoreUserCourseOptionHandlerService implements CoreCourseOptionsHand
         return {
             title: 'core.user.participants',
             class: 'core-user-participants-handler',
-            page: 'participants',
+            page: PARTICIPANTS_PAGE_NAME,
         };
     }
 

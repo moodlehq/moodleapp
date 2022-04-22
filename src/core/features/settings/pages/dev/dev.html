@@ -1,0 +1,81 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+
+        <ion-title>
+            <h1>{{ 'core.settings.developeroptions' | translate }}</h1>
+        </ion-title>
+
+        <ion-buttons slot="end" *ngIf="siteId">
+            <ion-button fill="clear" (click)="copyInfo()" [attr.aria-label]="'core.settings.copyinfo' | translate">
+                <ion-icon slot="icon-only" name="fas-clipboard" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-list class="list-item-limited-width">
+        <ion-item class="ion-text-wrap">
+            <ion-label>
+                <h2>Text direction</h2>
+                <p>{{ direction }}</p>
+            </ion-label>
+            <ion-toggle [(ngModel)]="rtl" (ionChange)="RTLChanged()"></ion-toggle>
+        </ion-item>
+        <ion-item class="ion-text-wrap">
+            <ion-label>
+                <h2>Force safe area margins</h2>
+            </ion-label>
+            <ion-toggle [(ngModel)]="forceSafeAreaMargins" (ionChange)="safeAreaChanged()"></ion-toggle>
+        </ion-item>
+        <ng-container *ngIf="siteId">
+            <ion-item class="ion-text-wrap">
+                <ion-label>
+                    <h2>Enable remote styles <ion-badge>{{remoteStylesCount}}</ion-badge>
+                    </h2>
+                </ion-label>
+                <ion-toggle [(ngModel)]="remoteStyles" (ionChange)="remoteStylesChanged()"></ion-toggle>
+            </ion-item>
+            <ion-item class="ion-text-wrap">
+                <ion-label>
+                    <h2>Enable site plugin styles <ion-badge>{{pluginStylesCount}}</ion-badge>
+                    </h2>
+                </ion-label>
+                <ion-toggle [(ngModel)]="pluginStyles" (ionChange)="pluginStylesChanged()"></ion-toggle>
+            </ion-item>
+            <ion-item class="ion-text-wrap" *ngIf="userToursEnabled">
+                <ion-label>
+                    <h2>Reset user tours</h2>
+                </ion-label>
+                <ion-button (click)="resetUserTours()" aria-label="Reset user tours" fill="clear" slot="end">
+                    <ion-icon slot="icon-only" aria-hidden="true" name="fas-broom"></ion-icon>
+                </ion-button>
+            </ion-item>
+
+            <ion-item-divider>
+                <ion-label>
+                    <h2>Disabled features</h2>
+                </ion-label>
+            </ion-item-divider>
+            <ion-item class="ion-text-wrap" *ngFor="let feature of disabledFeatures">
+                <ion-label>
+                    <h2>{{ feature }}</h2>
+                </ion-label>
+            </ion-item>
+
+            <ion-item-divider>
+                <ion-label>
+                    <h2>Site plugins</h2>
+                </ion-label>
+            </ion-item-divider>
+            <ion-item class="ion-text-wrap" *ngFor="let plugin of sitePlugins">
+                <ion-label>
+                    <h2>{{ plugin.addon }} ({{plugin.component}})</h2>
+                    <p>{{plugin.version}}</p>
+                </ion-label>
+            </ion-item>
+        </ng-container>
+    </ion-list>
+</ion-content>

@@ -52,7 +52,7 @@ export class AddonNotesCourseOptionHandlerService implements CoreCourseOptionsHa
             return false; // Not enabled for guests.
         }
 
-        if (navOptions && typeof navOptions.notes != 'undefined') {
+        if (navOptions && navOptions.notes !== undefined) {
             return navOptions.notes;
         }
 

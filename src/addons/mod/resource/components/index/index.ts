@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreConstants } from '@/core/constants';
 import { Component, OnDestroy, OnInit, Optional } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import {
-    CoreCourseModuleMainResourceComponent,
-} from '@features/course/classes/main-resource-component';
+import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { CoreCourse, CoreCourseWSModule } from '@features/course/services/course';
+import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreApp } from '@services/app';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
+import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils, OpenFileAction } from '@services/utils/utils';
@@ -32,7 +32,6 @@ import {
     AddonModResource,
     AddonModResourceCustomData,
     AddonModResourceProvider,
-    AddonModResourceResource,
 } from '../../services/resource';
 import { AddonModResourceHelper } from '../../services/resource-helper';
 
@@ -42,12 +41,12 @@ import { AddonModResourceHelper } from '../../services/resource-helper';
 @Component({
     selector: 'addon-mod-resource-index',
     templateUrl: 'addon-mod-resource-index.html',
+    styleUrls: ['index.scss'],
 })
 export class AddonModResourceIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy {
 
     component = AddonModResourceProvider.COMPONENT;
 
-    canGetResource = false;
     mode = '';
     src = '';
     contentText = '';
@@ -58,6 +57,14 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
     isOnline = false;
     isStreamedFile = false;
     shouldOpenInBrowser = false;
+
+    // Variables for 'external' mode.
+    type = '';
+    readableSize = '';
+    timecreated = -1;
+    timemodified = -1;
+    isExternalFile = false;
+    outdatedStatus = CoreConstants.OUTDATED;
 
     protected onlineObserver?: Subscription;
 
@@ -71,27 +78,18 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
     async ngOnInit(): Promise<void> {
         super.ngOnInit();
 
-        this.canGetResource = AddonModResource.isGetResourceWSAvailable();
         this.isIOS = CoreApp.isIOS();
         this.isOnline = CoreApp.isOnline();
 
-        if (this.isIOS) {
-            // Refresh online status when changes.
-            this.onlineObserver = Network.onChange().subscribe(() => {
-                // Execute the callback in the Angular zone, so change detection doesn't stop working.
-                NgZone.run(() => {
-                    this.isOnline = CoreApp.isOnline();
-                });
+        // Refresh online status when changes.
+        this.onlineObserver = Network.onChange().subscribe(() => {
+            // Execute the callback in the Angular zone, so change detection doesn't stop working.
+            NgZone.run(() => {
+                this.isOnline = CoreApp.isOnline();
             });
-        }
+        });
 
         await this.loadContent();
-        try {
-            await AddonModResource.logView(this.module.instance!, this.module.name);
-            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
-        } catch {
-            // Ignore errors.
-        }
     }
 
     /**
@@ -106,76 +104,90 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
      */
     protected async fetchContent(refresh?: boolean): Promise<void> {
         // Load module contents if needed. Passing refresh is needed to force reloading contents.
-        await CoreCourse.loadModuleContents(this.module, this.courseId, undefined, false, refresh);
+        const contents = await CoreCourse.getModuleContents(this.module, undefined, undefined, false, refresh);
 
-        if (!this.module.contents || !this.module.contents.length) {
+        if (!contents.length) {
             throw new CoreError(Translate.instant('core.filenotfound'));
         }
 
-        let resource: AddonModResourceResource | CoreCourseWSModule | undefined;
-        let options: AddonModResourceCustomData = {};
-
         // Get the resource instance to get the latest name/description and to know if it's embedded.
-        if (this.canGetResource) {
-            resource = await CoreUtils.ignoreErrors(AddonModResource.getResourceData(this.courseId, this.module.id));
-            this.description = resource?.intro || '';
-            options = resource?.displayoptions ? CoreTextUtils.unserialize(resource.displayoptions) : {};
-        } else {
-            resource = await CoreUtils.ignoreErrors(CoreCourse.getModule(this.module.id, this.courseId));
-            this.description = resource?.description || '';
-            options = resource?.customdata ? CoreTextUtils.unserialize(CoreTextUtils.parseJSON(resource.customdata)) : {};
-        }
+        const resource = await AddonModResource.getResourceData(this.courseId, this.module.id);
+        this.description = resource.intro || '';
+        const options: AddonModResourceCustomData =
+            resource.displayoptions ? CoreTextUtils.unserialize(resource.displayoptions) : {};
 
-        try {
-            if (resource) {
-                this.displayDescription = typeof options.printintro == 'undefined' || !!options.printintro;
-                this.dataRetrieved.emit(resource);
-            }
+        this.displayDescription = options.printintro === undefined || !!options.printintro;
+        this.dataRetrieved.emit(resource);
 
-            if (AddonModResourceHelper.isDisplayedInIframe(this.module)) {
-                const downloadResult = await this.downloadResourceIfNeeded(refresh, true);
-                const src = await AddonModResourceHelper.getIframeSrc(this.module);
-                this.mode = 'iframe';
+        this.setStatusListener();
 
-                if (this.src && src.toString() == this.src.toString()) {
-                    // Re-loading same page.
-                    // Set it to empty and then re-set the src in the next digest so it detects it has changed.
-                    this.src = '';
-                    setTimeout(() => {
-                        this.src = src;
-                    });
-                } else {
+        if (AddonModResourceHelper.isDisplayedInIframe(this.module)) {
+
+            const downloadResult = await this.downloadResourceIfNeeded(refresh, true);
+            const src = await AddonModResourceHelper.getIframeSrc(this.module);
+            this.mode = 'iframe';
+
+            if (this.src && src.toString() == this.src.toString()) {
+                // Re-loading same page.
+                // Set it to empty and then re-set the src in the next digest so it detects it has changed.
+                this.src = '';
+                setTimeout(() => {
                     this.src = src;
-                }
-
-                this.warning = downloadResult.failed
-                    ? this.getErrorDownloadingSomeFilesMessage(downloadResult.error!)
-                    : '';
-
-                return;
-            }
-
-            if (resource && 'display' in resource && AddonModResourceHelper.isDisplayedEmbedded(this.module, resource.display)) {
-                this.mode = 'embedded';
-                this.warning = '';
-
-                this.contentText = await AddonModResourceHelper.getEmbeddedHtml(this.module, this.courseId);
-                this.mode = this.contentText.length > 0 ? 'embedded' : 'external';
+                });
             } else {
-                this.mode = 'external';
-                this.warning = '';
-
-                if (this.isIOS) {
-                    this.shouldOpenInBrowser = CoreFileHelper.shouldOpenInBrowser(this.module.contents[0]);
-                }
-
-                const mimetype = await CoreUtils.getMimeTypeFromUrl(CoreFileHelper.getFileUrl(this.module.contents[0]));
-
-                this.isStreamedFile = CoreMimetypeUtils.isStreamedMimetype(mimetype);
+                this.src = src;
             }
-        } finally {
-            this.fillContextMenu(refresh);
+
+            // Never show description on iframe.
+            this.displayDescription = false;
+
+            this.warning = downloadResult.failed
+                ? this.getErrorDownloadingSomeFilesMessage(downloadResult.error!)
+                : '';
+
+            return;
         }
+
+        if (resource && 'display' in resource && AddonModResourceHelper.isDisplayedEmbedded(this.module, resource.display)) {
+            this.mode = 'embedded';
+            this.warning = '';
+
+            this.contentText = await AddonModResourceHelper.getEmbeddedHtml(this.module);
+            this.mode = this.contentText.length > 0 ? 'embedded' : 'external';
+        } else {
+            this.mode = 'external';
+            this.warning = '';
+            let mimetype: string;
+
+            // Always show description on external.
+            this.displayDescription = true;
+
+            if (this.isIOS) {
+                this.shouldOpenInBrowser = CoreFileHelper.shouldOpenInBrowser(contents[0]);
+            }
+
+            if ('contentsinfo' in this.module && this.module.contentsinfo) {
+                mimetype = this.module.contentsinfo.mimetypes[0];
+                this.readableSize = CoreTextUtils.bytesToSize(this.module.contentsinfo.filessize, 1);
+                this.timemodified = this.module.contentsinfo.lastmodified * 1000;
+            } else {
+                mimetype = await CoreUtils.getMimeTypeFromUrl(CoreFileHelper.getFileUrl(contents[0]));
+                this.readableSize = CoreTextUtils.bytesToSize(contents[0].filesize, 1);
+                this.timemodified = contents[0].timemodified * 1000;
+            }
+
+            this.timecreated = contents[0].timecreated * 1000;
+            this.isExternalFile = !!contents[0].isexternalfile;
+            this.type = CoreMimetypeUtils.getMimetypeDescription(mimetype);
+            this.isStreamedFile = CoreMimetypeUtils.isStreamedMimetype(mimetype);
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected async logActivity(): Promise<void> {
+        await AddonModResource.logView(this.module.instance, this.module.name);
     }
 
     /**
@@ -193,12 +205,22 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
             downloadable = await AddonModResourceHelper.isMainFileDownloadable(this.module);
 
             if (downloadable) {
+                if (this.currentStatus === CoreConstants.OUTDATED && !this.isOnline && !this.isExternalFile) {
+                    // Warn the user that the file isn't updated.
+                    const alert = await CoreDomUtils.showAlert(
+                        undefined,
+                        Translate.instant('addon.mod_resource.resourcestatusoutdatedconfirm'),
+                    );
+
+                    await alert.onWillDismiss();
+                }
+
                 return AddonModResourceHelper.openModuleFile(this.module, this.courseId, { iOSOpenFileAction });
             }
         }
 
         // The resource cannot be downloaded, open the activity in browser.
-        await CoreSites.getCurrentSite()?.openInBrowserWithAutoLoginIfSameSite(this.module.url!);
+        await CoreSites.getCurrentSite()?.openInBrowserWithAutoLoginIfSameSite(this.module.url || '');
     }
 
     /**

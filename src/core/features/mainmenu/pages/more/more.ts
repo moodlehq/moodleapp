@@ -17,8 +17,6 @@ import { Subscription } from 'rxjs';
 
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreSiteInfo } from '@classes/site';
-import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerData } from '../../services/mainmenu-delegate';
 import { CoreMainMenu, CoreMainMenuCustomItem } from '../../services/mainmenu';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -27,9 +25,11 @@ import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreTextUtils } from '@services/utils/text';
 import { Translate } from '@singletons';
+import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
+import { CoreDom } from '@singletons/dom';
 
 /**
- * Page that displays the main menu of the app.
+ * Page that displays the more page of the app.
  */
 @Component({
     selector: 'page-core-mainmenu-more',
@@ -39,38 +39,31 @@ import { Translate } from '@singletons';
 export class CoreMainMenuMorePage implements OnInit, OnDestroy {
 
     handlers?: CoreMainMenuHandlerData[];
-    allHandlers?: CoreMainMenuHandlerData[];
     handlersLoaded = false;
-    siteInfo?: CoreSiteInfo;
-    siteName?: string;
-    logoutLabel = 'core.mainmenu.changesite';
     showScanQR: boolean;
-    showWeb?: boolean;
-    showHelp?: boolean;
-    docsUrl?: string;
     customItems?: CoreMainMenuCustomItem[];
-    siteUrl?: string;
-    loggedOut = false;
 
+    protected allHandlers?: CoreMainMenuHandlerData[];
     protected subscription!: Subscription;
     protected langObserver: CoreEventObserver;
     protected updateSiteObserver: CoreEventObserver;
+    protected resizeListener?: CoreEventObserver;
 
     constructor() {
+        this.langObserver = CoreEvents.on(CoreEvents.LANGUAGE_CHANGED, this.loadCustomMenuItems.bind(this));
 
-        this.langObserver = CoreEvents.on(CoreEvents.LANGUAGE_CHANGED, this.loadSiteInfo.bind(this));
-        this.updateSiteObserver = CoreEvents.on(
-            CoreEvents.SITE_UPDATED,
-            this.loadSiteInfo.bind(this),
-            CoreSites.getCurrentSiteId(),
-        );
-        this.loadSiteInfo();
+        this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, async () => {
+            this.customItems = await CoreMainMenu.getCustomMenuItems();
+        }, CoreSites.getCurrentSiteId());
+
+        this.loadCustomMenuItems();
+
         this.showScanQR = CoreUtils.canScanQR() &&
                 !CoreSites.getCurrentSite()?.isFeatureDisabled('CoreMainMenuDelegate_QrReader');
     }
 
     /**
-     * Initialize component.
+     * @inheritdoc
      */
     ngOnInit(): void {
         // Load the handlers.
@@ -80,17 +73,22 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
             this.initHandlers();
         });
 
-        window.addEventListener('resize', this.initHandlers.bind(this));
+        this.resizeListener = CoreDom.onWindowResize(() => {
+            this.initHandlers();
+        });
+
+        const deepLinkManager = new CoreMainMenuDeepLinkManager();
+        deepLinkManager.treatLink();
     }
 
     /**
-     * Page destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
-        window.removeEventListener('resize', this.initHandlers.bind(this));
         this.langObserver?.off();
         this.updateSiteObserver?.off();
         this.subscription?.unsubscribe();
+        this.resizeListener?.off();
     }
 
     /**
@@ -113,24 +111,9 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
     }
 
     /**
-     * Load the site info required by the view.
+     * Load custom menu items.
      */
-    protected async loadSiteInfo(): Promise<void> {
-        const currentSite = CoreSites.getCurrentSite();
-
-        if (!currentSite) {
-            return;
-        }
-
-        this.siteInfo = currentSite.getInfo();
-        this.siteName = currentSite.getSiteName();
-        this.siteUrl = currentSite.getURL();
-        this.logoutLabel = CoreLoginHelper.getLogoutLabel(currentSite);
-        this.showWeb = !currentSite.isFeatureDisabled('CoreMainMenuDelegate_website');
-        this.showHelp = !currentSite.isFeatureDisabled('CoreMainMenuDelegate_help');
-
-        this.docsUrl = await currentSite.getDocsUrl();
-
+    protected async loadCustomMenuItems(): Promise<void> {
         this.customItems = await CoreMainMenu.getCustomMenuItems();
     }
 
@@ -152,13 +135,6 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
      */
     openItem(item: CoreMainMenuCustomItem): void {
         CoreNavigator.navigateToSitePath('viewer/iframe', { params: { title: item.label, url: item.url } });
-    }
-
-    /**
-     * Open preferences.
-     */
-    openPreferences(): void {
-        CoreNavigator.navigateToSitePath('preferences');
     }
 
     /**
@@ -198,14 +174,6 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
                 displayCopyButton: true,
             });
         }
-    }
-
-    /**
-     * Logout the user.
-     */
-    logout(): void {
-        this.loggedOut = true;
-        CoreSites.logout();
     }
 
 }

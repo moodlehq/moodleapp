@@ -66,7 +66,7 @@ export class CoreCoursesEnrolPushClickHandlerService implements CorePushNotifica
                 params.selectedTab = 'participants'; // @todo: Set this when participants is done.
             } else if (!result.enrolled) {
                 // User not enrolled anymore, open the preview page.
-                page += '/preview';
+                page += '/summary';
             }
 
             await CoreNavigator.navigateToSitePath(page, { params, siteId: notification.site });

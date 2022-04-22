@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, OnDestroy } from '@angular/core';
-import { IonContent } from '@ionic/angular';
+import { Directive, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { CoreCancellablePromise } from '@classes/cancellable-promise';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Directive to move ion-fab components as direct children of the nearest ion-content.
@@ -25,48 +26,60 @@ import { IonContent } from '@ionic/angular';
 @Directive({
     selector: 'ion-fab[core-fab]',
 })
-export class CoreFabDirective implements OnDestroy {
+export class CoreFabDirective implements OnInit, OnDestroy {
 
-    protected static readonly PADDINGBOTTOM = 56;
-
-    protected scrollElement?: HTMLElement;
-    protected done = false;
     protected element: HTMLElement;
+    protected content?: HTMLIonContentElement | null;
+    protected initialPaddingBottom = 0;
+    protected slotPromise?: CoreCancellablePromise<void>;
 
-    constructor(el: ElementRef, protected content: IonContent) {
+    constructor(el: ElementRef) {
         this.element = el.nativeElement;
-        this.asyncInit();
     }
 
     /**
-     * Initialize Component.
+     * @inheritdoc
      */
-    async asyncInit(): Promise<void> {
-        if (this.content) {
-            this.scrollElement = await this.content.getScrollElement();
-            if (!this.done) {
-                // Move element to the nearest ion-content if it's not the parent
-                if (this.element.parentElement?.nodeName != 'ION-CONTENT') {
-                    const ionContent = this.element.closest('ion-content');
-                    ionContent?.appendChild(this.element);
-                }
+    async ngOnInit(): Promise<void> {
+        this.slotPromise = CoreDom.slotOnContent(this.element);
+        await this.slotPromise;
 
-                // Add space at the bottom to let the user see the whole content.
-                const bottom = parseInt(this.scrollElement.style.paddingBottom, 10) || 0;
-                this.scrollElement.style.paddingBottom = (bottom + CoreFabDirective.PADDINGBOTTOM) + 'px';
-                this.done = true;
-            }
+        this.content = this.element.closest('ion-content');
+
+        if (!this.content) {
+            return;
         }
+
+        // Add space at the bottom to let the user see the whole content.
+        this.initialPaddingBottom = parseFloat(this.content.style.getPropertyValue('--padding-bottom') || '0');
+
+        await this.calculatePlace();
+
+        CoreDom.onElementSlot(this.element, () => {
+            this.calculatePlace();
+        });
     }
 
     /**
-     * Destroy component.
+     * Calculate the height of the footer.
+     */
+    protected async calculatePlace(): Promise<void> {
+        if (!this.content) {
+            return;
+        }
+
+        const initialHeight = this.element.getBoundingClientRect().height || 56;
+        this.content.style.setProperty('--padding-bottom', this.initialPaddingBottom + initialHeight + 'px');
+    }
+
+    /**
+     * @inheritdoc
      */
     ngOnDestroy(): void {
-        if (this.done && this.scrollElement) {
-            const bottom = parseInt(this.scrollElement.style.paddingBottom, 10) || 0;
-            this.scrollElement.style.paddingBottom = (bottom - CoreFabDirective.PADDINGBOTTOM) + 'px';
+        if (this.content) {
+            this.content.style.setProperty('--padding-bottom', this.initialPaddingBottom + 'px');
         }
+        this.slotPromise?.cancel();
     }
 
 }

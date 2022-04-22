@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreError } from '@classes/errors/error';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
@@ -252,11 +253,11 @@ export class AddonModForumProvider {
             throw new Error('Invalid response calling mod_forum_can_add_discussion');
         }
 
-        if (typeof result.canpindiscussions == 'undefined') {
+        if (result.canpindiscussions === undefined) {
             // WS doesn't support it yet, default it to false to prevent students from seeing the option.
             result.canpindiscussions = false;
         }
-        if (typeof result.cancreateattachment == 'undefined') {
+        if (result.cancreateattachment === undefined) {
             // WS doesn't support it yet, default it to true since usually the users will be able to create them.
             result.cancreateattachment = true;
         }
@@ -305,15 +306,6 @@ export class AddonModForumProvider {
         const index = posts.findIndex((post) => !post.parentid);
 
         return index >= 0 ? posts.splice(index, 1).pop() : undefined;
-    }
-
-    /**
-     * There was a bug adding new discussions to All Participants (see MDL-57962). Check if it's fixed.
-     *
-     * @return True if fixed, false otherwise.
-     */
-    isAllParticipantsFixed(): boolean {
-        return !!CoreSites.getCurrentSite()?.isVersionGreaterEqualThan(['3.1.5', '3.2.2']);
     }
 
     /**
@@ -480,7 +472,7 @@ export class AddonModForumProvider {
         const forum = forums.find(forum => forum.cmid == cmId);
 
         if (!forum) {
-            throw new Error('Forum not found');
+            throw new CoreError(Translate.instant('core.course.modulenotfound'));
         }
 
         return forum;
@@ -824,7 +816,7 @@ export class AddonModForumProvider {
             discussions: [] as AddonModForumDiscussion[],
             error: false,
         };
-        let numPages = typeof options.numPages == 'undefined' ? -1 : options.numPages;
+        let numPages = options.numPages === undefined ? -1 : options.numPages;
 
         if (!numPages) {
             return result;
@@ -1558,9 +1550,9 @@ export type AddonModForumAccessInformation = {
 };
 
 /**
- * Reply info.
+ * Post creation or edition data.
  */
-export type AddonModForumReply = {
+export type AddonModForumPostFormData = {
     id: number;
     subject: string | null; // Null means original data is not set.
     message: string | null; // Null means empty or just white space.

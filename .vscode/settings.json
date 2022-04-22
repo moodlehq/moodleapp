@@ -1,5 +1,24 @@
 {
 
+    /**
+     * Formatting.
+     */
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "[html]": {
+        "editor.defaultFormatter": "vscode.html-language-features",
+    },
+    "editor.formatOnSave": true,
+    "eslint.format.enable": true,
+    "html.format.endWithNewline": true,
+    "html.format.wrapLineLength": 140,
+    "files.eol": "\n",
+    "files.trimFinalNewlines": true,
+    "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true,
+
+    /**
+     * Config files.
+     */
     "files.associations": {
         "moodle.config.json": "jsonc",
         "moodle.config.*.json": "jsonc",

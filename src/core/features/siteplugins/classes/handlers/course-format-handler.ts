@@ -38,15 +38,9 @@ export class CoreSitePluginsCourseFormatHandler extends CoreSitePluginsBaseHandl
     /**
      * @inheritdoc
      */
-    displayEnableDownload(): boolean {
-        return this.handlerSchema.displayenabledownload ?? true;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    displaySectionSelector(): boolean {
-        return this.handlerSchema.displaysectionselector ?? true;
+    displayCourseIndex(): boolean {
+        // Use displaysectionselector while is not completely deprecated.
+        return this.handlerSchema.displaycourseindex ?? this.handlerSchema.displaysectionselector ?? true;
     }
 
     /**

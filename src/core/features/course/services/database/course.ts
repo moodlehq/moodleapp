@@ -18,9 +18,10 @@ import { CoreSiteSchema } from '@services/sites';
  * Database variables for CoreCourse service.
  */
 export const COURSE_STATUS_TABLE = 'course_status';
+export const COURSE_VIEWED_MODULES_TABLE = 'course_viewed_modules';
 export const SITE_SCHEMA: CoreSiteSchema = {
     name: 'CoreCourseProvider',
-    version: 1,
+    version: 2,
     tables: [
         {
             name: COURSE_STATUS_TABLE,
@@ -53,6 +54,29 @@ export const SITE_SCHEMA: CoreSiteSchema = {
                 },
             ],
         },
+        {
+            name: COURSE_VIEWED_MODULES_TABLE,
+            columns: [
+                {
+                    name: 'courseId',
+                    type: 'INTEGER',
+                },
+                {
+                    name: 'cmId',
+                    type: 'INTEGER',
+                },
+                {
+                    name: 'timeaccess',
+                    type: 'INTEGER',
+                    notNull: true,
+                },
+                {
+                    name: 'sectionId',
+                    type: 'INTEGER',
+                },
+            ],
+            primaryKeys: ['courseId', 'cmId'],
+        },
     ],
 };
 
@@ -81,7 +105,7 @@ export const OFFLINE_SITE_SCHEMA: CoreSiteSchema = {
                     type: 'INTEGER',
                 },
                 {
-                    name: 'coursename',
+                    name: 'coursename', // Not used  since 4.0 it can be safely removed.
                     type: 'TEXT',
                 },
                 {
@@ -102,10 +126,16 @@ export type CoreCourseStatusDBRecord = {
     previousDownloadTime: number;
 };
 
+export type CoreCourseViewedModulesDBRecord = {
+    courseId: number;
+    cmId: number;
+    timeaccess: number;
+    sectionId?: number;
+};
+
 export type CoreCourseManualCompletionDBRecord = {
     cmid: number;
     completed: number;
     courseid: number;
-    coursename: string;
     timecompleted: number;
 };

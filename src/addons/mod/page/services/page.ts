@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreSitesCommonWSOptions, CoreSites } from '@services/sites';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreWSExternalWarning, CoreWSExternalFile } from '@services/ws';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreFilepool } from '@services/filepool';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreUtils } from '@services/utils/utils';
@@ -79,7 +79,7 @@ export class AddonModPageProvider {
             return currentPage;
         }
 
-        throw new CoreError('Page not found');
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
     /**
@@ -122,16 +122,6 @@ export class AddonModPageProvider {
         const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getPageCacheKey(courseId));
-    }
-
-    /**
-     * Returns whether or not getPage WS available or not.
-     *
-     * @return If WS is available.
-     * @since 3.3
-     */
-    isGetPageWSAvailable(): boolean {
-        return CoreSites.wsAvailableInCurrentSite('mod_page_get_pages_by_courses');
     }
 
     /**

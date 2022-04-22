@@ -15,8 +15,8 @@
 import { Component, Input, Output, OnInit, OnDestroy, ElementRef, EventEmitter, ContentChild, TemplateRef } from '@angular/core';
 import { CoreTabBase } from '@classes/tabs';
 
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreNavBarButtonsComponent } from '../navbar-buttons/navbar-buttons';
 import { CoreTabsComponent } from './tabs';
 
@@ -65,7 +65,7 @@ export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
         return this.isEnabled;
     }
 
-    @Input() id?: string; // An ID to identify the tab.
+    @Input() id = ''; // An ID to identify the tab.
     @Output() ionSelect: EventEmitter<CoreTabComponent> = new EventEmitter<CoreTabComponent>();
 
     @ContentChild(TemplateRef) template?: TemplateRef<unknown>; // Template defined by the content.
@@ -82,7 +82,7 @@ export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
         element: ElementRef,
     ) {
         this.element = element.nativeElement;
-
+        this.id = this.id || 'core-tab-' + CoreUtils.getUniqueId('CoreTabComponent');
         this.element.setAttribute('role', 'tabpanel');
         this.element.setAttribute('tabindex', '0');
         this.element.setAttribute('aria-hidden', 'true');
@@ -92,7 +92,6 @@ export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.id = this.id || 'core-tab-' + CoreUtils.getUniqueId('CoreTabComponent');
         this.element.setAttribute('aria-labelledby', this.id + '-tab');
         this.element.setAttribute('id', this.id);
 
@@ -120,9 +119,6 @@ export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
         this.loaded = true;
         this.ionSelect.emit(this);
         this.showHideNavBarButtons(true);
-
-        // Setup tab scrolling.
-        this.tabs.listenContentScroll(this.element, this.id!);
     }
 
     /**
@@ -144,7 +140,7 @@ export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
     protected showHideNavBarButtons(show: boolean): void {
         const elements = this.element.querySelectorAll('core-navbar-buttons');
         elements.forEach((element) => {
-            const instance = CoreDomUtils.getInstanceByElement<CoreNavBarButtonsComponent>(element);
+            const instance = CoreComponentsRegistry.resolve(element, CoreNavBarButtonsComponent);
 
             if (instance) {
                 instance.forceHide(!show);

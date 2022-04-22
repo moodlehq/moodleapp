@@ -20,6 +20,8 @@ import { CoreContentLinksAction } from '@features/contentlinks/services/contentl
 import { CoreSiteHome } from '../sitehome';
 import { makeSingleton } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSiteHomeHomeHandlerService } from './sitehome-home';
+import { CoreMainMenuHomeHandlerService } from '@features/mainmenu/services/handlers/mainmenu';
 
 /**
  * Handler to treat links to site home index.
@@ -29,40 +31,32 @@ export class CoreSiteHomeIndexLinkHandlerService extends CoreContentLinksHandler
 
     name = 'CoreSiteHomeIndexLinkHandler';
     featureName = 'CoreMainMenuDelegate_CoreSiteHome';
-    pattern = /\/course\/view\.php.*([?&]id=\d+)/;
+    pattern = /(\/course\/view\.php.*([?&]id=\d+)|\/index\.php(\?redirect=0)?)/;
 
     /**
-     * Get the list of actions for a link (url).
-     *
-     * @param siteIds List of sites the URL belongs to.
-     * @param url The URL to treat.
-     * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
-     * @param courseId Course ID related to the URL. Optional but recommended.
-     * @return List of (or promise resolved with list of) actions.
+     * @inheritdoc
      */
     getActions(): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
             action: (siteId: string): void => {
-                // @todo This should open the 'sitehome' setting as well.
-                CoreNavigator.navigateToSiteHome({ siteId });
+                CoreNavigator.navigateToSitePath(
+                    `/${CoreMainMenuHomeHandlerService.PAGE_NAME}/${CoreSiteHomeHomeHandlerService.PAGE_NAME}`,
+                    {
+                        preferCurrentTab: false,
+                        siteId,
+                    },
+                );
             },
         }];
     }
 
     /**
-     * Check if the handler is enabled for a certain site (site + user) and a URL.
-     * If not defined, defaults to true.
-     *
-     * @param siteId The site ID.
-     * @param url The URL to treat.
-     * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
-     * @param courseId Course ID related to the URL. Optional but recommended.
-     * @return Whether the handler is enabled for the URL and site.
+     * @inheritdoc
      */
     async isEnabled(siteId: string, url: string, params: Record<string, string>, courseId?: number): Promise<boolean> {
         courseId = parseInt(params.id, 10);
         if (!courseId) {
-            return false;
+            return url.includes('index.php');
         }
 
         const site = await CoreSites.getSite(siteId);

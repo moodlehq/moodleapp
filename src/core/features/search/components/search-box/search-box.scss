@@ -1,28 +1,44 @@
 :host {
-    height: 73px;
+    --height: var(--a11y-min-target-size);
+    --search-height: calc(var(--height) - 2px);
+    min-height: var(--height);
     display: block;
     position: relative;
+    margin: 8px;
 
-    ion-card {
+    form {
         position: absolute;
         left: 0;
         right: 0;
         z-index: 4;
-        margin-top: 10px;
-        margin-bottom: 10px;
+        margin: 0;
+        border: 1px solid var(--core-search-box-border-color);
+        border-radius: var(--core-search-box-border-radius);
+        background: var(--core-search-box-background);
+        color: var(--core-search-box-border-color);
+
+        .search-box {
+            --min-height: var(--search-height);
+            border-radius: var(--core-search-box-border-radius);
+        }
+
+        ion-button.button {
+            margin: 0;
+            --a11y-min-target-size: var(--search-height);
+        }
     }
 
-    ion-button.button {
-        margin-left: 0;
-        margin-right: 0;
-    }
+
 
     .core-search-history {
         max-height: calc(-120px + 80vh);
         overflow-y: auto;
+        background: var(--core-search-box-background);
+        border-radius: 0 0 var(--core-search-box-border-radius) var(--core-search-box-border-radius);
+        --ion-item-background: var(--core-search-box-background);
 
         .item:hover {
-            --background: var(--gray-lighter);
+            --background: var(--light);
             cursor: pointer;
         }
     }
@@ -32,9 +48,16 @@
     }
 
     ion-input {
-        --padding-start: 0;
-        --padding-end: 0;
+        --padding-start: 0px;
+        --padding-end: 0px;
         padding-left: 0;
         padding-right: 0;
+    }
+
+
+    ion-item {
+        --min-height: var(--a11y-min-target-size);
+        --border-width: 0px;
+        --background: var(--core-search-box-background);
     }
 }

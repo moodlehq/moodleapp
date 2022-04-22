@@ -16,8 +16,7 @@ import { Injectable } from '@angular/core';
 import { File } from '@ionic-native/file/ngx';
 import { Zip } from '@ionic-native/zip/ngx';
 import * as JSZip from 'jszip';
-
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 
 /**
  * Emulates the Cordova Zip plugin in browser.
@@ -46,7 +45,7 @@ export class ZipMock extends Zip {
             await this.file.createDir(destination, folder, true);
 
             // Folder created, add it to the destination path.
-            destination = CoreTextUtils.concatenatePaths(destination, folder);
+            destination = CoreText.concatenatePaths(destination, folder);
         }
     }
 
@@ -65,7 +64,7 @@ export class ZipMock extends Zip {
         destination = destination.replace(/%20/g, ' ');
 
         const sourceDir = source.substring(0, source.lastIndexOf('/'));
-        const sourceName = source.substr(source.lastIndexOf('/') + 1);
+        const sourceName = source.substring(source.lastIndexOf('/') + 1);
         const zip = new JSZip();
 
         try {
@@ -82,7 +81,7 @@ export class ZipMock extends Zip {
 
             // First of all, create the directory where the files will be unzipped.
             const destParent = destination.substring(0, destination.lastIndexOf('/'));
-            const destFolderName = destination.substr(destination.lastIndexOf('/') + 1);
+            const destFolderName = destination.substring(destination.lastIndexOf('/') + 1);
 
             await this.file.createDir(destParent, destFolderName, true);
 
@@ -95,7 +94,7 @@ export class ZipMock extends Zip {
                 if (!file.dir) {
                     // It's a file.
                     const fileDir = name.substring(0, name.lastIndexOf('/'));
-                    const fileName = name.substr(name.lastIndexOf('/') + 1);
+                    const fileName = name.substring(name.lastIndexOf('/') + 1);
 
                     if (fileDir) {
                         // The file is in a subfolder, create it first.
@@ -106,7 +105,7 @@ export class ZipMock extends Zip {
                     const fileData = await file.async('blob');
 
                     // File read and parent folder created, now write the file.
-                    const parentFolder = CoreTextUtils.concatenatePaths(destination, fileDir);
+                    const parentFolder = CoreText.concatenatePaths(destination, fileDir);
 
                     await this.file.writeFile(parentFolder, fileName, fileData, { replace: true });
                 } else {

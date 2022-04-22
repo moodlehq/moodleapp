@@ -13,16 +13,11 @@
 // limitations under the License.
 
 import { Component, OnInit, Optional } from '@angular/core';
-import { CoreSilentError } from '@classes/errors/silenterror';
-import {
-    CoreCourseModuleMainResourceComponent,
-    CoreCourseResourceDownloadResult,
-} from '@features/course/classes/main-resource-component';
+import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreNavigator } from '@services/navigator';
 import { AddonModImscpProvider, AddonModImscp, AddonModImscpTocItem } from '../../services/imscp';
-import { AddonModImscpTocComponent } from '../toc/toc';
 
 /**
  * Component that displays a IMSCP.
@@ -37,32 +32,19 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
     component = AddonModImscpProvider.COMPONENT;
 
     items: AddonModImscpTocItem[] = [];
-    currentItem?: string;
-    src = '';
-    warning = '';
-
-    // Initialize empty previous/next to prevent showing arrows for an instant before they're hidden.
-    previousItem = '';
-    nextItem = '';
+    hasStarted = false;
 
     constructor(@Optional() courseContentsPage?: CoreCourseContentsPage) {
         super('AddonModImscpIndexComponent', courseContentsPage);
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         super.ngOnInit();
 
         await this.loadContent();
-
-        try {
-            await AddonModImscp.logView(this.module.instance!, this.module.name);
-            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
-        } catch {
-            // Ignore errors.
-        }
     }
 
     /**
@@ -75,91 +57,77 @@ export class AddonModImscpIndexComponent extends CoreCourseModuleMainResourceCom
     }
 
     /**
-     * Download imscp contents.
-     *
-     * @param refresh Whether we're refreshing data.
-     * @return Promise resolved when done.
+     * @inheritdoc
      */
-    protected async fetchContent(refresh = false): Promise<void> {
-        let downloadResult: CoreCourseResourceDownloadResult;
-        const promises: Promise<void>[] = [];
-
-        promises.push(AddonModImscp.getImscp(this.courseId, this.module.id).then((imscp) => {
-            this.description = imscp.intro;
-            this.dataRetrieved.emit(imscp);
-
-            return;
-        }));
-
-        promises.push(this.downloadResourceIfNeeded(refresh).then((result) => {
-            downloadResult = result;
-
-            return;
-        }));
-
-        try {
-            await Promise.all(promises);
-
-            this.items = AddonModImscp.createItemList(this.module.contents);
-
-            if (this.items.length && typeof this.currentItem == 'undefined') {
-                this.currentItem = this.items[0].href;
-            }
-
-            try {
-                await this.loadItem(this.currentItem);
-            } catch (error) {
-                CoreDomUtils.showErrorModalDefault(error, 'addon.mod_imscp.deploymenterror', true);
-
-                throw new CoreSilentError(error);
-            }
-
-            this.warning = downloadResult!.failed ? this.getErrorDownloadingSomeFilesMessage(downloadResult!.error!) : '';
-
-        } finally {
-            this.fillContextMenu(refresh);
-        }
+    protected async fetchContent(): Promise<void> {
+        await Promise.all([
+            this.loadImscp(),
+            this.loadTOC(),
+        ]);
     }
 
     /**
-     * Loads an item.
+     * Load IMSCP data.
      *
-     * @param itemId Item ID.
      * @return Promise resolved when done.
      */
-    async loadItem(itemId?: string): Promise<void> {
-        const src = await AddonModImscp.getIframeSrc(this.module, itemId);
-        this.currentItem = itemId;
-        this.previousItem = itemId ? AddonModImscp.getPreviousItem(this.items, itemId) : '';
-        this.nextItem = itemId ? AddonModImscp.getNextItem(this.items, itemId) : '';
+    protected async loadImscp(): Promise<void> {
+        const imscp = await AddonModImscp.getImscp(this.courseId, this.module.id);
 
-        if (this.src && src == this.src) {
-            // Re-loading same page. Set it to empty and then re-set the src in the next digest so it detects it has changed.
-            this.src = '';
-            setTimeout(() => {
-                this.src = src;
-            });
-        } else {
-            this.src = src;
-        }
+        this.dataRetrieved.emit(imscp);
+
+        this.dataRetrieved.emit(imscp);
+
+        this.description = imscp.intro;
+
+        const lastViewed = await AddonModImscp.getLastItemViewed(imscp.id);
+        this.hasStarted = lastViewed !== undefined;
     }
 
     /**
-     * Show the TOC.
+     * Load book TOC.
+     *
+     * @return Promise resolved when done.
      */
-    async showToc(): Promise<void> {
-        // Create the toc modal.
-        const modalData = await CoreDomUtils.openSideModal<string>({
-            component: AddonModImscpTocComponent,
-            componentProps: {
-                items: this.items,
-                selected: this.currentItem,
+    protected async loadTOC(): Promise<void> {
+        // Get contents. No need to refresh, it has been done in downloadResourceIfNeeded.
+        const contents = await CoreCourse.getModuleContents(this.module, this.courseId);
+
+        this.items = AddonModImscp.createItemList(contents);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected async logActivity(): Promise<void> {
+        await AddonModImscp.logView(this.module.instance, this.module.name);
+    }
+
+    /**
+     * Open IMSCP book with a certain item.
+     *
+     * @param href Item href to open, undefined for last item seen.
+     */
+    openImscp(href?: string): void {
+        CoreNavigator.navigate('view', {
+            params: {
+                cmId: this.module.id,
+                courseId: this.courseId,
+                initialHref: href,
             },
         });
 
-        if (modalData) {
-            this.loadItem(modalData);
-        }
+        this.hasStarted = true;
+    }
+
+    /**
+     * Get dummy array for padding.
+     *
+     * @param n Array length.
+     * @return Dummy array with n elements.
+     */
+    getNumberForPadding(n: number): number[] {
+        return new Array(n);
     }
 
 }

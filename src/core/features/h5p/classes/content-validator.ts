@@ -91,7 +91,7 @@ export class CoreH5PContentValidator {
         const group = CoreUtils.clone(metadata || {});
 
         // Stop complaining about "invalid selected option in select" for old content without license chosen.
-        if (typeof group.license == 'undefined') {
+        if (group.license === undefined) {
             group.license = 'U';
         }
 
@@ -168,8 +168,8 @@ export class CoreH5PContentValidator {
         }
 
         // Check if string is within allowed length.
-        if (typeof semantics.maxLength != 'undefined') {
-            text = text.substr(0, semantics.maxLength);
+        if (semantics.maxLength !== undefined) {
+            text = text.substring(0, semantics.maxLength);
         }
 
         return text;
@@ -202,22 +202,22 @@ export class CoreH5PContentValidator {
             num = 0;
         }
         // Check if number is within valid bounds. Move within bounds if not.
-        if (typeof semantics.min != 'undefined' && num < semantics.min) {
+        if (semantics.min !== undefined && num < semantics.min) {
             num = semantics.min;
         }
-        if (typeof semantics.max != 'undefined' && num > semantics.max) {
+        if (semantics.max !== undefined && num > semantics.max) {
             num = semantics.max;
         }
         // Check if number is within allowed bounds even if step value is set.
-        if (typeof semantics.step != 'undefined') {
-            const testNumber = num - (typeof semantics.min != 'undefined' ? semantics.min : 0);
+        if (semantics.step !== undefined) {
+            const testNumber = num - (semantics.min !== undefined ? semantics.min : 0);
             const rest = testNumber % semantics.step;
             if (rest !== 0) {
                 num -= rest;
             }
         }
         // Check if number has proper number of decimals.
-        if (typeof semantics.decimals != 'undefined') {
+        if (semantics.decimals !== undefined) {
             num = Number(num.toFixed(semantics.decimals));
         }
 
@@ -303,7 +303,7 @@ export class CoreH5PContentValidator {
         let keys = Object.keys(list);
 
         // Check that list is not longer than allowed length.
-        if (typeof semantics.max != 'undefined') {
+        if (semantics.max !== undefined) {
             keys = keys.slice(0, semantics.max);
         }
 
@@ -357,8 +357,8 @@ export class CoreH5PContentValidator {
         }
 
         // Remove temporary files suffix.
-        if (file.path.substr(-4, 4) === '#tmp') {
-            file.path = file.path.substr(0, file.path.length - 4);
+        if (file.path.slice(-4) === '#tmp') {
+            file.path = file.path.substring(0, file.path.length - 4);
         }
 
         // Make sure path and mime does not have any special chars
@@ -392,8 +392,8 @@ export class CoreH5PContentValidator {
             file.bitrate = parseInt(file.bitrate, 10);
         }
 
-        if (typeof file.quality != 'undefined') {
-            if (file.quality === null || typeof file.quality.level == 'undefined' || typeof file.quality.label == 'undefined') {
+        if (file.quality !== undefined) {
+            if (file.quality === null || file.quality.level === undefined || file.quality.label === undefined) {
                 delete file.quality;
             } else {
                 this.filterParams(file.quality, ['level', 'label']);
@@ -402,7 +402,7 @@ export class CoreH5PContentValidator {
             }
         }
 
-        if (typeof file.copyright != 'undefined') {
+        if (file.copyright !== undefined) {
             await this.validateGroup(file.copyright, this.getCopyrightSemantics());
         }
 
@@ -670,7 +670,7 @@ export class CoreH5PContentValidator {
 
         const tag = tags[0];
 
-        if (tag.substr(0, 1) != '<') {
+        if (tag.substring(0, 1) != '<') {
             // We matched a lone ">" character.
             return '&gt;';
         } else if (tag.length == 1) {
@@ -746,7 +746,7 @@ export class CoreH5PContentValidator {
                     matches = attr.match(/^([-a-zA-Z]+)/);
                     if (matches && matches.length > 1) {
                         attrName = matches[1].toLowerCase();
-                        skip = attrName == 'style' || attrName.substr(0, 2) == 'on' || attrName.substr(0, 1) == '-' ||
+                        skip = attrName == 'style' || attrName.substring(0, 2) == 'on' || attrName.substring(0, 1) == '-' ||
                                 attrName.length > 96; // Ignore long attributes to avoid unnecessary processing overhead.
                         working = mode = 1;
                         attr = attr.replace(/^[-a-zA-Z]+/, '');
@@ -883,7 +883,7 @@ export class CoreH5PContentValidator {
 
             if (colonPos > 0) {
                 // We found a colon, possibly a protocol. Verify.
-                const protocol = uri.substr(0, colonPos);
+                const protocol = uri.substring(0, colonPos);
                 // If a colon is preceded by a slash, question mark or hash, it cannot possibly be part of the URL scheme.
                 // This must be a relative URL, which inherits the (safe) protocol of the base document.
                 if (protocol.match(/[/?#]/)) {
@@ -891,7 +891,7 @@ export class CoreH5PContentValidator {
                 }
                 // Check if this is a disallowed protocol.
                 if (!allowedProtocols[protocol.toLowerCase()]) {
-                    uri = uri.substr(colonPos + 1);
+                    uri = uri.substring(colonPos + 1);
                 }
             }
         } while (before != uri);

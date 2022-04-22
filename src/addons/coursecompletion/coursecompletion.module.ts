@@ -42,8 +42,7 @@ const routes: Routes = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => async () => {
+            useValue: () => {
                 CoreUserDelegate.registerHandler(AddonCourseCompletionUserHandler.instance);
                 CoreCourseOptionsDelegate.registerHandler(AddonCourseCompletionCourseOptionHandler.instance);
             },

@@ -1,0 +1,5 @@
+<img *ngIf="!isLocalUrl" [src]="icon" [alt]="showAlt ? modNameTranslated : ''" [attr.role]="!showAlt ? 'presentation' : null"
+    class="core-module-icon" core-external-content [component]="linkIconWithComponent ? modname : null"
+    [componentId]="linkIconWithComponent ? componentId : null" (error)="loadFallbackIcon()">
+<img *ngIf="isLocalUrl" [src]="icon" [alt]="showAlt ? modNameTranslated : ''" [attr.role]="!showAlt ? 'presentation' : null"
+    class="core-module-icon" (error)="loadFallbackIcon()">

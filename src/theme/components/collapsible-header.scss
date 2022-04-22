@@ -1,0 +1,105 @@
+body:not(.core-iframe-fullscreen) .collapsible-header-page {
+    --collapsible-header-progress: 0;
+    --collapsible-header-collapsed-height: 0px;
+    --collapsible-header-expanded-y-delta: 0px;
+    --collapsible-header-expanded-height: 0px;
+    --collapsible-header-floating-title-top: 0px;
+    --collapsible-header-floating-title-left: 0px;
+    --collapsible-header-floating-title-width: 0px;
+    --collapsible-header-floating-title-x-delta: 0px;
+    --collapsible-header-floating-title-width-delta: 0px;
+
+    ion-header.core-header-shadow {
+        --core-header-shadow: none;
+    }
+
+    .collapsible-header-expanded {
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .collapsible-header-floating-title {
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0;
+    }
+
+    &:not(.collapsible-header-page-is-collapsed) .collapsible-header-collapsed {
+        --core-header-toolbar-border-width: 0;
+        --core-header-buttons-background: var(--ion-background-color);
+        --core-header-buttons-color: var(--text-color);
+        ion-toolbar {
+            --background: transparent;
+        }
+
+        h1 {
+            opacity: 0;
+        }
+
+    }
+
+    &.collapsible-header-page-is-active.collapsible-header-page-is-collapsed.collapsible-header-page-is-within-content ion-header.core-header-shadow {
+        --core-header-shadow: var(--drop-shadow-bottom, none);
+    }
+
+    &.collapsible-header-page-is-active {
+
+        .collapsible-header-expanded {
+            height: calc(var(--collapsible-header-expanded-height) * (1 - var(--collapsible-header-progress)));
+            transform: translateY(calc(var(--collapsible-header-expanded-y-delta) * var(--collapsible-header-progress)));
+            overflow: visible;
+
+            @include core-transition(height transform, 200ms, linear);
+
+            .collapsible-header-floating-title {
+                opacity: 1;
+                top: var(--collapsible-header-floating-title-top);
+                left: var(--collapsible-header-floating-title-left);
+                transform: translateX(calc(var(--collapsible-header-floating-title-x-delta) * var(--collapsible-header-progress)));
+                width: calc(var(--collapsible-header-floating-title-width) + var(--collapsible-header-progress) * var(--collapsible-header-floating-title-width-delta));
+
+                @include core-transition(width transform, 200ms, linear);
+            }
+
+            .collapsible-header-original-title {
+                opacity: 0;
+            }
+
+            & > *:not(.collapsible-header-floating-title-wrapper),
+            .collapsible-header-floating-title-wrapper > *:not(.collapsible-header-floating-title):not(.collapsible-header-original-title) {
+                opacity: calc(1 - var(--collapsible-header-progress));
+
+                @include core-transition(opacity, 200ms, linear);
+            }
+
+        }
+
+    }
+
+    &.collapsible-header-page-is-active.collapsible-header-page-is-within-content  {
+
+        ion-content {
+            --offset-top: var(--collapsible-header-collapsed-height) !important;
+        }
+
+        .collapsible-header-expanded {
+            transform: none;
+            height: auto;
+        }
+
+    }
+
+    &.collapsible-header-page-is-active.collapsible-header-page-is-frozen {
+
+        .collapsible-header-floating-title {
+            display: none;
+        }
+
+        .collapsible-header-expanded h1 {
+            opacity: 1;
+        }
+
+    }
+
+}

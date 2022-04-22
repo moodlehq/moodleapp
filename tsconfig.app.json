@@ -3,8 +3,8 @@
   "compilerOptions": {
     "outDir": "./out-tsc/app",
     "types": [
-      "cordova-plugin-file-transfer",
-      "cordova-plugin-inappbrowser",
+      "@moodlehq/cordova-plugin-file-transfer",
+      "@moodlehq/cordova-plugin-inappbrowser",
       "cordova",
       "dom-mediacapture-record",
       "node",

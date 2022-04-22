@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable, EventEmitter } from '@angular/core';
+import { FileEntry, DirectoryEntry } from '@ionic-native/file/ngx';
 
 import { CoreFile } from '@services/file';
 import { CoreFileHelper } from '@services/file-helper';
@@ -20,7 +21,6 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
@@ -138,7 +138,7 @@ export class CoreQuestionHelperProvider {
             // Search the radio button inside this certainty and add its data to the options array.
             const input = <HTMLInputElement> label.querySelector('input[type="radio"]');
             if (input) {
-                question.behaviourCertaintyOptions!.push({
+                question.behaviourCertaintyOptions?.push({
                     id: input.id,
                     name: input.name,
                     value: input.value,
@@ -153,7 +153,7 @@ export class CoreQuestionHelperProvider {
         });
 
         // If we have a certainty value stored in local we'll use that one.
-        if (question.localAnswers && typeof question.localAnswers['-certainty'] != 'undefined') {
+        if (question.localAnswers && question.localAnswers['-certainty'] !== undefined) {
             question.behaviourCertaintySelected = question.localAnswers['-certainty'];
         }
 
@@ -258,7 +258,7 @@ export class CoreQuestionHelperProvider {
         // Get the last element and check it's not in the question contents.
         let last = matches.pop();
         while (last) {
-            if (!CoreDomUtils.closest(last, '.formulation')) {
+            if (!last.closest('.formulation')) {
                 // Not in question contents. Add it to a separate attribute and remove it from the HTML.
                 question[attrName] = last.innerHTML;
                 last.parentElement?.removeChild(last);
@@ -303,7 +303,7 @@ export class CoreQuestionHelperProvider {
 
                 // Remove start and end of the match, we only want the object.
                 initMatch = initMatch.replace('M.qtype_' + question.type + '.init_question(', '');
-                initMatch = initMatch.substr(0, initMatch.length - 2);
+                initMatch = initMatch.substring(0, initMatch.length - 2);
 
                 // Try to convert it to an object and add it to the question.
                 question.initObjects = CoreTextUtils.parseJSON(initMatch, null);
@@ -650,7 +650,7 @@ export class CoreQuestionHelperProvider {
             }
             treated[fileUrl] = true;
 
-            if (!site.canDownloadFiles() && CoreUrlUtils.isPluginFileUrl(fileUrl)) {
+            if (!site.canDownloadFiles() && site.isSitePluginFileUrl(fileUrl)) {
                 return;
             }
 
@@ -791,7 +791,7 @@ export class CoreQuestionHelperProvider {
             }
 
             // Replace the icon with the font version.
-            const newIcon: HTMLElement = document.createElement('ion-icon');
+            const newIcon: HTMLIonIconElement = document.createElement('ion-icon');
 
             if (correct) {
                 newIcon.setAttribute('name', 'fas-check');

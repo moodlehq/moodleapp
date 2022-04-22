@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreDom } from '@singletons/dom';
+import { CoreEventObserver } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { AddonModQuizDdImageOrTextQuestionData } from '../component/ddimageortext';
 
@@ -28,7 +29,7 @@ export class AddonQtypeDdImageOrTextQuestion {
     protected afterImageLoadDone = false;
     protected proportion = 1;
     protected selected?: HTMLElement | null; // Selected element (being "dragged").
-    protected resizeFunction?: (ev?: Event) => void;
+    protected resizeListener?: CoreEventObserver;
 
     /**
      * Create the this.
@@ -77,13 +78,18 @@ export class AddonQtypeDdImageOrTextQuestion {
             return bgImgXY;
         }
 
-        const position = CoreDomUtils.getElementXY(bgImg, undefined, 'ddarea');
+        const ddArea = this.container.querySelector<HTMLElement>('.ddarea');
+        if (!ddArea) {
+            return bgImgXY;
+        }
+
+        const position = CoreDom.getRelativeElementPosition(bgImg, ddArea);
 
         // Render the position related to the current image dimensions.
         bgImgXY[0] *= this.proportion;
         bgImgXY[1] *= this.proportion;
 
-        return [Number(bgImgXY[0]) + position[0] + 1, Number(bgImgXY[1]) + position[1] + 1];
+        return [bgImgXY[0] + position.x + 1, bgImgXY[1] + position.y + 1];
     }
 
     /**
@@ -174,9 +180,7 @@ export class AddonQtypeDdImageOrTextQuestion {
     destroy(): void {
         this.stopPolling();
 
-        if (this.resizeFunction) {
-            window.removeEventListener('resize', this.resizeFunction);
-        }
+        this.resizeListener?.off();
     }
 
     /**
@@ -360,8 +364,9 @@ export class AddonQtypeDdImageOrTextQuestion {
             this.pollForImageLoad();
         });
 
-        this.resizeFunction = this.windowResized.bind(this);
-        window.addEventListener('resize', this.resizeFunction!);
+        this.resizeListener = CoreDom.onWindowResize(() => {
+            this.repositionDragsForQuestion();
+        });
     }
 
     /**
@@ -409,10 +414,15 @@ export class AddonQtypeDdImageOrTextQuestion {
         }
 
         // Now position the draggable and set it to the input.
-        const position = CoreDomUtils.getElementXY(drop, undefined, 'ddarea');
+        const ddArea = this.container.querySelector<HTMLElement>('.ddarea');
+        if (!ddArea) {
+            return;
+        }
+
+        const position = CoreDom.getRelativeElementPosition(drop, ddArea);
         const choice = drag.getAttribute('choice');
-        drag.style.left = position[0] - 1 + 'px';
-        drag.style.top = position[1] - 1 + 'px';
+        drag.style.left = position.x + 'px';
+        drag.style.top = position.y + 'px';
         drag.classList.add('placed');
 
         if (choice) {
@@ -458,13 +468,14 @@ export class AddonQtypeDdImageOrTextQuestion {
 
         // Move the element to its original position.
         const dragItemHome = this.doc.dragItemHome(Number(drag.getAttribute('dragitemno')));
-        if (!dragItemHome) {
+        const ddArea = this.container.querySelector<HTMLElement>('.ddarea');
+        if (!dragItemHome || !ddArea) {
             return;
         }
 
-        const position = CoreDomUtils.getElementXY(dragItemHome, undefined, 'ddarea');
-        drag.style.left = position[0] + 'px';
-        drag.style.top = position[1] + 'px';
+        const position = CoreDom.getRelativeElementPosition(dragItemHome, ddArea);
+        drag.style.left = position.x + 'px';
+        drag.style.top = position.y + 'px';
         drag.classList.remove('placed');
 
         drag.setAttribute('inputid', '');
@@ -677,15 +688,6 @@ export class AddonQtypeDdImageOrTextQuestion {
         for (let groupNo = 1; groupNo <= 8; groupNo++) {
             this.updatePaddingSizeForGroup(groupNo);
         }
-    }
-
-    /**
-     * Window resized.
-     */
-    async windowResized(): Promise<void> {
-        await CoreDomUtils.waitForResizeDone();
-
-        this.repositionDragsForQuestion();
     }
 
 }

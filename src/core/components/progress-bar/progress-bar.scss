@@ -1,13 +1,27 @@
+@import "~theme/globals";
+
 :host {
     display: flex;
     width: 100%;
 
     --line-height: 40px;
     --bar-margin: 16px 0;
+    --height: var(--core-progressbar-height);
+
+    --text-color: var(--core-progressbar-text-color);
+    --progressbar-color: var(--core-progressbar-color);
+    --progressbar-background: var(--core-progressbar-background);
+
+    @each $color-name, $unused in $colors {
+        &.ion-color-#{$color-name} {
+            --progressbar-color: var(--#{$color-name});
+            --progressbar-background: var(--#{$color-name}-tint);
+        }
+    }
 
     .core-progress-text {
         line-height: var(--line-height);
-        font-size: 1rem;
+        font-size: 0.9rem;
         color: var(--text-color);
         width: 55px;
         text-align: center;
@@ -24,15 +38,28 @@
         flex: 1;
 
         &[value]::-webkit-progress-bar {
-            background-color: var(--background);
-            border-radius: 0;
+            background-color: var(--progressbar-background);
+            border-radius: var(--height);
             border: 0;
             box-shadow: none;
         }
 
         &[value]::-webkit-progress-value {
-            background-color: var(--color);
-            border-radius: 0;
+            background-color: var(--progressbar-color);
+            border-radius: var(--height);
+        }
+    }
+
+    ion-progress-bar {
+        --progress-background: var(--progressbar-color);
+        --buffer-background: var(--progressbar-background);
+        border-radius: var(--height);
+        height: var(--height);
+        margin-top: calc((var(--line-height) - var(--height)) /2);
+        margin-bottom: calc((var(--line-height) - var(--height)) /2);
+
+        &::part(progress) {
+            border-radius: var(--height);
         }
     }
 }

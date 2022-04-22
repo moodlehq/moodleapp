@@ -7,4 +7,8 @@
     ion-item-divider {
         min-height: var(--item-divider-min-height);
     }
+
+    ::ng-deep core-loading {
+        --loading-inline-min-height: 44px;
+    }
 }

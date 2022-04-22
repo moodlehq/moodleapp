@@ -112,6 +112,22 @@ export class CoreUrl {
     }
 
     /**
+     * Given some parts of a URL, returns the URL as a string.
+     *
+     * @param parts Parts.
+     * @return Assembled URL.
+     */
+    static assemble(parts: UrlParts): string {
+        return (parts.protocol ? `${parts.protocol}://` : '') +
+            (parts.credentials ? `${parts.credentials}@` : '') +
+            (parts.domain ?? '') +
+            (parts.port ? `:${parts.port}` : '') +
+            (parts.path ?? '') +
+            (parts.query ? `?${parts.query}` : '') +
+            (parts.fragment ? `#${parts.fragment}` : '');
+    }
+
+    /**
      * Guess the Moodle domain from a site url.
      *
      * @param url Site url.
@@ -201,6 +217,67 @@ export class CoreUrl {
 
         return partsA?.domain === partsB?.domain
             && CoreText.removeEndingSlash(partsA?.path) === CoreText.removeEndingSlash(partsB?.path);
+    }
+
+    /**
+     * Get the anchor of a URL. If there's more than one they'll all be returned, separated by #.
+     * E.g. myurl.com#foo=1#bar=2 will return #foo=1#bar=2.
+     *
+     * @param url URL.
+     * @return Anchor, undefined if no anchor.
+     */
+    static getUrlAnchor(url: string): string | undefined {
+        const firstAnchorIndex = url.indexOf('#');
+        if (firstAnchorIndex === -1) {
+            return;
+        }
+
+        return url.substring(firstAnchorIndex);
+    }
+
+    /**
+     * Remove the anchor from a URL.
+     *
+     * @param url URL.
+     * @return URL without anchor if any.
+     */
+    static removeUrlAnchor(url: string): string {
+        const urlAndAnchor = url.split('#');
+
+        return urlAndAnchor[0];
+    }
+
+    /**
+     * Convert a URL to an absolute URL (if it isn't already).
+     *
+     * @param parentUrl The parent URL.
+     * @param url The url to convert.
+     * @return Absolute URL.
+     */
+    static toAbsoluteURL(parentUrl: string, url: string): string {
+        const parsedUrl = CoreUrl.parse(url);
+
+        if (parsedUrl?.protocol) {
+            return url; // Already absolute URL.
+        }
+
+        const parsedParentUrl = CoreUrl.parse(parentUrl);
+
+        if (url.startsWith('//')) {
+            // It only lacks the protocol, add it.
+            return (parsedParentUrl?.protocol || 'https') + ':' + url;
+        }
+
+        // The URL should be added after the domain (if starts with /) or after the parent path.
+        const treatedParentUrl = CoreUrl.assemble({
+            protocol: parsedParentUrl?.protocol || 'https',
+            domain: parsedParentUrl?.domain,
+            port: parsedParentUrl?.port,
+            credentials: parsedParentUrl?.credentials,
+            path: url.startsWith('/') ? undefined : parsedParentUrl?.path,
+        });
+
+        return CoreText.concatenatePaths(treatedParentUrl, url);
     }
 
 }

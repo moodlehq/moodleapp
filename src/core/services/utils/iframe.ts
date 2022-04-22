@@ -21,15 +21,15 @@ import { CoreFile } from '@services/file';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils, PromiseDefer } from '@services/utils/utils';
 
-import { makeSingleton, Network, Platform, NgZone, Translate, Diagnostic } from '@singletons';
+import { makeSingleton, Network, NgZone, Translate, Diagnostic } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreUrl } from '@singletons/url';
 import { CoreWindow } from '@singletons/window';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
+import { CoreText } from '@singletons/text';
 
 /**
  * Possible types of frame elements.
@@ -51,12 +51,7 @@ export class CoreIframeUtilsProvider {
     protected waitAutoLoginDefer?: PromiseDefer<void>;
 
     constructor() {
-        this.logger = CoreLogger.getInstance('CoreUtilsProvider');
-
-        if (CoreApp.isIOS() && 'WKUserScript' in window) {
-            // eslint-disable-next-line promise/catch-or-return
-            Platform.ready().then(() => this.injectiOSScripts(window));
-        }
+        this.logger = CoreLogger.getInstance('CoreIframeUtilsProvider');
     }
 
     /**
@@ -242,7 +237,7 @@ export class CoreIframeUtilsProvider {
             contentDocument = 'contentDocument' in element && element.contentDocument
                 ? element.contentDocument
                 : contentWindow && contentWindow.document;
-        } catch (ex) {
+        } catch {
             // Ignore errors.
         }
 
@@ -255,7 +250,7 @@ export class CoreIframeUtilsProvider {
             // It's probably an <embed>. Try to get the window and the document.
             try {
                 contentDocument = element.getSVGDocument();
-            } catch (ex) {
+            } catch {
                 // Ignore errors.
             }
 
@@ -315,10 +310,10 @@ export class CoreIframeUtilsProvider {
             };
         }
 
-        if (contentDocument) {
+        if (contentDocument.body) {
             // Search sub frames.
             CoreIframeUtilsProvider.FRAME_TAGS.forEach((tag) => {
-                const elements = Array.from(contentDocument.querySelectorAll(tag));
+                const elements = Array.from(contentDocument.body.querySelectorAll(tag));
                 elements.forEach((subElement: CoreFrameElement) => {
                     this.treatFrame(subElement, true);
                 });
@@ -338,6 +333,8 @@ export class CoreIframeUtilsProvider {
             return;
         }
 
+        element.classList.add('core-loading');
+
         const treatElement = (sendResizeEvent: boolean = false) => {
             this.checkOnlineFrameInOffline(element, isSubframe);
 
@@ -353,9 +350,12 @@ export class CoreIframeUtilsProvider {
                 this.treatFrameLinks(element, document);
             }
 
+            // Iframe content has been loaded.
             // Send a resize events to the iframe so it calculates the right size if needed.
             if (window && sendResizeEvent) {
-                setTimeout(() => window.dispatchEvent(new Event('resize')), 1000);
+                element.classList.remove('core-loading');
+
+                setTimeout(() => window.dispatchEvent && window.dispatchEvent(new Event('resize')), 1000);
             }
         };
 
@@ -420,7 +420,7 @@ export class CoreIframeUtilsProvider {
             if (src) {
                 const dirAndFile = CoreFile.getFileAndDirectoryFromPath(src);
                 if (dirAndFile.directory) {
-                    url = CoreTextUtils.concatenatePaths(dirAndFile.directory, url);
+                    url = CoreText.concatenatePaths(dirAndFile.directory, url);
                 } else {
                     this.logger.warn('Cannot get iframe dir path to open relative url', url, element);
 
@@ -446,26 +446,13 @@ export class CoreIframeUtilsProvider {
             } else {
                 element.setAttribute('src', url);
             }
-        } else if (CoreUrlUtils.isLocalFileUrl(url)) {
-            // It's a local file.
-            const filename = url.substr(url.lastIndexOf('/') + 1);
-
-            if (!CoreFileHelper.isOpenableInApp({ filename })) {
-                try {
-                    await CoreFileHelper.showConfirmOpenUnsupportedFile();
-                } catch (error) {
-                    return; // Cancelled, stop.
-                }
-            }
-
+        } else {
             try {
-                await CoreUtils.openFile(url);
+                // It's an external link or a local file, check if it can be opened in the app.
+                await CoreWindow.open(url, name);
             } catch (error) {
                 CoreDomUtils.showErrorModal(error);
             }
-        } else {
-            // It's an external link, check if it can be opened in the app.
-            await CoreWindow.open(url, name);
         }
     }
 
@@ -527,7 +514,7 @@ export class CoreIframeUtilsProvider {
             // Opening links with _parent, _top or _blank can break the app. We'll open it in InAppBrowser.
             event && event.preventDefault();
 
-            const filename = link.href.substr(link.href.lastIndexOf('/') + 1);
+            const filename = link.href.substring(link.href.lastIndexOf('/') + 1);
 
             if (!CoreFileHelper.isOpenableInApp({ filename })) {
                 try {
@@ -558,9 +545,9 @@ export class CoreIframeUtilsProvider {
      *
      * @param userScriptWindow Window.
      */
-    private injectiOSScripts(userScriptWindow: WKUserScriptWindow) {
+    injectiOSScripts(userScriptWindow: WKUserScriptWindow): void {
         const wwwPath = CoreFile.getWWWAbsolutePath();
-        const linksPath = CoreTextUtils.concatenatePaths(wwwPath, 'assets/js/iframe-treat-links.js');
+        const linksPath = CoreText.concatenatePaths(wwwPath, 'assets/js/iframe-treat-links.js');
 
         userScriptWindow.WKUserScript?.addScript({ id: 'CoreIframeUtilsLinksScript', file: linksPath });
 

@@ -22,8 +22,7 @@ import { CoreCourseFormatWeeksHandler } from './services/handlers/weeks-format';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreCourseFormatDelegate.registerHandler(CoreCourseFormatWeeksHandler.instance);
             },
         },

@@ -12,18 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable } from '@angular/core';
 
 import { CoreApp } from '@services/app';
 import { CoreConfig } from '@services/config';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
-import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreError } from '@classes/errors/error';
 
-import { makeSingleton, Network } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { APP_SCHEMA, CRON_TABLE_NAME, CronDBEntry } from '@services/database/cron';
+import { asyncInstance } from '../utils/async-instance';
+import { CoreDatabaseTable } from '@classes/database/database-table';
+import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
 
 /*
  * Service to handle cron processes. The registered processes will be executed every certain time.
@@ -39,22 +41,10 @@ export class CoreCronDelegateService {
     protected logger: CoreLogger;
     protected handlers: { [s: string]: CoreCronHandler } = {};
     protected queuePromise: Promise<void> = Promise.resolve();
+    protected table = asyncInstance<CoreDatabaseTable<CronDBEntry>>();
 
-    // Variables for DB.
-    protected appDB: Promise<SQLiteDB>;
-    protected resolveAppDB!: (appDB: SQLiteDB) => void;
-
-    constructor(zone: NgZone) {
-        this.appDB = new Promise(resolve => this.resolveAppDB = resolve);
+    constructor() {
         this.logger = CoreLogger.getInstance('CoreCronDelegate');
-
-        // When the app is re-connected, start network handlers that were stopped.
-        Network.onConnect().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            zone.run(() => {
-                this.startNetworkHandlers();
-            });
-        });
     }
 
     /**
@@ -67,7 +57,15 @@ export class CoreCronDelegateService {
             // Ignore errors.
         }
 
-        this.resolveAppDB(CoreApp.getDB());
+        const table = new CoreDatabaseTableProxy<CronDBEntry>(
+            { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
+            CoreApp.getDB(),
+            CRON_TABLE_NAME,
+        );
+
+        await table.initialize();
+
+        this.table.setInstance(table);
     }
 
     /**
@@ -246,11 +244,10 @@ export class CoreCronDelegateService {
      * @return Promise resolved with the handler's last execution time.
      */
     protected async getHandlerLastExecutionTime(name: string): Promise<number> {
-        const db = await this.appDB;
         const id = this.getHandlerLastExecutionId(name);
 
         try {
-            const entry = await db.getRecord<CronDBEntry>(CRON_TABLE_NAME, { id });
+            const entry = await this.table.getOneByPrimaryKey({ id });
 
             const time = Number(entry.value);
 
@@ -345,7 +342,7 @@ export class CoreCronDelegateService {
             // Invalid handler.
             return;
         }
-        if (typeof this.handlers[handler.name] != 'undefined') {
+        if (this.handlers[handler.name] !== undefined) {
             this.logger.debug(`The cron handler '${handler.name}' is already registered.`);
 
             return;
@@ -405,14 +402,13 @@ export class CoreCronDelegateService {
      * @return Promise resolved when the execution time is saved.
      */
     protected async setHandlerLastExecutionTime(name: string, time: number): Promise<void> {
-        const db = await this.appDB;
         const id = this.getHandlerLastExecutionId(name);
         const entry = {
             id,
             value: time,
         };
 
-        await db.insertRecord(CRON_TABLE_NAME, entry);
+        await this.table.insert(entry);
     }
 
     /**

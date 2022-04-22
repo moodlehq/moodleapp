@@ -12,26 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants } from '@/core/constants';
+import { CoreConstants, ModPurpose } from '@/core/constants';
 import { Injectable, Type } from '@angular/core';
-import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
-import { CoreCourseModule } from '@features/course/services/course-helper';
-import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
-import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
+import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
+import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
 import { AddonModWorkshopIndexComponent } from '../../components/index';
-import { AddonModWorkshop } from '../workshop';
 
 /**
  * Handler to support workshop modules.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonModWorkshopModuleHandlerService implements CoreCourseModuleHandler {
+export class AddonModWorkshopModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
     static readonly PAGE_NAME = 'mod_workshop';
 
     name = 'AddonModWorkshop';
     modName = 'workshop';
+    protected pageName = AddonModWorkshopModuleHandlerService.PAGE_NAME;
 
     supportedFeatures = {
         [CoreConstants.FEATURE_GROUPS]: true,
@@ -42,35 +40,12 @@ export class AddonModWorkshopModuleHandlerService implements CoreCourseModuleHan
         [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
         [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true,
         [CoreConstants.FEATURE_PLAGIARISM]: true,
+        [CoreConstants.FEATURE_MOD_PURPOSE]: ModPurpose.MOD_PURPOSE_ASSESSMENT,
     };
 
     /**
      * @inheritdoc
      */
-    isEnabled(): Promise<boolean> {
-        return AddonModWorkshop.isPluginEnabled();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    getData(module: CoreCourseAnyModuleData): CoreCourseModuleHandlerData {
-        return {
-            icon: CoreCourse.getModuleIconSrc(this.modName, 'modicon' in module ? module.modicon : undefined),
-            title: module.name,
-            class: 'addon-mod_workshop-handler',
-            showDownloadButton: true,
-            action(event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions): void {
-                options = options || {};
-                options.params = options.params || {};
-                Object.assign(options.params, { module });
-                const routeParams = '/' + courseId + '/' + module.id;
-
-                CoreNavigator.navigateToSitePath(AddonModWorkshopModuleHandlerService.PAGE_NAME + routeParams, options);
-            },
-        };
-    }
-
     async getMainComponent(): Promise<Type<unknown>> {
         return AddonModWorkshopIndexComponent;
     }

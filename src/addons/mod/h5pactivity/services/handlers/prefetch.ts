@@ -147,20 +147,35 @@ export class AddonModH5PActivityPrefetchHandlerService extends CoreCourseActivit
             siteId,
         });
 
+        const options = {
+            cmId: h5pActivity.coursemodule,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
+            siteId: siteId,
+        };
+
         if (!accessInfo.canreviewattempts) {
+            if (!h5pActivity.enabletracking) {
+                return;
+            }
+
             // Not a teacher, prefetch user attempts and the current user profile.
             const site = await CoreSites.getSite(siteId);
-
-            const options = {
-                cmId: h5pActivity.coursemodule,
-                readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
-                siteId: siteId,
-            };
 
             await Promise.all([
                 AddonModH5PActivity.getAllAttemptsResults(h5pActivity.id, options),
                 CoreUser.prefetchProfiles([site.getUserId()], h5pActivity.course, siteId),
             ]);
+        } else {
+            // It's a teacher, get all attempts if possible.
+            const canGetUsers = await AddonModH5PActivity.canGetUsersAttempts(siteId);
+            if (!canGetUsers) {
+                return;
+            }
+
+            const users = await AddonModH5PActivity.getAllUsersAttempts(h5pActivity.id, options);
+
+            const userIds = users.map(user => user.userid);
+            await CoreUser.prefetchProfiles(userIds, h5pActivity.course, siteId);
         }
     }
 

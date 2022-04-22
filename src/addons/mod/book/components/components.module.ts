@@ -16,7 +16,6 @@ import { NgModule } from '@angular/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseComponentsModule } from '@features/course/components/components.module';
-import { CoreTagComponentsModule } from '@features/tag/components/components.module';
 
 import { AddonModBookIndexComponent } from './index/index';
 import { AddonModBookTocComponent } from './toc/toc';
@@ -29,7 +28,6 @@ import { AddonModBookTocComponent } from './toc/toc';
     imports: [
         CoreSharedModule,
         CoreCourseComponentsModule,
-        CoreTagComponentsModule,
     ],
     exports: [
         AddonModBookIndexComponent,

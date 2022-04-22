@@ -35,13 +35,14 @@ const appRoutes: Routes = [
 ];
 
 @NgModule({
-    imports: [AppRoutingModule.forChild(appRoutes)],
+    imports: [
+        AppRoutingModule.forChild(appRoutes),
+    ],
     providers: [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => async () => {
+            useValue: () => {
                 CoreCronDelegate.register(CoreLoginCronHandler.instance);
             },
         },

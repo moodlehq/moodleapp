@@ -13,11 +13,9 @@
 // limitations under the License.
 
 import { Component, OnInit, Optional } from '@angular/core';
-import {
-    CoreCourseModuleMainResourceComponent,
-} from '@features/course/classes/main-resource-component';
+import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { CoreCourse, CoreCourseWSModule } from '@features/course/services/course';
+import { CoreCourse } from '@features/course/services/course';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { AddonModPageProvider, AddonModPagePage, AddonModPage } from '../../services/page';
@@ -29,17 +27,15 @@ import { AddonModPageHelper } from '../../services/page-helper';
 @Component({
     selector: 'addon-mod-page-index',
     templateUrl: 'addon-mod-page-index.html',
-    styleUrls: ['index.scss'],
 })
 export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit {
 
     component = AddonModPageProvider.COMPONENT;
-    canGetPage = false;
     contents?: string;
-    displayDescription = true;
+    displayDescription = false;
     displayTimemodified = true;
     timemodified?: number;
-    page?: CoreCourseWSModule | AddonModPagePage;
+    page?: AddonModPagePage;
     warning?: string;
 
     protected fetchContentDefaultError = 'addon.mod_page.errorwhileloadingthepage';
@@ -54,16 +50,7 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
     async ngOnInit(): Promise<void> {
         super.ngOnInit();
 
-        this.canGetPage = AddonModPage.isGetPageWSAvailable();
-
         await this.loadContent();
-
-        try {
-            await AddonModPage.logView(this.module.instance!, this.module.name);
-            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
-        } catch {
-            // Ignore errors.
-        }
     }
 
     /**
@@ -76,75 +63,58 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
     }
 
     /**
-     * Download page contents.
-     *
-     * @param refresh Whether we're refreshing data.
-     * @return Promise resolved when done.
+     * @inheritdoc
      */
     protected async fetchContent(refresh?: boolean): Promise<void> {
         // Download the resource if it needs to be downloaded.
-        try {
-            const downloadResult = await this.downloadResourceIfNeeded(refresh);
+        const downloadResult = await this.downloadResourceIfNeeded(refresh);
 
-            const promises: Promise<void>[] = [];
+        // Get contents. No need to refresh, it has been done in downloadResourceIfNeeded.
+        const contents = await CoreCourse.getModuleContents(this.module);
 
-            let getPagePromise: Promise<CoreCourseWSModule | AddonModPagePage>;
+        const results = await Promise.all([
+            this.loadPageData(),
+            AddonModPageHelper.getPageHtml(contents, this.module.id),
+        ]);
 
-            // Get the module to get the latest title and description. Data should've been updated in download.
-            if (this.canGetPage) {
-                getPagePromise = AddonModPage.getPageData(this.courseId, this.module.id);
-            } else {
-                getPagePromise = CoreCourse.getModule(this.module.id, this.courseId);
-            }
+        this.contents = results[1];
+        this.warning = downloadResult?.failed ? this.getErrorDownloadingSomeFilesMessage(downloadResult.error!) : '';
+    }
 
-            promises.push(getPagePromise.then((page) => {
-                if (!page) {
-                    return;
-                }
+    /**
+     * Load page data from WS.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async loadPageData(): Promise<void> {
+        // Get latest title, description and some extra data. Data should've been updated in download.
+        this.page = await AddonModPage.getPageData(this.courseId, this.module.id);
 
-                this.description = 'intro' in page ? page.intro : page.description;
-                this.dataRetrieved.emit(page);
+        this.description = this.page.intro;
+        this.dataRetrieved.emit(this.page);
 
-                if (!this.canGetPage) {
-                    return;
-                }
+        // Check if description and timemodified should be displayed.
+        if (this.page.displayoptions) {
+            const options: Record<string, string | boolean> =
+                CoreTextUtils.unserialize(this.page.displayoptions) || {};
 
-                this.page = page;
-
-                // Check if description and timemodified should be displayed.
-                if ('displayoptions' in this.page) {
-                    const options: Record<string, string | boolean> =
-                        CoreTextUtils.unserialize(this.page.displayoptions) || {};
-
-                    this.displayDescription = typeof options.printintro == 'undefined' ||
-                            CoreUtils.isTrueOrOne(options.printintro);
-                    this.displayTimemodified = typeof options.printlastmodified == 'undefined' ||
-                            CoreUtils.isTrueOrOne(options.printlastmodified);
-                } else {
-                    this.displayDescription = true;
-                    this.displayTimemodified = true;
-                }
-
-                this.timemodified = 'timemodified' in this.page ? this.page.timemodified : undefined;
-
-                return;
-            }).catch(() => {
-                // Ignore errors.
-            }));
-
-            // Get the page HTML.
-            promises.push(AddonModPageHelper.getPageHtml(this.module.contents, this.module.id).then((content) => {
-
-                this.contents = content;
-                this.warning = downloadResult?.failed ? this.getErrorDownloadingSomeFilesMessage(downloadResult.error!) : '';
-
-                return;
-            }));
-
-            await Promise.all(promises);
-        } finally {
-            this.fillContextMenu(refresh);
+            this.displayDescription = options.printintro === undefined ||
+                    CoreUtils.isTrueOrOne(options.printintro);
+            this.displayTimemodified = options.printlastmodified === undefined ||
+                    CoreUtils.isTrueOrOne(options.printlastmodified);
+        } else {
+            this.displayDescription = true;
+            this.displayTimemodified = true;
         }
+
+        this.timemodified = 'timemodified' in this.page ? this.page.timemodified : undefined;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected async logActivity(): Promise<void> {
+        await AddonModPage.logView(this.module.instance, this.module.name);
     }
 
 }

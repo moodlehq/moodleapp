@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 
 import { CoreCourse } from '@features/course/services/course';
-import { CoreCourseModule } from '@features/course/services/course-helper';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton, Platform } from '@singletons';
@@ -28,9 +28,16 @@ import { AddonModLti, AddonModLtiLti } from './lti';
 @Injectable({ providedIn: 'root' })
 export class AddonModLtiHelperProvider {
 
-    protected pendingCheckCompletion: {[moduleId: string]: {courseId: number; module: CoreCourseModule}} = {};
+    protected pendingCheckCompletion: {[moduleId: string]: {courseId: number; module: CoreCourseModuleData}} = {};
 
     constructor() {
+        // Clear pending completion on logout.
+        CoreEvents.on(CoreEvents.LOGOUT, () => {
+            this.pendingCheckCompletion = {};
+        });
+    }
+
+    watchPendingCompletions(): void {
         Platform.resume.subscribe(() => {
             // User went back to the app, check pending completions.
             for (const moduleId in this.pendingCheckCompletion) {
@@ -38,11 +45,6 @@ export class AddonModLtiHelperProvider {
 
                 CoreCourse.checkModuleCompletion(data.courseId, data.module.completiondata);
             }
-        });
-
-        // Clear pending completion on logout.
-        CoreEvents.on(CoreEvents.LOGOUT, () => {
-            this.pendingCheckCompletion = {};
         });
     }
 
@@ -55,7 +57,7 @@ export class AddonModLtiHelperProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
-    async getDataAndLaunch(courseId: number, module: CoreCourseModule, lti?: AddonModLtiLti, siteId?: string): Promise<void> {
+    async getDataAndLaunch(courseId: number, module: CoreCourseModuleData, lti?: AddonModLtiLti, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         const modal = await CoreDomUtils.showModalLoading();
@@ -72,7 +74,7 @@ export class AddonModLtiHelperProvider {
                     module,
                 };
 
-                return site.openInBrowserWithAutoLogin(module.url!);
+                return site.openInBrowserWithAutoLogin(module.url || '');
             }
 
             // Open in app.
@@ -106,7 +108,7 @@ export class AddonModLtiHelperProvider {
      */
     async logViewAndCheckCompletion(
         courseId: number,
-        module: CoreCourseModule,
+        module: CoreCourseModuleData,
         ltiId: number,
         name?: string,
         siteId?: string,

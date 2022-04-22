@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 import { Subscription } from 'rxjs';
@@ -19,21 +20,21 @@ import { Subscription } from 'rxjs';
 import { CoreSite } from '@classes/site';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import {
-    CoreUser,
-    CoreUserProfile,
-    CoreUserProvider,
-} from '@features/user/services/user';
+import { CoreUser, CoreUserProfile, CoreUserProvider } from '@features/user/services/user';
 import { CoreUserHelper } from '@features/user/services/user-helper';
-import { CoreUserDelegate, CoreUserDelegateService, CoreUserProfileHandlerData } from '@features/user/services/user-delegate';
-import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuploader-helper';
-import { CoreIonLoadingElement } from '@classes/ion-loading';
+import {
+    CoreUserDelegate,
+    CoreUserDelegateContext,
+    CoreUserDelegateService,
+    CoreUserProfileHandlerData,
+} from '@features/user/services/user-delegate';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreNavigator } from '@services/navigator';
 import { CoreCourses } from '@features/courses/services/courses';
+import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
+import { CoreUserParticipantsSource } from '@features/user/classes/participants-source';
+import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 
 @Component({
     selector: 'page-core-user-profile',
@@ -44,23 +45,25 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
 
     protected courseId?: number;
     protected userId!: number;
-    protected site?: CoreSite;
+    protected site!: CoreSite;
     protected obsProfileRefreshed: CoreEventObserver;
     protected subscription?: Subscription;
+    protected fetchSuccess = false;
 
     userLoaded = false;
     isLoadingHandlers = false;
     user?: CoreUserProfile;
-    title?: string;
     isDeleted = false;
+    isSuspended = false;
     isEnrolled = true;
-    canChangeProfilePicture = false;
     rolesFormatted?: string;
     actionHandlers: CoreUserProfileHandlerData[] = [];
     newPageHandlers: CoreUserProfileHandlerData[] = [];
     communicationHandlers: CoreUserProfileHandlerData[] = [];
 
-    constructor() {
+    users?: CoreUserSwipeItemsManager;
+
+    constructor(private route: ActivatedRoute) {
         this.obsProfileRefreshed = CoreEvents.on(CoreUserProvider.PROFILE_REFRESHED, (data) => {
             if (!this.user || !data.user) {
                 return;
@@ -72,42 +75,38 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
     }
 
     /**
-     * On init.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.site = CoreSites.getCurrentSite();
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId');
-        const userId = CoreNavigator.getRouteNumberParam('userId');
-
-        if (!this.site) {
-            return;
-        }
-        if (userId === undefined) {
-            CoreDomUtils.showErrorModal('User ID not supplied');
+        try {
+            this.site = CoreSites.getRequiredCurrentSite();
+            this.courseId = CoreNavigator.getRouteNumberParam('courseId');
+            this.userId = CoreNavigator.getRequiredRouteNumberParam('userId');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
             CoreNavigator.back();
 
             return;
         }
 
-        this.userId = userId;
+        if (this.courseId === this.site.getSiteHomeId()) {
+            // Get site profile.
+            this.courseId = undefined;
+        }
 
-        // Allow to change the profile image only in the app profile page.
-        this.canChangeProfilePicture =
-            (!this.courseId || this.courseId == this.site.getSiteHomeId()) &&
-            this.userId == this.site.getUserId() &&
-            this.site.canUploadFiles() &&
-            CoreUser.canUpdatePictureInSite(this.site) &&
-            !CoreUser.isUpdatePictureDisabledInSite(this.site);
+        if (this.courseId && this.route.snapshot.data.swipeManagerSource === 'participants') {
+            const search = CoreNavigator.getRouteParam('search');
+            const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
+                CoreUserParticipantsSource,
+                [this.courseId, search],
+            );
+            this.users = new CoreUserSwipeItemsManager(source);
+
+            this.users.start();
+        }
 
         try {
             await this.fetchUser();
-
-            try {
-                await CoreUser.logView(this.userId, this.courseId, this.user!.fullname);
-            } catch (error) {
-                this.isDeleted = error?.errorcode === 'userdeleted';
-                this.isEnrolled = error?.errorcode !== 'notenrolledprofile';
-            }
         } finally {
             this.userLoaded = true;
         }
@@ -124,12 +123,13 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
             this.rolesFormatted = 'roles' in user ? CoreUserHelper.formatRoleList(user.roles) : '';
 
             this.user = user;
-            this.title = user.fullname;
 
             // If there's already a subscription, unsubscribe because we'll get a new one.
             this.subscription?.unsubscribe();
 
-            this.subscription = CoreUserDelegate.getProfileHandlersFor(user, this.courseId).subscribe((handlers) => {
+            const context = this.courseId ? CoreUserDelegateContext.COURSE : CoreUserDelegateContext.SITE;
+
+            this.subscription = CoreUserDelegate.getProfileHandlersFor(user, context, this.courseId).subscribe((handlers) => {
                 this.actionHandlers = [];
                 this.newPageHandlers = [];
                 this.communicationHandlers = [];
@@ -148,84 +148,24 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
                     }
                 });
 
-                this.isLoadingHandlers = !CoreUserDelegate.areHandlersLoaded(user.id);
+                this.isLoadingHandlers = !CoreUserDelegate.areHandlersLoaded(user.id, context, this.courseId);
             });
 
-            await this.checkUserImageUpdated();
+            if (!this.fetchSuccess) {
+                this.fetchSuccess = true;
+
+                try {
+                    await CoreUser.logView(this.userId, this.courseId, this.user.fullname);
+                } catch (error) {
+                    this.isDeleted = error?.errorcode === 'userdeleted' || error?.errorcode === 'wsaccessuserdeleted';
+                    this.isSuspended = error?.errorcode === 'wsaccessusersuspended';
+                    this.isEnrolled = error?.errorcode !== 'notenrolledprofile';
+                }
+            }
 
         } catch (error) {
             // Error is null for deleted users, do not show the modal.
             CoreDomUtils.showErrorModal(error);
-        }
-    }
-
-    /**
-     * Check if current user image has changed.
-     *
-     * @return Promise resolved when done.
-     */
-    protected async checkUserImageUpdated(): Promise<void> {
-        if (!this.site || !this.site.getInfo() || !this.user) {
-            return;
-        }
-
-        if (this.userId != this.site.getUserId() || !this.isUserAvatarDirty()) {
-            // Not current user or hasn't changed.
-            return;
-        }
-
-        // The current user image received is different than the one stored in site info. Assume the image was updated.
-        // Update the site info to get the right avatar in there.
-        try {
-            await CoreSites.updateSiteInfo(this.site.getId());
-        } catch {
-            // Cannot update site info. Assume the profile image is the right one.
-            CoreEvents.trigger(CoreUserProvider.PROFILE_PICTURE_UPDATED, {
-                userId: this.userId,
-                picture: this.user.profileimageurl,
-            }, this.site.getId());
-        }
-
-        if (this.isUserAvatarDirty()) {
-            // The image is still different, this means that the good one is the one in site info.
-            await this.refreshUser();
-        } else {
-            // Now they're the same, send event to use the right avatar in the rest of the app.
-            CoreEvents.trigger(CoreUserProvider.PROFILE_PICTURE_UPDATED, {
-                userId: this.userId,
-                picture: this.user.profileimageurl,
-            }, this.site.getId());
-        }
-    }
-
-    /**
-     * Opens dialog to change profile picture.
-     */
-    async changeProfilePicture(): Promise<void> {
-        const maxSize = -1;
-        const title = Translate.instant('core.user.newpicture');
-        const mimetypes = CoreMimetypeUtils.getGroupMimeInfo('image', 'mimetypes');
-        let modal: CoreIonLoadingElement | undefined;
-
-        try {
-            const result = await CoreFileUploaderHelper.selectAndUploadFile(maxSize, title, mimetypes);
-
-            modal = await CoreDomUtils.showModalLoading('core.sending', true);
-
-            const profileImageURL = await CoreUser.changeProfilePicture(result.itemid, this.userId, this.site!.getId());
-
-            CoreEvents.trigger(CoreUserProvider.PROFILE_PICTURE_UPDATED, {
-                userId: this.userId,
-                picture: profileImageURL,
-            }, this.site!.getId());
-
-            CoreSites.updateSiteInfo(this.site!.getId());
-
-            this.refreshUser();
-        } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-        } finally {
-            modal?.dismiss();
         }
     }
 
@@ -274,52 +214,35 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
      * @param handler Handler that was clicked.
      */
     handlerClicked(event: Event, handler: CoreUserProfileHandlerData): void {
-        handler.action(event, this.user!, this.courseId);
+        if (!this.user) {
+            return;
+        }
+
+        const context = this.courseId ? CoreUserDelegateContext.COURSE : CoreUserDelegateContext.SITE;
+        handler.action(event, this.user, context, this.courseId);
     }
 
     /**
-     * Page destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
+        this.users?.destroy();
         this.subscription?.unsubscribe();
         this.obsProfileRefreshed.off();
     }
 
-    /**
-     * Check whether the user avatar is not up to date with site info.
-     *
-     * @return Whether the user avatar differs from site info cache.
-     */
-    private isUserAvatarDirty(): boolean {
-        if (!this.user || !this.site) {
-            return false;
-        }
+}
 
-        const courseAvatarUrl = this.normalizeAvatarUrl(this.user.profileimageurl);
-        const siteAvatarUrl = this.normalizeAvatarUrl(this.site.getInfo()?.userpictureurl);
-
-        return courseAvatarUrl !== siteAvatarUrl;
-    }
+/**
+ * Helper to manage swiping within a collection of users.
+ */
+class CoreUserSwipeItemsManager extends CoreSwipeNavigationItemsManager {
 
     /**
-     * Normalize an avatar url regardless of theme.
-     *
-     * Given that the default image is the only one that can be changed per theme, any other url will stay the same. Note that
-     * the values returned by this function may not be valid urls, given that they are intended for string comparison.
-     *
-     * @param avatarUrl Avatar url.
-     * @return Normalized avatar string (may not be a valid url).
+     * @inheritdoc
      */
-    private normalizeAvatarUrl(avatarUrl?: string): string {
-        if (!avatarUrl) {
-            return 'undefined';
-        }
-
-        if (avatarUrl.startsWith(`${this.site?.siteUrl}/theme/image.php`)) {
-            return 'default';
-        }
-
-        return avatarUrl;
+    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot): string | null {
+        return route.params.userId;
     }
 
 }

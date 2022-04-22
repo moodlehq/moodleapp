@@ -14,14 +14,12 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { AddonMessageOutputDelegate } from '@addons/messageoutput/services/messageoutput-delegate';
 import {
     AddonNotifications,
-    AddonNotificationsAnyNotification,
-    AddonNotificationsGetNotificationsOptions,
+    AddonNotificationsNotificationMessageFormatted,
     AddonNotificationsPreferences,
     AddonNotificationsPreferencesComponent,
     AddonNotificationsPreferencesNotification,
@@ -29,12 +27,38 @@ import {
     AddonNotificationsPreferencesProcessor,
     AddonNotificationsProvider,
 } from './notifications';
+import { CoreEvents } from '@singletons/events';
+import { AddonNotificationsNotificationData } from './handlers/push-click';
+import { CoreTimeUtils } from '@services/utils/time';
 
 /**
  * Service that provides some helper functions for notifications.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonNotificationsHelperProvider {
+
+    /**
+     * Formats the text of a notification.
+     *
+     * @param notification The notification object.
+     */
+    formatNotificationText(
+        notification: AddonNotificationsNotificationMessageFormatted,
+    ): AddonNotificationsNotificationToRender {
+        const formattedNotification: AddonNotificationsNotificationToRender = notification;
+
+        if (notification.moodlecomponent?.startsWith('mod_') && notification.iconurl) {
+            const modname = notification.moodlecomponent.substring(4);
+            if (notification.iconurl.match('/theme/image.php/[^/]+/' + modname + '/[-0-9]*/') ||
+                    notification.iconurl.match('/theme/image.php/[^/]+/' + notification.moodlecomponent + '/[-0-9]*/')) {
+                formattedNotification.modname = modname;
+            }
+        } else {
+            formattedNotification.iconurl = formattedNotification.iconurl || undefined; // Make sure the property exists.
+        }
+
+        return formattedNotification;
+    }
 
     /**
      * Format preferences data.
@@ -56,87 +80,6 @@ export class AddonNotificationsHelperProvider {
         });
 
         return formattedPreferences;
-    }
-
-    /**
-     * Get some notifications. It will try to use the new WS if available.
-     *
-     * @param notifications Current list of loaded notifications. It's used to calculate the offset.
-     * @param options Other options.
-     * @return Promise resolved with notifications and if can load more.
-     */
-    async getNotifications(
-        notifications: AddonNotificationsAnyNotification[],
-        options?: AddonNotificationsGetNotificationsOptions,
-    ): Promise<{notifications: AddonNotificationsAnyNotification[]; canLoadMore: boolean}> {
-
-        notifications = notifications || [];
-        options = options || {};
-        options.limit = options.limit || AddonNotificationsProvider.LIST_LIMIT;
-        options.siteId = options.siteId || CoreSites.getCurrentSiteId();
-
-        const available = await AddonNotifications.isPopupAvailable(options.siteId);
-
-        if (available) {
-            return AddonNotifications.getPopupNotifications(notifications.length, options);
-        }
-
-        // Fallback to get_messages. We need 2 calls, one for read and the other one for unread.
-        const unreadFrom = notifications.reduce((total, current) => total + (current.read ? 0 : 1), 0);
-
-        const unread = await AddonNotifications.getUnreadNotifications(unreadFrom, options);
-
-        let newNotifications = unread;
-
-        if (unread.length < options.limit) {
-            // Limit not reached. Get read notifications until reach the limit.
-            const readLimit = options.limit - unread.length;
-            const readFrom = notifications.length - unreadFrom;
-            const readOptions = Object.assign({}, options, { limit: readLimit });
-
-            try {
-                const read = await AddonNotifications.getReadNotifications(readFrom, readOptions);
-
-                newNotifications = unread.concat(read);
-            } catch (error) {
-                if (unread.length <= 0) {
-                    throw error;
-                }
-            }
-        }
-
-        return {
-            notifications: newNotifications,
-            canLoadMore: notifications.length >= options.limit,
-        };
-    }
-
-    /**
-     * Get a certain processor from a list of processors.
-     *
-     * @param processors List of processors.
-     * @param name Name of the processor to get.
-     * @param fallback True to return first processor if not found, false to not return any. Defaults to true.
-     * @return Processor.
-     */
-    getProcessor(
-        processors: AddonNotificationsPreferencesProcessor[],
-        name: string,
-        fallback: boolean = true,
-    ): AddonNotificationsPreferencesProcessor | undefined {
-        if (!processors || !processors.length) {
-            return;
-        }
-
-        const processor = processors.find((processor) => processor.name == name);
-        if (processor) {
-            return processor;
-        }
-
-        // Processor not found, return first if requested.
-        if (fallback) {
-            return processors[0];
-        }
     }
 
     /**
@@ -177,6 +120,46 @@ export class AddonNotificationsHelperProvider {
         return result;
     }
 
+    /**
+     * Mark notification as read, trigger event and invalidate data.
+     *
+     * @param notification Notification object.
+     * @return Promise resolved when done.
+     */
+    async markNotificationAsRead(
+        notification: AddonNotificationsNotificationMessageFormatted | AddonNotificationsNotificationData,
+        siteId?: string,
+    ): Promise<boolean> {
+        if ('read' in notification && (notification.read || notification.timeread > 0)) {
+            // Already read, don't mark it.
+            return false;
+        }
+
+        const notifId = 'savedmessageid' in notification ? notification.savedmessageid || notification.id : notification.id;
+        if (!notifId) {
+            return false;
+        }
+
+        siteId = 'site' in notification ? notification.site : siteId;
+
+        await CoreUtils.ignoreErrors(AddonNotifications.markNotificationRead(notifId, siteId));
+
+        const time = CoreTimeUtils.timestamp();
+        if ('read' in notification) {
+            notification.read = true;
+            notification.timeread = time;
+        }
+
+        await CoreUtils.ignoreErrors(AddonNotifications.invalidateNotificationsList());
+
+        CoreEvents.trigger(AddonNotificationsProvider.READ_CHANGED_EVENT, {
+            id: notifId,
+            time,
+        }, siteId);
+
+        return true;
+    }
+
 }
 
 export const AddonNotificationsHelper = makeSingleton(AddonNotificationsHelperProvider);
@@ -200,7 +183,11 @@ export type AddonNotificationsPreferencesComponentFormatted = Omit<AddonNotifica
  * Preferences notification with some calculated data.
  */
 export type AddonNotificationsPreferencesNotificationFormatted = AddonNotificationsPreferencesNotification & {
-    processorsByName?: Record<string, AddonNotificationsPreferencesNotificationProcessor>; // Calculated in the app.
+    processorsByName?: Record<string, AddonNotificationsPreferencesNotificationProcessorFormatted>; // Calculated in the app.
+};
+
+type AddonNotificationsPreferencesNotificationProcessorFormatted = AddonNotificationsPreferencesNotificationProcessor & {
+    updating?: boolean; // Calculated in the app. Whether the state is being updated.
 };
 
 /**
@@ -208,4 +195,12 @@ export type AddonNotificationsPreferencesNotificationFormatted = AddonNotificati
  */
 export type AddonNotificationsPreferencesProcessorFormatted = AddonNotificationsPreferencesProcessor & {
     supported?: boolean; // Calculated in the app. Whether the processor is supported in the app.
+};
+
+/**
+ * Notification with some calculated data to render it.
+ */
+export type AddonNotificationsNotificationToRender = AddonNotificationsNotificationMessageFormatted & {
+    iconurl?: string;
+    modname?: string;
 };

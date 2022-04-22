@@ -16,6 +16,8 @@ import Faker from 'faker';
 
 import { CoreError } from '@classes/errors/error';
 
+import { agnosticPath } from '@/testing/utils';
+
 describe('CoreError', () => {
 
     it('behaves like an error', () => {
@@ -38,7 +40,7 @@ describe('CoreError', () => {
         expect(error!.name).toEqual('CoreError');
         expect(error!.message).toEqual(message);
         expect(error!.stack).not.toBeNull();
-        expect(error!.stack).toContain('src/core/classes/tests/error.test.ts');
+        expect(error!.stack).toContain(agnosticPath('src/core/classes/tests/error.test.ts'));
     });
 
     it('can be subclassed', () => {
@@ -70,7 +72,7 @@ describe('CoreError', () => {
         expect(error!.name).toEqual('CustomCoreError');
         expect(error!.message).toEqual(`Custom message: ${message}`);
         expect(error!.stack).not.toBeNull();
-        expect(error!.stack).toContain('src/core/classes/tests/error.test.ts');
+        expect(error!.stack).toContain(agnosticPath('src/core/classes/tests/error.test.ts'));
     });
 
 });

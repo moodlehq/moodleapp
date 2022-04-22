@@ -122,9 +122,10 @@ export class AddonModChoiceSyncProvider extends CoreCourseActivitySyncBaseProvid
         siteId = site.getId();
 
         const syncId = this.getSyncId(choiceId, userId);
-        if (this.isSyncing(syncId, siteId)) {
+        const currentSyncPromise = this.getOngoingSync(syncId, siteId);
+        if (currentSyncPromise) {
             // There's already a sync ongoing for this discussion, return the promise.
-            return this.getOngoingSync(syncId, siteId)!;
+            return currentSyncPromise;
         }
 
         this.logger.debug(`Try to sync choice '${choiceId}' for user '${userId}'`);
@@ -196,7 +197,7 @@ export class AddonModChoiceSyncProvider extends CoreCourseActivitySyncBaseProvid
 
         // Data has been sent to server, prefetch choice if needed.
         try {
-            const module = await CoreCourse.getModuleBasicInfoByInstance(choiceId, 'choice', siteId);
+            const module = await CoreCourse.getModuleBasicInfoByInstance(choiceId, 'choice', { siteId });
 
             await this.prefetchAfterUpdate(AddonModChoicePrefetchHandler.instance, module, courseId, undefined, siteId);
         } catch {

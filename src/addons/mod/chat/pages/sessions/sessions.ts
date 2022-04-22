@@ -13,17 +13,14 @@
 // limitations under the License.
 
 import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
-import { Params } from '@angular/router';
-import { CorePageItemsListManager } from '@classes/page-items-list-manager';
+import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
+import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { CoreUser } from '@features/user/services/user';
 import { IonRefresher } from '@ionic/angular';
-import { CoreGroupInfo, CoreGroups } from '@services/groups';
+import { CoreGroupInfo } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
-import { Translate } from '@singletons';
-import { AddonModChat, AddonModChatSession, AddonModChatSessionUser } from '../../services/chat';
+import { AddonModChatSessionFormatted, AddonModChatSessionsSource } from '../../classes/chat-sessions-source';
 
 /**
  * Page that displays list of chat sessions.
@@ -36,28 +33,52 @@ export class AddonModChatSessionsPage implements AfterViewInit, OnDestroy {
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
-    sessions!: AddonChatSessionsManager;
-    showAll = false;
-    groupId = 0;
-    groupInfo?: CoreGroupInfo;
-
-    protected courseId!: number;
-    protected cmId!: number;
-    protected chatId!: number;
+    sessions!: CoreListItemsManager<AddonModChatSessionFormatted, AddonModChatSessionsSource>;
 
     constructor() {
-        this.sessions = new AddonChatSessionsManager(AddonModChatSessionsPage);
+        try {
+            const courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            const chatId = CoreNavigator.getRequiredRouteNumberParam('chatId');
+            const cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
+            const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
+                AddonModChatSessionsSource,
+                [courseId, chatId, cmId],
+            );
+
+            this.sessions = new CoreListItemsManager(source, AddonModChatSessionsPage);
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
+    }
+
+    get groupId(): number {
+        return this.sessions.getSource().groupId;
+    }
+
+    set groupId(value: number) {
+        this.sessions.getSource().groupId = value;
+    }
+
+    get showAll(): boolean {
+        return this.sessions.getSource().showAll;
+    }
+
+    set showAll(value: boolean) {
+        this.sessions.getSource().showAll = value;
+    }
+
+    get groupInfo(): CoreGroupInfo | undefined {
+        return this.sessions.getSource().groupInfo;
     }
 
     /**
      * @inheritdoc
      */
     async ngAfterViewInit(): Promise<void> {
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.cmId = CoreNavigator.getRouteNumberParam('cmId')!;
-        this.chatId = CoreNavigator.getRouteNumberParam('chatId')!;
-        this.sessions.setChatId(this.chatId);
-
         await this.fetchSessions();
 
         this.sessions.start(this.splitView);
@@ -67,66 +88,27 @@ export class AddonModChatSessionsPage implements AfterViewInit, OnDestroy {
      * Fetch chat sessions.
      *
      * @param showLoading Display a loading modal.
-     * @return Promise resolved when done.
      */
-    async fetchSessions(showLoading?: boolean): Promise<void> {
-        const modal = showLoading ? await CoreDomUtils.showModalLoading() : null;
-
+    async fetchSessions(): Promise<void> {
         try {
-            this.groupInfo = await CoreGroups.getActivityGroupInfo(this.cmId, false);
-
-            this.groupId = CoreGroups.validateGroupId(this.groupId, this.groupInfo);
-            this.sessions.setGroupId(this.groupId);
-
-            const sessions = await AddonModChat.getSessions(this.chatId, this.groupId, this.showAll, { cmId: this.cmId });
-
-            // Fetch user profiles.
-            const promises: Promise<unknown>[] = [];
-
-            const formattedSessions = sessions.map((session: AddonModChatSessionFormatted) => {
-                session.duration = session.sessionend - session.sessionstart;
-                session.sessionusers.forEach((sessionUser) => {
-                    // The WS does not return the user name, fetch user profile.
-                    promises.push(this.loadUserFullname(sessionUser));
-                });
-
-                // If session has more than 4 users we display a "Show more" link.
-                session.allsessionusers = session.sessionusers;
-                if (session.sessionusers.length > 4) {
-                    session.sessionusers = session.allsessionusers.slice(0, 3);
-                }
-
-                return session;
-            });
-
-            await Promise.all(promises);
-
-            this.sessions.setItems(formattedSessions);
+            await this.sessions.load();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'core.errorloadingcontent', true);
-        } finally {
-            modal?.dismiss();
         }
     }
 
     /**
-     * Load the fullname of a user.
-     *
-     * @param id User ID.
-     * @return Promise resolved when done.
+     * Reload chat sessions.
      */
-    protected async loadUserFullname(sessionUser: AddonModChatUserSessionFormatted): Promise<void> {
-        if (sessionUser.userfullname) {
-            return;
-        }
+    async reloadSessions(): Promise<void> {
+        const modal = await CoreDomUtils.showModalLoading();
 
         try {
-            const user = await CoreUser.getProfile(sessionUser.userid, this.courseId, true);
-
-            sessionUser.userfullname = user.fullname;
-        } catch {
-            // Error getting profile, most probably the user is deleted.
-            sessionUser.userfullname = Translate.instant('core.deleteduser') + ' ' + sessionUser.userid;
+            await this.sessions.reload();
+        } catch (error) {
+            CoreDomUtils.showErrorModalDefault(error, 'core.errorloadingcontent', true);
+        } finally {
+            modal.dismiss();
         }
     }
 
@@ -137,11 +119,9 @@ export class AddonModChatSessionsPage implements AfterViewInit, OnDestroy {
      */
     async refreshSessions(refresher: IonRefresher): Promise<void> {
         try {
-            await CoreUtils.ignoreErrors(CoreUtils.allPromises([
-                CoreGroups.invalidateActivityGroupInfo(this.cmId),
-                AddonModChat.invalidateSessions(this.chatId, this.groupId, this.showAll),
-            ]));
+            this.sessions.getSource().setDirty(true);
 
+            await this.sessions.getSource().invalidateCache();
             await this.fetchSessions();
         } finally {
             refresher.complete();
@@ -155,7 +135,10 @@ export class AddonModChatSessionsPage implements AfterViewInit, OnDestroy {
      * @param event The event.
      */
     showMoreUsers(session: AddonModChatSessionFormatted, event: Event): void {
-        session.sessionusers = session.allsessionusers!;
+        if (session.allsessionusers) {
+            session.sessionusers = session.allsessionusers;
+        }
+
         event.stopPropagation();
     }
 
@@ -167,68 +150,3 @@ export class AddonModChatSessionsPage implements AfterViewInit, OnDestroy {
     }
 
 }
-
-/**
- * Helper class to manage sessions.
- */
-class AddonChatSessionsManager extends CorePageItemsListManager<AddonModChatSessionFormatted> {
-
-    chatId = -1;
-    groupId = 0;
-
-    constructor(pageComponent: unknown) {
-        super(pageComponent);
-    }
-
-    /**
-     * Set chat ID.
-     *
-     * @param chatId Chat ID.
-     */
-    setChatId(chatId: number): void {
-        this.chatId = chatId;
-    }
-
-    /**
-     * Set group ID.
-     *
-     * @param groupId Group ID.
-     */
-    setGroupId(groupId: number): void {
-        this.groupId = groupId;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getItemPath(session: AddonModChatSessionFormatted): string {
-        return `${session.sessionstart}/${session.sessionend}`;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getItemQueryParams(): Params {
-        return {
-            chatId: this.chatId,
-            groupId: this.groupId,
-        };
-    }
-
-}
-
-/**
- * Fields added to chat session in this view.
- */
-type AddonModChatSessionFormatted = Omit<AddonModChatSession, 'sessionusers'> & {
-    duration?: number; // Session duration.
-    sessionusers: AddonModChatUserSessionFormatted[];
-    allsessionusers?: AddonModChatUserSessionFormatted[]; // All session users.
-};
-
-/**
- * Fields added to user session in this view.
- */
-type AddonModChatUserSessionFormatted = AddonModChatSessionUser & {
-    userfullname?: string; // User full name.
-};

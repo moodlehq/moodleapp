@@ -29,8 +29,7 @@ import { AddonModWorkshopAssessmentStrategyNumErrorsHandler } from './services/h
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 AddonWorkshopAssessmentStrategyDelegate.registerHandler(
                     AddonModWorkshopAssessmentStrategyNumErrorsHandler.instance,
                 );

@@ -3,10 +3,12 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>
-            <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
-            </core-format-text>
-        </h1>
+        <ion-title>
+            <h1>
+                <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
+                </core-format-text>
+            </h1>
+        </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" *ngIf="loaded" (click)="showChatUsers()" [attr.aria-label]="'core.users' | translate">
                 <ion-icon name="fas-users" slot="icon-only" aria-hidden="true"></ion-icon>
@@ -14,8 +16,8 @@
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
-<ion-content class="has-footer">
-    <core-loading [hideUntil]="loaded" class="safe-area-page">
+<ion-content>
+    <core-loading [hideUntil]="loaded">
         <ion-list class="addon-messages-discussion-container" aria-live="polite">
             <ng-container *ngFor="let message of messages; index as index; last as last">
 
@@ -72,7 +74,7 @@
                             {{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }}
                             <strong>
                                 {{ message.userfullname }} <core-format-text [text]="message.message" contextLevel="module"
-                                [contextInstanceId]="cmId" [courseId]="courseId" (afterRender)="last && scrollToBottom()">
+                                    [contextInstanceId]="cmId" [courseId]="courseId" (afterRender)="last && scrollToBottom()">
                                 </core-format-text>
                             </strong>
                         </span>
@@ -81,8 +83,7 @@
 
                 <ion-item *ngIf="!message.special" class="ion-text-wrap addon-message"
                     [class.addon-message-mine]="message.userid == currentUserId"
-                    [class.addon-message-not-mine]="message.userid != currentUserId"
-                    [class.addon-message-no-user]="!message.showUserData"
+                    [class.addon-message-not-mine]="message.userid != currentUserId" [class.addon-message-no-user]="!message.showUserData"
                     [@coreSlideInOut]="message.userid == currentUserId ? '' : 'fromLeft'">
                     <ion-label>
                         <!-- User data. -->
@@ -92,34 +93,33 @@
                             <div>{{ message.userfullname }}</div>
                         </h2>
 
-                        <p class="addon-message-text">
+                        <div class="addon-message-text">
                             <core-format-text [text]="message.message" contextLevel="module" [contextInstanceId]="cmId"
                                 [courseId]="courseId" (afterRender)="last && scrollToBottom()">
                             </core-format-text>
-                        </p>
+                        </div>
                     </ion-label>
-                    <ion-note>{{ message.timestamp * 1000 | coreFormatDate: "strftimetime" }}</ion-note>
+                    <ion-note slot="end">{{ message.timestamp * 1000 | coreFormatDate: "strftimetime" }}</ion-note>
                     <div class="tail" *ngIf="message.showTail"></div>
                 </ion-item>
             </ng-container>
         </ion-list>
 
-        <core-empty-box *ngIf="!messages || messages.length <= 0" icon="far-comments"
-            [message]="'addon.mod_chat.nomessages' | translate">
+        <core-empty-box *ngIf="!messages || messages.length <= 0" icon="far-comments" [message]="'addon.mod_chat.nomessages' | translate">
         </core-empty-box>
     </core-loading>
 </ion-content>
-<ion-footer color="light" class="footer-adjustable">
-    <ion-toolbar color="light">
+<ion-footer class="footer-adjustable">
+    <ion-toolbar [color]="isOnline && polling && loaded ? 'contrast' : 'light'">
         <p class="ion-text-center" *ngIf="!isOnline">
             {{ 'addon.mod_chat.mustbeonlinetosendmessages' | translate }}
         </p>
 
         <core-send-message-form [sendDisabled]="sending" *ngIf="isOnline && polling && loaded" [message]="newMessage"
-            (onSubmit)="sendMessage($event)" [placeholder]="'addon.messages.newmessage' | translate" (onResize)="resizeContent()">
+            (onSubmit)="sendMessage($event)" [placeholder]="'addon.messages.newmessage' | translate">
         </core-send-message-form>
 
-        <ion-button *ngIf="isOnline && !polling && loaded" (click)="reconnect()" expand="block" color="light">
+        <ion-button *ngIf="isOnline && !polling && loaded" (click)="reconnect()" expand="block" fill="outline">
             {{ 'core.login.reconnect' | translate }}
         </ion-button>
     </ion-toolbar>

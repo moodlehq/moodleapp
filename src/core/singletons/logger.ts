@@ -17,6 +17,7 @@ import moment from 'moment';
 import { CoreConstants } from '@/core/constants';
 
 import { CoreTime } from './time';
+import { CoreBrowser } from '@singletons/browser';
 
 /**
  * Method to warn that logs are disabled, called only once.
@@ -67,7 +68,10 @@ export class CoreLogger {
      */
     static getInstance(className: string): CoreLogger {
         // Disable log on production and testing.
-        if (CoreConstants.BUILD.isProduction || CoreConstants.BUILD.isTesting) {
+        if (
+            !CoreBrowser.hasCookie('MoodleAppLoggingEnabled') &&
+            (CoreConstants.BUILD.isProduction || CoreConstants.BUILD.isTesting)
+        ) {
             if (CoreConstants.BUILD.isProduction) {
                 warnLogsDisabled();
             }

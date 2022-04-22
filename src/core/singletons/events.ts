@@ -17,8 +17,9 @@ import { Subject } from 'rxjs';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSite, CoreSiteInfoResponse, CoreSitePublicConfigResponse } from '@classes/site';
 import { CoreFilepoolComponentFileEventData } from '@services/filepool';
-import { CoreNavigationOptions } from '@services/navigator';
+import { CoreRedirectPayload } from '@services/navigator';
 import { CoreCourseModuleCompletionData } from '@features/course/services/course-helper';
+import { CoreScreenOrientation } from '@services/screen';
 
 /**
  * Observer instance to stop listening to an event.
@@ -42,6 +43,8 @@ export interface CoreEventsData {
     [CoreEvents.COURSE_STATUS_CHANGED]: CoreEventCourseStatusChanged;
     [CoreEvents.PACKAGE_STATUS_CHANGED]: CoreEventPackageStatusChanged;
     [CoreEvents.USER_DELETED]: CoreEventUserDeletedData;
+    [CoreEvents.USER_SUSPENDED]: CoreEventUserSuspendedData;
+    [CoreEvents.USER_NO_LOGIN]: CoreEventUserNoLoginData;
     [CoreEvents.FORM_ACTION]: CoreEventFormActionData;
     [CoreEvents.NOTIFICATION_SOUND_CHANGED]: CoreEventNotificationSoundChangedData;
     [CoreEvents.SELECT_COURSE_TAB]: CoreEventSelectCourseTabData;
@@ -51,10 +54,14 @@ export interface CoreEventsData {
     [CoreEvents.ACTIVITY_DATA_SENT]: CoreEventActivityDataSentData;
     [CoreEvents.IAB_LOAD_START]: InAppBrowserEvent;
     [CoreEvents.LOGIN_SITE_CHECKED]: CoreEventLoginSiteCheckedData;
+    [CoreEvents.LOGIN_SITE_UNCHECKED]: CoreEventLoginSiteUncheckedData;
     [CoreEvents.SEND_ON_ENTER_CHANGED]: CoreEventSendOnEnterChangedData;
     [CoreEvents.COMPONENT_FILE_ACTION]: CoreFilepoolComponentFileEventData;
     [CoreEvents.FILE_SHARED]: CoreEventFileSharedData;
     [CoreEvents.APP_LAUNCHED_URL]: CoreEventAppLaunchedData;
+    [CoreEvents.ORIENTATION_CHANGE]: CoreEventOrientationData;
+    [CoreEvents.COURSE_MODULE_VIEWED]: CoreEventCourseModuleViewed;
+    [CoreEvents.COMPLETE_REQUIRED_PROFILE_DATA_FINISHED]: CoreEventCompleteRequiredProfileDataFinished;
 }
 
 /*
@@ -65,6 +72,7 @@ export class CoreEvents {
     static readonly SESSION_EXPIRED = 'session_expired';
     static readonly PASSWORD_CHANGE_FORCED = 'password_change_forced';
     static readonly USER_NOT_FULLY_SETUP = 'user_not_fully_setup';
+    static readonly SITE_POLICY_AGREED = 'site_policy_agreed';
     static readonly SITE_POLICY_NOT_AGREED = 'site_policy_not_agreed';
     static readonly LOGIN = 'login';
     static readonly LOGOUT = 'logout';
@@ -74,8 +82,14 @@ export class CoreEvents {
     static readonly SITE_UPDATED = 'site_updated';
     static readonly SITE_DELETED = 'site_deleted';
     static readonly COMPLETION_MODULE_VIEWED = 'completion_module_viewed';
+    /**
+     * Deprecated on 4.0 use COMPLETION_CHANGED instead.
+     */
     static readonly MANUAL_COMPLETION_CHANGED = 'manual_completion_changed';
+    static readonly COMPLETION_CHANGED = 'completion_changed';
     static readonly USER_DELETED = 'user_deleted';
+    static readonly USER_SUSPENDED = 'user_suspended';
+    static readonly USER_NO_LOGIN = 'user_no_login';
     static readonly PACKAGE_STATUS_CHANGED = 'package_status_changed';
     static readonly COURSE_STATUS_CHANGED = 'course_status_changed';
     static readonly SECTION_STATUS_CHANGED = 'section_status_changed';
@@ -89,6 +103,9 @@ export class CoreEvents {
     static readonly APP_LAUNCHED_URL = 'app_launched_url'; // App opened with a certain URL (custom URL scheme).
     static readonly FILE_SHARED = 'file_shared';
     static readonly KEYBOARD_CHANGE = 'keyboard_change';
+    /**
+     * @deprecated since app 4.0. Use CoreComponentsRegistry promises instead.
+     */
     static readonly CORE_LOADING_CHANGED = 'core_loading_changed';
     static readonly ORIENTATION_CHANGE = 'orientation_change';
     static readonly SEND_ON_ENTER_CHANGED = 'send_on_enter_changed';
@@ -98,6 +115,8 @@ export class CoreEvents {
     static readonly FORM_ACTION = 'form_action';
     static readonly ACTIVITY_DATA_SENT = 'activity_data_sent';
     static readonly DEVICE_REGISTERED_IN_MOODLE = 'device_registered_in_moodle';
+    static readonly COURSE_MODULE_VIEWED = 'course_module_viewed';
+    static readonly COMPLETE_REQUIRED_PROFILE_DATA_FINISHED = 'complete_required_profile_data_finished';
 
     protected static logger = CoreLogger.getInstance('CoreEvents');
     protected static observables: { [eventName: string]: Subject<unknown> } = {};
@@ -134,7 +153,7 @@ export class CoreEvents {
 
         this.logger.debug(`New observer listening to event '${eventName}'`);
 
-        if (typeof this.observables[eventName] == 'undefined') {
+        if (this.observables[eventName] === undefined) {
             // No observable for this event, create a new one.
             this.observables[eventName] = new Subject();
         }
@@ -154,6 +173,31 @@ export class CoreEvents {
                 subscription.unsubscribe();
             },
         };
+    }
+
+    /**
+     * Listen once for a certain event. To stop listening to the event (in case it wasn't triggered):
+     * let observer = eventsProvider.on('something', myCallBack);
+     * ...
+     * observer.off();
+     *
+     * @param eventName Name of the event to listen to.
+     * @param callBack Function to call when the event is triggered.
+     * @param siteId Site where to trigger the event. Undefined won't check the site.
+     * @return Observer to stop listening.
+     */
+    static once<Fallback = unknown, Event extends string = string>(
+        eventName: Event,
+        callBack: (value: CoreEventData<Event, Fallback> & CoreEventSiteData) => void,
+        siteId?: string,
+    ): CoreEventObserver {
+        const listener = CoreEvents.on<Fallback, Event>(eventName, (value) => {
+            setTimeout(() => listener.off(), 0);
+
+            callBack(value);
+        }, siteId);
+
+        return listener;
     }
 
     /**
@@ -261,10 +305,7 @@ export type CoreEventSiteAddedData = CoreSiteInfoResponse;
 /**
  * Data passed to SESSION_EXPIRED event.
  */
-export type CoreEventSessionExpiredData = {
-    pageName?: string;
-    options?: CoreNavigationOptions;
-};
+export type CoreEventSessionExpiredData = CoreRedirectPayload;
 
 /**
  * Data passed to CORE_LOADING_CHANGED event.
@@ -295,6 +336,22 @@ export type CoreEventPackageStatusChanged = {
  * Data passed to USER_DELETED event.
  */
 export type CoreEventUserDeletedData = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    params: any; // Params sent to the WS that failed.
+};
+
+/**
+ * Data passed to USER_SUSPENDED event.
+ */
+export type CoreEventUserSuspendedData = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    params: any; // Params sent to the WS that failed.
+};
+
+/**
+ * Data passed to USER_NO_LOGIN event.
+ */
+export type CoreEventUserNoLoginData = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     params: any; // Params sent to the WS that failed.
 };
@@ -367,6 +424,14 @@ export type CoreEventLoginSiteCheckedData = {
 };
 
 /**
+ * Data passed to LOGIN_SITE_UNCHECKED event.
+ */
+export type CoreEventLoginSiteUncheckedData = {
+    config?: CoreSitePublicConfigResponse;
+    loginSuccessful: boolean;
+};
+
+/**
  * Data passed to SEND_ON_ENTER_CHANGED event.
  */
 export type CoreEventSendOnEnterChangedData = {
@@ -386,4 +451,28 @@ export type CoreEventFileSharedData = {
  */
 export type CoreEventAppLaunchedData = {
     url: string;
+};
+
+/**
+ * Data passed to ORIENTATION_CHANGE event.
+ */
+export type CoreEventOrientationData = {
+    orientation: CoreScreenOrientation;
+};
+
+/**
+ * Data passed to COURSE_MODULE_VIEWED event.
+ */
+export type CoreEventCourseModuleViewed = {
+    courseId: number;
+    cmId: number;
+    timeaccess: number;
+    sectionId?: number;
+};
+
+/**
+ * Data passed to COMPLETE_REQUIRED_PROFILE_DATA_FINISHED event.
+ */
+export type CoreEventCompleteRequiredProfileDataFinished = {
+    path: string;
 };

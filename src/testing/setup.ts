@@ -14,7 +14,9 @@
 
 import 'jest-preset-angular';
 
-import { setCreateSingletonMethodProxy } from '@singletons';
+import { setCreateSingletonMethodProxy, setSingletonsInjector } from '@singletons';
+
+import { resetTestingEnvironment, getServiceInstance } from './utils';
 
 // eslint-disable-next-line no-console
 console.debug = () => {
@@ -22,7 +24,7 @@ console.debug = () => {
 };
 
 // eslint-disable-next-line no-console, jest/no-jasmine-globals, @typescript-eslint/no-explicit-any
-console.error = (...args: any[]) => fail(args.map(a => a.toString()).join(''));
+console.error = (...args: any[]) => fail(args.map(a => String(a)).join(''));
 
 // eslint-disable-next-line jest/no-jasmine-globals
 process.on('unhandledRejection', error => fail(error));
@@ -35,3 +37,6 @@ setCreateSingletonMethodProxy(
             instance[`mock_${String(property)}`] ??
             jest.fn((...args) => method.call(instance, ...args)),
 );
+
+setSingletonsInjector({ get: injectionToken => getServiceInstance(injectionToken) });
+beforeEach(() => resetTestingEnvironment());

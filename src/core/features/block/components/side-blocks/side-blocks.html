@@ -1,0 +1,24 @@
+<ion-header class="no-title">
+    <ion-toolbar>
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="fas-times" slot="icon-only" aria-hidden=true></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true">
+    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="doRefresh($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="loaded">
+        <ion-list *ngIf="blocks.length > 0">
+            <ng-container *ngFor="let block of blocks">
+                <core-block *ngIf="block.visible" [block]="block" [contextLevel]="contextLevel" [instanceId]="instanceId"></core-block>
+            </ng-container>
+        </ion-list>
+
+        <core-empty-box *ngIf="blocks.length == 0" icon="fas-th-large" [message]="'core.block.noblocks' | translate">
+        </core-empty-box>
+    </core-loading>
+</ion-content>

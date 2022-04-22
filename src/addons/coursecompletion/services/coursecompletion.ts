@@ -172,12 +172,12 @@ export class AddonCourseCompletionProvider {
         const course = await CoreCourses.getUserCourse(courseId, preferCache);
 
         if (course) {
-            if (typeof course.enablecompletion != 'undefined' && !course.enablecompletion) {
+            if (course.enablecompletion !== undefined && !course.enablecompletion) {
                 // Completion not enabled for the course.
                 return false;
             }
 
-            if (typeof course.completionhascriteria != 'undefined' && !course.completionhascriteria) {
+            if (course.completionhascriteria !== undefined && !course.completionhascriteria) {
                 // No criteria, cannot view completion.
                 return false;
             }
@@ -206,7 +206,7 @@ export class AddonCourseCompletionProvider {
 
                 // If the site is returning the completionhascriteria then the user can view his own completion.
                 // We already checked the value in isPluginViewEnabledForCourse.
-                if (course && typeof course.completionhascriteria != 'undefined') {
+                if (course && course.completionhascriteria !== undefined) {
                     return true;
                 }
             }

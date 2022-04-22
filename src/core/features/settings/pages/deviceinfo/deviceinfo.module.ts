@@ -17,11 +17,16 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSettingsDeviceInfoPage } from './deviceinfo';
+import { CoreSettingsDevPage } from '../dev/dev';
 
 const routes: Routes = [
     {
         path: '',
         component: CoreSettingsDeviceInfoPage,
+    },
+    {
+        path: 'dev',
+        component: CoreSettingsDevPage,
     },
 ];
 
@@ -32,6 +37,7 @@ const routes: Routes = [
     ],
     declarations: [
         CoreSettingsDeviceInfoPage,
+        CoreSettingsDevPage,
     ],
     exports: [RouterModule],
 })

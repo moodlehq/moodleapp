@@ -1,11 +1,9 @@
 :host .core-block-content ::ng-deep {
     .tag_cloud {
-        font-size: 80%;
         text-align: center;
         ul.inline-list {
             list-style: none;
-            margin-left: 0;
-            margin-right: 0;
+            margin: 0;
             -webkit-padding-start: 0;
 
             li {
@@ -13,8 +11,8 @@
                 display: inline-block;
 
                 a {
-                    background: var(--ion-color-primary);
-                    color: var(--ion-color-primary-contrast);
+                    background: var(--primary);
+                    color: var(--primary-contrast);
                     padding: 3px 8px;
                     -webkit-font-smoothing: antialiased;
                     display: inline-block;
@@ -26,7 +24,7 @@
                     contain: content;
                     vertical-align: baseline;
                     text-decoration: none;
-                    border-radius: 4px;
+                    border-radius: var(--small-radius);
                 }
                 .s20 {
                     font-size: 2.7em;

@@ -97,6 +97,7 @@ export class CoreQuestionBaseComponent {
             const radioEl = radios[i];
             const option: AddonModQuizQuestionRadioOption = {
                 id: radioEl.id,
+                class: '',
                 name: radioEl.name,
                 value: radioEl.value,
                 checked: radioEl.checked,
@@ -163,7 +164,7 @@ export class CoreQuestionBaseComponent {
         for (const i in options) {
             const optionEl = options[i];
 
-            if (typeof optionEl.value == 'undefined') {
+            if (optionEl.value === undefined) {
                 this.logger.warn('Aborting because couldn\'t find input.', this.question?.slot);
                 CoreQuestionHelper.showComponentError(this.onAbort);
 
@@ -224,7 +225,7 @@ export class CoreQuestionBaseComponent {
 
         // Extract question text.
         this.question.text = CoreDomUtils.getContentsOfElement(element, '.qtext');
-        if (typeof this.question.text == 'undefined') {
+        if (this.question.text === undefined) {
             this.logger.warn('Aborting because of an error parsing question.', this.question.slot);
 
             return CoreQuestionHelper.showComponentError(this.onAbort);
@@ -457,7 +458,7 @@ export class CoreQuestionBaseComponent {
             name: input.name,
             value: input.value,
             readOnly: input.readOnly,
-            isInline: !!CoreDomUtils.closest(input, '.qtext'), // The answer can be inside the question text.
+            isInline: !!input.closest('.qtext'), // The answer can be inside the question text.
         };
 
         // Check if question is marked as correct.
@@ -553,7 +554,7 @@ export class CoreQuestionBaseComponent {
             for (const j in options) {
                 const optionEl = options[j];
 
-                if (typeof optionEl.value == 'undefined') {
+                if (optionEl.value === undefined) {
                     this.logger.warn('Aborting because couldn\'t find the value of an option.', question.slot);
 
                     return CoreQuestionHelper.showComponentError(this.onAbort);
@@ -621,6 +622,7 @@ export class CoreQuestionBaseComponent {
             const element = options[i];
             const option: AddonModQuizQuestionRadioOption = {
                 id: element.id,
+                class: '',
                 name: element.name,
                 value: element.value,
                 checked: element.checked,
@@ -643,6 +645,7 @@ export class CoreQuestionBaseComponent {
                 // Not found, use the old format.
                 label = questionEl.querySelector('label[for="' + option.id + '"]');
             }
+            option.class = label?.className || option.class;
 
             // Check that we were able to successfully extract options required data.
             if (!label || option.name === undefined || option.value === undefined) {
@@ -736,6 +739,7 @@ export type AddonModQuizQuestionSelectOption = {
 export type AddonModQuizQuestionRadioOption = {
     id: string;
     name: string;
+    class: string;
     value: string;
     disabled: boolean;
     checked: boolean;

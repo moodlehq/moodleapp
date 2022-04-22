@@ -123,7 +123,7 @@ function readBytes (str, len, escapedString = false) {
     const isLowSurrogate = code >= 0xdc00 && code <= 0xdfff
 
     if (escapedString && chr === '\\') {
-      chr = String.fromCharCode(parseInt(str.substr(c + 1, 2), 16))
+      chr = String.fromCharCode(parseInt(str.substring(c + 1, c + 3), 16))
       escapedChars++
 
       // each escaped sequence is 3 characters. Go 2 chars ahead.
@@ -167,7 +167,7 @@ function expectString (str) {
 
   const len = parseInt(byteLenMatch, 10)
 
-  str = str.substr(match.length)
+  str = str.substring(match.length)
 
   let [ strMatch, bytes ] = readBytes(str, len)
 
@@ -175,7 +175,7 @@ function expectString (str) {
     throw SyntaxError(`Expected string of ${len} bytes, but got ${bytes}`)
   }
 
-  str = str.substr((strMatch as string).length)
+  str = str.substring((strMatch as string).length)
 
   // strict parsing, match closing "; chars
   if (!str.startsWith('";')) {
@@ -195,7 +195,7 @@ function expectEscapedString (str) {
 
   const len = parseInt(strLenMatch, 10)
 
-  str = str.substr(match.length)
+  str = str.substring(match.length)
 
   let [ strMatch, bytes, escapedChars ] = readBytes(str, len, true)
 
@@ -203,7 +203,7 @@ function expectEscapedString (str) {
     throw SyntaxError(`Expected escaped string of ${len} bytes, but got ${bytes}`)
   }
 
-  str = str.substr((strMatch as string).length + (escapedChars as number) * 2)
+  str = str.substring((strMatch as string).length + (escapedChars as number) * 2)
 
   // strict parsing, match closing "; chars
   if (!str.startsWith('";')) {
@@ -249,15 +249,15 @@ function expectObject (str, cache) {
   const obj = {}
   cache([obj])
 
-  str = str.substr(totalOffset)
+  str = str.substring(totalOffset)
 
   for (let i = 0; i < propCount; i++) {
     const prop = expectKeyOrIndex(str)
-    str = str.substr(prop[1])
+    str = str.substring(prop[1])
     totalOffset += prop[1] as number
 
     const value = expectType(str, cache)
-    str = str.substr(value[1])
+    str = str.substring(value[1])
     totalOffset += value[1]
 
     obj[prop[0]] = value[0]
@@ -299,7 +299,7 @@ function expectArray (str, cache) {
     throw SyntaxError('Expected array length annotation')
   }
 
-  str = str.substr(arrayLiteralBeginMatch.length)
+  str = str.substring(arrayLiteralBeginMatch.length)
 
   const array = expectArrayItems(str, parseInt(arrayLengthMatch, 10), cache)
 
@@ -327,14 +327,14 @@ function expectArrayItems (str, expectedItems = 0, cache) {
       hasStringKeys = (typeof key[0] === 'string')
     }
 
-    str = str.substr(key[1])
+    str = str.substring(key[1])
     totalOffset += key[1]
 
     // references are resolved immediately, so if duplicate key overwrites previous array index
     // the old value is anyway resolved
     // fixme: but next time the same reference should point to the new value
     item = expectType(str, cache)
-    str = str.substr(item[1])
+    str = str.substring(item[1])
     totalOffset += item[1]
 
     items[key[0]] = item[0]
@@ -428,7 +428,7 @@ function substr_replace (str, replace, start, length) {
 
   return [
     str.slice(0, start),
-    replace.substr(0, length),
+    replace.substring(0, length),
     replace.slice(length),
     str.slice(start + length)
   ].join('')

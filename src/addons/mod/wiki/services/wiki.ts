@@ -58,7 +58,7 @@ export class AddonModWikiProvider {
      * @param wikiId wiki Id, if not provided all will be cleared.
      */
     clearSubwikiList(wikiId?: number): void {
-        if (typeof wikiId == 'undefined') {
+        if (wikiId === undefined) {
             this.subwikiListsCache = {};
         } else {
             delete this.subwikiListsCache[wikiId];
@@ -178,9 +178,7 @@ export class AddonModWikiProvider {
         if (section) {
             params.section = section;
         }
-
-        // This parameter requires Moodle 3.2. It saves network usage.
-        if (lockOnly && site.isVersionGreaterEqualThan('3.2')) {
+        if (lockOnly) {
             params.lockonly = true;
         }
 
@@ -335,7 +333,10 @@ export class AddonModWikiProvider {
 
         const response = await site.read<AddonModWikiGetSubwikisWSResponse>('mod_wiki_get_subwikis', params, preSets);
 
-        return response.subwikis;
+        return response.subwikis.map(subwiki => ({
+            ...subwiki,
+            groupid: Number(subwiki.groupid), // Convert groupid to number.
+        }));
     }
 
     /**
@@ -394,7 +395,7 @@ export class AddonModWikiProvider {
             return currentWiki;
         }
 
-        throw new CoreError('Wiki not found.');
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
     /**
@@ -1112,19 +1113,26 @@ export type AddonModWikiGetSubwikisWSParams = {
  * Data returned by mod_wiki_get_subwikis WS.
  */
 export type AddonModWikiGetSubwikisWSResponse = {
-    subwikis: AddonModWikiSubwiki[];
+    subwikis: AddonModWikiSubwikiWSData[];
     warnings?: CoreWSExternalWarning[];
 };
 
 /**
  * Subwiki data returned by mod_wiki_get_subwikis WS.
  */
-export type AddonModWikiSubwiki = {
+export type AddonModWikiSubwikiWSData = {
     id: number; // Subwiki ID.
     wikiid: number; // Wiki ID.
-    groupid: number; // Group ID.
+    groupid: string; // Group ID.
     userid: number; // User ID.
     canedit: boolean; // True if user can edit the subwiki.
+};
+
+/**
+ * Subwiki data with some calculated data.
+ */
+export type AddonModWikiSubwiki = Omit<AddonModWikiSubwikiWSData, 'groupid'> & {
+    groupid: number; // Group ID.
 };
 
 /**

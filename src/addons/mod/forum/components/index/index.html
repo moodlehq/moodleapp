@@ -1,66 +1,27 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
-    <core-context-menu>
-        <core-context-menu-item *ngIf="externalUrl"
-            [priority]="900" [content]="'core.openinbrowser' | translate" [href]="externalUrl" iconAction="fas-external-link-alt">
-        </core-context-menu-item>
-        <core-context-menu-item *ngIf="description" [priority]="800" [content]="'core.moduleintro' | translate"
-            (action)="expandDescription()" iconAction="fas-arrow-right">
-        </core-context-menu-item>
-        <core-context-menu-item *ngIf="blog"
-            [priority]="750" content="{{'addon.blog.blog' | translate}}" iconAction="far-newspaper" (action)="gotoBlog()">
-        </core-context-menu-item>
-        <core-context-menu-item
-            *ngIf="discussions.loaded && !(hasOffline || hasOfflineRatings) && isOnline"
-            [priority]="700" [content]="'addon.mod_forum.refreshdiscussions' | translate" [iconAction]="refreshIcon" [closeOnClick]="false"
-            (action)="doRefresh(null, $event)">
-        </core-context-menu-item>
-        <core-context-menu-item
-            *ngIf="discussions.loaded && (hasOffline || hasOfflineRatings) && isOnline"
-            [priority]="600" [content]="'core.settings.synchronizenow' | translate" [iconAction]="syncIcon" [closeOnClick]="false"
-            (action)="doRefresh(null, $event, true)">
-        </core-context-menu-item>
-        <core-context-menu-item *ngIf="prefetchStatusIcon"
-            [priority]="500" [content]="prefetchText" [iconAction]="prefetchStatusIcon" [closeOnClick]="false"
-            (action)="prefetch($event)">
-        </core-context-menu-item>
-        <core-context-menu-item *ngIf="size"
-            iconDescription="fas-archive" iconAction="fas-trash"
-            [priority]="400" [content]="'core.clearstoreddata' | translate:{$a: size}" [closeOnClick]="false"
-            (action)="removeFiles($event)">
-        </core-context-menu-item>
-        <core-context-menu-item *ngIf="sortingAvailable"
-            iconAction="fas-sort"
-            [priority]="300" [content]="'core.sort' | translate"
-            (action)="showSortOrderSelector()">
-        </core-context-menu-item>
-    </core-context-menu>
+    <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [attr.aria-label]="'core.info' | translate">
+        <ion-icon name="fas-info-circle" slot="icon-only" aria-hidden="true"></ion-icon>
+    </ion-button>
 </core-navbar-buttons>
 
 <!-- Content. -->
 <core-split-view>
-    <ion-refresher slot="fixed" [disabled]="!discussions.loaded" (ionRefresh)="doRefresh($event.target)">
+    <ion-refresher slot="fixed" [disabled]="showLoading || (discussions && !discussions.loaded)" (ionRefresh)="doRefresh($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 
-    <core-loading [hideUntil]="discussions.loaded">
+    <core-loading [hideUntil]="!showLoading && discussions && discussions.loaded">
         <!-- Activity info. -->
-        <core-course-module-info *ngIf="showCompletion" [module]="module" [showManualCompletion]="true"
+        <core-course-module-info [module]="module" [description]="forum && forum.type != 'single' && description" [component]="component"
+            [componentId]="componentId" [courseId]="courseId" [hasDataToSync]="hasOffline || hasOfflineRatings"
             (completionChanged)="onCompletionChange()">
-        </core-course-module-info>
-
-        <core-course-module-description *ngIf="forum && forum.type != 'single'"
-            [description]="description" [component]="component" [componentId]="componentId" [note]="descriptionNote"
-            contextLevel="module" [contextInstanceId]="module && module.id" [courseId]="courseId">
-        </core-course-module-description>
-
-        <!-- Forum discussions found to be synchronized -->
-        <ion-card class="core-warning-card" *ngIf="hasOffline || hasOfflineRatings">
-            <ion-item>
-                <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
-                <ion-label>{{ 'core.hasdatatosync' | translate:{$a: moduleName} }}</ion-label>
+            <ion-item class="ion-text-wrap">
+                <ion-label>
+                    {{descriptionNote}}
+                </ion-label>
             </ion-item>
-        </ion-card>
+        </core-course-module-info>
 
         <!-- Cut-off date or due date message -->
         <ion-card class="core-info-card" *ngIf="availabilityMessage">
@@ -70,26 +31,29 @@
             </ion-item>
         </ion-card>
 
+        <!-- Q&A message. -->
+        <ion-card class="core-info-card" *ngIf="showQAMessage">
+            <ion-item>
+                <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
+                <ion-label>{{ 'addon.mod_forum.qandanotify' | translate }}</ion-label>
+            </ion-item>
+        </ion-card>
+
         <ng-container *ngIf="forum">
-            <core-empty-box *ngIf="discussions.empty" icon="far-comments"
+            <core-empty-box *ngIf="!discussions || !discussions.hasDiscussions" icon="far-comments"
                 [message]="'addon.mod_forum.forumnodiscussionsyet' | translate">
             </core-empty-box>
 
-            <div *ngIf="!discussions.empty && sortingAvailable && selectedSortOrder" class="ion-text-wrap">
-                <core-combobox
-                    [modalOptions]="sortOrderSelectorModalOptions"
-                    listboxId="addon-mod-forum-sort-selector"
-                    [label]="('core.sort' | translate)"
-                    (onChange)="setSortOrder($event)"
-                    [selection]="selectedSortOrder.label | translate"
+            <div *ngIf="discussions?.hasDiscussions && sortingAvailable && selectedSortOrder" class="ion-text-wrap">
+                <core-combobox [modalOptions]="sortOrderSelectorModalOptions" listboxId="addon-mod-forum-sort-selector"
+                    [label]="('core.sort' | translate)" (onChange)="setSortOrder($event)" [selection]="selectedSortOrder.label | translate"
                     interface="modal">
                 </core-combobox>
             </div>
 
-            <ion-item *ngFor="let discussion of discussions.items"
-                class="addon-mod-forum-discussion" detail="true"
-                [lines]="discussion.groupname && 'none'" [attr.aria-current]="discussions.getItemAriaCurrent(discussion)"
-                (click)="discussions.select(discussion)" button>
+            <ion-item *ngFor="let discussion of discussionsItems" class="addon-mod-forum-discussion" detail="true"
+                [lines]="discussion.groupname && 'none'" [attr.aria-current]="discussions?.getItemAriaCurrent(discussion)"
+                (click)="discussions?.select(discussion)" button>
                 <ion-label>
                     <div class="addon-mod-forum-discussion-title">
                         <p class="ion-text-wrap item-heading">
@@ -97,15 +61,14 @@
                                 [attr.aria-label]="'addon.mod_forum.discussionpinned' | translate"></ion-icon>
                             <ion-icon name="fas-star" class="addon-forum-star" *ngIf="!discussion.pinned && discussion.starred"
                                 [attr.aria-label]="'addon.mod_forum.favourites' | translate"></ion-icon>
-                            <core-format-text
-                                [text]="discussion.subject"
-                                contextLevel="module" [contextInstanceId]="module && module.id" [courseId]="courseId">
+                            <core-format-text [text]="discussion.subject" contextLevel="module" [contextInstanceId]="module && module.id"
+                                [courseId]="courseId">
                             </core-format-text>
+                            <ion-icon name="fas-lock" *ngIf="discussion.locked" class="addon-mod-forum-locked-icon"
+                                [attr.aria-label]="'addon.mod_forum.discussionlocked' | translate"></ion-icon>
                         </p>
-                        <ion-button *ngIf="canPin || discussion.canlock || discussion.canfavourite"
-                            fill="clear" color="dark"
-                            [attr.aria-label]="('core.displayoptions' | translate)"
-                            (click)="showOptionsMenu($event, discussion)">
+                        <ion-button *ngIf="canPin || discussion.canlock || discussion.canfavourite" fill="clear"
+                            [attr.aria-label]="('core.displayoptions' | translate)" (click)="showOptionsMenu($event, discussion)">
                             <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true">
                             </ion-icon>
                         </ion-button>
@@ -115,21 +78,20 @@
                         </core-user-avatar>
                         <div class="addon-mod-forum-discussion-author">
                             <span *ngIf="discussion.userfullname">{{discussion.userfullname}}</span>
-                            <p *ngIf="discussion.groupname">
+                            <p *ngIf="discussion.groupname" class="core-groupname">
                                 <ion-icon name="fas-users" [attr.aria-label]="'addon.mod_forum.group' | translate">
                                 </ion-icon> {{ discussion.groupname }}
                             </p>
-                            <p *ngIf="discussions.isOnlineDiscussion(discussion)">
+                            <p *ngIf="isOnlineDiscussion(discussion)">
                                 {{discussion.created * 1000 | coreFormatDate: "strftimerecentfull"}}
                             </p>
-                            <p *ngIf="discussions.isOfflineDiscussion(discussion)">
+                            <p *ngIf="isOfflineDiscussion(discussion)">
                                 <ion-icon name="fas-clock" aria-hidden="true"></ion-icon>
                                 {{ 'core.notsent' | translate }}
                             </p>
                         </div>
                     </div>
-                    <ion-row *ngIf="discussions.isOnlineDiscussion(discussion)"
-                        class="ion-text-center addon-mod-forum-discussion-more-info">
+                    <ion-row *ngIf="isOnlineDiscussion(discussion)" class="ion-text-center addon-mod-forum-discussion-more-info">
                         <ion-col class="ion-text-start">
                             <ion-note>
                                 <ion-icon name="fas-clock" aria-hidden="true"></ion-icon> {{ 'addon.mod_forum.lastpost' | translate }}
@@ -157,12 +119,14 @@
                 </ion-label>
             </ion-item>
 
-            <core-infinite-loading
-                [enabled]="discussions.onlineLoaded && !discussions.completed" [error]="discussions.fetchFailed"
+            <core-infinite-loading [enabled]="discussions && discussions.loaded && !discussions.completed" [error]="fetchFailed"
                 (action)="fetchMoreDiscussions($event)">
             </core-infinite-loading>
         </ng-container>
     </core-loading>
+
+    <core-course-module-navigation collapsible-footer [hidden]="showLoading" [courseId]="courseId" [currentModuleId]="module.id">
+    </core-course-module-navigation>
 
     <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="forum && canAddDiscussion">
         <ion-fab-button (click)="openNewDiscussion()" [attr.aria-label]="addDiscussionText">

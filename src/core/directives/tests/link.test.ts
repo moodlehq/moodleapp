@@ -13,8 +13,9 @@
 // limitations under the License.
 
 import { CoreLinkDirective } from '@directives/link';
+import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 
-import { renderTemplate } from '@/testing/utils';
+import { mockSingleton, renderTemplate } from '@/testing/utils';
 
 describe('CoreLinkDirective', () => {
 
@@ -33,6 +34,28 @@ describe('CoreLinkDirective', () => {
         expect(anchor.href).toEqual('https://moodle.org/');
     });
 
-    it.todo('should capture clicks');
+    it('should capture clicks', async () => {
+        // Arrange
+        mockSingleton(CoreContentLinksHelper, { handleLink: () => Promise.resolve(true) });
+
+        // Act
+        const { nativeElement } = await renderTemplate(
+            CoreLinkDirective,
+            '<a href="https://moodle.org/" core-link [capture]="true">Link</a>',
+        );
+
+        const anchor = nativeElement.querySelector('a');
+
+        anchor.click();
+
+        // Assert
+        expect(CoreContentLinksHelper.handleLink).toHaveBeenCalledTimes(1);
+        expect(CoreContentLinksHelper.handleLink).toHaveBeenCalledWith(
+            'https://moodle.org/',
+            undefined,
+            expect.anything(),
+            expect.anything(),
+        );
+    });
 
 });

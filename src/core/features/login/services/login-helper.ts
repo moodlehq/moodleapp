@@ -19,22 +19,25 @@ import { Md5 } from 'ts-md5/dist/md5';
 import { CoreApp, CoreStoreConfig } from '@services/app';
 import { CoreConfig } from '@services/config';
 import { CoreEvents, CoreEventSessionExpiredData, CoreEventSiteData } from '@singletons/events';
-import { CoreSites, CoreLoginSiteInfo } from '@services/sites';
+import { CoreSites, CoreLoginSiteInfo, CoreSiteBasicInfo } from '@services/sites';
 import { CoreWS, CoreWSExternalWarning } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlParams, CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
-import { CoreSite, CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@classes/site';
+import { CoreSite, CoreSiteIdentityProvider, CoreSitePublicConfigResponse, CoreSiteQRCodeType } from '@classes/site';
 import { CoreError } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreUrl } from '@singletons/url';
-import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
+import { CoreNavigator, CoreRedirectPayload } from '@services/navigator';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
+import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
+import { CoreText } from '@singletons/text';
+import { CorePromisedValue } from '@classes/promised-value';
 
 /**
  * Helper provider that provides some common features regarding authentication.
@@ -54,7 +57,7 @@ export class CoreLoginHelperProvider {
     protected logger: CoreLogger;
     protected sessionExpiredCheckingSite: Record<string, boolean> = {};
     protected isOpenEditAlertShown = false;
-    protected waitingForBrowser = false;
+    protected waitingForBrowser?: CorePromisedValue<void>;
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreLoginHelper');
@@ -128,8 +131,9 @@ export class CoreLoginHelperProvider {
      *
      * @param siteurl URL of the site where the SSO login will be performed.
      * @param typeOfLogin CoreConstants.LOGIN_SSO_CODE or CoreConstants.LOGIN_SSO_INAPP_CODE.
-     * @param service The service to use. If not defined, external service will be used.
-     * @param launchUrl The URL to open for SSO. If not defined, local_mobile launch URL will be used.
+     * @param service The service to use. If not defined, core service will be used.
+     * @param launchUrl The URL to open for SSO. If not defined, default tool mobile launch URL will be used.
+     * @param redirectData Data of the path/url to open once authenticated. If not defined, site initial page.
      * @return Promise resolved when done or if user cancelled.
      */
     async confirmAndOpenBrowserForSSOLogin(
@@ -137,6 +141,7 @@ export class CoreLoginHelperProvider {
         typeOfLogin: number,
         service?: string,
         launchUrl?: string,
+        redirectData?: CoreRedirectPayload,
     ): Promise<void> {
         // Show confirm only if it's needed. Treat "false" (string) as false to prevent typing errors.
         const showConfirmation = this.shouldShowSSOConfirm(typeOfLogin);
@@ -150,7 +155,7 @@ export class CoreLoginHelperProvider {
             }
         }
 
-        this.openBrowserForSSOLogin(siteUrl, typeOfLogin, service, launchUrl);
+        this.openBrowserForSSOLogin(siteUrl, typeOfLogin, service, launchUrl, redirectData);
     }
 
     /**
@@ -311,7 +316,7 @@ export class CoreLoginHelperProvider {
         site = site || CoreSites.getCurrentSite();
         const config = site?.getStoredConfig();
 
-        return 'core.mainmenu.' + (config && config.tool_mobile_forcelogout == '1' ? 'logout' : 'changesite');
+        return 'core.mainmenu.' + (config && config.tool_mobile_forcelogout == '1' ? 'logout' : 'switchaccount');
     }
 
     /**
@@ -321,7 +326,7 @@ export class CoreLoginHelperProvider {
      * @return OAuth ID.
      */
     getOAuthIdFromParams(params?: CoreUrlParams): number | undefined {
-        return params && typeof params.oauthsso != 'undefined' ? Number(params.oauthsso) : undefined;
+        return params && params.oauthsso !== undefined ? Number(params.oauthsso) : undefined;
     }
 
     /**
@@ -382,8 +387,8 @@ export class CoreLoginHelperProvider {
         }
 
         const validProviders: CoreSiteIdentityProvider[] = [];
-        const httpUrl = CoreTextUtils.concatenatePaths(siteConfig.wwwroot, 'auth/oauth2/');
-        const httpsUrl = CoreTextUtils.concatenatePaths(siteConfig.httpswwwroot, 'auth/oauth2/');
+        const httpUrl = CoreText.concatenatePaths(siteConfig.wwwroot, 'auth/oauth2/');
+        const httpsUrl = CoreText.concatenatePaths(siteConfig.httpswwwroot, 'auth/oauth2/');
 
         if (siteConfig.identityproviders && siteConfig.identityproviders.length) {
             siteConfig.identityproviders.forEach((provider) => {
@@ -407,8 +412,22 @@ export class CoreLoginHelperProvider {
      * @param showKeyboard Whether to show keyboard in the new page. Only if no fixed URL set.
      * @return Promise resolved when done.
      */
-    async goToAddSite(setRoot?: boolean, showKeyboard?: boolean): Promise<void> {
-        const [path, params] = this.getAddSiteRouteInfo(showKeyboard);
+    async goToAddSite(setRoot = false, showKeyboard = false): Promise<void> {
+        let path = '/login/sites';
+        let params: Params = { openAddSite: true , showKeyboard };
+
+        if (CoreSites.isLoggedIn()) {
+            const willReload = await CoreSites.logoutForRedirect(CoreConstants.NO_SITE_ID, {
+                redirectPath: path,
+                redirectOptions: { params },
+            });
+
+            if (willReload) {
+                return;
+            }
+        } else {
+            [path, params] = this.getAddSiteRouteInfo(showKeyboard);
+        }
 
         await CoreNavigator.navigate(path, { params, reset: setRoot });
     }
@@ -458,7 +477,7 @@ export class CoreLoginHelperProvider {
     async goToSiteInitialPage(navCtrlUnused?: unknown, page?: string, params?: any, options?: any, url?: string): Promise<void> {
         await CoreNavigator.navigateToSiteHome({
             ...options,
-            params: {
+            params: <CoreRedirectPayload> {
                 redirectPath: page,
                 redirectOptions: { params },
                 urlToOpen: url,
@@ -511,7 +530,7 @@ export class CoreLoginHelperProvider {
      * @return Whether email signup is disabled.
      */
     isFeatureDisabled(feature: string, config?: CoreSitePublicConfigResponse, disabledFeatures?: string): boolean {
-        if (typeof disabledFeatures == 'undefined') {
+        if (disabledFeatures === undefined) {
             disabledFeatures = this.getDisabledFeatures(config);
         }
 
@@ -545,23 +564,19 @@ export class CoreLoginHelperProvider {
     }
 
     /**
-     * Check if current site is logged out, triggering mmCoreEventSessionExpired if it is.
+     * Check if current site is logged out, triggering session expired event if it is.
      *
-     * @param pageName Name of the page to go once authenticated if logged out. If not defined, site initial page.
-     * @param options Options of the page to go once authenticated if logged out.
+     * @param redirectData Data of the path/url to open once authenticated if logged out. If not defined, site initial page.
      * @return True if user is logged out, false otherwise.
      */
-    isSiteLoggedOut(pageName?: string, options?: CoreNavigationOptions): boolean {
+    isSiteLoggedOut(redirectData?: CoreRedirectPayload): boolean {
         const site = CoreSites.getCurrentSite();
         if (!site) {
             return false;
         }
 
         if (site.isLoggedOut()) {
-            CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, {
-                pageName,
-                options,
-            }, site.getId());
+            CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, redirectData || {}, site.getId());
 
             return true;
         }
@@ -573,9 +588,10 @@ export class CoreLoginHelperProvider {
      * Check if a site URL is "allowed". In case the app has fixed sites, only those will be allowed to connect to.
      *
      * @param siteUrl Site URL to check.
+     * @param checkSiteFinder Whether to check site finder if needed. Defaults to true.
      * @return Promise resolved with boolean: whether is one of the fixed sites.
      */
-    async isSiteUrlAllowed(siteUrl: string): Promise<boolean> {
+    async isSiteUrlAllowed(siteUrl: string, checkSiteFinder = true): Promise<boolean> {
         if (this.isFixedUrlSet()) {
             // Only 1 site allowed.
             return CoreUrl.sameDomainAndPath(siteUrl, <string> this.getFixedSites());
@@ -583,7 +599,8 @@ export class CoreLoginHelperProvider {
             const sites = <CoreLoginSiteInfo[]> this.getFixedSites();
 
             return sites.some((site) => CoreUrl.sameDomainAndPath(siteUrl, site.url));
-        } else if (CoreConstants.CONFIG.multisitesdisplay == 'sitefinder' && CoreConstants.CONFIG.onlyallowlistedsites) {
+        } else if (CoreConstants.CONFIG.multisitesdisplay == 'sitefinder' && CoreConstants.CONFIG.onlyallowlistedsites &&
+                checkSiteFinder) {
             // Call the sites finder to validate the site.
             const result = await CoreSites.findSites(siteUrl.replace(/^https?:\/\/|\.\w{2,3}\/?$/g, ''));
 
@@ -631,16 +648,14 @@ export class CoreLoginHelperProvider {
      * @param siteUrl URL of the site where the login will be performed.
      * @param provider The identity provider.
      * @param launchUrl The URL to open for SSO. If not defined, tool/mobile launch URL will be used.
-     * @param pageName Name of the page to go once authenticated. If not defined, site initial page.
-     * @param pageOptions Options of the page to go once authenticated.
+     * @param redirectData Data of the path/url to open once authenticated. If not defined, site initial page.
      * @return True if success, false if error.
      */
     openBrowserForOAuthLogin(
         siteUrl: string,
         provider: CoreSiteIdentityProvider,
         launchUrl?: string,
-        pageName?: string,
-        pageOptions?: CoreNavigationOptions,
+        redirectData?: CoreRedirectPayload,
     ): boolean {
         launchUrl = launchUrl || siteUrl + '/admin/tool/mobile/launch.php';
         if (!provider || !provider.url) {
@@ -653,13 +668,12 @@ export class CoreLoginHelperProvider {
             return false;
         }
 
-        const service = CoreSites.determineService(siteUrl);
-        const loginUrl = this.prepareForSSOLogin(siteUrl, service, launchUrl, pageName, pageOptions, {
+        const loginUrl = this.prepareForSSOLogin(siteUrl, undefined, launchUrl, redirectData, {
             oauthsso: params.id,
         });
 
         // Always open it in browser because the user might have the session stored in there.
-        CoreUtils.openInBrowser(loginUrl);
+        CoreUtils.openInBrowser(loginUrl, { showBrowserWarning: false });
         CoreApp.closeApp();
 
         return true;
@@ -670,20 +684,18 @@ export class CoreLoginHelperProvider {
      *
      * @param siteurl URL of the site where the SSO login will be performed.
      * @param typeOfLogin CoreConstants.LOGIN_SSO_CODE or CoreConstants.LOGIN_SSO_INAPP_CODE.
-     * @param service The service to use. If not defined, external service will be used.
-     * @param launchUrl The URL to open for SSO. If not defined, local_mobile launch URL will be used.
-     * @param pageName Name of the page to go once authenticated. If not defined, site initial page.
-     * @param pageOptions Options of the state to go once authenticated.
+     * @param service The service to use. If not defined, core service will be used.
+     * @param launchUrl The URL to open for SSO. If not defined, default tool mobile launch URL will be used.
+     * @param redirectData Data of the path/url to open once authenticated. If not defined, site initial page.
      */
     openBrowserForSSOLogin(
         siteUrl: string,
         typeOfLogin: number,
         service?: string,
         launchUrl?: string,
-        pageName?: string,
-        pageOptions?: CoreNavigationOptions,
+        redirectData?: CoreRedirectPayload,
     ): void {
-        const loginUrl = this.prepareForSSOLogin(siteUrl, service, launchUrl, pageName, pageOptions);
+        const loginUrl = this.prepareForSSOLogin(siteUrl, service, launchUrl, redirectData);
 
         if (this.isSSOEmbeddedBrowser(typeOfLogin)) {
             CoreUtils.openInApp(loginUrl, {
@@ -691,7 +703,7 @@ export class CoreLoginHelperProvider {
                 closebuttoncaption: Translate.instant('core.login.cancel'),
             });
         } else {
-            CoreUtils.openInBrowser(loginUrl);
+            CoreUtils.openInBrowser(loginUrl, { showBrowserWarning: false });
             CoreApp.closeApp();
         }
     }
@@ -757,11 +769,15 @@ export class CoreLoginHelperProvider {
 
             try {
                 await currentSite.openInAppWithAutoLogin(siteUrl + path, undefined, alertMessage);
-
-                this.waitingForBrowser = true;
             } finally {
                 this.isOpenEditAlertShown = false;
             }
+
+            await this.waitForBrowser();
+
+            CoreEvents.trigger(CoreEvents.COMPLETE_REQUIRED_PROFILE_DATA_FINISHED, {
+                path,
+            }, siteId);
         }
     }
 
@@ -788,8 +804,8 @@ export class CoreLoginHelperProvider {
      * Prepare the app to perform SSO login.
      *
      * @param siteUrl URL of the site where the SSO login will be performed.
-     * @param service The service to use. If not defined, external service will be used.
-     * @param launchUrl The URL to open for SSO. If not defined, local_mobile launch URL will be used.
+     * @param service The service to use. If not defined, core service will be used.
+     * @param launchUrl The URL to open for SSO. If not defined, default tool mobile launch URL will be used.
      * @param pageName Name of the page to go once authenticated. If not defined, site initial page.
      * @param pageOptions Options of the page to go once authenticated.
      * @param urlParams Other params to add to the URL.
@@ -799,13 +815,12 @@ export class CoreLoginHelperProvider {
         siteUrl: string,
         service?: string,
         launchUrl?: string,
-        pageName?: string,
-        pageOptions?: CoreNavigationOptions,
+        redirectData: CoreRedirectPayload = {},
         urlParams?: CoreUrlParams,
     ): string {
 
-        service = service || CoreConstants.CONFIG.wsextservice;
-        launchUrl = launchUrl || siteUrl + '/local/mobile/launch.php';
+        service = service || CoreConstants.CONFIG.wsservice;
+        launchUrl = launchUrl || siteUrl + '/admin/tool/mobile/launch.php';
 
         const passport = Math.random() * 1000;
         let loginUrl = launchUrl + '?service=' + service;
@@ -822,8 +837,7 @@ export class CoreLoginHelperProvider {
         CoreConfig.set(CoreConstants.LOGIN_LAUNCH_DATA, JSON.stringify(<StoredLoginLaunchData> {
             siteUrl: siteUrl,
             passport: passport,
-            pageName: pageName || '',
-            pageOptions: pageOptions || {},
+            ...redirectData,
             ssoUrlParams: urlParams || {},
         }));
 
@@ -889,14 +903,15 @@ export class CoreLoginHelperProvider {
         }
 
         this.sessionExpiredCheckingSite[siteId || ''] = true;
+        const redirectData: CoreRedirectPayload = {
+            redirectPath: data.redirectPath,
+            redirectOptions: data.redirectOptions,
+            urlToOpen: data.urlToOpen,
+        };
 
         try {
             // Check authentication method.
             const result = await CoreSites.checkSite(siteUrl);
-
-            if (result.warning) {
-                CoreDomUtils.showErrorModal(result.warning, true, 4000);
-            }
 
             if (this.isSSOLoginNeeded(result.code)) {
                 // SSO. User needs to authenticate in a browser. Check if we need to display a message.
@@ -907,15 +922,14 @@ export class CoreLoginHelperProvider {
                                 (currentSite.isLoggedOut() ? 'loggedoutssodescription' : 'reconnectssodescription')));
                         }
 
-                        this.waitingForBrowser = true;
+                        this.waitForBrowser();
 
                         this.openBrowserForSSOLogin(
                             result.siteUrl,
                             result.code,
                             result.service,
                             result.config?.launchurl,
-                            data.pageName,
-                            data.options,
+                            redirectData,
                         );
                     } catch (error) {
                         // User cancelled, logout him.
@@ -941,15 +955,14 @@ export class CoreLoginHelperProvider {
                             try {
                                 await CoreDomUtils.showConfirm(confirmMessage);
 
-                                this.waitingForBrowser = true;
+                                this.waitForBrowser();
                                 CoreSites.unsetCurrentSite(); // Unset current site to make authentication work fine.
 
                                 this.openBrowserForOAuthLogin(
                                     siteUrl,
                                     providerToUse,
                                     result.config?.launchurl,
-                                    data.pageName,
-                                    data.options,
+                                    redirectData,
                                 );
                             } catch (error) {
                                 // User cancelled, logout him.
@@ -962,7 +975,7 @@ export class CoreLoginHelperProvider {
                 }
 
                 const info = currentSite.getInfo();
-                if (typeof info != 'undefined' && typeof info.username != 'undefined') {
+                if (info !== undefined && info.username !== undefined) {
                     // If current page is already reconnect, stop.
                     if (CoreNavigator.isCurrent('/login/reconnect')) {
                         return;
@@ -971,8 +984,7 @@ export class CoreLoginHelperProvider {
                     await CoreUtils.ignoreErrors(CoreNavigator.navigate('/login/reconnect', {
                         params: {
                             siteId,
-                            pageName: data.pageName,
-                            pageOptions: data.options,
+                            ...redirectData,
                         },
                         reset: true,
                     }));
@@ -1125,11 +1137,6 @@ export class CoreLoginHelperProvider {
             return;
         }
 
-        if (!CoreSites.wsAvailableInCurrentSite('core_user_agree_site_policy')) {
-            // WS not available, stop.
-            return;
-        }
-
         // If current page is already site policy, stop.
         if (CoreNavigator.isCurrent('/login/sitepolicy')) {
             return;
@@ -1202,8 +1209,9 @@ export class CoreLoginHelperProvider {
                 siteUrl: launchSiteURL,
                 token: params[1],
                 privateToken: params[2],
-                pageName: data.pageName,
-                pageOptions: data.pageOptions,
+                redirectPath: data.redirectPath,
+                redirectOptions: data.redirectOptions,
+                urlToOpen: data.urlToOpen,
                 ssoUrlParams: data.ssoUrlParams,
             };
         } else {
@@ -1220,16 +1228,28 @@ export class CoreLoginHelperProvider {
      * @return Whether the app is waiting for browser.
      */
     isWaitingForBrowser(): boolean {
-        return this.waitingForBrowser;
+        return !!this.waitingForBrowser;
     }
 
     /**
-     * Set whether the app is waiting for browser.
+     * Start waiting when opening a browser/IAB.
      *
-     * @param value New value.
+     * @return Promise resolved when the app is resumed.
      */
-    setWaitingForBrowser(value: boolean): void {
-        this.waitingForBrowser = value;
+    async waitForBrowser(): Promise<void> {
+        if (!this.waitingForBrowser) {
+            this.waitingForBrowser = new CorePromisedValue();
+        }
+
+        await this.waitingForBrowser;
+    }
+
+    /**
+     * Stop waiting for browser.
+     */
+    stopWaitingForBrowser(): void {
+        this.waitingForBrowser?.resolve();
+        this.waitingForBrowser = undefined;
     }
 
     /**
@@ -1238,22 +1258,29 @@ export class CoreLoginHelperProvider {
      * @return Whether the QR reader should be displayed in site screen.
      */
     displayQRInSiteScreen(): boolean {
-        return CoreUtils.canScanQR() && (typeof CoreConstants.CONFIG.displayqronsitescreen == 'undefined' ||
+        return CoreUtils.canScanQR() && (CoreConstants.CONFIG.displayqronsitescreen === undefined ||
             !!CoreConstants.CONFIG.displayqronsitescreen);
     }
 
     /**
      * Check whether the QR reader should be displayed in credentials screen.
      *
+     * @param qrCodeType QR Code type from public config, assuming enabled if undefined.
      * @return Whether the QR reader should be displayed in credentials screen.
      */
-    displayQRInCredentialsScreen(): boolean {
+    displayQRInCredentialsScreen(qrCodeType = CoreSiteQRCodeType.QR_CODE_LOGIN): boolean {
         if (!CoreUtils.canScanQR()) {
             return false;
         }
 
-        return (CoreConstants.CONFIG.displayqroncredentialscreen === undefined && this.isFixedUrlSet()) ||
-            (CoreConstants.CONFIG.displayqroncredentialscreen !== undefined && !!CoreConstants.CONFIG.displayqroncredentialscreen);
+        if ((CoreConstants.CONFIG.displayqroncredentialscreen === undefined && this.isFixedUrlSet()) ||
+            (CoreConstants.CONFIG.displayqroncredentialscreen !== undefined &&
+                !!CoreConstants.CONFIG.displayqroncredentialscreen)) {
+
+            return qrCodeType == CoreSiteQRCodeType.QR_CODE_LOGIN;
+        }
+
+        return false;
     }
 
     /**
@@ -1318,43 +1345,118 @@ export class CoreLoginHelperProvider {
         }
     }
 
+    /**
+     * Get the accounts list classified per site.
+     *
+     * @param currentSiteId If loggedin, current Site Id.
+     * @return Promise resolved with account list.
+     */
+    async getAccountsList(currentSiteId?: string): Promise<CoreAccountsList> {
+        const sites = await CoreUtils.ignoreErrors(CoreSites.getSortedSites(), [] as CoreSiteBasicInfo[]);
+
+        const accountsList: CoreAccountsList = {
+            sameSite: [],
+            otherSites: [],
+            count: sites.length,
+        };
+
+        let siteUrl = '';
+
+        if (currentSiteId) {
+            const index = sites.findIndex((site) => site.id == currentSiteId);
+
+            accountsList.currentSite = sites.splice(index, 1)[0];
+            siteUrl = accountsList.currentSite.siteUrlWithoutProtocol;
+        }
+
+        const otherSites: Record<string, CoreSiteBasicInfo[]> = {};
+
+        // Add site counter and classify sites.
+        await Promise.all(sites.map(async (site) => {
+            site.badge = await CoreUtils.ignoreErrors(CorePushNotifications.getSiteCounter(site.id)) || 0;
+
+            if (site.siteUrlWithoutProtocol == siteUrl) {
+                accountsList.sameSite.push(site);
+            } else {
+                if (!otherSites[site.siteUrlWithoutProtocol]) {
+                    otherSites[site.siteUrlWithoutProtocol] = [];
+                }
+
+                otherSites[site.siteUrlWithoutProtocol].push(site);
+            }
+
+            return;
+        }));
+
+        accountsList.otherSites = CoreUtils.objectToArray(otherSites);
+
+        return accountsList;
+    }
+
+    /**
+     * Find and delete a site from the list of sites.
+     *
+     * @param accountsList Account list.
+     * @param site Site to be deleted.
+     * @return Resolved when done.
+     */
+    async deleteAccountFromList(accountsList: CoreAccountsList, site: CoreSiteBasicInfo): Promise<void> {
+        await CoreSites.deleteSite(site.id);
+
+        const siteUrl = site.siteUrlWithoutProtocol;
+        let index = 0;
+
+        // Found on same site.
+        if (accountsList.sameSite.length > 0 && accountsList.sameSite[0].siteUrlWithoutProtocol == siteUrl) {
+            index = accountsList.sameSite.findIndex((listedSite) => listedSite.id == site.id);
+            if (index >= 0) {
+                accountsList.sameSite.splice(index, 1);
+                accountsList.count--;
+            }
+
+            return;
+        }
+
+        const otherSiteIndex = accountsList.otherSites.findIndex((sites) =>
+            sites.length > 0 && sites[0].siteUrlWithoutProtocol == siteUrl);
+        if (otherSiteIndex < 0) {
+            // Site Url not found.
+            return;
+        }
+
+        index = accountsList.otherSites[otherSiteIndex].findIndex((listedSite) => listedSite.id == site.id);
+        if (index >= 0) {
+            accountsList.otherSites[otherSiteIndex].splice(index, 1);
+            accountsList.count--;
+        }
+
+        if (accountsList.otherSites[otherSiteIndex].length == 0) {
+            accountsList.otherSites.splice(otherSiteIndex, 1);
+        }
+    }
+
 }
 
 export const CoreLoginHelper = makeSingleton(CoreLoginHelperProvider);
 
 /**
+ * Accounts list for selecting sites interfaces.
+ */
+export type CoreAccountsList = {
+    currentSite?: CoreSiteBasicInfo; // If logged in, current site info.
+    sameSite: CoreSiteBasicInfo[]; // If logged in, accounts info on the same site.
+    otherSites: CoreSiteBasicInfo[][]; // Other accounts in other sites.
+    count: number; // Number of sites.
+};
+
+/**
  * Data related to a SSO authentication.
  */
-export interface CoreLoginSSOData {
-    /**
-     * The site's URL.
-     */
-    siteUrl: string;
-
-    /**
-     * User's token.
-     */
-    token?: string;
-
-    /**
-     * User's private token.
-     */
-    privateToken?: string;
-
-    /**
-     * Name of the page to go after authenticated.
-     */
-    pageName?: string;
-
-    /**
-     * Options of the navigation to the page.
-     */
-    pageOptions?: CoreNavigationOptions;
-
-    /**
-     * Other params added to the login url.
-     */
-    ssoUrlParams?: CoreUrlParams;
+export type CoreLoginSSOData = CoreRedirectPayload & {
+    siteUrl: string; // The site's URL.
+    token?: string; // User's token.
+    privateToken?: string; // User's private token.
+    ssoUrlParams?: CoreUrlParams; // Other params added to the login url.
 };
 
 /**
@@ -1436,11 +1538,9 @@ type ResendConfirmationEmailResult = {
     warnings?: CoreWSExternalWarning[];
 };
 
-type StoredLoginLaunchData = {
+type StoredLoginLaunchData = CoreRedirectPayload & {
     siteUrl: string;
     passport: number;
-    pageName: string;
-    pageOptions: CoreNavigationOptions;
     ssoUrlParams: CoreUrlParams;
 };
 

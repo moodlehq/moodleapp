@@ -23,6 +23,10 @@ const routes: Routes = [
         path: ':courseId/:cmId',
         component: AddonModBookIndexPage,
     },
+    {
+        path: ':courseId/:cmId/contents',
+        loadChildren: () => import('./pages/contents/contents.module').then(m => m.AddonModBookContentsPageModule),
+    },
 ];
 
 @NgModule({

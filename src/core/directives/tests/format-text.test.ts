@@ -13,34 +13,30 @@
 // limitations under the License.
 
 import { IonContent } from '@ionic/angular';
-import { NgZone } from '@angular/core';
 import Faker from 'faker';
 
 import { CoreConfig } from '@services/config';
-import { CoreDomUtils, CoreDomUtilsProvider } from '@services/utils/dom';
+import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreFilepool } from '@services/filepool';
+import { CoreFilter } from '@features/filter/services/filter';
+import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { CoreFormatTextDirective } from '@directives/format-text';
 import { CoreSite } from '@classes/site';
 import { CoreSites } from '@services/sites';
-import { CoreUrlUtils, CoreUrlUtilsProvider } from '@services/utils/url';
-import { CoreUtils, CoreUtilsProvider } from '@services/utils/utils';
-import { Platform } from '@singletons';
+import { CoreUtils } from '@services/utils/utils';
 
-import { mock, mockSingleton, RenderConfig, renderWrapperComponent } from '@/testing/utils';
-import { CoreFilter } from '@features/filter/services/filter';
-import { CoreApp } from '@services/app';
+import { mock, mockSingleton, RenderConfig, renderTemplate, renderWrapperComponent } from '@/testing/utils';
+import { CoreDB } from '@services/db';
 
 describe('CoreFormatTextDirective', () => {
 
     let config: Partial<RenderConfig>;
 
     beforeEach(() => {
-        mockSingleton(Platform, { ready: () => Promise.resolve() });
+        mockSingleton(CoreSites, { getSite: () => Promise.reject() });
         mockSingleton(CoreConfig, { get: (_, defaultValue) => defaultValue });
-
-        CoreDomUtils.setInstance(new CoreDomUtilsProvider());
-        CoreUrlUtils.setInstance(new CoreUrlUtilsProvider());
-        CoreUtils.setInstance(new CoreUtilsProvider(mock<NgZone>()));
+        mockSingleton(CoreFilter, { formatText: text => Promise.resolve(text) });
+        mockSingleton(CoreFilterHelper, { getFiltersAndFormatText: text => Promise.resolve({ text, filters: [] }) });
 
         config = {
             providers: [
@@ -53,9 +49,6 @@ describe('CoreFormatTextDirective', () => {
         // Arrange
         const sentence = Faker.lorem.sentence();
 
-        mockSingleton(CoreSites, { getSite: () => Promise.reject() });
-        mockSingleton(CoreFilter, { formatText: (text) => Promise.resolve(text) });
-
         // Act
         const fixture = await renderWrapperComponent(
             CoreFormatTextDirective,
@@ -65,17 +58,77 @@ describe('CoreFormatTextDirective', () => {
         );
 
         // Assert
-        const text = fixture.nativeElement.querySelector('core-format-text .core-format-text-content');
+        const text = fixture.nativeElement.querySelector('core-format-text');
         expect(text).not.toBeNull();
         expect(text.innerHTML).toEqual(sentence);
     });
 
+    it('should format text', async () => {
+        // Arrange
+        mockSingleton(CoreFilter, { formatText: () => 'Formatted text' });
+
+        // Act
+        const { nativeElement } = await renderTemplate(
+            CoreFormatTextDirective,
+            '<core-format-text text="Lorem ipsum dolor"></core-format-text>',
+        );
+
+        // Assert
+        const text = nativeElement.querySelector('core-format-text');
+        expect(text).not.toBeNull();
+        expect(text.textContent).toEqual('Formatted text');
+
+        expect(CoreFilter.formatText).toHaveBeenCalledTimes(1);
+        expect(CoreFilter.formatText).toHaveBeenCalledWith(
+            'Lorem ipsum dolor',
+            expect.anything(),
+            expect.anything(),
+            undefined,
+        );
+    });
+
+    it('should get filters from server and format text', async () => {
+        // Arrange
+        mockSingleton(CoreFilterHelper, {
+            getFiltersAndFormatText: () => Promise.resolve({
+                text: 'Formatted text',
+                filters: [],
+            }),
+        });
+
+        // Act
+        const { nativeElement } = await renderTemplate(CoreFormatTextDirective, `
+            <core-format-text
+                text="Lorem ipsum dolor"
+                contextLevel="course"
+                [contextInstanceId]="42"
+            ></core-format-text>
+        `);
+
+        // Assert
+        const text = nativeElement.querySelector('core-format-text');
+        expect(text).not.toBeNull();
+        expect(text.textContent).toEqual('Formatted text');
+
+        expect(CoreFilterHelper.getFiltersAndFormatText).toHaveBeenCalledTimes(1);
+        expect(CoreFilterHelper.getFiltersAndFormatText).toHaveBeenCalledWith(
+            'Lorem ipsum dolor',
+            'course',
+            42,
+            expect.anything(),
+            undefined,
+        );
+    });
+
     it('should use external-content directive on images', async () => {
         // Arrange
-        const site = mock<CoreSite>({
-            getId: () => '42',
+        mockSingleton(CoreDB, {
+            getDB: () => undefined,
+        });
+
+        let site = new CoreSite('42', 'https://mysite.com', 'token');
+        site = mock(site, {
             canDownloadFiles: () => true,
-            isVersionGreaterEqualThan: () => true,
         });
 
         // @todo this is done because we cannot mock image being loaded, we should find an alternative...
@@ -86,11 +139,9 @@ describe('CoreFormatTextDirective', () => {
             getSite: () => Promise.resolve(site),
             getCurrentSite: () => Promise.resolve(site),
         });
-        mockSingleton(CoreFilter, { formatText: (text) => Promise.resolve(text) });
-        mockSingleton(CoreApp, { isMobile: () => false });
 
         // Act
-        const fixture = await renderWrapperComponent(
+        const { nativeElement } = await renderWrapperComponent(
             CoreFormatTextDirective,
             'core-format-text',
             { text: '<img src="https://image-url">', siteId: site.getId() },
@@ -98,7 +149,7 @@ describe('CoreFormatTextDirective', () => {
         );
 
         // Assert
-        const image = fixture.nativeElement.querySelector('img');
+        const image = nativeElement.querySelector('img');
         expect(image).not.toBeNull();
         expect(image.src).toEqual('file://local-path/');
 
@@ -106,10 +157,28 @@ describe('CoreFormatTextDirective', () => {
         expect(CoreFilepool.getSrcByUrl).toHaveBeenCalledTimes(1);
     });
 
-    it.todo('should format text');
+    it('should use link directive on anchors', async () => {
+        // Arrange
+        mockSingleton(CoreContentLinksHelper, { handleLink: () => Promise.resolve(true) });
 
-    it.todo('should get filters from server and format text');
+        // Act
+        const { nativeElement } = await renderWrapperComponent(
+            CoreFormatTextDirective,
+            'core-format-text',
+            { text: '<a href="https://anchor-url/">Link</a>' },
+        );
+        const anchor = nativeElement.querySelector('a');
 
-    it.todo('should use link directive on anchors');
+        anchor.click();
+
+        // Assert
+        expect(CoreContentLinksHelper.handleLink).toHaveBeenCalledTimes(1);
+        expect(CoreContentLinksHelper.handleLink).toHaveBeenCalledWith(
+            'https://anchor-url/',
+            undefined,
+            expect.anything(),
+            expect.anything(),
+        );
+    });
 
 });

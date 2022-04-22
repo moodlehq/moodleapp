@@ -1,0 +1,95 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-button fill="clear" (click)="close($event)" [attr.aria-label]="'core.back' | translate">
+                <ion-icon name="arrow-back" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+
+        <ion-title>
+            <h1>{{ 'core.mainmenu.switchaccount' | translate }}</h1>
+        </ion-title>
+
+        <ion-buttons slot="end">
+            <ion-button fill="clear" *ngIf="accountsList.count > 1" (click)="toggleDelete()"
+                [attr.aria-label]="'core.login.toggleremove' | translate">
+                <ion-icon slot="icon-only" name="fas-pen" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-loading [hideUntil]="loaded">
+        <ion-list class="core-sitelist">
+            <ion-card *ngIf="accountsList.currentSite">
+                <ion-item-divider sticky="true" class="core-sitelist-sitename">
+                    <ion-label>
+                        <h2>
+                            <core-format-text [text]="accountsList.currentSite.siteName" clean="true"
+                                [siteId]="accountsList.currentSite.id"></core-format-text>
+                        </h2>
+                        <p><a [href]="accountsList.currentSite.siteUrl" core-link autoLogin="yes">{{
+                                accountsList.currentSite.siteUrlWithoutProtocol }}</a>
+                        </p>
+                    </ion-label>
+                </ion-item-divider>
+
+                <ion-item detail="false">
+                    <ion-avatar slot="start">
+                        <img [src]="accountsList.currentSite.avatar" core-external-content [siteId]="accountsList.currentSite.id"
+                            alt="{{ 'core.pictureof' | translate:{$a: accountsList.currentSite.fullName} }}"
+                            onError="this.src='assets/img/user-avatar.png'">
+                    </ion-avatar>
+                    <ion-label>
+                        <p class="item-heading">{{accountsList.currentSite.fullName}}</p>
+                    </ion-label>
+                    <ion-icon color="success" name="fas-check"></ion-icon>
+                </ion-item>
+
+                <ng-container *ngTemplateOutlet="siteList; context: {sites: accountsList.sameSite}"></ng-container>
+            </ion-card>
+
+            <ion-card *ngFor="let sites of accountsList.otherSites">
+                <ion-item-divider sticky="true" *ngIf="sites[0]" class="core-sitelist-sitename">
+                    <ion-label>
+                        <h2>
+                            <core-format-text [text]="sites[0].siteName" clean="true" [siteId]="sites[0].id"></core-format-text>
+                        </h2>
+                        <p><a [href]="sites[0].siteUrl" core-link autoLogin="no">{{ sites[0].siteUrlWithoutProtocol }}</a></p>
+                    </ion-label>
+                </ion-item-divider>
+
+                <ng-container *ngTemplateOutlet="siteList; context: {sites: sites}"></ng-container>
+            </ion-card>
+
+        </ion-list>
+    </core-loading>
+    <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end">
+        <ion-fab-button (click)="add($event)" [attr.aria-label]="'core.login.add' | translate">
+            <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>
+            <span class="sr-only">{{ 'core.login.add' | translate }}</span>
+        </ion-fab-button>
+    </ion-fab>
+</ion-content>
+
+<!-- Template to render a list of sites. -->
+<ng-template #siteList let-sites="sites">
+    <ion-item button *ngFor="let site of sites" (click)="login($event, site.id)" detail="true">
+        <ion-avatar slot="start">
+            <img [src]="site.avatar" core-external-content [siteId]="site.id" alt="{{ 'core.pictureof' | translate:{$a: site.fullName} }}"
+                onError="this.src='assets/img/user-avatar.png'">
+        </ion-avatar>
+        <ion-label>
+            <p class="item-heading">{{site.fullName}}</p>
+        </ion-label>
+        <ion-badge slot="end" *ngIf="!showDelete && site.badge" @coreShowHideAnimation>
+            <span aria-hidden="true">{{site.badge}}</span>
+            <span class="sr-only">{{ 'core.login.sitebadgedescription' | translate:{ count: site.badge }
+                }}</span>
+        </ion-badge>
+        <ion-button *ngIf="showDelete" slot="end" fill="clear" color="danger" (click)="deleteSite($event, site)"
+            [attr.aria-label]="'core.login.removeaccount' | translate" [@coreSlideInOut]="'fromRight'">
+            <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
+        </ion-button>
+    </ion-item>
+</ng-template>

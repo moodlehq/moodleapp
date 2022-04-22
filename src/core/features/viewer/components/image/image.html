@@ -1,14 +1,29 @@
-<ion-header>
-    <ion-toolbar>
-        <h2>{{ title }}</h2>
-        <ion-buttons slot="end">
-            <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
-                <ion-icon name="fas-times" slot="icon-only" aria-hidden=true></ion-icon>
-            </ion-button>
-        </ion-buttons>
-    </ion-toolbar>
-</ion-header>
-<!-- @todo: zoom="true" maxZoom="2" . Now we need to use ionSlider? -->
-<ion-content [scrollX]="true" [scrollY]="true" class="core-zoom-pane">
-    <img [src]="image" [alt]="title" core-external-content [component]="component" [componentId]="componentId">
+<ion-content>
+    <ion-slides [options]="slidesOpts">
+        <ion-slide>
+            <div class="swiper-zoom-container">
+                <img [src]="image" [alt]="title" core-external-content [component]="component" [componentId]="componentId">
+            </div>
+        </ion-slide>
+    </ion-slides>
 </ion-content>
+<ion-footer>
+    <ion-row class="ion-justify-content-between ion-align-items-center ion-no-padding">
+        <ion-col size="auto">
+            <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="fas-times" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-col>
+        <ion-col></ion-col>
+        <ion-col size="auto" *ngIf="slidesSwiper">
+            <ion-button fill="clear" [attr.aria-label]="'core.zoomout' | translate" (click)="zoom(false)">
+                <ion-icon name="fas-search-minus" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-col>
+        <ion-col size="auto" *ngIf="slidesSwiper">
+            <ion-button fill="clear" [attr.aria-label]="'core.zoomin' | translate" (click)="zoom(true)">
+                <ion-icon name="fas-search-plus" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-col>
+    </ion-row>
+</ion-footer>

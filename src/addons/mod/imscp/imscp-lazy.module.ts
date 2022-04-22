@@ -24,6 +24,10 @@ const routes: Routes = [
         path: ':courseId/:cmId',
         component: AddonModImscpIndexPage,
     },
+    {
+        path: ':courseId/:cmId/view',
+        loadChildren: () => import('./pages/view/view.module').then(m => m.AddonModImscpViewPageModule),
+    },
 ];
 
 @NgModule({

@@ -13,6 +13,9 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreDashboardHomeHandler } from '@features/courses/services/handlers/dashboard-home';
+import { CoreSiteHomeHomeHandler } from '@features/sitehome/services/handlers/sitehome-home';
+import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '../mainmenu-delegate';
 
@@ -25,13 +28,18 @@ export class CoreMainMenuHomeHandlerService implements CoreMainMenuHandler {
     static readonly PAGE_NAME = 'home';
 
     name = 'CoreHome';
-    priority = 1100;
+    priority = 1000;
 
     /**
      * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
-        return true;
+        const siteId = CoreSites.getCurrentSiteId();
+
+        const dashboardEnabled = await CoreDashboardHomeHandler.isEnabledForSite(siteId);
+        const siteHomeEnabled = await CoreSiteHomeHomeHandler.isEnabledForSite(siteId);
+
+        return dashboardEnabled || siteHomeEnabled;
     }
 
     /**

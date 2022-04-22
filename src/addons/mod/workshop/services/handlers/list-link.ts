@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleListHandler } from '@features/contentlinks/classes/module-list-handler';
 import { makeSingleton } from '@singletons';
-import { AddonModWorkshop } from '../workshop';
 
 /**
  * Handler to treat links to workshop list page.
@@ -27,15 +26,6 @@ export class AddonModWorkshopListLinkHandlerService extends CoreContentLinksModu
 
     constructor() {
         super('AddonModWorkshop', 'workshop');
-    }
-
-    /**
-     * Check if the handler is enabled on a site level.
-     *
-     * @return Whether or not the handler is enabled on a site level.
-     */
-    isEnabled(): Promise<boolean> {
-        return AddonModWorkshop.isPluginEnabled();
     }
 
 }

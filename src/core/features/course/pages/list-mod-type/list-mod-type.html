@@ -3,7 +3,9 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>{{ title }}</h1>
+        <ion-title>
+            <h1>{{ title }}</h1>
+        </ion-title>
     </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -11,15 +13,13 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
-        <core-empty-box *ngIf="!sections || !sections.length" icon="fas-box-open"
-            [message]="'core.course.nocontentavailable' | translate">
+        <core-empty-box *ngIf="!sections || !sections.length" icon="fas-box-open" [message]="'core.course.nocontentavailable' | translate">
         </core-empty-box>
 
-        <ion-list>
-            <ng-container *ngFor="let section of sections" >
+        <ion-list class="core-course-module-list-wrapper">
+            <ng-container *ngFor="let section of sections">
                 <ng-container *ngFor="let module of section.modules">
-                    <core-course-module *ngIf="module.visibleoncoursepage !== 0" [module]="module" [section]="section"
-                        [courseId]="courseId" [downloadEnabled]="downloadEnabled">
+                    <core-course-module *ngIf="module.visibleoncoursepage !== 0" [module]="module" [section]="section">
                     </core-course-module>
                 </ng-container>
             </ng-container>

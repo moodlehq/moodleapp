@@ -113,13 +113,6 @@ export class AddonModFeedbackPrefetchHandlerService extends CoreCourseActivityPr
     /**
      * @inheritdoc
      */
-    isEnabled(): Promise<boolean> {
-        return AddonModFeedback.isPluginEnabled();
-    }
-
-    /**
-     * @inheritdoc
-     */
     prefetch(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
         return this.prefetchPackage(module, courseId, this.prefetchFeedback.bind(this, module, courseId));
     }
@@ -218,7 +211,7 @@ export class AddonModFeedbackPrefetchHandlerService extends CoreCourseActivityPr
      * @inheritdoc
      */
     sync(module: CoreCourseAnyModuleData, courseId: number, siteId?: string): Promise<AddonModFeedbackSyncResult> {
-        return AddonModFeedbackSync.syncFeedback(module.instance!, siteId);
+        return AddonModFeedbackSync.syncFeedback(module.instance, siteId);
     }
 
 }

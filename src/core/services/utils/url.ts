@@ -21,6 +21,7 @@ import { makeSingleton } from '@singletons';
 import { CoreUrl } from '@singletons/url';
 import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
+import { CoreText } from '@singletons/text';
 
 /*
  * "Utils" service with helper functions for URLs.
@@ -58,6 +59,10 @@ export class CoreUrlUtilsProvider {
      * @return URL with params.
      */
     addParamsToUrl(url: string, params?: Record<string, unknown>, anchor?: string, boolToNumber?: boolean): string {
+        // Remove any existing anchor to add the params before it.
+        const urlAndAnchor = url.split('#');
+        url = urlAndAnchor[0];
+
         let separator = url.indexOf('?') != -1 ? '&' : '?';
 
         for (const key in params) {
@@ -73,6 +78,15 @@ export class CoreUrlUtilsProvider {
                 url += separator + key + '=' + value;
                 separator = '&';
             }
+        }
+
+        // Re-add the anchor if any.
+        if (urlAndAnchor.length > 1) {
+            // Remove the URL from the array.
+            urlAndAnchor.shift();
+
+            // Use a join in case there is more than one #.
+            url += '#' + urlAndAnchor.join('#');
         }
 
         if (anchor) {
@@ -105,8 +119,8 @@ export class CoreUrlUtilsProvider {
         // Do not use tokenpluginfile if site doesn't use slash params, the URL doesn't work.
         // Also, only use it for "core" pluginfile endpoints. Some plugins can implement their own endpoint (like customcert).
         return !!accessKey && !url.match(/[&?]file=/) && (
-            url.indexOf(CoreTextUtils.concatenatePaths(siteUrl, 'pluginfile.php')) === 0 ||
-            url.indexOf(CoreTextUtils.concatenatePaths(siteUrl, 'webservice/pluginfile.php')) === 0);
+            url.indexOf(CoreText.concatenatePaths(siteUrl, 'pluginfile.php')) === 0 ||
+            url.indexOf(CoreText.concatenatePaths(siteUrl, 'webservice/pluginfile.php')) === 0);
     }
 
     /**
@@ -133,7 +147,7 @@ export class CoreUrlUtilsProvider {
         }
 
         urlAndHash[0].replace(regex, (match: string, key: string, value: string): string => {
-            params[key] = typeof value != 'undefined' ? CoreTextUtils.decodeURIComponent(value) : '';
+            params[key] = value !== undefined ? CoreTextUtils.decodeURIComponent(value) : '';
 
             if (subParams) {
                 params[key] = params[key].replace(subParamsPlaceholder, subParams);
@@ -188,7 +202,7 @@ export class CoreUrlUtilsProvider {
             url = url.replace(/(\/webservice)?\/pluginfile\.php/, '/tokenpluginfile.php/' + accessKey);
         } else {
             // Use pluginfile.php. Some webservices returns directly the correct download url, others not.
-            if (url.indexOf(CoreTextUtils.concatenatePaths(siteUrl, 'pluginfile.php')) === 0) {
+            if (url.indexOf(CoreText.concatenatePaths(siteUrl, 'pluginfile.php')) === 0) {
                 url = url.replace('/pluginfile', '/webservice/pluginfile');
             }
 
@@ -233,7 +247,7 @@ export class CoreUrlUtilsProvider {
     async getDocsUrl(release?: string, page: string = 'Mobile_app'): Promise<string> {
         let docsUrl = 'https://docs.moodle.org/en/' + page;
 
-        if (typeof release != 'undefined') {
+        if (release !== undefined) {
             const version = CoreSites.getMajorReleaseNumber(release).replace('.', '');
 
             // Check is a valid number.
@@ -316,9 +330,9 @@ export class CoreUrlUtilsProvider {
      * @return Last file without params.
      */
     getLastFileWithoutParams(url: string): string {
-        let filename = url.substr(url.lastIndexOf('/') + 1);
+        let filename = url.substring(url.lastIndexOf('/') + 1);
         if (filename.indexOf('?') != -1) {
-            filename = filename.substr(0, filename.indexOf('?'));
+            filename = filename.substring(0, filename.indexOf('?'));
         }
 
         return filename;
@@ -396,7 +410,7 @@ export class CoreUrlUtilsProvider {
      * @return Whether the URL is downloadable.
      */
     isDownloadableUrl(url: string): boolean {
-        return this.isPluginFileUrl(url) || this.isThemeImageUrl(url) || this.isGravatarUrl(url);
+        return this.isPluginFileUrl(url) || this.isTokenPluginFileUrl(url) || this.isThemeImageUrl(url) || this.isGravatarUrl(url);
     }
 
     /**
@@ -457,7 +471,17 @@ export class CoreUrlUtilsProvider {
      * @return Whether the URL is a pluginfile URL.
      */
     isPluginFileUrl(url: string): boolean {
-        return url?.indexOf('/pluginfile.php') !== -1;
+        return url.indexOf('/pluginfile.php') !== -1;
+    }
+
+    /**
+     * Returns if a URL is a tokenpluginfile URL.
+     *
+     * @param url The URL to test.
+     * @return Whether the URL is a tokenpluginfile URL.
+     */
+    isTokenPluginFileUrl(url: string): boolean {
+        return url.indexOf('/tokenpluginfile.php') !== -1;
     }
 
     /**

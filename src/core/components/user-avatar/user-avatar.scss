@@ -1,3 +1,5 @@
+@import '~theme/globals.scss';
+
 :host {
     position: relative;
     width: var(--core-avatar-size);
@@ -36,13 +38,19 @@
             content: "";
         }
     }
-    &.core-bar-button-image img {
+    &.core-bar-button-image {
         padding: 0;
         width: var(--core-header-toolbar-button-image-size);
         height: var(--core-header-toolbar-button-image-size);
         max-width: var(--core-header-toolbar-button-image-size);
         max-height: var(--core-header-toolbar-button-image-size);
         border-radius: 50%;
+        display: block;
+
+        img {
+            padding: 4px;
+            border-radius: 50%;
+        }
     }
 
     .contact-status {
@@ -57,17 +65,6 @@
             background-color: var(--core-online-color);
         }
     }
-
-    .core-avatar-extra-icon {
-        margin: 0 !important;
-        border-radius: 0 !important;
-        background: none;
-        position: absolute;
-        right: -4px;
-        bottom: -4px;
-        width: 24px;
-        height: 24px;
-    }
 }
 
 :host-context(.toolbar) .contact-status {
@@ -78,4 +75,12 @@
 :host-context([dir="rtl"]) .contact-status {
     left: 0;
     right: unset;
+}
+
+:host-context(ion-item) {
+    @include margin(6px, 8px, 6px, 0px);
+    img {
+        min-width: var(--core-avatar-size);
+        min-height: var(--core-avatar-size);
+    }
 }

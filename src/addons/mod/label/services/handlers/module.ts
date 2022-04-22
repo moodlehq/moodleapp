@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants } from '@/core/constants';
+import { CoreConstants, ModPurpose } from '@/core/constants';
 import { Injectable } from '@angular/core';
-import { CoreCourseWSModule } from '@features/course/services/course';
+import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
 
@@ -22,7 +23,7 @@ import { makeSingleton } from '@singletons';
  * Handler to support label modules.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonModLabelModuleHandlerService implements CoreCourseModuleHandler {
+export class AddonModLabelModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
     name = 'AddonModLabel';
     modName = 'label';
@@ -38,26 +39,21 @@ export class AddonModLabelModuleHandlerService implements CoreCourseModuleHandle
         [CoreConstants.FEATURE_GRADE_OUTCOMES]: false,
         [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
         [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true,
+        [CoreConstants.FEATURE_NO_VIEW_LINK]: true,
+        [CoreConstants.FEATURE_MOD_PURPOSE]: ModPurpose.MOD_PURPOSE_CONTENT,
     };
 
     /**
      * @inheritdoc
      */
-    async isEnabled(): Promise<boolean> {
-        return true;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    getData(module: CoreCourseWSModule): CoreCourseModuleHandlerData {
+    async getData(module: CoreCourseModuleData): Promise<CoreCourseModuleHandlerData> {
         // Remove the description from the module so it isn't rendered twice.
         const title = module.description || '';
         module.description = '';
 
         return {
             icon: '',
-            title: title,
+            title,
             a11yTitle: '',
             class: 'addon-mod-label-handler',
         };

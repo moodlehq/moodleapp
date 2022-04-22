@@ -1,0 +1,70 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <ion-title>
+            <h1>{{ 'addon.mod_feedback.responses' |translate }}</h1>
+        </ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-split-view>
+        <ion-refresher slot="fixed" [disabled]="!attempts || !attempts.loaded" (ionRefresh)="refreshFeedback($event.target)">
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        </ion-refresher>
+        <core-loading [hideUntil]="attempts && attempts.loaded">
+            <ion-list class="ion-no-margin">
+                <ion-item class="ion-text-wrap core-group-selector"
+                    *ngIf="groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)">
+                    <ion-label id="addon-feedback-groupslabel">
+                        <ng-container *ngIf="groupInfo.separateGroups">{{'core.groupsseparate' | translate }}</ng-container>
+                        <ng-container *ngIf="groupInfo.visibleGroups">{{'core.groupsvisible' | translate }}</ng-container>
+                    </ion-label>
+                    <ion-select [(ngModel)]="selectedGroup" (ionChange)="reloadAttempts()" aria-labelledby="addon-feedback-groupslabel"
+                        interface="action-sheet" [interfaceOptions]="{header: 'core.group' | translate}">
+                        <ion-select-option *ngFor="let groupOpt of groupInfo.groups" [value]="groupOpt.id">
+                            {{groupOpt.name}}
+                        </ion-select-option>
+                    </ion-select>
+                </ion-item>
+
+                <ng-container *ngIf="identifiableAttemptsTotal > 0">
+                    <ion-item-divider>
+                        <ion-label>
+                            <h2>{{ 'addon.mod_feedback.non_anonymous_entries' | translate : {$a: identifiableAttemptsTotal } }}</h2>
+                        </ion-label>
+                    </ion-item-divider>
+                    <ion-item *ngFor="let attempt of identifiableAttempts" class="ion-text-wrap" button detail="true"
+                        (click)="attempts?.select(attempt)" [attr.aria-current]="attempts?.getItemAriaCurrent(attempt)">
+                        <core-user-avatar [user]="attempt" [linkProfile]="false" slot="start"></core-user-avatar>
+                        <ion-label>
+                            <p class="item-heading">{{ attempt.fullname }}</p>
+                            <p *ngIf="attempt.timemodified">{{ attempt.timemodified * 1000 | coreFormatDate }}</p>
+                        </ion-label>
+                    </ion-item>
+                </ng-container>
+
+                <ng-container *ngIf="identifiableAttemptsTotal === identifiableAttempts.length && anonymousAttemptsTotal > 0">
+                    <ion-item-divider>
+                        <ion-label>
+                            <h2>{{ 'addon.mod_feedback.anonymous_entries' | translate : {$a: anonymousAttemptsTotal } }}</h2>
+                        </ion-label>
+                    </ion-item-divider>
+                    <ion-item *ngFor="let attempt of anonymousAttempts" class="ion-text-wrap" button detail="true"
+                        (click)="attempts?.select(attempt)" [attr.aria-current]="attempts?.getItemAriaCurrent(attempt)">
+                        <core-user-avatar [linkProfile]="false" slot="start"></core-user-avatar>
+                        <ion-label>
+                            <p class="item-heading">{{ 'addon.mod_feedback.anonymous_user' | translate }}</p>
+                            <p>{{ 'addon.mod_feedback.response_nr' | translate }}: {{attempt.number}}</p>
+                        </ion-label>
+                    </ion-item>
+                </ng-container>
+
+                <core-infinite-loading [enabled]="attempts && attempts.loaded && !attempts.completed" [error]="fetchFailed"
+                    (action)="fetchMoreAttempts($event)">
+                </core-infinite-loading>
+            </ion-list>
+        </core-loading>
+    </core-split-view>
+</ion-content>

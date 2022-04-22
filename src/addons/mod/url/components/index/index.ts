@@ -36,7 +36,6 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
 
     component = AddonModUrlProvider.COMPONENT;
 
-    canGetUrl = false;
     url?: string;
     name?: string;
     shouldEmbed = false;
@@ -48,6 +47,8 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
     mimetype?: string;
     displayDescription = true;
 
+    protected checkCompletionAfterLog = false;
+
     constructor(@Optional() courseContentsPage?: CoreCourseContentsPage) {
         super('AddonModUrlIndexComponent', courseContentsPage);
     }
@@ -58,15 +59,7 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
     async ngOnInit(): Promise<void> {
         super.ngOnInit();
 
-        this.canGetUrl = AddonModUrl.isGetUrlWSAvailable();
-
         await this.loadContent();
-
-        if ((this.shouldIframe ||
-            (this.shouldEmbed && this.isOther)) ||
-            (!this.shouldIframe && (!this.shouldEmbed || !this.isOther))) {
-            this.logView();
-        }
     }
 
     /**
@@ -86,9 +79,6 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
      */
     protected async fetchContent(refresh = false): Promise<void> {
         try {
-            if (!this.canGetUrl) {
-                throw null;
-            }
             // Fetch the module data.
             const url = await AddonModUrl.getUrl(this.courseId, this.module.id);
 
@@ -98,19 +88,27 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
 
             if (url.displayoptions) {
                 const unserialized = CoreTextUtils.unserialize<AddonModUrlDisplayOptions>(url.displayoptions);
-                this.displayDescription = typeof unserialized.printintro == 'undefined' || !!unserialized.printintro;
+                this.displayDescription = unserialized.printintro === undefined || !!unserialized.printintro;
             }
 
-            // Try to load module contents, it's needed to get the URL with parameters.
-            await CoreCourse.loadModuleContents(this.module, this.courseId, undefined, false, refresh, undefined, 'url');
+            // Try to get module contents, it's needed to get the URL with parameters.
+            const contents = await CoreCourse.getModuleContents(
+                this.module,
+                undefined,
+                undefined,
+                false,
+                refresh,
+                undefined,
+                'url',
+            );
 
             // Always use the URL from the module because it already includes the parameters.
-            this.url = this.module.contents[0] && this.module.contents[0].fileurl ? this.module.contents[0].fileurl : undefined;
+            this.url = contents[0] && contents[0].fileurl ? contents[0].fileurl : undefined;
 
             await this.calculateDisplayOptions(url);
 
         } catch {
-            // Fallback in case is not prefetched or not available.
+            // Fallback in case is not prefetched.
             const mod =
                 await CoreCourse.getModule(this.module.id, this.courseId, undefined, false, false, undefined, 'url');
 
@@ -118,12 +116,12 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
             this.description = mod.description;
             this.dataRetrieved.emit(mod);
 
-            if (!mod.contents.length) {
+            if (!mod.contents?.length) {
                 // If the data was cached maybe we don't have contents. Reject.
                 throw new CoreError('No contents found in module.');
             }
 
-            this.url = mod.contents && mod.contents[0] && mod.contents[0].fileurl ? mod.contents[0].fileurl : undefined;
+            this.url = mod.contents[0].fileurl ? mod.contents[0].fileurl : undefined;
         }
     }
 
@@ -167,10 +165,22 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
      */
     protected async logView(): Promise<void> {
         try {
-            await AddonModUrl.logView(this.module.instance!, this.module.name);
-            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
+            await AddonModUrl.logView(this.module.instance, this.module.name);
+
+            this.checkCompletion();
         } catch {
             // Ignore errors.
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected async logActivity(): Promise<void> {
+        if ((this.shouldIframe ||
+            (this.shouldEmbed && this.isOther)) ||
+            (!this.shouldIframe && (!this.shouldEmbed || !this.isOther))) {
+            this.logView();
         }
     }
 

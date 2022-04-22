@@ -63,8 +63,7 @@ const routes: Routes = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreCourseModuleDelegate.registerHandler(AddonModScormModuleHandler.instance);
                 CoreCourseModulePrefetchDelegate.registerHandler(AddonModScormPrefetchHandler.instance);
                 CoreCronDelegate.register(AddonModScormSyncCronHandler.instance);

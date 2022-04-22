@@ -12,15 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
-import { AddonCompetencyDataForCourseCompetenciesPageWSResponse, AddonCompetency } from '@addons/competency/services/competency';
-import { AddonCompetencyHelper } from '@addons/competency/services/competency-helper';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+    AddonCompetencyDataForCourseCompetenciesPageWSResponse,
+    AddonCompetencyDataForCourseCompetenciesPageCompetency,
+} from '@addons/competency/services/competency';
 import { CoreUserProfile } from '@features/user/services/user';
 import { IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
-import { AddonCompetencyMainMenuHandlerService } from '@addons/competency/services/handlers/mainmenu';
 import { ContextLevel } from '@/core/constants';
+import { ADDON_COMPETENCY_SUMMARY_PAGE } from '@addons/competency/competency.module';
+import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
+import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
+import { AddonCompetencyCourseCompetenciesSource } from '@addons/competency/classes/competency-course-competencies-source';
 
 /**
  * Page that displays the list of competencies of a course.
@@ -29,25 +34,74 @@ import { ContextLevel } from '@/core/constants';
     selector: 'page-addon-competency-coursecompetencies',
     templateUrl: 'coursecompetencies.html',
 })
-export class AddonCompetencyCourseCompetenciesPage implements OnInit {
+export class AddonCompetencyCourseCompetenciesPage implements OnInit, OnDestroy {
 
-    competenciesLoaded = false;
-    competencies?: AddonCompetencyDataForCourseCompetenciesPageWSResponse;
-    user?: CoreUserProfile;
-    courseId!: number;
+    competencies!: CoreListItemsManager<
+        AddonCompetencyDataForCourseCompetenciesPageCompetency,
+        AddonCompetencyCourseCompetenciesSource
+    >;
 
-    protected userId!: number;
+    constructor() {
+        try {
+            const courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            const userId = CoreNavigator.getRouteNumberParam('userId');
+            const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
+                AddonCompetencyCourseCompetenciesSource,
+                [courseId, userId],
+            );
+
+            this.competencies = new CoreListItemsManager(source, AddonCompetencyCourseCompetenciesPage);
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
+    }
+
+    get courseCompetencies(): AddonCompetencyDataForCourseCompetenciesPageWSResponse | undefined {
+        return this.competencies.getSource().courseCompetencies;
+    }
+
+    get courseId(): number {
+        return this.competencies.getSource().COURSE_ID;
+    }
+
+    get user(): CoreUserProfile | undefined {
+        return this.competencies.getSource().user;
+    }
+
+    get showLeastProficientCompetencies(): boolean {
+        return !!this.courseCompetencies?.statistics.canmanagecoursecompetencies
+            && this.courseCompetencies?.statistics.leastproficientcount > 0;
+    }
 
     /**
-     * View loaded.
+     * @inheritdoc
      */
-    ngOnInit(): void {
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.userId = CoreNavigator.getRouteNumberParam('userId')!;
+    async ngOnInit(): Promise<void> {
+        await this.fetchCourseCompetencies();
+        await this.competencies.start();
+    }
 
-        this.fetchCourseCompetencies().finally(() => {
-            this.competenciesLoaded = true;
-        });
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.competencies.destroy();
+    }
+
+    /**
+     * Get competency framework url.
+     *
+     * @param competency Competency.
+     * @returns Competency framework url.
+     */
+    getCompetencyFrameworkUrl(competency: AddonCompetencyDataForCourseCompetenciesPageCompetency): string {
+        const { pluginbaseurl, framework, pagecontextid } = competency.comppath;
+
+        return `${pluginbaseurl}/competencies.php?competencyframeworkid=${framework.id}&pagecontextid=${pagecontextid}`;
     }
 
     /**
@@ -57,27 +111,10 @@ export class AddonCompetencyCourseCompetenciesPage implements OnInit {
      */
     protected async fetchCourseCompetencies(): Promise<void> {
         try {
-            this.competencies = await AddonCompetency.getCourseCompetencies(this.courseId, this.userId);
-
-            // Get the user profile image.
-            this.user = await AddonCompetencyHelper.getProfile(this.userId);
+            await this.competencies.getSource().reload();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error getting course competencies data.');
         }
-    }
-
-    /**
-     * Opens a competency.
-     *
-     * @param competencyId
-     */
-    openCompetency(competencyId: number): void {
-        CoreNavigator.navigateToSitePath(
-            '/' + AddonCompetencyMainMenuHandlerService.PAGE_NAME + '/competencies/' + competencyId,
-            {
-                params: { courseId: this.courseId, userId: this.userId },
-            },
-        );
     }
 
     /**
@@ -86,11 +123,15 @@ export class AddonCompetencyCourseCompetenciesPage implements OnInit {
      * @param competencyId
      */
     openCompetencySummary(competencyId: number): void {
-        CoreNavigator.navigateToSitePath('/' + AddonCompetencyMainMenuHandlerService.PAGE_NAME + '/summary/' + competencyId, {
-            params: {
-                contextLevel: ContextLevel.COURSE,
-                contextInstanceId: this.courseId,
-            } });
+        CoreNavigator.navigateToSitePath(
+            `./${competencyId}/${ADDON_COMPETENCY_SUMMARY_PAGE}`,
+            {
+                params: {
+                    contextLevel: ContextLevel.COURSE,
+                    contextInstanceId: this.courseId,
+                },
+            },
+        );
     }
 
     /**
@@ -98,11 +139,11 @@ export class AddonCompetencyCourseCompetenciesPage implements OnInit {
      *
      * @param refresher Refresher.
      */
-    refreshCourseCompetencies(refresher?: IonRefresher): void {
-        AddonCompetency.invalidateCourseCompetencies(this.courseId, this.userId).finally(() => {
-            this.fetchCourseCompetencies().finally(() => {
-                refresher?.complete();
-            });
+    async refreshCourseCompetencies(refresher?: IonRefresher): Promise<void> {
+        await this.competencies.getSource().invalidateCache();
+
+        this.fetchCourseCompetencies().finally(() => {
+            refresher?.complete();
         });
     }
 

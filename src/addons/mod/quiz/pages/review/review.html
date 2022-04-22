@@ -3,7 +3,9 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>{{ 'addon.mod_quiz.review' | translate }}</h1>
+        <ion-title>
+            <h1>{{ 'addon.mod_quiz.review' | translate }}</h1>
+        </ion-title>
 
         <ion-buttons slot="end">
             <ion-button fill="clear" *ngIf="navigation.length" [attr.aria-label]="'addon.mod_quiz.opentoc' | translate"
@@ -13,7 +15,7 @@
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
-<ion-content>
+<ion-content class="limited-width">
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshData($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
@@ -21,15 +23,7 @@
 
         <!-- Review summary -->
         <ion-card *ngIf="attempt">
-            <ion-card-header class="ion-text-wrap">
-                <ion-card-title>
-                    <ng-container *ngIf="attempt.preview">{{ 'addon.mod_quiz.reviewofpreview' | translate }}</ng-container>
-                    <ng-container *ngIf="!attempt.preview">
-                        {{ 'addon.mod_quiz.reviewofattempt' | translate:{$a: attempt.attempt} }}
-                    </ng-container>
-                </ion-card-title>
-            </ion-card-header>
-            <ion-list lines="none">
+            <ion-list>
                 <ion-item class="ion-text-wrap">
                     <ion-label>
                         <h2>{{ 'addon.mod_quiz.startedon' | translate }}</h2>
@@ -75,8 +69,8 @@
                 <ion-item class="ion-text-wrap" *ngFor="let data of additionalData">
                     <ion-label>
                         <p class="item-heading">{{ data.title }}</p>
-                        <core-format-text [component]="component" [componentId]="cmId" [text]="data.content"
-                            contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
+                        <core-format-text [component]="component" [componentId]="cmId" [text]="data.content" contextLevel="module"
+                            [contextInstanceId]="cmId" [courseId]="courseId">
                         </core-format-text>
                     </ion-label>
                 </ion-item>
@@ -85,8 +79,6 @@
 
         <!-- Questions -->
         <div *ngIf="attempt && questions.length">
-            <!-- Arrows to go to next/previous. -->
-            <ng-container *ngTemplateOutlet="navArrows"></ng-container>
 
             <!-- Questions. -->
             <div *ngFor="let question of questions">
@@ -107,34 +99,34 @@
                     <!-- Body of the question. -->
                     <core-question class="ion-text-wrap" [question]="question" [component]="component" [componentId]="cmId"
                         [attemptId]="attempt.id" [usageId]="attempt.uniqueid" [offlineEnabled]="false" contextLevel="module"
-                        [contextInstanceId]="cmId" [courseId]="courseId" [review]="true"
-                        [preferredBehaviour]="quiz?.preferredbehaviour">
+                        [contextInstanceId]="cmId" [courseId]="courseId" [review]="true" [preferredBehaviour]="quiz?.preferredbehaviour">
                     </core-question>
                 </ion-card>
             </div>
+        </div>
 
-            <!-- Arrows to go to next/previous. -->
-            <ng-container *ngTemplateOutlet="navArrows"></ng-container>
+        <div collapsible-footer appearOnBottom *ngIf="loaded && numPages > 1" slot="fixed">
+            <ion-row class="ion-justify-content-between ion-align-items-center ion-no-padding ion-wrap">
+                <ion-col class="ion-text-start ion-no-padding core-navigation-arrow" size="auto" *ngIf="!showAll">
+                    <ion-button [disabled]="previousPage < 0" fill="clear" [attr.aria-label]="'core.previous' | translate"
+                        (click)="changePage(previousPage)">
+                        <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true"></ion-icon>
+                    </ion-button>
+                </ion-col>
+                <ion-col class="ion-text-center">
+                    <!-- In review we can toggle between all questions in same page or one page at a time. -->
+                    <ion-button class="ion-text-wrap" *ngIf="numPages > 1" (click)="switchMode()" fill="outline">
+                        <span *ngIf="!showAll">{{ 'addon.mod_quiz.showall' | translate }}</span>
+                        <span *ngIf="showAll">{{ 'addon.mod_quiz.showeachpage' | translate }}</span>
+                    </ion-button>
+                </ion-col>
+                <ion-col class="ion-text-end ion-no-padding core-navigation-arrow" size="auto" *ngIf="!showAll">
+                    <ion-button [disabled]="nextPage >= numPages" fill="clear" [attr.aria-label]="'core.next' | translate"
+                        (click)="changePage(nextPage)">
+                        <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true"></ion-icon>
+                    </ion-button>
+                </ion-col>
+            </ion-row>
         </div>
     </core-loading>
 </ion-content>
-
-<!-- Arrows to go to next/previous. -->
-<ng-template #navArrows>
-    <ion-grid>
-        <ion-row class="ion-align-items-center">
-            <ion-col class="ion-text-start">
-                <ion-button color="light" *ngIf="previousPage >= 0" (click)="changePage(previousPage)"
-                    [title]="'core.previous' | translate">
-                    <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true"></ion-icon>
-                </ion-button>
-            </ion-col>
-            <ion-col class="ion-text-end">
-                <ion-button color="light" *ngIf="nextPage >= -1" (click)="changePage(nextPage)"
-                    [attr.aria-label]="'core.next' | translate">
-                    <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true"></ion-icon>
-                </ion-button>
-            </ion-col>
-        </ion-row>
-    </ion-grid>
-</ng-template>

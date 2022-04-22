@@ -14,11 +14,15 @@
 
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { NavController } from '@ionic/angular';
+import { CoreConfig } from '@services/config';
 
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
+import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
+import { Translate } from '@singletons';
+import { CoreConstants } from '../constants';
 
 /**
  * Options for the open function.
@@ -45,6 +49,36 @@ export class CoreWindow {
     }
 
     /**
+     * Show a confirm before opening a link in browser, unless the user previously marked to not show again.
+     *
+     * @param url URL to open.
+     * @return Promise resolved if confirmed, rejected if rejected.
+     */
+    static async confirmOpenBrowserIfNeeded(url: string): Promise<void> {
+        // Check if the user decided not to see the warning.
+        const dontShowWarning = await CoreConfig.get(CoreConstants.SETTINGS_DONT_SHOW_EXTERNAL_LINK_WARN, 0);
+        if (dontShowWarning) {
+            return;
+        }
+
+        // Remove common sensitive information from the URL.
+        url = url
+            .replace(/token=[^&#]+/gi, 'token=secret')
+            .replace(/tokenpluginfile\.php\/[^/]+/gi, 'tokenpluginfile.php/secret');
+
+        const dontShowAgain = await CoreDomUtils.showPrompt(
+            Translate.instant('core.warnopeninbrowser', { url }),
+            undefined,
+            Translate.instant('core.dontshowagain'),
+            'checkbox',
+        );
+
+        if (dontShowAgain) {
+            CoreConfig.set(CoreConstants.SETTINGS_DONT_SHOW_EXTERNAL_LINK_WARN, 1);
+        }
+    }
+
+    /**
      * "Safe" implementation of window.open. It will open the URL without overriding the app.
      *
      * @param url URL to open.
@@ -53,7 +87,7 @@ export class CoreWindow {
      */
     static async open(url: string, name?: string): Promise<void> {
         if (CoreUrlUtils.isLocalFileUrl(url)) {
-            const filename = url.substr(url.lastIndexOf('/') + 1);
+            const filename = url.substring(url.lastIndexOf('/') + 1);
 
             if (!CoreFileHelper.isOpenableInApp({ filename })) {
                 try {
@@ -73,12 +107,12 @@ export class CoreWindow {
             }
 
             if (!treated) {
-                // Not opened in the app, open with browser. Check if we need to auto-login
+                // Not opened in the app, open with browser. Check if we need to auto-login.
                 if (!CoreSites.isLoggedIn()) {
                     // Not logged in, cannot auto-login.
                     CoreUtils.openInBrowser(url);
                 } else {
-                    await CoreSites.getCurrentSite()!.openInBrowserWithAutoLoginIfSameSite(url);
+                    await CoreSites.getRequiredCurrentSite().openInBrowserWithAutoLoginIfSameSite(url);
                 }
             }
         }

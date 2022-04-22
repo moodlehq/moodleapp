@@ -12,38 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
+import { Component, ViewChild, OnInit, OnDestroy, forwardRef, ChangeDetectorRef } from '@angular/core';
 import { IonContent, IonRefresher } from '@ionic/angular';
 
-import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreCourses, CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import {
     CoreCourse,
     CoreCourseCompletionActivityStatus,
-    CoreCourseProvider,
 } from '@features/course/services/course';
 import {
     CoreCourseHelper,
     CoreCourseModuleCompletionData,
     CoreCourseSection,
-    CorePrefetchStatusInfo,
 } from '@features/course/services/course-helper';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
-import {
-    CoreCourseOptionsDelegate,
-    CoreCourseOptionsMenuHandlerToDisplay,
-} from '@features/course/services/course-options-delegate';
 import { CoreCourseSync, CoreCourseSyncProvider } from '@features/course/services/sync';
-import { CoreCourseFormatComponent } from '../../components/format/format';
+import { CoreCourseFormatComponent } from '../../components/course-format/course-format';
 import {
     CoreEvents,
     CoreEventObserver,
 } from '@singletons/events';
 import { CoreNavigator } from '@services/navigator';
-import { CoreConstants } from '@/core/constants';
+import { CoreRefreshContext, CORE_REFRESH_CONTEXT } from '@/core/utils/refresh-context';
 
 /**
  * Page that displays the contents of a course.
@@ -51,8 +44,12 @@ import { CoreConstants } from '@/core/constants';
 @Component({
     selector: 'page-core-course-contents',
     templateUrl: 'contents.html',
+    providers: [{
+        provide: CORE_REFRESH_CONTEXT,
+        useExisting: forwardRef(() => CoreCourseContentsPage),
+    }],
 })
-export class CoreCourseContentsPage implements OnInit, OnDestroy {
+export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshContext {
 
     @ViewChild(IonContent) content?: IonContent;
     @ViewChild(CoreCourseFormatComponent) formatComponent?: CoreCourseFormatComponent;
@@ -61,50 +58,40 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
     sections?: CoreCourseSection[];
     sectionId?: number;
     sectionNumber?: number;
-    courseMenuHandlers: CoreCourseOptionsMenuHandlerToDisplay[] = [];
     dataLoaded = false;
-    downloadEnabled = false;
-    downloadEnabledIcon = 'far-square'; // Disabled by default.
+    updatingData = false;
     downloadCourseEnabled = false;
     moduleId?: number;
     displayEnableDownload = false;
     displayRefresher = false;
-    prefetchCourseData: CorePrefetchStatusInfo = {
-        icon: CoreConstants.ICON_LOADING,
-        statusTranslatable: 'core.course.downloadcourse',
-        status: '',
-        loading: true,
-    };
 
     protected formatOptions?: Record<string, unknown>;
     protected completionObserver?: CoreEventObserver;
-    protected courseStatusObserver?: CoreEventObserver;
+    protected manualCompletionObserver?: CoreEventObserver;
     protected syncObserver?: CoreEventObserver;
     protected isDestroyed = false;
     protected modulesHaveCompletion = false;
     protected debouncedUpdateCachedCompletion?: () => void; // Update the cached completion after a certain time.
 
+    constructor(protected changeDetectorRef: ChangeDetectorRef) {}
+
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        const course = CoreNavigator.getRouteParam<CoreCourseAnyCourseData>('course');
 
-        if (!course) {
-            CoreDomUtils.showErrorModal('Missing required course parameter.');
+        try {
+            this.course = CoreNavigator.getRequiredRouteParam<CoreCourseAnyCourseData>('course');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
             CoreNavigator.back();
 
             return;
         }
 
-        this.course = course;
         this.sectionId = CoreNavigator.getRouteNumberParam('sectionId');
         this.sectionNumber = CoreNavigator.getRouteNumberParam('sectionNumber');
         this.moduleId = CoreNavigator.getRouteNumberParam('moduleId');
-
-        this.displayEnableDownload = !CoreSites.getCurrentSite()?.isOfflineDisabled() &&
-            CoreCourseFormatDelegate.displayEnableDownload(this.course);
-        this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
 
         this.debouncedUpdateCachedCompletion = CoreUtils.debounce(() => {
             if (this.modulesHaveCompletion) {
@@ -126,8 +113,6 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         await this.loadData(false, true);
 
         this.dataLoaded = true;
-
-        this.initPrefetch();
     }
 
     /**
@@ -136,13 +121,8 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async initListeners(): Promise<void> {
-        if (this.downloadCourseEnabled) {
-            // Listen for changes in course status.
-            this.courseStatusObserver = CoreEvents.on(CoreEvents.COURSE_STATUS_CHANGED, (data) => {
-                if (data.courseId == this.course.id || data.courseId == CoreCourseProvider.ALL_COURSES_CLEARED) {
-                    this.updateCourseStatus(data.status);
-                }
-            }, CoreSites.getCurrentSiteId());
+        if (this.completionObserver) {
+            return; // Already initialized.
         }
 
         // Check if the course format requires the view to be refreshed when completion changes.
@@ -155,57 +135,26 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
             CoreEvents.COMPLETION_MODULE_VIEWED,
             (data) => {
                 if (data && data.courseId == this.course.id) {
-                    this.refreshAfterCompletionChange(true);
+                    this.showLoadingAndRefresh(true, false);
                 }
             },
         );
+
+        this.manualCompletionObserver = CoreEvents.on(CoreEvents.MANUAL_COMPLETION_CHANGED, (data) => {
+            this.onCompletionChange(data.completion);
+        });
 
         this.syncObserver = CoreEvents.on(CoreCourseSyncProvider.AUTO_SYNCED, (data) => {
             if (!data || data.courseId != this.course.id) {
                 return;
             }
 
-            this.refreshAfterCompletionChange(false);
+            this.showLoadingAndRefresh(false, false);
 
             if (data.warnings && data.warnings[0]) {
                 CoreDomUtils.showErrorModal(data.warnings[0]);
             }
         });
-    }
-
-    /**
-     * Init prefetch data if needed.
-     *
-     * @return Promise resolved when done.
-     */
-    protected async initPrefetch(): Promise<void> {
-        if (!this.downloadCourseEnabled) {
-            // Cannot download the whole course, stop.
-            return;
-        }
-
-        // Determine the course prefetch status.
-        await this.determineCoursePrefetchIcon();
-
-        if (this.prefetchCourseData.icon != CoreConstants.ICON_LOADING) {
-            return;
-        }
-
-        // Course is being downloaded. Get the download promise.
-        const promise = CoreCourseHelper.getCourseDownloadPromise(this.course.id);
-        if (promise) {
-            // There is a download promise. Show an error if it fails.
-            promise.catch((error) => {
-                if (!this.isDestroyed) {
-                    CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
-                }
-            });
-        } else {
-            // No download, this probably means that the app was closed while downloading. Set previous status.
-            const status = await CoreCourse.setCoursePreviousStatus(this.course.id);
-
-            this.updateCourseStatus(status);
-        }
     }
 
     /**
@@ -229,7 +178,10 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         if (sync) {
             // Try to synchronize the course data.
             // For now we don't allow manual syncing, so ignore errors.
-            const result = await CoreUtils.ignoreErrors(CoreCourseSync.syncCourse(this.course.id));
+            const result = await CoreUtils.ignoreErrors(CoreCourseSync.syncCourse(
+                this.course.id,
+                this.course.displayname || this.course.fullname,
+            ));
             if (result?.warnings?.length) {
                 CoreDomUtils.showErrorModal(result.warnings[0]);
             }
@@ -238,7 +190,6 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         try {
             await Promise.all([
                 this.loadSections(refresh),
-                this.loadMenuHandlers(refresh),
                 this.loadCourseFormatOptions(),
             ]);
         } catch (error) {
@@ -269,7 +220,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         if (this.course.enablecompletion !== false) {
             const sectionWithModules = sections.find((section) => section.modules.length > 0);
 
-            if (sectionWithModules && typeof sectionWithModules.modules[0].completion != 'undefined') {
+            if (sectionWithModules && sectionWithModules.modules[0].completion !== undefined) {
                 // The module already has completion (3.6 onwards). Load the offline completion.
                 this.modulesHaveCompletion = true;
 
@@ -284,7 +235,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
         }
 
         // Add handlers
-        const result = CoreCourseHelper.addHandlerDataForModules(
+        const result = await CoreCourseHelper.addHandlerDataForModules(
             sections,
             this.course.id,
             completionStatus,
@@ -303,16 +254,6 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Load the course menu handlers.
-     *
-     * @param refresh If it's refreshing content.
-     * @return Promise resolved when done.
-     */
-    protected async loadMenuHandlers(refresh?: boolean): Promise<void> {
-        this.courseMenuHandlers = await CoreCourseOptionsDelegate.getMenuHandlersToDisplay(this.course, refresh);
-    }
-
-    /**
      * Load course format options if needed.
      *
      * @return Promise resolved when done.
@@ -320,7 +261,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
     protected async loadCourseFormatOptions(): Promise<void> {
 
         // Load the course format options when course completion is enabled to show completion progress on sections.
-        if (!this.course.enablecompletion || !CoreCourses.isGetCoursesByFieldAvailable()) {
+        if (!this.course.enablecompletion) {
             return;
         }
 
@@ -369,7 +310,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     async onCompletionChange(completionData: CoreCourseModuleCompletionData): Promise<void> {
-        const shouldReload = typeof completionData.valueused == 'undefined' || completionData.valueused;
+        const shouldReload = completionData.valueused === undefined || completionData.valueused;
 
         if (!shouldReload) {
             // Invalidate the completion.
@@ -382,7 +323,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
 
         await CoreUtils.ignoreErrors(this.invalidateData());
 
-        await this.refreshAfterCompletionChange(true);
+        await this.showLoadingAndRefresh(true, false);
     }
 
     /**
@@ -408,110 +349,41 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy {
      * Refresh list after a completion change since there could be new activities.
      *
      * @param sync If it should try to sync.
+     * @param invalidateData Whether to invalidate data. Set it to false if data has already been invalidated.
      * @return Promise resolved when done.
      */
-    protected async refreshAfterCompletionChange(sync?: boolean): Promise<void> {
-        // Save scroll position to restore it once done.
-        const scrollElement = await this.content?.getScrollElement();
-        const scrollTop = scrollElement?.scrollTop || 0;
-        const scrollLeft = scrollElement?.scrollLeft || 0;
-
-        this.dataLoaded = false;
-        this.content?.scrollToTop(0); // Scroll top so the spinner is seen.
+    protected async showLoadingAndRefresh(sync = false, invalidateData = true): Promise<void> {
+        this.updatingData = true;
+        this.changeDetectorRef.detectChanges();
 
         try {
+            if (invalidateData) {
+                await CoreUtils.ignoreErrors(this.invalidateData());
+            }
+
             await this.loadData(true, sync);
 
             await this.formatComponent?.doRefresh(undefined, undefined, true);
         } finally {
-            this.dataLoaded = true;
-
-            // Wait for new content height to be calculated and scroll without animation.
-            setTimeout(() => {
-                this.content?.scrollToPoint(scrollLeft, scrollTop, 0);
-            });
+            this.updatingData = false;
+            this.changeDetectorRef.detectChanges();
         }
     }
 
     /**
-     * Determines the prefetch icon of the course.
-     *
-     * @return Promise resolved when done.
+     * @inheritdoc
      */
-    protected async determineCoursePrefetchIcon(): Promise<void> {
-        this.prefetchCourseData = await CoreCourseHelper.getCourseStatusIconAndTitle(this.course.id);
+    async refreshContext(): Promise<void> {
+        await this.showLoadingAndRefresh(true, true);
     }
 
     /**
-     * Prefetch the whole course.
-     */
-    async prefetchCourse(): Promise<void> {
-        try {
-            await CoreCourseHelper.confirmAndPrefetchCourse(
-                this.prefetchCourseData,
-                this.course,
-                this.sections,
-                undefined,
-                this.courseMenuHandlers,
-            );
-        } catch (error) {
-            if (this.isDestroyed) {
-                return;
-            }
-
-            CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
-        }
-    }
-
-    /**
-     * Toggle download enabled.
-     */
-    toggleDownload(): void {
-        this.downloadEnabled = !this.downloadEnabled;
-        this.downloadEnabledIcon = this.downloadEnabled ? 'far-check-square' : 'far-square';
-    }
-
-    /**
-     * Update the course status icon and title.
-     *
-     * @param status Status to show.
-     */
-    protected updateCourseStatus(status: string): void {
-        const statusData = CoreCourseHelper.getCoursePrefetchStatusInfo(status);
-
-        this.prefetchCourseData.status = statusData.status;
-        this.prefetchCourseData.icon = statusData.icon;
-        this.prefetchCourseData.statusTranslatable = statusData.statusTranslatable;
-        this.prefetchCourseData.loading = statusData.loading;
-    }
-
-    /**
-     * Open the course summary
-     */
-    openCourseSummary(): void {
-        CoreNavigator.navigateToSitePath(
-            '/course/' + this.course.id + '/preview',
-            { params: { course: this.course, avoidOpenCourse: true } },
-        );
-    }
-
-    /**
-     * Opens a menu item registered to the delegate.
-     *
-     * @param item Item to open
-     */
-    openMenuItem(item: CoreCourseOptionsMenuHandlerToDisplay): void {
-        const params = Object.assign({ course: this.course }, item.data.pageParams);
-        CoreNavigator.navigateToSitePath(item.data.page, { params });
-    }
-
-    /**
-     * Page destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.isDestroyed = true;
         this.completionObserver?.off();
-        this.courseStatusObserver?.off();
+        this.manualCompletionObserver?.off();
         this.syncObserver?.off();
     }
 

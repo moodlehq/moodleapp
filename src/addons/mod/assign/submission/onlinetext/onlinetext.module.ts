@@ -31,8 +31,7 @@ import { AddonModAssignSubmissionDelegate } from '../../services/submission-dele
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 AddonModAssignSubmissionDelegate.registerHandler(AddonModAssignSubmissionOnlineTextHandler.instance);
             },
         },

@@ -12,14 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { CoreUser } from '@features/user/services/user';
-import { CoreCourseProvider } from '@features/course/services/course';
+import {
+    CoreCourseModuleCompletionStatus,
+    CoreCourseModuleCompletionTracking,
+} from '@features/course/services/course';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { Translate } from '@singletons';
 import { CoreCourseModuleCompletionBaseComponent } from '@features/course/classes/module-completion';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
 
 /**
  * Component to handle activity completion in sites previous to 3.11.
@@ -35,10 +39,28 @@ import { CoreCourseHelper } from '@features/course/services/course-helper';
     templateUrl: 'core-course-module-completion-legacy.html',
     styleUrls: ['module-completion-legacy.scss'],
 })
-export class CoreCourseModuleCompletionLegacyComponent extends CoreCourseModuleCompletionBaseComponent {
+export class CoreCourseModuleCompletionLegacyComponent extends CoreCourseModuleCompletionBaseComponent
+    implements OnInit, OnDestroy {
 
     completionImage?: string;
     completionDescription?: string;
+
+    protected completionObserver?: CoreEventObserver;
+
+    /**
+     * @inheritdoc
+     */
+    ngOnInit(): void {
+        this.completionObserver = CoreEvents.on(CoreEvents.MANUAL_COMPLETION_CHANGED, (data) => {
+            if (!this.completion || this.completion.cmid != data.completion.cmid) {
+                return;
+            }
+
+            this.completion = data.completion;
+            this.calculateData();
+            this.completionChanged.emit(this.completion);
+        });
+    }
 
     /**
      * @inheritdoc
@@ -52,30 +74,28 @@ export class CoreCourseModuleCompletionLegacyComponent extends CoreCourseModuleC
         let langKey: string | undefined;
         let image: string | undefined;
 
-        if (this.completion.tracking === CoreCourseProvider.COMPLETION_TRACKING_MANUAL &&
-                this.completion.state === CoreCourseProvider.COMPLETION_INCOMPLETE) {
-            image = 'completion-manual-n';
-            langKey = 'core.completion-alt-manual-n';
-        } else if (this.completion.tracking === CoreCourseProvider.COMPLETION_TRACKING_MANUAL &&
-                this.completion.state === CoreCourseProvider.COMPLETION_COMPLETE) {
-            image = 'completion-manual-y';
-            langKey = 'core.completion-alt-manual-y';
-        } else if (this.completion.tracking === CoreCourseProvider.COMPLETION_TRACKING_AUTOMATIC &&
-                this.completion.state === CoreCourseProvider.COMPLETION_INCOMPLETE) {
-            image = 'completion-auto-n';
-            langKey = 'core.completion-alt-auto-n';
-        } else if (this.completion.tracking === CoreCourseProvider.COMPLETION_TRACKING_AUTOMATIC &&
-                this.completion.state === CoreCourseProvider.COMPLETION_COMPLETE) {
-            image = 'completion-auto-y';
-            langKey = 'core.completion-alt-auto-y';
-        } else if (this.completion.tracking === CoreCourseProvider.COMPLETION_TRACKING_AUTOMATIC &&
-                this.completion.state === CoreCourseProvider.COMPLETION_COMPLETE_PASS) {
-            image = 'completion-auto-pass';
-            langKey = 'core.completion-alt-auto-pass';
-        } else if (this.completion.tracking === CoreCourseProvider.COMPLETION_TRACKING_AUTOMATIC &&
-                this.completion.state === CoreCourseProvider.COMPLETION_COMPLETE_FAIL) {
-            image = 'completion-auto-fail';
-            langKey = 'core.completion-alt-auto-fail';
+        if (this.completion.tracking === CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_MANUAL) {
+            if (this.completion.state === CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE) {
+                image = 'completion-manual-n';
+                langKey = 'core.completion-alt-manual-n';
+            } else if (this.completion.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE) {
+                image = 'completion-manual-y';
+                langKey = 'core.completion-alt-manual-y';
+            }
+        } else if (this.completion.tracking === CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_AUTOMATIC) {
+            if (this.completion.state === CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE) {
+                image = 'completion-auto-n';
+                langKey = 'core.completion-alt-auto-n';
+            } else if (this.completion.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE) {
+                image = 'completion-auto-y';
+                langKey = 'core.completion-alt-auto-y';
+            } else if (this.completion.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE_PASS) {
+                image = 'completion-auto-pass';
+                langKey = 'core.completion-alt-auto-pass';
+            } else if (this.completion.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE_FAIL) {
+                image = 'completion-auto-fail';
+                langKey = 'core.completion-alt-auto-fail';
+            }
         }
 
         if (image) {
@@ -128,9 +148,14 @@ export class CoreCourseModuleCompletionLegacyComponent extends CoreCourseModuleC
 
         await CoreCourseHelper.changeManualCompletion(this.completion, event);
 
-        this.calculateData();
+        CoreEvents.trigger(CoreEvents.MANUAL_COMPLETION_CHANGED, { completion: this.completion });
+    }
 
-        this.completionChanged.emit(this.completion);
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.completionObserver?.off();
     }
 
 }

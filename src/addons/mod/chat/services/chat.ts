@@ -61,7 +61,7 @@ export class AddonModChatProvider {
             return chat;
         }
 
-        throw new CoreError('Chat not found.');
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
     /**
@@ -218,19 +218,6 @@ export class AddonModChatProvider {
     }
 
     /**
-     * Return whether WS for passed sessions are available.
-     *
-     * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with a boolean.
-     * @since 3.5
-     */
-    async areSessionsAvailable(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.getSite(siteId);
-
-        return site.wsAvailable('mod_chat_get_sessions') && site.wsAvailable('mod_chat_get_session_messages');
-    }
-
-    /**
      * Get chat sessions.
      *
      * @param chatId Chat ID.
@@ -238,7 +225,6 @@ export class AddonModChatProvider {
      * @param showAll Whether to include incomplete sessions or not.
      * @param options Other options.
      * @return Promise resolved with the list of sessions.
-     * @since 3.5
      */
     async getSessions(
         chatId: number,
@@ -275,7 +261,6 @@ export class AddonModChatProvider {
      * @param groupId Group ID, 0 means that the function will determine the user group.
      * @param options Other options.
      * @return Promise resolved with the list of messages.
-     * @since 3.5
      */
     async getSessionMessages(
         chatId: number,
@@ -461,7 +446,7 @@ export type AddonModChatChat = {
     name: string; // Chat name.
     intro: string; // The Chat intro.
     introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    introfiles?: CoreWSExternalFile[]; // @since 3.2.
+    introfiles?: CoreWSExternalFile[];
     chatmethod?: string; // Chat method (sockets, ajax, header_js).
     keepdays?: number; // Keep days.
     studentlogs?: number; // Student logs visible to everyone.

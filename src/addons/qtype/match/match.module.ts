@@ -30,8 +30,7 @@ import { AddonQtypeMatchHandler } from './services/handlers/match';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreQuestionDelegate.registerHandler(AddonQtypeMatchHandler.instance);
             },
         },

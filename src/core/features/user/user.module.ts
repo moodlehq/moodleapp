@@ -35,6 +35,10 @@ import { CoreUserProvider } from './services/user';
 import { CoreUserHelperProvider } from './services/user-helper';
 import { CoreUserOfflineProvider } from './services/user-offline';
 import { CoreUserSyncProvider } from './services/user-sync';
+import { conditionalRoutes } from '@/app/app-routing.module';
+import { CoreScreen } from '@services/screen';
+import { COURSE_PAGE_NAME } from '@features/course/course.module';
+import { COURSE_INDEX_PATH } from '@features/course/course-lazy.module';
 
 export const CORE_USER_SERVICES: Type<unknown>[] = [
     CoreUserDelegateService,
@@ -45,16 +49,27 @@ export const CORE_USER_SERVICES: Type<unknown>[] = [
     CoreUserSyncProvider,
 ];
 
+export const PARTICIPANTS_PAGE_NAME = 'participants';
+
 const routes: Routes = [
     {
         path: 'user',
         loadChildren: () => import('@features/user/user-lazy.module').then(m => m.CoreUserLazyModule),
     },
+    ...conditionalRoutes([
+        {
+            path: `${COURSE_PAGE_NAME}/${COURSE_INDEX_PATH}/${PARTICIPANTS_PAGE_NAME}/:userId`,
+            loadChildren: () => import('@features/user/pages/profile/profile.module').then(m => m.CoreUserProfilePageModule),
+            data: {
+                swipeManagerSource: 'participants',
+            },
+        },
+    ], () => CoreScreen.isMobile),
 ];
 
 const courseIndexRoutes: Routes = [
     {
-        path: 'participants',
+        path: PARTICIPANTS_PAGE_NAME,
         loadChildren: () => import('@features/user/user-course-lazy.module').then(m => m.CoreUserCourseLazyModule),
     },
 ];
@@ -77,8 +92,7 @@ const courseIndexRoutes: Routes = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreUserDelegate.registerHandler(CoreUserProfileMailHandler.instance);
                 CoreContentLinksDelegate.registerHandler(CoreUserProfileLinkHandler.instance);
                 CoreCronDelegate.register(CoreUserSyncCronHandler.instance);

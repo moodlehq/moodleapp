@@ -1,18 +1,59 @@
-<ion-card *ngIf="module.dates?.length || (module.completiondata && (module.completiondata.isautomatic || showManualCompletion))">
-    <ion-item class="ion-text-wrap">
-        <ion-label>
-            <!-- Activity dates. -->
-            <div *ngIf="module.dates && module.dates.length" class="core-module-dates">
-                <p *ngFor="let date of module.dates">
-                    <strong>{{ date.label }}</strong> {{ date.timestamp * 1000 | coreFormatDate:'strftimedatetime' }}
-                </p>
-            </div>
+<ion-item class="ion-text-wrap" collapsible>
+    <core-mod-icon slot="start" [modicon]="modicon" [modname]="module.modname" [componentId]="module.instance">
+    </core-mod-icon>
+    <ion-label>
+        <p class="core-modulename" *ngIf="moduleNameTranslated">{{moduleNameTranslated}}</p>
+        <h1>
+            <core-format-text [text]="module.name" contextLevel="module" [component]="component" [componentId]="componentId"
+                [contextInstanceId]="module.id" [courseId]="courseId">
+            </core-format-text>
+            <ion-icon name="fas-lock" *ngIf="module.visible === 0 || module.uservisible === false"
+                [attr.aria-label]="'core.restricted' | translate"></ion-icon>
+        </h1>
+        <ng-content select="[title]"></ng-content>
+    </ion-label>
+</ion-item>
 
-            <!-- Module completion. -->
-            <core-course-module-completion *ngIf="module.completiondata" [completion]="module.completiondata"
-                [moduleName]="module.name" [moduleId]="module.id" [showCompletionConditions]="true"
-                [showManualCompletion]="showManualCompletion" (completionChanged)="completionChanged.emit($event)">
-            </core-course-module-completion>
-        </ion-label>
+<div class="core-module-info-box">
+    <!-- Module completion. -->
+    <div class="core-module-info-completion core-module-info-box-section" *ngIf="showCompletion &&
+            module.completiondata && (module.completiondata.isautomatic || (showManualCompletion && module.uservisible))">
+        <core-course-module-completion [completion]="module.completiondata" [moduleName]="module.name" [moduleId]="module.id"
+            [showCompletionConditions]="true" [showManualCompletion]="showManualCompletion && module.uservisible"
+            (completionChanged)="completionChanged.emit($event)">
+        </core-course-module-completion>
+    </div>
+
+    <!-- Activity dates. -->
+    <div *ngIf="module.dates && module.dates.length" class="core-module-dates core-module-info-box-section">
+        <p *ngFor="let date of module.dates">
+            <ion-icon name="fas-calendar" aria-hidden="true"></ion-icon><strong>{{ date.label }}</strong> {{ date.timestamp
+            *
+            1000 | coreFormatDate:'strftimedatetime' }}
+        </p>
+    </div>
+
+    <!-- Availability info space. -->
+    <div class="core-module-availabilityinfo core-module-info-box-section" *ngIf="showAvailabilityInfo && module.availabilityinfo">
+        <ion-icon name="fas-lock" [attr.aria-label]="'core.restricted' | translate"></ion-icon>
+        <core-format-text [text]="module.availabilityinfo" contextLevel="module" [contextInstanceId]="module.id" [courseId]="module.course">
+        </core-format-text>
+    </div>
+
+    <div class="core-module-info-description core-module-info-box-section" *ngIf="description">
+        <core-format-text [text]="description" [component]="component" [componentId]="componentId" contextLevel="module"
+            [contextInstanceId]="module.id" [courseId]="courseId" [collapsible-item]="expandDescription ? null : ''">
+        </core-format-text>
+    </div>
+    <ng-content select="[description]"></ng-content>
+</div>
+
+<ng-content></ng-content>
+
+<!-- Activity has something offline. -->
+<ion-card class="core-warning-card" *ngIf="hasDataToSync">
+    <ion-item>
+        <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+        <ion-label>{{ 'core.hasdatatosync' | translate: {$a: moduleNameTranslated} }}</ion-label>
     </ion-item>
 </ion-card>

@@ -28,6 +28,7 @@ import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
+import { CoreSitePluginsModuleHandler } from '../classes/handlers/module-handler';
 
 const ROOT_CACHE_KEY = 'CoreSitePlugins:';
 
@@ -38,11 +39,14 @@ const ROOT_CACHE_KEY = 'CoreSitePlugins:';
 export class CoreSitePluginsProvider {
 
     static readonly COMPONENT = 'CoreSitePlugins';
+    static readonly UPDATE_COURSE_CONTENT = 'siteplugins_update_course_content';
 
     protected logger: CoreLogger;
     protected sitePlugins: {[name: string]: CoreSitePluginsHandler} = {}; // Site plugins registered.
     protected sitePluginPromises: {[name: string]: Promise<void>} = {}; // Promises of loading plugins.
     protected fetchPluginsDeferred: PromiseDefer<void>;
+    protected moduleHandlerInstances: Record<string, CoreSitePluginsModuleHandler> = {};
+
     hasSitePluginsLoaded = false;
     sitePluginsFinishedLoading = false;
 
@@ -261,7 +265,7 @@ export class CoreSitePluginsProvider {
         switch (paramName) {
             case 'courseids':
                 // The WS needs the list of course IDs. Create the list.
-                return [courseId!];
+                return [courseId || 0];
 
             case component + 'id':
                 // The WS needs the instance id.
@@ -292,11 +296,6 @@ export class CoreSitePluginsProvider {
     async getPlugins(siteId?: string): Promise<CoreSitePluginsPlugin[]> {
         const site = await CoreSites.getSite(siteId);
 
-        if (!CoreSitePlugins.isGetContentAvailable(site)) {
-            // Cannot load site plugins, so there's no point to fetch them.
-            return [];
-        }
-
         // Get the list of plugins. Try not to use cache.
         const data = await site.read<CoreSitePluginsGetPluginsSupportingMobileWSResponse>(
             'tool_mobile_get_plugins_supporting_mobile',
@@ -316,6 +315,15 @@ export class CoreSitePluginsProvider {
      */
     getSitePluginHandler(name: string): CoreSitePluginsHandler | undefined {
         return this.sitePlugins[name];
+    }
+
+    /**
+     * Get the current site plugin list.
+     *
+     * @return Plugin list ws info.
+     */
+    getCurrentSitePluginList(): CoreSitePluginsWSPlugin[] {
+        return CoreUtils.objectToArray(this.sitePlugins).map((plugin) => plugin.plugin);
     }
 
     /**
@@ -371,12 +379,10 @@ export class CoreSitePluginsProvider {
     /**
      * Check if the get content WS is available.
      *
-     * @param site The site to check. If not defined, current site.
+     * @deprecated since app 4.0
      */
-    isGetContentAvailable(site?: CoreSite): boolean {
-        site = site || CoreSites.getCurrentSite();
-
-        return !!site?.wsAvailable('tool_mobile_get_content');
+    isGetContentAvailable(): boolean {
+        return true;
     }
 
     /**
@@ -397,7 +403,7 @@ export class CoreSitePluginsProvider {
             return false;
         }
 
-        if (restrictEnrolled || typeof restrictEnrolled == 'undefined') {
+        if (restrictEnrolled || restrictEnrolled === undefined) {
             // Only enabled for courses the user is enrolled to. Check if the user is enrolled in the course.
             try {
                 await CoreCourses.getUserCourse(courseId, true);
@@ -479,7 +485,7 @@ export class CoreSitePluginsProvider {
 
         otherData = otherData || {};
 
-        if (typeof useOtherData == 'undefined') {
+        if (useOtherData === undefined) {
             // No need to add other data, return args as they are.
             return args;
         } else if (Array.isArray(useOtherData)) {
@@ -537,10 +543,13 @@ export class CoreSitePluginsProvider {
             return;
         }
 
+        const siteInstance = site;
+        const offlineFunctions = handlerSchema.offlinefunctions;
+
         await Promise.all(Object.keys(handlerSchema.offlinefunctions).map(async(method) => {
-            if (site!.wsAvailable(method)) {
+            if (siteInstance.wsAvailable(method)) {
                 // The method is a WS.
-                const paramsList = handlerSchema.offlinefunctions![method];
+                const paramsList = offlineFunctions[method];
                 const cacheKey = this.getCallWSCacheKey(method, args);
                 let params: Record<string, unknown> = {};
 
@@ -551,12 +560,12 @@ export class CoreSitePluginsProvider {
                     for (const i in paramsList) {
                         const paramName = paramsList[i];
 
-                        if (typeof args[paramName] != 'undefined') {
+                        if (args[paramName] !== undefined) {
                             params[paramName] = args[paramName];
                         } else {
                             // The param is not one of the default ones. Try to calculate the param to use.
                             const value = this.getDownloadParam(component, paramName, courseId, module);
-                            if (typeof value != 'undefined') {
+                            if (value !== undefined) {
                                 params[paramName] = value;
                             }
                         }
@@ -581,7 +590,7 @@ export class CoreSitePluginsProvider {
             // Prefetch the files in the content.
             if (result.files.length) {
                 await CoreFilepool.downloadOrPrefetchFiles(
-                    site!.getId(),
+                    siteInstance.getId(),
                     result.files,
                     !!prefetch,
                     false,
@@ -652,6 +661,26 @@ export class CoreSitePluginsProvider {
      */
     waitFetchPlugins(): Promise<void> {
         return this.fetchPluginsDeferred.promise;
+    }
+
+    /**
+     * Get a module hander instance, if present.
+     *
+     * @param modName Mod name without "mod_".
+     * @return Handler instance, undefined if not found.
+     */
+    getModuleHandlerInstance(modName: string): CoreSitePluginsModuleHandler | undefined {
+        return this.moduleHandlerInstances[modName];
+    }
+
+    /**
+     * Set a module hander instance.
+     *
+     * @param modName Mod name.
+     * @param handler Handler instance.
+     */
+    setModuleHandlerInstance(modName: string, handler: CoreSitePluginsModuleHandler): void {
+        this.moduleHandlerInstances[modName] = handler;
     }
 
 }
@@ -842,10 +871,12 @@ export type CoreSitePluginsCourseModuleHandlerData = CoreSitePluginsHandlerCommo
     displayrefresh?: boolean;
     displayprefetch?: boolean;
     displaysize?: boolean;
+    displaygrades?: boolean;
     coursepagemethod?: string;
     ptrenabled?: boolean;
     supportedfeatures?: Record<string, unknown>;
     manualcompletionalwaysshown?: boolean;
+    nolinkhandlers?: boolean;
 };
 
 /**
@@ -854,7 +885,11 @@ export type CoreSitePluginsCourseModuleHandlerData = CoreSitePluginsHandlerCommo
 export type CoreSitePluginsCourseFormatHandlerData = CoreSitePluginsHandlerCommonData & {
     canviewallsections?: boolean;
     displayenabledownload?: boolean;
+    /**
+     * @deprecated on 4.0, use displaycourseindex instead.
+     */
     displaysectionselector?: boolean;
+    displaycourseindex?: boolean;
 };
 
 /**
@@ -928,3 +963,24 @@ export type CoreSitePluginsMainMenuHomeHandlerData = CoreSitePluginsHandlerCommo
     priority?: number;
     ptrenabled?: boolean;
 };
+
+/**
+ * Event to update course content data for plugins using coursepagemethod.
+ */
+export type CoreSitePluginsUpdateCourseContentEvent = {
+    cmId: number; // Module ID to update.
+    alreadyFetched?: boolean; // Whether course data has already been fetched (no need to fetch it again).
+};
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [CoreSitePluginsProvider.UPDATE_COURSE_CONTENT]: CoreSitePluginsUpdateCourseContentEvent;
+    }
+
+}

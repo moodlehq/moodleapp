@@ -33,15 +33,6 @@ export class AddonPrivateFilesProvider {
     static readonly SITE_FILES_COMPONENT = 'mmaFilesSite';
 
     /**
-     * Check if core_user_get_private_files_info WS call is available.
-     *
-     * @return Whether the WS is available, false otherwise.
-     */
-    canGetPrivateFilesInfo(): boolean {
-        return CoreSites.wsAvailableInCurrentSite('core_user_get_private_files_info');
-    }
-
-    /**
      * Check if user can view his private files.
      *
      * @return Whether the user can view his private files.
@@ -394,19 +385,6 @@ export class AddonPrivateFilesProvider {
         const site = await CoreSites.getSite(siteId);
 
         return site.write('core_user_add_user_private_files', params, preSets);
-    }
-
-    /**
-     * Check the Moodle version in order to check if upload files is working.
-     *
-     * @param siteId Site ID. If not defined, use current site.
-     * @return Promise resolved with true if WS is working, false otherwise.
-     */
-    async versionCanUploadFiles(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.getSite(siteId);
-
-        // Upload private files doesn't work for Moodle 3.1.0 due to a bug.
-        return site.isVersionGreaterEqualThan('3.1.1');
     }
 
 }

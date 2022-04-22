@@ -1,0 +1,50 @@
+<ion-header collapsible>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <ion-title>
+            <h1>
+                <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
+                </core-format-text>
+            </h1>
+        </ion-title>
+
+        <ion-buttons slot="end">
+            <ion-button fill="clear" *ngIf="module.url && module.uservisible && !unsupported" [href]="module.url" core-link
+                [showBrowserWarning]="false" [attr.aria-label]="'core.openinbrowser' | translate">
+                <ion-icon name="fas-external-link-alt" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content class="limited-width">
+    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="doRefresh($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="loaded" class="has-spacer">
+        <core-course-module-info [module]="module" [courseId]="courseId" [description]="module.description" [component]="module.modname"
+            [componentId]="module.id" [expandDescription]="true" [showAvailabilityInfo]="true" (completionChanged)="onCompletionChange()"
+            [showManualCompletion]="showManualCompletion">
+            <div class="core-module-additional-info" title>
+                <ion-chip *ngIf="module.handlerData?.extraBadge" [color]="module.handlerData?.extraBadgeColor"
+                    class="ion-text-wrap ion-text-start" [outline]="true">
+                    <ion-label><span [innerHTML]="module.handlerData?.extraBadge"></span></ion-label>
+                </ion-chip>
+
+                <!-- Hidden badges -->
+                <ion-badge color="warning" *ngIf="module.visible === 0" class="ion-text-wrap">
+                    {{ 'core.course.hiddenfromstudents' | translate }}
+                </ion-badge>
+                <ion-badge color="warning" *ngIf="module.visible !== 0 && module.isStealth" class="ion-text-wrap">
+                    {{ 'core.course.hiddenoncoursepage' | translate }}
+                </ion-badge>
+            </div>
+        </core-course-module-info>
+
+        <core-course-unsupported-module *ngIf="unsupported" [module]="module"></core-course-unsupported-module>
+    </core-loading>
+
+    <core-course-module-navigation collapsible-footer appearOnBottom [hidden]="!loaded" [courseId]="courseId" [currentModuleId]="module.id">
+    </core-course-module-navigation>
+</ion-content>

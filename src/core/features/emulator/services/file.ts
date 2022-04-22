@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { File, Entry, DirectoryEntry, FileEntry, IWriteOptions, RemoveResult } from '@ionic-native/file/ngx';
 
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreText } from '@singletons/text';
 
 /**
  * Implement the File Error because the ionic-native plugin doesn't implement it.
@@ -58,7 +58,7 @@ export class FileMock extends File {
      * @return Returns a Promise that resolves to true if the directory exists or rejects with an error.
      */
     async checkDir(path: string, dir: string): Promise<boolean> {
-        const fullPath = CoreTextUtils.concatenatePaths(path, dir);
+        const fullPath = CoreText.concatenatePaths(path, dir);
 
         await this.resolveDirectoryUrl(fullPath);
 
@@ -73,7 +73,7 @@ export class FileMock extends File {
      * @return Returns a Promise that resolves with a boolean or rejects with an error.
      */
     async checkFile(path: string, file: string): Promise<boolean> {
-        const entry = await this.resolveLocalFilesystemUrl(CoreTextUtils.concatenatePaths(path, file));
+        const entry = await this.resolveLocalFilesystemUrl(CoreText.concatenatePaths(path, file));
 
         if (entry.isFile) {
             return true;
@@ -144,7 +144,7 @@ export class FileMock extends File {
     async copyFileOrDir(sourcePath: string, sourceName: string, destPath: string, destName: string): Promise<Entry> {
         const destFixed = this.fixPathAndName(destPath, destName);
 
-        const source = await this.resolveLocalFilesystemUrl(CoreTextUtils.concatenatePaths(sourcePath, sourceName));
+        const source = await this.resolveLocalFilesystemUrl(CoreText.concatenatePaths(sourcePath, sourceName));
 
         const destParentDir = await this.resolveDirectoryUrl(destFixed.path);
 
@@ -344,10 +344,10 @@ export class FileMock extends File {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const win = <any> window; // Convert to <any> to be able to use non-standard properties.
 
-            if (typeof win.requestFileSystem == 'undefined') {
+            if (win.requestFileSystem === undefined) {
                 win.requestFileSystem = win.webkitRequestFileSystem;
             }
-            if (typeof win.resolveLocalFileSystemURL == 'undefined') {
+            if (win.resolveLocalFileSystemURL === undefined) {
                 win.resolveLocalFileSystemURL = win.webkitResolveLocalFileSystemURL;
             }
             win.LocalFileSystem = {
@@ -424,7 +424,7 @@ export class FileMock extends File {
     async moveFileOrDir(sourcePath: string, sourceName: string, destPath: string, destName: string): Promise<Entry> {
         const destFixed = this.fixPathAndName(destPath, destName);
 
-        const source = await this.resolveLocalFilesystemUrl(CoreTextUtils.concatenatePaths(sourcePath, sourceName));
+        const source = await this.resolveLocalFilesystemUrl(CoreText.concatenatePaths(sourcePath, sourceName));
 
         const destParentDir = await this.resolveDirectoryUrl(destFixed.path);
 
@@ -440,11 +440,11 @@ export class FileMock extends File {
      */
     protected fixPathAndName(path: string, name: string): {path: string; name: string} {
 
-        const fullPath = CoreTextUtils.concatenatePaths(path, name);
+        const fullPath = CoreText.concatenatePaths(path, name);
 
         return {
             path: fullPath.substring(0, fullPath.lastIndexOf('/')),
-            name: fullPath.substr(fullPath.lastIndexOf('/') + 1),
+            name: fullPath.substring(fullPath.lastIndexOf('/') + 1),
         };
     }
 

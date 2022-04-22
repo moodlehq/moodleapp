@@ -71,7 +71,7 @@ export class AddonModGlossaryHelperProvider {
         files: CoreFileEntry[],
         original?: AddonModGlossaryNewEntryWithFiles,
     ): boolean {
-        if (!original || typeof original.concept == 'undefined') {
+        if (!original || original.concept === undefined) {
             // There is no original data.
             return !!(entry.definition || entry.concept || files.length > 0);
         }

@@ -1,0 +1,15 @@
+@import "~theme/globals";
+
+.core-module-availabilityinfo {
+    background: var(--light);
+    border-radius: var(--small-radius);
+    padding: 8px;
+    font-size: 90%;
+    ::ng-deep  ul {
+        margin-top: 0.5em;
+    }
+
+    ion-icon {
+        @include margin-horizontal(null, 8px);
+    }
+}

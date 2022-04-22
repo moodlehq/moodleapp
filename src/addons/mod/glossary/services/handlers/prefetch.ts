@@ -16,9 +16,11 @@ import { Injectable } from '@angular/core';
 import { CoreComments } from '@features/comments/services/comments';
 import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/activity-prefetch-handler';
 import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
+import { CoreCourses } from '@features/courses/services/courses';
 import { CoreUser } from '@features/user/services/user';
 import { CoreFilepool } from '@services/filepool';
-import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
+import { CoreSitesReadingStrategy } from '@services/sites';
+import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModGlossary, AddonModGlossaryEntry, AddonModGlossaryGlossary, AddonModGlossaryProvider } from '../glossary';
@@ -71,16 +73,12 @@ export class AddonModGlossaryPrefetchHandlerService extends CoreCourseActivityPr
     ): CoreWSFile[] {
         let files = this.getIntroFilesFromInstance(module, glossary);
 
-        const getInlineFiles = CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.2');
-
         // Get entries files.
         entries.forEach((entry) => {
             files = files.concat(entry.attachments || []);
 
-            if (getInlineFiles && entry.definitioninlinefiles && entry.definitioninlinefiles.length) {
+            if (entry.definitioninlinefiles && entry.definitioninlinefiles.length) {
                 files = files.concat(entry.definitioninlinefiles);
-            } else if (entry.definition && !getInlineFiles) {
-                files = files.concat(CoreFilepool.extractDownloadableFilesFromHtmlAsFakeFileObjects(entry.definition));
             }
         });
 
@@ -207,8 +205,11 @@ export class AddonModGlossaryPrefetchHandlerService extends CoreCourseActivityPr
         promises.push(AddonModGlossary.getAllCategories(glossary.id, options));
 
         // Prefetch data for link handlers.
-        promises.push(CoreCourse.getModuleBasicInfo(module.id, siteId));
-        promises.push(CoreCourse.getModuleBasicInfoByInstance(glossary.id, 'glossary', siteId));
+        promises.push(CoreCourse.getModuleBasicInfo(module.id, { siteId }));
+        promises.push(CoreCourse.getModuleBasicInfoByInstance(glossary.id, 'glossary', { siteId }));
+
+        // Get course data, needed to determine upload max size if it's configured to be course limit.
+        promises.push(CoreUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));
 
         await Promise.all(promises);
     }
@@ -218,7 +219,7 @@ export class AddonModGlossaryPrefetchHandlerService extends CoreCourseActivityPr
      */
     async sync(module: CoreCourseAnyModuleData, courseId: number, siteId?: string): Promise<AddonModGlossarySyncResult> {
         const results = await Promise.all([
-            AddonModGlossarySync.syncGlossaryEntries(module.instance!, undefined, siteId),
+            AddonModGlossarySync.syncGlossaryEntries(module.instance, undefined, siteId),
             AddonModGlossarySync.syncRatings(module.id, undefined, siteId),
         ]);
 

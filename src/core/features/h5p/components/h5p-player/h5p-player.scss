@@ -1,12 +1,12 @@
 :host {
-    --core-h5p-placeholder-bg-color: var(--gray);
+    --core-h5p-placeholder-bg-color: var(--gray-300);
     --core-h5p-placeholder-text-color: var(--ion-text-color);
 
     .core-h5p-placeholder {
         position: relative;
         width: 100%;
         height: 230px;
-        background: url('../../../../../assets/img/icons/h5p.svg') center top 25px / 100px auto no-repeat var(--core-h5p-placeholder-bg-color);
+        background: url('/assets/img/icons/h5p.svg') center top 25px / 100px auto no-repeat var(--core-h5p-placeholder-bg-color);
         color: var(--core-h5p-placeholder-text-color);
 
         .icon:not([color="success"]) {

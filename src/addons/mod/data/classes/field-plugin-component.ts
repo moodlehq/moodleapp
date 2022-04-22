@@ -32,10 +32,11 @@ export abstract class AddonModDataFieldPluginComponent implements OnInit, OnChan
     @Input() error?: string; // Error when editing.
     @Input() form?: FormGroup; // Form where to add the form control. Just required for edit and search modes.
     @Input() searchFields?: CoreFormFields; // The search value of all fields.
-    @Output() gotoEntry: EventEmitter<number>; // Action to perform.
+    @Output() gotoEntry = new EventEmitter<number>(); // Action to perform.
+    // Output called when the field is initialized with a value and it didn't have one already.
+    @Output() onFieldInit = new EventEmitter<AddonModDataEntryFieldInitialized>();
 
     constructor(protected fb: FormBuilder) {
-        this.gotoEntry = new EventEmitter();
     }
 
     /**
@@ -114,3 +115,11 @@ export abstract class AddonModDataFieldPluginComponent implements OnInit, OnChan
     }
 
 }
+
+/**
+ * Data for an initialized field.
+ */
+export type AddonModDataEntryFieldInitialized = Partial<AddonModDataEntryField> & {
+    fieldid: number;
+    content: string;
+};

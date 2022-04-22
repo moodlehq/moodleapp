@@ -17,7 +17,7 @@ import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreTagItem } from '@features/tag/services/tag';
 import { CoreWSExternalWarning, CoreWSExternalFile, CoreWS } from '@services/ws';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreCourse, CoreCourseModuleContentFile } from '@features/course/services/course';
 import { CoreUtils } from '@services/utils/utils';
@@ -103,7 +103,7 @@ export class AddonModBookProvider {
             return book;
         }
 
-        throw new CoreError('Book not found');
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
     /**
@@ -134,7 +134,7 @@ export class AddonModBookProvider {
 
         if (!CoreFile.isAvailable()) {
             // We return the live URL.
-            return CoreSites.getCurrentSite()!.checkAndFixPluginfileURL(indexUrl);
+            return CoreSites.getRequiredCurrentSite().checkAndFixPluginfileURL(indexUrl);
         }
 
         const siteId = CoreSites.getCurrentSiteId();
@@ -217,33 +217,19 @@ export class AddonModBookProvider {
     }
 
     /**
-     * Get the next chapter to the given one.
+     * Get last chapter viewed in the app for a book.
      *
-     * @param chapters The chapters list.
-     * @param chapterId The current chapter.
-     * @return The next chapter.
+     * @param id Book instance ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with last chapter viewed, undefined if none.
      */
-    getNextChapter(chapters: AddonModBookTocChapter[], chapterId: number): AddonModBookTocChapter | undefined {
-        const currentChapterIndex = chapters.findIndex((chapter) => chapter.id == chapterId);
+    async getLastChapterViewed(id: number, siteId?: string): Promise<number | undefined> {
+        const site = await CoreSites.getSite(siteId);
+        const entry = await site.getLastViewed(AddonModBookProvider.COMPONENT, id);
 
-        if (currentChapterIndex >= 0 && typeof chapters[currentChapterIndex + 1] != 'undefined') {
-            return chapters[currentChapterIndex + 1];
-        }
-    }
+        const chapterId = Number(entry?.value);
 
-    /**
-     * Get the previous chapter to the given one.
-     *
-     * @param chapters The chapters list.
-     * @param chapterId The current chapter.
-     * @return The next chapter.
-     */
-    getPreviousChapter(chapters: AddonModBookTocChapter[], chapterId: number): AddonModBookTocChapter | undefined {
-        const currentChapterIndex = chapters.findIndex((chapter) => chapter.id == chapterId);
-
-        if (currentChapterIndex > 0) {
-            return chapters[currentChapterIndex - 1];
-        }
+        return isNaN(chapterId) ? undefined : chapterId;
     }
 
     /**
@@ -253,7 +239,7 @@ export class AddonModBookProvider {
      * @return The toc.
      */
     getToc(contents: CoreCourseModuleContentFile[]): AddonModBookTocChapterParsed[] {
-        if (!contents || !contents.length || typeof contents[0].content == 'undefined') {
+        if (!contents || !contents.length || contents[0].content === undefined) {
             return [];
         }
 
@@ -393,6 +379,21 @@ export class AddonModBookProvider {
         );
     }
 
+    /**
+     * Store last chapter viewed in the app for a book.
+     *
+     * @param id Book instance ID.
+     * @param chapterId Chapter ID.
+     * @param courseId Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @return Promise resolved with last chapter viewed, undefined if none.
+     */
+    async storeLastChapterViewed(id: number, chapterId: number, courseId: number, siteId?: string): Promise<void> {
+        const site = await CoreSites.getSite(siteId);
+
+        await site.storeLastViewed(AddonModBookProvider.COMPONENT, id, chapterId, { data: String(courseId) });
+    }
+
 }
 
 export const AddonModBook = makeSingleton(AddonModBookProvider);
@@ -441,7 +442,7 @@ export type AddonModBookBookWSData = {
     name: string; // Book name.
     intro: string; // The Book intro.
     introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    introfiles?: CoreWSExternalFile[]; // @since 3.2.
+    introfiles?: CoreWSExternalFile[];
     numbering: number; // Book numbering configuration.
     navstyle: number; // Book navigation style configuration.
     customtitles: number; // Book custom titles type.

@@ -9,21 +9,18 @@
 <core-loading [hideUntil]="filesLoaded" [fullscreen]="false">
     <ion-list *ngIf="files && files.length > 0">
         <ng-container *ngFor="let file of files; let idx = index">
-            <core-local-file *ngIf="file.isFile" [file]="file" [manage]="manage" [overrideClick]="pick"
-                (onClick)="filePicked(file)" (onDelete)="fileDeleted(idx)" (onRename)="fileRenamed(idx, $event)">
+            <core-local-file *ngIf="file.isFile" [file]="file" [manage]="manage" [overrideClick]="pick" (onClick)="filePicked(file)"
+                (onDelete)="fileDeleted(idx)" (onRename)="fileRenamed(idx, $event)">
             </core-local-file>
 
-            <ion-item button *ngIf="!file.isFile" class="ion-text-wrap item-file" (click)="openFolder(file)" detail="true">
-                <ion-thumbnail slot="start" aria-hidden="true">
-                    <img src="assets/img/files/folder-64.png" alt="">
-                </ion-thumbnail>
+            <ion-item button *ngIf="!file.isFile" class="ion-text-wrap item-file item-directory" (click)="openFolder(file)" detail="true">
+                <ion-icon name="fas-folder" slot="start" [attr.aria-label]="'core.folder' | translate"></ion-icon>
                 <ion-label>{{ file.name }}</ion-label>
             </ion-item>
         </ng-container>
     </ion-list>
 
-    <core-empty-box *ngIf="files && !files.length && manage" icon="fas-folder"
-        [message]="'core.sharedfiles.nosharedfiles' | translate">
+    <core-empty-box *ngIf="files && !files.length && manage" icon="fas-folder" [message]="'core.sharedfiles.nosharedfiles' | translate">
     </core-empty-box>
 
     <core-empty-box *ngIf="files && !files.length && !manage" icon="fas-folder"

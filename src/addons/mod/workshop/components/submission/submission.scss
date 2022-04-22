@@ -1,10 +1,10 @@
 :host {
   p.addon-overriden-grade {
-    color: var(--ion-color-success);
+    color: var(--success);
   }
 
   p.addon-has-overriden-grade {
-    color: var(--ion-color-danger);
+    color: var(--danger);
     text-decoration: line-through;
   }
 }

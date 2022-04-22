@@ -1,0 +1,52 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <ion-title>
+            <h1>
+                <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
+                </core-format-text>
+            </h1>
+        </ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="showToc()" [attr.aria-label]="'addon.mod_book.toc' | translate" aria-haspopup="true" *ngIf="loaded">
+                <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="doRefresh($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+
+    <core-loading [hideUntil]="loaded">
+        <div class="safe-area-padding-horizontal core-swipe-slides-container">
+            <ion-card class="core-warning-card" *ngIf="warning">
+                <ion-item>
+                    <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-label><span [innerHTML]="warning"></span></ion-label>
+                </ion-item>
+            </ion-card>
+
+            <core-swipe-slides [manager]="manager" [options]="slidesOpts">
+                <ng-template let-chapter="item">
+                    <div class="ion-padding">
+                        <core-format-text [component]="component" [componentId]="cmId" [text]="chapter.content" contextLevel="module"
+                            [contextInstanceId]="cmId" [courseId]="courseId"></core-format-text>
+                        <div class="ion-margin-top" *ngIf="chapter.tags?.length > 0">
+                            <strong>{{ 'core.tag.tags' | translate }}: </strong>
+                            <core-tag-list [tags]="chapter.tags"></core-tag-list>
+                        </div>
+                    </div>
+                </ng-template>
+            </core-swipe-slides>
+        </div>
+    </core-loading>
+
+    <core-navigation-bar collapsible-footer appearOnBottom *ngIf="loaded && displayNavBar && navigationItems.length > 1"
+        [items]="navigationItems" previousTranslate="addon.mod_book.navprevtitle" nextTranslate="addon.mod_book.navnexttitle"
+        (action)="changeChapter($event.id)" slot="fixed">
+    </core-navigation-bar>
+</ion-content>

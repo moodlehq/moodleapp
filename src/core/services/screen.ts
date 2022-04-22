@@ -16,7 +16,8 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Platform } from '@singletons';
+import { CoreEvents } from '@singletons/events';
 
 /**
  * Screen breakpoints.
@@ -46,6 +47,14 @@ const BREAKPOINT_WIDTHS: Record<Breakpoint, number> = {
 export enum CoreScreenLayout {
     MOBILE = 'mobile',
     TABLET = 'tablet',
+}
+
+/**
+ * Screen orientation.
+ */
+export enum CoreScreenOrientation {
+    LANDSCAPE = 'landscape',
+    PORTRAIT = 'portrait',
 }
 
 /**
@@ -91,6 +100,31 @@ export class CoreScreenService {
 
     get isTablet(): boolean {
         return this.layout === CoreScreenLayout.TABLET;
+    }
+
+    get orientation(): CoreScreenOrientation {
+        return screen.orientation.type.startsWith(CoreScreenOrientation.LANDSCAPE)
+            ? CoreScreenOrientation.LANDSCAPE
+            : CoreScreenOrientation.PORTRAIT;
+    }
+
+    get isPortrait(): boolean {
+        return this.orientation === CoreScreenOrientation.PORTRAIT;
+    }
+
+    get isLandscape(): boolean {
+        return this.orientation === CoreScreenOrientation.LANDSCAPE;
+    }
+
+    /**
+     * Watch orientation changes.
+     */
+    async watchOrientation(): Promise<void> {
+        await Platform.ready();
+
+        screen.orientation.addEventListener('change', () => {
+            CoreEvents.trigger(CoreEvents.ORIENTATION_CHANGE, { orientation: this.orientation });
+        });
     }
 
     /**

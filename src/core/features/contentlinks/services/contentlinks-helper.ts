@@ -21,6 +21,7 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { Params } from '@angular/router';
 import { CoreContentLinksChooseSiteModalComponent } from '../components/choose-site-modal/choose-site-modal';
+import { CoreCustomURLSchemes } from '@services/urlschemes';
 
 /**
  * Service that provides some features regarding content links.
@@ -138,6 +139,12 @@ export class CoreContentLinksHelperProvider {
         openBrowserRoot?: boolean,
     ): Promise<boolean> {
         try {
+            if (CoreCustomURLSchemes.isCustomURL(url)) {
+                await CoreCustomURLSchemes.handleCustomURL(url);
+
+                return true;
+            }
+
             if (checkRoot) {
                 const data = await CoreSites.isStoredRootURL(url, username);
 

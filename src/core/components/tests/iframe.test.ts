@@ -12,8 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreIframeComponent } from '@components/iframe/iframe';
+
+import { renderTemplate } from '@/testing/utils';
+
 describe('CoreIframeComponent', () => {
 
-    it.todo('should render');
+    it('should render', async () => {
+        // Arrange.
+        CoreIframeComponent.loadingTimeout = 0;
+
+        // Act.
+        const { nativeElement } = await renderTemplate(
+            CoreIframeComponent,
+            '<core-iframe src="https://moodle.org/"></core-iframe>',
+        );
+
+        // Assert.
+        expect(nativeElement.innerHTML.trim()).not.toHaveLength(0);
+
+        const iframe = nativeElement.querySelector('iframe');
+        expect(iframe).not.toBeNull();
+        expect(iframe.src).toEqual('https://moodle.org/');
+    });
 
 });

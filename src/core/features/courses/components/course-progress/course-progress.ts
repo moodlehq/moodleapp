@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, OnChanges } from '@angular/core';
 import { CoreEventCourseStatusChanged, CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -21,7 +21,10 @@ import { CoreCourse, CoreCourseProvider } from '@features/course/services/course
 import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
 import { Translate } from '@singletons';
 import { CoreConstants } from '@/core/constants';
-import { CoreEnrolledCourseDataWithExtraInfoAndOptions } from '../../services/courses-helper';
+import {
+    CoreCourseAnyCourseDataWithExtraInfoAndOptions,
+    CoreEnrolledCourseDataWithExtraInfoAndOptions,
+} from '../../services/courses-helper';
 import { CoreCoursesCourseOptionsMenuComponent } from '../course-options-menu/course-options-menu';
 import { CoreUser } from '@features/user/services/user';
 
@@ -32,20 +35,21 @@ import { CoreUser } from '@features/user/services/user';
  *
  * <core-courses-course-progress [course]="course">
  * </core-courses-course-progress>
+ *
+ * @deprecated since 4.0 Use core-courses-course-list-item instead.
  */
 @Component({
     selector: 'core-courses-course-progress',
     templateUrl: 'core-courses-course-progress.html',
     styleUrls: ['course-progress.scss'],
 })
-export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
+export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy, OnChanges {
 
-    @Input() course!: CoreEnrolledCourseDataWithExtraInfoAndOptions; // The course to render.
+    // The course to render.
+    @Input() course!: CoreCourseAnyCourseDataWithExtraInfoAndOptions;
     @Input() showAll = false; // If true, will show all actions, options, star and progress.
     @Input() showDownload = true; // If true, will show download button. Only works if the options menu is not shown.
 
-    courseStatus = CoreConstants.NOT_DOWNLOADED;
-    isDownloading = false;
     prefetchCourseData: CorePrefetchStatusInfo = {
         icon: '',
         statusTranslatable: 'core.loading',
@@ -56,13 +60,17 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
     showSpinner = false;
     downloadCourseEnabled = false;
     courseOptionMenuEnabled = false;
+    isFavourite = false;
+    progress = -1;
+    completionUserTracked: boolean | undefined = false;
 
+    protected courseStatus = CoreConstants.NOT_DOWNLOADED;
     protected isDestroyed = false;
     protected courseStatusObserver?: CoreEventObserver;
     protected siteUpdatedObserver?: CoreEventObserver;
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
 
@@ -73,7 +81,8 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
         }
 
         // This field is only available from 3.6 onwards.
-        this.courseOptionMenuEnabled = this.showAll && typeof this.course.isfavourite != 'undefined';
+        this.courseOptionMenuEnabled = this.showAll && 'isfavourite' in this.course &&
+            this.course.isfavourite !== undefined;
 
         // Refresh the enabled flag if site is updated.
         this.siteUpdatedObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
@@ -89,10 +98,19 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * @inheritdoc
+     */
+    ngOnChanges(): void {
+        this.isFavourite = 'isfavourite' in this.course && !!this.course.isfavourite;
+        this.progress = 'progress' in this.course ? this.course.progress || -1 : -1;
+        this.completionUserTracked = 'completionusertracked' in this.course && this.course.completionusertracked;
+    }
+
+    /**
      * Initialize prefetch course.
      */
     async initPrefetchCourse(): Promise<void> {
-        if (typeof this.courseStatusObserver != 'undefined') {
+        if (this.courseStatusObserver !== undefined) {
             // Already initialized.
             return;
         }
@@ -157,9 +175,12 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
      */
     async deleteCourse(): Promise<void> {
         try {
-            await CoreDomUtils.showDeleteConfirm('core.course.confirmdeletestoreddata');
+            await CoreDomUtils.showDeleteConfirm(
+                'addon.storagemanager.confirmdeletedatafrom',
+                { name: this.course.displayname || this.course.fullname },
+            );
         } catch (error) {
-            if (CoreDomUtils.isCanceledError(error)) {
+            if (!CoreDomUtils.isCanceledError(error)) {
                 throw error;
             }
 
@@ -205,7 +226,6 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
             component: CoreCoursesCourseOptionsMenuComponent,
             componentProps: {
                 course: this.course,
-                courseStatus: this.courseStatus,
                 prefetch: this.prefetchCourseData,
             },
             event: e,
@@ -218,7 +238,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
                 }
                 break;
             case 'delete':
-                if (this.courseStatus == 'downloaded' || this.courseStatus == 'outdated') {
+                if (this.courseStatus == CoreConstants.DOWNLOADED || this.courseStatus == CoreConstants.OUTDATED) {
                     this.deleteCourse();
                 }
                 break;
@@ -255,7 +275,7 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
                 hide ? '1' : undefined,
             );
 
-            this.course.hidden = hide;
+            (<CoreEnrolledCourseDataWithExtraInfoAndOptions> this.course).hidden = hide;
             CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {
                 courseId: this.course.id,
                 course: this.course,
@@ -284,7 +304,8 @@ export class CoreCoursesCourseProgressComponent implements OnInit, OnDestroy {
         try {
             await CoreCourses.setFavouriteCourse(this.course.id, favourite);
 
-            this.course.isfavourite = favourite;
+            (<CoreEnrolledCourseDataWithExtraInfoAndOptions> this.course).isfavourite = favourite;
+            this.isFavourite = favourite;
             CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_UPDATED, {
                 courseId: this.course.id,
                 course: this.course,

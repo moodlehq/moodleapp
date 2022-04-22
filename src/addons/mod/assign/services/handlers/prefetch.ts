@@ -28,13 +28,13 @@ import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/
 import { CoreCourse, CoreCourseAnyModuleData, CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreWSFile } from '@services/ws';
 import { AddonModAssignHelper, AddonModAssignSubmissionFormatted } from '../assign-helper';
-import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreFilepool } from '@services/filepool';
 import { CoreGroups } from '@services/groups';
 import { AddonModAssignSync, AddonModAssignSyncResult } from '../assign-sync';
 import { CoreUser } from '@features/user/services/user';
 import { CoreGradesHelper } from '@features/grades/services/grades-helper';
+import { CoreCourses } from '@features/courses/services/courses';
 
 /**
  * Handler to prefetch assigns.
@@ -87,9 +87,10 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
 
         try {
             const assign = await AddonModAssign.getAssignment(courseId, module.id, { siteId });
-            // Get intro files and attachments.
+            // Get intro files, attachments and activity files.
             let files: CoreWSFile[] = assign.introattachments || [];
             files = files.concat(this.getIntroFilesFromInstance(module, assign));
+            files = files.concat(assign.activityattachments || []);
 
             // Now get the files in the submissions.
             const submissionData = await AddonModAssign.getSubmissions(assign.id, { cmId: module.id, siteId });
@@ -100,19 +101,26 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
                     await AddonModAssignHelper.getSubmissionsUserData(assign, submissionData.submissions, 0, { siteId });
 
                 // Get all the files in the submissions.
-                const promises = submissions.map((submission) =>
-                    this.getSubmissionFiles(assign, submission.submitid!, !!submission.blindid, siteId).then((submissionFiles) => {
-                        files = files.concat(submissionFiles);
+                const promises = submissions.map(async (submission) => {
+                    try {
+                        const submissionFiles = await this.getSubmissionFiles(
+                            assign,
+                            submission.submitid!,
+                            !!submission.blindid,
+                            true,
+                            siteId,
+                        );
 
-                        return;
-                    }).catch((error) => {
+                        files = files.concat(submissionFiles);
+                    } catch (error) {
                         if (error && error.errorcode == 'nopermission') {
                             // The user does not have persmission to view this submission, ignore it.
                             return;
                         }
 
                         throw error;
-                    }));
+                    }
+                });
 
                 await Promise.all(promises);
             } else {
@@ -120,7 +128,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
                 const userId = CoreSites.getCurrentSiteUserId();
                 const blindMarking = !!assign.blindmarking && !assign.revealidentities;
 
-                const submissionFiles = await this.getSubmissionFiles(assign, userId, blindMarking, siteId);
+                const submissionFiles = await this.getSubmissionFiles(assign, userId, blindMarking, false, siteId);
                 files = files.concat(submissionFiles);
             }
 
@@ -137,6 +145,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
      * @param assign Assign.
      * @param submitId User ID of the submission to get.
      * @param blindMarking True if blind marking, false otherwise.
+     * @param canViewAllSubmissions Whether the user can view all submissions.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with array of files.
      */
@@ -144,6 +153,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
         assign: AddonModAssignAssign,
         submitId: number,
         blindMarking: boolean,
+        canViewAllSubmissions: boolean,
         siteId?: string,
     ): Promise<CoreWSFile[]> {
 
@@ -154,8 +164,15 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
         });
         const userSubmission = AddonModAssign.getSubmissionObjectFromAttempt(assign, submissionStatus.lastattempt);
 
+        // Get intro and activity files from the submission status if it's a student.
+        // It's ok if they were already obtained from the assignment instance, they won't be downloaded twice.
+        const files = canViewAllSubmissions ?
+            [] :
+            (submissionStatus.assignmentdata?.attachments?.intro || [])
+                .concat(submissionStatus.assignmentdata?.attachments?.activity || []);
+
         if (!submissionStatus.lastattempt || !userSubmission) {
-            return [];
+            return files;
         }
 
         const promises: Promise<CoreWSFile[]>[] = [];
@@ -176,7 +193,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
 
         const filesLists = await Promise.all(promises);
 
-        return [].concat.apply([], filesLists);
+        return files.concat.apply(files, filesLists);
     }
 
     /**
@@ -199,15 +216,6 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
      */
     async invalidateModule(module: CoreCourseAnyModuleData): Promise<void> {
         return CoreCourse.invalidateModule(module.id);
-    }
-
-    /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @return A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.
-     */
-    async isEnabled(): Promise<boolean> {
-        return AddonModAssign.isPluginEnabled();
     }
 
     /**
@@ -251,7 +259,9 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
 
         promises.push(this.prefetchSubmissions(assign, courseId, module.id, userId, siteId));
 
-        promises.push(CoreCourseHelper.getModuleCourseIdByInstance(assign.id, 'assign', siteId));
+        promises.push(CoreCourse.getModuleBasicInfoByInstance(assign.id, 'assign', { siteId }));
+        // Get course data, needed to determine upload max size if it's configured to be course limit.
+        promises.push(CoreUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));
 
         // Download intro files and attachments. Do not call getFiles because it'd call some WS twice.
         let files: CoreWSFile[] = assign.introattachments || [];
@@ -260,7 +270,6 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
         promises.push(CoreFilepool.addFilesToQueue(siteId, files, this.component, module.id));
 
         await Promise.all(promises);
-
     }
 
     /**
@@ -388,10 +397,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
                     // Participiants already fetched, we don't need to ignore cache now.
                     const participants = await AddonModAssignHelper.getParticipants(assign, group.id, { siteId });
 
-                    // Fail silently (Moodle < 3.2).
-                    await CoreUtils.ignoreErrors(
-                        CoreUser.prefetchUserAvatars(participants, 'profileimageurl', siteId),
-                    );
+                    await CoreUser.prefetchUserAvatars(participants, 'profileimageurl', siteId);
 
                     return;
                 }));
@@ -524,7 +530,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
      * @return Promise resolved when done.
      */
     sync(module: CoreCourseAnyModuleData, courseId: number, siteId?: string): Promise<AddonModAssignSyncResult> {
-        return AddonModAssignSync.syncAssign(module.instance!, siteId);
+        return AddonModAssignSync.syncAssign(module.instance, siteId);
     }
 
 }

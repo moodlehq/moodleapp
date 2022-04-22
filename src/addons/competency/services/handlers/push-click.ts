@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { ADDON_COMPETENCY_COMPETENCIES_PAGE, ADDON_COMPETENCY_LEARNING_PLANS_PAGE } from '@addons/competency/competency.module';
 import { Injectable } from '@angular/core';
+import { COURSE_PAGE_NAME } from '@features/course/course.module';
 import { CorePushNotificationsClickHandler } from '@features/pushnotifications/services/push-delegate';
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
 import { CoreNavigator } from '@services/navigator';
@@ -20,7 +22,6 @@ import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { AddonCompetency } from '../competency';
-import { AddonCompetencyMainMenuHandlerService } from './mainmenu';
 
 /**
  * Handler for competencies push notifications clicks.
@@ -56,7 +57,7 @@ export class AddonCompetencyPushClickHandlerService implements CorePushNotificat
 
             await CoreUtils.ignoreErrors(AddonCompetency.invalidateLearningPlan(planId, notification.site));
 
-            await CoreNavigator.navigateToSitePath('/' + AddonCompetencyMainMenuHandlerService.PAGE_NAME + '/' + planId, {
+            await CoreNavigator.navigateToSitePath(`${ADDON_COMPETENCY_LEARNING_PLANS_PAGE}/${planId}`, {
                 siteId: notification.site,
             });
 
@@ -71,15 +72,30 @@ export class AddonCompetencyPushClickHandlerService implements CorePushNotificat
             const userId = Number(contextUrlParams.userid);
 
             await CoreUtils.ignoreErrors(AddonCompetency.invalidateCompetencyInPlan(planId, competencyId, notification.site));
-            await CoreNavigator.navigateToSitePath(
-                '/' + AddonCompetencyMainMenuHandlerService.PAGE_NAME + '/competencies/' + competencyId,
-                {
-                    params: { planId, courseId, userId },
-                    siteId: notification.site,
-                },
-            );
 
-            return;
+            if (courseId) {
+                await CoreNavigator.navigateToSitePath(
+                    `${COURSE_PAGE_NAME}/${courseId}/${ADDON_COMPETENCY_COMPETENCIES_PAGE}/${competencyId}`,
+                    {
+                        params: { userId },
+                        siteId: notification.site,
+                    },
+                );
+
+                return;
+            }
+
+            if (planId) {
+                await CoreNavigator.navigateToSitePath(
+                    `${ADDON_COMPETENCY_LEARNING_PLANS_PAGE}/competencies/${planId}/${competencyId}`,
+                    {
+                        params: { userId },
+                        siteId: notification.site,
+                    },
+                );
+
+                return;
+            }
         }
 
         // Open the list of plans.
@@ -87,7 +103,7 @@ export class AddonCompetencyPushClickHandlerService implements CorePushNotificat
 
         await CoreUtils.ignoreErrors(AddonCompetency.invalidateLearningPlans(userId, notification.site));
 
-        await CoreNavigator.navigateToSitePath('/' + AddonCompetencyMainMenuHandlerService.PAGE_NAME, {
+        await CoreNavigator.navigateToSitePath(ADDON_COMPETENCY_LEARNING_PLANS_PAGE, {
             params: { userId },
             siteId: notification.site,
         });

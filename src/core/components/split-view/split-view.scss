@@ -1,13 +1,16 @@
+@import "~theme/globals";
+
 :host {
     --menu-min-width: 270px;
     --menu-max-width: 28%;
     --menu-box-shadow: var(--core-menu-box-shadow-end);
     --menu-z: 2;
-    --menu-border-width: 1;
+    --menu-border-width: 1px;
+    --menu-border-color: var(--stroke);
     --menu-display: flex;
     --content-display: block;
     --content-outlet-display: none;
-    --content-placeholder-display: var(--content-display);
+    --content-placeholder-display: flex;
 
     top: 0;
     right: 0;
@@ -15,14 +18,14 @@
     left: 0;
     display: flex;
     position: absolute;
-    inset: 0;
     flex-direction: row;
     flex-wrap: nowrap;
     contain: strict;
 
     .menu,
     .content-outlet {
-        top: 0;
+        top: var(--offset-top);
+        height: calc(100% - var(--offset-top));
         right: 0;
         bottom: 0;
         left: 0;
@@ -38,8 +41,8 @@
         flex-shrink: 0;
         order: -1;
         width: 100%;
-        border-inline-start: 0;
-        border-inline-end: var(--border);
+        @include border-start(0);
+        @include border-end(var(--menu-border-width), solid, var(--menu-border-color));
         min-width: var(--menu-min-width);
         max-width: var(--menu-max-width);
     }
@@ -64,29 +67,22 @@
 }
 
 :host(.menu-only) {
-    --menu-min-width: 0;
+    --menu-min-width: 0px;
     --menu-max-width: 100%;
     --content-display: none;
-    --menu-border-width: 0;
+    --content-placeholder-display: none;
+    --menu-border-width: 0px;
     --menu-box-shadow: none;
-    --menu-z: 0;
+    --menu-z: 0px;
     --selected-item-color: transparent;
 }
 
 :host(.content-only) {
     --menu-display: none;
-    --menu-border-width: 0;
+    --menu-border-width: 0px;
 }
 
 :host(.outlet-activated) {
     --content-placeholder-display: none;
     --content-outlet-display: var(--content-display);
-}
-
-:host-context(ion-app.md) {
-    --border: calc(var(--menu-border-width) * 1px) solid var(--ion-item-border-color, var(--ion-border-color, var(--ion-color-step-150, rgba(0, 0, 0, .13))));
-}
-
-:host-context(ion-app.ios) {
-    --border: calc(var(--menu-border-width) * .55px) solid var(--ion-item-border-color, var(--ion-border-color, var(--ion-color-step-250, #c8c7cc)));
 }

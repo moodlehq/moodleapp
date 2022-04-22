@@ -108,18 +108,10 @@ export class CoreStylesService {
      * Listen events.
      */
     protected listenEvents(): void {
-        let addingSite: string | undefined;
-
         // When a new site is added to the app, add its styles.
         CoreEvents.on(CoreEvents.SITE_ADDED, async (data) => {
-            addingSite = data.siteId;
-
             try {
                 await this.addSite(data.siteId);
-
-                if (addingSite == data.siteId) {
-                    addingSite = undefined;
-                }
 
                 // User has logged in, remove tmp styles and enable loaded styles.
                 if (data.siteId == CoreSites.getCurrentSiteId()) {
@@ -164,10 +156,10 @@ export class CoreStylesService {
         });
 
         // Unload temporary styles when site config is "unchecked" in login.
-        CoreEvents.on(CoreEvents.LOGIN_SITE_UNCHECKED, (data) => {
-            if (data.siteId && data.siteId === addingSite) {
-                // The tmp styles are from a site that is being added permanently.
-                // Wait for the final site styles to be loaded before removing the tmp styles so there is no blink effect.
+        CoreEvents.on(CoreEvents.LOGIN_SITE_UNCHECKED, ({ loginSuccessful }) => {
+            if (loginSuccessful) {
+                // The tmp styles have been added for a site we've logged into, so we'll wait for the final
+                // site styles to be loaded before removing the tmp styles so there is no blink effect.
                 return;
             }
 
@@ -330,9 +322,9 @@ export class CoreStylesService {
         (<any> element).disabled = !!disable; // eslint-disable-line @typescript-eslint/no-explicit-any
 
         if (disable) {
-            element.setAttribute('disabled', 'true');
+            element.setAttribute('media', 'disabled');
         } else {
-            element.removeAttribute('disabled');
+            element.removeAttribute('media');
         }
     }
 

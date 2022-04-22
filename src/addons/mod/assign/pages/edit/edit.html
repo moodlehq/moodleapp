@@ -3,10 +3,12 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>
-            <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="moduleId" [courseId]="courseId">
-            </core-format-text>
-        </h1>
+        <ion-title>
+            <h1>
+                <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="moduleId" [courseId]="courseId">
+                </core-format-text>
+            </h1>
+        </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="save()">
                 {{ 'core.save' | translate }}
@@ -18,6 +20,25 @@
     <core-loading [hideUntil]="loaded">
         <ion-list *ngIf="userSubmission && userSubmission.plugins && userSubmission.plugins.length">
             <!-- @todo: plagiarism_print_disclosure -->
+            <core-timer *ngIf="timeLimitEndTime > 0" [endTime]="timeLimitEndTime" (finished)="timeUp()" timeUpText="00:00:00"
+                [timerText]="'addon.mod_assign.assigntimeleft' | translate" [align]="'center'" [timeLeftClassThreshold]="-1"
+                [underTimeClassThresholds]="[300, 900]" class="ion-margin-horizontal">
+            </core-timer>
+
+            <!-- Assign activity instructions and attachments if needed. -->
+            <ion-item class="ion-text-wrap" *ngIf="activityInstructions">
+                <ion-label>
+                    <core-format-text [text]="activityInstructions" [component]="component" [componentId]="moduleId" contextLevel="module"
+                        [contextInstanceId]="moduleId" [courseId]="courseId" [maxHeight]="120">
+                    </core-format-text>
+                </ion-label>
+            </ion-item>
+
+            <ng-container *ngIf="assign?.submissionattachments">
+                <core-file *ngFor="let file of introAttachments" [file]="file" [component]="component" [componentId]="moduleId">
+                </core-file>
+            </ng-container>
+
             <form name="addon-mod_assign-edit-form" #editSubmissionForm>
                 <!-- Submission statement. -->
                 <ion-item class="ion-text-wrap" *ngIf="submissionStatement">

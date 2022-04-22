@@ -19,7 +19,6 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
-import { AddonModFeedback } from '../feedback';
 import { AddonModFeedbackModuleHandlerService } from './module';
 
 /**
@@ -44,13 +43,11 @@ export class AddonModFeedbackAnalysisLinkHandlerService extends CoreContentLinks
                 const moduleId = Number(params.id);
 
                 try {
-                    const moduleBasicInfo = await CoreCourse.getModuleBasicInfo(moduleId, siteId);
-
                     // Get the module.
                     const module = await CoreCourse.getModule(
                         moduleId,
-                        moduleBasicInfo.course,
-                        moduleBasicInfo.section,
+                        undefined,
+                        undefined,
                         false,
                         false,
                         siteId,
@@ -79,12 +76,12 @@ export class AddonModFeedbackAnalysisLinkHandlerService extends CoreContentLinks
      * @inheritdoc
      */
     async isEnabled(siteId: string, url: string, params: Record<string, string>): Promise<boolean> {
-        if (typeof params.id == 'undefined') {
+        if (params.id === undefined) {
             // Cannot treat the URL.
             return false;
         }
 
-        return AddonModFeedback.isPluginEnabled(siteId);
+        return true;
     }
 
 }

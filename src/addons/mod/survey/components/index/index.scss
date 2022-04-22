@@ -1,13 +1,13 @@
 :host {
     --grid-background: var(--white);
-    --even-background: var(--gray-light);
+    --even-background: var(--gray-200);
 
     .option-name {
-        font-size: 14px;
+        font-size: var(--text-size);
     }
 
     .addon-mod_survey-question {
-        border-top: 1px solid var(--gray);
+        border-top: 1px solid var(--stroke);
     }
 
     ion-row {
@@ -26,6 +26,6 @@
 }
 
 :host-context(body.dark) {
-    --grid-background: var(--black);
-    --even-background: var(--gray-darker);
+    --grid-background: var(--gray-900);
+    --even-background: var(--medium);
 }

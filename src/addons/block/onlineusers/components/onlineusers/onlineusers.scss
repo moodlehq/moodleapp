@@ -1,3 +1,5 @@
+@import "~theme/globals";
+
 :host .core-block-content ::ng-deep {
     max-height: 200px;
     overflow-y: auto;
@@ -17,23 +19,22 @@
             list-style-type: none;
 
             .user {
-                float: left;
+                @include float(start);
                 position: relative;
                 padding-bottom: 16px;
 
                 .core-adapted-img-container {
                     display: inline;
-                    margin-left: 0;
-                    margin-right: 8px;
+                    @include margin-horizontal(0px, 8px);
                 }
 
                 .userpicture {
-                    vertical-align: text-bottom;
+                    border-radius: 50%;
                 }
             }
 
             .message {
-                float: right;
+                @include float(end);
                 margin-top: 3px;
             }
 
@@ -47,21 +48,4 @@
         text-align: center;
     }
 
-}
-
-:host-context([dir=rtl]) .core-block-content ::ng-deep {
-    .list li.listentry {
-        .user {
-            float: right;
-
-            .core-adapted-img-container {
-                margin-left: 8px;
-                margin-right: 0;
-            }
-        }
-
-        .message {
-            float: left;
-        }
-    }
 }

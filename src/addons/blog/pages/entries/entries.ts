@@ -16,6 +16,7 @@ import { ContextLevel } from '@/core/constants';
 import { AddonBlog, AddonBlogFilter, AddonBlogPost, AddonBlogProvider } from '@addons/blog/services/blog';
 import { Component, OnInit } from '@angular/core';
 import { CoreComments } from '@features/comments/services/comments';
+import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
 import { CoreTag } from '@features/tag/services/tag';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { IonRefresher } from '@ionic/angular';
@@ -42,6 +43,7 @@ export class AddonBlogEntriesPage implements OnInit {
     protected canLoadMoreEntries = false;
     protected canLoadMoreUserEntries = true;
     protected siteHomeId: number;
+    protected fetchSuccess = false;
 
     loaded = false;
     canLoadMore = false;
@@ -118,9 +120,10 @@ export class AddonBlogEntriesPage implements OnInit {
         this.commentsEnabled = !CoreComments.areCommentsDisabledInSite();
         this.tagsEnabled = CoreTag.areTagsAvailableInSite();
 
-        await this.fetchEntries();
+        const deepLinkManager = new CoreMainMenuDeepLinkManager();
+        deepLinkManager.treatLink();
 
-        CoreUtils.ignoreErrors(AddonBlog.logView(this.filter));
+        await this.fetchEntries();
     }
 
     /**
@@ -170,15 +173,9 @@ export class AddonBlogEntriesPage implements OnInit {
                     entry.contextInstanceId = entry.userid;
                 }
 
-                entry.summary = CoreTextUtils.instance.replacePluginfileUrls(entry.summary, entry.summaryfiles || []);
+                entry.summary = CoreTextUtils.replacePluginfileUrls(entry.summary, entry.summaryfiles || []);
 
-                return CoreUser.getProfile(entry.userid, entry.courseid, true).then((user) => {
-                    entry.user = user;
-
-                    return;
-                }).catch(() => {
-                    // Ignore errors.
-                });
+                entry.user = await CoreUtils.ignoreErrors(CoreUser.getProfile(entry.userid, entry.courseid, true));
             });
 
             if (refresh) {
@@ -201,6 +198,11 @@ export class AddonBlogEntriesPage implements OnInit {
             }
 
             await Promise.all(promises);
+
+            if (!this.fetchSuccess) {
+                this.fetchSuccess = true;
+                CoreUtils.ignoreErrors(AddonBlog.logView(this.filter));
+            }
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.blog.errorloadentries', true);
             this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.

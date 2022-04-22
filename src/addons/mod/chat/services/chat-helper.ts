@@ -53,21 +53,20 @@ export class AddonModChatHelperProvider {
         formattedMessage.message = formattedMessage.message.trim();
 
         formattedMessage.showDate = this.showDate(message, prevMessage);
-        formattedMessage.beep = (message.message.substr(0, 5) == 'beep ' && message.message.substr(5).trim()) || undefined;
+        formattedMessage.beep = (message.message.substring(0, 5) == 'beep ' && message.message.substring(5).trim()) || undefined;
 
         formattedMessage.special = !!formattedMessage.beep || (<AddonModChatSessionMessage> message).issystem ||
             (<AddonModChatMessage> message).system;
 
-        if (formattedMessage.message.substr(0, 4) == '/me ') {
+        if (formattedMessage.message.substring(0, 4) == '/me ') {
             formattedMessage.special = true;
-            formattedMessage.message = formattedMessage.message.substr(4).trim();
+            formattedMessage.message = formattedMessage.message.substring(4).trim();
         }
 
         if (!formattedMessage.special && formattedMessage.message.match(patternTo)) {
             const matches = formattedMessage.message.match(patternTo);
 
-            formattedMessage.message = '<b>' + Translate.instant('addon.mod_chat.saidto') +
-                '</b> <i>' + matches![1] + '</i>: ' + matches![2];
+            formattedMessage.message = `<i><b>${Translate.instant('addon.mod_chat.saidto')} </b>${matches![1]}</i>: ${matches![2]}`;
         }
 
         formattedMessage.showUserData = this.showUserData(currentUserId, message, prevMessage);

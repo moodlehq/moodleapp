@@ -1,0 +1,8 @@
+{
+    "actionsaved": "Your feedback of '{{$a}}' has been saved.",
+    "fixedack": "Accept",
+    "incorrectlyflagged": "Incorrectly flagged",
+    "notapplicable": "Not applicable",
+    "notuseful": "Not useful",
+    "useful": "Useful"
+}

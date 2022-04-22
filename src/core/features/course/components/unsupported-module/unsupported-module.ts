@@ -14,7 +14,7 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 
-import { CoreCourse, CoreCourseWSModule } from '@features/course/services/course';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 
 /**
@@ -23,15 +23,14 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 @Component({
     selector: 'core-course-unsupported-module',
     templateUrl: 'core-course-unsupported-module.html',
+    styleUrls: ['unsupported-module.scss'],
 })
 export class CoreCourseUnsupportedModuleComponent implements OnInit {
 
-    @Input() courseId?: number; // The course to module belongs to.
-    @Input() module?: CoreCourseWSModule; // The module to render.
+    @Input() courseId?: number; // The course to module belongs to (unused).
+    @Input() module?: CoreCourseModuleData; // The module to render.
 
-    isDisabledInSite?: boolean;
-    isSupportedByTheApp?: boolean;
-    moduleName?: string;
+    isDisabledInSite = false; // It is implicit than if not disabled it will be unsupported.
 
     /**
      * Component being initialized.
@@ -42,8 +41,6 @@ export class CoreCourseUnsupportedModuleComponent implements OnInit {
         }
 
         this.isDisabledInSite = CoreCourseModuleDelegate.isModuleDisabledInSite(this.module.modname);
-        this.isSupportedByTheApp = CoreCourseModuleDelegate.hasHandler(this.module.modname);
-        this.moduleName = CoreCourse.translateModuleName(this.module.modname);
     }
 
 }

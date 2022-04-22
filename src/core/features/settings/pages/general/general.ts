@@ -22,7 +22,11 @@ import { CorePushNotifications } from '@features/pushnotifications/services/push
 import { CoreSettingsHelper, CoreColorScheme, CoreZoomLevel } from '../../services/settings-helper';
 import { CoreApp } from '@services/app';
 import { CoreIframeUtils } from '@services/utils/iframe';
-import { Diagnostic } from '@singletons';
+import { Diagnostic, Translate } from '@singletons';
+import { CoreSites } from '@services/sites';
+import { CoreUtils } from '@services/utils/utils';
+import { AlertButton } from '@ionic/angular';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that displays the general settings.
@@ -108,9 +112,66 @@ export class CoreSettingsGeneralPage {
     /**
      * Called when a new language is selected.
      */
-    languageChanged(): void {
-        CoreLang.changeCurrentLanguage(this.selectedLanguage).finally(() => {
-            CoreEvents.trigger(CoreEvents.LANGUAGE_CHANGED, this.selectedLanguage);
+    async languageChanged(): Promise<void> {
+        const previousLanguage = await CoreLang.getCurrentLanguage();
+        if (this.selectedLanguage === previousLanguage) {
+            // Prevent opening again.
+
+            return;
+        }
+
+        const previousLanguageCancel = Translate.instant('core.cancel');
+
+        try {
+            await CoreLang.changeCurrentLanguage(this.selectedLanguage);
+        } finally {
+            const langName = this.languages.find((lang) => lang.code == this.selectedLanguage)?.name;
+
+            const buttons: AlertButton[] = [
+                {
+                    text: previousLanguageCancel,
+                    role: 'cancel',
+                    handler: (): void => {
+                        clearTimeout(timeout);
+                        this.selectedLanguage = previousLanguage;
+                        CoreLang.changeCurrentLanguage(this.selectedLanguage);
+                    },
+                },
+                {
+                    text: Translate.instant('core.settings.changelanguage', { $a: langName }),
+                    cssClass: 'timed-button',
+                    handler: (): void => {
+                        clearTimeout(timeout);
+                        this.applyLanguageAndRestart();
+                    },
+                },
+            ];
+
+            const alert = await CoreDomUtils.showAlertWithOptions(
+                {
+                    message: Translate.instant('core.settings.changelanguagealert'),
+                    buttons,
+                },
+            );
+            const timeout = window.setTimeout(async () => {
+                await alert.dismiss();
+                this.applyLanguageAndRestart();
+            }, 10000);
+        }
+    }
+
+    /**
+     * Apply language changes and restart the app.
+     */
+    protected async applyLanguageAndRestart(): Promise<void> {
+        // Invalidate cache for all sites to get the content in the right language.
+        const sites = await CoreSites.getSitesInstances();
+        await CoreUtils.ignoreErrors(Promise.all(sites.map((site) => site.invalidateWsCache())));
+
+        CoreEvents.trigger(CoreEvents.LANGUAGE_CHANGED, this.selectedLanguage);
+
+        CoreNavigator.navigate('/reload', {
+            reset: true,
         });
     }
 

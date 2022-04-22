@@ -113,8 +113,15 @@ function add_langs_to_config($langs, $config) {
         $config['languages'] = json_decode( json_encode( $config['languages'] ), true );
         ksort($config['languages']);
         $config['languages'] = json_decode( json_encode( $config['languages'] ), false );
-        file_put_contents(CONFIG, json_encode($config, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        save_json(CONFIG, $config);
     }
+}
+
+/**
+ * Save json data.
+ */
+function save_json($path, $content) {
+    file_put_contents($path, str_replace('\/', '/', json_encode($content, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT))."\n");
 }
 
 function get_langfolder($lang) {
@@ -246,9 +253,11 @@ function build_lang($lang, $keys) {
         }
 
         if ($value->file != 'local_moodlemobileapp') {
+            $text = str_replace('$a->@', '$a.', $text);
             $text = str_replace('$a->', '$a.', $text);
             $text = str_replace('{$a', '{{$a', $text);
             $text = str_replace('}', '}}', $text);
+            $text = preg_replace('/@@.+?@@(<br>)?\\s*/', '', $text);
             // Prevent double.
             $text = str_replace(array('{{{', '}}}'), array('{{', '}}'), $text);
         } else {
@@ -270,7 +279,7 @@ function build_lang($lang, $keys) {
 
     // Sort and save.
     ksort($translations);
-    file_put_contents(ASSETSPATH.$lang.'.json', str_replace('\/', '/', json_encode($translations, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)));
+    save_json(ASSETSPATH.$lang.'.json', $translations);
 
     $success = count($translations);
     $percentage = floor($success/$total * 100);
@@ -365,7 +374,7 @@ function save_key($key, $value, $filePath) {
     if (!isset($file[$key]) || $file[$key] != $value) {
         $file[$key] = $value;
         ksort($file);
-        file_put_contents($filePath, str_replace('\/', '/', json_encode($file, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)));
+        save_json($filePath, $file);
     }
 }
 

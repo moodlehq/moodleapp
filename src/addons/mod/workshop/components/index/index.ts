@@ -16,7 +16,6 @@ import { Component, Input, OnDestroy, OnInit, Optional } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { CoreCourse } from '@features/course/services/course';
 import { IonContent } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
@@ -82,6 +81,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
         separateGroups: false,
         visibleGroups: false,
         defaultGroupId: 0,
+        canAccessAllGroups: false,
     };
 
     canSubmit = false;
@@ -137,16 +137,6 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
         super.ngOnInit();
 
         await this.loadContent(false, true);
-        if (!this.workshop) {
-            return;
-        }
-
-        try {
-            await AddonModWorkshop.logView(this.workshop.id, this.workshop.name);
-            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
-        } catch (error) {
-            // Ignore errors.
-        }
     }
 
     /**
@@ -163,7 +153,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
             this.showLoadingAndRefresh(true);
 
             // Check completion since it could be configured to complete once the user adds a new discussion or replies.
-            CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
+            this.checkCompletion();
         }
     }
 
@@ -215,55 +205,56 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
     }
 
     /**
-     * Download feedback contents.
-     *
-     * @param refresh If it's refreshing content.
-     * @param sync If it should try to sync.
-     * @param showErrors If show errors to the user of hide them.
-     * @return Promise resolved when done.
+     * @inheritdoc
      */
-    protected async fetchContent(refresh = false, sync = false, showErrors = false): Promise<void> {
-        try {
-            this.workshop = await AddonModWorkshop.getWorkshop(this.courseId, this.module.id);
+    protected async fetchContent(refresh?: boolean, sync = false, showErrors = false): Promise<void> {
+        this.workshop = await AddonModWorkshop.getWorkshop(this.courseId, this.module.id);
 
-            this.description = this.workshop.intro;
-            this.dataRetrieved.emit(this.workshop);
+        this.description = this.workshop.intro;
+        this.dataRetrieved.emit(this.workshop);
 
-            if (sync) {
-                // Try to synchronize the feedback.
-                await this.syncActivity(showErrors);
-            }
-
-            // Check if there are answers stored in offline.
-            this.access = await AddonModWorkshop.getWorkshopAccessInformation(this.workshop.id, { cmId: this.module.id });
-
-            if (this.access.canviewallsubmissions) {
-                this.groupInfo = await CoreGroups.getActivityGroupInfo(this.workshop.coursemodule);
-                this.group = CoreGroups.validateGroupId(this.group, this.groupInfo);
-            }
-
-            this.phases = await AddonModWorkshop.getUserPlanPhases(this.workshop.id, { cmId: this.module.id });
-
-            this.phases[this.workshop.phase].tasks.forEach((task) => {
-                if (!task.link && (task.code == 'examples' || task.code == 'prepareexamples')) {
-                    // Add links to manage examples.
-                    task.link = this.externalUrl!;
-                }
-            });
-
-            // Check if there are info stored in offline.
-            this.hasOffline = await AddonModWorkshopOffline.hasWorkshopOfflineData(this.workshop.id);
-            if (this.hasOffline) {
-                this.offlineSubmissions = await AddonModWorkshopOffline.getSubmissions(this.workshop.id);
-            } else {
-                this.offlineSubmissions = [];
-            }
-
-            await this.setPhaseInfo();
-
-        } finally {
-            this.fillContextMenu(refresh);
+        if (sync) {
+            // Try to synchronize the feedback.
+            await this.syncActivity(showErrors);
         }
+
+        // Check if there are answers stored in offline.
+        this.access = await AddonModWorkshop.getWorkshopAccessInformation(this.workshop.id, { cmId: this.module.id });
+
+        if (this.access.canviewallsubmissions) {
+            this.groupInfo = await CoreGroups.getActivityGroupInfo(this.workshop.coursemodule);
+            this.group = CoreGroups.validateGroupId(this.group, this.groupInfo);
+        }
+
+        this.phases = await AddonModWorkshop.getUserPlanPhases(this.workshop.id, { cmId: this.module.id });
+
+        this.phases[this.workshop.phase].tasks.forEach((task) => {
+            if (!task.link && (task.code == 'examples' || task.code == 'prepareexamples')) {
+                // Add links to manage examples.
+                task.link = this.module.url || '';
+            }
+        });
+
+        // Check if there are info stored in offline.
+        this.hasOffline = await AddonModWorkshopOffline.hasWorkshopOfflineData(this.workshop.id);
+        if (this.hasOffline) {
+            this.offlineSubmissions = await AddonModWorkshopOffline.getSubmissions(this.workshop.id);
+        } else {
+            this.offlineSubmissions = [];
+        }
+
+        await this.setPhaseInfo();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected async logActivity(): Promise<void> {
+        if (!this.workshop) {
+            return; // Shouldn't happen.
+        }
+
+        await AddonModWorkshop.logView(this.workshop.id, this.workshop.name);
     }
 
     /**
@@ -321,7 +312,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
 
             const offlineData = await AddonModWorkshopHelper.applyOfflineData(submission, this.offlineSubmissions);
 
-            if (typeof offlineData != 'undefined') {
+            if (offlineData !== undefined) {
                 this.grades!.push(offlineData);
             }
         }));
@@ -355,7 +346,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
      *
      * @param task Task to be done.
      */
-    runTask(task: AddonModWorkshopPhaseTaskData): void {
+    async runTask(task: AddonModWorkshopPhaseTaskData): Promise<void> {
         if (task.code == 'submit') {
             this.gotoSubmit();
         } else if (task.link) {
@@ -393,7 +384,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
                 componentProps: {
                     phases: CoreUtils.objectToArray(this.phases),
                     workshopPhase: this.workshop!.phase,
-                    externalUrl: this.externalUrl,
+                    externalUrl: this.module.url,
                     showSubmit: this.showSubmit,
                 },
             });

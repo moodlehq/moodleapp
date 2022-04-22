@@ -1,0 +1,102 @@
+@import '~theme/globals.scss';
+
+:host {
+    --thumb-height: 180px;
+
+    ion-content {
+        position: absolute;
+    }
+
+    .core-course-thumb {
+        background: var(--course-color, white);
+        overflow: hidden;
+        text-align: center;
+        height: var(--thumb-height);
+        position: fixed;
+        z-index: -1;
+        width: 100%;
+
+        @for $i from 0 to length($core-course-image-background) {
+            &.course-color-#{$i} {
+                --course-color: var(--core-course-color-#{$i});
+                --course-color-tint: var(--core-course-color-#{$i}-tint);
+            }
+        }
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        ion-icon.course-icon {
+            padding: 24px;
+            font-size: calc(var(--thumb-height) - 48px);
+            color: var(--course-color-tint);
+        }
+    }
+
+    .course-container {
+        position: relative;
+        top: calc(var(--thumb-height) - var(--big-radius));
+        border-radius: var(--big-radius) var(--big-radius) 0 0;
+        background-color: var(--ion-background-color);
+        box-shadow: var(--drop-shadow-top);
+        clip-path: inset(-5px 0px 0px 0px);
+    }
+
+    .course-name {
+        --background: transparent;
+        ion-label {
+            margin-bottom: 0px;
+        }
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    .core-course-category {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .core-course-dates {
+        background: var(--light);
+        border-radius: var(--small-radius);
+        padding: 8px;
+        width: 100%;
+
+        p {
+            margin-bottom: 8px;
+        }
+
+        p:last-child {
+            margin-bottom: 0px;
+        }
+
+        ion-icon {
+            @include margin-horizontal(null, 8px);
+        }
+    }
+
+
+    .core-customfield {
+        margin-bottom: 8px;
+
+        &.core-customfield_textarea {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 12px;
+        }
+
+        .core-customfieldname {
+            @include margin-horizontal(null, 4px);
+            font-weight: bold;
+            display: inline;
+        }
+        .core-customfieldvalue {
+            display: inline;
+        }
+    }
+}

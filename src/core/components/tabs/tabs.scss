@@ -7,72 +7,80 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+    --ion-safe-area-top: 0px;
 
     ion-tabs {
         background: transparent;
         position: relative;
     }
 
-    ion-tab-bar.core-tabs-bar {
+    ion-tab-bar {
         position: relative;
-        width: 100%;
         background: var(--tabs-background);
+        @include safe-area-padding-end(null, 0px);
         height: var(--height);
         color: var(--tabs-color);
-        -webkit-filter: drop-shadow(0px 3px 3px rgba(var(--drop-shadow)));
-        filter: drop-shadow(0px 3px 3px rgba(var(--drop-shadow)));
-        border: 0;
+        border-bottom: 1px solid var(--stroke);
         display: flex;
-        align-items: flex-end;
+        flex-direction: row;
+        justify-content: space-between;
+        flex-shrink: 0;
 
-        ion-row {
-            width: 100%;
+        ion-spinner {
+            flex-grow: 1;
         }
 
-        .tab-slide {
-            border-bottom: 2px solid transparent;
-            min-width: 100px;
-            min-height: var(--height);
-            cursor: pointer;
-            overflow: hidden;
-
-            ion-tab-button {
-                max-width: 100%;
-                ion-label {
-                    font-size: 16px;
-                    font-weight: 400;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    word-wrap: break-word;
-                    max-width: 100%;
-                    line-height: 1.2em;
-                    margin-top: 16px;
-                    margin-bottom: 16px;
-                }
-            }
-
-            &[aria-selected=true],
-            &.selected {
-                color: var(--color-active);
-                border-bottom-color: var(--border-color-active);
-                ion-tab-button {
-                    color: var(--color-active);
-                    ion-label {
-                        font-weight: var(--font-weight-active);
-                    }
-                }
+        ion-button.arrow-button {
+            flex-shrink: 1;
+            margin: 0;
+            padding: 0;
+            --padding-start: 0;
+            --padding-end: 0;
+            min-width: 30px;
+            height: var(--height);
+            --border-radius: 0;
+            ion-icon {
+                font-size: 16px;
             }
         }
 
-        ion-col {
+        ion-slides {
             text-align: center;
             line-height: 1.6rem;
+            flex-grow: 1;
 
-            &.col-with-arrow {
-                display: flex;
-                justify-content: center;
-                align-items: center;
+            ion-slide {
+                border-bottom: 2px solid transparent;
+                min-width: 100px;
+                height: var(--height);
+                cursor: pointer;
+                overflow: hidden;
+
+                ion-tab-button {
+                    max-width: 100%;
+                    ion-label {
+                        font-size: 14px;
+                        font-weight: 400;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        word-wrap: break-word;
+                        max-width: 100%;
+                        line-height: 1.2em;
+                    }
+                }
+
+                &[aria-selected=true],
+                &.selected {
+                    color: var(--color-active);
+                    border-bottom-color: var(--border-color-active);
+                    ion-tab-button {
+                        color: var(--color-active);
+                        ion-label {
+                            font-weight: var(--font-weight-active);
+                        }
+                    }
+                }
             }
         }
 
@@ -108,9 +116,4 @@
         flex-grow: 1;
         position: relative;
     }
-}
-
-
-:host-context(.ios) {
-    --height: 53px;
 }

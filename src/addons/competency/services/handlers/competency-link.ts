@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { ADDON_COMPETENCY_COMPETENCIES_PAGE, ADDON_COMPETENCY_LEARNING_PLANS_PAGE } from '@addons/competency/competency.module';
 import { Injectable } from '@angular/core';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
+import { COURSE_PAGE_NAME } from '@features/course/course.module';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 import { AddonCompetency } from '../competency';
-import { AddonCompetencyMainMenuHandlerService } from './mainmenu';
 
 /**
  * Handler to treat links to a competency in a plan or in a course.
@@ -28,6 +29,7 @@ export class AddonCompetencyCompetencyLinkHandlerService extends CoreContentLink
 
     name = 'AddonCompetencyCompetencyLinkHandler';
     pattern = /\/admin\/tool\/lp\/(user_competency_in_course|user_competency_in_plan)\.php/;
+    patternMatchStart = false;
 
     /**
      * @inheritdoc
@@ -37,17 +39,29 @@ export class AddonCompetencyCompetencyLinkHandlerService extends CoreContentLink
 
         return [{
             action: (siteId: string): void => {
-                const pageParams = {
-                    planId: params.planid,
-                    courseId: courseId,
-                    userId: params.userid,
-                };
+                if (courseId) {
+                    CoreNavigator.navigateToSitePath(
+                        `${COURSE_PAGE_NAME}/${courseId}/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
+                        {
+                            params: { userId: params.userid },
+                            siteId,
+                        },
+                    );
 
-                CoreNavigator.navigateToSitePath(
-                    '/' + AddonCompetencyMainMenuHandlerService.PAGE_NAME + '/competencies/' + params.competencyid,
-                    { params: pageParams, siteId },
-                );
+                    return;
+                }
 
+                if (params.planid) {
+                    CoreNavigator.navigateToSitePath(
+                        `${ADDON_COMPETENCY_LEARNING_PLANS_PAGE}/competencies/${params.planid}`,
+                        {
+                            params: { userId: params.userid },
+                            siteId,
+                        },
+                    );
+
+                    return;
+                }
             },
         }];
     }

@@ -1,0 +1,12 @@
+core-user-avatar {
+    padding: 0;
+}
+
+:host-context(ion-tabs.placement-side ion-toolbar) {
+    display: none;
+}
+
+:host-context(ion-toolbar) core-user-avatar ::ng-deep img,
+:host-context(ion-tab-bar) core-user-avatar ::ng-deep img {
+    padding: 6px !important;
+}

@@ -1,3 +1,4 @@
 {
-    "processorsettingsdesc": "Configure devices"
+    "processorsettingsdesc": "Configure devices",
+    "pushdisabledwarning": "Your users are not receiving any notification from this site on their mobile devices. Enable mobile notifications in the Notification settings page."
 }

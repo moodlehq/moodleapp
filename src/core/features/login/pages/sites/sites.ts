@@ -13,14 +13,11 @@
 // limitations under the License.
 
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
 import { Component, OnInit } from '@angular/core';
 
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
-import { CoreLogger } from '@singletons/logger';
-import { CoreLoginHelper } from '@features/login/services/login-helper';
+import { CoreAccountsList, CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreNavigator } from '@services/navigator';
-import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { CoreFilter } from '@features/filter/services/filter';
 import { CoreAnimations } from '@components/animations';
 
@@ -30,36 +27,34 @@ import { CoreAnimations } from '@components/animations';
 @Component({
     selector: 'page-core-login-sites',
     templateUrl: 'sites.html',
-    animations: [CoreAnimations.SLIDE_IN_OUT],
+    styleUrls: ['../../sitelist.scss'],
+    animations: [CoreAnimations.SLIDE_IN_OUT, CoreAnimations.SHOW_HIDE],
 })
 export class CoreLoginSitesPage implements OnInit {
 
-    sites: CoreSiteBasicInfo[] = [];
+    accountsList: CoreAccountsList = {
+        sameSite: [],
+        otherSites: [],
+        count: 0,
+    };
+
     showDelete = false;
-
-    protected logger: CoreLogger;
-
-    constructor() {
-        this.logger = CoreLogger.getInstance('CoreLoginSitesPage');
-    }
+    loaded = false;
 
     /**
-     * Component being initialized.
-     *
-     * @return Promise resolved when done.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        const sites = await CoreUtils.ignoreErrors(CoreSites.getSortedSites(), [] as CoreSiteBasicInfo[]);
+        if (CoreNavigator.getRouteBooleanParam('openAddSite')) {
+            this.add();
+        }
 
-        // Remove protocol from the url to show more url text.
-        this.sites = await Promise.all(sites.map(async (site) => {
-            site.siteUrl = site.siteUrl.replace(/^https?:\/\//, '');
-            site.badge = await CoreUtils.ignoreErrors(CorePushNotifications.getSiteCounter(site.id)) || 0;
+        this.accountsList = await CoreLoginHelper.getAccountsList();
+        this.loaded = true;
 
-            return site;
-        }));
-
-        this.showDelete = false;
+        if (this.accountsList.count == 0) {
+            this.add();
+        }
     }
 
     /**
@@ -72,12 +67,12 @@ export class CoreLoginSitesPage implements OnInit {
     /**
      * Delete a site.
      *
-     * @param e Click event.
+     * @param event Click event.
      * @param site Site to delete.
      * @return Promise resolved when done.
      */
-    async deleteSite(e: Event, site: CoreSiteBasicInfo): Promise<void> {
-        e.stopPropagation();
+    async deleteSite(event: Event, site: CoreSiteBasicInfo): Promise<void> {
+        event.stopPropagation();
 
         let siteName = site.siteName || '';
 
@@ -91,20 +86,15 @@ export class CoreLoginSitesPage implements OnInit {
         }
 
         try {
-            await CoreSites.deleteSite(site.id);
+            await CoreLoginHelper.deleteAccountFromList(this.accountsList, site);
 
-            const index = this.sites.findIndex((listedSite) => listedSite.id == site.id);
-            index >= 0 && this.sites.splice(index, 1);
             this.showDelete = false;
 
             // If there are no sites left, go to add site.
-            const hasSites = await CoreSites.hasSites();
-
-            if (!hasSites) {
+            if (this.accountsList.count == 0) {
                 CoreLoginHelper.goToAddSite(true, true);
             }
         } catch (error) {
-            this.logger.error('Error deleting site ' + site.id, error);
             CoreDomUtils.showErrorModalDefault(error, 'core.login.errordeletesite', true);
         }
     }
@@ -112,10 +102,14 @@ export class CoreLoginSitesPage implements OnInit {
     /**
      * Login in a site.
      *
+     * @param event Click event.
      * @param siteId The site ID.
      * @return Promise resolved when done.
      */
-    async login(siteId: string): Promise<void> {
+    async login(event: Event, siteId: string): Promise<void> {
+        event.preventDefault();
+        event.stopPropagation();
+
         const modal = await CoreDomUtils.showModalLoading();
 
         try {
@@ -127,7 +121,6 @@ export class CoreLoginSitesPage implements OnInit {
                 return;
             }
         } catch (error) {
-            this.logger.error('Error loading site ' + siteId, error);
             CoreDomUtils.showErrorModalDefault(error, 'Error loading site.');
         } finally {
             modal.dismiss();

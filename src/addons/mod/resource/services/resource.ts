@@ -21,7 +21,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 
 const ROOT_CACHE_KEY = 'mmaModResource:';
 
@@ -82,7 +82,7 @@ export class AddonModResourceProvider {
             return currentResource;
         }
 
-        throw new CoreError('Resource not found');
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
     /**
@@ -128,16 +128,6 @@ export class AddonModResourceProvider {
         const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getResourceCacheKey(courseId));
-    }
-
-    /**
-     * Returns whether or not getResource WS available or not.
-     *
-     * @return If WS is abalaible.
-     * @since 3.3
-     */
-    isGetResourceWSAvailable(): boolean {
-        return CoreSites.wsAvailableInCurrentSite('mod_resource_get_resources_by_courses');
     }
 
     /**

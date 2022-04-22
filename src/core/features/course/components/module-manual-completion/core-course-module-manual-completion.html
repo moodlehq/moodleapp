@@ -1,23 +1,23 @@
-<div *ngIf="completion && !completion.isautomatic" class="core-module-manual-completion">
-
+<ng-container *ngIf="completion && !completion.isautomatic">
     <ng-container *ngIf="completion.istrackeduser">
-        <ng-container *ngIf="completion.state">
-            <ion-button color="success" fill="outline" [attr.aria-label]="accessibleDescription"
-                (click)="completionClicked($event)">
-                <ion-icon name="fas-check" slot="start" aria-hidden="true"></ion-icon>
-                {{ 'core.course.completion_manual:done' | translate }}
-            </ion-button>
-        </ng-container>
-        <ng-container *ngIf="!completion.state">
-            <ion-button color="light" [attr.aria-label]="accessibleDescription" (click)="completionClicked($event)">
-                {{ 'core.course.completion_manual:markdone' | translate }}
-            </ion-button>
-        </ng-container>
+        <ion-button *ngIf="completion.state" color="success" [attr.aria-label]="accessibleDescription" (click)="completionClicked($event)"
+            class="ion-text-wrap" [class.chip]="mode == 'basic'">
+            <ion-icon name="fas-check" slot="start" aria-hidden="true"></ion-icon>
+            {{ 'core.course.completion_manual:done' | translate }}
+            <ion-icon *ngIf="completion?.offline" name="fas-sync" [attr.aria-label]="'core.course.manualcompletionnotsynced' | translate"
+                slot="end"></ion-icon>
+        </ion-button>
+        <ion-button *ngIf="!completion.state" fill="outline" [attr.aria-label]="accessibleDescription" (click)="completionClicked($event)"
+            class="ion-text-wrap" [class.chip]="mode == 'basic'">
+            {{ 'core.course.completion_manual:markdone' | translate }}
+            <ion-icon *ngIf="completion?.offline" name="fas-sync" [attr.aria-label]="'core.course.manualcompletionnotsynced' | translate"
+                slot="end"></ion-icon>
+        </ion-button>
     </ng-container>
 
     <ng-container *ngIf="!completion.istrackeduser">
-        <ion-button disabled="true" color="light">
+        <ion-button disabled="true" fill="outline" class="ion-text-wrap" [class.chip]="mode == 'basic'">
             {{ 'core.course.completion_manual:markdone' | translate }}
         </ion-button>
     </ng-container>
-</div>
+</ng-container>

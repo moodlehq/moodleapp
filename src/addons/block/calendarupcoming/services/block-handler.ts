@@ -16,10 +16,11 @@ import { Injectable } from '@angular/core';
 import { CoreBlockHandlerData } from '@features/block/services/block-delegate';
 import { CoreBlockOnlyTitleComponent } from '@features/block/components/only-title-block/only-title-block';
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
-import { AddonCalendar } from '@/addons/calendar/services/calendar';
 import { CoreCourseBlock } from '@features/course/services/course';
 import { Params } from '@angular/router';
 import { makeSingleton } from '@singletons';
+import { AddonCalendarMainMenuHandlerService } from '@addons/calendar/services/handlers/mainmenu';
+import { CoreSites } from '@services/sites';
 
 /**
  * Block handler.
@@ -39,18 +40,18 @@ export class AddonBlockCalendarUpcomingHandlerService extends CoreBlockBaseHandl
      * @return Data or promise resolved with the data.
      */
     getDisplayData(block: CoreCourseBlock, contextLevel: string, instanceId: number): CoreBlockHandlerData {
-        const linkParams: Params = contextLevel == 'course' ? { courseId: instanceId } : {};
-        linkParams.upcoming = true;
+        const linkParams: Params = { upcoming: true };
+
+        if (contextLevel == 'course' && instanceId !== CoreSites.getCurrentSiteHomeId()) {
+            linkParams.courseId = instanceId;
+        }
 
         return {
             title: 'addon.block_calendarupcoming.pluginname',
             class: 'addon-block-calendar-upcoming',
             component: CoreBlockOnlyTitleComponent,
-            link: AddonCalendar.getMainCalendarPagePath(),
+            link: AddonCalendarMainMenuHandlerService.PAGE_NAME,
             linkParams: linkParams,
-            navOptions: {
-                preferCurrentTab: false,
-            },
         };
     }
 

@@ -1,6 +1,8 @@
 <ion-header>
     <ion-toolbar>
-        <h2>{{ 'addon.messages.groupinfo' | translate }}</h2>
+        <ion-title>
+            <h2>{{ 'addon.messages.groupinfo' | translate }}</h2>
+        </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
                 <ion-icon name="fas-times" slot="icon-only" aria-hidden="true"></ion-icon>
@@ -18,7 +20,7 @@
             <ion-label>
                 <div class="large-avatar">
                     <img class="avatar" [src]="conversation!.imageurl" core-external-content [alt]="conversation!.name"
-                    onError="this.src='assets/img/group-avatar.png'">
+                        onError="this.src='assets/img/group-avatar.svg'">
                 </div>
                 <h2>
                     <core-format-text [text]="conversation!.name" contextLevel="system" [contextInstanceId]="0"></core-format-text>
@@ -32,8 +34,8 @@
             </ion-label>
         </ion-item>
 
-        <ion-item class="ion-text-wrap addon-messages-conversation-item" *ngFor="let member of members"
-            (click)="closeModal(member.id)" detail="true" button>
+        <ion-item class="ion-text-wrap addon-messages-conversation-item" *ngFor="let member of members" (click)="closeModal(member.id)"
+            detail="true" button>
             <core-user-avatar [user]="member" [linkProfile]="false" [checkOnline]="member.showonlinestatus" slot="start">
             </core-user-avatar>
             <ion-label>

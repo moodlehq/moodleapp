@@ -3,40 +3,42 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>
-            {{ 'core.settings.about' | translate}}
-        </h1>
+        <ion-title>
+            <h1>
+                {{ 'core.settings.about' | translate}}
+            </h1>
+        </ion-title>
     </ion-toolbar>
 </ion-header>
 
 <ion-content>
-    <ion-item class="ion-text-wrap">
-        <ion-label><h2>{{ appName }} {{ versionName }}</h2></ion-label>
-    </ion-item>
-    <ion-item button class="ion-text-wrap" (click)="openPage('deviceinfo')" detail="true">
-        <ion-icon name="fas-mobile" slot="start" aria-hidden="true"></ion-icon>
-        <ion-label>{{ 'core.settings.deviceinfo' | translate }}</ion-label>
-    </ion-item>
-    <ion-item button class="ion-text-wrap" (click)="openPage('licenses')" detail="true">
-        <ion-icon name="far-copyright" slot="start" aria-hidden="true"></ion-icon>
-        <ion-label>{{ 'core.settings.opensourcelicenses' | translate }}</ion-label>
-    </ion-item>
-    <ion-item
-        *ngIf="privacyPolicy"
-        class="ion-text-wrap"
-        button core-link auto-login="no" [href]="privacyPolicy"
-        detail="true" detailIcon="open-outline"
-    >
-        <ion-icon name="fas-user-shield" slot="start" aria-hidden="true"></ion-icon>
-        <ion-label>{{ 'core.settings.privacypolicy' | translate }}</ion-label>
-    </ion-item>
-    <ion-item
-        *ngIf="feedbackFormUrl"
-        class="ion-text-wrap"
-        button core-link [href]="feedbackFormUrl"
-        detail="true" detailIcon="open-outline"
-    >
-        <ion-icon name="fas-bullhorn" slot="start" aria-hidden="true"></ion-icon>
-        <ion-label>{{ 'core.settings.helpusimprove' | translate }}</ion-label>
-    </ion-item>
+    <ion-list class="list-item-limited-width">
+        <ion-item button class="ion-text-wrap" (click)="openPage('licenses')" detail="true">
+            <ion-icon name="far-copyright" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>{{ 'core.settings.opensourcelicenses' | translate }}</ion-label>
+        </ion-item>
+        <ion-item *ngIf="privacyPolicy" class="ion-text-wrap" button core-link auto-login="no" [href]="privacyPolicy" detail="true"
+            detailIcon="open-outline">
+            <ion-icon name="fas-user-shield" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>{{ 'core.settings.privacypolicy' | translate }}</ion-label>
+        </ion-item>
+        <ion-item *ngIf="a11yStatement" class="ion-text-wrap" button core-link auto-login="no" [href]="a11yStatement" detail="true"
+            detailIcon="open-outline">
+            <ion-icon name="fas-universal-access" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>{{ 'core.settings.accessstatement' | translate }}</ion-label>
+        </ion-item>
+        <ion-item *ngIf="currentSite && feedbackFormUrl" class="ion-text-wrap" button core-link [href]="feedbackFormUrl" detail="true"
+            detailIcon="open-outline">
+            <ion-icon name="fas-bullhorn" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>{{ 'core.settings.helpusimprove' | translate }}</ion-label>
+        </ion-item>
+    </ion-list>
 </ion-content>
+
+<ion-footer class="ion-no-border">
+    <ion-item button class="ion-text-wrap ion-text-center core-about-deviceinfo" detail="false" (click)="openPage('deviceinfo')">
+        <ion-label>
+            <h2>{{ appName }} {{ versionName }}</h2>
+        </ion-label>
+    </ion-item>
+</ion-footer>

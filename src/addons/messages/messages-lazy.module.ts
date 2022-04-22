@@ -27,12 +27,12 @@ export const AddonMessagesDiscussionRoute: Route = {
 function buildRoutes(injector: Injector): Routes {
     return [
         {
-            path: 'index', // 3.5 or lower.
+            path: 'index', // 3.5.
             loadChildren: () =>
                 import('./pages/discussions-35/discussions.module').then(m => m.AddonMessagesDiscussions35PageModule),
         },
         {
-            path: 'contacts-35', // 3.5 or lower.
+            path: 'contacts-35', // 3.5.
             loadChildren: () => import('./pages/contacts-35/contacts.module').then(m => m.AddonMessagesContacts35PageModule),
         },
         {
@@ -52,7 +52,7 @@ function buildRoutes(injector: Injector): Routes {
                 .then(m => m.AddonMessagesContactsPageModule),
         },
         {
-            path: 'preferences',
+            path: 'message-settings',
             loadChildren: () => import('./pages/settings/settings.module').then(m => m.AddonMessagesSettingsPageModule),
         },
         ...buildTabMainRoutes(injector, {

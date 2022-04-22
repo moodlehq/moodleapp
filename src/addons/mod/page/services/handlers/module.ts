@@ -14,24 +14,23 @@
 
 import { Injectable, Type } from '@angular/core';
 import { AddonModPage } from '../page';
-import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
-import { CoreConstants } from '@/core/constants';
-import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
-import { CoreCourseModule } from '@features/course/services/course-helper';
-import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
+import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
+import { CoreConstants, ModPurpose } from '@/core/constants';
 import { AddonModPageIndexComponent } from '../../components/index';
 import { makeSingleton } from '@singletons';
+import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 
 /**
  * Handler to support page modules.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonModPageModuleHandlerService implements CoreCourseModuleHandler {
+export class AddonModPageModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
     static readonly PAGE_NAME = 'mod_page';
 
     name = 'AddonModPage';
     modName = 'page';
+    protected pageName = AddonModPageModuleHandlerService.PAGE_NAME;
 
     supportedFeatures = {
         [CoreConstants.FEATURE_MOD_ARCHETYPE]: CoreConstants.MOD_ARCHETYPE_RESOURCE,
@@ -43,49 +42,20 @@ export class AddonModPageModuleHandlerService implements CoreCourseModuleHandler
         [CoreConstants.FEATURE_GRADE_OUTCOMES]: false,
         [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
         [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true,
+        [CoreConstants.FEATURE_MOD_PURPOSE]: ModPurpose.MOD_PURPOSE_CONTENT,
     };
 
     /**
-     * Check if the handler is enabled on a site level.
-     *
-     * @return Whether or not the handler is enabled on a site level.
+     * @inheritdoc
      */
     isEnabled(): Promise<boolean> {
         return AddonModPage.isPluginEnabled();
     }
 
     /**
-     * Get the data required to display the module in the course contents view.
-     *
-     * @param module The module object.
-     * @return Data to render the module.
+     * @inheritdoc
      */
-    getData(module: CoreCourseAnyModuleData): CoreCourseModuleHandlerData {
-        return {
-            icon: CoreCourse.getModuleIconSrc(this.modName, 'modicon' in module ? module.modicon : undefined),
-            title: module.name,
-            class: 'addon-mod_page-handler',
-            showDownloadButton: true,
-            action(event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions): void {
-                options = options || {};
-                options.params = options.params || {};
-                Object.assign(options.params, { module });
-                const routeParams = '/' + courseId + '/' + module.id;
-
-                CoreNavigator.navigateToSitePath(AddonModPageModuleHandlerService.PAGE_NAME + routeParams, options);
-            },
-        };
-    }
-
-    /**
-     * Get the component to render the module. This is needed to support singleactivity course format.
-     * The component returned must implement CoreCourseModuleMainComponent.
-     *
-     * @param course The course object.
-     * @param module The module object.
-     * @return The component to use, undefined if not found.
-     */
-    async getMainComponent(): Promise<Type<unknown> | undefined> {
+    async getMainComponent(): Promise<Type<unknown>> {
         return AddonModPageIndexComponent;
     }
 

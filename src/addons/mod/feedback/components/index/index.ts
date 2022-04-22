@@ -82,6 +82,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
 
     protected submitObserver: CoreEventObserver;
     protected syncEventName = AddonModFeedbackSyncProvider.AUTO_SYNCED;
+    protected checkCompletionAfterLog = false;
 
     constructor(
         protected content?: IonContent,
@@ -97,7 +98,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
 
             this.tabsLoaded.analysis = false;
             this.tabsLoaded.overview = false;
-            this.loaded = false;
+            this.showLoading = true;
 
             // Prefetch data if needed.
             if (!data.offline && this.isPrefetched()) {
@@ -125,13 +126,20 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
 
         try {
             await this.loadContent(false, true);
-
-            if (this.feedback) {
-                CoreUtils.ignoreErrors(AddonModFeedback.logView(this.feedback.id, this.feedback.name));
-            }
         } finally {
             this.tabsReady = true;
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected async logActivity(): Promise<void> {
+        if (!this.feedback) {
+            return; // Shouldn't happen.
+        }
+
+        await AddonModFeedback.logView(this.feedback.id, this.feedback.name);
     }
 
     /**
@@ -172,7 +180,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
     /**
      * @inheritdoc
      */
-    protected async fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<void> {
+    protected async fetchContent(refresh?: boolean, sync = false, showErrors = false): Promise<void> {
         try {
             this.feedback = await AddonModFeedback.getFeedback(this.courseId, this.module.id);
 
@@ -201,9 +209,6 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
 
             await this.fetchFeedbackOverviewData();
         } finally {
-            // Now fill the context menu.
-            this.fillContextMenu(refresh);
-
             if (this.feedback) {
                 // Check if there are responses stored in offline.
                 this.hasOffline = await AddonModFeedbackOffline.hasFeedbackOfflineData(this.feedback.id);
@@ -299,7 +304,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
                 item.data = <string[]> item.data.map((dataItem) => {
                     const parsed = <Record<string, string>> CoreTextUtils.parseJSON(dataItem);
 
-                    return typeof parsed.show != 'undefined' ? parsed.show : false;
+                    return parsed.show !== undefined ? parsed.show : false;
                 }).filter((dataItem) => dataItem); // Filter false entries.
 
             case 'textfield':
@@ -312,7 +317,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
                 const parsedData = <Record<string, string | number>[]> item.data.map((dataItem) => {
                     const parsed = <Record<string, string | number>> CoreTextUtils.parseJSON(dataItem);
 
-                    return typeof parsed.answertext != 'undefined' ? parsed : false;
+                    return parsed.answertext !== undefined ? parsed : false;
                 }).filter((dataItem) => dataItem); // Filter false entries.
 
                 // Format labels.
@@ -320,7 +325,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
                     dataItem.quotient = (<number> dataItem.quotient * 100).toFixed(2);
                     let label = '';
 
-                    if (typeof dataItem.value != 'undefined') {
+                    if (dataItem.value !== undefined) {
                         label = '(' + dataItem.value + ') ';
                     }
                     label += dataItem.answertext;
@@ -400,15 +405,15 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
     }
 
     /**
-     * Open respondents page.
+     * Open attempts page.
      */
-    openRespondents(): void {
+    openAttempts(): void {
         if (!this.access!.canviewreports || this.completedCount <= 0) {
             return;
         }
 
         CoreNavigator.navigateToSitePath(
-            AddonModFeedbackModuleHandlerService.PAGE_NAME + `/${this.courseId}/${this.module.id}/respondents`,
+            AddonModFeedbackModuleHandlerService.PAGE_NAME + `/${this.courseId}/${this.module.id}/attempts`,
             {
                 params: {
                     group: this.group,

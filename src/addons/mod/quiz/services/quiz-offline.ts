@@ -54,7 +54,7 @@ export class AddonModQuizOfflineProvider {
             if (!questionsWithAnswers[slot]) {
                 questionsWithAnswers[slot] = {
                     answers: {},
-                    prefix: name.substr(0, name.indexOf(nameWithoutPrefix)),
+                    prefix: name.substring(0, name.indexOf(nameWithoutPrefix)),
                 };
             }
             questionsWithAnswers[slot].answers[nameWithoutPrefix] = answers[name];

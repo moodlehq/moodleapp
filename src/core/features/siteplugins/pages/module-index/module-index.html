@@ -1,9 +1,11 @@
-<ion-header>
+<ion-header collapsible>
     <ion-toolbar>
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>{{ title }}</h1>
+        <ion-title>
+            <h1>{{ title }}</h1>
+        </ion-title>
 
         <ion-buttons slot="end">
             <!-- If the site plugin defines some buttons using core-nav-buttons, they will be added here. -->

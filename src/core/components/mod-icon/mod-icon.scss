@@ -1,0 +1,56 @@
+@import "~theme/globals";
+
+:host {
+    display: inline-block;
+    --size: var(--module-icon-size);
+    --margin-end: 0px;
+    --margin-vertical: 0px;
+    --icon-radius: var(--small-radius);
+    --filter: brightness(0) invert(1);
+
+    margin-top: var(--margin-vertical);
+    margin-bottom: var(--margin-vertical);
+    @include margin-horizontal(null, var(--margin-end));
+
+    border-radius: var(--icon-radius);
+    padding: 0.7rem;
+    background-color: $gray-100;
+    line-height: var(--size);
+
+    @each $type, $value in $activity-icon-colors {
+        &.#{$type} {
+            background-color: var(--activity#{$type});
+            img {
+                filter: var(--filter);
+            }
+        }
+    }
+
+}
+
+img {
+    width: var(--size);
+    height: var(--size);
+    max-width: var(--size);
+    max-height: var(--size);
+    min-width: var(--size);
+    min-height: var(--size);
+    vertical-align: top;
+
+    &[alt] {
+        text-indent: -999999px;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+}
+
+:host-context(ion-item) {
+    --margin-vertical: 12px;
+    --margin-end: 1rem;
+}
+
+:host-context(ion-card ion-item) {
+    --margin-vertical: 12px;
+    --margin-end: 12px;
+    --icon-radius: var(--module-icon-radius);
+}

@@ -22,6 +22,21 @@ import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from './mainmenu-d
 import { Device, makeSingleton } from '@singletons';
 import { CoreArray } from '@singletons/array';
 import { CoreTextUtils } from '@services/utils/text';
+import { CoreScreen } from '@services/screen';
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [CoreMainMenuProvider.MAIN_MENU_HANDLER_BADGE_UPDATED]: CoreMainMenuHandlerBadgeUpdatedEventData;
+        [CoreMainMenuProvider.MAIN_MENU_VISIBILITY_UPDATED]: void;
+    }
+
+}
 
 /**
  * Service that provides some features regarding Main Menu.
@@ -32,12 +47,8 @@ export class CoreMainMenuProvider {
     static readonly NUM_MAIN_HANDLERS = 4;
     static readonly ITEM_MIN_WIDTH = 72; // Min with of every item, based on 5 items on a 360 pixel wide screen.
     static readonly MORE_PAGE_NAME = 'more';
-
-    protected tablet = false;
-
-    constructor() {
-        this.tablet = !!(window?.innerWidth && window.innerWidth >= 576 && window.innerHeight >= 576);
-    }
+    static readonly MAIN_MENU_HANDLER_BADGE_UPDATED = 'main_menu_handler_badge_updated';
+    static readonly MAIN_MENU_VISIBILITY_UPDATED = 'main_menu_visbility_updated';
 
     /**
      * Get the current main menu handlers.
@@ -162,7 +173,7 @@ export class CoreMainMenuProvider {
         }
 
         // Remove undefined values.
-        return result.filter((entry) => typeof entry != 'undefined');
+        return result.filter((entry) => entry !== undefined);
     }
 
     /**
@@ -213,7 +224,7 @@ export class CoreMainMenuProvider {
         if (!this.isResponsiveMainMenuItemsDisabledInCurrentSite() && window && window.innerWidth) {
             let numElements: number;
 
-            if (this.tablet) {
+            if (CoreScreen.isTablet) {
                 // Tablet, menu will be displayed vertically.
                 numElements = Math.floor(window.innerHeight / CoreMainMenuProvider.ITEM_MIN_WIDTH);
             } else {
@@ -236,22 +247,13 @@ export class CoreMainMenuProvider {
      * @return Tabs placement including side value.
      */
     getTabPlacement(): 'bottom' | 'side' {
-        const tablet = !!(window.innerWidth && window.innerWidth >= 576 && (window.innerHeight >= 576 ||
-                ((CoreApp.isKeyboardVisible() || CoreApp.isKeyboardOpening()) && window.innerHeight >= 200)));
-
-        if (tablet != this.tablet) {
-            this.tablet = tablet;
-
-            // @todo Resize so content margins can be updated.
-        }
-
-        return tablet ? 'side' : 'bottom';
+        return CoreScreen.isTablet ? 'side' : 'bottom';
     }
 
     /**
      * Check if a certain page is the root of a main menu tab.
      *
-     * @param page Name of the page.
+     * @param pageName Name of the page.
      * @return Promise resolved with boolean: whether it's the root of a main menu tab.
      */
     async isMainMenuTab(pageName: string): Promise<boolean> {
@@ -265,7 +267,7 @@ export class CoreMainMenuProvider {
     /**
      * Check if a certain page is the root of a main menu handler currently displayed.
      *
-     * @param page Name of the page.
+     * @param pageName Name of the page.
      * @return Promise resolved with boolean: whether it's the root of a main menu handler.
      */
     async isCurrentMainMenuHandler(pageName: string): Promise<boolean> {
@@ -341,3 +343,8 @@ type CustomMenuItemsMap = Record<string, {
         };
     };
 }>;
+
+export type CoreMainMenuHandlerBadgeUpdatedEventData = {
+    handler: string; // Handler name.
+    value: number; // New counter value.
+};

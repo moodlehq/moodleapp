@@ -15,7 +15,12 @@
 import { Component, Input } from '@angular/core';
 
 import { CoreCourseModuleCompletionBaseComponent } from '@features/course/classes/module-completion';
-import { CoreCourseModuleWSRuleDetails, CoreCourseProvider } from '@features/course/services/course';
+import {
+    CoreCourseCompletionMode,
+    CoreCourseModuleCompletionStatus,
+    CoreCourseModuleCompletionTracking,
+    CoreCourseModuleWSRuleDetails,
+} from '@features/course/services/course';
 import { CoreUser } from '@features/user/services/user';
 import { Translate } from '@singletons';
 
@@ -31,15 +36,16 @@ import { Translate } from '@singletons';
 @Component({
     selector: 'core-course-module-completion',
     templateUrl: 'core-course-module-completion.html',
-    styleUrls: ['module-completion.scss'],
 })
 export class CoreCourseModuleCompletionComponent extends CoreCourseModuleCompletionBaseComponent {
 
     @Input() showCompletionConditions = false; // Whether to show activity completion conditions.
     @Input() showManualCompletion = false; // Whether to show manual completion.
+    @Input() mode: CoreCourseCompletionMode = CoreCourseCompletionMode.FULL; // Show full completion status or a basic mode.
 
     details?: CompletionRule[];
     accessibleDescription: string | null = null;
+    completionStatus?: CoreCourseModuleCompletionStatus;
 
     /**
      * @inheritdoc
@@ -49,16 +55,21 @@ export class CoreCourseModuleCompletionComponent extends CoreCourseModuleComplet
             return;
         }
 
+        this.completionStatus = !this.completion?.istrackeduser ||
+            this.completion.tracking == CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_NONE
+            ? undefined
+            : this.completion.state;
+
         // Format rules.
         this.details = await Promise.all(this.completion.details.map(async (rule: CompletionRule) => {
-            rule.statuscomplete = rule.rulevalue.status == CoreCourseProvider.COMPLETION_COMPLETE ||
-                    rule.rulevalue.status == CoreCourseProvider.COMPLETION_COMPLETE_PASS;
-            rule.statuscompletefail = rule.rulevalue.status == CoreCourseProvider.COMPLETION_COMPLETE_FAIL;
-            rule.statusincomplete = rule.rulevalue.status == CoreCourseProvider.COMPLETION_INCOMPLETE;
+            rule.statuscomplete = rule.rulevalue.status == CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE ||
+                    rule.rulevalue.status == CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE_PASS;
+            rule.statuscompletefail = rule.rulevalue.status == CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE_FAIL;
+            rule.statusincomplete = rule.rulevalue.status == CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE;
             rule.accessibleDescription = null;
 
-            if (this.completion!.overrideby) {
-                const fullName = await CoreUser.getUserFullNameWithDefault(this.completion!.overrideby, this.completion!.courseId);
+            if (this.completion?.overrideby) {
+                const fullName = await CoreUser.getUserFullNameWithDefault(this.completion.overrideby, this.completion.courseId);
 
                 const setByData = {
                     $a: {

@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 
 import { AddonMessageOutputHandler, AddonMessageOutputHandlerData } from '@addons/messageoutput/services/messageoutput-delegate';
-import { AddonMessageOutputAirnotifierProvider } from '../airnotifier';
 import { makeSingleton } from '@singletons';
 
 /**
@@ -29,15 +28,13 @@ export class AddonMessageOutputAirnotifierHandlerService implements AddonMessage
     name = 'AddonMessageOutputAirnotifier';
     processorName = 'airnotifier';
 
-    constructor(private airnotifierProvider: AddonMessageOutputAirnotifierProvider) {}
-
     /**
      * Whether or not the module is enabled for the site.
      *
      * @return True if enabled, false otherwise.
      */
     async isEnabled(): Promise<boolean> {
-        return this.airnotifierProvider.isEnabled();
+        return true;
     }
 
     /**

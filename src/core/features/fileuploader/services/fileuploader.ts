@@ -23,7 +23,6 @@ import { CoreFile, CoreFileProvider } from '@services/file';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile, CoreWSFileUploadOptions, CoreWSUploadFileResult } from '@services/ws';
@@ -33,6 +32,7 @@ import { CoreEmulatorCaptureMediaComponent } from '@features/emulator/components
 import { CoreError } from '@classes/errors/error';
 import { CoreSite } from '@classes/site';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
+import { CoreText } from '@singletons/text';
 
 /**
  * File upload options.
@@ -579,7 +579,7 @@ export class CoreFileUploaderProvider {
             } else {
                 // Local file, copy it.
                 // Use copy instead of move to prevent having a unstable state if some copies succeed and others don't.
-                const destFile = CoreTextUtils.concatenatePaths(folderPath, file.name);
+                const destFile = CoreText.concatenatePaths(folderPath, file.name);
                 result.offline++;
 
                 await CoreFile.copyFile(file.toURL(), destFile);

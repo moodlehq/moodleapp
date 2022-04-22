@@ -13,13 +13,14 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreLogger } from '@singletons/logger';
-import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
+import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { makeSingleton } from '@singletons';
 import { CoreStatusWithWarningsWSResponse, CoreWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { CoreEvents } from '@singletons/events';
 import { CoreWSError } from '@classes/errors/wserror';
+import { CoreCourseAnyCourseDataWithExtraInfoAndOptions, CoreCourseWithImageAndColor } from './courses-helper';
+import { CoreUtils } from '@services/utils/utils';
 
 const ROOT_CACHE_KEY = 'mmCourses:';
 
@@ -45,6 +46,7 @@ declare module '@singletons/events' {
 export class CoreCoursesProvider {
 
     static readonly SEARCH_PER_PAGE = 20;
+    static readonly RECENT_PER_PAGE = 10;
     static readonly ENROL_INVALID_KEY = 'CoreCoursesEnrolInvalidKey';
     static readonly EVENT_MY_COURSES_CHANGED = 'courses_my_courses_changed'; // User course list changed while app is running.
     // A course was hidden/favourite, or user enroled in a course.
@@ -61,21 +63,18 @@ export class CoreCoursesProvider {
     static readonly STATE_HIDDEN = 'hidden';
     static readonly STATE_FAVOURITE = 'favourite';
 
-    protected logger: CoreLogger;
     protected userCoursesIds: { [id: number]: boolean } = {}; // Use an object to make it faster to search.
 
-    constructor() {
-        this.logger = CoreLogger.getInstance('CoreCoursesProvider');
-    }
+    protected downloadOptionsEnabled = false;
 
     /**
      * Whether current site supports getting course options.
      *
      * @return Whether current site supports getting course options.
+     * @deprecated since app 4.0
      */
     canGetAdminAndNavOptions(): boolean {
-        return CoreSites.wsAvailableInCurrentSite('core_course_get_user_navigation_options') &&
-                CoreSites.wsAvailableInCurrentSite('core_course_get_user_administration_options');
+        return true;
     }
 
     /**
@@ -461,7 +460,6 @@ export class CoreCoursesProvider {
      * @param value The value to match.
      * @param siteId Site ID. If not defined, use current site.
      * @return Promise resolved with the first course.
-     * @since 3.2
      */
     async getCourseByField(field?: string, value?: string | number, siteId?: string): Promise<CoreCourseSearchedData> {
         const courses = await this.getCoursesByField(field, value, siteId);
@@ -485,7 +483,6 @@ export class CoreCoursesProvider {
      * @param value The value to match.
      * @param siteId Site ID. If not defined, use current site.
      * @return Promise resolved with the courses.
-     * @since 3.2
      */
     async getCoursesByField(
         field: string = '',
@@ -528,15 +525,15 @@ export class CoreCoursesProvider {
 
         // Courses will be sorted using sortorder if available.
         return response.courses.sort((a, b) => {
-            if (typeof a.sortorder == 'undefined' && typeof b.sortorder == 'undefined') {
+            if (a.sortorder === undefined && b.sortorder === undefined) {
                 return b.id - a.id;
             }
 
-            if (typeof a.sortorder == 'undefined') {
+            if (a.sortorder === undefined) {
                 return 1;
             }
 
-            if (typeof b.sortorder == 'undefined') {
+            if (b.sortorder === undefined) {
                 return -1;
             }
 
@@ -568,7 +565,7 @@ export class CoreCoursesProvider {
         customFieldName: string,
         customFieldValue: string,
         siteId?: string,
-    ): Promise<CoreCourseGetEnrolledCoursesByTimelineClassification[]> {
+    ): Promise<CoreCourseSummaryData[]> {
         const site = await CoreSites.getSite(siteId);
         const params: CoreCourseGetEnrolledCoursesByTimelineClassificationWSParams = {
             classification: 'customfield',
@@ -593,27 +590,21 @@ export class CoreCoursesProvider {
     /**
      * Check if get courses by field WS is available in a certain site.
      *
-     * @param site Site to check.
      * @return Whether get courses by field is available.
-     * @since 3.2
+     * @deprecated since app 4.0
      */
-    isGetCoursesByFieldAvailable(site?: CoreSite): boolean {
-        site = site || CoreSites.getCurrentSite();
-
-        return !!site && site.wsAvailable('core_course_get_courses_by_field');
+    isGetCoursesByFieldAvailable(): boolean {
+        return true;
     }
 
     /**
      * Check if get courses by field WS is available in a certain site, by site ID.
      *
-     * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with boolean: whether get courses by field is available.
-     * @since 3.2
+     * @deprecated since app 4.0
      */
-    async isGetCoursesByFieldAvailableInSite(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.getSite(siteId);
-
-        return this.isGetCoursesByFieldAvailable(site);
+    async isGetCoursesByFieldAvailableInSite(): Promise<boolean> {
+        return true;
     }
 
     /**
@@ -635,25 +626,47 @@ export class CoreCoursesProvider {
         // Get the list of courseIds to use based on the param.
         courseIds = await this.getCourseIdsForAdminAndNavOptions(courseIds, siteId);
 
-        let navOptions: CoreCourseUserAdminOrNavOptionCourseIndexed;
-        let admOptions: CoreCourseUserAdminOrNavOptionCourseIndexed;
-
         // Get user navigation and administration options.
-        try {
-            navOptions = await this.getUserNavigationOptions(courseIds, siteId);
-        } catch {
-            // Couldn't get it, return empty options.
-            navOptions = {};
-        }
+        const [navOptions, admOptions] = await Promise.all([
+            CoreUtils.ignoreErrors(this.getUserNavigationOptions(courseIds, siteId), {}),
+            CoreUtils.ignoreErrors(this.getUserAdministrationOptions(courseIds, siteId), {}),
+        ]);
 
-        try {
-            admOptions = await this.getUserAdministrationOptions(courseIds, siteId);
-        } catch {
-            // Couldn't get it, return empty options.
-            admOptions = {};
-        }
+        return { navOptions: navOptions, admOptions: admOptions };
+    }
 
-        return ({ navOptions: navOptions, admOptions: admOptions });
+    /**
+     * Get cache key for get recent courses WS call.
+     *
+     * @param userId User ID.
+     * @return Cache key.
+     */
+    protected getRecentCoursesCacheKey(userId: number): string {
+        return `${ROOT_CACHE_KEY}:recentcourses:${userId}`;
+    }
+
+    /**
+     * Get recent courses.
+     *
+     * @param options Options.
+     * @return Promise resolved with courses.
+     * @since 3.6
+     */
+    async getRecentCourses(options: CoreCourseGetRecentCoursesOptions = {}): Promise<CoreCourseSummaryData[]> {
+        const site = await CoreSites.getSite(options.siteId);
+
+        const userId = options.userId || site.getUserId();
+        const params: CoreCourseGetRecentCoursesWSParams = {
+            userid: userId,
+            offset: options.offset || 0,
+            limit: options.limit || CoreCoursesProvider.RECENT_PER_PAGE,
+            sort: options.sort,
+        };
+        const preSets: CoreSiteWSPreSets = {
+            cacheKey: this.getRecentCoursesCacheKey(userId),
+        };
+
+        return await site.read<CoreCourseSummaryData[]>('core_course_get_recent_courses', params, preSets);
     }
 
     /**
@@ -1004,6 +1017,19 @@ export class CoreCoursesProvider {
     }
 
     /**
+     * Invalidates get recent courses WS call.
+     *
+     * @param userId User ID. If not defined, current user.
+     * @param siteId Site Id. If not defined, use current site.
+     * @return Promise resolved when the data is invalidated.
+     */
+    async invalidateRecentCourses(userId?: number, siteId?: string): Promise<void> {
+        const site = await CoreSites.getSite(siteId);
+
+        await site.invalidateWsCacheForKey(this.getRecentCoursesCacheKey(userId || site.getUserId()));
+    }
+
+    /**
      * Invalidates all user administration options.
      *
      * @param siteId Site ID to invalidate. If not defined, use current site.
@@ -1069,8 +1095,7 @@ export class CoreCoursesProvider {
      * Check if WS to retrieve guest enrolment data is available.
      *
      * @return Whether guest WS is available.
-     * @since 3.1
-     * @deprecated Will always return true since it's available since 3.1.
+     * @deprecated since app 3.9.5
      */
     isGuestWSAvailable(): boolean {
         return true;
@@ -1082,6 +1107,7 @@ export class CoreCoursesProvider {
      * @param text Text to search.
      * @param page Page to get.
      * @param perPage Number of courses per page. Defaults to CoreCoursesProvider.SEARCH_PER_PAGE.
+     * @param limitToEnrolled Limit to enrolled courses.
      * @param siteId Site ID. If not defined, use current site.
      * @return Promise resolved with the courses and the total of matches.
      */
@@ -1089,6 +1115,7 @@ export class CoreCoursesProvider {
         text: string,
         page: number = 0,
         perPage: number = CoreCoursesProvider.SEARCH_PER_PAGE,
+        limitToEnrolled: boolean = false,
         siteId?: string,
     ): Promise<{ total: number; courses: CoreCourseBasicSearchedData[] }> {
         const site = await CoreSites.getSite(siteId);
@@ -1097,6 +1124,7 @@ export class CoreCoursesProvider {
             criteriavalue: text,
             page: page,
             perpage: perPage,
+            limittoenrolled: limitToEnrolled,
         };
         const preSets: CoreSiteWSPreSets = {
             getFromCache: false,
@@ -1175,6 +1203,29 @@ export class CoreCoursesProvider {
         };
 
         return site.write('core_course_set_favourite_courses', params);
+    }
+
+    /**
+     * Get download options enabled option.
+     *
+     * @return True if enabled, false otherwise.
+     */
+    getCourseDownloadOptionsEnabled(): boolean {
+        return this.downloadOptionsEnabled;
+    }
+
+    /**
+     * Set trigger and save the download option.
+     *
+     * @param enable True to enable, false to disable.
+     */
+    setCourseDownloadOptionsEnabled(enable: boolean): void {
+        if (this.downloadOptionsEnabled == enable) {
+            return;
+        }
+
+        this.downloadOptionsEnabled = enable;
+        CoreEvents.trigger(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, { enabled: enable });
     }
 
 }
@@ -1266,6 +1317,7 @@ export type CoreEnrolledCourseData = CoreEnrolledCourseBasicData & {
     overviewfiles?: CoreWSExternalFile[];
     showactivitydates?: boolean; // @since 3.11. Whether the activity dates are shown or not.
     showcompletionconditions?: boolean; // @since 3.11. Whether the activity completion conditions are shown or not.
+    timemodified?: number; // @since 4.0. Last time course settings were updated (timestamp).
 };
 
 /**
@@ -1317,6 +1369,17 @@ export type CoreCourseSearchedData = CoreCourseBasicSearchedData & {
         inheritedstate: number; // 1 or 0 to use when localstate is set to inherit.
     }[];
     courseformatoptions?: CoreCourseFormatOption[]; // Additional options for particular course format.
+};
+
+/**
+ * Course to render as list item.
+ */
+export type CoreCourseListItem = ((CoreCourseSearchedData & CoreCourseWithImageAndColor) |
+CoreCourseAnyCourseDataWithExtraInfoAndOptions) & {
+    isfavourite?: boolean; // If the user marked this course a favourite.
+    hidden?: boolean; // If the user hide the course from the dashboard.
+    completionusertracked?: boolean; // If the user is completion tracked.
+    progress?: number | null; // Progress percentage.
 };
 
 export type CoreCourseGetCoursesData = CoreEnrolledCourseBasicData & {
@@ -1437,13 +1500,15 @@ type CoreCourseGetCoursesWSParams = {
 export type CoreCourseGetCoursesWSResponse = CoreCourseGetCoursesData[];
 
 /**
- * Course type exported in CoreCourseGetEnrolledCoursesByTimelineClassificationWSResponse;
+ * Course data exported by course_summary_exporter;
  */
-export type CoreCourseGetEnrolledCoursesByTimelineClassification = CoreCourseBasicData & { // Course.
+export type CoreCourseSummaryData = CoreCourseBasicData & { // Course.
     idnumber: string; // Idnumber.
     startdate: number; // Startdate.
     enddate: number; // Enddate.
     visible: boolean; // Visible.
+    showactivitydates: boolean; // Showactivitydates.
+    showcompletionconditions: boolean; // Showcompletionconditions.
     fullnamedisplay: string; // Fullnamedisplay.
     viewurl: string; // Viewurl.
     courseimage: string; // Courseimage.
@@ -1472,7 +1537,7 @@ type CoreCourseGetEnrolledCoursesByTimelineClassificationWSParams = {
  * Data returned by core_course_get_enrolled_courses_by_timeline_classification WS.
  */
 export type CoreCourseGetEnrolledCoursesByTimelineClassificationWSResponse = {
-    courses: CoreCourseGetEnrolledCoursesByTimelineClassification[];
+    courses: CoreCourseSummaryData[];
     nextoffset: number; // Offset for the next request.
 };
 
@@ -1595,6 +1660,26 @@ type EnrolGuestGetInstanceInfoWSParams = {
 export type EnrolGuestGetInstanceInfoWSResponse = {
     instanceinfo: CoreCourseEnrolmentGuestMethod;
     warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Params of core_course_get_recent_courses WS.
+ */
+export type CoreCourseGetRecentCoursesWSParams = {
+    userid?: number; // Id of the user, default to current user.
+    limit?: number; // Result set limit.
+    offset?: number; // Result set offset.
+    sort?: string; // Sort string.
+};
+
+/**
+ * Options for getRecentCourses.
+ */
+export type CoreCourseGetRecentCoursesOptions = CoreSitesCommonWSOptions & {
+    userId?: number; // Id of the user, default to current user.
+    limit?: number; // Result set limit.
+    offset?: number; // Result set offset.
+    sort?: string; // Sort string.
 };
 
 /**

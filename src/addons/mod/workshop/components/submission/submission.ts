@@ -14,7 +14,7 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { Params } from '@angular/router';
-import { CoreCourseModule } from '@features/course/services/course-helper';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
@@ -44,7 +44,7 @@ import { AddonModWorkshopOffline } from '../../services/workshop-offline';
 export class AddonModWorkshopSubmissionComponent implements OnInit {
 
     @Input() submission!: AddonModWorkshopSubmissionDataWithOfflineData;
-    @Input() module!: CoreCourseModule;
+    @Input() module!: CoreCourseModuleData;
     @Input() workshop!: AddonModWorkshopData;
     @Input() access!: AddonModWorkshopGetWorkshopAccessInformationWSResponse;
     @Input() courseId!: number;

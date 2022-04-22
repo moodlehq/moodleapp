@@ -1,0 +1,16 @@
+:host ::ng-deep ion-item-divider {
+    display: none !important;
+}
+:host ::ng-deep core-loading {
+    --internal-loading-inline-min-height: calc(100vh - var(--core-header-toolbar-height));
+}
+
+:host-context(ion-tabs.placement-bottom) ::ng-deep core-loading {
+    --internal-loading-inline-min-height: calc(100vh - var(--core-header-toolbar-height) - var(--bottom-tabs-size) - 2px);
+}
+
+core-block ::ng-deep ion-card.addon-block-myoverview {
+    --border-width: 0;
+    --background: transparent;
+    margin: 0;
+}

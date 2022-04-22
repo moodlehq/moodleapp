@@ -1,7 +1,7 @@
 {
-    "changesite": "Change site",
-    "help": "Help",
     "home": "Home",
     "logout": "Log out",
-    "website": "Website"
+    "switchaccount": "Switch account",
+    "usermenutourdescription": "The place to check your grades, change your preferences or switch accounts.",
+    "usermenutourtitle": "Explore your personal area"
 }

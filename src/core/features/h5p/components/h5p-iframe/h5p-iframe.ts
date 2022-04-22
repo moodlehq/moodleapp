@@ -44,6 +44,7 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
     @Input() onlinePlayerUrl?: string; // The URL of the online player to display the H5P package.
     @Input() trackComponent?: string; // Component to send xAPI events to.
     @Input() contextId?: number; // Context ID. Required for tracking.
+    @Input() enableInAppFullscreen?: boolean; // Whether to enable our custom in-app fullscreen feature.
     @Output() onIframeUrlSet = new EventEmitter<{src: string; online: boolean}>();
     @Output() onIframeLoaded = new EventEmitter<void>();
 
@@ -63,7 +64,7 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
     ) {
 
         this.logger = CoreLogger.getInstance('CoreH5PIframeComponent');
-        this.site = CoreSites.getCurrentSite()!;
+        this.site = CoreSites.getRequiredCurrentSite();
         this.siteId = this.site.getId();
         this.siteCanDownload = this.site.canDownloadFiles() && !CoreH5P.isOfflineDisabledInSite();
 
@@ -138,7 +139,7 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
             CoreDomUtils.showErrorModalDefault(error, 'Error loading H5P package.', true);
 
         } finally {
-            this.addResizerScript();
+            CoreH5PHelper.addResizerScript();
             this.onIframeUrlSet.emit({ src: this.iframeSrc!, online: !!localUrl });
         }
     }
@@ -183,22 +184,6 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
                 this.logger.error('Error loading downloaded index:', error, this.fileUrl);
             }
         }
-    }
-
-    /**
-     * Add the resizer script if it hasn't been added already.
-     */
-    protected addResizerScript(): void {
-        if (document.head.querySelector('#core-h5p-resizer-script') != null) {
-            // Script already added, don't add it again.
-            return;
-        }
-
-        const script = document.createElement('script');
-        script.id = 'core-h5p-resizer-script';
-        script.type = 'text/javascript';
-        script.src = CoreH5P.h5pPlayer.getResizerScriptUrl();
-        document.head.appendChild(script);
     }
 
     /**

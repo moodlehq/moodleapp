@@ -1,0 +1,86 @@
+
+.collapsible-item {
+    --display-toggle: none;
+    --collapsible-height: none;
+    --toggle-size: 24px;
+    --gradient-size: 44px;
+
+    &.collapsible-loading-height {
+        display: block !important;
+        height: auto !important;
+        --collapsible-height: auto !important;
+        --display-toggle: none !important;
+    }
+
+    .collapsible-toggle {
+        display: var(--display-toggle);
+    }
+
+    @include media-breakpoint-down(sm) {
+        &.collapsible-enabled:not(.collapsible-loading-height) {
+            position: relative;
+            padding-bottom: var(--toggle-size); // So the Show less button can fit.
+            --display-toggle: block;
+            @include core-transition(height, 300ms);
+            height: calc(var(--collapsible-height, auto) + var(--toggle-size));
+
+            .collapsible-toggle {
+                position: absolute;
+                @include position (null, 0, 0, null);
+                text-align: center;
+                z-index: 7;
+                text-transform: none;
+                font-size: 11px;
+                font-weight: normal;
+                background-color: var(--collapsible-toggle-background);
+                color: var(--collapsible-toggle-text);
+                min-height: var(--toggle-size);
+                min-width: var(--toggle-size);
+                height: var(--toggle-size);
+                width: var(--toggle-size);
+                --border-radius: var(--huge-radius);
+                border-radius: var(--border-radius);
+                --padding-start: 0px;
+                --padding-end: 0px;
+                margin: 0px;
+
+                .collapsible-toggle-arrow {
+                    width: var(--toggle-size);
+                    height: var(--toggle-size);
+
+                    background-position: center;
+                    background-repeat: no-repeat;
+                    background-size: 14px 14px;
+                    transform: rotate(-90deg);
+
+                    @include core-transition(transform, 500ms);
+
+                    @include push-arrow-color(#626262);
+
+                    @include darkmode() {
+                        @include push-arrow-color(#ffffff);
+                    }
+                }
+            }
+
+            &.collapsible-collapsed {
+                overflow: hidden;
+                min-height: calc(var(--toggle-size) + 12px);
+                height: var(--collapsible-height, auto);
+
+                .collapsible-toggle-arrow {
+                    transform: rotate(90deg);
+                }
+
+                &:before {
+                    content: '';
+                    height: 100%;
+                    position: absolute;
+                    @include position(null, 0, 0, 0);
+                    background: linear-gradient(to bottom, rgba(var(--background-gradient-rgb), 0) calc(100% - var(--gradient-size)), rgba(var(--background-gradient-rgb), 1) calc(100% - 4px));
+                    z-index: 6;
+                }
+            }
+        }
+    }
+}

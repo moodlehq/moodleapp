@@ -44,12 +44,10 @@ export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
     @Input() initialShown?: boolean | string; // Whether the password should be shown at start.
     @ContentChild(IonInput) ionInput?: IonInput;
 
-    shown!: boolean; // Whether the password is shown.
-    label!: string; // Label for the button to show/hide.
-    iconName!: string; // Name of the icon of the button to show/hide.
-    selector = ''; // Selector to identify the input.
+    shown = false; // Whether the password is shown.
+    label = ''; // Label for the button to show/hide.
 
-    protected input?: HTMLInputElement | null; // Input affected.
+    protected input?: HTMLInputElement; // Input affected.
     protected element: HTMLElement; // Current element.
 
     constructor(element: ElementRef) {
@@ -57,58 +55,50 @@ export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.shown = CoreUtils.isTrueOrOne(this.initialShown);
-        this.selector = 'input[name="' + this.name + '"]';
-        this.setData();
     }
 
     /**
-     * View has been initialized.
+     * @inheritdoc
      */
-    ngAfterViewInit(): void {
-        this.searchInput();
-    }
-
-    /**
-     * Search the input to show/hide.
-     */
-    protected async searchInput(): Promise<void> {
+    async ngAfterViewInit(): Promise<void> {
         if (this.ionInput) {
             // It's an ion-input, use it to get the native element.
             this.input = await this.ionInput.getInputElement();
+            this.setData(this.input);
 
             return;
         }
 
         // Search the input.
-        this.input = <HTMLInputElement> this.element.querySelector(this.selector);
+        this.input = this.element.querySelector<HTMLInputElement>('input[name="' + this.name + '"]') ?? undefined;
 
-        if (this.input) {
-            // Input found. Set the right type.
-            this.input.type = this.shown ? 'text' : 'password';
+        if (!this.input) {
+            return;
+        }
 
-            // By default, don't autocapitalize and autocorrect.
-            if (!this.input.getAttribute('autocorrect')) {
-                this.input.setAttribute('autocorrect', 'off');
-            }
-            if (!this.input.getAttribute('autocapitalize')) {
-                this.input.setAttribute('autocapitalize', 'none');
-            }
+        this.setData(this.input);
+
+        // By default, don't autocapitalize and autocorrect.
+        if (!this.input.getAttribute('autocorrect')) {
+            this.input.setAttribute('autocorrect', 'off');
+        }
+        if (!this.input.getAttribute('autocapitalize')) {
+            this.input.setAttribute('autocapitalize', 'none');
         }
     }
 
     /**
      * Set label, icon name and input type.
+     *
+     * @param input The input element.
      */
-    protected setData(): void {
+    protected setData(input: HTMLInputElement): void {
         this.label = this.shown ? 'core.hide' : 'core.show';
-        this.iconName = this.shown ? 'fas-eye-slash' : 'fas-eye';
-        if (this.input) {
-            this.input.type = this.shown ? 'text' : 'password';
-        }
+        input.type = this.shown ? 'text' : 'password';
     }
 
     /**
@@ -117,20 +107,49 @@ export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
      * @param event The mouse event.
      */
     toggle(event: Event): void {
+        if (event.type == 'keyup' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
+            return;
+        }
+
         event.preventDefault();
         event.stopPropagation();
 
         const isFocused = document.activeElement === this.input;
-
         this.shown = !this.shown;
-        this.setData();
 
-        if (isFocused && CoreApp.isAndroid()) {
-            // In Android, the keyboard is closed when the input type changes. Focus it again.
-            setTimeout(() => {
-                CoreDomUtils.focusElement(this.input!);
-            }, 400);
+        if (!this.input) {
+            return;
         }
+
+        this.setData(this.input);
+        // In Android, the keyboard is closed when the input type changes. Focus it again.
+        if (isFocused && CoreApp.isAndroid()) {
+            CoreDomUtils.focusElement(this.input);
+        }
+    }
+
+    /**
+     * Do not loose focus.
+     *
+     * @param event The mouse event.
+     */
+    doNotBlur(event: Event): void {
+        if (event.type == 'keydown' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    /**
+     * Checks if Space or Enter have been pressed.
+     *
+     * @param event Keyboard Event.
+     * @returns Wether space or enter have been pressed.
+     */
+    protected isValidKeyboardKey(event: KeyboardEvent): boolean {
+        return event.key == ' ' || event.key == 'Enter';
     }
 
 }

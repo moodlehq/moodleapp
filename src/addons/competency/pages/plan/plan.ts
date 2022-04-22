@@ -12,14 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CoreDomUtils } from '@services/utils/dom';
-import { AddonCompetencyDataForPlanPageWSResponse, AddonCompetency } from '../../services/competency';
-import { AddonCompetencyHelper } from '../../services/competency-helper';
+import { AddonCompetencyDataForPlanPageCompetency, AddonCompetencyDataForPlanPageWSResponse } from '../../services/competency';
 import { CoreNavigator } from '@services/navigator';
 import { CoreUserProfile } from '@features/user/services/user';
 import { IonRefresher } from '@ionic/angular';
-import { AddonCompetencyMainMenuHandlerService } from '@addons/competency/services/handlers/mainmenu';
+import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
+import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
+import { AddonCompetencyPlansSource } from '@addons/competency/classes/competency-plans-source';
+import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
+import { AddonCompetencyPlanCompetenciesSource } from '@addons/competency/classes/competency-plan-competencies-source';
 
 /**
  * Page that displays a learning plan.
@@ -28,22 +31,58 @@ import { AddonCompetencyMainMenuHandlerService } from '@addons/competency/servic
     selector: 'page-addon-competency-plan',
     templateUrl: 'plan.html',
 })
-export class AddonCompetencyPlanPage implements OnInit {
+export class AddonCompetencyPlanPage implements OnInit, OnDestroy {
 
-    protected planId!: number;
-    loaded = false;
-    plan?: AddonCompetencyDataForPlanPageWSResponse;
-    user?: CoreUserProfile;
+    plans!: CoreSwipeNavigationItemsManager;
+    competencies!: CoreListItemsManager<AddonCompetencyDataForPlanPageCompetency, AddonCompetencyPlanCompetenciesSource>;
+
+    constructor() {
+        try {
+            const planId = CoreNavigator.getRequiredRouteNumberParam('planId');
+            const userId = CoreNavigator.getRouteNumberParam('userId');
+            const plansSource = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
+                AddonCompetencyPlansSource,
+                [userId],
+            );
+            const competenciesSource = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
+                AddonCompetencyPlanCompetenciesSource,
+                [planId],
+            );
+
+            this.competencies = new CoreListItemsManager(competenciesSource, AddonCompetencyPlanPage);
+            this.plans = new CoreSwipeNavigationItemsManager(plansSource);
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
+    }
+
+    get plan(): AddonCompetencyDataForPlanPageWSResponse | undefined {
+        return this.competencies.getSource().plan;
+    }
+
+    get user(): CoreUserProfile | undefined {
+        return this.competencies.getSource().user;
+    }
 
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
-        this.planId = CoreNavigator.getRouteNumberParam('planId')!;
+    async ngOnInit(): Promise<void> {
+        await this.fetchLearningPlan();
+        await this.plans.start();
+        await this.competencies.start();
+    }
 
-        this.fetchLearningPlan().finally(() => {
-            this.loaded = true;
-        });
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.plans.destroy();
+        this.competencies.destroy();
     }
 
     /**
@@ -53,28 +92,10 @@ export class AddonCompetencyPlanPage implements OnInit {
      */
     protected async fetchLearningPlan(): Promise<void> {
         try {
-            const plan = await AddonCompetency.getLearningPlan(this.planId);
-            plan.plan.statusname = AddonCompetencyHelper.getPlanStatusName(plan.plan.status);
-
-            // Get the user profile image.
-            this.user = await AddonCompetencyHelper.getProfile(plan.plan.userid);
-
-            this.plan = plan;
+            await this.competencies.getSource().reload();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error getting learning plan data.');
         }
-    }
-
-    /**
-     * Navigates to a particular competency.
-     *
-     * @param competencyId
-     */
-    openCompetency(competencyId: number): void {
-        CoreNavigator.navigateToSitePath(
-            '/' + AddonCompetencyMainMenuHandlerService.PAGE_NAME + '/competencies/' + competencyId,
-            { params: { planId: this.planId } },
-        );
     }
 
     /**
@@ -82,11 +103,11 @@ export class AddonCompetencyPlanPage implements OnInit {
      *
      * @param refresher Refresher.
      */
-    refreshLearningPlan(refresher: IonRefresher): void {
-        AddonCompetency.invalidateLearningPlan(this.planId).finally(() => {
-            this.fetchLearningPlan().finally(() => {
-                refresher?.complete();
-            });
+    async refreshLearningPlan(refresher: IonRefresher): Promise<void> {
+        await this.competencies.getSource().invalidateCache();
+
+        this.fetchLearningPlan().finally(() => {
+            refresher?.complete();
         });
     }
 

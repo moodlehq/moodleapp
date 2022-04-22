@@ -19,10 +19,11 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
-import { CorePageItemsListManager } from '@classes/page-items-list-manager';
-import { Params } from '@angular/router';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreNavigator } from '@services/navigator';
+import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
+import { AddonBadgesUserBadgesSource } from '@addons/badges/classes/user-badges-source';
+import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 
 /**
  * Page that displays the list of calendar events.
@@ -34,15 +35,23 @@ import { CoreNavigator } from '@services/navigator';
 export class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
 
     currentTime = 0;
-    badges: AddonBadgesUserBadgesManager;
+    badges: CoreListItemsManager<AddonBadgesUserBadge, AddonBadgesUserBadgesSource>;
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
     constructor() {
-        const courseId = CoreNavigator.getRouteNumberParam('courseId') ?? 0; // Use 0 for site badges.
+        let courseId = CoreNavigator.getRouteNumberParam('courseId') ?? 0; // Use 0 for site badges.
         const userId = CoreNavigator.getRouteNumberParam('userId') ?? CoreSites.getCurrentSiteUserId();
 
-        this.badges = new AddonBadgesUserBadgesManager(AddonBadgesUserBadgesPage, courseId, userId);
+        if (courseId === CoreSites.getCurrentSiteHomeId()) {
+            // Use courseId 0 for site home, otherwise the site doesn't return site badges.
+            courseId = 0;
+        }
+
+        this.badges = new CoreListItemsManager(
+            CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(AddonBadgesUserBadgesSource, [courseId, userId]),
+            AddonBadgesUserBadgesPage,
+        );
     }
 
     /**
@@ -67,8 +76,13 @@ export class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
      * @param refresher Refresher.
      */
     async refreshBadges(refresher?: IonRefresher): Promise<void> {
-        await CoreUtils.ignoreErrors(AddonBadges.invalidateUserBadges(this.badges.courseId, this.badges.userId));
-        await CoreUtils.ignoreErrors(this.fetchBadges());
+        await CoreUtils.ignoreErrors(
+            AddonBadges.invalidateUserBadges(
+                this.badges.getSource().COURSE_ID,
+                this.badges.getSource().USER_ID,
+            ),
+        );
+        await CoreUtils.ignoreErrors(this.badges.reload());
 
         refresher?.complete();
     }
@@ -80,55 +94,12 @@ export class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
         this.currentTime = CoreTimeUtils.timestamp();
 
         try {
-            await this.fetchBadges();
+            await this.badges.reload();
         } catch (message) {
             CoreDomUtils.showErrorModalDefault(message, 'Error loading badges');
 
-            this.badges.setItems([]);
+            this.badges.reset();
         }
-    }
-
-    /**
-     * Update the list of badges.
-     */
-    private async fetchBadges(): Promise<void> {
-        const badges = await AddonBadges.getUserBadges(this.badges.courseId, this.badges.userId);
-
-        this.badges.setItems(badges);
-    }
-
-}
-
-/**
- * Helper class to manage badges.
- */
-class AddonBadgesUserBadgesManager extends CorePageItemsListManager<AddonBadgesUserBadge> {
-
-    courseId: number;
-    userId: number;
-
-    constructor(pageComponent: unknown, courseId: number, userId: number) {
-        super(pageComponent);
-
-        this.courseId = courseId;
-        this.userId = userId;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getItemPath(badge: AddonBadgesUserBadge): string {
-        return badge.uniquehash;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected getItemQueryParams(): Params {
-        return {
-            courseId: this.courseId,
-            userId: this.userId,
-        };
     }
 
 }

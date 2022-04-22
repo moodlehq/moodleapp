@@ -8,52 +8,42 @@
 :root {
 
     // Color palette
-    --black:           #{$black}; // Headings, standard text.
-    --gray-darker:     #{$gray-darker}; // Text (emphasis-detail), placeholder, background.
-    --gray-dark:       #{$gray-dark}; // Borders (never text).
-    --gray:            #{$gray};
-    --gray-light:      #{$gray-light}; // Background.
-    --gray-lighter:    #{$gray-lighter};
-    --white:           #{$white}; // Background, reversed text.
+    --black: #{$black};
+    --gray-900: #{$gray-900};
+    --gray-800: #{$gray-800};
+    --gray-700: #{$gray-700};
+    --gray-600: #{$gray-600};
+    --gray-500: #{$gray-500};
+    --gray-400: #{$gray-400};
+    --gray-300: #{$gray-300};
+    --gray-200: #{$gray-200};
+    --gray-100: #{$gray-100};
+    --white: #{$white};
 
-    --blue:            #{$blue};
-    --blue-light:      #{$blue-light};
-    --blue-dark:       #{$blue-dark};
+    // Ionic shades, defined for ionic internal use.
+    --ion-color-step-0:    var(--white);
+    --ion-color-step-50:   var(--gray-100);
+    --ion-color-step-100:  var(--gray-100);
+    --ion-color-step-150:  var(--gray-100);
+    --ion-color-step-200:  var(--gray-200);
+    --ion-color-step-250:  var(--gray-200);
+    --ion-color-step-300:  var(--gray-300);
+    --ion-color-step-350:  var(--gray-300);
+    --ion-color-step-400:  var(--gray-400);
+    --ion-color-step-450:  var(--gray-400);
+    --ion-color-step-500:  var(--gray-500);
+    --ion-color-step-550:  var(--gray-500);
+    --ion-color-step-600:  var(--gray-600);
+    --ion-color-step-650:  var(--gray-600);
+    --ion-color-step-700:  var(--gray-700);
+    --ion-color-step-750:  var(--gray-700);
+    --ion-color-step-800:  var(--gray-800);
+    --ion-color-step-850:  var(--gray-800);
+    --ion-color-step-900:  var(--gray-900);
+    --ion-color-step-950:  var(--gray-900);
+    --ion-color-step-1000: var(--black);
 
-    --green:           #{$green};
-    --green-light:     #{$green-light};
-    --green-dark:      #{$green-dark};
-
-    --red:             #{$red};
-    --red-light:       #{$red-light};
-    --red-dark:        #{$red-dark};
-
-    --yellow:          #{$yellow};
-    --yellow-light:    #{$yellow-light};
-    --yellow-dark:     #{$yellow-dark};
-
-    --turquoise:       #007982; // Accent.
-    --purple:          #8e24aa;
-
-    --text-color:       #{$text-color};
-    --background-color: #{$background-color};
-
-    --brand-color:          #{$brand-color};
-    --brand-color-contrast: var(--text-color);
-
-    --core-online-color: #5cb85c;
-
-    // Named Color Variables
-    --primary:      var(--brand-color);
-    --success:      #{$success};
-    --danger:       #{$danger};
-    --warning:      #{$warning};
-    --info:         #{$info};
-    --light:        #{$light};
-    --dark:         #{$dark};
-    --medium:       #{$medium};
-
-    @each $color-name, $value in $colors {
+    @each $color-name, $unused in $colors {
         @include generate-color($color-name, $colors);
     }
 
@@ -61,19 +51,67 @@
     --a11y-min-target-size: 44px;
     --a11y-focus-color: var(--primary);
     --a11y-focus-width: 2px;
+    --zoom-level: 100%;
 
-    --module-icon-size: 24px;
+    --small-radius: 4px;
+    --medium-radius: 8px;
+    --big-radius: 16px;
+    --huge-radius: 24px;
+
+    --text-color:       #{$text-color};
+    --text-size:        14px;
+    --background-color: #{$background-color};
+    --stroke:            var(--gray-300);
+
+    --core-online-color: #5cb85c;
 
     --ion-background-color: var(--background-color);
+    --ion-item-border-color: var(--stroke);
     --ion-background-color-rgb: #{$background-color-rgb};
+    --ion-border-color: var(--stroke);
+
+    --core-input-stroke: var(--gray-500);
+    --core-input-text: var(--dark);
+    --core-input-background: var(--ion-background-color);
+    --core-input-radius: var(--small-radius);
+    --core-input-border-width: 1px;
+
+    --module-icon-size: 24px;
+    --module-icon-radius: var(--medium-radius);
+
+    --list-item-max-width: 768px;
+
+    --modal-lateral-max-width: 320px;
+    --modal-lateral-margin: 56px;
 
     --contrast-background: white;
 
+    --loader-background-color: rgba(0, 0, 0, .1);
+    --loader-shine: 251, 251, 251;
+    --loader-radius: var(--small-radius);
+    --loader-display: block;
+
+    --drop-shadow-color: 0, 0, 0, 0.5;
+    --drop-shadow-top: 0px 2px 5px rgba(var(--drop-shadow-color));
+    --drop-shadow-bottom: 0px -2px 5px rgba(var(--drop-shadow-color));
+
     --ion-text-color: var(--text-color);
     --ion-text-color-rgb: #{$text-color-rgb};
-    --subdued-text-color: #595959;
+    --subdued-text-color: var(--medium);
 
     --ion-card-color: var(--text-color);
+    --ion-card-vertical-margin: 10px;
+    --ion-card-horizontal-margin: 10px;
+    --ion-card-radius: var(--medium-radius);
+    --ion-card-border-width: 1px;
+    --ion-card-border-color: var(--stroke);
+    ion-card {
+        --border-width: var(--ion-card-border-width);
+        --border-style: solid;
+        --border-color: var(--ion-card-border-color);
+        --box-shadow: none;
+        --border-radius: var(--ion-card-radius);
+    }
 
     --text-hightlight-background-color: #{$core-text-hightlight-background-color};
 
@@ -81,74 +119,104 @@
 
     ion-content {
         --background: var(--ion-background-color);
-        --background-alternative: var(--gray-lighter);
+        --background-alternative: var(--gray-200);
     }
 
-    --core-bottom-tabs-background: var(--black);
-    --core-bottom-tabs-color: var(--gray-lighter);
-    --core-bottom-tabs-color-selected: var(--brand-color);
-    --core-bottom-tabs-background-selected: var(--core-bottom-tabs-background);
-    --core-bottom-tabs-badge-color: var(--brand-color);
-    --core-bottom-tabs-badge-text-color: var(--brand-color-contrast);
-    --bottom-tabs-size: 56px;
+    --core-bottom-tabs-background: var(--white);
+    --core-bottom-tabs-color: var(--dark);
+    --core-bottom-tabs-color-selected: var(--primary);
+    --core-bottom-tabs-background-selected: transparent;
+    --core-bottom-tabs-badge-color: var(--primary);
+    --core-bottom-tabs-badge-text-color: var(--primary-contrast);
+    --bottom-tabs-size: 48px;
+    --side-tabs-size: 56px;
     ion-tab-bar.mainmenu-tabs {
         --background: var(--core-bottom-tabs-background);
         --color: var(--core-bottom-tabs-color);
         --color-selected: var(--core-bottom-tabs-color-selected);
         --background-selected: var(--core-bottom-tabs-background-selected);
-        ion-badge {
-            --background: var(--core-bottom-tabs-badge-color);
-            --color: var(--core-bottom-tabs-badge-text-color);
-        }
     }
 
-    --core-link-color: var(--blue);
+    --core-link-color: var(--info);
     a {
         color: var(--core-link-color);
     }
 
-    --core-header-toolbar-button-image-size: 44px;
+    --core-header-toolbar-button-image-size: var(--a11y-min-target-size);
     --core-header-toolbar-background: var(--white);
-    --core-header-toolbar-border-width: 3px;
-    --core-header-toolbar-border-color: var(--brand-color);
-    --core-header-toolbar-color: var(--black);
-    --core-header-toolbar-height: 56px;
-    html.ios {
-        --core-header-toolbar-height: 54px;
+    --core-header-toolbar-border-width: 0px;
+    --core-header-toolbar-border-color: var(--stroke);
+    --core-header-toolbar-color: var(--text-color);
+    --core-header-toolbar-height: 48px;
+    --core-header-shadow: none;
+    --core-header-buttons-background: var(--core-header-toolbar-background);
+    --core-header-buttons-color: var(--core-header-toolbar-color);
+
+    ion-header {
+        box-shadow: var(--core-header-shadow, none);
+        transition: box-shadow 0.5s;
+
+        ion-toolbar {
+            --color: var(--core-header-toolbar-color);
+            --background: var(--core-header-toolbar-background);
+            --border-width: 0 0 var(--core-header-toolbar-border-width) 0;
+            --border-color: var(--core-header-toolbar-border-color);
+
+            ion-button {
+                --ion-toolbar-color: var(--core-header-toolbar-color);
+                --color: var(--core-header-toolbar-color);
+            }
+
+            ion-spinner {
+                --ion-color-base: var(--core-header-toolbar-color);
+                --color: var(--core-header-toolbar-color);
+            }
+        }
     }
 
-    ion-header ion-toolbar {
-        --color: var(--core-header-toolbar-color);
-        --background: var(--core-header-toolbar-background);
-        --border-width: 0 0 var(--core-header-toolbar-border-width) 0;
-        --border-color: var(--core-header-toolbar-border-color);
 
-        ion-button {
-            --ion-toolbar-color: var(--core-header-toolbar-color);
-            --color: var(--core-header-toolbar-color);
-        }
+    ion-header.core-header-shadow {
+        --core-header-shadow: var(--drop-shadow-bottom, none);
+    }
 
-        ion-spinner {
-            --ion-color-base: var(--core-header-toolbar-color);
-            --color: var(--core-header-toolbar-color);
-        }
+    ion-header::after {
+        display: none;
     }
 
     ion-header.header-ios ion-toolbar:last-of-type {
         --border-width: 0 0 var(--core-header-toolbar-border-width) 0;
     }
 
+    --ion-searchbar-background: var(--ion-background-color);
+    --ion-searchbar-border-color: var(--core-input-stroke);
+    --ion-searchbar-border-radius: var(--core-input-radius);
+    --ion-searchbar-height: var(--a11y-min-target-size);
+    --ion-searchbar-color: var(--text-color);
+    --ion-searchbar-icon-color: var(--core-input-stroke);
     ion-searchbar {
-        --background: var(--ion-item-background);
-        .searchbar-input {
-            height: var(--a11y-min-target-size);
-        }
+        --background: var(--ion-searchbar-background);
+        --border-color: var(--ion-searchbar-border-color);
+        --color: var(--ion-searchbar-color);
+        --border-radius: var(--ion-searchbar-border-radius);
+        --icon-color: var(--ion-searchbar-icon-color);
+        --height: var(--ion-searchbar-height);
     }
+
+    --core-search-box-background: var(--ion-background-color);
+    --core-search-box-border-color: var(--core-input-stroke);
+    --core-search-box-border-radius: var(--core-input-radius);
+    --core-search-box-color: var(--core-input-text);
+
+    --core-combobox-background: var(--core-input-background);
+    --core-combobox-color: var(--core-input-text);
+    --core-combobox-border-color: var(--core-input-stroke);
+    --core-combobox-border-width: var(--core-input-border-width);
+    --core-combobox-radius: var(--core-input-radius);
+    --core-combobox-box-shadow: none;
 
     ion-action-sheet {
         --button-color: var(--ion-text-color);
         --button-color-selected: var(--ion-text-color);
-        --title-border-color: var(--brand-color);
 
         .action-sheet-title {
             --color: var(--ion-text-color);
@@ -161,18 +229,24 @@
         }
 
         .action-sheet-cancel {
-            --button-color: var(--ion-color-danger);
+            --button-color: var(--danger);
         }
+    }
+
+    ion-toast {
+        --color: var(--ion-color-step-50);
+        --button-color: var(--primary);
+        --background: var(--ion-color-step-800);
     }
 
     --core-tabs-background: var(--white);
     --core-tab-background: var(--core-tabs-background);
     --core-tab-color: var(--subdued-text-color);
-    --core-tab-border-color: var(--gray);
+    --core-tab-border-color: var(--stroke);
     --core-tab-color-active: var(--dark);
-    --core-tab-border-color-active: var(--brand-color);
+    --core-tab-border-color-active: var(--primary);
     --core-tab-font-weight-active: normal;
-    --core-tabs-height: 56px;
+    --core-tabs-height: 48px;
     core-tabs, core-tabs-outlet {
         ion-slide {
             --background: var(--core-tab-background);
@@ -180,142 +254,158 @@
             --border-color: var(--core-tab-border-color);
             --color-active: var(--core-tab-color-active);
             --border-color-active: var(--core-tab-border-color-active);
+            --color-selected: var(--border-color-active);
             --font-weight-active: var(--core-tab-font-weight-active);
         }
     }
 
-    ion-spinner {
-        --ion-color-base: var(--ion-color-primary);
-        --color: var(--ion-color-primary);
+    --core-loading-spinner: var(--primary);
+    ion-loading {
+        --spinner-color: var(--core-loading-spinner);
+    }
+    ion-spinner, ion-refresher {
+        --ion-color-base: var(--core-loading-spinner);
+        --ion-color-primary: var(--core-loading-spinner);
+        --color: var(--core-loading-spinner);
     }
 
     --core-progressbar-height: 8px;
-    --core-progressbar-color: var(--brand-color);
-    --core-progressbar-text-color: var(--gray-darker);
-    --core-progressbar-background: var(--gray-lighter);
-    core-progress-bar {
-        --height: var(--core-progressbar-height);
-        --color: var(--core-progressbar-color);
-        --text-color: var(--core-progressbar-text-color);
-        --background: var(--core-progressbar-background);
-    }
-
-    --core-side-blocks-max-width: 30%;
-    --core-side-blocks-min-width: 280px;
-    core-block-course-blocks {
-        --side-blocks-max-width: var(--core-side-blocks-max-width);
-        --side-blocks-min-width: var(--core-side-blocks-min-width);
-    }
+    --core-progressbar-color: var(--primary);
+    --core-progressbar-text-color: var(--medium);
+    --core-progressbar-background: var(--primary-tint);
 
     --ion-item-background:        #{$ion-item-background};
-    --ion-item-detail-icon-color: var(--gray-darker);
+    --ion-item-icon-color: var(--medium);
+    --ion-item-detail-icon-color: var(--dark);
     --ion-item-detail-icon-font-size: 20px;
     --ion-item-detail-icon-opacity: 1;
+    --core-more-icon: var(--ion-item-icon-color);
     ion-item {
         --detail-icon-color: var(--ion-item-detail-icon-color);
         --detail-icon-font-size: var(--ion-item-detail-icon-font-size);
         --detail-icon-opacity: var(--ion-item-detail-icon-opacity);
+
+        > ion-icon[slot] {
+            color: var(--ion-item-icon-color);
+        }
     }
 
     --item-divider-min-height: calc(var(--a11y-min-target-size) + 8px);
-    --item-divider-background: var(--gray-lighter);
+    --item-divider-background: var(--ion-item-background);
     --item-divider-color: var(--text-color);
+    --item-divider-border-width: 0px;
+    --item-divider-font-size: 16px;
+    --item-divider-font-size-big: 20px;
     ion-item-divider, ion-item.divider {
         --background: var(--item-divider-background);
         --color: var(--item-divider-color);
         --min-height: var(--item-divider-min-height);
-        min-height: var(--min-height);
     }
 
-    --spacer-background: var(--item-divider-background);
-    core-spacer {
-        --item-divider-background: var(--spacer-background);
-    }
+    --spacer-vertical: 8px;
+    --spacer-color: var(--gray-300);
 
     ion-note {
         --color: var(--subdued-text-color);
     }
 
-    --core-combobox-background: var(--ion-item-background);
-    --core-combobox-color: var(--black);
-    --core-combobox-border-color: var(--primary);
-    --core-combobox-border-width: 3px;
-    --core-combobox-border-all-width: 0 0 var(--core-combobox-border-width) 0;
-    --core-combobox-radius: 0;
-    --core-combobox-box-shadow: 0 3px 1px -2px rgba(0, 0, 0, .2), 0 2px 2px 0 rgba(0, 0, 0, .14), 0 1px 5px 0 rgba(0, 0, 0, .12);
+    ion-back-button {
+        --min-height: var(--a11y-min-target-size);
+        --min-width: var(--a11y-min-target-size);
+    }
 
     --selected-item-color: var(--primary);
     --selected-item-border-width: 5px;
 
-    --core-login-background: var(--white);
-    --core-login-text-color: var(--black);
-    --core-login-input-background: var(--white);
-    --core-login-input-color: var(--black);
+    --collapsible-toggle-background: transparent;
+    --collapsible-toggle-text: var(--medium);
 
-    --core-star-color: var(--brand-color);
+    --background-gradient-rgb: #{$ion-item-background-rgb};
+
+    --core-login-background: var(--white);
+    --core-login-text-color: var(--gray-900);
+    --core-login-input-background: var(--white);
+    --core-login-input-color: var(--gray-900);
+
+    --core-star-color: var(--primary);
 
     --core-large-avatar-size: 90px;
-    --core-avatar-size: 44px;
+    --core-avatar-size: var(--a11y-min-target-size);
 
-    --core-send-message-input-background: var(--gray-light);
-    --core-send-message-input-color: var(--black);
+    --core-courseimage-on-course-size: 72px;
+    --core-courseimage-radius: var(--medium-radius);
 
-    --core-courseimage-on-course-height: 150px;
+    --core-navigation-background: var(--contrast-background);
 
-    --addon-calendar-event-category-color: var(--purple);
-    --addon-calendar-event-course-color: var(--red);
-    --addon-calendar-event-group-color: var(--yellow);
-    --addon-calendar-event-user-color: var(--blue);
-    --addon-calendar-event-site-color: var(--green);
+    --core-collapsible-footer-background: var(--contrast-background);
+
+    --core-user-menu-site-logo-max-height: 32px;
+
     --addon-calendar-today-border-color: var(--primary);
-    --addon-calendar-border-color: var(--gray);
+    --addon-calendar-border-color: var(--stroke);
 
     --addon-messages-message-bg: var(--white);
-    --addon-messages-message-activated-bg: var(--gray-light);
-    --addon-messages-message-note-text: var(--gray-dark);
+    --addon-messages-message-activated-bg: var(--gray-200);
+    --addon-messages-message-note-text: var(--gray-500);
     --addon-messages-message-note-font-size: 75%;
-    --addon-messages-message-mine-bg: var(--gray-light);
-    --addon-messages-message-mine-activated-bg: var(--gray);
+    --addon-messages-message-mine-bg: var(--gray-300);
+    --addon-messages-message-mine-activated-bg: var(--gray-400);
     --addon-messages-avatar-size: 30px;
     --addon-messages-discussion-badge: var(--primary);
     --addon-messages-discussion-badge-text: var(--white);
 
     --addon-forum-avatar-size: var(--core-avatar-size);
-    --addon-forum-border-color: var(--gray);
-    --addon-forum-highlight-color: var(--gray-lighter);
+    --addon-forum-border-color: var(--stroke);
+    --addon-forum-highlight-color: var(--light);
 
-    --drop-shadow: 0, 0, 0, 0.18;
+    --core-question-correct-color: var(--success-shade);
+    --core-question-correct-color-bg: var(--success-tint);
+    --core-question-incorrect-color: var(--danger);
+    --core-question-incorrect-color-bg: var(--danger-tint);
+    --core-question-feedback-color: var(--warning-shade);
+    --core-question-feedback-color-bg: var(--warning-tint);
+    --core-question-warning-color: var(--danger);
+    --core-question-saved-color-bg: var(--gray-200);
 
-    --core-menu-box-shadow-end: -4px 0px 16px rgba(var(--drop-shadow));
-    --core-menu-box-shadow-start: 4px 0px 16px rgba(var(--drop-shadow));
+    --core-question-state-correct-color: var(--success-tint);
+    --core-question-state-partial-color: var(--warning-tint);
+    --core-question-state-partial-text: var(--warning);
+    --core-question-state-incorrect-color: var(--danger-tint);
 
-    --core-question-correct-color: var(--green-dark);
-    --core-question-correct-color-bg: var(--green-light);
-    --core-question-incorrect-color: var(--red);
-    --core-question-incorrect-color-bg: var(--red-light);
-    --core-question-feedback-color: var(--yellow-dark);
-    --core-question-feedback-color-bg: var(--yellow-light);
-    --core-question-warning-color: var(--red);
-    --core-question-saved-color-bg: var(--gray-light);
+    --core-question-feedback-color: var(--warning-shade);
+    --core-question-feedback-background-color: var(--warning-tint);
 
-    --core-question-state-correct-color: var(--green-light);
-    --core-question-state-partial-color: var(--yellow-light);
-    --core-question-state-partial-text: var(--yellow);
-    --core-question-state-incorrect-color: var(--red-light);
-
-    --core-question-feedback-color: var(--yellow-dark);
-    --core-question-feedback-background-color: var(--yellow-light);
-
-    --core-dd-question-selected-shadow: 2px 2px 4px var(--gray-dark);
+    --core-dd-question-selected-shadow: 2px 2px 4px var(--gray-500);
     --core-dd-question-radius: 10px;
-    --core-dd-question-border: var(--gray-darker);
+    --core-dd-question-border: var(--medium);
+
+    --rotate-expandable: rotate(90deg);
+    &[dir=rtl] {
+        --rotate-expandable: rotate(-90deg);
+    }
 
     @for $i from 0 to length($core-course-image-background) {
         --core-course-color-#{$i}: #{nth($core-course-image-background, $i + 1)};
+        --core-course-color-#{$i}-tint: #{get-color-tint-percent(nth($core-course-image-background, $i + 1))};
     }
 
     @for $i from 0 to length($core-dd-question-colors) {
         --core-dd-question-color-#{$i + 1}: #{nth($core-dd-question-colors, $i + 1)};
         --core-dd-question-color-#{$i + 1}-contrast: #{get_contrast_color(nth($core-dd-question-colors, $i + 1))};
+    }
+
+    // Make activtity colours available for custom modules.
+    @each $type, $value in $activity-icon-colors {
+        --activity#{$type}: #{$value};
+    }
+
+    --core-mainpage-sitename-display: none;
+    --core-mainpage-headerlogo-display: none;
+    --core-mainpage-headerlogo-maxheight: calc(var(--core-header-toolbar-height) - 16px);
+
+    @if ($core-dashboard-logo) {
+        --core-mainpage-headerlogo-display: inline;
+    } @else {
+        --core-mainpage-sitename-display: inline;
     }
 }

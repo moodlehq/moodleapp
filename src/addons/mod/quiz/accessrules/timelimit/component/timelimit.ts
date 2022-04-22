@@ -16,7 +16,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
 import { AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from '@addons/mod/quiz/services/quiz';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 
 /**
  * Component to render the preflight for time limit.
@@ -41,7 +41,7 @@ export class AddonModQuizAccessTimeLimitComponent implements OnInit {
             return;
         }
 
-        this.readableTimeLimit = CoreTimeUtils.formatTime(this.quiz?.timelimit);
+        this.readableTimeLimit = CoreTime.formatTime(this.quiz?.timelimit);
     }
 
 }

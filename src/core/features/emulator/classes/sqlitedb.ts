@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/* tslint:disable:no-console */
-
 import { SQLiteDB } from '@classes/sqlitedb';
+import { DbTransaction, SQLiteObject } from '@ionic-native/sqlite/ngx';
+import { CoreDB } from '@services/db';
 
 /**
  * Class to mock the interaction with the SQLite database.
@@ -51,7 +51,7 @@ export class SQLiteDBMock extends SQLiteDB {
         await this.ready();
 
         return new Promise((resolve, reject): void => {
-            this.db!.transaction((tx) => {
+            this.db?.transaction((tx) => {
                 // Query all tables from sqlite_master that we have created and can modify.
                 const args = [];
                 const query = `SELECT * FROM sqlite_master
@@ -60,7 +60,7 @@ export class SQLiteDBMock extends SQLiteDB {
                 tx.executeSql(query, args, (tx, result) => {
                     if (result.rows.length <= 0) {
                         // No tables to delete, stop.
-                        resolve();
+                        resolve(null);
 
                         return;
                     }
@@ -97,15 +97,13 @@ export class SQLiteDBMock extends SQLiteDB {
 
         return new Promise((resolve, reject): void => {
             // With WebSQL, all queries must be run in a transaction.
-            this.db!.transaction((tx) => {
-                tx.executeSql(sql, params, (tx, results) => {
-                    resolve(results);
-                }, (tx, error) => {
-                    // eslint-disable-next-line no-console
-                    console.error(sql, params, error);
-
-                    reject(error);
-                });
+            this.db?.transaction((tx) => {
+                tx.executeSql(
+                    sql,
+                    params,
+                    (_, results) => resolve(results),
+                    (_, error) => reject(new Error(`SQL failed: ${sql}, reason: ${error?.message}`)),
+                );
             });
         });
     }
@@ -124,7 +122,7 @@ export class SQLiteDBMock extends SQLiteDB {
 
         return new Promise((resolve, reject): void => {
             // Create a transaction to execute the queries.
-            this.db!.transaction((tx) => {
+            this.db?.transaction((tx) => {
                 const promises: Promise<void>[] = [];
 
                 // Execute all the queries. Each statement can be a string or an array.
@@ -141,14 +139,7 @@ export class SQLiteDBMock extends SQLiteDB {
                             params = null;
                         }
 
-                        tx.executeSql(query, params, (tx, results) => {
-                            resolve(results);
-                        }, (tx, error) => {
-                            // eslint-disable-next-line no-console
-                            console.error(query, params, error);
-
-                            reject(error);
-                        });
+                        tx.executeSql(query, params, (_, results) => resolve(results), (_, error) => reject(error));
                     }));
                 });
 
@@ -156,16 +147,6 @@ export class SQLiteDBMock extends SQLiteDB {
                 Promise.all(promises).then(resolve, reject);
             });
         });
-    }
-
-    /**
-     * Initialize the database.
-     */
-    init(): void {
-        // This DB is for desktop apps, so use a big size to be sure it isn't filled.
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        this.db = (<any> window).openDatabase(this.name, '1.0', this.name, 500 * 1024 * 1024);
-        this.promise = Promise.resolve();
     }
 
     /**
@@ -178,4 +159,57 @@ export class SQLiteDBMock extends SQLiteDB {
         return Promise.resolve();
     }
 
+    /**
+     * @inheritdoc
+     */
+    protected async createDatabase(): Promise<SQLiteObject> {
+        // This DB is for desktop apps, so use a big size to be sure it isn't filled.
+        return (window as unknown as WebSQLWindow).openDatabase(this.name, '1.0', this.name, 500 * 1024 * 1024);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected getDatabaseSpies(db: SQLiteObject): Partial<SQLiteObject> {
+        return {
+            transaction: (callback) => db.transaction((transaction) => {
+                const transactionSpy: DbTransaction = {
+                    executeSql(sql, params, success, error) {
+                        const start = performance.now();
+
+                        return transaction.executeSql(
+                            sql,
+                            params,
+                            (...args) => {
+                                CoreDB.logQuery({
+                                    sql,
+                                    params,
+                                    duration: performance.now() - start,
+                                });
+
+                                return success?.(...args);
+                            },
+                            (...args) => {
+                                CoreDB.logQuery({
+                                    sql,
+                                    params,
+                                    error: args[0],
+                                    duration: performance.now() - start,
+                                });
+
+                                return error?.(...args);
+                            },
+                        );
+                    },
+                };
+
+                return callback(transactionSpy);
+            }),
+        };
+    }
+
+}
+
+interface WebSQLWindow extends Window {
+    openDatabase(name: string, version: string, displayName: string, estimatedSize: number): SQLiteObject;
 }

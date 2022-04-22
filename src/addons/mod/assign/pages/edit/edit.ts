@@ -32,10 +32,13 @@ import {
     AddonModAssignSubmissionStatusOptions,
     AddonModAssignGetSubmissionStatusWSResponse,
     AddonModAssignSavePluginData,
+    AddonModAssignSubmissionStatusValues,
 } from '../../services/assign';
 import { AddonModAssignHelper } from '../../services/assign-helper';
 import { AddonModAssignOffline } from '../../services/assign-offline';
 import { AddonModAssignSync } from '../../services/assign-sync';
+import { CoreUtils } from '@services/utils/utils';
+import { CoreWSExternalFile } from '@services/ws';
 
 /**
  * Page that allows adding or editing an assigment submission.
@@ -43,6 +46,7 @@ import { AddonModAssignSync } from '../../services/assign-sync';
 @Component({
     selector: 'page-addon-mod-assign-edit',
     templateUrl: 'edit.html',
+    styleUrls: ['edit.scss'],
 })
 export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
 
@@ -57,6 +61,10 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
     submissionStatement?: string; // The submission statement.
     submissionStatementAccepted = false; // Whether submission statement is accepted.
     loaded = false; // Whether data has been loaded.
+    timeLimitEndTime = 0; // If time limit is enabled, the end time for the timer.
+    activityInstructions?: string; // Activity instructions.
+    introAttachments?: CoreWSExternalFile[]; // Intro attachments.
+    component = AddonModAssignProvider.COMPONENT;
 
     protected userId: number; // User doing the submission.
     protected isBlind = false; // Whether blind is used.
@@ -65,6 +73,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
     protected hasOffline = false; // Whether the assignment has offline data.
     protected isDestroyed = false; // Whether the component has been destroyed.
     protected forceLeave = false; // To allow leaving the page without checking for changes.
+    protected timeUpToast?: HTMLIonToastElement;
 
     constructor(
         protected route: ActivatedRoute,
@@ -78,9 +87,17 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.moduleId = CoreNavigator.getRouteNumberParam('cmId')!;
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.isBlind = !!CoreNavigator.getRouteNumberParam('blindId');
+        try {
+            this.moduleId = CoreNavigator.getRequiredRouteNumberParam('cmId');
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.isBlind = !!CoreNavigator.getRouteNumberParam('blindId');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
 
         this.fetchAssignment().finally(() => {
             this.loaded = true;
@@ -170,12 +187,34 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
                 throw new CoreError(Translate.instant('core.nopermissions', { $a: this.editText }));
             }
 
+            submissionStatus = await this.startSubmissionIfNeeded(submissionStatus, options);
+
+            if (submissionStatus.assignmentdata?.activity) {
+                // There are activity instructions. Make sure to display it with filters applied.
+                const filteredSubmissionStatus = options.filter ?
+                    submissionStatus :
+                    await AddonModAssign.getSubmissionStatus(this.assign.id, {
+                        ...options,
+                        filter: true,
+                    });
+
+                this.activityInstructions = filteredSubmissionStatus.assignmentdata?.activity;
+            }
+
+            this.introAttachments = submissionStatus.assignmentdata?.attachments?.intro ?? this.assign.introattachments;
+
             this.allowOffline = true; // If offline isn't allowed we shouldn't have reached this point.
             // Only show submission statement if we are editing our own submission.
             if (this.assign.requiresubmissionstatement && !this.assign.submissiondrafts && this.userId == currentUserId) {
                 this.submissionStatement = this.assign.submissionstatement;
             } else {
                 this.submissionStatement = undefined;
+            }
+
+            if (this.assign.timelimit && this.userSubmission?.timestarted) {
+                this.timeLimitEndTime = AddonModAssignHelper.calculateEndTime(this.assign, this.userSubmission);
+            } else {
+                this.timeLimitEndTime = 0;
             }
 
             try {
@@ -193,6 +232,45 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
             // Leave the player.
             this.leaveWithoutCheck();
         }
+    }
+
+    /**
+     * Start the submission if needed.
+     *
+     * @param submissionStatus Current submission status.
+     * @param options Options.
+     * @return Promise resolved with the new submission status if it changed, original submission status otherwise.
+     */
+    protected async startSubmissionIfNeeded(
+        submissionStatus: AddonModAssignGetSubmissionStatusWSResponse,
+        options: AddonModAssignSubmissionStatusOptions,
+    ): Promise<AddonModAssignGetSubmissionStatusWSResponse> {
+        if (!this.assign || !this.assign.timelimit) {
+            // Submission only needs to be started if there's a timelimit.
+            return submissionStatus;
+        }
+
+        if (this.userSubmission && this.userSubmission.status !== AddonModAssignSubmissionStatusValues.NEW &&
+            this.userSubmission.status !== AddonModAssignSubmissionStatusValues.REOPENED) {
+            // There is an ongoing submission, no need to start it.
+            return submissionStatus;
+        }
+
+        await AddonModAssign.startSubmission(this.assign.id);
+
+        CoreEvents.trigger(AddonModAssignProvider.STARTED_EVENT, {
+            assignmentId: this.assign.id,
+        }, CoreSites.getCurrentSiteId());
+
+        // Submission started, update the submission status.
+        const newSubmissionStatus = await AddonModAssign.getSubmissionStatus(this.assign.id, {
+            ...options,
+            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK, // Make sure not to use cache.
+        });
+
+        this.userSubmission = AddonModAssign.getSubmissionObjectFromAttempt(this.assign, newSubmissionStatus.lastattempt);
+
+        return newSubmissionStatus;
     }
 
     /**
@@ -247,7 +325,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
                 this.hasOffline,
             );
         } catch (error) {
-            if (this.allowOffline && !this.saveOffline) {
+            if (this.allowOffline && !this.saveOffline && !CoreUtils.isWebServiceError(error)) {
                 // Cannot submit in online, prepare for offline usage.
                 this.saveOffline = true;
 
@@ -384,10 +462,23 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
     }
 
     /**
+     * Function called when the time is up.
+     */
+    async timeUp(): Promise<void> {
+        this.timeUpToast = await CoreDomUtils.showToastWithOptions({
+            message: Translate.instant('addon.mod_assign.caneditsubmission'),
+            duration: 0,
+            buttons: [Translate.instant('core.dismiss')],
+            cssClass: 'core-danger-toast',
+        });
+    }
+
+    /**
      * Component being destroyed.
      */
     ngOnDestroy(): void {
         this.isDestroyed = true;
+        this.timeUpToast?.dismiss();
 
         // Unblock the assignment.
         if (this.assign) {

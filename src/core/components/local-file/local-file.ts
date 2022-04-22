@@ -26,6 +26,7 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils, CoreUtilsOpenFileOptions, OpenFileAction } from '@services/utils/utils';
 import { CoreForms } from '@singletons/form';
 import { CoreApp } from '@services/app';
+import { CoreText } from '@singletons/text';
 
 /**
  * Component to handle a local file. Only files inside the app folder can be managed.
@@ -55,7 +56,7 @@ export class CoreLocalFileComponent implements OnInit {
     timemodified?: string;
     newFileName = '';
     editMode = false;
-    relativePath?: string;
+    relativePath = '';
     isIOS = false;
     openButtonIcon = '';
     openButtonLabel = '';
@@ -111,7 +112,7 @@ export class CoreLocalFileComponent implements OnInit {
      * @param isOpenButton Whether the open button was clicked.
      */
     async openFile(e: Event, isOpenButton = false): Promise<void> {
-        if (this.editMode) {
+        if (this.editMode || !this.file) {
             return;
         }
 
@@ -124,7 +125,7 @@ export class CoreLocalFileComponent implements OnInit {
             return;
         }
 
-        if (!CoreFileHelper.isOpenableInApp(this.file!)) {
+        if (!CoreFileHelper.isOpenableInApp(this.file)) {
             try {
                 await CoreFileHelper.showConfirmOpenUnsupportedFile();
             } catch (error) {
@@ -138,7 +139,7 @@ export class CoreLocalFileComponent implements OnInit {
             options.iOSOpenFileAction = this.defaultIsOpenWithPicker ? OpenFileAction.OPEN : OpenFileAction.OPEN_WITH;
         }
 
-        CoreUtils.openFile(this.file!.toURL(), options);
+        CoreUtils.openFile(this.file.toURL(), options);
     }
 
     /**
@@ -147,11 +148,15 @@ export class CoreLocalFileComponent implements OnInit {
      * @param e Click event.
      */
     activateEdit(e: Event): void {
+        if (!this.file) {
+            return;
+        }
+
         e.preventDefault();
         e.stopPropagation();
 
         this.editMode = true;
-        this.newFileName = this.file!.name;
+        this.newFileName = this.file.name;
     }
 
     /**
@@ -161,10 +166,14 @@ export class CoreLocalFileComponent implements OnInit {
      * @param e Click event.
      */
     async changeName(newName: string, e: Event): Promise<void> {
+        if (!this.file) {
+            return;
+        }
+
         e.preventDefault();
         e.stopPropagation();
 
-        if (newName == this.file!.name) {
+        if (newName == this.file.name) {
             // Name hasn't changed, stop.
             this.editMode = false;
             CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
@@ -173,8 +182,8 @@ export class CoreLocalFileComponent implements OnInit {
         }
 
         const modal = await CoreDomUtils.showModalLoading();
-        const fileAndDir = CoreFile.getFileAndDirectoryFromPath(this.relativePath!);
-        const newPath = CoreTextUtils.concatenatePaths(fileAndDir.directory, newName);
+        const fileAndDir = CoreFile.getFileAndDirectoryFromPath(this.relativePath);
+        const newPath = CoreText.concatenatePaths(fileAndDir.directory, newName);
 
         try {
             // Check if there's a file with this name.
@@ -185,7 +194,7 @@ export class CoreLocalFileComponent implements OnInit {
         } catch {
             try {
                 // File doesn't exist, move it.
-                const fileEntry = await CoreFile.moveFile(this.relativePath!, newPath);
+                const fileEntry = await CoreFile.moveFile(this.relativePath, newPath);
 
                 CoreForms.triggerFormSubmittedEvent(this.formElement, false, CoreSites.getCurrentSiteId());
 
@@ -218,7 +227,7 @@ export class CoreLocalFileComponent implements OnInit {
 
             modal = await CoreDomUtils.showModalLoading('core.deleting', true);
 
-            await CoreFile.removeFile(this.relativePath!);
+            await CoreFile.removeFile(this.relativePath);
 
             this.onDelete.emit();
         } catch (error) {

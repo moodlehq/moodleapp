@@ -3,12 +3,14 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1 *ngIf="competency">
-            {{ competency.competency.shortname }} <small>{{ competency.competency.idnumber }}</small>
-        </h1>
+        <ion-title>
+            <h1 *ngIf="competency">
+                {{ competency.competency.shortname }} <small>{{ competency.competency.idnumber }}</small>
+            </h1>
+        </ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content>
+<ion-content class="limited-width">
     <ion-refresher slot="fixed" [disabled]="!competencyLoaded" (ionRefresh)="refreshCompetency($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>

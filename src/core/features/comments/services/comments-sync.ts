@@ -92,7 +92,7 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
                     siteId,
                 ));
 
-            if (typeof result != 'undefined') {
+            if (result !== undefined) {
                 // Sync successful, send event.
                 CoreEvents.trigger(CoreCommentsSyncProvider.AUTO_SYNCED, {
                     contextLevel: comment.contextlevel,
@@ -158,10 +158,11 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         const syncId = this.getSyncId(contextLevel, instanceId, component, itemId, area);
+        const currentSyncPromise = this.getOngoingSync(syncId, siteId);
 
-        if (this.isSyncing(syncId, siteId)) {
+        if (currentSyncPromise) {
             // There's already a sync ongoing for comments, return the promise.
-            return this.getOngoingSync(syncId, siteId)!;
+            return currentSyncPromise;
         }
 
         this.logger.debug('Try to sync comments ' + syncId + ' in site ' + siteId);

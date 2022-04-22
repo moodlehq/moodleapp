@@ -27,6 +27,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourse } from '@features/course/services/course';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
+import { Observable, Subject } from 'rxjs';
 
 /**
  * Object with space usage and cache entries that can be erased.
@@ -64,8 +65,9 @@ export class CoreSettingsHelperProvider {
     protected prefersDark?: MediaQueryList;
     protected colorSchemes: CoreColorScheme[] = [];
     protected currentColorScheme = CoreColorScheme.LIGHT;
+    protected darkModeObservable = new Subject<boolean>();
 
-    constructor() {
+    async initialize(): Promise<void> {
         this.prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
         if (!CoreConstants.CONFIG.forceColorScheme) {
@@ -93,7 +95,14 @@ export class CoreSettingsHelperProvider {
         }
 
         // Listen for changes to the prefers-color-scheme media query.
-        this.prefersDark.addEventListener && this.prefersDark.addEventListener('change', this.toggleDarkModeListener.bind(this));
+        this.prefersDark.addEventListener && this.prefersDark.addEventListener('change', () => {
+            this.setColorScheme(this.currentColorScheme);
+        });
+
+        // Init zoom level.
+        await this.upgradeZoomLevel();
+
+        this.initDomSettings();
     }
 
     /**
@@ -111,10 +120,13 @@ export class CoreSettingsHelperProvider {
 
         siteName = await CoreFilter.formatText(siteName, { clean: true, singleLine: true, filter: false }, [], siteId);
 
-        const title = Translate.instant('core.settings.deletesitefilestitle');
-        const message = Translate.instant('core.settings.deletesitefiles', { sitename: siteName });
+        const title = Translate.instant('addon.storagemanager.confirmdeleteallsitedata');
 
-        await CoreDomUtils.showConfirm(message, title);
+        await CoreDomUtils.showDeleteConfirm(
+            'addon.storagemanager.deleteallsitedatainfo',
+            { name: siteName },
+            { header:  title },
+        );
 
         const site = await CoreSites.getSite(siteId);
 
@@ -138,7 +150,7 @@ export class CoreSettingsHelperProvider {
                 siteInfo.spaceUsage = 0;
             } else {
                 // Error, recalculate the site usage.
-                CoreDomUtils.showErrorModal('core.settings.errordeletesitefiles', true);
+                CoreDomUtils.showErrorModal('addon.storagemanager.errordeletedownloadeddata', true);
 
                 siteInfo.spaceUsage = await site.getSpaceUsage();
             }
@@ -226,7 +238,7 @@ export class CoreSettingsHelperProvider {
      * @return Sync promise or null if site is not being syncrhonized.
      */
     getSiteSyncPromise(siteId: string): Promise<void> | void {
-        if (this.syncPromises[siteId]) {
+        if (this.syncPromises[siteId] !== undefined) {
             return this.syncPromises[siteId];
         }
     }
@@ -239,7 +251,7 @@ export class CoreSettingsHelperProvider {
      * @return Promise resolved when synchronized, rejected if failure.
      */
     async synchronizeSite(syncOnlyOnWifi: boolean, siteId: string): Promise<void> {
-        if (this.syncPromises[siteId]) {
+        if (this.syncPromises[siteId] !== undefined) {
             // There's already a sync ongoing for this site, return the promise.
             return this.syncPromises[siteId];
         }
@@ -262,7 +274,6 @@ export class CoreSettingsHelperProvider {
             CoreUtils.ignoreErrors(CoreFilepool.invalidateAllFiles(siteId)),
             // Invalidate and synchronize site data.
             site.invalidateWsCache(),
-            this.checkSiteLocalMobile(site),
             CoreSites.updateSiteInfo(site.getId()),
             CoreCronDelegate.forceSyncExecution(site.getId()),
         // eslint-disable-next-line arrow-body-style
@@ -280,34 +291,13 @@ export class CoreSettingsHelperProvider {
     }
 
     /**
-     * Check if local_mobile was added to the site.
-     *
-     * @param site Site to check.
-     * @return Promise resolved if no action needed.
-     */
-    protected async checkSiteLocalMobile(site: CoreSite): Promise<void> {
-        try {
-            // Check if local_mobile was installed in Moodle.
-            await site.checkIfLocalMobileInstalledAndNotUsed();
-        } catch {
-            // Not added, nothing to do.
-            return;
-        }
-
-        // Local mobile was added. Throw invalid session to force reconnect and create a new token.
-        CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, {}, site.getId());
-
-        throw new CoreError(Translate.instant('core.lostconnection'));
-    }
-
-    /**
      * Upgrades from Font size to new zoom level.
      */
     async upgradeZoomLevel(): Promise<void> {
         // Check old setting and update the new.
         try {
             const fontSize = await CoreConfig.get<number>('CoreSettingsFontSize');
-            if (typeof fontSize == 'undefined') {
+            if (fontSize === undefined) {
                 // Already upgraded.
                 return;
             }
@@ -405,8 +395,8 @@ export class CoreSettingsHelperProvider {
      */
     applyZoomLevel(zoomLevel: CoreZoomLevel): void {
         const zoom = CoreConstants.CONFIG.zoomlevels[zoomLevel];
-        // @todo Since zoom is deprecated and fontSize is not working, we should do some research here.
-        document.documentElement.style.zoom = zoom + '%';
+
+        document.documentElement.style.setProperty('--zoom-level', zoom + '%');
     }
 
     /**
@@ -459,21 +449,27 @@ export class CoreSettingsHelperProvider {
     }
 
     /**
-     * Listener function to toggle dark mode.
-     */
-    protected toggleDarkModeListener(): void {
-        this.setColorScheme(this.currentColorScheme);
-    };
-
-    /**
      * Toggles dark mode based on enabled boolean.
      *
      * @param enable True to enable dark mode, false to disable.
      */
     protected toggleDarkMode(enable: boolean = false): void {
-        document.body.classList.toggle('dark', enable);
+        const isDark = document.body.classList.contains('dark');
+        if (isDark !== enable) {
+            document.body.classList.toggle('dark', enable);
+            this.darkModeObservable.next(enable);
 
-        CoreApp.setStatusBarColor();
+            CoreApp.setStatusBarColor();
+        }
+    }
+
+    /**
+     * Returns dark mode change observable.
+     *
+     * @return Dark mode change observable.
+     */
+    onDarkModeChange(): Observable<boolean> {
+        return this.darkModeObservable;
     }
 
 }

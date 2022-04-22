@@ -24,8 +24,7 @@ import { AddonQbehaviourInteractiveCountbackHandler } from './services/handlers/
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreQuestionBehaviourDelegate.registerHandler(AddonQbehaviourInteractiveCountbackHandler.instance);
             },
         },

@@ -3,24 +3,24 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>{{ 'addon.mod_forum.addanewdiscussion' | translate }}</h1>
+        <ion-title>
+            <h1>{{ 'addon.mod_forum.addanewdiscussion' | translate }}</h1>
+        </ion-title>
         <ion-buttons slot="end">
             <!-- The context menu will be added in here. -->
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
-<ion-content>
+<ion-content [core-swipe-navigation]="discussions">
     <ion-refresher slot="fixed" [disabled]="!groupsLoaded" (ionRefresh)="refreshGroups($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-
     <core-loading [hideUntil]="groupsLoaded">
         <form *ngIf="showForm" #newDiscFormEl>
             <ion-item>
                 <ion-label position="stacked">{{ 'addon.mod_forum.subject' | translate }}</ion-label>
-                <ion-input
-                    [(ngModel)]="newDiscussion.subject"
-                    type="text" [placeholder]="'addon.mod_forum.subject' | translate" name="subject">
+                <ion-input [(ngModel)]="newDiscussion.subject" type="text" [placeholder]="'addon.mod_forum.subject' | translate"
+                    name="subject">
                 </ion-input>
             </ion-item>
             <ion-item>
@@ -31,26 +31,21 @@
                     (contentChanged)="onMessageChange($event)">
                 </core-rich-text-editor>
             </ion-item>
-            <ion-item
-                button
-                class="divider ion-text-wrap"
-                (click)="toggleAdvanced()"
-                detail="false"
-                [attr.aria-expanded]="advanced"
-                [attr.aria-label]="(advanced ? 'core.hideadvanced' : 'core.showadvanced') | translate"
-                role="heading"
-                aria-controls="addon-mod-forum-new-discussion-advanced"
-            >
-                <ion-icon *ngIf="!advanced" name="fas-caret-right" flip-rtl slot="start" aria-hidden="true"></ion-icon>
-                <ion-icon *ngIf="advanced" name="fas-caret-down" slot="start" aria-hidden="true"></ion-icon>
-                <ion-label><h2>{{ 'addon.mod_forum.advanced' | translate }}</h2></ion-label>
+            <ion-item button class="divider ion-text-wrap" (click)="toggleAdvanced()" detail="false" [attr.aria-expanded]="advanced"
+                [attr.aria-label]="(advanced ? 'core.hideadvanced' : 'core.showadvanced') | translate" role="heading"
+                aria-controls="addon-mod-forum-new-discussion-advanced">
+                <ion-icon name="fas-chevron-right" flip-rtl slot="start" aria-hidden="true" class="expandable-status-icon"
+                    [class.expandable-status-icon-expanded]="advanced"></ion-icon>
+                <ion-label>
+                    <h2>{{ 'addon.mod_forum.advanced' | translate }}</h2>
+                </ion-label>
             </ion-item>
             <div *ngIf="advanced" id="addon-mod-forum-new-discussion-advanced">
                 <ion-item *ngIf="showGroups && groupIds.length > 1 && accessInfo.cancanposttomygroups">
                     <ion-label>{{ 'addon.mod_forum.posttomygroups' | translate }}</ion-label>
                     <ion-toggle [(ngModel)]="newDiscussion.postToAllGroups" name="postallgroups"></ion-toggle>
                 </ion-item>
-                <ion-item *ngIf="showGroups">
+                <ion-item *ngIf="showGroups" class="core-edit-set-group">
                     <ion-label id="addon-mod-forum-groupslabel">{{ 'addon.mod_forum.group' | translate }}</ion-label>
                     <ion-select [(ngModel)]="newDiscussion.groupId" [disabled]="newDiscussion.postToAllGroups"
                         aria-labelledby="addon-mod-forum-groupslabel" interface="action-sheet" name="groupid"
@@ -66,23 +61,22 @@
                     <ion-label>{{ 'addon.mod_forum.discussionpinned' | translate }}</ion-label>
                     <ion-toggle [(ngModel)]="newDiscussion.pin" name="pin"></ion-toggle>
                 </ion-item>
-                <core-attachments *ngIf="canCreateAttachments && forum && forum.maxattachments > 0"
-                    [files]="newDiscussion.files" [maxSize]="forum.maxbytes" [maxSubmissions]="forum.maxattachments"
-                    [component]="component" [componentId]="forum.cmid" [allowOffline]="true">
+                <core-attachments *ngIf="canCreateAttachments && forum && forum.maxattachments > 0" [files]="newDiscussion.files"
+                    [maxSize]="forum.maxbytes" [maxSubmissions]="forum.maxattachments" [component]="component" [componentId]="forum.cmid"
+                    [allowOffline]="true" [courseId]="courseId">
                 </core-attachments>
             </div>
             <ion-item>
                 <ion-label>
                     <ion-row>
+                        <ion-col *ngIf="hasOffline">
+                            <ion-button expand="block" fill="outline" (click)="discard()">{{ 'core.discard' | translate }}</ion-button>
+                        </ion-col>
                         <ion-col>
-                            <ion-button
-                                expand="block" [disabled]="newDiscussion.subject == '' || newDiscussion.message == null"
+                            <ion-button expand="block" [disabled]="newDiscussion.subject == '' || newDiscussion.message == null"
                                 (click)="add()">
                                 {{ 'addon.mod_forum.posttoforum' | translate }}
                             </ion-button>
-                        </ion-col>
-                        <ion-col *ngIf="hasOffline">
-                            <ion-button expand="block" color="light" (click)="discard()">{{ 'core.discard' | translate }}</ion-button>
                         </ion-col>
                     </ion-row>
                 </ion-label>

@@ -16,6 +16,7 @@ import { SQLiteObject } from '@ionic-native/sqlite/ngx';
 
 import { SQLite, Platform } from '@singletons';
 import { CoreError } from '@classes/errors/error';
+import { CoreDB } from '@services/db';
 
 type SQLiteDBColumnType = 'INTEGER' | 'REAL' | 'TEXT' | 'BLOB';
 
@@ -135,6 +136,50 @@ export interface SQLiteDBForeignKeySchema {
  */
 export class SQLiteDB {
 
+    /**
+     * Constructs 'IN()' or '=' sql fragment
+     *
+     * @param items A single value or array of values for the expression. It doesn't accept objects.
+     * @param equal True means we want to equate to the constructed expression.
+     * @param onEmptyItems This defines the behavior when the array of items provided is empty. Defaults to false,
+     *                     meaning return empty. Other values will become part of the returned SQL fragment.
+     * @return A list containing the constructed sql fragment and an array of parameters.
+     */
+    static getInOrEqual(
+        items: SQLiteDBRecordValue | SQLiteDBRecordValue[],
+        equal: boolean = true,
+        onEmptyItems?: SQLiteDBRecordValue | null,
+    ): SQLiteDBQueryParams {
+        let sql = '';
+        let params: SQLiteDBRecordValue[];
+
+        // Default behavior, return empty data on empty array.
+        if (Array.isArray(items) && !items.length && onEmptyItems === undefined) {
+            return { sql: '', params: [] };
+        }
+
+        // Handle onEmptyItems on empty array of items.
+        if (Array.isArray(items) && !items.length) {
+            if (onEmptyItems === null) { // Special case, NULL value.
+                sql = equal ? ' IS NULL' : ' IS NOT NULL';
+
+                return { sql, params: [] };
+            } else {
+                items = [onEmptyItems as SQLiteDBRecordValue]; // Rest of cases, prepare items for processing.
+            }
+        }
+
+        if (!Array.isArray(items) || items.length == 1) {
+            sql = equal ? '= ?' : '<> ?';
+            params = Array.isArray(items) ? items : [items];
+        } else {
+            sql = (equal ? '' : 'NOT ') + 'IN (' + ',?'.repeat(items.length).substring(1) + ')';
+            params = items;
+        }
+
+        return { sql, params };
+    }
+
     db?: SQLiteObject;
     promise!: Promise<void>;
 
@@ -221,7 +266,7 @@ export class SQLiteDB {
                 columnSql += ` CHECK (${column.check})`;
             }
 
-            if (typeof column.default != 'undefined') {
+            if (column.default !== undefined) {
                 columnSql += ` DEFAULT ${column.default}`;
             }
 
@@ -388,7 +433,7 @@ export class SQLiteDB {
      * @return Promise resolved with the number of affected rows.
      */
     async deleteRecords(table: string, conditions?: SQLiteDBRecordValues): Promise<number> {
-        if (conditions === null || typeof conditions == 'undefined') {
+        if (conditions === null || conditions === undefined) {
             // No conditions, delete the whole table.
             const result = await this.execute(`DELETE FROM ${table}`);
 
@@ -485,7 +530,7 @@ export class SQLiteDB {
 
         // Remove undefined entries and convert null to "NULL".
         for (const name in data) {
-            if (typeof data[name] == 'undefined') {
+            if (data[name] === undefined) {
                 delete data[name];
             }
         }
@@ -561,50 +606,6 @@ export class SQLiteDB {
         }
 
         return record[Object.keys(record)[0]];
-    }
-
-    /**
-     * Constructs 'IN()' or '=' sql fragment
-     *
-     * @param items A single value or array of values for the expression. It doesn't accept objects.
-     * @param equal True means we want to equate to the constructed expression.
-     * @param onEmptyItems This defines the behavior when the array of items provided is empty. Defaults to false,
-     *                     meaning return empty. Other values will become part of the returned SQL fragment.
-     * @return A list containing the constructed sql fragment and an array of parameters.
-     */
-    getInOrEqual(
-        items: SQLiteDBRecordValue | SQLiteDBRecordValue[],
-        equal: boolean = true,
-        onEmptyItems?: SQLiteDBRecordValue | null,
-    ): SQLiteDBQueryParams {
-        let sql = '';
-        let params: SQLiteDBRecordValue[];
-
-        // Default behavior, return empty data on empty array.
-        if (Array.isArray(items) && !items.length && typeof onEmptyItems == 'undefined') {
-            return { sql: '', params: [] };
-        }
-
-        // Handle onEmptyItems on empty array of items.
-        if (Array.isArray(items) && !items.length) {
-            if (onEmptyItems === null || typeof onEmptyItems === 'undefined') { // Special case, NULL value.
-                sql = equal ? ' IS NULL' : ' IS NOT NULL';
-
-                return { sql, params: [] };
-            } else {
-                items = [onEmptyItems]; // Rest of cases, prepare items for processing.
-            }
-        }
-
-        if (!Array.isArray(items) || items.length == 1) {
-            sql = equal ? '= ?' : '<> ?';
-            params = Array.isArray(items) ? items : [items];
-        } else {
-            sql = (equal ? '' : 'NOT ') + 'IN (' + ',?'.repeat(items.length).substr(1) + ')';
-            params = items;
-        }
-
-        return { sql, params };
     }
 
     /**
@@ -801,7 +802,7 @@ export class SQLiteDB {
 
         const keys = Object.keys(data);
         const fields = keys.join(',');
-        const questionMarks = ',?'.repeat(keys.length).substr(1);
+        const questionMarks = ',?'.repeat(keys.length).substring(1);
 
         return {
             sql: `INSERT OR REPLACE INTO ${table} (${fields}) VALUES (${questionMarks})`,
@@ -813,16 +814,19 @@ export class SQLiteDB {
      * Initialize the database.
      */
     init(): void {
-        this.promise = Platform.ready()
-            .then(() => SQLite.create({
-                name: this.name,
-                location: 'default',
-            }))
-            .then((db: SQLiteObject) => {
-                this.db = db;
+        this.promise = this.createDatabase().then(db => {
+            if (CoreDB.loggingEnabled()) {
+                const spies = this.getDatabaseSpies(db);
 
-                return;
-            });
+                db = new Proxy(db, {
+                    get: (target, property, receiver) => spies[property] ?? Reflect.get(target, property, receiver),
+                });
+            }
+
+            this.db = db;
+
+            return;
+        });
     }
 
     /**
@@ -1091,7 +1095,7 @@ export class SQLiteDB {
         for (const key in conditions) {
             const value = conditions[key];
 
-            if (typeof value == 'undefined' || value === null) {
+            if (value === undefined || value === null) {
                 where.push(key + ' IS NULL');
             } else {
                 where.push(key + ' = ?');
@@ -1124,7 +1128,7 @@ export class SQLiteDB {
         let sql = '';
 
         values.forEach((value) => {
-            if (typeof value == 'undefined' || value === null) {
+            if (value === undefined || value === null) {
                 sql = field + ' IS NULL';
             } else {
                 params.push(value);
@@ -1139,12 +1143,83 @@ export class SQLiteDB {
             if (params.length == 1) {
                 sql = sql + field + ' = ?';
             } else {
-                const questionMarks = ',?'.repeat(params.length).substr(1);
+                const questionMarks = ',?'.repeat(params.length).substring(1);
                 sql = sql + field + ' IN (' + questionMarks + ')';
             }
         }
 
         return { sql, params };
+    }
+
+    /**
+     * Open a database connection.
+     *
+     * @returns Database.
+     */
+    protected async createDatabase(): Promise<SQLiteObject> {
+        await Platform.ready();
+
+        return SQLite.create({ name: this.name, location: 'default' });
+    }
+
+    /**
+     * Get database spy methods to intercept database calls and track logging information.
+     *
+     * @param db Database to spy.
+     * @returns Spy methods.
+     */
+    protected getDatabaseSpies(db: SQLiteObject): Partial<SQLiteObject> {
+        return {
+            async executeSql(statement, params) {
+                const start = performance.now();
+
+                try {
+                    const result = await db.executeSql(statement, params);
+
+                    CoreDB.logQuery({
+                        params,
+                        sql: statement,
+                        duration:  performance.now() - start,
+                    });
+
+                    return result;
+                } catch (error) {
+                    CoreDB.logQuery({
+                        params,
+                        error,
+                        sql: statement,
+                        duration:  performance.now() - start,
+                    });
+
+                    throw error;
+                }
+            },
+            async sqlBatch(statements) {
+                const start = performance.now();
+                const sql = Array.isArray(statements)
+                    ? statements.join(' | ')
+                    : String(statements);
+
+                try {
+                    const result = await db.sqlBatch(statements);
+
+                    CoreDB.logQuery({
+                        sql,
+                        duration: performance.now() - start,
+                    });
+
+                    return result;
+                } catch (error) {
+                    CoreDB.logQuery({
+                        sql,
+                        error,
+                        duration: performance.now() - start,
+                    });
+
+                    throw error;
+                }
+            },
+        };
     }
 
 }
@@ -1158,4 +1233,4 @@ export type SQLiteDBQueryParams = {
     params: SQLiteDBRecordValue[];
 };
 
-type SQLiteDBRecordValue = number | string;
+export type SQLiteDBRecordValue = number | string;

@@ -5,17 +5,17 @@ core-format-text {
         text-transform: uppercase;
         font-size: 60%;
         padding: 0.25em;
-        border: 1px solid var(--gray-light);
+        border: 1px solid var(--gray-200);
     }
 
     .gradingform_rubric_editform .status.ready {
-        background-color: var(--green-light);
-        border-color: var(--green);
+        background-color: var(--success-tint);
+        border-color: var(--success);
     }
 
     .gradingform_rubric_editform .status.draft {
-        background-color: var(--yellow-light);
-        border-color: var(--yellow);
+        background-color: var(--warning-tint);
+        border-color: var(--warning);
     }
 
     .gradingform_rubric {
@@ -57,12 +57,12 @@ core-format-text {
     }
 
     .gradingform_rubric .criterion {
-        border: 1px solid var(--gray);
+        border: 1px solid var(--stroke);
         overflow: hidden;
     }
 
     .gradingform_rubric .criterion.even {
-        background-color: var(--gray-lighter);
+        background-color: var(--light);
     }
 
     .gradingform_rubric .criterion .description {
@@ -83,7 +83,7 @@ core-format-text {
     }
 
     .gradingform_rubric .criterion .levels .level {
-        border-left: 1px solid var(--gray);
+        border-left: 1px solid var(--stroke);
         max-width: 150px;
     }
 
@@ -92,12 +92,12 @@ core-format-text {
     }
 
     .gradingform_rubric .criterion .levels .level.last {
-        border-right: 1px solid var(--gray);
+        border-right: 1px solid var(--stroke);
     }
 
     .gradingform_rubric .plainvalue.empty {
         font-style: italic;
-        color: var(--gray-dark);
+        color: var(--gray-500);
     }
 
     .gradingform_rubric.editor .criterion .levels .level .delete {
@@ -107,7 +107,7 @@ core-format-text {
 
     .gradingform_rubric .criterion .levels .level .score {
         font-style: italic;
-        color: var(--green);
+        color: var(--success);
         font-weight: bold;
         margin-top: 5px;
         white-space: nowrap;
@@ -126,12 +126,12 @@ core-format-text {
 
     /* evaluation */
     .gradingform_rubric .criterion .levels .level.currentchecked {
-        background-color: #fff0f0;
+        background-color: var(--danger-tint);
     }
 
     .gradingform_rubric .criterion .levels .level.checked {
-        background-color: var(--green-light);
-        border: 1px solid var(--gray-darker);
+        background-color: var(--success-tint);
+        border: 1px solid var(--medium);
     }
 
     .gradingform_rubric .options .optionsheading {
@@ -154,31 +154,31 @@ core-format-text {
     }
 
     .gradingform_rubric .criterion .levels.error {
-        border: 1px solid var(--red);
+        border: 1px solid var(--danger);
     }
 
     .gradingform_rubric .criterion .description.error,
     .gradingform_rubric .criterion .levels .level .definition.error,
     .gradingform_rubric .criterion .levels .level .score.error {
-        background-color: var(--gray-lighter);
+        background-color: var(--light);
     }
 
     .gradingform_rubric-regrade {
         padding: 10px;
-        background-color: var(--gray-lighter);
-        border: 1px solid var(--red-light);
+        background-color: var(--light);
+        border: 1px solid var(--danger-tint);
         margin-bottom: 10px;
     }
 
     .gradingform_rubric-restored {
         padding: 10px;
-        background-color: var(--yellow-light);
-        border: 1px solid var(--yellow);
+        background-color: var(--warning-tint);
+        border: 1px solid var(--warning);
         margin-bottom: 10px;
     }
 
     .gradingform_rubric-error {
-        color: var(--red);
+        color: var(--danger);
         font-weight: bold;
     }
 
@@ -219,17 +219,17 @@ core-format-text {
     }
 
     .gradingform_rubric.evaluate .criterion .levels .level:hover {
-        background-color: var(--green-light);
+        background-color: var(--success-tint);
     }
 
     .gradingform_rubric .criterion .levels .level.checked {
-        background-color: var(--green-light);
+        background-color: var(--success-tint);
         border: none;
-        border-left: 1px solid var(--gray);
+        border-left: 1px solid var(--stroke);
     }
 
     .gradingform_rubric .criterion .levels .level .score {
-        color: var(--green);
+        color: var(--success);
         font-weight: 500;
         font-style: normal;
         margin-top: 20px;

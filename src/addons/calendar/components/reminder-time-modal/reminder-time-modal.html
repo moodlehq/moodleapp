@@ -1,0 +1,62 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-title>
+            <h2>{{ 'addon.calendar.reminders' | translate }}</h2>
+        </ion-title>
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon slot="icon-only" name="fas-times" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <form (ngSubmit)="saveReminder()">
+        <ion-radio-group name="radiovalue" [(ngModel)]="radioValue" class="ion-text-wrap">
+            <!-- Preset options. -->
+            <ion-item *ngIf="allowDisable">
+                <ion-label>
+                    <p>{{ 'core.settings.disabled' | translate }}</p>
+                </ion-label>
+                <ion-radio slot="end" value="disabled"></ion-radio>
+            </ion-item>
+            <ion-item *ngFor="let option of presetOptions">
+                <ion-label>
+                    <p>{{ option.label }}</p>
+                </ion-label>
+                <ion-radio slot="end" [value]="option.radioValue"></ion-radio>
+            </ion-item>
+
+            <!-- Custom value. -->
+            <ion-item class="ion-text-wrap">
+                <ion-label>
+                    <p>{{ 'core.custom' | translate }}</p>
+                </ion-label>
+                <ion-radio slot="end" value="custom"></ion-radio>
+            </ion-item>
+            <ion-item class="ion-text-wrap" (click)="customInputClicked($event)">
+                <ion-label></ion-label>
+
+                <div class="flex-row">
+                    <!-- Input to enter the value. -->
+                    <ion-input type="number" name="customvalue" [(ngModel)]="customValue" [disabled]="radioValue != 'custom'"
+                        placeholder="10" (click)="customInputClicked($event)">
+                    </ion-input>
+
+                    <!-- Units. -->
+                    <label class="accesshide" for="reminderUnits">{{ 'addon.calendar.units' | translate }}</label>
+                    <ion-select id="reminderUnits" name="customunits" [(ngModel)]="customUnits" interface="action-sheet"
+                        [disabled]="radioValue != 'custom'" slot="end" [interfaceOptions]="{header: 'addon.calendar.units' | translate}">
+                        <ion-select-option *ngFor="let option of customUnitsOptions" [value]="option.value">
+                            {{ option.label | translate }}
+                        </ion-select-option>
+                    </ion-select>
+                </div>
+            </ion-item>
+        </ion-radio-group>
+
+        <ion-button type="submit" class="ion-margin" expand="block" [disabled]="radioValue == 'custom' && !customValue">
+            {{ 'core.done' | translate }}
+        </ion-button>
+    </form>
+</ion-content>

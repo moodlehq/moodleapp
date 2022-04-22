@@ -12,18 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, Input, AfterViewInit, ElementRef, OnChanges, SimpleChange, Output, EventEmitter } from '@angular/core';
-
+import {
+    Directive,
+    Input,
+    AfterViewInit,
+    ElementRef,
+    OnChanges,
+    SimpleChange,
+    Output,
+    EventEmitter,
+    OnDestroy,
+} from '@angular/core';
 import { CoreApp } from '@services/app';
 import { CoreFile } from '@services/file';
-import { CoreFilepool } from '@services/filepool';
+import { CoreFilepool, CoreFilepoolFileActions, CoreFilepoolFileEventData } from '@services/filepool';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { Platform } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreError } from '@classes/errors/error';
+import { CoreSite } from '@classes/site';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreConstants } from '../constants';
 
 /**
  * Directive to handle external content.
@@ -33,12 +44,12 @@ import { CoreError } from '@classes/errors/error';
  *
  * If a file is downloaded, its URL will be replaced by the local file URL.
  *
- * From v3.5.2 this directive will also download inline styles, so it can be used in any element as long as it has inline styles.
+ * This directive also downloads inline styles, so it can be used in any element as long as it has inline styles.
  */
 @Directive({
     selector: '[core-external-content]',
 })
-export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
+export class CoreExternalContentDirective implements AfterViewInit, OnChanges, OnDestroy {
 
     @Input() siteId?: string; // Site ID to use.
     @Input() component?: string; // Component to link the file to.
@@ -54,6 +65,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
     protected element: Element;
     protected logger: CoreLogger;
     protected initialized = false;
+    protected fileEventObserver?: CoreEventObserver;
 
     constructor(element: ElementRef) {
 
@@ -113,8 +125,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
      * Get the URL that should be handled and, if valid, handle it.
      */
     protected async checkAndHandleExternalContent(): Promise<void> {
-        const currentSite = CoreSites.getCurrentSite();
-        const siteId = this.siteId || currentSite?.getId();
+        const siteId = this.siteId || CoreSites.getRequiredCurrentSite().getId();
         const tagName = this.element.tagName.toUpperCase();
         let targetAttr;
         let url;
@@ -184,38 +195,15 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
     protected async handleExternalContent(targetAttr: string, url: string, siteId?: string): Promise<void> {
 
         const tagName = this.element.tagName;
-
         if (tagName == 'VIDEO' && targetAttr != 'poster') {
-            const video = <HTMLVideoElement> this.element;
-            if (video.textTracks) {
-                // It's a video with subtitles. Fix some issues with subtitles.
-                video.textTracks.onaddtrack = (event): void => {
-                    const track = <TextTrack> event.track;
-                    if (track) {
-                        track.oncuechange = (): void => {
-                            if (!track.cues) {
-                                return;
-                            }
-
-                            const line = Platform.is('tablet') || CoreApp.isAndroid() ? 90 : 80;
-                            // Position all subtitles to a percentage of video height.
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            Array.from(track.cues).forEach((cue: any) => {
-                                cue.snapToLines = false;
-                                cue.line = line;
-                                cue.size = 100; // This solves some Android issue.
-                            });
-                            // Delete listener.
-                            track.oncuechange = null;
-                        };
-                    }
-                };
-            }
-
+            this.handleVideoSubtitles(<HTMLVideoElement> this.element);
         }
 
+        const site = await CoreSites.getSite(siteId);
+        const isSiteFile = site.isSitePluginFileUrl(url);
+
         if (!url || !url.match(/^https?:\/\//i) || CoreUrlUtils.isLocalFileUrl(url) ||
-                (tagName === 'A' && !CoreUrlUtils.isDownloadableUrl(url))) {
+                (tagName === 'A' && !(isSiteFile || site.isSiteThemeImageUrl(url) || CoreUrlUtils.isGravatarUrl(url)))) {
 
             this.logger.debug('Ignoring non-downloadable URL: ' + url);
             if (tagName === 'SOURCE') {
@@ -226,17 +214,125 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
             throw new CoreError('Non-downloadable URL');
         }
 
-        const site = await CoreSites.getSite(siteId);
-
-        if (!site.canDownloadFiles() && CoreUrlUtils.isPluginFileUrl(url)) {
+        if (!site.canDownloadFiles() && isSiteFile) {
             this.element.parentElement?.removeChild(this.element); // Remove element since it'll be broken.
 
             throw new CoreError('Site doesn\'t allow downloading files.');
         }
 
+        const finalUrl = await this.getUrlToUse(targetAttr, url, site);
+
+        this.logger.debug('Using URL ' + finalUrl + ' for ' + url);
+        if (tagName === 'SOURCE') {
+            // The browser does not catch changes in SRC, we need to add a new source.
+            this.addSource(finalUrl);
+        } else {
+            if (tagName === 'IMG') {
+                this.loaded = false;
+                this.waitForLoad();
+            }
+
+            if (targetAttr == 'poster') {
+                // Setting the poster immediately doesn't display it in some cases. Set it to empty and then set the right one.
+                this.element.setAttribute(targetAttr, '');
+                await CoreUtils.nextTick();
+            }
+
+            this.element.setAttribute(targetAttr, finalUrl);
+            this.element.setAttribute('data-original-' + targetAttr, url);
+        }
+
+        this.setListeners(targetAttr, url, site);
+    }
+
+    /**
+     * Handle inline styles, trying to download referenced files.
+     *
+     * @param siteId Site ID.
+     * @return Promise resolved when done.
+     */
+    protected async handleInlineStyles(siteId?: string): Promise<void> {
+        if (!siteId) {
+            return;
+        }
+
+        let inlineStyles = this.element.getAttribute('style') || '';
+
+        if (!inlineStyles) {
+            return;
+        }
+
+        let urls = inlineStyles.match(/https?:\/\/[^"') ;]*/g);
+        if (!urls || !urls.length) {
+            return;
+        }
+
+        urls = CoreUtils.uniqueArray(urls); // Remove duplicates.
+
+        const promises = urls.map(async (url) => {
+            const finalUrl = await CoreFilepool.getSrcByUrl(siteId, url, this.component, this.componentId, 0, true, true);
+
+            this.logger.debug('Using URL ' + finalUrl + ' for ' + url + ' in inline styles');
+            inlineStyles = inlineStyles.replace(new RegExp(url, 'gi'), finalUrl);
+        });
+
+        try {
+            await CoreUtils.allPromises(promises);
+
+            this.element.setAttribute('style', inlineStyles);
+        } catch (error) {
+            this.logger.error('Error treating inline styles.', this.element);
+        }
+    }
+
+    /**
+     * Handle video subtitles if any.
+     *
+     * @param video Video element.
+     */
+    protected handleVideoSubtitles(video: HTMLVideoElement): void {
+        if (!video.textTracks) {
+            return;
+        }
+
+        // It's a video with subtitles. Fix some issues with subtitles.
+        video.textTracks.onaddtrack = (event): void => {
+            const track = <TextTrack> event.track;
+            if (track) {
+                track.oncuechange = (): void => {
+                    if (!track.cues) {
+                        return;
+                    }
+
+                    const line = Platform.is('tablet') || CoreApp.isAndroid() ? 90 : 80;
+                    // Position all subtitles to a percentage of video height.
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    Array.from(track.cues).forEach((cue: any) => {
+                        cue.snapToLines = false;
+                        cue.line = line;
+                        cue.size = 100; // This solves some Android issue.
+                    });
+                    // Delete listener.
+                    track.oncuechange = null;
+                };
+            }
+        };
+    }
+
+    /**
+     * Get the URL to use in the element. E.g. if the file is already downloaded it will return the local URL.
+     *
+     * @param targetAttr Attribute to modify.
+     * @param url Original URL to treat.
+     * @param site Site.
+     * @return Promise resolved with the URL.
+     */
+    protected async getUrlToUse(targetAttr: string, url: string, site: CoreSite): Promise<string> {
+        const tagName = this.element.tagName;
+        let finalUrl: string;
+
         // Download images, tracks and posters if size is unknown.
         const downloadUnknown = tagName == 'IMG' || tagName == 'TRACK' || targetAttr == 'poster';
-        let finalUrl: string;
 
         if (targetAttr === 'src' && tagName !== 'SOURCE' && tagName !== 'TRACK' && tagName !== 'VIDEO' && tagName !== 'AUDIO') {
             finalUrl = await CoreFilepool.getSrcByUrl(
@@ -267,93 +363,78 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
             finalUrl = CoreFile.convertFileSrc(finalUrl);
         }
 
-        if (!CoreUrlUtils.isLocalFileUrl(finalUrl)) {
+        if (!CoreUrlUtils.isLocalFileUrl(finalUrl) && !finalUrl.includes('#') && tagName !== 'A') {
             /* In iOS, if we use the same URL in embedded file and background download then the download only
-               downloads a few bytes (cached ones). Add a hash to the URL so both URLs are different. */
+               downloads a few bytes (cached ones). Add an anchor to the URL so both URLs are different.
+               Don't add this anchor if the URL already has an anchor, otherwise other anchors might not work.
+               The downloaded URL won't have anchors so the URLs will already be different. */
             finalUrl = finalUrl + '#moodlemobile-embedded';
         }
 
-        this.logger.debug('Using URL ' + finalUrl + ' for ' + url);
-        if (tagName === 'SOURCE') {
-            // The browser does not catch changes in SRC, we need to add a new source.
-            this.addSource(finalUrl);
-        } else {
-            if (tagName === 'IMG') {
-                this.loaded = false;
-                this.waitForLoad();
-            }
+        return finalUrl;
+    }
 
-            if (targetAttr == 'poster') {
-                // Setting the poster immediately doesn't display it in some cases. Set it to empty and then set the right one.
-                this.element.setAttribute(targetAttr, '');
-                await CoreUtils.nextTick();
-            }
-
-            this.element.setAttribute(targetAttr, finalUrl);
-            this.element.setAttribute('data-original-' + targetAttr, url);
+    /**
+     * Set listeners if needed.
+     *
+     * @param targetAttr Attribute to modify.
+     * @param url Original URL to treat.
+     * @param site Site.
+     * @return Promise resolved when done.
+     */
+    protected async setListeners(targetAttr: string, url: string, site: CoreSite): Promise<void> {
+        if (this.fileEventObserver) {
+            // Already listening to events.
+            return;
         }
 
+        const tagName = this.element.tagName;
+        let state = await CoreFilepool.getFileStateByUrl(site.getId(), url);
+
+        // Listen for download changes in the file.
+        const eventName = await CoreFilepool.getFileEventNameByUrl(site.getId(), url);
+
+        this.fileEventObserver = CoreEvents.on(eventName, async (data: CoreFilepoolFileEventData) => {
+            if (data.action === CoreFilepoolFileActions.DOWNLOAD && !data.success) {
+                // Error downloading the file. Don't try again.
+                return;
+            }
+
+            const newState = await CoreFilepool.getFileStateByUrl(site.getId(), url);
+            if (newState === state) {
+                return;
+            }
+
+            state = newState;
+            if (state === CoreConstants.DOWNLOADING) {
+                return;
+            }
+
+            // The file state has changed. Handle the file again, maybe it's downloaded now or the file has been deleted.
+            this.checkAndHandleExternalContent();
+        });
+
         // Set events to download big files (not downloaded automatically).
-        if (!CoreUrlUtils.isLocalFileUrl(finalUrl) && targetAttr != 'poster' &&
-            (tagName == 'VIDEO' || tagName == 'AUDIO' || tagName == 'A' || tagName == 'SOURCE')) {
+        if (targetAttr !== 'poster' && (tagName === 'VIDEO' || tagName === 'AUDIO' || tagName === 'A' || tagName === 'SOURCE')) {
             const eventName = tagName == 'A' ? 'click' : 'play';
-            let clickableEl = this.element;
+            let clickableEl: Element | null = this.element;
 
             if (tagName == 'SOURCE') {
-                clickableEl = <HTMLElement> CoreDomUtils.closest(this.element, 'video,audio');
-                if (!clickableEl) {
-                    return;
-                }
+                clickableEl = this.element.closest('video,audio');
+            }
+
+            if (!clickableEl) {
+                return;
             }
 
             clickableEl.addEventListener(eventName, () => {
                 // User played media or opened a downloadable link.
                 // Download the file if in wifi and it hasn't been downloaded already (for big files).
-                if (CoreApp.isWifi()) {
+                if (state !== CoreConstants.DOWNLOADED && state !== CoreConstants.DOWNLOADING && CoreApp.isWifi()) {
                     // We aren't using the result, so it doesn't matter which of the 2 functions we call.
                     CoreFilepool.getUrlByUrl(site.getId(), url, this.component, this.componentId, 0, false);
                 }
             });
-        }
-    }
-
-    /**
-     * Handle inline styles, trying to download referenced files.
-     *
-     * @param siteId Site ID.
-     * @return Promise resolved when done.
-     */
-    protected async handleInlineStyles(siteId?: string): Promise<void> {
-        if (!siteId) {
-            return;
-        }
-
-        let inlineStyles = this.element.getAttribute('style');
-
-        if (!inlineStyles) {
-            return;
-        }
-
-        let urls = inlineStyles.match(/https?:\/\/[^"') ;]*/g);
-        if (!urls || !urls.length) {
-            return;
-        }
-
-        urls = CoreUtils.uniqueArray(urls); // Remove duplicates.
-
-        const promises = urls.map(async (url) => {
-            const finalUrl = await CoreFilepool.getUrlByUrl(siteId, url, this.component, this.componentId, 0, true, true);
-
-            this.logger.debug('Using URL ' + finalUrl + ' for ' + url + ' in inline styles');
-            inlineStyles = inlineStyles!.replace(new RegExp(url, 'gi'), finalUrl);
-        });
-
-        try {
-            await CoreUtils.allPromises(promises);
-
-            this.element.setAttribute('style', inlineStyles);
-        } catch (error) {
-            this.logger.error('Error treating inline styles.', this.element);
         }
     }
 
@@ -370,6 +451,13 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges {
 
         this.element.addEventListener('load', listener);
         this.element.addEventListener('error', listener);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.fileEventObserver?.off();
     }
 
 }

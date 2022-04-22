@@ -52,9 +52,17 @@ export class AddonModQuizAttemptPage implements OnInit {
      * Component being initialized.
      */
     ngOnInit(): void {
-        this.cmId = CoreNavigator.getRouteNumberParam('cmId')!;
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.attemptId = CoreNavigator.getRouteNumberParam('attemptId')!;
+        try {
+            this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.attemptId = CoreNavigator.getRequiredRouteNumberParam('attemptId');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            CoreNavigator.back();
+
+            return;
+        }
 
         this.fetchQuizData().finally(() => {
             this.loaded = true;
@@ -178,7 +186,7 @@ export class AddonModQuizAttemptPage implements OnInit {
             promises.push(AddonModQuiz.invalidateQuizAccessInformation(this.quiz.id));
             promises.push(AddonModQuiz.invalidateCombinedReviewOptionsForUser(this.quiz.id));
 
-            if (this.attempt && typeof this.feedback != 'undefined') {
+            if (this.attempt && this.feedback !== undefined) {
                 promises.push(AddonModQuiz.invalidateFeedback(this.quiz.id));
             }
         }

@@ -1,8 +1,8 @@
 {
     "app_id": "com.moodle.moodlemobile",
     "appname": "Moodle Mobile",
-    "versioncode": 3950,
-    "versionname": "3.9.5",
+    "versioncode": 40000,
+    "versionname": "4.0.0",
     "cache_update_frequency_usually": 420000,
     "cache_update_frequency_often": 1200000,
     "cache_update_frequency_sometimes": 3600000,
@@ -30,6 +30,7 @@
         "he": "עברית",
         "hi": "हिंदी",
         "hr": "Hrvatski",
+        "hsb": "Hornjoserbsski",
         "hu": "magyar",
         "hy": "Հայերեն",
         "id": "Indonesian",
@@ -38,6 +39,7 @@
         "km": "ខ្មែរ",
         "kn": "ಕನ್ನಡ",
         "ko": "한국어",
+        "lo": "ລາວ",
         "lt": "Lietuvių",
         "lv": "Latviešu",
         "mn": "Монгол",
@@ -62,15 +64,14 @@
         "zh-tw": "正體中文"
     },
     "wsservice": "moodle_mobile_app",
-    "wsextservice": "local_mobile",
     "demo_sites": {
         "student": {
-            "url": "https:\/\/school.moodledemo.net",
+            "url": "https://school.moodledemo.net",
             "username": "student",
             "password": "moodle"
         },
         "teacher": {
-            "url": "https:\/\/school.moodledemo.net",
+            "url": "https://school.moodledemo.net",
             "username": "teacher",
             "password": "moodle"
         }
@@ -88,7 +89,7 @@
     "onlyallowlistedsites": false,
     "skipssoconfirmation": false,
     "forcedefaultlanguage": false,
-    "privacypolicy": "https:\/\/moodle.net\/moodle-app-privacy\/",
+    "privacypolicy": "https://moodle.net/moodle-app-privacy/",
     "notificoncolor": "#f98012",
     "enableanalytics": false,
     "enableonboarding": true,
@@ -98,5 +99,8 @@
     "appstores": {
         "android": "com.moodle.moodlemobile",
         "ios": "id633359593"
-    }
+    },
+    "wsrequestqueuelimit": 10,
+    "wsrequestqueuedelay": 100,
+    "calendarreminderdefaultvalue": 3600
 }

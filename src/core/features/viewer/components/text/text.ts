@@ -24,6 +24,7 @@ import { ModalController } from '@singletons';
 @Component({
     selector: 'page-core-viewer-text',
     templateUrl: 'text.html',
+    styleUrls: ['text.scss'],
 })
 export class CoreViewerTextComponent {
 

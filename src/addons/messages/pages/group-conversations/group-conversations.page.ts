@@ -36,6 +36,7 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
+import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
 
 /**
  * Page that displays the list of conversations, including group conversations.
@@ -118,7 +119,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                 // Search the conversation to update.
                 const conversation = this.findConversation(data.conversationId, data.userId, expandedOption);
 
-                if (typeof conversation == 'undefined') {
+                if (conversation === undefined) {
                 // Probably a new conversation, refresh the list.
                     this.loaded = false;
                     this.refreshData().finally(() => {
@@ -152,7 +153,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             if (data.conversationId) {
                 const conversation = this.findConversation(data.conversationId);
 
-                if (typeof conversation != 'undefined') {
+                if (conversation !== undefined) {
                     // A conversation has been read reset counter.
                     conversation.unreadcount = 0;
 
@@ -270,7 +271,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
     async ngOnInit(): Promise<void> {
         this.route.queryParams.subscribe(async (params) => {
             // When a child page loads this callback is triggered too.
-            const conversationId =CoreNavigator.getRouteNumberParam('conversationId', { params });
+            const conversationId = CoreNavigator.getRouteNumberParam('conversationId', { params });
             const userId = CoreNavigator.getRouteNumberParam('userId', { params });
             if (conversationId || userId) {
                 // Update the selected ones.
@@ -278,6 +279,8 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                 this.selectedUserId = userId;
             }
         });
+
+        const deepLinkManager = new CoreMainMenuDeepLinkManager();
 
         await this.fetchData();
 
@@ -290,10 +293,13 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                 conversation = expandedOption.conversations[0];
 
                 if (conversation) {
-                    this.gotoConversation(conversation.id);
+                    await this.gotoConversation(conversation.id);
                 }
             }
         }
+
+        // Treat deep link now that the conversation route has been loaded if needed.
+        deepLinkManager.treatLink();
     }
 
     /**
@@ -318,7 +324,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             await Promise.all(promises);
 
             // The expanded status hasn't been initialized. Do it now.
-            if (typeof this.favourites.expanded == 'undefined' && (this.selectedConversationId || this.selectedUserId)) {
+            if (this.favourites.expanded === undefined && (this.selectedConversationId || this.selectedUserId)) {
                 // A certain conversation should be opened.
                 // We don't know which option it belongs to, so we need to fetch the data for all of them.
                 const promises: Promise<void>[] = [];
@@ -355,7 +361,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async fetchDataForExpandedOption(): Promise<void> {
-        if (typeof this.favourites.expanded == 'undefined') {
+        if (this.favourites.expanded === undefined) {
             // Calculate which option should be expanded initially.
             this.favourites.expanded = this.favourites.count != 0 && !this.group.unread && !this.individual.unread;
             this.group.expanded = !this.favourites.expanded && this.group.count != 0 && !this.individual.unread;
@@ -507,7 +513,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * @param userId User of the conversation. Only if there is no conversationId.
      * @param messageId Message to scroll after loading the discussion. Used when searching.
      */
-    gotoConversation(conversationId?: number, userId?: number, messageId?: number): void {
+    async gotoConversation(conversationId?: number, userId?: number, messageId?: number): Promise<void> {
         this.selectedConversationId = conversationId;
         this.selectedUserId = userId;
 
@@ -524,14 +530,15 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
 
         const splitViewLoaded = CoreNavigator.isCurrentPathInTablet('**/messages/group-conversations/discussion');
         const path = (splitViewLoaded ? '../' : '') + 'discussion';
-        CoreNavigator.navigate(path, { params });
+
+        await CoreNavigator.navigate(path, { params });
     }
 
     /**
      * Navigate to message settings.
      */
     gotoSettings(): void {
-        CoreNavigator.navigateToSitePath('../preferences');
+        CoreNavigator.navigateToSitePath('../message-settings');
     }
 
     /**
@@ -572,7 +579,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
 
                 if (conversation) {
                     // Check if it's the last message. Offline messages are considered more recent than sent messages.
-                    if (typeof conversation.lastmessage === 'undefined' || conversation.lastmessage === null ||
+                    if (conversation.lastmessage === undefined || conversation.lastmessage === null ||
                             !conversation.lastmessagepending || (conversation.lastmessagedate || 0) <= message.timecreated / 1000) {
 
                         this.addLastOfflineMessage(conversation, message);

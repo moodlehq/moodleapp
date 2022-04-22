@@ -20,8 +20,8 @@ import { Md5 } from 'ts-md5';
 import { CoreSharedFiles } from '@features/sharedfiles/services/sharedfiles';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreText } from '@singletons/text';
 
 /**
  * Component to display the list of shared files, either as a modal or inside a page.
@@ -113,7 +113,7 @@ export class CoreSharedFilesListComponent implements OnInit, OnDestroy {
      * @param folder The folder to open.
      */
     openFolder(folder: DirectoryEntry): void {
-        const path = CoreTextUtils.concatenatePaths(this.path || '', folder.name);
+        const path = CoreText.concatenatePaths(this.path || '', folder.name);
 
         if (this.isModal) {
             this.path = path;

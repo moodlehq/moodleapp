@@ -2,9 +2,9 @@
 
 // Edit and search modal.
 :host {
-    --input-border-color: var(--gray);
+    --input-border-color: var(--stroke);
     --input-border-width: 1px;
-    --select-border-width: 0;
+    --select-border-width: 0px;
 
     ::ng-deep {
         table {
@@ -39,7 +39,7 @@
                 }
 
                 &.has-focus {
-                    --input-border-color: var(--ion-color-primary);
+                    --input-border-color: var(--primary);
                 }
                 &.has-focus.ion-valid {
                     --input-border-color: var(--success);

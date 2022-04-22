@@ -12,15 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreError } from '@classes/errors/error';
+import { FileEntry, DirectoryEntry } from '@ionic-native/file/ngx';
 import { CoreFile, CoreFileFormat } from '@services/file';
-import { CoreTextUtils } from '@services/utils/text';
+import { Translate } from '@singletons';
+import { CoreText } from '@singletons/text';
 import { CoreH5PSemantics } from './content-validator';
-import { CoreH5PCore, CoreH5PLibraryBasicData } from './core';
+import { CoreH5PCore, CoreH5PLibraryBasicData, CoreH5PMissingLibrary } from './core';
+import { CoreH5PFramework } from './framework';
 
 /**
  * Equivalent to H5P's H5PValidator class.
  */
 export class CoreH5PValidator {
+
+    constructor(public h5pFramework: CoreH5PFramework) {
+    }
 
     /**
      * Get library data.
@@ -49,6 +56,57 @@ export class CoreH5PValidator {
     }
 
     /**
+     * Use the dependency declarations to find any missing libraries.
+     *
+     * @param libraries Libraries to check.
+     * @return Promise resolved with the missing dependencies.
+     */
+    protected getMissingLibraries(libraries: CoreH5PLibrariesJsonData): Record<string, CoreH5PMissingLibrary> {
+        const missing: Record<string, CoreH5PMissingLibrary> = {};
+
+        Object.values(libraries).forEach((library) => {
+            if (library.preloadedDependencies !== undefined) {
+                Object.assign(missing, this.getMissingDependencies(library.preloadedDependencies, library, libraries));
+            }
+            if (library.dynamicDependencies !== undefined) {
+                Object.assign(missing, this.getMissingDependencies(library.dynamicDependencies, library, libraries));
+            }
+            if (library.editorDependencies !== undefined) {
+                Object.assign(missing, this.getMissingDependencies(library.editorDependencies, library, libraries));
+            }
+        });
+
+        return missing;
+    }
+
+    /**
+     * Helper function for getMissingLibraries, searches for dependency required libraries in the provided list of libraries.
+     *
+     * @param dependencies Dependencies to check.
+     * @param library Library that has these dependencies.
+     * @param libraries Libraries.
+     * @return Promise resolved with missing dependencies.
+     */
+    protected getMissingDependencies(
+        dependencies: CoreH5PLibraryBasicData[],
+        library: CoreH5PLibraryJsonData,
+        libraries: CoreH5PLibrariesJsonData,
+    ): Record<string, CoreH5PLibraryBasicData> {
+        const missing: Record<string, CoreH5PMissingLibrary> = {};
+
+        dependencies.forEach((dependency) => {
+            const libString  = CoreH5PCore.libraryToString(dependency);
+            if (!libraries[libString]) {
+                missing[libString] = Object.assign(dependency, {
+                    libString: CoreH5PCore.libraryToString(library),
+                });
+            }
+        });
+
+        return missing;
+    }
+
+    /**
      * Get library data for all libraries in an H5P package.
      *
      * @param packagePath The path to the package folder.
@@ -68,7 +126,7 @@ export class CoreH5PValidator {
                 return;
             }
 
-            const libDirPath = CoreTextUtils.concatenatePaths(packagePath, entry.name);
+            const libDirPath = CoreText.concatenatePaths(packagePath, entry.name);
 
             const libraryData = await this.getLibraryData(<DirectoryEntry> entry, libDirPath);
 
@@ -86,7 +144,7 @@ export class CoreH5PValidator {
      * @return Promise resolved with boolean: whether the library has an icon file.
      */
     protected async libraryHasIcon(libPath: string): Promise<boolean> {
-        const path = CoreTextUtils.concatenatePaths(libPath, 'icon.svg');
+        const path = CoreText.concatenatePaths(libPath, 'icon.svg');
 
         try {
             // Check if the file exists.
@@ -105,9 +163,14 @@ export class CoreH5PValidator {
      *
      * @param packagePath The path to the package folder.
      * @param entries List of files and directories in the root of the package folder.
+     * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
-    async processH5PFiles(packagePath: string, entries: (DirectoryEntry | FileEntry)[]): Promise<CoreH5PMainJSONFilesData> {
+    async processH5PFiles(
+        packagePath: string,
+        entries: (DirectoryEntry | FileEntry)[],
+        siteId?: string,
+    ): Promise<CoreH5PMainJSONFilesData> {
 
         // Read the needed files.
         const results = await Promise.all([
@@ -115,6 +178,31 @@ export class CoreH5PValidator {
             this.readH5PContentJsonFile(packagePath),
             this.getPackageLibrariesData(packagePath, entries),
         ]);
+
+        // Check if there are missing libraries.
+        const missingLibraries = this.getMissingLibraries(results[2]);
+
+        // Check if the missing libraries are already installed in the app.
+        await Promise.all(Object.keys(missingLibraries).map(async (libString) => {
+            const dependency = missingLibraries[libString];
+            const dependencyId = await this.h5pFramework.getLibraryIdByData(dependency, siteId);
+
+            if (dependencyId) {
+                // Lib is installed.
+                delete missingLibraries[libString];
+            }
+        }));
+
+        if (Object.keys(missingLibraries).length > 0) {
+            // Missing library, throw error.
+            const libString = Object.keys(missingLibraries)[0];
+            const missingLibrary = missingLibraries[libString];
+
+            throw new CoreError(Translate.instant('core.h5p.missingdependency', { $a: {
+                lib: missingLibrary.libString,
+                dep: libString,
+            } }));
+        }
 
         return {
             librariesJsonData: results[2],
@@ -131,7 +219,7 @@ export class CoreH5PValidator {
      * @return Promise resolved with the parsed file contents.
      */
     protected readH5PContentJsonFile(packagePath: string): Promise<unknown> {
-        const path = CoreTextUtils.concatenatePaths(packagePath, 'content/content.json');
+        const path = CoreText.concatenatePaths(packagePath, 'content/content.json');
 
         return CoreFile.readFile(path, CoreFileFormat.FORMATJSON);
     }
@@ -143,7 +231,7 @@ export class CoreH5PValidator {
      * @return Promise resolved with the parsed file contents.
      */
     protected readH5PJsonFile(packagePath: string): Promise<CoreH5PMainJSONData> {
-        const path = CoreTextUtils.concatenatePaths(packagePath, 'h5p.json');
+        const path = CoreText.concatenatePaths(packagePath, 'h5p.json');
 
         return CoreFile.readFile(path, CoreFileFormat.FORMATJSON);
     }
@@ -155,7 +243,7 @@ export class CoreH5PValidator {
      * @return Promise resolved with the parsed file contents.
      */
     protected readLibraryJsonFile(libPath: string): Promise<CoreH5PLibraryMainJsonData> {
-        const path = CoreTextUtils.concatenatePaths(libPath, 'library.json');
+        const path = CoreText.concatenatePaths(libPath, 'library.json');
 
         return CoreFile.readFile<CoreH5PLibraryMainJsonData>(path, CoreFileFormat.FORMATJSON);
     }
@@ -168,14 +256,14 @@ export class CoreH5PValidator {
      */
     protected async readLibraryLanguageFiles(libPath: string): Promise<CoreH5PLibraryLangsJsonData | undefined> {
         try {
-            const path = CoreTextUtils.concatenatePaths(libPath, 'language');
+            const path = CoreText.concatenatePaths(libPath, 'language');
             const langIndex: CoreH5PLibraryLangsJsonData = {};
 
             // Read all the files in the language directory.
             const entries = await CoreFile.getDirectoryContents(path);
 
             await Promise.all(entries.map(async (entry) => {
-                const langFilePath = CoreTextUtils.concatenatePaths(path, entry.name);
+                const langFilePath = CoreText.concatenatePaths(path, entry.name);
 
                 try {
                     const langFileData = await CoreFile.readFile<CoreH5PLibraryLangJsonData>(
@@ -205,7 +293,7 @@ export class CoreH5PValidator {
      */
     protected async readLibrarySemanticsFile(libPath: string): Promise<CoreH5PSemantics[] | undefined> {
         try {
-            const path = CoreTextUtils.concatenatePaths(libPath, 'semantics.json');
+            const path = CoreText.concatenatePaths(libPath, 'semantics.json');
 
             return await CoreFile.readFile<CoreH5PSemantics[]>(path, CoreFileFormat.FORMATJSON);
         } catch (error) {

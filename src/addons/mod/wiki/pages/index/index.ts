@@ -47,23 +47,6 @@ export class AddonModWikiIndexPage extends CoreCourseModuleMainActivityPage<Addo
         this.subwikiId = CoreNavigator.getRouteNumberParam('subwikiId');
         this.userId = CoreNavigator.getRouteNumberParam('userId');
         this.groupId = CoreNavigator.getRouteNumberParam('groupId');
-
-        this.title = this.pageTitle || this.module.name;
-    }
-
-    /**
-     * Update some data based on the data received.
-     *
-     * @param data The data received.
-     */
-    updateData(data: { name: string } | string): void {
-        if (typeof data == 'string') {
-            // We received the title to display.
-            this.title = data;
-        } else {
-            // We received a wiki instance.
-            this.title = this.pageTitle || data.name || this.title;
-        }
     }
 
     /**

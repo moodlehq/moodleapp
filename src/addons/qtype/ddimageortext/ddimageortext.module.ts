@@ -30,8 +30,7 @@ import { AddonQtypeDdImageOrTextHandler } from './services/handlers/ddimageortex
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreQuestionDelegate.registerHandler(AddonQtypeDdImageOrTextHandler.instance);
             },
         },

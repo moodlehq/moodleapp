@@ -22,37 +22,61 @@ import { Platform } from '@singletons';
 export function CoreModalLateralTransitionEnter(baseEl: HTMLElement): Animation {
     const OFF_RIGHT = Platform.isRTL ? '-100%' : '100%';
 
-    const backdropAnimation = createAnimation()
-        .addElement(baseEl.querySelector('ion-backdrop')!)
-        .fromTo('opacity', 0.01, 0.4);
+    const otherAnimations: Animation[] = [];
 
-    const wrapperAnimation = createAnimation()
-        .addElement(baseEl.querySelector('.modal-wrapper')!)
-        .fromTo('transform', 'translateX(' + OFF_RIGHT + ')', 'translateX(0)')
-        .fromTo('opacity', 0.8, 1);
+    const backdrop = baseEl.querySelector('ion-backdrop');
+    if (backdrop) {
+        const backdropAnimation = createAnimation()
+            .addElement(backdrop)
+            .fromTo('opacity', 0.01, 0.4);
+
+        otherAnimations.push(backdropAnimation);
+    }
+
+    const wrapper = baseEl.querySelector('.modal-wrapper');
+    if (wrapper) {
+        const wrapperAnimation = createAnimation()
+            .addElement(wrapper)
+            .fromTo('transform', 'translateX(' + OFF_RIGHT + ')', 'translateX(0)')
+            .fromTo('opacity', 0.8, 1);
+
+        otherAnimations.push(wrapperAnimation);
+    }
 
     return createAnimation()
         .addElement(baseEl)
         .easing('cubic-bezier(0.36,0.66,0.04,1)')
         .duration(300)
-        .addAnimation([backdropAnimation, wrapperAnimation]);
+        .addAnimation(otherAnimations);
 }
 
 export function CoreModalLateralTransitionLeave(baseEl: HTMLElement): Animation {
     const OFF_RIGHT = Platform.isRTL ? '-100%' : '100%';
 
-    const backdropAnimation = createAnimation()
-        .addElement(baseEl.querySelector('ion-backdrop')!)
-        .fromTo('opacity', 0.4, 0.0);
+    const otherAnimations: Animation[] = [];
 
-    const wrapperAnimation = createAnimation()
-        .addElement(baseEl.querySelector('.modal-wrapper')!)
-        .beforeStyles({ opacity: 1 })
-        .fromTo('transform', 'translateX(0)', 'translateX(' + OFF_RIGHT + ')');
+    const backdrop = baseEl.querySelector('ion-backdrop');
+    if (backdrop) {
+        const backdropAnimation = createAnimation()
+            .addElement(backdrop)
+            .fromTo('opacity', 0.4, 0.0);
+
+        otherAnimations.push(backdropAnimation);
+    }
+
+    const wrapper = baseEl.querySelector('.modal-wrapper');
+    if (wrapper) {
+        const wrapperAnimation = createAnimation()
+            .addElement(wrapper)
+            .beforeStyles({ opacity: 1 })
+            .fromTo('transform', 'translateX(0)', 'translateX(' + OFF_RIGHT + ')');
+
+        otherAnimations.push(wrapperAnimation);
+    }
 
     return createAnimation()
         .addElement(baseEl)
         .easing('cubic-bezier(0.36,0.66,0.04,1)')
         .duration(300)
-        .addAnimation([backdropAnimation, wrapperAnimation]);
+        .addAnimation(otherAnimations);
 }

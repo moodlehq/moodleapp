@@ -110,7 +110,7 @@ export class AddonModLtiProvider {
             return currentLti;
         }
 
-        throw new CoreError('Activity not found.');
+        throw new CoreError(Translate.instant('core.course.modulenotfound'));
     }
 
     /**
@@ -331,7 +331,7 @@ export type AddonModLtiLti = {
     name: string; // LTI name.
     intro?: string; // The LTI intro.
     introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    introfiles?: CoreWSExternalFile[]; // @since 3.2.
+    introfiles?: CoreWSExternalFile[];
     timecreated?: number; // Time of creation.
     timemodified?: number; // Time of last modification.
     typeid?: number; // Type id.

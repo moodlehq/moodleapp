@@ -14,8 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/activity-prefetch-handler';
-import { CoreCourseAnyModuleData } from '@features/course/services/course';
-import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
 import { CoreFilepool } from '@services/filepool';
 import { CoreGroups } from '@services/groups';
 import { CoreFileSizeSum, CorePluginFileDelegate } from '@services/plugin-file-delegate';
@@ -190,7 +189,7 @@ export class AddonModWikiPrefetchHandlerService extends CoreCourseActivityPrefet
 
         // Fetch info to provide wiki links.
         promises.push(AddonModWiki.getWiki(courseId, module.id, { siteId }).then((wiki) =>
-            CoreCourseHelper.getModuleCourseIdByInstance(wiki.id, 'wiki', siteId)));
+            CoreCourse.getModuleBasicInfoByInstance(wiki.id, 'wiki', { siteId })));
 
         // Get related page files and fetch them.
         promises.push(this.getFiles(module, courseId, single, siteId).then((files) =>
@@ -203,7 +202,7 @@ export class AddonModWikiPrefetchHandlerService extends CoreCourseActivityPrefet
      * @inheritdoc
      */
     sync(module: CoreCourseAnyModuleData, courseId: number, siteId?: string): Promise<AddonModWikiSyncWikiResult> {
-        return AddonModWikiSync.syncWiki(module.instance!, module.course, module.id, siteId);
+        return AddonModWikiSync.syncWiki(module.instance, module.course, module.id, siteId);
     }
 
 }

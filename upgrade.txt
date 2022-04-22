@@ -1,6 +1,33 @@
 This files describes API changes in the Moodle Mobile app,
 information provided here is intended especially for developers.
 
+=== 4.0.0 ===
+
+- The versioncode in moodle.config.json has changed from 4 digits to 5 digits to match the actual value for the stores: the 4.0.0 version's versioncode is now 40000 instead of 4000. If you maintain a Moodle plugin with mobile support and you use the versioncode that is sent in every request, you might need to check if this change will affect your code.
+- The parameters of the functions confirmAndPrefetchCourse and confirmAndPrefetchCourses have changed, they now accept an object with options.
+- Component core-navigation-bar changed to add an slider inside. previous, previousTitle, next, nextTitle, info and title have been removed.
+  Now you have to pass all items and 3 optional params have been added.
+- CoreCourseModulePrefetchDelegate.getPrefetchHandlerFor now admits module name instead of full module object.
+- CoreCourse.getModuleBasicInfoByInstance and CoreCourse.getModuleBasicInfo have been modified to accept an "options" parameter instead of only siteId.
+- The function CoreFilepool.isFileDownloadingByUrl now returns Promise<boolean> instead of relying on resolve/reject.
+- downloadEnabled input has been removed from CoreBlockSideBlocksComponent, CoreCourseFormatComponent, CoreCourseFormatSingleActivityComponent and CoreCourseModuleComponent.
+- There were several breaking changes done in CoreUserDelegate and its handlers:
+    The function CoreUserDelegate.getProfileHandlersFor must now receive a context + contextId instead of a courseId.
+    The user handler function isEnabledForCourse is now called isEnabledForContext and receives a context + contextId instead of a courseId.
+    Some user handler's functions have also changed to accept context + contextId instead of a courseId: isEnabledForUser, getDisplayData, action.
+- CoreCourseHelperProvider.openCourse parameters changed, now it admits CoreNavigationOptions + siteId on the same object that includes Params passed to page.
+- displaySectionSelector has been deprecated on CoreCourseFormatHandler, use displayCourseIndex instead.
+- Most of the functions or callbacks that handle redirects/deeplinks have been modified to accept an object instead of just path + options. E.g.: CoreLoginHelper.isSiteLoggedOut, CoreLoginHelper.openBrowserForSSOLogin, CoreLoginHelper.openBrowserForOAuthLogin, CoreLoginHelper.prepareForSSOLogin, CoreApp.storeRedirect, CoreSites.loadSite.
+- Course preview page route has changed from course/:courseId/preview to course/:courseId/summary to match with the page name and characteristics.
+- The parameters of the following functions in CoreCourseHelper have changed: navigateToModuleByInstance, navigateToModule, openModule.
+- fillContextMenu, expandDescription, gotoBlog, prefetch and removeFiles functions have been removed from CoreCourseModuleMainResourceComponent.
+- contextMenuPrefetch and fillContextMenu have been removed from CoreCourseHelper.
+- The variable "loaded" in CoreCourseModuleMainResourceComponent has been changed to "showLoading" to reflect its purpose better.
+- The function getCurrentSection of course formats can now return a forceSelected boolean along with the section (defaults to false if not returned).
+- The link handlers functions (CoreContentLinksHandler) will now always receive a relative URL instead of an absolute URL. The CoreContentLinksHandlerBase class now adds "^" to the start of the pattern by default to prevent false positives.
+- The function CoreLoginHelper.setWaitingForBrowser has been removed, use CoreLoginHelper.waitForBrowser and CoreLoginHelper.stopWaitingForBrowser instead.
+
+
 === 3.9.5 ===
 
 - Several functions inside AddonNotificationsProvider have been modified to accept an "options" parameter instead of having several optional parameters.

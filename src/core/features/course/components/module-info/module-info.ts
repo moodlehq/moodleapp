@@ -12,20 +12,57 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CoreCourseModule, CoreCourseModuleCompletionData } from '@features/course/services/course-helper';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { CoreCourse } from '@features/course/services/course';
+import { CoreCourseModuleCompletionData, CoreCourseModuleData } from '@features/course/services/course-helper';
+import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
+import { CoreSites } from '@services/sites';
 
 /**
- * Display info about a module: dates and completion.
+ * Display info about a module:
+ *
+ * Description:
+ * Module descriptions are shortened by default, allowing the user to see the full description by clicking in it.
+ *
+ * Completion dates, status and buttons.
+ *
+ * You can add also add custom information that will be included at the end.
  */
 @Component({
     selector: 'core-course-module-info',
     templateUrl: 'core-course-module-info.html',
+    styleUrls: ['course-module-info.scss'],
 })
-export class CoreCourseModuleInfoComponent {
+export class CoreCourseModuleInfoComponent implements OnInit {
 
-    @Input() module!: CoreCourseModule; // The module to render.
-    @Input() showManualCompletion = false; // Whether to show manual completion.
+    @Input() module!: CoreCourseModuleData; // The module to render.
+    @Input() courseId!: number; // The courseId the module belongs to.
+
+    @Input() component!: string; // Component for format text directive.
+    @Input() componentId!: string | number; // Component ID to use in conjunction with the component.
+
+    @Input() description?: string | false; // The description to display. If false, no description will be shown.
+    @Input() expandDescription = false; // If the description should be expanded by default.
+
+    @Input() showAvailabilityInfo = false; // If show availability info on the box.
+
+    @Input() hasDataToSync = false; // If the activity has any data to be synced.
+
+    @Input() showManualCompletion = true; // Whether to show manual completion, true by default.
     @Output() completionChanged = new EventEmitter<CoreCourseModuleCompletionData>(); // Notify when completion changes.
+
+    modicon = '';
+    showCompletion = false; // Whether to show completion.
+    moduleNameTranslated = '';
+
+    /**
+     * @inheritdoc
+     */
+    async ngOnInit(): Promise<void> {
+        this.modicon = await CoreCourseModuleDelegate.getModuleIconSrc(this.module.modname, this.module.modicon, this.module);
+
+        this.moduleNameTranslated = CoreCourse.translateModuleName(this.module.modname || '');
+        this.showCompletion = CoreSites.getRequiredCurrentSite().isVersionGreaterEqualThan('3.11');
+    }
 
 }

@@ -14,9 +14,11 @@
 
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ApplicationInitStatus, Injector, NgModule, Type } from '@angular/core';
+import { HammerModule, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
 
 import { CoreApplicationInitStatus } from './classes/application-init-status';
 import { CoreFeaturesModule } from './features/features.module';
+import { CoreHammerGestureConfig } from './classes/hammer-gesture-config';
 import { CoreInterceptor } from './classes/interceptor';
 import { getDatabaseProviders } from './services/database';
 import { getInitializerProviders } from './initializers';
@@ -31,7 +33,6 @@ import { CoreFileHelperProvider } from '@services/file-helper';
 import { CoreFilepoolProvider } from '@services/filepool';
 import { CoreFileProvider } from '@services/file';
 import { CoreFileSessionProvider } from '@services/file-session';
-import { CoreForms } from '@singletons/form';
 import { CoreGeolocationProvider } from '@services/geolocation';
 import { CoreGroupsProvider } from '@services/groups';
 import { CoreIframeUtilsProvider } from '@services/utils/iframe';
@@ -61,7 +62,6 @@ export const CORE_SERVICES: Type<unknown>[] = [
     CoreFilepoolProvider,
     CoreFileProvider,
     CoreFileSessionProvider,
-    CoreForms,
     CoreGeolocationProvider,
     CoreGroupsProvider,
     CoreIframeUtilsProvider,
@@ -84,9 +84,11 @@ export const CORE_SERVICES: Type<unknown>[] = [
 @NgModule({
     imports: [
         CoreFeaturesModule,
+        HammerModule,
     ],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: CoreInterceptor, multi: true },
+        { provide: HAMMER_GESTURE_CONFIG, useClass: CoreHammerGestureConfig },
         { provide: ApplicationInitStatus, useClass: CoreApplicationInitStatus, deps: [Injector] },
         ...getDatabaseProviders(),
         ...getInitializerProviders(),

@@ -3,16 +3,18 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>
-            <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
-            </core-format-text>
-        </h1>
+        <ion-title>
+            <h1>
+                <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
+                </core-format-text>
+            </h1>
+        </ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content>
-    <core-loading [hideUntil]="feedbackLoaded">
+<ion-content class="limited-width">
+    <core-loading [hideUntil]="feedbackLoaded" class="has-spacer">
         <ng-container *ngIf="items && items.length">
-            <ion-list class="ion-no-margin">
+            <ion-list class="ion-no-margin has-spacer">
                 <ion-item class="ion-text-wrap">
                     <ion-label>
                         <h2>{{ 'addon.mod_feedback.mode' | translate }}</h2>
@@ -28,22 +30,20 @@
                             <ion-label [position]="item.hasTextInput ? 'stacked' : undefined">
                                 <p *ngIf="item.name" [core-mark-required]="item.required">
                                     <span *ngIf="feedback!.autonumbering && item.itemnumber">{{item.itemnumber}}. </span>
-                                    <core-format-text [component]="component" [componentId]="cmId" [text]="item.name"
-                                        contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId" [wsNotFiltered]="true">
+                                    <core-format-text [component]="component" [componentId]="cmId" [text]="item.name" contextLevel="module"
+                                        [contextInstanceId]="cmId" [courseId]="courseId" [wsNotFiltered]="true">
                                     </core-format-text>
                                     <span *ngIf="item.postfix" class="addon-mod_feedback-postfix">{{item.postfix}}</span>
                                 </p>
                                 <p *ngIf="item.templateName == 'label'">
-                                    <core-format-text [component]="component" [componentId]="cmId"
-                                        [text]="item.presentation" contextLevel="module" [contextInstanceId]="cmId"
-                                        [wsNotFiltered]="true" [courseId]="courseId">
+                                    <core-format-text [component]="component" [componentId]="cmId" [text]="item.presentation"
+                                        contextLevel="module" [contextInstanceId]="cmId" [wsNotFiltered]="true" [courseId]="courseId">
                                     </core-format-text>
                                 </p>
                             </ion-label>
 
-                            <ion-input *ngIf="item.templateName == 'textfield'" type="text" [(ngModel)]="item.value"
-                                autocorrect="off" name="{{item.typ}}_{{item.id}}" maxlength="{{item.length}}"
-                                [required]="item.required">
+                            <ion-input *ngIf="item.templateName == 'textfield'" type="text" [(ngModel)]="item.value" autocorrect="off"
+                                name="{{item.typ}}_{{item.id}}" maxlength="{{item.length}}" [required]="item.required">
                             </ion-input>
 
                             <ng-container *ngIf="item.templateName == 'numeric'">
@@ -56,8 +56,8 @@
                                 </ion-text>
                             </ng-container>
 
-                            <ion-textarea *ngIf="item.templateName == 'textarea'" [required]="item.required"
-                                name="{{item.typ}}_{{item.id}}" [(ngModel)]="item.value">
+                            <ion-textarea *ngIf="item.templateName == 'textarea'" [required]="item.required" name="{{item.typ}}_{{item.id}}"
+                                [(ngModel)]="item.value">
                             </ion-textarea>
 
                             <ion-select *ngIf="item.templateName == 'multichoice-d'" [required]="item.required"
@@ -65,20 +65,18 @@
                                 [interfaceOptions]="{header: item.name}">
                                 <ion-select-option *ngFor="let option of item.choices" [value]="option.value">
                                     <core-format-text [component]="component" [componentId]="cmId" [text]="option.label"
-                                        contextLevel="module" [contextInstanceId]="cmId" [wsNotFiltered]="true"
-                                        [courseId]="courseId">
+                                        contextLevel="module" [contextInstanceId]="cmId" [wsNotFiltered]="true" [courseId]="courseId">
                                     </core-format-text>
                                 </ion-select-option>
                             </ion-select>
                         </ion-item>
 
-                        <ion-radio-group *ngIf="item.templateName == 'multichoice-r'" [(ngModel)]="item.value"
-                            [required]="item.required" name="{{item.typ}}_{{item.id}}">
+                        <ion-radio-group *ngIf="item.templateName == 'multichoice-r'" [(ngModel)]="item.value" [required]="item.required"
+                            name="{{item.typ}}_{{item.id}}">
                             <ion-item *ngFor="let option of item.choices">
                                 <ion-label>
-                                    <core-format-text [component]="component" [componentId]="cmId"
-                                        [text]="option.label" contextLevel="module" [contextInstanceId]="cmId"
-                                        [wsNotFiltered]="true" [courseId]="courseId">
+                                    <core-format-text [component]="component" [componentId]="cmId" [text]="option.label"
+                                        contextLevel="module" [contextInstanceId]="cmId" [wsNotFiltered]="true" [courseId]="courseId">
                                     </core-format-text>
                                 </ion-label>
                                 <ion-radio slot="start" [value]="option.value"></ion-radio>
@@ -89,19 +87,18 @@
                             <ion-item *ngFor="let option of item.choices">
                                 <ion-label>
                                     <core-format-text [component]="component" [componentId]="cmId" [text]="option.label"
-                                        contextLevel="module" [contextInstanceId]="cmId" [wsNotFiltered]="true"
-                                        [courseId]="courseId">
+                                        contextLevel="module" [contextInstanceId]="cmId" [wsNotFiltered]="true" [courseId]="courseId">
                                     </core-format-text>
                                 </ion-label>
-                                <ion-checkbox [required]="item.required" name="{{item.typ}}_{{item.id}}"
-                                    [(ngModel)]="option.checked" value="option.value">
+                                <ion-checkbox [required]="item.required" name="{{item.typ}}_{{item.id}}" [(ngModel)]="option.checked"
+                                    value="option.value">
                                 </ion-checkbox>
                             </ion-item>
                         </ng-container>
 
                         <ng-container *ngIf="item.templateName == 'captcha'">
-                            <core-recaptcha *ngIf="!preview && !offline" [publicKey]="item.captcha.recaptchapublickey"
-                                [model]="item" modelValueName="value">
+                            <core-recaptcha *ngIf="!preview && !offline" [publicKey]="item.captcha.recaptchapublickey" [model]="item"
+                                modelValueName="value">
                             </core-recaptcha>
                             <div *ngIf="!preview && (!item.captcha || offline)" class="core-warning-card">
                                 <ion-item>
@@ -112,32 +109,31 @@
                         </ng-container>
                     </ng-container>
                 </ng-container>
-                <ion-grid *ngIf="!preview">
-                    <ion-row class="ion-align-items-center">
-                        <ion-col *ngIf="hasPrevPage">
-                            <ion-button expand="block" fill="outline" (click)="gotoPage(true)" class="ion-text-wrap">
-                                <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true"></ion-icon>
-                                {{ 'addon.mod_feedback.previous_page' | translate }}
-                            </ion-button>
-                        </ion-col>
-                        <ion-col *ngIf="hasNextPage">
-                            <ion-button expand="block" (click)="gotoPage(false)" class="ion-text-wrap">
-                                {{ 'addon.mod_feedback.next_page' | translate }}
-                                <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true"></ion-icon>
-                            </ion-button>
-                        </ion-col>
-                        <ion-col *ngIf="!hasNextPage">
-                            <ion-button expand="block" (click)="gotoPage(false)" class="ion-text-wrap">
-                                {{ 'addon.mod_feedback.save_entries' | translate }}
-                            </ion-button>
-                        </ion-col>
-                    </ion-row>
-                </ion-grid>
+
+                <ion-row class="ion-align-items-center spacer-top" *ngIf="!preview">
+                    <ion-col *ngIf="hasPrevPage">
+                        <ion-button expand="block" fill="outline" (click)="gotoPage(true)" class="ion-text-wrap">
+                            <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true"></ion-icon>
+                            {{ 'core.previous' | translate }}
+                        </ion-button>
+                    </ion-col>
+                    <ion-col *ngIf="hasNextPage">
+                        <ion-button expand="block" (click)="gotoPage(false)" class="ion-text-wrap">
+                            {{ 'core.next' | translate }}
+                            <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true"></ion-icon>
+                        </ion-button>
+                    </ion-col>
+                    <ion-col *ngIf="!hasNextPage">
+                        <ion-button expand="block" (click)="gotoPage(false)" class="ion-text-wrap">
+                            {{ 'core.submit' | translate }}
+                        </ion-button>
+                    </ion-col>
+                </ion-row>
             </ion-list>
         </ng-container>
 
         <ion-card class="core-success-card" *ngIf="completed">
-            <ion-item>
+            <ion-item class="ion-text-wrap">
                 <ion-icon name="fas-check" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
                     <p *ngIf="!completionPageContents && !completedOffline">
@@ -146,32 +142,25 @@
                     <p *ngIf="!completionPageContents && completedOffline">
                         {{ 'addon.mod_feedback.feedback_submitted_offline' | translate }}
                     </p>
-                    <p *ngIf="completionPageContents">
-                        <core-format-text [component]="component" componentId="componentId" [text]="completionPageContents"
-                            contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
-                        </core-format-text>
-                    </p>
+                    <core-format-text *ngIf="completionPageContents" [component]="component" componentId="componentId"
+                        [text]="completionPageContents" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
+                    </core-format-text>
                 </ion-label>
             </ion-item>
         </ion-card>
 
-        <ion-card *ngIf="completed && (access!.canviewanalysis || hasNextPage)">
-            <ion-grid>
-                <ion-row class="ion-align-items-center">
-                    <ion-col *ngIf="access!.canviewanalysis">
-                        <ion-button expand="block" fill="outline" (click)="showAnalysis()" class="ion-text-wrap">
-                            <ion-icon name="fas-chart-bar" slot="start" aria-hidden="true"></ion-icon>
-                            {{ 'addon.mod_feedback.completed_feedbacks' | translate }}
-                        </ion-button>
-                    </ion-col>
-                    <ion-col *ngIf="hasNextPage">
-                        <ion-button expand="block" (click)="continue()" class="ion-text-wrap">
-                            {{ 'core.continue' | translate }}
-                            <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true"></ion-icon>
-                        </ion-button>
-                    </ion-col>
-                </ion-row>
-            </ion-grid>
-        </ion-card>
+        <div collapsible-footer *ngIf="feedbackLoaded && completed" slot="fixed" appearOnBottom>
+            <div class="list-item-limited-width adaptable-buttons-row">
+                <ion-button expand="block" fill="outline" (click)="showAnalysis()" class="ion-text-wrap ion-margin"
+                    *ngIf="access!.canviewanalysis">
+                    <ion-icon name="fas-chart-bar" slot="start" aria-hidden="true"></ion-icon>
+                    {{ 'addon.mod_feedback.completed_feedbacks' | translate }}
+                </ion-button>
+                <ion-button expand="block" (click)="continue()" class="ion-text-wrap ion-margin">
+                    <ng-container *ngIf="!siteAfterSubmit">{{ 'core.continue' | translate }}</ng-container>
+                    <ng-container *ngIf="siteAfterSubmit">{{ 'core.course.nextactivity' | translate }}</ng-container>
+                </ion-button>
+            </div>
+        </div>
     </core-loading>
 </ion-content>

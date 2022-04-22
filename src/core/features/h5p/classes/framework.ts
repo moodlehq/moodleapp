@@ -42,6 +42,8 @@ import { CoreH5PSemantics } from './content-validator';
 import { CoreH5PContentBeingSaved, CoreH5PLibraryBeingSaved } from './storage';
 import { CoreH5PLibraryAddTo, CoreH5PLibraryMetadataSettings } from './validator';
 import { CoreH5PMetadata } from './metadata';
+import { Translate } from '@singletons';
+import { SQLiteDB } from '@classes/sqlitedb';
 
 /**
  * Equivalent to Moodle's implementation of H5PFrameworkInterface.
@@ -63,7 +65,7 @@ export class CoreH5PFramework {
 
         const db = await CoreSites.getSiteDb(siteId);
 
-        const whereAndParams = db.getInOrEqual(libraryIds);
+        const whereAndParams = SQLiteDB.getInOrEqual(libraryIds);
         whereAndParams.sql = 'mainlibraryid ' + whereAndParams.sql;
 
         await db.updateRecordsWhere(CONTENT_TABLE_NAME, { filtered: null }, whereAndParams.sql, whereAndParams.params);
@@ -387,7 +389,7 @@ export class CoreH5PFramework {
      * @return Library parameter values separated by ', '
      */
     libraryParameterValuesToCsv(libraryData: CoreH5PLibraryBeingSaved, key: string, searchParam: string = 'path'): string {
-        if (typeof libraryData[key] != 'undefined') {
+        if (libraryData[key] !== undefined) {
             const parameterValues: string[] = [];
 
             libraryData[key].forEach((file) => {
@@ -419,7 +421,7 @@ export class CoreH5PFramework {
                         'l1.patchversion AS patchVersion, l1.addto AS addTo, ' +
                         'l1.preloadedjs AS preloadedJs, l1.preloadedcss AS preloadedCss ' +
                     'FROM ' + LIBRARIES_TABLE_NAME + ' l1 ' +
-                    'JOIN ' + LIBRARIES_TABLE_NAME + ' l2 ON l1.machinename = l2.machinename AND (' +
+                    'LEFT JOIN ' + LIBRARIES_TABLE_NAME + ' l2 ON l1.machinename = l2.machinename AND (' +
                         'l1.majorversion < l2.majorversion OR (l1.majorversion = l2.majorversion AND ' +
                         'l1.minorversion < l2.minorversion)) ' +
                     'WHERE l1.addto IS NOT NULL AND l2.machinename IS NULL';
@@ -483,8 +485,12 @@ export class CoreH5PFramework {
         if (!params.metadata) {
             params.metadata = {};
         }
+        // Add title to metadata.
+        if (typeof params.title === 'string' && !params.metadata.title) {
+            params.metadata.title = params.title;
+        }
         content.metadata = params.metadata;
-        content.params = JSON.stringify(typeof params.params != 'undefined' && params.params != null ? params.params : params);
+        content.params = JSON.stringify(params.params !== undefined && params.params != null ? params.params : params);
 
         return content;
     }
@@ -685,15 +691,15 @@ export class CoreH5PFramework {
         const preloadedCSS = this.libraryParameterValuesToCsv(libraryData, 'preloadedCss', 'path');
         const dropLibraryCSS = this.libraryParameterValuesToCsv(libraryData, 'dropLibraryCss', 'machineName');
 
-        if (typeof libraryData.semantics == 'undefined') {
+        if (libraryData.semantics === undefined) {
             libraryData.semantics = [];
         }
-        if (typeof libraryData.fullscreen == 'undefined') {
+        if (libraryData.fullscreen === undefined) {
             libraryData.fullscreen = 0;
         }
 
         let embedTypes = '';
-        if (typeof libraryData.embedTypes != 'undefined') {
+        if (libraryData.embedTypes !== undefined) {
             embedTypes = libraryData.embedTypes.join(', ');
         }
 
@@ -712,9 +718,9 @@ export class CoreH5PFramework {
             preloadedjs: preloadedJS,
             preloadedcss: preloadedCSS,
             droplibrarycss: dropLibraryCSS,
-            semantics: typeof libraryData.semantics != 'undefined' ? JSON.stringify(libraryData.semantics) : null,
-            addto: typeof libraryData.addTo != 'undefined' ? JSON.stringify(libraryData.addTo) : null,
-            metadatasettings: typeof libraryData.metadataSettings != 'undefined' ?
+            semantics: libraryData.semantics !== undefined ? JSON.stringify(libraryData.semantics) : null,
+            addto: libraryData.addTo !== undefined ? JSON.stringify(libraryData.addTo) : null,
+            metadatasettings: libraryData.metadataSettings !== undefined ?
                 CoreH5PMetadata.boolifyAndEncodeSettings(libraryData.metadataSettings) : null,
         };
 
@@ -738,14 +744,14 @@ export class CoreH5PFramework {
     /**
      * Save what libraries a library is depending on.
      *
-     * @param libraryId Library Id for the library we're saving dependencies for.
+     * @param library Library data for the library we're saving dependencies for.
      * @param dependencies List of dependencies as associative arrays containing machineName, majorVersion, minorVersion.
      * @param dependencytype The type of dependency.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
     async saveLibraryDependencies(
-        libraryId: number,
+        library: CoreH5PLibraryBeingSaved,
         dependencies: CoreH5PLibraryBasicData[],
         dependencyType: string,
         siteId?: string,
@@ -757,9 +763,17 @@ export class CoreH5PFramework {
             // Get the ID of the library.
             const dependencyId = await this.getLibraryIdByData(dependency, siteId);
 
+            if (!dependencyId) {
+                // Missing dependency. It should have been detected before installing the package.
+                throw new CoreError(Translate.instant('core.h5p.missingdependency', { $a: {
+                    lib: CoreH5PCore.libraryToString(library),
+                    dep: CoreH5PCore.libraryToString(dependency),
+                } }));
+            }
+
             // Create the relation.
             const entry: Partial<CoreH5PLibraryDependencyDBRecord> = {
-                libraryid: libraryId,
+                libraryid: library.libraryId,
                 requiredlibraryid: dependencyId,
                 dependencytype: dependencyType,
             };
@@ -828,10 +842,18 @@ export class CoreH5PFramework {
         const db = await CoreSites.getSiteDb(siteId);
 
         // If the libraryid declared in the package is empty, get the latest version.
-        if (content.library && typeof content.library.libraryId == 'undefined') {
+        if (content.library && content.library.libraryId === undefined) {
             const mainLibrary = await this.getLatestLibraryVersion(content.library.machineName, siteId);
 
             content.library.libraryId = mainLibrary.id;
+        }
+
+        // Add title to 'params' to be able to add it to metadata later.
+        if (typeof content.title === 'string') {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const params = CoreTextUtils.parseJSON<any>(content.params || '{}');
+            params.title = content.title;
+            content.params = JSON.stringify(params);
         }
 
         const data: Partial<CoreH5PContentDBRecord> = {
@@ -844,23 +866,26 @@ export class CoreH5PFramework {
             fileurl: fileUrl,
             timecreated: undefined,
         };
+        let contentId: number | undefined;
 
-        if (typeof content.id != 'undefined') {
+        if (content.id !== undefined) {
             data.id = content.id;
+            contentId = content.id;
         } else {
             data.timecreated = data.timemodified;
         }
 
         await db.insertRecord(CONTENT_TABLE_NAME, data);
 
-        if (!data.id) {
+        if (!contentId) {
             // New content. Get its ID.
             const entry = await db.getRecord<CoreH5PContentDBRecord>(CONTENT_TABLE_NAME, data);
 
             content.id = entry.id;
+            contentId = content.id;
         }
 
-        return content.id!;
+        return contentId;
     }
 
     /**

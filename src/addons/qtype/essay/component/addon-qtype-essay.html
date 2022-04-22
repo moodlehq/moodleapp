@@ -2,8 +2,8 @@
     <!-- Question text. -->
     <ion-item class="ion-text-wrap">
         <ion-label>
-            <core-format-text [component]="component" [componentId]="componentId" [text]="essayQuestion.text"
-                [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">
+            <core-format-text [component]="component" [componentId]="componentId" [text]="essayQuestion.text" [contextLevel]="contextLevel"
+                [contextInstanceId]="contextInstanceId" [courseId]="courseId">
             </core-format-text>
         </ion-label>
     </ion-item>
@@ -15,13 +15,12 @@
             <ion-label class="sr-only">{{ 'core.question.answer' | translate }}</ion-label>
             <!-- "Format" and draftid hidden inputs -->
             <input *ngIf="essayQuestion.formatInput" type="hidden" [name]="essayQuestion.formatInput.name"
-                [value]="essayQuestion.formatInput.value" >
+                [value]="essayQuestion.formatInput.value">
             <input *ngIf="essayQuestion.answerDraftIdInput" type="hidden" [name]="essayQuestion.answerDraftIdInput.name"
-                [value]="essayQuestion.answerDraftIdInput.value" >
+                [value]="essayQuestion.answerDraftIdInput.value">
             <!-- Plain text textarea. -->
             <ion-textarea *ngIf="essayQuestion.isPlainText" class="core-question-textarea"
-                [ngClass]='{"core-monospaced": essayQuestion.isMonospaced}'
-                placeholder="{{ 'core.question.answer' | translate }}"
+                [ngClass]='{"core-monospaced": essayQuestion.isMonospaced}' placeholder="{{ 'core.question.answer' | translate }}"
                 [attr.name]="essayQuestion.textarea.name" [ngModel]="essayQuestion.textarea.text">
             </ion-textarea>
             <!-- Rich text editor. -->
@@ -52,11 +51,11 @@
             <core-attachments *ngIf="uploadFilesSupported && essayQuestion.attachmentsDraftIdInput" [files]="attachments"
                 [component]="component" [componentId]="componentId" [maxSize]="essayQuestion.attachmentsMaxBytes"
                 [maxSubmissions]="essayQuestion.attachmentsMaxFiles" [allowOffline]="offlineEnabled"
-                [acceptedTypes]="essayQuestion.attachmentsAcceptedTypes">
+                [acceptedTypes]="essayQuestion.attachmentsAcceptedTypes" [courseId]="courseId">
             </core-attachments>
 
             <input *ngIf="essayQuestion.attachmentsDraftIdInput" type="hidden" [name]="essayQuestion.attachmentsDraftIdInput.name"
-                [value]="essayQuestion.attachmentsDraftIdInput.value" >
+                [value]="essayQuestion.attachmentsDraftIdInput.value">
 
             <!-- Attachments not supported in this site. -->
             <ion-item *ngIf="!uploadFilesSupported" class="ion-text-wrap core-danger-item">
@@ -70,7 +69,7 @@
     <!-- Reviewing the question. -->
     <ng-container *ngIf="review">
         <!-- Answer to the question and attachments (reviewing). -->
-        <ion-item class="ion-text-wrap" *ngIf="essayQuestion.answer || essayQuestion.answer == ''">
+        <ion-item class="ion-text-wrap" *ngIf="essayQuestion.answer || essayQuestion.answer == ''">
             <ion-label>
                 <core-format-text [ngClass]='{"core-monospaced": essayQuestion.isMonospaced}' [component]="component"
                     [componentId]="componentId" [text]="essayQuestion.answer" [contextLevel]="contextLevel"

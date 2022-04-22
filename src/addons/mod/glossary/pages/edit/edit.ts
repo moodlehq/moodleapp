@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ViewChild, ElementRef, Optional } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Optional, OnDestroy } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { CoreError } from '@classes/errors/error';
+import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CanLeave } from '@guards/can-leave';
@@ -23,9 +25,12 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
+import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreForms } from '@singletons/form';
+import { AddonModGlossaryEntriesSource } from '../../classes/glossary-entries-source';
+import { AddonModGlossaryEntriesSwipeManager } from '../../classes/glossary-entries-swipe-manager';
 import {
     AddonModGlossary,
     AddonModGlossaryCategory,
@@ -45,7 +50,7 @@ import { AddonModGlossaryOffline } from '../../services/glossary-offline';
     selector: 'page-addon-mod-glossary-edit',
     templateUrl: 'edit.html',
 })
-export class AddonModGlossaryEditPage implements OnInit, CanLeave {
+export class AddonModGlossaryEditPage implements OnInit, OnDestroy, CanLeave {
 
     @ViewChild('editFormEl') formElement?: ElementRef;
 
@@ -64,6 +69,8 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
         timecreated: 0,
     };
 
+    entries?: AddonModGlossaryEditEntriesSwipeManager;
+
     options = {
         categories: <string[]> [],
         aliases: '',
@@ -73,26 +80,53 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
     };
 
     protected timecreated!: number;
-    protected concept?: string;
+    protected concept = '';
     protected syncId?: string;
     protected syncObserver?: CoreEventObserver;
     protected isDestroyed = false;
     protected originalData?: AddonModGlossaryNewEntryWithFiles;
     protected saved = false;
 
-    constructor(@Optional() protected splitView: CoreSplitViewComponent) {}
+    constructor(protected route: ActivatedRoute, @Optional() protected splitView: CoreSplitViewComponent) {}
 
     /**
      * Component being initialized.
      */
-    ngOnInit(): void {
-        this.cmId = CoreNavigator.getRouteNumberParam('cmId')!;
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId')!;
-        this.timecreated = CoreNavigator.getRouteNumberParam('timecreated')!;
-        this.concept = CoreNavigator.getRouteParam<string>('concept')!;
-        this.editorExtraParams.timecreated = this.timecreated;
+    async ngOnInit(): Promise<void> {
+        try {
+            const routeData = this.route.snapshot.data;
+            this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
+            this.timecreated = CoreNavigator.getRequiredRouteNumberParam('timecreated');
+            this.concept = CoreNavigator.getRouteParam<string>('concept') || '';
+            this.editorExtraParams.timecreated = this.timecreated;
+
+            if (this.timecreated !== 0 && (routeData.swipeEnabled ?? true)) {
+                const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
+                    AddonModGlossaryEntriesSource,
+                    [this.courseId, this.cmId, routeData.glossaryPathPrefix ?? ''],
+                );
+
+                this.entries = new AddonModGlossaryEditEntriesSwipeManager(source);
+
+                await this.entries.start();
+            }
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+
+            this.goBack();
+
+            return;
+        }
 
         this.fetchData();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.entries?.destroy();
     }
 
     /**
@@ -116,7 +150,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.mod_glossary.errorloadingglossary', true);
 
-            CoreNavigator.back();
+            this.goBack();
         }
     }
 
@@ -126,7 +160,11 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
      * @return Promise resolved when done.
      */
     protected async loadOfflineData(): Promise<void> {
-        const entry = await AddonModGlossaryOffline.getNewEntry(this.glossary!.id, this.concept || '', this.timecreated);
+        if (!this.glossary) {
+            return;
+        }
+
+        const entry = await AddonModGlossaryOffline.getNewEntry(this.glossary.id, this.concept, this.timecreated);
 
         this.entry.concept = entry.concept || '';
         this.entry.definition = entry.definition || '';
@@ -151,7 +189,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
 
         // Treat offline attachments if any.
         if (entry.attachments?.offline) {
-            this.attachments = await AddonModGlossaryHelper.getStoredFiles(this.glossary!.id, entry.concept, entry.timecreated);
+            this.attachments = await AddonModGlossaryHelper.getStoredFiles(this.glossary.id, entry.concept, entry.timecreated);
 
             this.originalData.files = this.attachments.slice();
         }
@@ -228,6 +266,10 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
         definition = CoreTextUtils.formatHtmlLines(definition);
 
         try {
+            if (!this.glossary) {
+                return;
+            }
+
             // Upload attachments first if any.
             const { saveOffline, attachmentsResult } = await this.uploadAttachments(timecreated);
 
@@ -236,7 +278,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
                 categories: this.options.categories.join(','),
             };
 
-            if (this.glossary!.usedynalink) {
+            if (this.glossary.usedynalink) {
                 options.usedynalink = this.options.usedynalink ? 1 : 0;
                 if (this.options.usedynalink) {
                     options.casesensitive = this.options.casesensitive ? 1 : 0;
@@ -245,9 +287,9 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
             }
 
             if (saveOffline) {
-                if (this.entry && !this.glossary!.allowduplicatedentries) {
+                if (this.entry && !this.glossary.allowduplicatedentries) {
                     // Check if the entry is duplicated in online or offline mode.
-                    const isUsed = await AddonModGlossary.isConceptUsed(this.glossary!.id, this.entry.concept, {
+                    const isUsed = await AddonModGlossary.isConceptUsed(this.glossary.id, this.entry.concept, {
                         timeCreated: this.entry.timecreated,
                         cmId: this.cmId,
                     });
@@ -260,7 +302,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
 
                 // Save entry in offline.
                 await AddonModGlossaryOffline.addNewEntry(
-                    this.glossary!.id,
+                    this.glossary.id,
                     this.entry.concept,
                     definition,
                     this.courseId,
@@ -275,7 +317,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
                 // Try to send it to server.
                 // Don't allow offline if there are attachments since they were uploaded fine.
                 await AddonModGlossary.addEntry(
-                    this.glossary!.id,
+                    this.glossary.id,
                     this.entry.concept,
                     definition,
                     this.courseId,
@@ -285,7 +327,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
                         timeCreated: timecreated,
                         discardEntry: this.entry,
                         allowOffline: !this.attachments.length,
-                        checkDuplicates: !this.glossary!.allowduplicatedentries,
+                        checkDuplicates: !this.glossary.allowduplicatedentries,
                     },
                 );
             }
@@ -295,12 +337,12 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
 
             if (entryId) {
                 // Data sent to server, delete stored files (if any).
-                AddonModGlossaryHelper.deleteStoredFiles(this.glossary!.id, this.entry.concept, timecreated);
+                AddonModGlossaryHelper.deleteStoredFiles(this.glossary.id, this.entry.concept, timecreated);
                 CoreEvents.trigger(CoreEvents.ACTIVITY_DATA_SENT, { module: 'glossary' });
             }
 
             CoreEvents.trigger(AddonModGlossaryProvider.ADD_ENTRY_EVENT, {
-                glossaryId: this.glossary!.id,
+                glossaryId: this.glossary.id,
                 entryId: entryId,
             }, CoreSites.getCurrentSiteId());
 
@@ -334,7 +376,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
     protected async uploadAttachments(
         timecreated: number,
     ): Promise<{saveOffline: boolean; attachmentsResult?: number | CoreFileUploaderStoreFilesResult}> {
-        if (!this.attachments.length) {
+        if (!this.attachments.length || !this.glossary) {
             return {
                 saveOffline: false,
             };
@@ -344,17 +386,21 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
             const attachmentsResult = await CoreFileUploader.uploadOrReuploadFiles(
                 this.attachments,
                 AddonModGlossaryProvider.COMPONENT,
-                this.glossary!.id,
+                this.glossary.id,
             );
 
             return {
                 saveOffline: false,
                 attachmentsResult,
             };
-        } catch {
+        } catch (error) {
+            if (CoreUtils.isWebServiceError(error)) {
+                throw error;
+            }
+
             // Cannot upload them in online, save them in offline.
             const attachmentsResult = await AddonModGlossaryHelper.storeFiles(
-                this.glossary!.id,
+                this.glossary.id,
                 this.entry.concept,
                 timecreated,
                 this.attachments,
@@ -365,6 +411,31 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
                 attachmentsResult,
             };
         }
+    }
+
+    /**
+     * Helper function to go back.
+     */
+    protected goBack(): void {
+        if (this.splitView?.outletActivated) {
+            CoreNavigator.navigate('../../');
+        } else {
+            CoreNavigator.back();
+        }
+    }
+
+}
+
+/**
+ * Helper to manage swiping within a collection of glossary entries.
+ */
+class AddonModGlossaryEditEntriesSwipeManager extends AddonModGlossaryEntriesSwipeManager {
+
+    /**
+     * @inheritdoc
+     */
+    protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot): string | null {
+        return `${this.getSource().GLOSSARY_PATH_PREFIX}edit/${route.params.timecreated}`;
     }
 
 }

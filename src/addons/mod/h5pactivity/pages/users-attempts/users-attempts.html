@@ -1,0 +1,74 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <ion-title>
+            <h1>
+                <core-format-text *ngIf="h5pActivity" [text]="h5pActivity.name" contextLevel="module"
+                    [contextInstanceId]="h5pActivity.coursemodule" [courseId]="courseId">
+                </core-format-text>
+            </h1>
+        </ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="doRefresh($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <core-loading [hideUntil]="loaded">
+        <ion-list *ngIf="users.length">
+            <!-- "Header" of the table -->
+            <ion-item class="addon-mod_h5pactivity-table-header font-bold" [detail]="false">
+                <ion-label>
+                    <ion-row class="ion-align-items-center">
+                        <ion-col class="ion-text-center" size="4">{{ 'core.user' | translate }}</ion-col>
+                        <ion-col class="ion-text-center" size="4">{{ 'core.date' | translate }}</ion-col>
+                        <ion-col class="ion-text-center" size="2">{{ 'addon.mod_h5pactivity.score' | translate }}</ion-col>
+                        <ion-col class="ion-text-center" size="2">{{ 'addon.mod_h5pactivity.attempts' | translate }}</ion-col>
+                    </ion-row>
+                </ion-label>
+            </ion-item>
+
+            <!-- List of users. -->
+            <ion-item class="ion-text-wrap addon-mod_h5pactivity-table-row" *ngFor="let user of users" detail="true" button
+                [attr.aria-label]="'addon.mod_h5pactivity.review_user_attempts' | translate:{$a: user.attempts.length}"
+                (click)="openUser(user)">
+
+                <ion-label>
+                    <ion-row class="ion-align-items-center">
+                        <ion-col class="ion-text-center" size="4">
+                            <p>
+                                <core-user-avatar [user]="user.user" [courseId]="courseId"></core-user-avatar>
+                            </p>
+                            {{ user.user.fullname }}
+                        </ion-col>
+                        <ion-col class="ion-text-center" size="4">
+                            <span *ngIf="user.attempts.length">
+                                {{ user.attempts[user.attempts.length - 1].timemodified | coreFormatDate:'strftimedatetimeshort' }}
+                            </span>
+                            <span *ngIf="!user.attempts.length">-</span>
+                        </ion-col>
+                        <ion-col class="ion-text-center" size="2">
+                            <span *ngIf="user.score !== undefined">
+                                {{ 'core.percentagenumber' | translate: {$a: user.score} }}
+                            </span>
+                            <span *ngIf="user.score === undefined">-</span>
+                        </ion-col>
+                        <ion-col class="ion-text-center" size="2">
+                            {{user.attempts.length}}
+                        </ion-col>
+                    </ion-row>
+                </ion-label>
+            </ion-item>
+        </ion-list>
+
+        <!-- No attempts. -->
+        <core-empty-box *ngIf="!users.length && !canLoadMore" icon="fas-chart-bar"
+            [message]="'addon.mod_h5pactivity.noparticipants' | translate">
+        </core-empty-box>
+
+        <core-infinite-loading [enabled]="loaded && canLoadMore" [error]="fetchMoreUsersFailed" (action)="fetchMoreUsers($event)">
+        </core-infinite-loading>
+    </core-loading>
+</ion-content>

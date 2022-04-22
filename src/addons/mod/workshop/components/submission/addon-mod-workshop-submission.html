@@ -5,13 +5,11 @@
             </core-user-avatar>
             <ion-label>
                 <h2>
-                    <core-format-text [text]="submission.title" contextLevel="module" [contextInstanceId]="module.id"
-                        [courseId]="courseId">
+                    <core-format-text [text]="submission.title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
                     </core-format-text>
                 </h2>
                 <p *ngIf="profile && profile?.fullname">{{profile.fullname}}</p>
-                <p *ngIf="showGrade(submission.grade)"
-                    [class.addon-has-overriden-grade]="showGrade(submission.gradeover)">
+                <p *ngIf="showGrade(submission.grade)" [class.addon-has-overriden-grade]="showGrade(submission.gradeover)">
                     {{ 'addon.mod_workshop.submissiongradeof' | translate:{$a: workshop.grade } }}: {{submission.grade}}
                 </p>
                 <p *ngIf="showGrade(submission.gradeover)" class="addon-overriden-grade">
@@ -36,8 +34,8 @@
         </ion-item>
         <ion-item class="ion-text-wrap" *ngIf="submission.content">
             <ion-label>
-                <core-format-text [component]="component" [componentId]="componentId" [text]="submission.content"
-                    contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
+                <core-format-text [component]="component" [componentId]="componentId" [text]="submission.content" contextLevel="module"
+                    [contextInstanceId]="module.id" [courseId]="courseId">
                 </core-format-text>
             </ion-label>
         </ion-item>
@@ -71,8 +69,7 @@
         </core-user-avatar>
         <ion-label>
             <h2>
-                <core-format-text [text]="submission.title" contextLevel="module" [contextInstanceId]="module.id"
-                    [courseId]="courseId">
+                <core-format-text [text]="submission.title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
                 </core-format-text>
             </h2>
             <p *ngIf="profile && profile.fullname">{{profile.fullname}}</p>
@@ -92,19 +89,19 @@
                 {{ 'addon.mod_workshop.gradinggradeof' | translate:{$a: workshop.gradinggrade } }}: {{submission.gradinggrade}}
             </p>
 
-            <ion-badge *ngIf="assessment && (showGrade(assessment.grade) || assessment.offline)" color="success"
-                class="ion-text-wrap">
+            <ion-badge *ngIf="assessment && (showGrade(assessment.grade) || assessment.offline)" color="success" class="ion-text-wrap">
                 {{ 'addon.mod_workshop.assessedsubmission' | translate }}
             </ion-badge>
-            <ion-badge *ngIf="assessment && !showGrade(assessment.grade) && !assessment.offline" color="danger"
-                class="ion-text-wrap">
+            <ion-badge *ngIf="assessment && !showGrade(assessment.grade) && !assessment.offline" color="danger" class="ion-text-wrap">
                 {{ 'addon.mod_workshop.notassessed' | translate }}
             </ion-badge>
 
         </ion-label>
         <ion-note slot="end" *ngIf="submission.timemodified">
             {{submission.timemodified | coreDateDayOrTime}}
-            <div *ngIf="offline"><ion-icon name="fas-clock" aria-hidden="true"></ion-icon> {{ 'core.notsent' | translate }}</div>
+            <div *ngIf="offline">
+                <ion-icon name="fas-clock" aria-hidden="true"></ion-icon> {{ 'core.notsent' | translate }}
+            </div>
             <div *ngIf="submission.deleted">
                 <ion-icon name="fas-trash" aria-hidden="true"></ion-icon> {{ 'core.deletedoffline' | translate }}
             </div>

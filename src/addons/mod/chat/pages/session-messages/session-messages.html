@@ -3,14 +3,16 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>{{ 'addon.mod_chat.messages' | translate }}</h1>
+        <ion-title>
+            <h1>{{ 'addon.mod_chat.messages' | translate }}</h1>
+        </ion-title>
     </ion-toolbar>
 </ion-header>
 <ion-content>
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshMessages($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    <core-loading [hideUntil]="loaded" class="safe-area-page">
+    <core-loading [hideUntil]="loaded">
         <ion-list class="addon-messages-discussion-container">
             <ng-container *ngFor="let message of messages; index as index;">
 
@@ -67,7 +69,7 @@
                             {{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }}
                             <strong>
                                 {{ message.userfullname }} <core-format-text [text]="message.message" contextLevel="module"
-                                [contextInstanceId]="cmId" [courseId]="courseId"></core-format-text>
+                                    [contextInstanceId]="cmId" [courseId]="courseId"></core-format-text>
                             </strong>
                         </span>
                     </ion-badge>
@@ -75,8 +77,7 @@
 
                 <ion-item *ngIf="!message.special" class="ion-text-wrap addon-message"
                     [class.addon-message-mine]="message.userid == currentUserId"
-                    [class.addon-message-not-mine]="message.userid != currentUserId"
-                    [class.addon-message-no-user]="!message.showUserData">
+                    [class.addon-message-not-mine]="message.userid != currentUserId" [class.addon-message-no-user]="!message.showUserData">
                     <ion-label>
                         <!-- User data. -->
                         <h2 class="addon-message-user">
@@ -85,13 +86,13 @@
                             <div *ngIf="message.showUserData">{{ message.userfullname }}</div>
                         </h2>
 
-                        <p class="addon-message-text">
+                        <div class="addon-message-text">
                             <core-format-text [text]="message.message" contextLevel="module" [contextInstanceId]="cmId"
                                 [courseId]="courseId">
                             </core-format-text>
-                        </p>
-                        <ion-note>{{ message.timestamp * 1000 | coreFormatDate: "strftimetime" }}</ion-note>
+                        </div>
                     </ion-label>
+                    <ion-note slot="end">{{ message.timestamp * 1000 | coreFormatDate: "strftimetime" }}</ion-note>
                     <div class="tail" *ngIf="message.showTail"></div>
                 </ion-item>
             </ng-container>

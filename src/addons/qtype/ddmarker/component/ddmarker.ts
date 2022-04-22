@@ -19,7 +19,6 @@ import { CoreQuestionHelper } from '@features/question/services/question-helper'
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUrlUtils } from '@services/utils/url';
 import { AddonQtypeDdMarkerQuestion } from '../classes/ddmarker';
 
 /**
@@ -65,7 +64,7 @@ export class AddonQtypeDdMarkerComponent extends CoreQuestionBaseComponent imple
         const ddForm = element.querySelector('.ddform');
 
         this.ddQuestion.text = CoreDomUtils.getContentsOfElement(element, '.qtext');
-        if (!ddArea || !ddForm || typeof this.ddQuestion.text == 'undefined') {
+        if (!ddArea || !ddForm || this.ddQuestion.text === undefined) {
             this.logger.warn('Aborting because of an error parsing question.', this.ddQuestion.slot);
 
             return CoreQuestionHelper.showComponentError(this.onAbort);
@@ -82,11 +81,11 @@ export class AddonQtypeDdMarkerComponent extends CoreQuestionBaseComponent imple
         this.ddQuestion.readOnly = false;
 
         if (this.ddQuestion.initObjects) {
-            // Moodle version <= 3.5.
-            if (typeof this.ddQuestion.initObjects.dropzones != 'undefined') {
+            // Moodle version = 3.5.
+            if (this.ddQuestion.initObjects.dropzones !== undefined) {
                 this.dropZones = <unknown[]> this.ddQuestion.initObjects.dropzones;
             }
-            if (typeof this.ddQuestion.initObjects.readonly != 'undefined') {
+            if (this.ddQuestion.initObjects.readonly !== undefined) {
                 this.ddQuestion.readOnly = !!this.ddQuestion.initObjects.readonly;
             }
         } else if (this.ddQuestion.amdArgs) {
@@ -98,12 +97,12 @@ export class AddonQtypeDdMarkerComponent extends CoreQuestionBaseComponent imple
                 nextIndex++;
             }
 
-            if (typeof this.ddQuestion.amdArgs[nextIndex] != 'undefined') {
+            if (this.ddQuestion.amdArgs[nextIndex] !== undefined) {
                 this.ddQuestion.readOnly = !!this.ddQuestion.amdArgs[nextIndex];
             }
             nextIndex++;
 
-            if (typeof this.ddQuestion.amdArgs[nextIndex] != 'undefined') {
+            if (this.ddQuestion.amdArgs[nextIndex] !== undefined) {
                 this.dropZones = <unknown[]> this.ddQuestion.amdArgs[nextIndex];
             }
         }
@@ -142,9 +141,9 @@ export class AddonQtypeDdMarkerComponent extends CoreQuestionBaseComponent imple
         let imgSrc = this.imgSrc;
         const site = CoreSites.getCurrentSite();
 
-        if (this.imgSrc && site?.canDownloadFiles() && CoreUrlUtils.isPluginFileUrl(this.imgSrc)) {
+        if (this.imgSrc && site?.canDownloadFiles() && site.isSitePluginFileUrl(this.imgSrc)) {
             imgSrc = await CoreFilepool.getSrcByUrl(
-                site.id!,
+                site.getId(),
                 this.imgSrc,
                 this.component,
                 this.componentId,

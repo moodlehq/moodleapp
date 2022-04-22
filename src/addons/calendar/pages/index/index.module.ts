@@ -19,6 +19,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { AddonCalendarComponentsModule } from '../../components/components.module';
 
 import { AddonCalendarIndexPage } from './index.page';
+import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 
 const routes: Routes = [
     {
@@ -32,6 +33,7 @@ const routes: Routes = [
         RouterModule.forChild(routes),
         CoreSharedModule,
         AddonCalendarComponentsModule,
+        CoreMainMenuComponentsModule,
     ],
     declarations: [
         AddonCalendarIndexPage,

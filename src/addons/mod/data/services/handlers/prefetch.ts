@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreComments } from '@features/comments/services/comments';
 import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/activity-prefetch-handler';
 import { CoreCourseCommonModWSOptions, CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
+import { CoreCourses } from '@features/courses/services/courses';
 import { CoreFilepool } from '@services/filepool';
 import { CoreGroup, CoreGroups } from '@services/groups';
 import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
@@ -172,7 +173,7 @@ export class AddonModDataPrefetchHandlerService extends CoreCourseActivityPrefet
     async invalidateModule(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
         const promises: Promise<void>[] = [];
         promises.push(AddonModData.invalidateDatabaseData(courseId));
-        promises.push(AddonModData.invalidateDatabaseAccessInformationData(module.instance!));
+        promises.push(AddonModData.invalidateDatabaseAccessInformationData(module.instance));
 
         await Promise.all(promises);
     }
@@ -200,13 +201,6 @@ export class AddonModDataPrefetchHandlerService extends CoreCourseActivityPrefet
         }
 
         return true;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    async isEnabled(): Promise<boolean> {
-        return AddonModData.isPluginEnabled();
     }
 
     /**
@@ -267,7 +261,10 @@ export class AddonModDataPrefetchHandlerService extends CoreCourseActivityPrefet
         });
 
         // Add Basic Info to manage links.
-        promises.push(CoreCourse.getModuleBasicInfoByInstance(database.id, 'data', siteId));
+        promises.push(CoreCourse.getModuleBasicInfoByInstance(database.id, 'data', { siteId }));
+
+        // Get course data, needed to determine upload max size if it's configured to be course limit.
+        promises.push(CoreUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));
 
         await Promise.all(promises);
     }
@@ -282,7 +279,7 @@ export class AddonModDataPrefetchHandlerService extends CoreCourseActivityPrefet
      */
     async sync(module: CoreCourseAnyModuleData, courseId: number, siteId?: string): Promise<AddonModDataSyncResult> {
         const promises = [
-            AddonModDataSync.syncDatabase(module.instance!, siteId),
+            AddonModDataSync.syncDatabase(module.instance, siteId),
             AddonModDataSync.syncRatings(module.id, true, siteId),
         ];
 

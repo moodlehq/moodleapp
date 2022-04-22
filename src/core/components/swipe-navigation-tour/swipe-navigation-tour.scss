@@ -1,0 +1,21 @@
+:host {
+    max-width: 85vw;
+
+    ion-icon {
+        width: 100%;
+        height: 150px;
+        min-width: 300px;
+    }
+
+    p {
+        text-align: center;
+    }
+
+    ion-button {
+        --border-width: 2px;
+        --border-color: white;
+        --background: transparent;
+        --color: white;
+    }
+
+}

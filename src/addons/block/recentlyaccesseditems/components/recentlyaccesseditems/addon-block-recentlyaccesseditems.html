@@ -1,23 +1,23 @@
 <ion-item-divider sticky="true">
-    <ion-label><h2>{{ 'addon.block_recentlyaccesseditems.pluginname' | translate }}</h2></ion-label>
+    <ion-label>
+        <h2>{{ 'addon.block_recentlyaccesseditems.pluginname' | translate }}</h2>
+    </ion-label>
     <div slot="end">
         <core-horizontal-scroll-controls #scrollControls [aria-controls]="scrollElementId">
         </core-horizontal-scroll-controls>
     </div>
 </ion-item-divider>
-<core-loading [hideUntil]="loaded" [fullscreen]="false" class="safe-area-page">
-    <div
-        [id]="scrollElementId"
-        [hidden]="!items || items.length === 0"
-        class="core-horizontal-scroll"
-        (scroll)="scrollControls.updateScrollPosition()"
-    >
+<core-loading [hideUntil]="loaded">
+    <div [id]="scrollElementId" [hidden]="!items || items.length === 0" class="core-horizontal-scroll"
+        (scroll)="scrollControls.updateScrollPosition()">
         <div *ngIf="items" (onResize)="scrollControls.updateScrollPosition()" class="flex-row">
-            <div *ngFor="let item of items">
+            <div class="safe-area-pseudo-padding-start"></div>
+            <div *ngFor="let item of items" class="core-horizontal-scroll-item">
                 <ion-card>
-                    <ion-item class="core-course-module-handler item-media ion-text-wrap" detail="false" (click)="action($event, item)"
-                        button>
-                        <img slot="start" [src]="item.iconUrl" alt="" role="presentation" *ngIf="item.iconUrl" class="core-module-icon">
+                    <ion-item class="core-course-module-handler ion-text-wrap" detail="false" (click)="action($event, item)" button>
+                        <core-mod-icon slot="start" *ngIf="item.iconUrl" [modicon]="item.iconUrl" [modname]="item.modname"
+                            [componentId]="item.cmid" [showAlt]="false">
+                        </core-mod-icon>
                         <ion-label>
                             <!-- Add the icon title so accessibility tools read it. -->
                             <span class="sr-only" *ngIf="item.iconTitle">{{ item.iconTitle }}</span>
@@ -33,10 +33,11 @@
                     </ion-item>
                 </ion-card>
             </div>
+            <div class="safe-area-pseudo-padding-end"></div>
         </div>
     </div>
 
-    <core-empty-box *ngIf="items.length <= 0" image="assets/img/icons/activities.svg" inline="true"
+    <core-empty-box *ngIf="items.length <= 0" image="assets/img/icons/activities.svg"
         [message]="'addon.block_recentlyaccesseditems.noitems' | translate"></core-empty-box>
 
 </core-loading>

@@ -1,12 +1,23 @@
 @import "~theme/globals";
 
 :host {
-    .core-horizontal-scroll > div > div {
+    .core-horizontal-scroll div.core-horizontal-scroll-item {
         @include horizontal_scroll_item(80%, 250px, 300px);
+        ion-card {
+            height: auto;
+        }
+
+        .ion-text-wrap ion-label {
+            .item-heading, h2, p {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
     }
 
     .core-course-module-handler {
-        --inner-border-width: 0;
+        --inner-border-width: 0px;
     }
     core-loading {
         --loading-inline-min-height: 102px;

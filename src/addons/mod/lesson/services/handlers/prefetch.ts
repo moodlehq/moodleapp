@@ -222,15 +222,6 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
     }
 
     /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @return Promise resolved with a boolean indicating if the handler is enabled.
-     */
-    isEnabled(): Promise<boolean> {
-        return AddonModLesson.isPluginEnabled();
-    }
-
-    /**
      * @inheritdoc
      */
     prefetch(module: CoreCourseAnyModuleData, courseId: number, single?: boolean): Promise<void> {
@@ -546,7 +537,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
      * @return Promise resolved when done.
      */
     sync(module: CoreCourseAnyModuleData, courseId: number, siteId?: string): Promise<AddonModLessonSyncResult> {
-        return AddonModLessonSync.syncLesson(module.instance!, false, false, siteId);
+        return AddonModLessonSync.syncLesson(module.instance, false, false, siteId);
     }
 
 }

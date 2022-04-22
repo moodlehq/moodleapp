@@ -15,11 +15,10 @@
 import { NgModule } from '@angular/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCoursesComponentsModule } from '@features/courses/components/components.module';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
 
 import { AddonBlockTimelineComponent } from './timeline/timeline';
 import { AddonBlockTimelineEventsComponent } from './events/events';
+import { CoreSearchComponentsModule } from '@features/search/components/components.module';
 
 @NgModule({
     declarations: [
@@ -28,8 +27,7 @@ import { AddonBlockTimelineEventsComponent } from './events/events';
     ],
     imports: [
         CoreSharedModule,
-        CoreCoursesComponentsModule,
-        CoreCourseComponentsModule,
+        CoreSearchComponentsModule,
     ],
     exports: [
         AddonBlockTimelineComponent,

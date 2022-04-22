@@ -104,7 +104,7 @@ export class AddonModDataFieldLatlongHandlerService implements AddonModDataField
 
         // The lat long class has two values that need to be checked.
         inputData.forEach((value) => {
-            if (typeof value.value != 'undefined' && value.value != '') {
+            if (value.value !== undefined && value.value != '') {
                 valueCount++;
             }
         });

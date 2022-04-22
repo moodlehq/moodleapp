@@ -1,9 +1,11 @@
-:host {
-    .core-zoom-pane {
-        height: 100%;
+ion-slides {
+    height: 100%;
+}
 
-        img {
-            max-width: none;
-        }
-    }
+img {
+    max-width: 100%;
+}
+
+ion-footer {
+    background: var(--contrast-background);
 }

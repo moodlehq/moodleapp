@@ -23,6 +23,8 @@ import { CoreApp } from '@services/app';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuploader-helper';
 import { CoreFileEntry } from '@services/file-helper';
+import { CoreCourses } from '@features/courses/services/courses';
+import { CoreUtils } from '@services/utils/utils';
 
 /**
  * Component to render attachments, allow adding more and delete the current ones.
@@ -40,40 +42,35 @@ import { CoreFileEntry } from '@services/file-helper';
 @Component({
     selector: 'core-attachments',
     templateUrl: 'core-attachments.html',
+    styleUrls: ['attachments.scss'],
 })
 export class CoreAttachmentsComponent implements OnInit {
 
     @Input() files?: CoreFileEntry[]; // List of attachments. New attachments will be added to this array.
-    @Input() maxSize?: number; // Max size for attachments. -1 means unlimited, 0 means user max size, not defined means unknown.
+    @Input() maxSize?: number; // Max size. -1 means unlimited, 0 means course/user max size, not defined means unknown.
     @Input() maxSubmissions?: number; // Max number of attachments. -1 means unlimited, not defined means unknown limit.
     @Input() component?: string; // Component the downloaded files will be linked to.
     @Input() componentId?: string | number; // Component ID.
     @Input() allowOffline?: boolean | string; // Whether to allow selecting files in offline.
     @Input() acceptedTypes?: string; // List of supported filetypes. If undefined, all types supported.
     @Input() required?: boolean; // Whether to display the required mark.
+    @Input() courseId?: number; // Course ID.
 
     maxSizeReadable?: string;
     maxSubmissionsReadable?: string;
     unlimitedFiles?: boolean;
     fileTypes?: CoreFileUploaderTypeList;
+    loaded = false;
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         this.files = this.files || [];
         this.maxSize = this.maxSize !== null ? Number(this.maxSize) : NaN;
 
         if (this.maxSize === 0) {
-            const currentSite = CoreSites.getCurrentSite();
-            const siteInfo = currentSite?.getInfo();
-
-            if (siteInfo?.usermaxuploadfilesize) {
-                this.maxSize = siteInfo.usermaxuploadfilesize;
-                this.maxSizeReadable = CoreTextUtils.bytesToSize(this.maxSize, 2);
-            } else {
-                this.maxSizeReadable = Translate.instant('core.unknown');
-            }
+            await this.getMaxSizeOfArea();
         } else if (this.maxSize > 0) {
             this.maxSizeReadable = CoreTextUtils.bytesToSize(this.maxSize, 2);
         } else if (this.maxSize === -1) {
@@ -94,6 +91,38 @@ export class CoreAttachmentsComponent implements OnInit {
 
         if (this.acceptedTypes && this.acceptedTypes != '*') {
             this.fileTypes = CoreFileUploader.prepareFiletypeList(this.acceptedTypes);
+        }
+
+        this.loaded = true;
+    }
+
+    /**
+     * Get max size of the area.
+     *
+     * @return Promise resolved when done.
+     */
+    protected async getMaxSizeOfArea(): Promise<void> {
+        if (this.courseId) {
+            // Check course max size.
+            const course = await CoreUtils.ignoreErrors(CoreCourses.getCourseByField('id', this.courseId));
+
+            if (course?.maxbytes) {
+                this.maxSize = course.maxbytes;
+                this.maxSizeReadable = CoreTextUtils.bytesToSize(this.maxSize, 2);
+
+                return;
+            }
+        }
+
+        // Check user max size.
+        const currentSite = CoreSites.getCurrentSite();
+        const siteInfo = currentSite?.getInfo();
+
+        if (siteInfo?.usermaxuploadfilesize) {
+            this.maxSize = siteInfo.usermaxuploadfilesize;
+            this.maxSizeReadable = CoreTextUtils.bytesToSize(this.maxSize, 2);
+        } else {
+            this.maxSizeReadable = Translate.instant('core.unknown');
         }
     }
 

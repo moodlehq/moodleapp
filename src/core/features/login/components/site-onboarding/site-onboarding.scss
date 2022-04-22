@@ -1,8 +1,10 @@
+@import "~theme/globals";
+
 :host {
     .core-login-onboarding-step {
         padding: 10px 20px;
         text-align: center;
-        @media (min-width: 768px) {
+        @include media-breakpoint-up(md) {
             max-width: 80%;
         }
         margin: 0 auto;

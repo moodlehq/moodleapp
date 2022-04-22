@@ -27,7 +27,6 @@ import { CoreError } from '@classes/errors/error';
 import { CoreEvents } from '@singletons/events';
 import {
     AddonNotifications,
-    AddonNotificationsPreferencesProcessor,
     AddonNotificationsPreferencesNotificationProcessorState,
 } from '../../services/notifications';
 import {
@@ -51,18 +50,20 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
 
     preferences?: AddonNotificationsPreferencesFormatted;
     components?: AddonNotificationsPreferencesComponentFormatted[];
-    currentProcessor?: AddonNotificationsPreferencesProcessor;
+    currentProcessorName = 'airnotifier';
     preferencesLoaded = false;
     notificationSound = false;
-    notifPrefsEnabled: boolean;
     canChangeSound: boolean;
     processorHandlers: AddonMessageOutputHandlerData[] = [];
+    loggedInOffLegacyMode = false;
 
     protected updateTimeout?: number;
 
     constructor() {
-        this.notifPrefsEnabled = AddonNotifications.isNotificationPreferencesEnabled();
         this.canChangeSound = CoreLocalNotifications.canDisableSound();
+
+        const currentSite = CoreSites.getRequiredCurrentSite();
+        this.loggedInOffLegacyMode = !currentSite.isVersionGreaterEqualThan('4.0');
     }
 
     /**
@@ -73,11 +74,7 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
             this.notificationSound = await CoreConfig.get<boolean>(CoreConstants.SETTINGS_NOTIFICATION_SOUND, true);
         }
 
-        if (this.notifPrefsEnabled) {
-            this.fetchPreferences();
-        } else {
-            this.preferencesLoaded = true;
-        }
+        this.fetchPreferences();
     }
 
     /**
@@ -89,20 +86,20 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
         try {
             const preferences = await AddonNotifications.getNotificationPreferences();
 
-            if (!this.currentProcessor) {
-                // Initialize current processor. Load "Mobile" (airnotifier) if available.
-                this.currentProcessor = AddonNotificationsHelper.getProcessor(preferences.processors, 'airnotifier');
+            // Initialize current processor. Load "Mobile" (airnotifier) if available.
+            let currentProcessor = preferences.processors.find((processor) => processor.name == this.currentProcessorName);
+            if (!currentProcessor) {
+                currentProcessor = preferences.processors[0];
             }
 
-            if (!this.currentProcessor) {
+            if (!currentProcessor) {
                 // Shouldn't happen.
                 throw new CoreError('No processor found');
             }
 
             preferences.enableall = !preferences.disableall;
             this.preferences = AddonNotificationsHelper.formatPreferences(preferences);
-            this.loadProcessor(this.currentProcessor);
-
+            this.loadProcessor(currentProcessor);
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
         } finally {
@@ -120,7 +117,7 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
             return;
         }
 
-        this.currentProcessor = processor;
+        this.currentProcessorName = processor.name;
         this.processorHandlers = [];
         this.components = AddonNotificationsHelper.getProcessorComponents(
             processor.name,
@@ -167,7 +164,7 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
      * @param name Name of the selected processor.
      */
     changeProcessor(name: string): void {
-        const processor = this.preferences!.processors.find((processor) => processor.name == name);
+        const processor = this.preferences?.processors.find((processor) => processor.name == name);
 
         if (processor) {
             this.loadProcessor(processor);
@@ -205,27 +202,21 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
      * @param state State name, ['loggedin', 'loggedoff'].
      * @return Promise resolved when done.
      */
-    async changePreference(notification: AddonNotificationsPreferencesNotificationFormatted, state: string): Promise<void> {
-        const processor = notification.processorsByName?.[this.currentProcessor?.name || ''];
+    async changePreferenceLegacy(notification: AddonNotificationsPreferencesNotificationFormatted, state: string): Promise<void> {
+        const processor = notification.processorsByName?.[this.currentProcessorName];
         if (!processor) {
             return;
         }
 
         const processorState: ProcessorStateFormatted = processor[state];
         const preferenceName = notification.preferencekey + '_' + processorState.name;
-        let value: string | undefined;
 
-        notification.processors.forEach((processor) => {
-            if (processor[state].checked) {
-                if (!value) {
-                    value = processor.name;
-                } else {
-                    value += ',' + processor.name;
-                }
-            }
-        });
+        let value = notification.processors
+            .filter((processor) => processor[state].checked)
+            .map((processor) => processor.name)
+            .join(',');
 
-        if (!value) {
+        if (value == '') {
             value = 'none';
         }
 
@@ -246,12 +237,55 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
     }
 
     /**
+     * Change the value of a certain preference.
+     *
+     * @param notification Notification object.
+     * @return Promise resolved when done.
+     */
+    async changePreference(notification: AddonNotificationsPreferencesNotificationFormatted): Promise<void> {
+        const processor = notification.processorsByName?.[this.currentProcessorName];
+        if (!processor) {
+            return;
+        }
+
+        const preferenceName = notification.preferencekey + '_enabled';
+
+        let value = notification.processors
+            .filter((processor) => processor.enabled)
+            .map((processor) => processor.name)
+            .join(',');
+
+        if (value == '') {
+            value = 'none';
+        }
+
+        processor.updating = true;
+
+        try {
+            await CoreUser.updateUserPreference(preferenceName, value);
+
+            // Update the preferences since they were modified.
+            this.updatePreferencesAfterDelay();
+        } catch (error) {
+            // Show error and revert change.
+            CoreDomUtils.showErrorModal(error);
+            processor.enabled = !processor.enabled;
+        } finally {
+            processor.updating = false;
+        }
+    }
+
+    /**
      * Enable all notifications changed.
      *
      * @param enable Whether to enable or disable.
      * @return Promise resolved when done.
      */
     async enableAll(enable?: boolean): Promise<void> {
+        if (!this.preferences) {
+            return;
+        }
+
         const modal = await CoreDomUtils.showModalLoading('core.sending', true);
 
         try {
@@ -262,7 +296,7 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
         } catch (error) {
             // Show error and revert change.
             CoreDomUtils.showErrorModal(error);
-            this.preferences!.enableall = !this.preferences!.enableall;
+            this.preferences.enableall = !this.preferences.enableall;
         } finally {
             modal.dismiss();
         }
@@ -296,6 +330,8 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
 
 /**
  * State in notification processor in notification preferences component with some calculated data.
+ *
+ * @deprecated 4.0
  */
 type ProcessorStateFormatted = AddonNotificationsPreferencesNotificationProcessorState & {
     updating?: boolean; // Calculated in the app. Whether the state is being updated.

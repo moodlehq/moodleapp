@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants } from '@/core/constants';
+import { CoreConstants, ModPurpose } from '@/core/constants';
 import { Injectable, Type } from '@angular/core';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
-import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
-import { CoreCourseModule } from '@features/course/services/course-helper';
+import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
+import { CoreCourse } from '@features/course/services/course';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
-import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
+import { CoreNavigationOptions } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
@@ -30,12 +31,13 @@ import { AddonModUrlHelper } from '../url-helper';
  * Handler to support url modules.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonModUrlModuleHandlerService implements CoreCourseModuleHandler {
+export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
     static readonly PAGE_NAME = 'mod_url';
 
     name = 'AddonModUrl';
     modName = 'url';
+    protected pageName = AddonModUrlModuleHandlerService.PAGE_NAME;
 
     supportedFeatures = {
         [CoreConstants.FEATURE_MOD_ARCHETYPE]: CoreConstants.MOD_ARCHETYPE_RESOURCE,
@@ -47,19 +49,13 @@ export class AddonModUrlModuleHandlerService implements CoreCourseModuleHandler 
         [CoreConstants.FEATURE_GRADE_OUTCOMES]: false,
         [CoreConstants.FEATURE_BACKUP_MOODLE2]: true,
         [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true,
+        [CoreConstants.FEATURE_MOD_PURPOSE]: ModPurpose.MOD_PURPOSE_CONTENT,
     };
 
     /**
      * @inheritdoc
      */
-    async isEnabled(): Promise<boolean> {
-        return true;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    getData(module: CoreCourseAnyModuleData, courseId: number): CoreCourseModuleHandlerData {
+    async getData(module: CoreCourseModuleData): Promise<CoreCourseModuleHandlerData> {
 
         /**
          * Open the URL.
@@ -67,39 +63,37 @@ export class AddonModUrlModuleHandlerService implements CoreCourseModuleHandler 
          * @param module The module object.
          * @param courseId The course ID.
          */
-        const openUrl = async (module: CoreCourseModule, courseId: number): Promise<void> => {
+        const openUrl = async (module: CoreCourseModuleData, courseId: number): Promise<void> => {
             try {
                 if (module.instance) {
                     await AddonModUrl.logView(module.instance, module.name);
-                    CoreCourse.checkModuleCompletion(courseId, module.completiondata);
+                    CoreCourse.checkModuleCompletion(module.course, module.completiondata);
                 }
             } catch {
                 // Ignore errors.
             }
 
-            AddonModUrlHelper.open(module.contents[0].fileurl);
+            CoreCourse.storeModuleViewed(courseId, module.id);
+
+            const contents = await CoreCourse.getModuleContents(module);
+            AddonModUrlHelper.open(contents[0].fileurl);
         };
 
         const handlerData: CoreCourseModuleHandlerData = {
-            icon: CoreCourse.getModuleIconSrc(this.modName, 'modicon' in module ? module.modicon : undefined),
+            icon: await CoreCourse.getModuleIconSrc(module.modname, module.modicon),
             title: module.name,
             class: 'addon-mod_url-handler',
             showDownloadButton: false,
-            action: async (event: Event, module: CoreCourseModule, courseId: number, options?: CoreNavigationOptions) => {
+            action: async (event: Event, module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions) => {
                 const modal = await CoreDomUtils.showModalLoading();
 
                 try {
-                    const shouldOpen = await this.shouldOpenLink(module, courseId);
+                    const shouldOpen = await this.shouldOpenLink(module);
 
                     if (shouldOpen) {
                         openUrl(module, courseId);
                     } else {
-                        options = options || {};
-                        options.params = options.params || {};
-                        Object.assign(options.params, { module });
-                        const routeParams = '/' + courseId + '/' + module.id;
-
-                        CoreNavigator.navigateToSitePath(AddonModUrlModuleHandlerService.PAGE_NAME + routeParams, options);
+                        this.openActivityPage(module, module.course, options);
                     }
                 } finally {
                     modal.dismiss();
@@ -109,19 +103,24 @@ export class AddonModUrlModuleHandlerService implements CoreCourseModuleHandler 
                 hidden: true, // Hide it until we calculate if it should be displayed or not.
                 icon: 'fas-link',
                 label: 'core.openmodinbrowser',
-                action: (event: Event, module: CoreCourseModule, courseId: number): void => {
+                action: (event: Event, module: CoreCourseModuleData, courseId: number): void => {
                     openUrl(module, courseId);
                 },
             }],
         };
 
-        this.hideLinkButton(module, courseId).then((hideButton) => {
-            handlerData.buttons![0]!.hidden = hideButton;
+        this.hideLinkButton(module).then(async (hideButton) => {
+            if (!handlerData.buttons) {
+                return;
+            }
+
+            handlerData.buttons[0].hidden = hideButton;
 
             if (module.contents && module.contents[0]) {
+                const icon = AddonModUrl.guessIcon(module.contents[0].fileurl);
+
                 // Calculate the icon to use.
-                handlerData.icon = AddonModUrl.guessIcon(module.contents[0].fileurl) ||
-                    CoreCourse.getModuleIconSrc(this.modName, 'modicon' in module ? module.modicon : undefined);
+                handlerData.icon = await CoreCourse.getModuleIconSrc(module.modname, module.modicon, icon);
             }
 
             return;
@@ -139,11 +138,12 @@ export class AddonModUrlModuleHandlerService implements CoreCourseModuleHandler 
      * @param courseId The course ID.
      * @return Resolved when done.
      */
-    protected async hideLinkButton(module: CoreCourseAnyModuleData, courseId: number): Promise<boolean> {
+    protected async hideLinkButton(module: CoreCourseModuleData): Promise<boolean> {
         try {
-            await CoreCourse.loadModuleContents(module, courseId, undefined, false, false, undefined, this.modName);
+            const contents =
+                await CoreCourse.getModuleContents(module, undefined, undefined, false, false, undefined, this.modName);
 
-            return !(module.contents && module.contents[0] && module.contents[0].fileurl);
+            return !(contents[0] && contents[0].fileurl);
         } catch {
             // Module contents could not be loaded, most probably device is offline.
             return true;
@@ -153,7 +153,7 @@ export class AddonModUrlModuleHandlerService implements CoreCourseModuleHandler 
     /**
      * @inheritdoc
      */
-    async getMainComponent(): Promise<Type<unknown> | undefined> {
+    async getMainComponent(): Promise<Type<unknown>> {
         return AddonModUrlIndexComponent;
     }
 
@@ -161,30 +161,27 @@ export class AddonModUrlModuleHandlerService implements CoreCourseModuleHandler 
      * Check whether the link should be opened directly.
      *
      * @param module Module.
-     * @param courseId Course ID.
      * @return Promise resolved with boolean.
      */
-    protected async shouldOpenLink(module: CoreCourseModule, courseId: number): Promise<boolean> {
+    protected async shouldOpenLink(module: CoreCourseModuleData): Promise<boolean> {
         try {
-            // First of all, make sure module contents are loaded.
-            await CoreCourse.loadModuleContents(module, courseId, undefined, false, false, undefined, this.modName);
+            const contents =
+                await CoreCourse.getModuleContents(module, undefined, undefined, false, false, undefined, this.modName);
 
             // Check if the URL can be handled by the app. If so, always open it directly.
-            const canHandle = await CoreContentLinksHelper.canHandleLink(module.contents[0].fileurl, courseId, undefined, true);
+            const canHandle = await CoreContentLinksHelper.canHandleLink(contents[0].fileurl, module.course, undefined, true);
 
             if (canHandle) {
                 // URL handled by the app, open it directly.
                 return true;
-            } else if (AddonModUrl.isGetUrlWSAvailable()) {
+            } else {
                 // Not handled by the app, check the display type.
-                const url = await CoreUtils.ignoreErrors(AddonModUrl.getUrl(courseId, module.id));
+                const url = await CoreUtils.ignoreErrors(AddonModUrl.getUrl(module.course, module.id));
                 const displayType = AddonModUrl.getFinalDisplayType(url);
 
                 return displayType == CoreConstants.RESOURCELIB_DISPLAY_OPEN ||
                     displayType == CoreConstants.RESOURCELIB_DISPLAY_POPUP;
             }
-
-            return false;
         } catch {
             return false;
         }
@@ -193,8 +190,8 @@ export class AddonModUrlModuleHandlerService implements CoreCourseModuleHandler 
     /**
      * @inheritdoc
      */
-    manualCompletionAlwaysShown(module: CoreCourseModule): Promise<boolean> {
-        return this.shouldOpenLink(module, module.course!);
+    manualCompletionAlwaysShown(module: CoreCourseModuleData): Promise<boolean> {
+        return this.shouldOpenLink(module);
     }
 
 }

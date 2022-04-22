@@ -31,87 +31,46 @@ export class CoreCourseFormatSingleActivityHandlerService implements CoreCourseF
     format = 'singleactivity';
 
     /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @return True or promise resolved with true if enabled.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         return true;
     }
 
     /**
-     * Whether it allows seeing all sections at the same time. Defaults to true.
-     *
-     * @param course The course to check.
-     * @return Whether it can view all sections.
+     * @inheritdoc
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    canViewAllSections(course: CoreCourseAnyCourseData): boolean {
+    canViewAllSections(): boolean {
         return false;
     }
 
     /**
-     * Whether the option blocks should be displayed. Defaults to true.
-     *
-     * @param course The course to check.
-     * @return Whether it can display blocks.
+     * @inheritdoc
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    displayBlocks(course: CoreCourseAnyCourseData): boolean {
-        return false;
+    displayBlocks(): boolean {
+        return true;
     }
 
     /**
-     * Get the title to use in course page. If not defined, course displayname or fullname.
-     * This function will be called without sections first, and then call it again when the sections are retrieved.
-     *
-     * @param course The course.
-     * @param sections List of sections.
-     * @return Title.
+     * @inheritdoc
      */
     getCourseTitle(course: CoreCourseAnyCourseData, sections?: CoreCourseWSSection[]): string {
         if (sections?.[0]?.modules?.[0]) {
             return sections[0].modules[0].name;
         }
 
-        if (course.displayname) {
-            return course.displayname;
-        } else if (course.fullname) {
-            return course.fullname;
-        }
-
-        return '';
+        return course.fullname || '';
     }
 
     /**
-     * Whether the option to enable section/module download should be displayed. Defaults to true.
-     *
-     * @param course The course to check.
-     * @return Whether the option to enable section/module download should be displayed
+     * @inheritdoc
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    displayEnableDownload(course: CoreCourseAnyCourseData): boolean {
+    displayCourseIndex(): boolean {
         return false;
     }
 
     /**
-     * Whether the default section selector should be displayed. Defaults to true.
-     *
-     * @param course The course to check.
-     * @return Whether the default section selector should be displayed.
-     */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    displaySectionSelector(course: CoreCourseAnyCourseData): boolean {
-        return false;
-    }
-
-    /**
-     * Whether the course refresher should be displayed. If it returns false, a refresher must be included in the course format,
-     * and the doRefresh method of CoreCourseSectionPage must be called on refresh. Defaults to true.
-     *
-     * @param course The course to check.
-     * @param sections List of course sections.
-     * @return Whether the refresher should be displayed.
+     * @inheritdoc
      */
     displayRefresher(course: CoreCourseAnyCourseData, sections: CoreCourseWSSection[]): boolean {
         if (sections?.[0]?.modules?.[0]) {
@@ -122,28 +81,16 @@ export class CoreCourseFormatSingleActivityHandlerService implements CoreCourseF
     }
 
     /**
-     * Return the Component to use to display the course format instead of using the default one.
-     * Use it if you want to display a format completely different from the default one.
-     * If you want to customize the default format there are several methods to customize parts of it.
-     * It's recommended to return the class of the component, but you can also return an instance of the component.
-     *
-     * @param course The course to render.
-     * @return The component (or promise resolved with component) to use, undefined if not found.
+     * @inheritdoc
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async getCourseFormatComponent(course: CoreCourseAnyCourseData): Promise<Type<unknown>> {
+    async getCourseFormatComponent(): Promise<Type<unknown>> {
         return CoreCourseFormatSingleActivityComponent;
     }
 
     /**
-     * Whether the view should be refreshed when completion changes. If your course format doesn't display
-     * activity completion then you should return false.
-     *
-     * @param course The course.
-     * @return Whether course view should be refreshed when an activity completion changes.
+     * @inheritdoc
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async shouldRefreshWhenCompletionChanges(course: CoreCourseAnyCourseData): Promise<boolean> {
+    async shouldRefreshWhenCompletionChanges(): Promise<boolean> {
         return false;
     }
 

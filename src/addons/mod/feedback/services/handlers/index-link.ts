@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleIndexHandler } from '@features/contentlinks/classes/module-index-handler';
 import { makeSingleton } from '@singletons';
-import { AddonModFeedback } from '../feedback';
 
 /**
  * Handler to treat links to feedback.
@@ -27,19 +26,6 @@ export class AddonModFeedbackIndexLinkHandlerService extends CoreContentLinksMod
 
     constructor() {
         super('AddonModFeedback', 'feedback');
-    }
-
-    /**
-     * Check if the handler is enabled for a certain site (site + user) and a URL.
-     *
-     * @param siteId The site ID.
-     * @param url The URL to treat.
-     * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
-     * @param courseId Course ID related to the URL. Optional but recommended.
-     * @return Whether the handler is enabled for the URL and site.
-     */
-    isEnabled(): Promise<boolean> {
-        return AddonModFeedback.isPluginEnabled();
     }
 
 }

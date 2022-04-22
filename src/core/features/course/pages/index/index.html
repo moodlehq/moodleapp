@@ -1,13 +1,42 @@
-<ion-header>
+<ion-header [collapsible]="tabsComponent?.selectedIndex == 0 || tabsComponent?.selectedIndex === undefined">
     <ion-toolbar>
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>
-            <core-format-text [text]="title" contextLevel="course" [contextInstanceId]="course?.id"></core-format-text>
-        </h1>
+        <ion-title>
+            <h1>
+                <core-format-text [text]="title" contextLevel="course" [contextInstanceId]="course?.id"></core-format-text>
+            </h1>
+        </ion-title>
 
-        <ion-buttons slot="end"></ion-buttons>
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="openCourseSummary()" [attr.aria-label]="'core.course.coursesummary' | translate">
+                <ion-icon name="fas-info-circle" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-buttons>
     </ion-toolbar>
 </ion-header>
+<div class="core-course-header">
+    <ion-item class="core-format-progress-list ion-text-wrap list-item-limited-width" collapsible>
+        <ng-container *ngIf="course">
+            <div *ngIf="!course.courseImage" #courseThumb slot="start" class="core-course-thumb">
+                <ion-icon *ngIf="!course.courseImage" name="fas-graduation-cap" class="course-icon" aria-hidden="true">
+                </ion-icon>
+            </div>
+            <ion-avatar *ngIf="course.courseImage" slot="start" class="core-course-thumb">
+                <img [src]="course.courseImage" core-external-content alt="" />
+            </ion-avatar>
+        </ng-container>
+
+        <ion-label>
+            <h1>
+                <core-format-text [text]="title" contextLevel="course" [contextInstanceId]="course?.id"></core-format-text>
+            </h1>
+            <div class="core-course-progress" *ngIf="progress !== undefined">
+                <core-progress-bar [progress]="progress" a11yText="core.course.aria:sectionprogress">
+                </core-progress-bar>
+            </div>
+        </ion-label>
+    </ion-item>
+</div>
 <core-tabs-outlet [tabs]="tabs" [hideUntil]="loaded" (ionChange)="tabSelected()"></core-tabs-outlet>

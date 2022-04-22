@@ -135,9 +135,10 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
     syncDatabase(dataId: number, siteId?: string): Promise<AddonModDataSyncResult> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        if (this.isSyncing(dataId, siteId)) {
+        const currentSyncPromise = this.getOngoingSync(dataId, siteId);
+        if (currentSyncPromise) {
             // There's already a sync ongoing for this database, return the promise.
-            return this.getOngoingSync(dataId, siteId)!;
+            return currentSyncPromise;
         }
 
         // Verify that database isn't blocked.
@@ -196,7 +197,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
         const offlineEntries: Record<number, AddonModDataOfflineAction[]> = {};
 
         offlineActions.forEach((entry) => {
-            if (typeof offlineEntries[entry.entryid] == 'undefined') {
+            if (offlineEntries[entry.entryid] === undefined) {
                 offlineEntries[entry.entryid] = [];
             }
 

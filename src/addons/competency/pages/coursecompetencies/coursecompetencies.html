@@ -3,39 +3,41 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>{{ 'addon.competency.coursecompetencies' | translate }}</h1>
+        <ion-title>
+            <h1>{{ 'addon.competency.coursecompetencies' | translate }}</h1>
+        </ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content>
-    <ion-refresher slot="fixed" [disabled]="!competenciesLoaded" (ionRefresh)="refreshCourseCompetencies($event.target)">
+<ion-content class="limited-width">
+    <ion-refresher slot="fixed" [disabled]="!competencies.loaded" (ionRefresh)="refreshCourseCompetencies($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    <core-loading [hideUntil]="competenciesLoaded">
-        <ion-card *ngIf="!user && competencies && competencies.statistics.competencycount > 0">
-            <ng-container *ngIf="competencies.cangradecompetencies">
-                <ion-item class="ion-text-wrap" *ngIf="competencies.settings.pushratingstouserplans">
+    <core-loading [hideUntil]="competencies.loaded">
+        <ion-card *ngIf="!user && courseCompetencies && courseCompetencies.statistics.competencycount > 0">
+            <ng-container *ngIf="courseCompetencies.cangradecompetencies">
+                <ion-item class="ion-text-wrap" *ngIf="courseCompetencies.settings.pushratingstouserplans">
                     <ion-label>{{ 'addon.competency.coursecompetencyratingsarepushedtouserplans' | translate }}</ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="!competencies.settings.pushratingstouserplans" color="danger">
+                <ion-item class="ion-text-wrap" *ngIf="!courseCompetencies.settings.pushratingstouserplans" color="danger">
                     <ion-label>{{ 'addon.competency.coursecompetencyratingsarenotpushedtouserplans' | translate }}</ion-label>
                 </ion-item>
             </ng-container>
-            <ion-item class="ion-text-wrap" *ngIf="competencies.statistics.canbegradedincourse">
+            <ion-item class="ion-text-wrap" *ngIf="courseCompetencies.statistics.canbegradedincourse">
                 <ion-label>
                     <span id="addon-competency-course-{{courseId}}-progress">
                         {{ 'addon.competency.xcompetenciesproficientoutofyincourse' | translate: {$a:
-                            {x: competencies.statistics.proficientcompetencycount, y: competencies.statistics.competencycount} } }}
+                        {x: courseCompetencies.statistics.proficientcompetencycount, y: courseCompetencies.statistics.competencycount} } }}
                     </span>
-                    <core-progress-bar [progress]="competencies.statistics.proficientcompetencypercentage"
+                    <core-progress-bar [progress]="courseCompetencies.statistics.proficientcompetencypercentage"
                         ariaDescribedBy="addon-competency-course-{{courseId}}-progress">
                     </core-progress-bar>
                 </ion-label>
             </ion-item>
             <ion-item class="ion-text-wrap"
-                *ngIf="competencies.statistics.canmanagecoursecompetencies && competencies.statistics.leastproficientcount > 0">
+                *ngIf="courseCompetencies.statistics.canmanagecoursecompetencies && courseCompetencies.statistics.leastproficientcount > 0">
                 <ion-label>
                     <p class="item-heading">{{ 'addon.competency.competenciesmostoftennotproficientincourse' | translate }}</p>
-                    <p *ngFor="let comp of competencies.statistics.leastproficient">
+                    <p *ngFor="let comp of courseCompetencies.statistics.leastproficient">
                         <button class="as-link" (click)="openCompetencySummary(comp.id)">
                             {{ comp.shortname }} - {{ comp.idnumber }}
                         </button>
@@ -44,22 +46,24 @@
             </ion-item>
         </ion-card>
 
-        <h2 class="ion-margin-horizontal" *ngIf="competencies && competencies.statistics.competencycount > 0">
+        <h2 class="ion-margin-horizontal" *ngIf="courseCompetencies && courseCompetencies.statistics.competencycount > 0">
             {{ 'addon.competency.coursecompetencies' | translate }}
         </h2>
         <ion-card *ngIf="user">
-             <ion-item class="ion-text-wrap">
+            <ion-item class="ion-text-wrap">
                 <core-user-avatar [user]="user" slot="start"></core-user-avatar>
-               <ion-label><h2>{{ user.fullname }}</h2></ion-label>
+                <ion-label>
+                    <h2>{{ user.fullname }}</h2>
+                </ion-label>
             </ion-item>
         </ion-card>
-        <core-empty-box *ngIf="competencies && competencies.statistics.competencycount == 0"
-            icon="fas-award" message="{{ 'addon.competency.nocompetenciesincourse' | translate }}">
+        <core-empty-box *ngIf="courseCompetencies && courseCompetencies.statistics.competencycount == 0" icon="fas-award"
+            message="{{ 'addon.competency.nocompetenciesincourse' | translate }}">
         </core-empty-box>
 
-        <div *ngIf="competencies">
-            <ion-card *ngFor="let competency of competencies.competencies">
-                <ion-item class="ion-text-wrap" (click)="openCompetency(competency.competency.id)"
+        <div *ngIf="competencies.loaded">
+            <ion-card *ngFor="let competency of competencies.items">
+                <ion-item class="ion-text-wrap" (click)="competencies.select(competency)"
                     [attr.aria-label]="competency.competency.shortname" detail="true" button>
                     <ion-label>
                         <p class="item-heading">
@@ -81,10 +85,8 @@
                         <div>
                             <p class="item-heading">{{ 'addon.competency.path' | translate }}</p>
                             <p>
-                                <a *ngIf="competency.comppath.showlinks"
-                                    [href]="competency.comppath.pluginbaseurl + '/competencies.php?competencyframeworkid=' +
-                                    competency.comppath.framework.id + '&pagecontextid=' + competency.comppath.pagecontextid"
-                                    core-link [title]="competency.comppath.framework.name">
+                                <a *ngIf="competency.comppath.showlinks" [href]="getCompetencyFrameworkUrl(competency)" core-link
+                                    [title]="competency.comppath.framework.name">
                                     {{ competency.comppath.framework.name }}
                                 </a>
                                 <ng-container *ngIf="!competency.comppath.showlinks">
@@ -101,9 +103,9 @@
                                 </ng-container>
                             </p>
                         </div>
-                        <div *ngIf="competencies.statistics.canmanagecoursecompetencies">
+                        <div *ngIf="courseCompetencies?.statistics.canmanagecoursecompetencies">
                             <p class="item-heading">{{ 'addon.competency.uponcoursecompletion' | translate }}</p>
-                             <ng-container *ngFor="let ruleoutcome of competency.ruleoutcomeoptions">
+                            <ng-container *ngFor="let ruleoutcome of competency.ruleoutcomeoptions">
                                 <span *ngIf="ruleoutcome.selected">{{ ruleoutcome.text }}</span>
                             </ng-container>
                         </div>
@@ -112,10 +114,10 @@
                             <p *ngIf="competency.coursemodules.length == 0">
                                 {{ 'addon.competency.noactivities' | translate }}
                             </p>
-                            <ion-item class="ion-text-wrap core-course-module-handler item-media" [attr.aria-label]="activity.name"
-                                core-link *ngFor="let activity of competency.coursemodules" [href]="activity.url" capture="true">
-                                <img slot="start" [src]="activity.iconurl" core-external-content alt=""
-                                    *ngIf="activity.iconurl" class="core-module-icon">
+                            <ion-item class="ion-text-wrap core-course-module-handler" [attr.aria-label]="activity.name" core-link
+                                *ngFor="let activity of competency.coursemodules" [href]="activity.url" capture="true">
+                                <core-mod-icon slot="start" [modicon]="activity.iconurl" [showAlt]="false" *ngIf="activity.iconurl">
+                                </core-mod-icon>
                                 <ion-label>
                                     <core-format-text [text]="activity.name" contextLevel="module" [contextInstanceId]="activity.id"
                                         [courseId]="courseId">
@@ -131,8 +133,8 @@
                             <ion-item class="ion-text-wrap" *ngFor="let plan of competency.plans" [href]="plan.url"
                                 [attr.aria-label]="plan.name" core-link capture="true">
                                 <ion-label>
-                                   <core-format-text [text]="plan.name" contextLevel="user" [contextInstanceId]="plan.userid">
-                                   </core-format-text>
+                                    <core-format-text [text]="plan.name" contextLevel="user" [contextInstanceId]="plan.userid">
+                                    </core-format-text>
                                 </ion-label>
                             </ion-item>
                         </div>

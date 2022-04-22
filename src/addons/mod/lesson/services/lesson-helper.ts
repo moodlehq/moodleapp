@@ -26,6 +26,7 @@ import {
     AddonModLessonGetPageDataWSResponse,
     AddonModLessonProvider,
 } from './lesson';
+import { CoreTime } from '@singletons/time';
 
 /**
  * Helper service that provides some features for quiz.
@@ -416,7 +417,7 @@ export class AddonModLessonHelperProvider {
             // Treat each option.
             let controlAdded = false;
             options.forEach((option) => {
-                if (typeof option.value == 'undefined') {
+                if (option.value === undefined) {
                     // Option not valid, ignore it.
                     return;
                 }
@@ -531,7 +532,7 @@ export class AddonModLessonHelperProvider {
             }
             data.timestart = CoreTimeUtils.userDate(retake.timestart * 1000);
             if (includeDuration) {
-                data.duration = CoreTimeUtils.formatTime(retake.timeend - retake.timestart);
+                data.duration = CoreTime.formatTime(retake.timeend - retake.timestart);
             }
         } else {
             // The user has not completed the retake.
@@ -557,7 +558,7 @@ export class AddonModLessonHelperProvider {
 
             // Add some HTML to the answer if needed.
             if (textarea) {
-                data[textarea.name] = CoreTextUtils.formatHtmlLines(<string> data[textarea.name]);
+                data[textarea.name] = CoreTextUtils.formatHtmlLines(<string> data[textarea.name] || '');
             }
         } else if (question.template == 'multichoice' && (<AddonModLessonMultichoiceQuestion> question).multi) {
             // Only send the options with value set to true.

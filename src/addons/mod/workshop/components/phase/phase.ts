@@ -28,7 +28,7 @@ export class AddonModWorkshopPhaseInfoComponent implements OnInit {
     @Input() phases!: AddonModWorkshopPhaseDataWithSwitch[];
     @Input() workshopPhase!: AddonModWorkshopPhase;
     @Input() showSubmit = false;
-    @Input() protected externalUrl!: string;
+    @Input() externalUrl!: string;
 
     ngOnInit(): void {
 
@@ -57,7 +57,7 @@ export class AddonModWorkshopPhaseInfoComponent implements OnInit {
      *
      * @param task Task to be done.
      */
-    runTask(task: AddonModWorkshopPhaseTaskData): void {
+    async runTask(task: AddonModWorkshopPhaseTaskData): Promise<void> {
         if (task.code == 'submit') {
             // This will close the modal and go to the submit.
             ModalController.dismiss(true);

@@ -119,7 +119,7 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
 
             // Package marked as downloading, get module info to be able to handle links. Get module filters too.
             await Promise.all([
-                CoreCourse.getModuleBasicInfo(module.id, siteId),
+                CoreCourse.getModuleBasicInfo(module.id, { siteId }),
                 CoreCourse.getModule(module.id, courseId, undefined, false, true, siteId),
                 CoreFilterHelper.getFilters('module', module.id, { courseId }),
             ]);

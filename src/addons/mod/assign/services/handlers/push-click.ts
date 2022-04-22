@@ -54,7 +54,10 @@ export class AddonModAssignPushClickHandlerService implements CorePushNotificati
         const moduleId = Number(contextUrlParams.id);
 
         await CoreUtils.ignoreErrors(AddonModAssign.invalidateContent(moduleId, courseId, notification.site));
-        await CoreCourseHelper.navigateToModule(moduleId, notification.site, courseId);
+        await CoreCourseHelper.navigateToModule(moduleId, {
+            courseId,
+            siteId: notification.site,
+        });
     }
 
 }

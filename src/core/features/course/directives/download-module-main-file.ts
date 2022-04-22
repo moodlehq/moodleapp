@@ -15,8 +15,8 @@
 import { Directive, Input, OnInit, ElementRef } from '@angular/core';
 
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreCourse, CoreCourseModuleContentFile, CoreCourseWSModule } from '@features/course/services/course';
-import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { CoreCourse, CoreCourseModuleContentFile } from '@features/course/services/course';
+import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreUtilsOpenFileOptions } from '@services/utils/utils';
 
 /**
@@ -31,7 +31,7 @@ import { CoreUtilsOpenFileOptions } from '@services/utils/utils';
 })
 export class CoreCourseDownloadModuleMainFileDirective implements OnInit {
 
-    @Input() module?: CoreCourseWSModule; // The module.
+    @Input() module?: CoreCourseModuleData; // The module.
     @Input() moduleId?: string | number; // The module ID. Required if module is not supplied.
     @Input() courseId?: string | number; // The course ID.
     @Input() component?: string; // Component to link the file to.
@@ -71,7 +71,7 @@ export class CoreCourseDownloadModuleMainFileDirective implements OnInit {
 
                 await CoreCourseHelper.downloadModuleAndOpenFile(
                     this.module,
-                    courseId ?? this.module.course!,
+                    courseId ?? this.module.course,
                     this.component,
                     componentId,
                     this.files,

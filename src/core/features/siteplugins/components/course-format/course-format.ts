@@ -15,8 +15,8 @@
 import { Component, OnChanges, Input, ViewChild, Output, EventEmitter } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 
-import { CoreCourseFormatComponent } from '@features/course/components/format/format';
-import { CoreCourseModuleCompletionData, CoreCourseSectionWithStatus } from '@features/course/services/course-helper';
+import { CoreCourseFormatComponent } from '@features/course/components/course-format/course-format';
+import { CoreCourseModuleCompletionData, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreSitePlugins, CoreSitePluginsContent } from '@features/siteplugins/services/siteplugins';
@@ -33,12 +33,12 @@ import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-
 export class CoreSitePluginsCourseFormatComponent implements OnChanges {
 
     @Input() course?: CoreCourseAnyCourseData; // The course to render.
-    @Input() sections?: CoreCourseSectionWithStatus[]; // List of course sections. The status will be calculated in this component.
-    @Input() downloadEnabled?: boolean; // Whether the download of sections and modules is enabled.
+    @Input() sections?: CoreCourseSection[]; // List of course sections. The status will be calculated in this component.
     @Input() initialSectionId?: number; // The section to load first (by ID).
     @Input() initialSectionNumber?: number; // The section to load first (by number).
     @Input() moduleId?: number; // The module ID to scroll to. Must be inside the initial selected section.
-    @Output() completionChanged = new EventEmitter<CoreCourseModuleCompletionData>(); // Notify when any module completion changes.
+    // Notify when any module completion changes. @deprecated since 4.0, now we use CoreEvents.
+    @Output() completionChanged = new EventEmitter<CoreCourseModuleCompletionData>();
 
     // Special input, allows access to the parent instance properties and methods.
     // Please notice that all the other inputs/outputs are also accessible through this instance, so they could be removed.
@@ -71,7 +71,6 @@ export class CoreSitePluginsCourseFormatComponent implements OnChanges {
                 this.method = handler.handlerSchema.method;
                 this.args = {
                     courseid: this.course.id,
-                    downloadenabled: this.downloadEnabled,
                 };
                 this.initResult = handler.initResult;
             }
@@ -81,7 +80,6 @@ export class CoreSitePluginsCourseFormatComponent implements OnChanges {
         this.data = {
             course: this.course,
             sections: this.sections,
-            downloadEnabled: this.downloadEnabled,
             initialSectionId: this.initialSectionId,
             initialSectionNumber: this.initialSectionNumber,
             moduleId: this.moduleId,

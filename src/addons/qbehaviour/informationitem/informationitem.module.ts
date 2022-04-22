@@ -30,8 +30,7 @@ import { AddonQbehaviourInformationItemHandler } from './services/handlers/infor
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreQuestionBehaviourDelegate.registerHandler(AddonQbehaviourInformationItemHandler.instance);
             },
         },

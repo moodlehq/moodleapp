@@ -1,6 +1,8 @@
 <ion-header>
     <ion-toolbar>
-        <h1>{{ 'addon.mod_scorm.toc' | translate }}</h1>
+        <ion-title>
+            <h2>{{ 'addon.mod_scorm.toc' | translate }}</h2>
+        </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
                 <ion-icon slot="icon-only" name="fas-times" aria-hidden="true"></ion-icon>
@@ -36,8 +38,7 @@
                     <ion-icon *ngIf="sco.icon" [name]="sco.icon.icon" [attr.aria-label]="sco.icon.description" slot="start">
                     </ion-icon>
                     <ion-label>
-                        <core-format-text [text]="sco.title" contextLevel="module" [contextInstanceId]="moduleId"
-                            [courseId]="courseId">
+                        <core-format-text [text]="sco.title" contextLevel="module" [contextInstanceId]="moduleId" [courseId]="courseId">
                         </core-format-text>
                         <span *ngIf="accessInfo && accessInfo.canviewscores && sco.scoreraw">
                             ({{ 'addon.mod_scorm.score' | translate }}: {{sco.scoreraw}})

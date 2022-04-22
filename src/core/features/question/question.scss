@@ -26,15 +26,15 @@
             line-height: 14px;
             color: var(--white);
             text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
-            background-color: var(--gray-dark);
+            background-color: var(--gray-500);
             -webkit-border-radius: 3px;
             border-radius: 3px;
 
             &.incorrect {
-                background-color: var(--red);
+                background-color: var(--danger);
             }
             &.correct {
-                background-color: var(--green);
+                background-color: var(--success);
             }
         }
     }

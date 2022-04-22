@@ -3,11 +3,13 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1 *ngIf="badge">{{ badge.name }}</h1>
-        <h1 *ngIf="!badge">{{ 'addon.badges.badges' | translate }}</h1>
+        <ion-title>
+            <h1 *ngIf="badge">{{ badge.name }}</h1>
+            <h1 *ngIf="!badge">{{ 'addon.badges.badges' | translate }}</h1>
+        </ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content>
+<ion-content [core-swipe-navigation]="badges" class="limited-width">
     <ion-refresher slot="fixed" [disabled]="!badgeLoaded" (ionRefresh)="refreshBadges($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
@@ -53,7 +55,9 @@
                 <ion-item class="ion-text-wrap" *ngIf="badge.issuercontact">
                     <ion-label>
                         <h2>{{ 'addon.badges.contact' | translate}}</h2>
-                        <p><a href="mailto:{{badge.issuercontact}}" core-link auto-login="no"> {{ badge.issuercontact }} </a></p>
+                        <p><a href="mailto:{{badge.issuercontact}}" core-link auto-login="no" [showBrowserWarning]="false">
+                                {{ badge.issuercontact }}
+                            </a></p>
                     </ion-label>
                 </ion-item>
             </ion-item-group>
@@ -97,7 +101,9 @@
                 <ion-item class="ion-text-wrap" *ngIf="badge.imageauthoremail">
                     <ion-label>
                         <h2>{{ 'addon.badges.imageauthoremail' | translate}}</h2>
-                        <p><a href="mailto:{{badge.imageauthoremail}}" core-link auto-login="no"> {{ badge.imageauthoremail }} </a></p>
+                        <p><a href="mailto:{{badge.imageauthoremail}}" core-link auto-login="no" [showBrowserWarning]="false">
+                                {{ badge.imageauthoremail }}
+                            </a></p>
                     </ion-label>
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngIf="badge.imageauthorurl">
@@ -153,7 +159,9 @@
             <!-- Endorsement -->
             <ion-item-group *ngIf="badge.endorsement">
                 <ion-item-divider>
-                    <ion-label><h2>{{ 'addon.badges.bendorsement' | translate}}</h2></ion-label>
+                    <ion-label>
+                        <h2>{{ 'addon.badges.bendorsement' | translate}}</h2>
+                    </ion-label>
                 </ion-item-divider>
                 <ion-item class="ion-text-wrap" *ngIf="badge.endorsement.issuername">
                     <ion-label>
@@ -165,7 +173,7 @@
                     <ion-label>
                         <h2>{{ 'addon.badges.issueremail' | translate}}</h2>
                         <p>
-                            <a href="mailto:{{badge.endorsement.issueremail}}" core-link auto-login="no">
+                            <a href="mailto:{{badge.endorsement.issueremail}}" core-link auto-login="no" [showBrowserWarning]="false">
                                 {{ badge.endorsement.issueremail }}
                             </a>
                         </p>
@@ -200,27 +208,39 @@
             <!-- Related badges -->
             <ion-item-group *ngIf="badge.relatedbadges">
                 <ion-item-divider>
-                    <ion-label><h2>{{ 'addon.badges.relatedbages' | translate}}</h2></ion-label>
+                    <ion-label>
+                        <h2>{{ 'addon.badges.relatedbages' | translate}}</h2>
+                    </ion-label>
                 </ion-item-divider>
                 <ion-item class="ion-text-wrap" *ngFor="let relatedBadge of badge.relatedbadges">
-                    <ion-label><h2>{{ relatedBadge.name }}</h2></ion-label>
+                    <ion-label>
+                        <h2>{{ relatedBadge.name }}</h2>
+                    </ion-label>
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngIf="badge.relatedbadges.length == 0">
-                    <ion-label><h2>{{ 'addon.badges.norelated' | translate}}</h2></ion-label>
+                    <ion-label>
+                        <h2>{{ 'addon.badges.norelated' | translate}}</h2>
+                    </ion-label>
                 </ion-item>
             </ion-item-group>
 
             <!-- Competencies alignment -->
             <ion-item-group *ngIf="badge.alignment">
                 <ion-item-divider>
-                    <ion-label><h2>{{ 'addon.badges.alignment' | translate}}</h2></ion-label>
+                    <ion-label>
+                        <h2>{{ 'addon.badges.alignment' | translate}}</h2>
+                    </ion-label>
                 </ion-item-divider>
                 <ion-item class="ion-text-wrap" *ngFor="let alignment of badge.alignment" [href]="alignment.targeturl" core-link
                     auto-login="no">
-                    <ion-label><h2>{{ alignment.targetname }}</h2></ion-label>
+                    <ion-label>
+                        <h2>{{ alignment.targetname }}</h2>
+                    </ion-label>
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngIf="badge.alignment.length == 0">
-                    <ion-label><h2>{{ 'addon.badges.noalignment' | translate}}</h2></ion-label>
+                    <ion-label>
+                        <h2>{{ 'addon.badges.noalignment' | translate}}</h2>
+                    </ion-label>
                 </ion-item>
             </ion-item-group>
         </ng-container>

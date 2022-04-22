@@ -47,8 +47,7 @@ const routes: Routes = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreCourseModuleDelegate.registerHandler(AddonModChatModuleHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModChatIndexLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModChatListLinkHandler.instance);

@@ -18,6 +18,10 @@ import { CoreCourse, CoreCourseProvider } from '@features/course/services/course
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreCourses, CoreEnrolledCourseData } from '@features/courses/services/courses';
+import { CoreSettingsHelper, CoreSiteSpaceUsage } from '@features/settings/services/settings-helper';
+import { CoreSiteHome } from '@features/sitehome/services/sitehome';
+import { CoreNavigator } from '@services/navigator';
+import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
 import { CoreArray } from '@singletons/array';
@@ -38,11 +42,20 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
     completelyDownloadedCourses: DownloadedCourse[] = [];
     totalSize = 0;
     loaded = false;
+    spaceUsage: CoreSiteSpaceUsage = {
+        cacheEntries: 0,
+        spaceUsage: 0,
+    };
 
     courseStatusObserver?: CoreEventObserver;
+    siteId: string;
+
+    constructor() {
+        this.siteId = CoreSites.getCurrentSiteId();
+    }
 
     /**
-     * View loaded.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         this.userCourses = await CoreCourses.getUserCourses();
@@ -58,6 +71,24 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
                 .map((course) => this.getDownloadedCourse(course)),
         );
 
+        const siteHomeEnabled = await CoreSiteHome.isAvailable(this.siteId);
+        if (siteHomeEnabled) {
+            const siteHomeId = CoreSites.getCurrentSiteHomeId();
+            const size = await this.calculateDownloadedCourseSize(siteHomeId);
+            if (size > 0) {
+                const status = await CoreCourse.getCourseStatus(siteHomeId);
+
+                downloadedCourses.push({
+                    id: siteHomeId,
+                    title: Translate.instant('core.sitehome.sitehome'),
+                    totalSize: size,
+                    isDownloading: status === CoreConstants.DOWNLOADING,
+                });
+            }
+        }
+
+        this.spaceUsage = await CoreSettingsHelper.getSiteSpaceUsage(this.siteId);
+
         this.setDownloadedCourses(downloadedCourses);
 
         this.loaded = true;
@@ -72,10 +103,15 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
 
     /**
      * Delete all courses that have been downloaded.
+     *
+     * @param event: Event Object.
      */
-    async deleteCompletelyDownloadedCourses(): Promise<void> {
+    async deleteCompletelyDownloadedCourses(event: Event): Promise<void> {
+        event.preventDefault();
+        event.stopPropagation();
+
         try {
-            await CoreDomUtils.showDeleteConfirm('core.course.confirmdeletestoreddata');
+            await CoreDomUtils.showDeleteConfirm('addon.storagemanager.confirmdeletecourses');
         } catch (error) {
             if (!CoreDomUtils.isCanceledError(error)) {
                 throw error;
@@ -84,7 +120,7 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreDomUtils.showModalLoading('core.deleting', true);
         const deletedCourseIds = this.completelyDownloadedCourses.map((course) => course.id);
 
         try {
@@ -101,11 +137,18 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
     /**
      * Delete course.
      *
+     * @param event: Event Object.
      * @param course Course to delete.
      */
-    async deleteCourse(course: DownloadedCourse): Promise<void> {
+    async deleteCourse(event: Event, course: DownloadedCourse): Promise<void> {
+        event.preventDefault();
+        event.stopPropagation();
+
         try {
-            await CoreDomUtils.showDeleteConfirm('core.course.confirmdeletestoreddata');
+            await CoreDomUtils.showDeleteConfirm(
+                'addon.storagemanager.confirmdeletedatafrom',
+                { name: course.title },
+            );
         } catch (error) {
             if (!CoreDomUtils.isCanceledError(error)) {
                 throw error;
@@ -114,7 +157,7 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
             return;
         }
 
-        const modal = await CoreDomUtils.showModalLoading();
+        const modal = await CoreDomUtils.showModalLoading('core.deleting', true);
 
         try {
             await CoreCourseHelper.deleteCourseFiles(course.id);
@@ -173,7 +216,8 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
         const status = await CoreCourse.getCourseStatus(course.id);
 
         return {
-            ...course,
+            id: course.id,
+            title: course.displayname || course.fullname,
             totalSize,
             isDownloading: status === CoreConstants.DOWNLOADING,
         };
@@ -198,12 +242,41 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
         return moduleSizes.reduce((totalSize, moduleSize) => totalSize + moduleSize, 0);
     }
 
+    /**
+     * Open course storage.
+     *
+     * @param courseId Course Id.
+     */
+    openCourse(courseId: number, title: string): void {
+        CoreNavigator.navigateToSitePath('/storage/' + courseId, { params: { title } });
+    }
+
+    /**
+     * Deletes files of a site and the tables that can be cleared.
+     *
+     * @param event: Event Object.
+     */
+    async deleteSiteStorage(event: Event): Promise<void> {
+        event.preventDefault();
+        event.stopPropagation();
+
+        try {
+            const siteName = CoreSites.getRequiredCurrentSite().getSiteName();
+
+            this.spaceUsage = await CoreSettingsHelper.deleteSiteStorage(siteName, this.siteId);
+        } catch {
+            // Ignore cancelled confirmation modal.
+        }
+    }
+
 }
 
 /**
  * Downloaded course data.
  */
-interface DownloadedCourse extends CoreEnrolledCourseData {
+interface DownloadedCourse {
+    id: number;
+    title: string;
     totalSize: number;
     isDownloading: boolean;
 }

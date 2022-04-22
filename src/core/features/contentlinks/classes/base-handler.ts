@@ -51,6 +51,11 @@ export class CoreContentLinksHandlerBase implements CoreContentLinksHandler {
     pattern?: RegExp;
 
     /**
+     * If true, a "^" will be added to the beginning of the pattern. It's recommended to avoid collisions with other handlers.
+     */
+    patternMatchStart = true;
+
+    /**
      * Get the list of actions for a link (url).
      *
      * @param siteIds List of sites the URL belongs to.
@@ -82,7 +87,15 @@ export class CoreContentLinksHandlerBase implements CoreContentLinksHandler {
      * @return Whether the URL is handled by this handler
      */
     handles(url: string): boolean {
-        return !!this.pattern && url.search(this.pattern) >= 0;
+        let pattern = this.pattern;
+
+        if (pattern && this.patternMatchStart) {
+            let patternString = pattern.toString();
+            patternString = patternString.substring(1, patternString.length - 1); // Remove slashes from beginning and end.
+            pattern = new RegExp('^' + patternString);
+        }
+
+        return !!pattern && url.search(pattern) >= 0;
     }
 
     /**
@@ -95,7 +108,7 @@ export class CoreContentLinksHandlerBase implements CoreContentLinksHandler {
         if (this.pattern) {
             const position = url.search(this.pattern);
             if (position > -1) {
-                return url.substr(0, position);
+                return url.substring(0, position);
             }
         }
     }

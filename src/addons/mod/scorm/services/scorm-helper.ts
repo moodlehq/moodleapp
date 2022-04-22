@@ -280,18 +280,13 @@ export class AddonModScormHelperProvider {
      * @return Next SCO.
      */
     getNextScoFromToc(toc: AddonModScormScoWithData[], scoId: number): AddonModScormScoWithData | undefined {
-        for (let i = 0; i < toc.length; i++) {
-            if (toc[i].id != scoId) {
-                continue;
-            }
+        const currentTocIndex = toc.findIndex((item) => item.id == scoId);
 
-            // We found the current SCO. Now search the next visible SCO with fulfilled prerequisites.
-            for (let j = i + 1; j < toc.length; j++) {
-                if (toc[j].isvisible && toc[j].prereq && toc[j].launch) {
-                    return toc[j];
-                }
+        // We found the current SCO. Now search the next visible SCO with fulfilled prerequisites.
+        for (let j = currentTocIndex + 1; j < toc.length; j++) {
+            if (toc[j].isvisible && toc[j].prereq && toc[j].launch) {
+                return toc[j];
             }
-            break;
         }
     }
 
@@ -303,18 +298,13 @@ export class AddonModScormHelperProvider {
      * @return Previous SCO.
      */
     getPreviousScoFromToc(toc: AddonModScormScoWithData[], scoId: number): AddonModScormScoWithData | undefined {
-        for (let i = 0; i < toc.length; i++) {
-            if (toc[i].id != scoId) {
-                continue;
-            }
+        const currentTocIndex = toc.findIndex((item) => item.id == scoId);
 
-            // We found the current SCO. Now let's search the previous visible SCO with fulfilled prerequisites.
-            for (let j = i - 1; j >= 0; j--) {
-                if (toc[j].isvisible && toc[j].prereq && toc[j].launch) {
-                    return toc[j];
-                }
+        // We found the current SCO. Now let's search the previous visible SCO with fulfilled prerequisites.
+        for (let j = currentTocIndex - 1; j >= 0; j--) {
+            if (toc[j].isvisible && toc[j].prereq && toc[j].launch) {
+                return toc[j];
             }
-            break;
         }
     }
 

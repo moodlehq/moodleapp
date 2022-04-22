@@ -151,6 +151,7 @@ export class CoreGroupsProvider {
         const groupInfo: CoreGroupInfo = {
             groups: [],
             defaultGroupId: 0,
+            canAccessAllGroups: false,
         };
 
         const groupMode = await this.getActivityGroupMode(cmId, siteId, ignoreCache);
@@ -161,6 +162,8 @@ export class CoreGroupsProvider {
         let result: CoreGroupGetActivityAllowedGroupsWSResponse;
         if (groupInfo.separateGroups || groupInfo.visibleGroups) {
             result = await this.getActivityAllowedGroups(cmId, userId, siteId, ignoreCache);
+
+            groupInfo.canAccessAllGroups = !!result.canaccessallgroups;
         } else {
             result = {
                 groups: [],
@@ -172,8 +175,7 @@ export class CoreGroupsProvider {
             groupInfo.visibleGroups = false;
             groupInfo.defaultGroupId = 0;
         } else {
-            // The "canaccessallgroups" field was added in 3.4. Add all participants for visible groups in previous versions.
-            if (result.canaccessallgroups || (typeof result.canaccessallgroups == 'undefined' && groupInfo.visibleGroups)) {
+            if (result.canaccessallgroups || groupInfo.visibleGroups) {
                 groupInfo.groups!.push({ id: 0, name: Translate.instant('core.allparticipants') });
                 groupInfo.defaultGroupId = 0;
             } else {
@@ -212,7 +214,7 @@ export class CoreGroupsProvider {
         const response: CoreGroupGetActivityGroupModeWSResponse =
             await site.read('core_group_get_activity_groupmode', params, preSets);
 
-        if (!response || typeof response.groupmode == 'undefined') {
+        if (!response || response.groupmode === undefined) {
             throw new CoreError('Activity group mode not found.');
         }
 
@@ -472,6 +474,11 @@ export type CoreGroupInfo = {
      * The group ID to use by default. If all participants is visible, 0 will be used. First group ID otherwise.
      */
     defaultGroupId: number;
+
+    /**
+     * Whether the user has the capability to access all groups in the context.
+     */
+    canAccessAllGroups: boolean;
 };
 
 /**

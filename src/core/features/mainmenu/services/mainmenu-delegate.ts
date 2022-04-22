@@ -77,6 +77,11 @@ export interface CoreMainMenuHandlerData {
      * Whether the handler should only appear in More menu.
      */
     onlyInMore?: boolean;
+
+    /**
+     * Priority of the handler. If set, overrides the priority defined in CoreMainMenuHandler.
+     */
+    priority?: number;
 }
 
 /**

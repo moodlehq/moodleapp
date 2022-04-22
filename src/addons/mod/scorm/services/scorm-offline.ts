@@ -682,7 +682,7 @@ export class AddonModScormOfflineProvider {
             scoid: scoId,
             attempt,
             element: element,
-            value: typeof value == 'undefined' ? null : JSON.stringify(value),
+            value: value === undefined ? null : JSON.stringify(value),
             timemodified: CoreTimeUtils.timestamp(),
             synced: 0,
         };
@@ -730,7 +730,7 @@ export class AddonModScormOfflineProvider {
         }
 
         const scoUserData = scoData?.userdata || {};
-        const db = CoreSites.getCurrentSite()!.getDb();
+        const db = CoreSites.getRequiredCurrentSite().getDb();
         let lessonStatusInserted = false;
 
         if (forceCompleted) {
@@ -937,7 +937,7 @@ export class AddonModScormOfflineProvider {
         param: string,
         ifEmpty: AddonModScormDataValue = '',
     ): AddonModScormDataValue {
-        if (typeof userData[param] != 'undefined') {
+        if (userData[param] !== undefined) {
             return userData[param];
         }
 

@@ -2,9 +2,11 @@
     <!-- Question text first. -->
     <ion-item class="ion-text-wrap">
         <ion-label>
-            <p><core-format-text [component]="component" [componentId]="componentId" [text]="multiQuestion.text"
-                [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">
-            </core-format-text></p>
+            <p>
+                <core-format-text [component]="component" [componentId]="componentId" [text]="multiQuestion.text"
+                    [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">
+                </core-format-text>
+            </p>
             <p *ngIf="multiQuestion.prompt">{{ multiQuestion.prompt }}</p>
         </ion-label>
     </ion-item>
@@ -12,9 +14,9 @@
     <!-- Checkbox for multiple choice. -->
     <ng-container *ngIf="multiQuestion.multi">
         <ion-item class="ion-text-wrap answer" *ngFor="let option of multiQuestion.options">
-            <ion-label [color]='(option.isCorrect === 1 ? "success": "") + (option.isCorrect === 0 ? "danger": "")' class="flex">
-                <core-format-text [component]="component" [componentId]="componentId" [text]="option.text"
-                    [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">
+            <ion-label [color]='(option.isCorrect === 1 ? "success": "") + (option.isCorrect === 0 ? "danger": "")' [class]="option.class">
+                <core-format-text [component]="component" [componentId]="componentId" [text]="option.text" [contextLevel]="contextLevel"
+                    [contextInstanceId]="contextInstanceId" [courseId]="courseId">
                 </core-format-text>
                 <div *ngIf="option.feedback" class="specificfeedback">
                     <core-format-text [component]="component" [componentId]="componentId" [text]="option.feedback"
@@ -40,9 +42,9 @@
     <!-- Radio buttons for single choice. -->
     <ion-radio-group *ngIf="!multiQuestion.multi" [(ngModel)]="multiQuestion.singleChoiceModel" [name]="multiQuestion.optionsName">
         <ion-item class="ion-text-wrap answer" *ngFor="let option of multiQuestion.options">
-            <ion-label class="flex">
-                <core-format-text [component]="component" [componentId]="componentId" [text]="option.text"
-                    [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">
+            <ion-label [class]="option.class">
+                <core-format-text [component]="component" [componentId]="componentId" [text]="option.text" [contextLevel]="contextLevel"
+                    [contextInstanceId]="contextInstanceId" [courseId]="courseId">
                 </core-format-text>
                 <div *ngIf="option.feedback" class="specificfeedback">
                     <core-format-text [component]="component" [componentId]="componentId" [text]="option.feedback"
@@ -60,8 +62,8 @@
             <ion-icon *ngIf="option.isCorrect === 0" class="core-correct-icon" name="fas-times" color="danger"
                 [attr.aria-label]="'core.question.incorrect' | translate"></ion-icon>
         </ion-item>
-        <ion-button *ngIf="!multiQuestion.disabled" class="ion-text-wrap ion-margin" expand="full" color="light"
-            [disabled]="!multiQuestion.singleChoiceModel" (click)="clear()" type="reset">
+        <ion-button *ngIf="!multiQuestion.disabled" class="ion-text-wrap ion-margin-top" expand="block" fill="outline"
+            [disabled]="!multiQuestion.singleChoiceModel" (click)="clear()" type="button">
             {{ 'addon.mod_quiz.clearchoice' | translate }}
         </ion-button>
 

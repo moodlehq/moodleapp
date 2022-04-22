@@ -24,8 +24,7 @@ import { AddonModQuizAccessDelayBetweenAttemptsHandler } from './services/handle
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 AddonModQuizAccessRuleDelegate.registerHandler(AddonModQuizAccessDelayBetweenAttemptsHandler.instance);
             },
         },

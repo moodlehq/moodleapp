@@ -29,6 +29,7 @@ import { AddonCalendarHelper } from './calendar-helper';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreSync } from '@services/sync';
 import { CoreNetworkError } from '@classes/errors/network-error';
+import moment from 'moment';
 
 /**
  * Service to sync calendar.
@@ -100,9 +101,10 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
     async syncEvents(siteId?: string): Promise<AddonCalendarSyncEvents> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        if (this.isSyncing(AddonCalendarSyncProvider.SYNC_ID, siteId)) {
+        const currentSyncPromise = this.getOngoingSync(AddonCalendarSyncProvider.SYNC_ID, siteId);
+        if (currentSyncPromise) {
             // There's already a sync ongoing for this site, return the promise.
-            return this.getOngoingSync(AddonCalendarSyncProvider.SYNC_ID, siteId)!;
+            return currentSyncPromise;
         }
 
         this.logger.debug('Try to sync calendar events for site ' + siteId);
@@ -123,6 +125,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
         const result: AddonCalendarSyncEvents = {
             warnings: [],
             events: [],
+            offlineIdMap: {},
             deleted: [],
             toinvalidate: [],
             updated: false,
@@ -255,10 +258,13 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
         ); // Clone the object because it will be modified in the submit function.
 
         try {
-            const newEvent = await AddonCalendar.submitEventOnline(eventId > 0 ? eventId : 0, data, siteId);
+            const newEvent = await AddonCalendar.submitEventOnline(eventId, data, siteId);
 
             result.updated = true;
             result.events.push(newEvent);
+            if (eventId < 0) {
+                result.offlineIdMap[eventId] = newEvent.id;
+            }
 
             // Add data to invalidate.
             const numberOfRepetitions = data.repeat ? data.repeats :
@@ -272,7 +278,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
             });
 
             // Event sent, delete the offline data.
-            return AddonCalendarOffline.deleteEvent(event.id!, siteId);
+            return AddonCalendarOffline.deleteEvent(event.id, siteId);
 
         } catch (error) {
             if (!CoreUtils.isWebServiceError(error)) {
@@ -283,7 +289,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
             // The WebService has thrown an error, this means that the event cannot be created. Delete it.
             result.updated = true;
 
-            await AddonCalendarOffline.deleteEvent(event.id!, siteId);
+            await AddonCalendarOffline.deleteEvent(event.id, siteId);
 
             // Event deleted, add a warning.
             this.addOfflineDataDeletedWarning(result.warnings, event.name, error);
@@ -297,13 +303,12 @@ export const AddonCalendarSync = makeSingleton(AddonCalendarSyncProvider);
 export type AddonCalendarSyncEvents = {
     warnings: string[];
     events: AddonCalendarEvent[];
+    offlineIdMap: Record<number, number>; // Map offline ID with online ID for created events.
     deleted: number[];
     toinvalidate: AddonCalendarSyncInvalidateEvent[];
     updated: boolean;
     source?: string; // Added on pages.
-    day?: number; // Added on day page.
-    month?: number; // Added on day page.
-    year?: number; // Added on day page.
+    moment?: moment.Moment; // Added on day page.
 };
 
 export type AddonCalendarSyncInvalidateEvent = {

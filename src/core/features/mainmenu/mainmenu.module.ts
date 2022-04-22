@@ -41,6 +41,10 @@ const appRoutes: Routes = [
         canActivate: [CoreMainMenuAuthGuard],
         canLoad: [CoreMainMenuAuthGuard],
     },
+    {
+        path: 'reload',
+        loadChildren: () => import('./pages/reload/reload.module').then( m => m.CoreMainMenuReloadPageModule),
+    },
 ];
 
 @NgModule({
@@ -49,8 +53,7 @@ const appRoutes: Routes = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreMainMenuDelegate.registerHandler(CoreMainMenuHomeHandler.instance);
             },
         },

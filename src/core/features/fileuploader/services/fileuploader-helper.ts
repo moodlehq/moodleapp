@@ -35,6 +35,7 @@ import { CoreCaptureError } from '@classes/errors/captureerror';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreWSUploadFileResult } from '@services/ws';
 import { CoreSites } from '@services/sites';
+import { CoreText } from '@singletons/text';
 
 /**
  * Helper service to upload files.
@@ -123,8 +124,8 @@ export class CoreFileUploaderHelperProvider {
             throw new CoreError(Translate.instant('core.fileuploader.errormustbeonlinetoupload'));
         }
 
-        wifiThreshold = typeof wifiThreshold == 'undefined' ? CoreFileUploaderProvider.WIFI_SIZE_WARNING : wifiThreshold;
-        limitedThreshold = typeof limitedThreshold == 'undefined' ?
+        wifiThreshold = wifiThreshold === undefined ? CoreFileUploaderProvider.WIFI_SIZE_WARNING : wifiThreshold;
+        limitedThreshold = limitedThreshold === undefined ?
             CoreFileUploaderProvider.LIMITED_SIZE_WARNING : limitedThreshold;
 
         if (size < 0) {
@@ -158,7 +159,7 @@ export class CoreFileUploaderHelperProvider {
             // Get unique name for the copy.
             const newName = await CoreFile.getUniqueNameInFolder(CoreFileProvider.TMPFOLDER, name);
 
-            const filePath = CoreTextUtils.concatenatePaths(CoreFileProvider.TMPFOLDER, newName);
+            const filePath = CoreText.concatenatePaths(CoreFileProvider.TMPFOLDER, newName);
 
             // Write the data into the file.
             fileEntry = await CoreFile.writeFileDataInFile(
@@ -203,17 +204,13 @@ export class CoreFileUploaderHelperProvider {
         const fileName = options?.fileName || CoreFile.getFileAndDirectoryFromPath(path).name;
 
         // Check that size isn't too large.
-        if (typeof maxSize != 'undefined' && maxSize != -1) {
-            try {
-                const fileEntry = await CoreFile.getExternalFile(path);
+        if (maxSize !== undefined && maxSize != -1) {
+            const fileEntry = await CoreFile.getExternalFile(path);
 
-                const fileData = await CoreFile.getFileObjectFromFileEntry(fileEntry);
+            const fileData = await CoreFile.getFileObjectFromFileEntry(fileEntry);
 
-                if (fileData.size > maxSize) {
-                    throw this.createMaxBytesError(maxSize, fileEntry.name);
-                }
-            } catch (error) {
-                // Ignore failures.
+            if (fileData.size > maxSize) {
+                throw this.createMaxBytesError(maxSize, fileEntry.name);
             }
         }
 
@@ -222,7 +219,7 @@ export class CoreFileUploaderHelperProvider {
         const newName = await CoreFile.getUniqueNameInFolder(CoreFileProvider.TMPFOLDER, fileName, defaultExt);
 
         // Now move or copy the file.
-        const destPath = CoreTextUtils.concatenatePaths(CoreFileProvider.TMPFOLDER, newName);
+        const destPath = CoreText.concatenatePaths(CoreFileProvider.TMPFOLDER, newName);
         if (shouldDelete) {
             return CoreFile.moveExternalFile(path, destPath);
         } else {
@@ -553,10 +550,8 @@ export class CoreFileUploaderHelperProvider {
             media = medias[0]; // We used limit 1, we only want 1 media.
         } catch (error) {
 
-            if (isAudio && this.isNoAppError(error) && CoreApp.isMobile() &&
-                    (!Platform.is('android') || CoreApp.getPlatformMajorVersion() < 10)) {
+            if (isAudio && this.isNoAppError(error) && CoreApp.isMobile()) {
                 // No app to record audio, fallback to capture it ourselves.
-                // In Android it will only be done in Android 9 or lower because there's a bug in the plugin.
                 try {
                     media = await CoreFileUploader.captureAudioInApp();
                 } catch (error) {

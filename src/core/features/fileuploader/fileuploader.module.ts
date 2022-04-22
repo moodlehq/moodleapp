@@ -34,8 +34,7 @@ export const CORE_FILEUPLOADER_SERVICES: Type<unknown>[] = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreFileUploaderDelegate.registerHandler(CoreFileUploaderAlbumHandler.instance);
                 CoreFileUploaderDelegate.registerHandler(CoreFileUploaderAudioHandler.instance);
                 CoreFileUploaderDelegate.registerHandler(CoreFileUploaderCameraHandler.instance);

@@ -26,6 +26,8 @@ import { AddonModBookListLinkHandler } from './services/handlers/list-link';
 import { AddonModBookPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModBookTagAreaHandler } from './services/handlers/tag-area';
 import { AddonModBookProvider } from './services/book';
+import { CORE_SITE_SCHEMAS } from '@services/sites';
+import { BOOK_SITE_SCHEMA } from './services/database/book';
 
 export const ADDON_MOD_BOOK_SERVICES: Type<unknown>[] = [
     AddonModBookProvider,
@@ -45,10 +47,14 @@ const routes: Routes = [
     ],
     providers: [
         {
+            provide: CORE_SITE_SCHEMAS,
+            useValue: [BOOK_SITE_SCHEMA],
+            multi: true,
+        },
+        {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreCourseModuleDelegate.registerHandler(AddonModBookModuleHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModBookIndexLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModBookListLinkHandler.instance);

@@ -3,10 +3,12 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>
-            <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="moduleId" [courseId]="courseId">
-            </core-format-text>
-        </h1>
+        <ion-title>
+            <h1>
+                <core-format-text [text]="title" contextLevel="module" [contextInstanceId]="moduleId" [courseId]="courseId">
+                </core-format-text>
+            </h1>
+        </ion-title>
 
         <ion-buttons slot="end"></ion-buttons>
     </ion-toolbar>
@@ -17,13 +19,12 @@
         </ion-button>
     </core-navbar-buttons>
 </ion-header>
-<ion-content>
-
+<ion-content [core-swipe-navigation]="submissions">
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshSubmission($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
-        <addon-mod-assign-submission [courseId]="courseId" [moduleId]="moduleId" [submitId]="submitId" [blindId]="blindId">
+        <addon-mod-assign-submission *ngIf="loaded" [courseId]="courseId" [moduleId]="moduleId" [submitId]="submitId" [blindId]="blindId">
         </addon-mod-assign-submission>
     </core-loading>
 </ion-content>

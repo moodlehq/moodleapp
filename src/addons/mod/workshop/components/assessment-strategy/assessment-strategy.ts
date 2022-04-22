@@ -304,7 +304,11 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
                     files,
                     saveOffline,
                 );
-            } catch {
+            } catch (error) {
+                if (CoreUtils.isWebServiceError(error)) {
+                    throw error;
+                }
+
                 // Cannot upload them in online, save them in offline.
                 saveOffline = true;
                 allowOffline = true;

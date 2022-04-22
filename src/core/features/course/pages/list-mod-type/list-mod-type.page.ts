@@ -14,7 +14,6 @@
 
 import { Component, OnInit } from '@angular/core';
 
-import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -36,7 +35,6 @@ export class CoreCourseListModTypePage implements OnInit {
     sections: CoreCourseSection[] = [];
     title = '';
     loaded = false;
-    downloadEnabled = false;
     courseId?: number;
 
     protected modName?: string;
@@ -49,7 +47,6 @@ export class CoreCourseListModTypePage implements OnInit {
         this.title = CoreNavigator.getRouteParam('title') || '';
         this.courseId = CoreNavigator.getRouteNumberParam('courseId');
         this.modName = CoreNavigator.getRouteParam('modName');
-        this.downloadEnabled = !CoreSites.getCurrentSite()?.isOfflineDisabled();
 
         try {
             await this.fetchData();
@@ -78,14 +75,14 @@ export class CoreCourseListModTypePage implements OnInit {
                 }
 
                 section.modules = section.modules.filter((mod) => {
-                    if (mod.uservisible === false || !CoreCourse.moduleHasView(mod)) {
+                    if (!CoreCourseHelper.canUserViewModule(mod, section) || !CoreCourse.moduleHasView(mod)) {
                         // Ignore this module.
                         return false;
                     }
 
                     if (this.modName === 'resources') {
                         // Check that the module is a resource.
-                        if (typeof this.archetypes[mod.modname] == 'undefined') {
+                        if (this.archetypes[mod.modname] === undefined) {
                             this.archetypes[mod.modname] = CoreCourseModuleDelegate.supportsFeature<number>(
                                 mod.modname,
                                 CoreConstants.FEATURE_MOD_ARCHETYPE,
@@ -105,7 +102,7 @@ export class CoreCourseListModTypePage implements OnInit {
                 return section.modules.length > 0;
             });
 
-            const result = CoreCourseHelper.addHandlerDataForModules(sections, this.courseId);
+            const result = await CoreCourseHelper.addHandlerDataForModules(sections, this.courseId);
 
             this.sections = result.sections;
         } catch (error) {

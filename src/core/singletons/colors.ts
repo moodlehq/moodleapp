@@ -22,6 +22,22 @@ interface ColorComponents {
 }
 
 /**
+ * Ionic color names.
+ */
+export enum CoreIonicColorNames {
+    PRIMARY = 'primary',
+    SECONDARY = 'secondary',
+    SUCCESS = 'success',
+    WARNING = 'warning',
+    DANGER = 'danger',
+    INFO = 'info',
+    DARK = 'dark',
+    MEDIUM = 'medium',
+    LIGHT = 'light',
+    NONE = '',
+};
+
+/**
  * Singleton with helper functions for colors.
  */
 export class CoreColors {
@@ -37,17 +53,35 @@ export class CoreColors {
     }
 
     /**
-     * Returns the same color 10% darker to be used as status bar on Android.
+     * Returns the same color % darker.
      *
      * @param color Color to get darker.
      * @return Darker Hex RGB color.
      */
-    static darker(color: string, percent: number = 10): string {
-        percent = 1 - (percent / 100);
+    static darker(color: string, percent: number = 48): string {
+        const inversePercent = 1 - (percent / 100);
         const components = CoreColors.hexToRGB(color);
-        components.red = Math.floor(components.red * percent);
-        components.green = Math.floor(components.green * percent);
-        components.blue = Math.floor(components.blue * percent);
+        components.red = Math.floor(components.red * inversePercent);
+        components.green = Math.floor(components.green * inversePercent);
+        components.blue = Math.floor(components.blue * inversePercent);
+
+        return CoreColors.RGBToHex(components);
+    }
+
+    /**
+     * Returns the same color % lighter.
+     *
+     * @param color Color to get lighter.
+     * @return Lighter Hex RGB color.
+     */
+    static lighter(color: string, percent: number = 80): string {
+        percent = percent / 100;
+        const inversePercent = 1 - percent;
+
+        const components = CoreColors.hexToRGB(color);
+        components.red = Math.floor(255 * percent + components.red * inversePercent);
+        components.green = Math.floor(255 * percent + components.green * inversePercent);
+        components.blue = Math.floor(255 * percent + components.blue * inversePercent);
 
         return CoreColors.RGBToHex(components);
     }
@@ -56,23 +90,42 @@ export class CoreColors {
      * Returns the hex code from any color css type (ie named).
      *
      * @param color Color in any format.
-     * @returns Color in hex format.
+     * @return Color in hex format.
      */
     static getColorHex(color: string): string {
-        const d = document.createElement('div');
-        d.style.color = color;
-        document.body.appendChild(d);
-
-        // Color in RGB .
-        const rgba = getComputedStyle(d).color.match(/\d+/g)!.map((a) => parseInt(a, 10));
+        const rgba = CoreColors.getColorRGBA(color, true);
+        if (rgba.length === 0) {
+            return '';
+        }
 
         const hex = [0,1,2].map(
             (idx) => this.componentToHex(rgba[idx]),
         ).join('');
 
-        document.body.removeChild(d);
+        return '#' + hex;
+    }
 
-        return '#'+hex;
+    /**
+     * Returns RGBA color from any color format.
+     *
+     * @param color Color in any format.
+     * @param createElement Wether create a new element is needed to calculate value.
+     * @return Red, green, blue and alpha.
+     */
+    static getColorRGBA(color: string, createElement = false): number[] {
+        if (createElement) {
+            const d = document.createElement('span');
+            d.style.color = color;
+            document.body.appendChild(d);
+
+            // Color in RGB.
+            color = getComputedStyle(d).color;
+            document.body.removeChild(d);
+        }
+
+        const matches = color.match(/\d+/g) || [];
+
+        return matches.map((a, index) => index < 3 ? parseInt(a, 10) : parseFloat(a));
     }
 
     /**
@@ -95,7 +148,7 @@ export class CoreColors {
      */
     static hexToRGB(color: string): ColorComponents {
         if (color.charAt(0) == '#') {
-            color = color.substr(1);
+            color = color.substring(1);
         }
 
         if (color.length === 3) {
@@ -105,9 +158,9 @@ export class CoreColors {
         }
 
         return {
-            red: parseInt(color.substr(0, 2), 16),
-            green: parseInt(color.substr(2, 2), 16),
-            blue: parseInt(color.substr(4, 2), 16),
+            red: parseInt(color.substring(0, 2), 16),
+            green: parseInt(color.substring(2, 4), 16),
+            blue: parseInt(color.substring(4, 6), 16),
         };
 
     }
@@ -133,6 +186,25 @@ export class CoreColors {
      */
     protected static componentToHex(c: number): string {
         return ('0' + c.toString(16)).slice(-2);
+    }
+
+    /**
+     * Get the toolbar's current background color.
+     *
+     * @return Color in hex format.
+     */
+    static getToolbarBackgroundColor(): string {
+        const element = document.querySelector('ion-header ion-toolbar');
+        let color: string;
+
+        if (element) {
+            color = getComputedStyle(element).getPropertyValue('--background').trim();
+        } else {
+            // Fallback, it won't always work.
+            color = getComputedStyle(document.body).getPropertyValue('--core-header-toolbar-background').trim();
+        }
+
+        return CoreColors.getColorHex(color);
     }
 
 }

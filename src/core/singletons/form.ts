@@ -60,7 +60,7 @@ export class CoreForms {
     /**
      * Trigger form cancelled event.
      *
-     * @param form Form element.
+     * @param formRef Form element.
      * @param siteId The site affected. If not provided, no site affected.
      */
     static triggerFormCancelledEvent(formRef?: ElementRef | HTMLFormElement | undefined, siteId?: string): void {
@@ -77,7 +77,7 @@ export class CoreForms {
     /**
      * Trigger form submitted event.
      *
-     * @param form Form element.
+     * @param formRef Form element.
      * @param online Whether the action was done in offline or not.
      * @param siteId The site affected. If not provided, no site affected.
      */

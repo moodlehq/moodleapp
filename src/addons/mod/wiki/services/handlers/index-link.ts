@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { Params } from '@angular/router';
 import { CoreContentLinksModuleIndexHandler } from '@features/contentlinks/classes/module-index-handler';
 import { makeSingleton } from '@singletons';
 
@@ -26,6 +27,17 @@ export class AddonModWikiIndexLinkHandlerService extends CoreContentLinksModuleI
 
     constructor() {
         super('AddonModWiki', 'wiki', 'wid');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getPageParams(url: string, params: Record<string, string>): Params {
+        return {
+            groupId: params.group || params.group === '0' ? Number(params.group) : undefined,
+            userId: params.uid || params.uid === '0' ? Number(params.uid) : undefined,
+            pageTitle: params.title,
+        };
     }
 
 }

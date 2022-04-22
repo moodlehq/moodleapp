@@ -395,7 +395,7 @@ export class CoreCommentsProvider {
 
         if (response.comments) {
             // Update pageSize with the greatest count at the moment.
-            if (typeof response.count == 'undefined' && response.comments.length > CoreCommentsProvider.pageSize) {
+            if (response.count === undefined && response.comments.length > CoreCommentsProvider.pageSize) {
                 CoreCommentsProvider.pageSize = response.comments.length;
             }
 
@@ -434,7 +434,7 @@ export class CoreCommentsProvider {
                 const response = await this.getComments(contextLevel, instanceId, component, itemId, area, page, siteId);
                 // Count is only available in 3.8 onwards.
 
-                if (typeof response.count != 'undefined') {
+                if (response.count !== undefined) {
                     trueCount = true;
 
                     return response.count;
@@ -536,7 +536,7 @@ export type CoreCommentsArea = {
     canpost: boolean; // Canpost.
     canview: boolean; // Canview.
     count: number; // Count.
-    collapsediconkey: string; // @since 3.3. Collapsediconkey.
+    collapsediconkey: string; // Collapsediconkey.
     displaytotalcount: boolean; // Displaytotalcount.
     displaycancel: boolean; // Displaycancel.
     fullwidth: boolean; // Fullwidth.

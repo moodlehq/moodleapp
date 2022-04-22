@@ -20,6 +20,7 @@ import { CoreSites } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { makeSingleton } from '@singletons';
+import { CoreText } from '@singletons/text';
 import { AddonModAssignOutcomes, AddonModAssignSavePluginData } from './assign';
 import {
     AddonModAssignSubmissionsDBRecord,
@@ -236,7 +237,7 @@ export class AddonModAssignOfflineProvider {
         const siteFolderPath = CoreFile.getSiteFolder(site.getId());
         const submissionFolderPath = 'offlineassign/' + assignId + '/' + userId;
 
-        return CoreTextUtils.concatenatePaths(siteFolderPath, submissionFolderPath);
+        return CoreText.concatenatePaths(siteFolderPath, submissionFolderPath);
     }
 
     /**
@@ -276,7 +277,7 @@ export class AddonModAssignOfflineProvider {
     async getSubmissionPluginFolder(assignId: number, pluginName: string, userId?: number, siteId?: string): Promise<string> {
         const folderPath = await this.getSubmissionFolder(assignId, userId, siteId);
 
-        return CoreTextUtils.concatenatePaths(folderPath, pluginName);
+        return CoreText.concatenatePaths(folderPath, pluginName);
     }
 
     /**

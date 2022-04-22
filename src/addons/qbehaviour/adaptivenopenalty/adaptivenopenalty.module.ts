@@ -24,8 +24,7 @@ import { AddonQbehaviourAdaptiveNoPenaltyHandler } from './services/handlers/ada
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [],
-            useFactory: () => () => {
+            useValue: () => {
                 CoreQuestionBehaviourDelegate.registerHandler(AddonQbehaviourAdaptiveNoPenaltyHandler.instance);
             },
         },

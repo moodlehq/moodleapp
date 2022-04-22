@@ -5,7 +5,7 @@
                 <ion-icon slot="icon-only" name="fas-arrow-left" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
-
+        <ion-title></ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="skip($event)" [attr.aria-label]="'core.skip' | translate">
                 {{'core.skip' | translate}}
@@ -24,10 +24,10 @@
         </h3>
 
         <div *ngIf="step == 0" class="core-login-onboarding-step">
-            <ion-button expand="block" (click)="skip($event)" class="ion-margin-bottom" color="light">
+            <ion-button expand="block" (click)="skip($event)" class="ion-margin-bottom" fill="outline">
                 {{'core.login.onboardingimalearner' | translate}}
             </ion-button>
-            <ion-button expand="block" (click)="next($event)" class="ion-margin-bottom" color="light">
+            <ion-button expand="block" (click)="next($event)" class="ion-margin-bottom" fill="outline">
                 {{'core.login.onboardingimaneducator' | translate}}
             </ion-button>
         </div>
@@ -36,7 +36,7 @@
             <p class="core-login-onboarding-text">
                 {{ 'core.login.onboardingtoconnect' | translate }}
             </p>
-            <ion-button expand="block" (click)="skip($event)" class="ion-margin-bottom" color="light">
+            <ion-button expand="block" (click)="skip($event)" class="ion-margin-bottom" fill="outline">
                 {{ 'core.login.onboardingialreadyhaveasite' | translate }}
             </ion-button>
             <ion-button expand="block" (click)="next($event)" class="ion-margin-bottom">

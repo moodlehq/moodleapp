@@ -28,6 +28,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreWS, CoreWSExternalFile, CoreWSExternalWarning, CoreWSFile, CoreWSPreSets } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
+import { CoreText } from '@singletons/text';
 import { AddonModScormOffline } from './scorm-offline';
 import { AddonModScormAutoSyncEventData, AddonModScormSyncProvider } from './scorm-sync';
 
@@ -331,7 +332,7 @@ export class AddonModScormProvider {
                     set.forEach((setElement) => {
                         setElement = setElement.trim();
 
-                        if (typeof trackData[setElement] != 'undefined' &&
+                        if (trackData[setElement] !== undefined &&
                                 (trackData[setElement].status == 'completed' || trackData[setElement].status == 'passed')) {
                             count++;
                         }
@@ -350,11 +351,11 @@ export class AddonModScormProvider {
                     matches = element.match(reOther)!;
                     element = matches[1].trim();
 
-                    if (typeof trackData[element] != 'undefined') {
+                    if (trackData[element] !== undefined) {
                         let value = matches[3].trim().replace(/('|")/gi, '');
                         let oper: string;
 
-                        if (typeof STATUSES[value] != 'undefined') {
+                        if (STATUSES[value] !== undefined) {
                             value = STATUSES[value];
                         }
 
@@ -370,7 +371,7 @@ export class AddonModScormProvider {
                     }
                 } else {
                     // Everything else must be an element defined like S45 ...
-                    if (typeof trackData[element] != 'undefined' &&
+                    if (trackData[element] !== undefined &&
                             (trackData[element].status == 'completed' || trackData[element].status == 'passed')) {
                         element = 'true';
                     } else {
@@ -395,7 +396,7 @@ export class AddonModScormProvider {
      * @return Grade to display.
      */
     formatGrade(scorm: AddonModScormScorm, grade: number): string {
-        if (typeof grade == 'undefined' || grade == -1) {
+        if (grade === undefined || grade == -1) {
             return Translate.instant('core.none');
         }
 
@@ -607,8 +608,8 @@ export class AddonModScormProvider {
                 attemptScore.scos++;
             }
 
-            if (userData.score_raw || (typeof scorm.scormtype != 'undefined' &&
-                        scorm.scormtype == 'sco' && typeof userData.score_raw != 'undefined')) {
+            if (userData.score_raw || (scorm.scormtype !== undefined &&
+                        scorm.scormtype == 'sco' && userData.score_raw !== undefined)) {
 
                 const scoreRaw = parseFloat(<string> userData.score_raw);
                 attemptScore.values++;
@@ -912,14 +913,14 @@ export class AddonModScormProvider {
             }
 
             // Check isvisible attribute.
-            sco.isvisible = typeof scoData.isvisible == 'undefined' || (!!scoData.isvisible && scoData.isvisible !== 'false');
+            sco.isvisible = scoData.isvisible === undefined || (!!scoData.isvisible && scoData.isvisible !== 'false');
             // Check pre-requisites status.
-            sco.prereq = typeof scoData.prerequisites == 'undefined' ||
+            sco.prereq = scoData.prerequisites === undefined ||
                 this.evalPrerequisites(<string> scoData.prerequisites, trackDataBySCO);
             // Add status.
-            sco.status = (typeof scoData.status == 'undefined' || scoData.status === '') ? 'notattempted' : <string> scoData.status;
+            sco.status = (scoData.status === undefined || scoData.status === '') ? 'notattempted' : <string> scoData.status;
             // Exit var.
-            sco.exitvar = typeof scoData.exitvar == 'undefined' ? 'cmi.core.exit' : <string> scoData.exitvar;
+            sco.exitvar = scoData.exitvar === undefined ? 'cmi.core.exit' : <string> scoData.exitvar;
             sco.exitvalue = <string> scoData[sco.exitvar];
             // Copy score.
             sco.scoreraw = scoData.score_raw;
@@ -947,7 +948,7 @@ export class AddonModScormProvider {
         if (parameters) {
             const connector = launchUrl.indexOf('?') > -1 ? '&' : '?';
             if (parameters.charAt(0) == '?') {
-                parameters = parameters.substr(1);
+                parameters = parameters.substring(1);
             }
 
             launchUrl += connector + parameters;
@@ -960,7 +961,7 @@ export class AddonModScormProvider {
 
         const dirPath = await CoreFilepool.getPackageDirUrlByUrl(siteId, scorm.moduleurl!);
 
-        return CoreTextUtils.concatenatePaths(dirPath, launchUrl);
+        return CoreText.concatenatePaths(dirPath, launchUrl);
     }
 
     /**
@@ -1105,11 +1106,11 @@ export class AddonModScormProvider {
 
         const currentScorm = <AddonModScormScorm> response.scorms.find(scorm => scorm[key] == value);
         if (!currentScorm) {
-            throw new CoreError('SCORM not found.');
+            throw new CoreError(Translate.instant('core.course.modulenotfound'));
         }
 
         // If the SCORM isn't available the WS returns a warning and it doesn't return timeopen and timeclosed.
-        if (typeof currentScorm.timeopen == 'undefined') {
+        if (currentScorm.timeopen === undefined) {
             const warning = response.warnings?.find(warning => warning.itemid === currentScorm.id);
             currentScorm.warningMessage = warning?.message;
         }
@@ -1315,7 +1316,7 @@ export class AddonModScormProvider {
 
         if (link.match(/^https?:\/\//i) && !CoreUrlUtils.isLocalFileUrl(link)) {
             return true;
-        } else if (link.substr(0, 4) == 'www.') {
+        } else if (link.substring(0, 4) == 'www.') {
             return true;
         }
 
@@ -1339,7 +1340,7 @@ export class AddonModScormProvider {
      * @return Whether the SCORM is downloadable.
      */
     isScormDownloadable(scorm: AddonModScormScorm): boolean {
-        return typeof scorm.protectpackagedownloads != 'undefined' && scorm.protectpackagedownloads === false;
+        return scorm.protectpackagedownloads !== undefined && scorm.protectpackagedownloads === false;
     }
 
     /**
@@ -1612,11 +1613,6 @@ export class AddonModScormProvider {
         };
         const wsFunction = 'mod_scorm_insert_scorm_tracks';
 
-        // Check if the method is available, use a prefixed version if possible.
-        if (!currentSite.wsAvailable(wsFunction, false)) {
-            return false;
-        }
-
         try {
             const response = CoreWS.syncCall<AddonModScormInsertScormTracksWSResponse>(wsFunction, params, preSets);
 
@@ -1640,7 +1636,7 @@ export class AddonModScormProvider {
 
         const component = AddonModScormProvider.COMPONENT;
 
-        if (typeof isOutdated == 'undefined') {
+        if (isOutdated === undefined) {
             // Calculate if it's outdated.
             const data = await CoreUtils.ignoreErrors(CoreFilepool.getPackageData(siteId, component, scorm.coursemodule));
 

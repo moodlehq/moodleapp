@@ -1,0 +1,46 @@
+@import "~theme/globals";
+
+:host {
+    --extra-icon-size: 16px;
+    --icon-size: 24px;
+
+    ::ng-deep core-user-avatar {
+        .core-avatar-extra-img,
+        core-mod-icon {
+            margin: 0 !important;
+            position: absolute;
+            right: -4px;
+            bottom: -4px;
+            padding: 0.2rem;
+        }
+
+        .core-avatar-extra-img {
+            background: var(--background-color);
+            border-radius: var(--medium-radius);
+            img {
+                max-width: var(--extra-icon-size);
+                max-height: var(--extra-icon-size);
+                display: block;
+            }
+        }
+
+        core-mod-icon  {
+            --size: var(--extra-icon-size);
+        }
+    }
+
+    div.core-notification-icon {
+        img {
+            width: var(--icon-size);
+            height: var(--icon-size);
+        }
+        padding: 0.7rem;
+        background: var(--background-color);
+        border-radius: var(--small-radius);
+    }
+
+    .core-notification-icon {
+        --module-icon-size: var(--icon-size);
+        @include margin(6px, 8px, 6px, 0px);
+    }
+}

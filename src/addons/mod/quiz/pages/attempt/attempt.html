@@ -3,19 +3,21 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
-        <h1>
-            <core-format-text *ngIf="quiz" [text]="quiz.name" contextLevel="module" [contextInstanceId]="quiz.coursemodule"
-                [courseId]="courseId">
-            </core-format-text>
-        </h1>
+        <ion-title>
+            <h1>
+                <core-format-text *ngIf="quiz" [text]="quiz.name" contextLevel="module" [contextInstanceId]="quiz.coursemodule"
+                    [courseId]="courseId">
+                </core-format-text>
+            </h1>
+        </ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content>
+<ion-content class="limited-width">
     <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="doRefresh($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
-        <ion-list *ngIf="attempt" lines="none">
+        <ion-list *ngIf="attempt">
             <ion-item class="ion-text-wrap">
                 <ion-label>
                     <h2>{{ 'addon.mod_quiz.attemptnumber' | translate }}</h2>
@@ -45,21 +47,27 @@
                 <ion-label>
                     <h2>{{ 'addon.mod_quiz.feedback' | translate }}</h2>
                     <p>
-                        <core-format-text [component]="component" [componentId]="componentId" [text]="feedback"
-                            contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">
+                        <core-format-text [component]="component" [componentId]="componentId" [text]="feedback" contextLevel="module"
+                            [contextInstanceId]="cmId" [courseId]="courseId">
                         </core-format-text>
                     </p>
                 </ion-label>
             </ion-item>
-            <ion-button *ngIf="showReviewColumn && attempt.finished" class="ion-margin" expand="block" (click)="reviewAttempt()">
-                <ion-icon name="fas-search" slot="start" aria-hidden="true"></ion-icon>
-                {{ 'addon.mod_quiz.review' | translate }}
-            </ion-button>
+
             <ion-item class="ion-text-wrap core-danger-item" *ngIf="!showReviewColumn">
                 <ion-label>
                     <p>{{ 'addon.mod_quiz.noreviewattempt' | translate }}</p>
                 </ion-label>
             </ion-item>
         </ion-list>
+
+        <div collapsible-footer appearOnBottom *ngIf="loaded && attempt && showReviewColumn && attempt.finished" slot="fixed">
+            <div class="list-item-limited-width">
+                <ion-button class="ion-margin ion-text-wrap" expand="block" (click)="reviewAttempt()">
+                    <ion-icon name="fas-search" slot="start" aria-hidden="true"></ion-icon>
+                    {{ 'addon.mod_quiz.review' | translate }}
+                </ion-button>
+            </div>
+        </div>
     </core-loading>
 </ion-content>
