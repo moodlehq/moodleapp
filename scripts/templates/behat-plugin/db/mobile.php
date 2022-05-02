@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $addons = [
-    'local_moodlemobileapp' => [
+    'local_moodleappbehat' => [
         'handlers' => [
             'index' => [
                 'delegate' => 'CoreMainMenuDelegate',
@@ -28,7 +28,7 @@ $addons = [
             ],
         ],
         'lang' => [
-            ['pluginname', 'local_moodlemobileapp'],
+            ['pluginname', 'local_moodleappbehat'],
         ],
     ],
 ];

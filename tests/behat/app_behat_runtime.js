@@ -601,7 +601,7 @@
             case 'more menu':
                 foundButton = findElementsBasedOnText({
                     text: 'More',
-                    near: { text: 'Messages' },
+                    selector: 'ion-tab-button',
                 })[0];
                 break;
             case 'user menu' :

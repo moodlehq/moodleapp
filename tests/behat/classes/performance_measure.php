@@ -18,6 +18,8 @@ use Behat\Mink\Exception\DriverException;
 use Facebook\WebDriver\Exception\InvalidArgumentException;
 use Moodle\BehatExtension\Driver\WebDriver;
 
+require_once(__DIR__ . '/../behat_app.php');
+
 /**
  * Performance measures for one particular metric.
  */
@@ -334,7 +336,7 @@ class performance_measure implements behat_app_listener {
                     "            ],",
                     "        ],",
                     "    ],",
-                    ");",
+                    "];",
                     "",
                 ])
             );

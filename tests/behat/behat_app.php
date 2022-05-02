@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Mobile/desktop app steps definitions.
+ * Moodle App steps definitions.
  *
  * @package core
  * @category test
@@ -49,7 +49,7 @@ interface behat_app_listener {
 }
 
 /**
- * Mobile/desktop app steps definitions.
+ * Moodle App steps definitions.
  *
  * @package core
  * @category test
@@ -518,7 +518,7 @@ class behat_app extends behat_base {
 
         $this->execute_script("
             var script = document.createElement('script');
-            script.src = '{$CFG->behat_wwwroot}/local/moodlemobileapp/tests/behat/app_behat_runtime.js';
+            script.src = '{$CFG->behat_wwwroot}/local/moodleappbehat/tests/behat/app_behat_runtime.js';
             document.body.append(script);
         ");
 

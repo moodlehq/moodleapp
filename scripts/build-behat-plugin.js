@@ -80,7 +80,8 @@ async function main() {
         }
 
         const newPath = featurePath.substring(0, featurePath.length - ('/tests/behat'.length));
-        const prefix = relative(behatTempFeaturesPath, newPath).replace('/','-') || 'core';
+        const searchRegExp = new RegExp('/', 'g');
+        const prefix = relative(behatTempFeaturesPath, newPath).replace(searchRegExp,'-') || 'core';
         const featureFilename = prefix + '-' + basename(featureFile);
         renameSync(featureFile, behatFeaturesPath + '/' + featureFilename);
     }
