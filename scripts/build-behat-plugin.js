@@ -14,17 +14,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const { existsSync, readFileSync, writeFileSync } = require('fs');
+const { existsSync, readFileSync, writeFileSync, statSync, renameSync, rmSync } = require('fs');
 const { readdir } = require('fs').promises;
 const { mkdirSync, copySync } = require('fs-extra');
-const { resolve } = require('path');
+const { resolve, extname, dirname, basename, relative } = require('path');
 
 async function main() {
     const pluginPath = process.argv[2] || guessPluginPath() || fail('Folder argument missing!');
 
     if (!existsSync(pluginPath)) {
         mkdirSync(pluginPath);
+    } else {
+        // Empty directory, except the excluding list.
+        const excludeFromErase = [
+            '.git',
+            '.gitignore',
+            'README.md',
+        ];
+
+        const files = await readdir(pluginPath, { withFileTypes: true });
+        for (const file of files) {
+            if (excludeFromErase.indexOf(file.name) >= 0) {
+                continue;
+            }
+
+            const path = resolve(pluginPath, file.name);
+            rmSync(`${path}`, {recursive: true});
+        }
     }
+
 
     // Copy plugin template.
     const { version: appVersion } = require(projectPath('package.json'));
@@ -43,8 +61,37 @@ async function main() {
         writeFileSync(pluginFilePath, replaceArguments(fileContents, replacements));
     }
 
-    // Copy features.
+    // Copy plugin files.
     copySync(projectPath('tests/behat'), `${pluginPath}/tests/behat`);
+
+    // Copy feature files.
+    const behatTempFeaturesPath = `${pluginPath}/behat-tmp`;
+    copySync(projectPath('src'), behatTempFeaturesPath, { filter: isFeatureFileOrDirectory });
+
+    const behatFeaturesPath = `${pluginPath}/tests/behat`;
+    if (!existsSync(behatFeaturesPath)) {
+        mkdirSync(behatFeaturesPath, {recursive: true});
+    }
+
+    for await (const featureFile of getDirectoryFiles(behatTempFeaturesPath)) {
+        const featurePath = dirname(featureFile);
+        if (!featurePath.endsWith('/tests/behat')) {
+            continue;
+        }
+
+        const newPath = featurePath.substring(0, featurePath.length - ('/tests/behat'.length));
+        const prefix = relative(behatTempFeaturesPath, newPath).replace('/','-') || 'core';
+        const featureFilename = prefix + '-' + basename(featureFile);
+        renameSync(featureFile, behatFeaturesPath + '/' + featureFilename);
+    }
+
+    rmSync(behatTempFeaturesPath, {recursive: true});
+}
+
+function isFeatureFileOrDirectory(src) {
+    const stats = statSync(src);
+
+    return stats.isDirectory() || extname(src) === '.feature';
 }
 
 function fail(message) {
