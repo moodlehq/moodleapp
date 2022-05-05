@@ -46,23 +46,20 @@ async function main() {
 
     // Copy plugin template.
     const { version: appVersion } = require(projectPath('package.json'));
-    const templatePath = projectPath('scripts/templates/behat-plugin');
+    const templatePath = projectPath('local-moodleappbehat');
+
+
+    copySync(templatePath, pluginPath);
+
+    // Update version.php
+    const pluginFilePath = pluginPath + '/version.php';
+    const fileContents = readFileSync(pluginFilePath).toString();
+
     const replacements = {
         appVersion,
         pluginVersion: getMoodlePluginVersion(),
     };
-
-    copySync(templatePath, pluginPath);
-
-    for await (const templateFilePath of getDirectoryFiles(templatePath)) {
-        const pluginFilePath = pluginPath + templateFilePath.substr(templatePath.length);
-        const fileContents = readFileSync(pluginFilePath).toString();
-
-        writeFileSync(pluginFilePath, replaceArguments(fileContents, replacements));
-    }
-
-    // Copy plugin files.
-    copySync(projectPath('tests/behat'), `${pluginPath}/tests/behat`);
+    writeFileSync(pluginFilePath, replaceArguments(fileContents, replacements));
 
     // Copy feature files.
     const behatTempFeaturesPath = `${pluginPath}/behat-tmp`;
