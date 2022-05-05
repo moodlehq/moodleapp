@@ -353,17 +353,6 @@ class behat_app extends behat_base {
             $service->enabled = 1;
             $webservicemanager->update_external_service($service);
         }
-
-        // If installed, also configure local_mobile plugin to enable additional features service.
-        $localplugins = core_component::get_plugin_list('local');
-        if (array_key_exists('mobile', $localplugins)) {
-            $service = $webservicemanager->get_external_service_by_shortname(
-                    'local_mobile', MUST_EXIST);
-            if (!$service->enabled) {
-                $service->enabled = 1;
-                $webservicemanager->update_external_service($service);
-            }
-        }
     }
 
     /**
