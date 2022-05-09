@@ -731,9 +731,10 @@ class behat_app extends behat_base {
                 throw new DriverException('Invalid custom link title - ' . $title);
         }
 
-        $url = "moodlemobile://link=" . urlencode($pageurl);
+        $urlscheme = $this->get_mobile_url_scheme();
+        $url = "$urlscheme://link=" . urlencode($pageurl);
 
-        $this->evaluate_script("return window.urlSchemes.handleCustomURL('$url')");
+        $this->evaluate_async_script("return window.behat.handleCustomURL('$url')");
         $this->wait_for_pending_js();
     }
 
@@ -1178,6 +1179,15 @@ class behat_app extends behat_base {
         $this->evaluate_script("delete window.$promisevariable;");
 
         return $result;
+    }
+
+    /**
+     * Returns the current mobile url scheme of the site.
+     */
+    private function get_mobile_url_scheme() {
+        $mobilesettings = get_config('tool_mobile');
+
+        return !empty($mobilesettings->forcedurlscheme) ? $mobilesettings->forcedurlscheme : 'moodlemobile';
     }
 
 }

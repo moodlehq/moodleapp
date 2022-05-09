@@ -14,6 +14,7 @@
 
 import { TestsBehatDomUtils } from './behat-dom';
 import { TestsBehatBlocking } from './behat-blocking';
+import { CoreCustomURLSchemes } from '@services/urlschemes';
 
 /**
  * Behat runtime servive with public API.
@@ -35,14 +36,31 @@ export class TestsBehatRuntime {
             pressStandard: TestsBehatRuntime.pressStandard,
             scrollTo: TestsBehatRuntime.scrollTo,
             setField: TestsBehatRuntime.setField,
+            handleCustomURL: TestsBehatRuntime.handleCustomURL,
         };
+    }
+
+    /**
+     * Handles a custom URL.
+     *
+     * @param url Url to open.
+     * @return OK if successful, or ERROR: followed by message.
+     */
+    static async handleCustomURL(url: string): Promise<string> {
+        try {
+            await CoreCustomURLSchemes.handleCustomURL(url);
+
+            return 'OK';
+        } catch (error) {
+            return 'ERROR: ' + error.message;
+        }
     }
 
     /**
      * Function to find and click an app standard button.
      *
-     * @param button Type of button to press
-     * @return OK if successful, or ERROR: followed by message
+     * @param button Type of button to press.
+     * @return OK if successful, or ERROR: followed by message.
      */
     static pressStandard(button: string): string {
         this.log('Action - Click standard button: ' + button);
