@@ -15,13 +15,21 @@
 import { TestsBehatDomUtils } from './behat-dom';
 import { TestsBehatBlocking } from './behat-blocking';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
+import { CoreLoginHelperProvider } from '@features/login/services/login-helper';
+import { CoreConfig } from '@services/config';
+import { EnvironmentConfig } from '@/types/config';
 
 /**
  * Behat runtime servive with public API.
  */
 export class TestsBehatRuntime {
 
-    static init(): void {
+    /**
+     * Init behat functions and set options like skipping onboarding.
+     *
+     * @param options Options to set on the app.
+     */
+    static init(options?: TestsBehatInitOptions): void {
         TestsBehatBlocking.init();
 
         (window as BehatTestsWindow).behat = {
@@ -38,6 +46,20 @@ export class TestsBehatRuntime {
             setField: TestsBehatRuntime.setField,
             handleCustomURL: TestsBehatRuntime.handleCustomURL,
         };
+
+        if (!options) {
+            return;
+        }
+
+        if (options.skipOnBoarding === true) {
+            CoreConfig.set(CoreLoginHelperProvider.ONBOARDING_DONE, 1);
+        }
+
+        if (options.configOverrides) {
+            // Set the cookie so it's maintained between reloads.
+            document.cookie = 'MoodleAppConfig=' + JSON.stringify(options.configOverrides);
+            CoreConfig.patchEnvironment(options.configOverrides);
+        }
     }
 
     /**
@@ -406,4 +428,9 @@ export type TestBehatElementLocator = {
     within?: TestBehatElementLocator;
     near?: TestBehatElementLocator;
     selector?: string;
+};
+
+export type TestsBehatInitOptions = {
+    skipOnBoarding?: boolean;
+    configOverrides?: Partial<EnvironmentConfig>;
 };

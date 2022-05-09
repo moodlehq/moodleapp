@@ -17,6 +17,14 @@ Feature: Test basic usage of login in app
       | student2 | C1     | student        |
       | teacher1 | C1     | editingteacher |
 
+  Scenario: Skip on boarding
+    When I launch the app runtime
+    Then I should find "Welcome to the Moodle App!" in the app
+
+    When I press "Skip" in the app
+    Then I should not find "Skip" in the app
+    And I should find "Connect to Moodle" in the app
+
   Scenario: Add a new account in the app & Site name in displayed when adding a new account
     When I enter the app
     And I press the back button in the app

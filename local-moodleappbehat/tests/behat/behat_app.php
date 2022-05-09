@@ -470,7 +470,6 @@ class behat_app extends behat_base {
      */
     protected function prepare_browser(array $options = []) {
         $restart = $options['restart'] ?? true;
-        $skiponboarding = $options['skiponboarding'] ?? true;
 
         if ($restart) {
             if ($this->apprunning) {
@@ -509,32 +508,23 @@ class behat_app extends behat_base {
 
         try {
             // Init Behat JavaScript runtime.
-            $this->execute_script('window.behatInit();');
+
+            $initOptions = new StdClass();
+            $initOptions->skipOnBoarding = $options['skiponboarding'] ?? true;
+            $initOptions->configOverrides = $this->appconfig;
+
+            $this->execute_script('window.behatInit(' . json_encode($initOptions) . ');');
         } catch (Exception $error) {
             throw new DriverException('Moodle app not running or not running on Automated mode.');
         }
 
-
         if ($restart) {
             // Assert initial page.
-            $this->spin(function($context) use ($skiponboarding) {
+            $this->spin(function($context) {
                 $page = $context->getSession()->getPage();
                 $element = $page->find('xpath', '//page-core-login-site//input[@name="url"]');
 
                 if ($element) {
-                    if (!$skiponboarding) {
-                        return true;
-                    }
-
-                    // Wait for the onboarding modal to open, if any.
-                    $this->wait_for_pending_js();
-
-                    $element = $page->find('xpath', '//core-login-site-onboarding');
-
-                    if ($element) {
-                        $this->i_press_in_the_app('"Skip"');
-                    }
-
                     // Login screen found.
                     return true;
                 }
@@ -547,12 +537,6 @@ class behat_app extends behat_base {
                 throw new DriverException('Moodle app not launched properly');
             }, false, 60);
         }
-
-        // Prepare testing config.
-        $configoverrides = json_encode($this->appconfig);
-
-        $this->evaluate_script("document.cookie='MoodleAppConfig=$configoverrides'");
-        $this->evaluate_script("configProvider.patchEnvironment($configoverrides)");
 
         // Continue only after JS finishes.
         $this->wait_for_pending_js();
