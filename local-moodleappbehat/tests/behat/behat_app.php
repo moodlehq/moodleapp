@@ -113,7 +113,7 @@ class behat_app extends behat_base {
     }
 
     /**
-     * Opens the Moodle app in the browser and introduces the enters the site.
+     * Opens the Moodle App in the browser and introduces the enters the site.
      *
      * @Given /^I enter the app$/
      * @throws DriverException Issue with configuration or feature file
@@ -126,7 +126,7 @@ class behat_app extends behat_base {
     }
 
     /**
-     * Opens the Moodle app in the browser logged in as a user.
+     * Opens the Moodle App in the browser logged in as a user.
      *
      * @Given /^I enter(ed)? the app as "(.+)"$/
      * @throws DriverException Issue with configuration or feature file
@@ -140,7 +140,7 @@ class behat_app extends behat_base {
     }
 
     /**
-     * Opens the Moodle app in the browser.
+     * Opens the Moodle App in the browser.
      *
      * @Given /^I launch the app( runtime)?$/
      * @throws DriverException Issue with configuration or feature file
@@ -269,6 +269,8 @@ class behat_app extends behat_base {
 
         $this->evaluate_script("window.behat.getAngularInstance('ion-content', 'CoreSwipeNavigationDirective').$method()");
 
+        $this->wait_for_pending_js();
+
         // Wait swipe animation to finish.
         $this->getSession()->wait(300);
     }
@@ -327,7 +329,7 @@ class behat_app extends behat_base {
     }
 
     /**
-     * Fixes the Moodle admin settings to allow mobile app use (if not already correct).
+     * Fixes the Moodle admin settings to allow Moodle App use (if not already correct).
      *
      * @throws dml_exception If there is any problem changing Moodle settings
      */
@@ -517,7 +519,7 @@ class behat_app extends behat_base {
                 }
             }
 
-            throw new DriverException('Moodle app not found in browser');
+            throw new DriverException('Moodle App not found in browser');
         }, false, 60);
 
         try {
@@ -529,7 +531,7 @@ class behat_app extends behat_base {
 
             $this->execute_script('window.behatInit(' . json_encode($initOptions) . ');');
         } catch (Exception $error) {
-            throw new DriverException('Moodle app not running or not running on Automated mode.');
+            throw new DriverException('Moodle App not running or not running on Automated mode.');
         }
 
         if ($restart) {
@@ -548,7 +550,7 @@ class behat_app extends behat_base {
                     return true;
                 }
 
-                throw new DriverException('Moodle app not launched properly');
+                throw new DriverException('Moodle App not launched properly');
             }, false, 60);
         }
 
@@ -591,7 +593,7 @@ class behat_app extends behat_base {
                     if ($mainmenu) {
                         return 'mainpage';
                     }
-                    throw new DriverException('Moodle app main page not loaded after login');
+                    throw new DriverException('Moodle App main page not loaded after login');
                 }, false, 30);
 
         // Wait for JS to finish as well.
@@ -700,7 +702,7 @@ class behat_app extends behat_base {
      * @param TableNode $data
      */
     public function i_open_a_custom_link(TableNode $data) {
-        global $DB, $CFG;
+        global $DB;
 
         $data = $data->getColumnsHash()[0];
         $title = array_keys($data)[0];
@@ -713,10 +715,33 @@ class behat_app extends behat_base {
 
                 break;
 
+            case 'assign':
+            case 'bigbluebuttonbn':
+            case 'book':
+            case 'chat':
+            case 'choice':
+            case 'data':
+            case 'feedback':
+            case 'folder':
             case 'forum':
-                $forumdata = $DB->get_record('forum', ['name' => $data->forum]);
-                $cm = get_coursemodule_from_instance('forum', $forumdata->id);
-                $pageurl = "/mod/forum/view.php?id={$cm->id}";
+            case 'glossary':
+            case 'h5pactivity':
+            case 'imscp':
+            case 'label':
+            case 'lesson':
+            case 'lti':
+            case 'page':
+            case 'quiz':
+            case 'resource':
+            case 'scorm':
+            case 'survey':
+            case 'url':
+            case 'wiki':
+            case 'workshop':
+                $name = $data->$title;
+                $module = $DB->get_record($title, ['name' => $name]);
+                $cm = get_coursemodule_from_instance($title, $module->id);
+                $pageurl = "/mod/$title/view.php?id={$cm->id}";
                 break;
 
             default:
@@ -913,8 +938,8 @@ class behat_app extends behat_base {
      */
     public function the_app_should_have_opened_a_browser_tab(bool $not = false, ?string $urlpattern = null) {
         $this->spin(function() use ($not, $urlpattern) {
-            $windownames = $this->getSession()->getWindowNames();
-            $openedbrowsertab = count($windownames) === 2;
+            $windowNames = $this->getSession()->getWindowNames();
+            $openedbrowsertab = count($windowNames) === 2;
 
             if ((!$not && !$openedbrowsertab) || ($not && $openedbrowsertab && is_null($urlpattern))) {
                 throw new ExpectationException(
@@ -926,10 +951,10 @@ class behat_app extends behat_base {
             }
 
             if (!is_null($urlpattern)) {
-                $this->getSession()->switchToWindow($windownames[1]);
+                $this->getSession()->switchToWindow($windowNames[1]);
                 $windowurl = $this->getSession()->getCurrentUrl();
                 $windowhaspattern = preg_match("/$urlpattern/", $windowurl);
-                $this->getSession()->switchToWindow($windownames[0]);
+                $this->getSession()->switchToWindow($windowNames[0]);
 
                 if ($not === $windowhaspattern) {
                     throw new ExpectationException(
@@ -954,11 +979,11 @@ class behat_app extends behat_base {
      * @throws DriverException If there aren't exactly 2 tabs open
      */
     public function i_switch_to_the_browser_tab_opened_by_the_app() {
-        $names = $this->getSession()->getWindowNames();
-        if (count($names) !== 2) {
-            throw new DriverException('Expected to see 2 tabs open, not ' . count($names));
+        $windowNames = $this->getSession()->getWindowNames();
+        if (count($windowNames) !== 2) {
+            throw new DriverException('Expected to see 2 tabs open, not ' . count($windowNames));
         }
-        $this->getSession()->switchToWindow($names[1]);
+        $this->getSession()->switchToWindow($windowNames[1]);
     }
 
     /**
@@ -984,8 +1009,8 @@ class behat_app extends behat_base {
             new ExpectationException('Forced cron tasks in the app took too long to complete', $session)
         );
 
-        // Trigger Angular change detection
-        $session->executeScript('ngZone.run(() => {});');
+        // Trigger Angular change detection.
+        $this->trigger_angular_change_detection();
     }
 
     /**
@@ -998,7 +1023,7 @@ class behat_app extends behat_base {
 
         $this->spin(
             function() use ($session) {
-                $session->executeScript('ngZone.run(() => {});');
+                $this->trigger_angular_change_detection();
 
                 $nodes = $this->find_all('css', 'core-loading ion-spinner');
 
@@ -1169,8 +1194,16 @@ class behat_app extends behat_base {
         return $result;
     }
 
+
     /**
-     * Opens a custom URL for automatic login and redirect from the mobile app (and waits to finish.)
+     * Trigger Angular change detection.
+     */
+    private function trigger_angular_change_detection() {
+        $this->getSession()->executeScript('ngZone.run(() => {});');
+    }
+
+    /**
+     * Opens a custom URL for automatic login and redirect from the Moodle App (and waits to finish.)
      *
      * @param string $username Of the user that needs to be logged in.
      * @param string $path To redirect the user.
@@ -1221,7 +1254,7 @@ class behat_app extends behat_base {
     }
 
     /**
-     * Opens a custom URL on the mobile app (and waits to finish.)
+     * Opens a custom URL on the Moodle App (and waits to finish.)
      *
      * @param string $path To navigate.
      * @param string $successXPath The XPath of the element to lookat after navigation.
@@ -1236,7 +1269,7 @@ class behat_app extends behat_base {
     }
 
     /**
-     * Handles the custom URL on the mobile app (and waits to finish.)
+     * Handles the custom URL on the Moodle App (and waits to finish.)
      *
      * @param string $customurl To navigate.
      * @param string $successXPath The XPath of the element to lookat after navigation.
@@ -1244,6 +1277,8 @@ class behat_app extends behat_base {
     private function handle_url_and_wait_page_to_load(string $customurl, string $successXPath = '') {
         // Instead of using evaluate_async_script, we wait for the path to load.
         $this->evaluate_script("return window.behat.handleCustomURL('$customurl')");
+
+        $this->wait_for_pending_js();
 
         if (!empty($successXPath)) {
             // Wait until the page appears.

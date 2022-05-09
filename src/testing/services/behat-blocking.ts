@@ -13,7 +13,8 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { makeSingleton } from '@singletons';
+import { CoreUtils } from '@services/utils/utils';
+import { makeSingleton, NgZone } from '@singletons';
 import { BehatTestsWindow, TestsBehatRuntime } from './behat-runtime';
 
 /**
@@ -26,6 +27,7 @@ export class TestsBehatBlockingService {
     protected recentMutation = false;
     protected lastMutation = 0;
     protected initialized = false;
+    protected keyIndex = 0;
 
     /**
      * Listen to mutations and override XML Requests.
@@ -74,16 +76,23 @@ export class TestsBehatBlockingService {
     /**
      * Adds a pending key to the array.
      *
-     * @param key Key to add.
+     * @param key Key to add. It will be generated if none.
+     * @return Key name.
      */
-    block(key: string): void {
+    block(key = ''): string {
         // Add a special DELAY entry whenever another entry is added.
         if (this.pendingList.length === 0) {
             this.pendingList.push('DELAY');
         }
+        if (!key) {
+            key = 'generated-' + this.keyIndex;
+            this.keyIndex++;
+        }
         this.pendingList.push(key);
 
         TestsBehatRuntime.log('PENDING+: ' + this.pendingList);
+
+        return key;
     }
 
     /**
@@ -92,7 +101,7 @@ export class TestsBehatBlockingService {
      *
      * @param key Key to remove
      */
-    unblock(key: string): void {
+    async unblock(key: string): Promise<void> {
         // Remove the key immediately.
         this.pendingList = this.pendingList.filter((x) => x !== key);
 
@@ -100,43 +109,32 @@ export class TestsBehatBlockingService {
 
         // If the only thing left is DELAY, then remove that as well, later...
         if (this.pendingList.length === 1) {
-            this.runAfterEverything(() => {
-                // Check there isn't a spinner...
-                this.checkUIBlocked();
+            if (!document.hidden) {
+                // When tab is not active, ticks should be slower and may do Behat to fail.
+                // From Timers API:
+                // https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timers
+                // "This API does not guarantee that timers will run exactly on schedule.
+                // Delays due to CPU load, other tasks, etc, are to be expected."
+                await CoreUtils.nextTicks(10);
+            }
 
-                // Only remove it if the pending array is STILL empty after all that.
-                if (this.pendingList.length === 1) {
-                    this.pendingList = [];
-                    TestsBehatRuntime.log('PENDING-: ' + this.pendingList);
-                }
-            });
+            // Check there isn't a spinner...
+            await this.checkUIBlocked();
+
+            // Only remove it if the pending array is STILL empty after all that.
+            if (this.pendingList.length === 1) {
+                this.pendingList = [];
+                TestsBehatRuntime.log('PENDING-: ' + this.pendingList);
+            }
         }
     }
 
     /**
-     * Adds a pending key to the array, but removes it after some setTimeouts finish.
+     * Adds a pending key to the array, but removes it after some ticks.
      */
-    delay(): void {
-        this.block('...');
-        this.unblock('...');
-    }
-
-    /**
-     * Run after several setTimeouts to ensure queued events are finished.
-     *
-     * @param target Function to run.
-     * @param count Number of times to do setTimeout (leave blank for 10).
-     */
-    protected runAfterEverything(target: () => void, count = 10): void {
-        setTimeout(() => {
-            count--;
-            if (count === 0) {
-                target();
-
-                return;
-            }
-            this.runAfterEverything(target, count);
-        }, 0);
+    async delay(): Promise<void> {
+        const key = this.block('forced-delay');
+        this.unblock(key);
     }
 
     /**
@@ -192,8 +190,9 @@ export class TestsBehatBlockingService {
      * Checks if a loading spinner is present and visible; if so, adds it to the pending array
      * (and if not, removes it).
      */
-    protected checkUIBlocked(): void {
-        const blocked = document.querySelector<HTMLElement>('span.core-loading-spinner, ion-loading, .click-block-active');
+    protected async checkUIBlocked(): Promise<void> {
+        await CoreUtils.nextTick();
+        const blocked = document.querySelector<HTMLElement>('div.core-loading-container, ion-loading, .click-block-active');
 
         if (blocked?.offsetParent) {
             if (!this.waitingBlocked) {
@@ -216,23 +215,25 @@ export class TestsBehatBlockingService {
         let requestIndex = 0;
 
         XMLHttpRequest.prototype.open = function(...args) {
-            const index = requestIndex++;
-            const key = 'httprequest-' + index;
+            NgZone.run(() => {
+                const index = requestIndex++;
+                const key = 'httprequest-' + index;
 
-            try {
+                try {
                 // Add to the list of pending requests.
-                TestsBehatBlocking.block(key);
+                    TestsBehatBlocking.block(key);
 
-                // Detect when it finishes and remove it from the list.
-                this.addEventListener('loadend', () => {
+                    // Detect when it finishes and remove it from the list.
+                    this.addEventListener('loadend', () => {
+                        TestsBehatBlocking.unblock(key);
+                    });
+
+                    return realOpen.apply(this, args);
+                } catch (error) {
                     TestsBehatBlocking.unblock(key);
-                });
-
-                return realOpen.apply(this, args);
-            } catch (error) {
-                TestsBehatBlocking.unblock(key);
-                throw error;
-            }
+                    throw error;
+                }
+            });
         };
     }
 

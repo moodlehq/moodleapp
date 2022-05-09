@@ -69,12 +69,16 @@ export class TestsBehatRuntime {
      * @return OK if successful, or ERROR: followed by message.
      */
     static async handleCustomURL(url: string): Promise<string> {
+        const blockKey = TestsBehatBlocking.block();
+
         try {
             await CoreCustomURLSchemes.handleCustomURL(url);
 
             return 'OK';
         } catch (error) {
             return 'ERROR: ' + error.message;
+        } finally {
+            TestsBehatBlocking.unblock(blockKey);
         }
     }
 
@@ -330,49 +334,7 @@ export class TestsBehatRuntime {
             return 'ERROR: No element matches field to set.';
         }
 
-        // Functions to get/set value depending on field type.
-        let setValue = (text: string) => {
-            found.innerHTML = text;
-        };
-        let getValue = () => found.innerHTML;
-
-        if (found instanceof HTMLInputElement || found instanceof HTMLTextAreaElement) {
-            setValue = (text: string) => {
-                found.value = text;
-            };
-            getValue = () => found.value;
-        }
-
-        // Pretend we have cut and pasted the new text.
-        let event: InputEvent;
-        if (getValue() !== '') {
-            event = new InputEvent('input', {
-                bubbles: true,
-                view: window,
-                cancelable: true,
-                inputType: 'deleteByCut',
-            });
-
-            setTimeout(() => {
-                setValue('');
-                found.dispatchEvent(event);
-            }, 0);
-        }
-
-        if (value !== '') {
-            event = new InputEvent('input', {
-                bubbles: true,
-                view: window,
-                cancelable: true,
-                inputType: 'insertFromPaste',
-                data: value,
-            });
-
-            setTimeout(() => {
-                setValue(value);
-                found.dispatchEvent(event);
-            }, 0);
-        }
+        TestsBehatDomUtils.setElementValue(found, value);
 
         return 'OK';
     }

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreUtils } from '@services/utils/utils';
+import { NgZone } from '@singletons';
 import { TestsBehatBlocking } from './behat-blocking';
 import { TestBehatElementLocator } from './behat-runtime';
 
@@ -409,30 +411,27 @@ export class TestsBehatDomUtils {
      * Make sure that an element is visible and wait to trigger the callback.
      *
      * @param element Element.
-     * @param callback Callback called when the element is visible, passing bounding box parameter.
      */
-    protected static ensureElementVisible(element: HTMLElement, callback: (rect: DOMRect) => void): void {
+    protected static async ensureElementVisible(element: HTMLElement): Promise<DOMRect> {
         const initialRect = element.getBoundingClientRect();
 
         element.scrollIntoView(false);
 
-        requestAnimationFrame(() => {
-            const rect = element.getBoundingClientRect();
+        return new Promise<DOMRect>((resolve): void => {
+            requestAnimationFrame(() => {
+                const rect = element.getBoundingClientRect();
 
-            if (initialRect.y !== rect.y) {
-                setTimeout(() => {
-                    callback(rect);
-                }, 300);
+                if (initialRect.y !== rect.y) {
+                    setTimeout(() => {
+                        resolve(rect);
+                    }, 300);
 
-                TestsBehatBlocking.delay();
+                    return;
+                }
 
-                return;
-            }
-
-            callback(rect);
+                resolve(rect);
+            });
         });
-
-        TestsBehatBlocking.delay();
     };
 
     /**
@@ -440,16 +439,9 @@ export class TestsBehatDomUtils {
      *
      * @param element Element to press.
      */
-    static pressElement(element: HTMLElement): void {
-        this.ensureElementVisible(element, (rect) => {
-            // Simulate a mouse click on the button.
-            const eventOptions = {
-                clientX: rect.left + rect.width / 2,
-                clientY: rect.top + rect.height / 2,
-                bubbles: true,
-                view: window,
-                cancelable: true,
-            };
+    static async pressElement(element: HTMLElement): Promise<void> {
+        NgZone.run(async () => {
+            const blockKey = TestsBehatBlocking.block();
 
             // Events don't bubble up across Shadow DOM boundaries, and some buttons
             // may not work without doing this.
@@ -459,6 +451,17 @@ export class TestsBehatDomUtils {
                 element = parentElement;
             }
 
+            const rect = await this.ensureElementVisible(element);
+
+            // Simulate a mouse click on the button.
+            const eventOptions: MouseEventInit = {
+                clientX: rect.left + rect.width / 2,
+                clientY: rect.top + rect.height / 2,
+                bubbles: true,
+                view: window,
+                cancelable: true,
+            };
+
             // There are some buttons in the app that don't respond to click events, for example
             // buttons using the core-supress-events directive. That's why we need to send both
             // click and mouse events.
@@ -467,10 +470,65 @@ export class TestsBehatDomUtils {
             setTimeout(() => {
                 element.dispatchEvent(new MouseEvent('mouseup', eventOptions));
                 element.click();
-            }, 300);
 
-            // Mark busy until the button click finishes processing.
-            TestsBehatBlocking.delay();
+                TestsBehatBlocking.unblock(blockKey);
+            }, 300);
+        });
+    }
+
+    /**
+     * Set an element value.
+     *
+     * @param element HTML to set.
+     * @param value Value to be set.
+     */
+    static async setElementValue(element: HTMLElement, value: string): Promise<void> {
+        NgZone.run(async () => {
+            const blockKey = TestsBehatBlocking.block();
+
+            // Functions to get/set value depending on field type.
+            let setValue = (text: string) => {
+                element.innerHTML = text;
+            };
+            let getValue = () => element.innerHTML;
+
+            if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
+                setValue = (text: string) => {
+                    element.value = text;
+                };
+                getValue = () => element.value;
+            }
+
+            // Pretend we have cut and pasted the new text.
+            let event: InputEvent;
+            if (getValue() !== '') {
+                event = new InputEvent('input', {
+                    bubbles: true,
+                    view: window,
+                    cancelable: true,
+                    inputType: 'deleteByCut',
+                });
+
+                await CoreUtils.nextTick();
+                setValue('');
+                element.dispatchEvent(event);
+            }
+
+            if (value !== '') {
+                event = new InputEvent('input', {
+                    bubbles: true,
+                    view: window,
+                    cancelable: true,
+                    inputType: 'insertFromPaste',
+                    data: value,
+                });
+
+                await CoreUtils.nextTick();
+                setValue(value);
+                element.dispatchEvent(event);
+            }
+
+            TestsBehatBlocking.unblock(blockKey);
         });
     }
 
