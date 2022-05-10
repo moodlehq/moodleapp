@@ -25,7 +25,7 @@ Feature: Test chat navigation
     And I press "Send" in the app
     Then I should find "Test message" in the app
 
-  Scenario: Tablet navigation
+  Scenario: Tablet navigation on chat
     Given I entered the course "Course 1" as "student2" in the app
     And I change viewport size to "1200x640"
 

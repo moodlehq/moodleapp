@@ -34,7 +34,7 @@ Feature: Test basic usage of courses in app
       | activity | course | idnumber | name                | intro                       | assignsubmission_onlinetext_enabled |
       | assign   | C1     | assign1  | assignment          | Test assignment description | 1                                   |
 
-  Scenario: "Dashboard" tab displayed in >= 3.3 sites
+  Scenario: "Dashboard" tab displayed
     Given I entered the app as "student1"
     When I should see "Dashboard"
     And the header should be "Acceptance test site" in the app

@@ -6,7 +6,7 @@ Feature: It navigates properly within settings.
       | username |
       | student1 |
 
-  Scenario: Mobile navigation
+  Scenario: Mobile navigation on settings
     Given I entered the app as "student1"
 
     # Settings
@@ -45,7 +45,7 @@ Feature: It navigates properly within settings.
     And I press "Manage downloads" in the app
     Then I should find "Total space used" in the app
 
-  Scenario: Tablet navigation
+  Scenario: Tablet navigation on settings
     Given I entered the app as "student1"
     And I change viewport size to "1200x640"
 

@@ -34,6 +34,7 @@ Feature: Test basic usage of courses in app
       | activity | course | idnumber | name                | intro                       | assignsubmission_onlinetext_enabled |
       | assign   | C1     | assign1  | assignment          | Test assignment description | 1                                   |
 
+  @lms_from4.0
   Scenario: "Dashboard" tab displayed
     Given I entered the app as "student1"
     When I should see "Dashboard"
@@ -48,6 +49,7 @@ Feature: Test basic usage of courses in app
     And I should find "Course 2" in the app
     And I should find "Course 3" in the app
 
+  @lms_from4.0
   Scenario: See my courses
     Given I entered the app as "student1"
     When the header should be "Acceptance test site" in the app

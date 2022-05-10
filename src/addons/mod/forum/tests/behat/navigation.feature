@@ -41,7 +41,7 @@ Feature: Test forum navigation
       | Discussion 04 | Discussion 04 | Discussion 04 first reply |
       | Discussion 05 | Discussion 05 | Discussion 05 first reply |
 
-  Scenario: Mobile navigation
+  Scenario: Mobile navigation on forum
     Given I entered the course "Course 1" as "student1" in the app
 
     # By last reply
@@ -138,7 +138,7 @@ Feature: Test forum navigation
     # When I swipe to the left in the app
     # Then I should find "Discussion 20 message" in the app
 
-  Scenario: Tablet navigation
+  Scenario: Tablet navigation on forum
     Given I entered the course "Course 1" as "student1" in the app
     And I change viewport size to "1200x640"
 
