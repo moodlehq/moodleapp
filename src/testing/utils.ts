@@ -256,3 +256,16 @@ export async function renderWrapperComponent<T>(
 export function agnosticPath(unixPath: string): string {
     return unixPath.replace(/\//g, sep);
 }
+
+/**
+ * Waits a certain time.
+ *
+ * @param time Number of milliseconds.
+ */
+export function wait(time: number): Promise<void> {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve();
+        }, time);
+    });
+}
