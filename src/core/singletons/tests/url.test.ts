@@ -17,8 +17,11 @@ import { CoreUrl } from '@singletons/url';
 describe('CoreUrl singleton', () => {
 
     it('parses standard urls', () => {
-        expect(CoreUrl.parse('https://my.subdomain.com/path/?query=search#hash')).toEqual({
+        expect(CoreUrl.parse('https://u1:pw1@my.subdomain.com/path/?query=search#hash')).toEqual({
             protocol: 'https',
+            credentials: 'u1:pw1',
+            username: 'u1',
+            password: 'pw1',
             domain: 'my.subdomain.com',
             path: '/path/',
             query: 'query=search',
@@ -43,6 +46,46 @@ describe('CoreUrl singleton', () => {
         });
     });
 
+    it('assembles standard urls', () => {
+        expect(CoreUrl.assemble({
+            protocol: 'https',
+            credentials: 'u1:pw1',
+            domain: 'my.subdomain.com',
+            path: '/path/',
+            query: 'query=search',
+            fragment: 'hash',
+        })).toEqual('https://u1:pw1@my.subdomain.com/path/?query=search#hash');
+    });
+
+    it('guesses the Mooddle domain', () => {
+        // Check known endpoints first.
+        expect(CoreUrl.guessMoodleDomain('https://school.edu/moodle/my')).toEqual('school.edu/moodle');
+        expect(CoreUrl.guessMoodleDomain('https://school.edu/moodle/?redirect=0')).toEqual('school.edu/moodle');
+        expect(CoreUrl.guessMoodleDomain('https://school.edu/moodle/index.php')).toEqual('school.edu/moodle');
+        expect(CoreUrl.guessMoodleDomain('https://school.edu/moodle/course/view.php')).toEqual('school.edu/moodle');
+        expect(CoreUrl.guessMoodleDomain('https://school.edu/moodle/login/index.php')).toEqual('school.edu/moodle');
+        expect(CoreUrl.guessMoodleDomain('https://school.edu/moodle/mod/page/view.php')).toEqual('school.edu/moodle');
+
+        // Check an unknown endpoint.
+        expect(CoreUrl.guessMoodleDomain('https://school.edu/moodle/unknown/endpoint.php')).toEqual('school.edu');
+    });
+
+    it('detects valid Moodle urls', () => {
+        expect(CoreUrl.isValidMoodleUrl('https://school.edu')).toBe(true);
+        expect(CoreUrl.isValidMoodleUrl('https://school.edu/path/?query=search#hash')).toBe(true);
+        expect(CoreUrl.isValidMoodleUrl('//school.edu')).toBe(true);
+        expect(CoreUrl.isValidMoodleUrl('school.edu')).toBe(true);
+        expect(CoreUrl.isValidMoodleUrl('localhost')).toBe(true);
+
+        expect(CoreUrl.isValidMoodleUrl('some text')).toBe(false);
+    });
+
+    it('removes protocol', () => {
+        expect(CoreUrl.removeProtocol('https://school.edu')).toEqual('school.edu');
+        expect(CoreUrl.removeProtocol('ftp://school.edu')).toEqual('school.edu');
+        expect(CoreUrl.removeProtocol('school.edu')).toEqual('school.edu');
+    });
+
     it('compares domains and paths', () => {
         expect(CoreUrl.sameDomainAndPath('https://school.edu', 'https://school.edu')).toBe(true);
         expect(CoreUrl.sameDomainAndPath('https://school.edu', 'HTTPS://SCHOOL.EDU')).toBe(true);
@@ -54,6 +97,18 @@ describe('CoreUrl singleton', () => {
         expect(CoreUrl.sameDomainAndPath('https://school.edu/moodle', 'HTTPS://SCHOOL.EDU/MOODLE#ABOUT')).toBe(true);
 
         expect(CoreUrl.sameDomainAndPath('https://school.edu/moodle', 'https://school.edu/moodle/about')).toBe(false);
+    });
+
+    it('gets the anchor of a URL', () => {
+        expect(CoreUrl.getUrlAnchor('https://school.edu#foo')).toEqual('#foo');
+        expect(CoreUrl.getUrlAnchor('https://school.edu#foo#bar')).toEqual('#foo#bar');
+        expect(CoreUrl.getUrlAnchor('https://school.edu')).toEqual(undefined);
+    });
+
+    it('removes the anchor of a URL', () => {
+        expect(CoreUrl.removeUrlAnchor('https://school.edu#foo')).toEqual('https://school.edu');
+        expect(CoreUrl.removeUrlAnchor('https://school.edu#foo#bar')).toEqual('https://school.edu');
+        expect(CoreUrl.removeUrlAnchor('https://school.edu')).toEqual('https://school.edu');
     });
 
     it('converts to absolute URLs', () => {
