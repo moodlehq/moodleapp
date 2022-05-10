@@ -126,7 +126,7 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
         try {
             await Promise.all(deletedCourseIds.map((courseId) => CoreCourseHelper.deleteCourseFiles(courseId)));
 
-            this.setDownloadedCourses(this.downloadedCourses.filter((course) => !CoreArray.contains(deletedCourseIds, course.id)));
+            this.setDownloadedCourses(this.downloadedCourses.filter((course) => !deletedCourseIds.includes(course.id)));
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, Translate.instant('core.errordeletefile'));
         } finally {

@@ -24,7 +24,6 @@ import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreArray } from '@singletons/array';
 import { CoreEvents } from '@singletons/events';
 import {
     AddonModForum,
@@ -90,7 +89,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
             // Do not sync same forum twice.
             const syncedForumIds: number[] = [];
             const promises = discussions.map(async discussion => {
-                if (CoreArray.contains(syncedForumIds, discussion.forumid)) {
+                if (syncedForumIds.includes(discussion.forumid)) {
                     return;
                 }
 
@@ -123,7 +122,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
             // Do not sync same discussion twice.
             const syncedDiscussionIds: number[] = [];
             const promises = replies.map(async reply => {
-                if (CoreArray.contains(syncedDiscussionIds, reply.discussionid)) {
+                if (syncedDiscussionIds.includes(reply.discussionid)) {
                     return;
                 }
 
