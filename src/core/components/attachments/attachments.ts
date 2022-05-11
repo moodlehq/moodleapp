@@ -19,7 +19,7 @@ import { CoreFileUploader, CoreFileUploaderTypeList } from '@features/fileupload
 import { CoreSites } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
 import { Translate } from '@singletons';
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuploader-helper';
 import { CoreFileEntry } from '@services/file-helper';
@@ -132,7 +132,7 @@ export class CoreAttachmentsComponent implements OnInit {
     async add(): Promise<void> {
         const allowOffline = !!this.allowOffline && this.allowOffline !== 'false';
 
-        if (!allowOffline && !CoreApp.isOnline()) {
+        if (!allowOffline && !CoreNetwork.isOnline()) {
             CoreDomUtils.showErrorModal('core.fileuploader.errormustbeonlinetoupload', true);
 
             return;

@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreSite } from '@classes/site';
 import { CoreWSExternalWarning } from '@services/ws';
@@ -338,7 +338,7 @@ export class CoreFilterProvider {
 
         // Check if we have the contexts in the memory cache.
         const siteContexts = this.contextsCache[site.getId()];
-        const isOnline = CoreApp.isOnline();
+        const isOnline = CoreNetwork.isOnline();
         const result: CoreFilterClassifiedFilters = {};
         let allFound = true;
 

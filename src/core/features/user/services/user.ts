@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
@@ -401,7 +401,7 @@ export class CoreUserProvider {
 
         const preference = await CoreUtils.ignoreErrors(CoreUserOffline.getPreference(name, siteId));
 
-        if (preference && !CoreApp.isOnline()) {
+        if (preference && !CoreNetwork.isOnline()) {
             // Offline, return stored value.
             return preference.value;
         }
@@ -760,7 +760,7 @@ export class CoreUserProvider {
     async setUserPreference(name: string, value: string, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        if (!CoreApp.isOnline()) {
+        if (!CoreNetwork.isOnline()) {
             // Offline, just update the preference.
             return CoreUserOffline.setPreference(name, value);
         }

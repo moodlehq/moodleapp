@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUrlUtils } from '@services/utils/url';
@@ -241,7 +241,7 @@ export class AddonCalendarProvider {
         const storeOffline = (): Promise<boolean> =>
             AddonCalendarOffline.markDeleted(eventId, name, deleteAll, siteId).then(() => false);
 
-        if (forceOffline || !CoreApp.isOnline()) {
+        if (forceOffline || !CoreNetwork.isOnline()) {
             // App is offline, store the action.
             return storeOffline();
         }
@@ -1074,7 +1074,7 @@ export class AddonCalendarProvider {
         });
 
         // Store starting week day preference, we need it in offline to show months that are not in cache.
-        if (CoreApp.isOnline()) {
+        if (CoreNetwork.isOnline()) {
             CoreConfig.set(AddonCalendarProvider.STARTING_WEEK_DAY, response.daynames[0].dayno);
         }
 
@@ -1707,7 +1707,7 @@ export class AddonCalendarProvider {
             return { sent: false, event };
         };
 
-        if (options.forceOffline || !CoreApp.isOnline()) {
+        if (options.forceOffline || !CoreNetwork.isOnline()) {
             // App is offline, store the event.
             return storeOffline();
         }

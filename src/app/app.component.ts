@@ -32,6 +32,7 @@ import { CoreConstants } from '@/core/constants';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreDom } from '@singletons/dom';
+import { CoreNetwork } from '@services/network';
 
 const MOODLE_VERSION_PREFIX = 'version-';
 const MOODLEAPP_VERSION_PREFIX = 'moodleapp-';
@@ -310,7 +311,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         Network.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             NgZone.run(() => {
-                const isOnline = CoreApp.isOnline();
+                const isOnline = CoreNetwork.isOnline();
                 const hadOfflineMessage = document.body.classList.contains('core-offline');
 
                 document.body.classList.toggle('core-offline', !isOnline);
@@ -327,7 +328,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             });
         });
 
-        const isOnline = CoreApp.isOnline();
+        const isOnline = CoreNetwork.isOnline();
         document.body.classList.toggle('core-offline', !isOnline);
 
         // Set StatusBar properties.

@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { FileEntry } from '@ionic-native/file/ngx';
 
 import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreFile } from '@services/file';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
@@ -167,8 +168,8 @@ export class CoreFileHelperProvider {
         }
 
         // The file system is available.
-        const isWifi = CoreApp.isWifi();
-        const isOnline = CoreApp.isOnline();
+        const isWifi = CoreNetwork.isWifi();
+        const isOnline = CoreNetwork.isOnline();
 
         if (state == CoreConstants.DOWNLOADED) {
             // File is downloaded, get the local file URL.

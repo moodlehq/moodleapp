@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 
 import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreConfig } from '@services/config';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
@@ -89,7 +90,7 @@ export class CoreCronDelegateService {
         const usesNetwork = this.handlerUsesNetwork(name);
         const isSync = !force && this.isHandlerSync(name);
 
-        if (usesNetwork && !CoreApp.isOnline()) {
+        if (usesNetwork && !CoreNetwork.isOnline()) {
             // Offline, stop executing.
             const message = `Cannot execute handler because device is offline: ${name}`;
             this.logger.debug(message);
@@ -102,7 +103,7 @@ export class CoreCronDelegateService {
             // Check network connection.
             const syncOnlyOnWifi = await CoreConfig.get(CoreConstants.SETTINGS_SYNC_ONLY_ON_WIFI, false);
 
-            if (syncOnlyOnWifi && !CoreApp.isWifi()) {
+            if (syncOnlyOnWifi && !CoreNetwork.isWifi()) {
                 // Cannot execute in this network connection, retry soon.
                 const message = `Cannot execute handler because device is using limited connection: ${name}`;
                 this.logger.debug(message);

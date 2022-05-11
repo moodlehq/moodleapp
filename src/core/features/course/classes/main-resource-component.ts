@@ -16,7 +16,7 @@ import { CoreConstants } from '@/core/constants';
 import { OnInit, OnDestroy, Input, Output, EventEmitter, Component, Optional, Inject } from '@angular/core';
 import { CoreAnyError } from '@classes/errors/error';
 import { IonRefresher } from '@ionic/angular';
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 
@@ -354,7 +354,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
 
         if (!this.module.contents?.length || (refresh && !contentsAlreadyLoaded)) {
             // Try to load the contents.
-            const ignoreCache = refresh && CoreApp.isOnline();
+            const ignoreCache = refresh && CoreNetwork.isOnline();
 
             try {
                 await CoreCourse.loadModuleContents(this.module, undefined, undefined, false, ignoreCache);

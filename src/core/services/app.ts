@@ -18,7 +18,7 @@ import { CoreDB } from '@services/db';
 import { CoreEvents } from '@singletons/events';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 
-import { makeSingleton, Keyboard, Network, StatusBar, Platform, Device } from '@singletons';
+import { makeSingleton, Keyboard, StatusBar, Platform, Device } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreColors } from '@singletons/colors';
 import { DBNAME, SCHEMA_VERSIONS_TABLE_NAME, SCHEMA_VERSIONS_TABLE_SCHEMA, SchemaVersionsDBEntry } from '@services/database/app';
@@ -30,6 +30,7 @@ import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CorePromisedValue } from '@classes/promised-value';
 import { Subscription } from 'rxjs';
 import { CorePlatform } from '@services/platform';
+import { CoreNetwork } from '@services/network';
 
 /**
  * Factory to provide some global functionalities, like access to the global app database.
@@ -53,7 +54,6 @@ export class CoreAppProvider {
     protected isKeyboardShown = false;
     protected keyboardOpening = false;
     protected keyboardClosing = false;
-    protected forceOffline = false;
     protected redirect?: CoreRedirectData;
     protected schemaVersionsTable = asyncInstance<CoreDatabaseTable<SchemaVersionsDBEntry, 'name'>>();
 
@@ -329,54 +329,30 @@ export class CoreAppProvider {
      * Returns whether we are online.
      *
      * @return Whether the app is online.
+     * @deprecated since 4.1.0. Use CoreNetwork instead.
      */
     isOnline(): boolean {
-        if (this.forceOffline) {
-            return false;
-        }
-
-        if (!this.isMobile()) {
-            return navigator.onLine;
-        }
-
-        let online = Network.type !== null && Network.type != Network.Connection.NONE &&
-            Network.type != Network.Connection.UNKNOWN;
-
-        // Double check we are not online because we cannot rely 100% in Cordova APIs.
-        if (!online && navigator.onLine) {
-            online = true;
-        }
-
-        return online;
+        return CoreNetwork.isOnline();
     }
 
     /**
      * Check if device uses a limited connection.
      *
      * @return Whether the device uses a limited connection.
+     * @deprecated since 4.1.0. Use CoreNetwork instead.
      */
     isNetworkAccessLimited(): boolean {
-        if (!this.isMobile()) {
-            return false;
-        }
-
-        const limited = [
-            Network.Connection.CELL_2G,
-            Network.Connection.CELL_3G,
-            Network.Connection.CELL_4G,
-            Network.Connection.CELL,
-        ];
-
-        return limited.indexOf(Network.type) > -1;
+        return CoreNetwork.isNetworkAccessLimited();
     }
 
     /**
      * Check if device uses a wifi connection.
      *
      * @return Whether the device uses a wifi connection.
+     * @deprecated since 4.1.0. Use CoreNetwork instead.
      */
     isWifi(): boolean {
-        return this.isOnline() && !this.isNetworkAccessLimited();
+        return CoreNetwork.isWifi();
     }
 
     /**
@@ -668,9 +644,10 @@ export class CoreAppProvider {
      * Set value of forceOffline flag. If true, the app will think the device is offline.
      *
      * @param value Value to set.
+     * @deprecated since 4.1.0. Use CoreNetwork instead.
      */
     setForceOffline(value: boolean): void {
-        this.forceOffline = !!value;
+        CoreNetwork.setForceOffline(value);
     }
 
     /**

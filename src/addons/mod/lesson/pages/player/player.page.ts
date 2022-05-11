@@ -18,7 +18,7 @@ import { IonContent } from '@ionic/angular';
 
 import { CoreError } from '@classes/errors/error';
 import { CanLeave } from '@guards/can-leave';
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
@@ -280,7 +280,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
             // If lesson has offline data already, use offline mode.
             this.offline = await AddonModLessonOffline.hasOfflineData(this.lesson.id);
 
-            if (!this.offline && !CoreApp.isOnline() && AddonModLesson.isLessonOffline(this.lesson) && !this.review) {
+            if (!this.offline && !CoreNetwork.isOnline() && AddonModLesson.isLessonOffline(this.lesson) && !this.review) {
                 // Lesson doesn't have offline data, but it allows offline and the device is offline. Use offline mode.
                 this.offline = true;
             }
@@ -375,7 +375,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
     protected async finishRetake(outOfTime?: boolean): Promise<void> {
         this.messages = [];
 
-        if (this.offline && CoreApp.isOnline()) {
+        if (this.offline && CoreNetwork.isOnline()) {
             // Offline mode but the app is online. Try to sync the data.
             const result = await CoreUtils.ignoreErrors(
                 AddonModLessonSync.syncLesson(this.lesson!.id, true, true),
