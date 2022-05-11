@@ -90,9 +90,9 @@ export class CoreSitesProvider {
     protected schemasTables: Record<string, AsyncInstance<CoreDatabaseTable<SchemaVersionsDBEntry, 'name'>>> = {};
     protected sitesTable = asyncInstance<CoreDatabaseTable<SiteDBEntry>>();
 
-    constructor(@Optional() @Inject(CORE_SITE_SCHEMAS) siteSchemas: CoreSiteSchema[][] = []) {
+    constructor(@Optional() @Inject(CORE_SITE_SCHEMAS) siteSchemas: CoreSiteSchema[][] | null) {
         this.logger = CoreLogger.getInstance('CoreSitesProvider');
-        this.siteSchemas = CoreArray.flatten(siteSchemas).reduce(
+        this.siteSchemas = CoreArray.flatten(siteSchemas ?? []).reduce(
             (siteSchemas, schema) => {
                 siteSchemas[schema.name] = schema;
 
