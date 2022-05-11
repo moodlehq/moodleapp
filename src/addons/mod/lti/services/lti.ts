@@ -17,8 +17,8 @@ import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
-import { CoreApp } from '@services/app';
 import { CoreFile } from '@services/file';
+import { CorePlatform } from '@services/platform';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlUtils } from '@services/utils/url';
@@ -251,7 +251,7 @@ export class AddonModLtiProvider {
         // Generate launcher and open it.
         const launcherUrl = await this.generateLauncher(url, params);
 
-        if (CoreApp.isMobile()) {
+        if (CorePlatform.isMobile()) {
             CoreUtils.openInApp(launcherUrl);
         } else {
             // In desktop open in browser, we found some cases where inapp caused JS issues.

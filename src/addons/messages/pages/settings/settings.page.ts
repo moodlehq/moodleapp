@@ -20,7 +20,6 @@ import {
     AddonMessages,
 } from '../../services/messages';
 import { CoreUser } from '@features/user/services/user';
-import { CoreApp } from '@services/app';
 import { CoreConfig } from '@services/config';
 import { CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
@@ -28,6 +27,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreConstants } from '@/core/constants';
 import { IonRefresher } from '@ionic/angular';
 import { AddonNotificationsPreferencesNotificationProcessorState } from '@addons/notifications/services/notifications';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Page that displays the messages settings page.
@@ -66,7 +66,7 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
     }
 
     protected async asyncInit(): Promise<void> {
-        this.sendOnEnter = !!(await CoreConfig.get(CoreConstants.SETTINGS_SEND_ON_ENTER, !CoreApp.isMobile()));
+        this.sendOnEnter = !!(await CoreConfig.get(CoreConstants.SETTINGS_SEND_ON_ENTER, !CorePlatform.isMobile()));
     }
 
     /**

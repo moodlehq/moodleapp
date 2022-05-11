@@ -46,6 +46,7 @@ import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
 import { CoreObject } from '@singletons/object';
 import { lazyMap, LazyMap } from '@/core/utils/lazy-map';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Service to handle push notifications.
@@ -204,7 +205,7 @@ export class CorePushNotificationsProvider {
      * @return Whether the device can be registered in Moodle.
      */
     canRegisterOnMoodle(): boolean {
-        return !!this.pushID && CoreApp.isMobile();
+        return !!this.pushID && CorePlatform.isMobile();
     }
 
     /**
@@ -545,7 +546,7 @@ export class CorePushNotificationsProvider {
      * @return Promise resolved when device is unregistered.
      */
     async unregisterDeviceOnMoodle(site: CoreSite): Promise<void> {
-        if (!site || !CoreApp.isMobile()) {
+        if (!site || !CorePlatform.isMobile()) {
             throw new CoreError('Cannot unregister device');
         }
 
@@ -627,7 +628,7 @@ export class CorePushNotificationsProvider {
 
         const total = counters.reduce((previous, counter) => previous + counter, 0);
 
-        if (!CoreApp.isMobile()) {
+        if (!CorePlatform.isMobile()) {
             // Browser doesn't have an app badge, stop.
             return total;
         }

@@ -12,15 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CorePlatform } from '@services/platform';
-import { NativeHttp, Platform } from '@singletons';
+import { Injectable } from '@angular/core';
+import { makeSingleton, Platform } from '@singletons';
 
-export default async function(): Promise<void> {
-    if (!CorePlatform.isMobile()) {
-        return;
+/**
+ * Extend Ionic's Platform service.
+ */
+@Injectable({ providedIn: 'root' })
+export class CorePlatformService {
+
+    /**
+     * Checks if the app is running in a mobile or tablet device (Cordova).
+     *
+     * @return Whether the app is running in a mobile or tablet device.
+     */
+    isMobile(): boolean {
+        return Platform.is('cordova');
     }
 
-    await Platform.ready();
-
-    NativeHttp.setHeader('*', 'User-Agent', navigator.userAgent);
 }
+
+export const CorePlatform = makeSingleton(CorePlatformService);

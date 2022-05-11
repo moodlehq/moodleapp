@@ -16,9 +16,9 @@ import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/activity-prefetch-handler';
 import { CoreCourse, CoreCourseAnyModuleData, CoreCourseCommonModWSOptions } from '@features/course/services/course';
-import { CoreApp } from '@services/app';
 import { CoreFile } from '@services/file';
 import { CoreFilepool } from '@services/filepool';
+import { CorePlatform } from '@services/platform';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
@@ -394,7 +394,7 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
 
         // Remove the unzipped folder.
         promises.push(CoreFile.removeDir(path).catch((error) => {
-            if (error && (error.code == 1 || !CoreApp.isMobile())) {
+            if (error && (error.code == 1 || !CorePlatform.isMobile())) {
                 // Not found, ignore error.
             } else {
                 throw error;

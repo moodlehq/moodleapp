@@ -19,9 +19,9 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreConstants } from '@/core/constants';
 import { makeSingleton } from '@singletons';
 import { CoreUrl } from '@singletons/url';
-import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
+import { CorePlatform } from '@services/platform';
 
 /*
  * "Utils" service with helper functions for URLs.
@@ -461,7 +461,7 @@ export class CoreUrlUtilsProvider {
                 scheme == 'file' ||
                 scheme == 'filesystem' ||
                 scheme == CoreConstants.CONFIG.ioswebviewscheme ||
-                (CoreApp.isMobile() && scheme === 'http' && domain === 'localhost'); // @todo: Get served domain from ENV.
+                (CorePlatform.isMobile() && scheme === 'http' && domain === 'localhost'); // @todo: Get served domain from ENV.
     }
 
     /**

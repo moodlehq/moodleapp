@@ -34,6 +34,7 @@ import { CoreFileEntry } from '@services/file-helper';
 import { CoreConstants } from '@/core/constants';
 import { CoreWindow } from '@singletons/window';
 import { CoreColors } from '@singletons/colors';
+import { CorePlatform } from '@services/platform';
 
 type TreeNode<T> = T & { children: TreeNode<T>[] };
 
@@ -1014,7 +1015,7 @@ export class CoreUtilsProvider {
 
         this.iabInstance = InAppBrowser.create(url, '_blank', options);
 
-        if (CoreApp.isMobile()) {
+        if (CorePlatform.isMobile()) {
             let loadStopSubscription;
             const loadStartUrls: string[] = [];
 
@@ -1594,7 +1595,7 @@ export class CoreUtilsProvider {
      * @return Whether the app can scan QR codes.
      */
     canScanQR(): boolean {
-        return CoreApp.isMobile();
+        return CorePlatform.isMobile();
     }
 
     /**
@@ -1619,7 +1620,7 @@ export class CoreUtilsProvider {
      * @return Promise resolved with the QR string, rejected if error or cancelled.
      */
     async startScanQR(): Promise<string | undefined> {
-        if (!CoreApp.isMobile()) {
+        if (!CorePlatform.isMobile()) {
             return Promise.reject('QRScanner isn\'t available in browser.');
         }
 
