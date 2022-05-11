@@ -18,10 +18,23 @@ import { Subject, BehaviorSubject } from 'rxjs';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEvents } from '@singletons/events';
-import { CoreUserProfile, CoreUserProvider } from './user';
+import { CoreUserProfile, USER_PROFILE_REFRESHED } from './user';
 import { makeSingleton } from '@singletons';
 import { CoreCourses, CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/services/courses';
 import { CoreSites } from '@services/sites';
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [USER_DELEGATE_UPDATE_HANDLER_EVENT]: CoreUserUpdateHandlerData;
+    }
+
+}
 
 /**
  * Interface that all user profile handlers must implement.
@@ -169,6 +182,11 @@ export interface CoreUserProfileHandlerToDisplay {
 }
 
 /**
+ * Delegate update handler event.
+ */
+export const USER_DELEGATE_UPDATE_HANDLER_EVENT = 'CoreUserDelegate_update_handler_event';
+
+/**
  * Service to interact with plugins to be shown in user profile. Provides functions to register a plugin
  * and notify an update in the data.
  */
@@ -189,11 +207,6 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
     static readonly TYPE_ACTION = 'action';
 
     /**
-     * Update handler information event.
-     */
-    static readonly UPDATE_HANDLER_EVENT = 'CoreUserDelegate_update_handler_event';
-
-    /**
      * Cache object that checks enabled for use.
      */
     protected enabledForUserCache: Record<string, Record<string, boolean>> = {};
@@ -206,7 +219,7 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
     constructor() {
         super('CoreUserDelegate', true);
 
-        CoreEvents.on(CoreUserDelegateService.UPDATE_HANDLER_EVENT, (data) => {
+        CoreEvents.on(USER_DELEGATE_UPDATE_HANDLER_EVENT, (data) => {
             const handlersData = this.getHandlersData(data.userId, data.context, data.contextId);
 
             // Search the handler.
@@ -225,7 +238,7 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
             this.clearHandlerCache();
         });
 
-        CoreEvents.on(CoreUserProvider.PROFILE_REFRESHED, (data) => {
+        CoreEvents.on(USER_PROFILE_REFRESHED, (data) => {
             const context = data.courseId ? CoreUserDelegateContext.COURSE : CoreUserDelegateContext.SITE;
             this.clearHandlerCache(data.userId, context, data.courseId);
         });

@@ -27,7 +27,6 @@ import { CoreStatusWithWarningsWSResponse, CoreWSExternalWarning } from '@servic
 import { CoreError } from '@classes/errors/error';
 import { USERS_TABLE_NAME, CoreUserDBRecord } from './database/user';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
-import { CoreUserDelegateService, CoreUserUpdateHandlerData } from './user-delegate';
 
 const ROOT_CACHE_KEY = 'mmUser:';
 
@@ -39,12 +38,21 @@ declare module '@singletons/events' {
      * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
      */
     export interface CoreEventsData {
-        [CoreUserProvider.PROFILE_REFRESHED]: CoreUserProfileRefreshedData;
-        [CoreUserProvider.PROFILE_PICTURE_UPDATED]: CoreUserProfilePictureUpdatedData;
-        [CoreUserDelegateService.UPDATE_HANDLER_EVENT]: CoreUserUpdateHandlerData;
+        [USER_PROFILE_REFRESHED]: CoreUserProfileRefreshedData;
+        [USER_PROFILE_PICTURE_UPDATED]: CoreUserProfilePictureUpdatedData;
     }
 
 }
+
+/**
+ * Profile picture updated event.
+ */
+export const USER_PROFILE_REFRESHED = 'CoreUserProfileRefreshed';
+
+/**
+ * Profile picture updated event.
+ */
+export const USER_PROFILE_PICTURE_UPDATED = 'CoreUserProfilePictureUpdated';
 
 /**
  * Service to provide user functionalities.
@@ -53,8 +61,6 @@ declare module '@singletons/events' {
 export class CoreUserProvider {
 
     static readonly PARTICIPANTS_LIST_LIMIT = 50; // Max of participants to retrieve in each WS call.
-    static readonly PROFILE_REFRESHED = 'CoreUserProfileRefreshed';
-    static readonly PROFILE_PICTURE_UPDATED = 'CoreUserProfilePictureUpdated';
 
     protected logger: CoreLogger;
 
@@ -840,20 +846,6 @@ export class CoreUserProvider {
 
 }
 export const CoreUser = makeSingleton(CoreUserProvider);
-
-declare module '@singletons/events' {
-
-    /**
-     * Augment CoreEventsData interface with events specific to this service.
-     *
-     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
-     */
-    export interface CoreEventsData {
-        [CoreUserProvider.PROFILE_REFRESHED]: CoreUserProfileRefreshedData;
-        [CoreUserProvider.PROFILE_PICTURE_UPDATED]: CoreUserProfilePictureUpdatedData;
-    }
-
-}
 
 /**
  * Data passed to PROFILE_REFRESHED event.
