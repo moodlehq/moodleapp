@@ -28,6 +28,8 @@ import { CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreNetworkError } from '@classes/errors/network-error';
+import { CoreConfig } from './config';
+import { CoreCanceledError } from '@classes/errors/cancelederror';
 
 /**
  * Provider to provide some helper functions regarding files and packages.
@@ -71,7 +73,7 @@ export class CoreFileHelperProvider {
         const timemodified = this.getFileTimemodified(file);
 
         if (!this.isOpenableInApp(file)) {
-            await this.showConfirmOpenUnsupportedFile();
+            await this.showConfirmOpenUnsupportedFile(false, file);
         }
 
         let url = await this.downloadFileIfNeeded(
@@ -413,13 +415,42 @@ export class CoreFileHelperProvider {
      * Show a confirm asking the user if we wants to open the file.
      *
      * @param onlyDownload Whether the user is only downloading the file, not opening it.
+     * @param file The file that will be opened.
      * @return Promise resolved if confirmed, rejected otherwise.
      */
-    showConfirmOpenUnsupportedFile(onlyDownload?: boolean): Promise<void> {
+    async showConfirmOpenUnsupportedFile(onlyDownload = false, file: {filename?: string; name?: string}): Promise<void> {
+        file = file || {}; // Just in case some plugin doesn't pass it. This can be removed in the future, @since app 4.1.
+
+        // Check if the user decided not to see the warning.
+        const regex = /(?:\.([^.]+))?$/;
+        const regexResult = regex.exec(file.filename || file.name || '');
+
+        const configKey = 'CoreFileUnsupportedWarningDisabled-' + (regexResult?.[1] ?? 'unknown');
+        const dontShowWarning = await CoreConfig.get(configKey, 0);
+        if (dontShowWarning) {
+            return;
+        }
+
         const message = Translate.instant('core.cannotopeninapp' + (onlyDownload ? 'download' : ''));
         const okButton = Translate.instant(onlyDownload ? 'core.downloadfile' : 'core.openfile');
 
-        return CoreDomUtils.showConfirm(message, undefined, okButton, undefined, { cssClass: 'core-modal-force-on-top' });
+        try {
+            const dontShowAgain = await CoreDomUtils.showPrompt(
+                message,
+                undefined,
+                Translate.instant('core.dontshowagain'),
+                'checkbox',
+                { okText: okButton },
+                { cssClass: 'core-modal-force-on-top' },
+            );
+
+            if (dontShowAgain) {
+                CoreConfig.set(configKey, 1);
+            }
+        } catch {
+            // User canceled.
+            throw new CoreCanceledError('');
+        }
     }
 
     /**

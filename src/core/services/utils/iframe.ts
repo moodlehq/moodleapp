@@ -520,7 +520,7 @@ export class CoreIframeUtilsProvider {
 
             if (!CoreFileHelper.isOpenableInApp({ filename })) {
                 try {
-                    await CoreFileHelper.showConfirmOpenUnsupportedFile();
+                    await CoreFileHelper.showConfirmOpenUnsupportedFile(false, { filename });
                 } catch (error) {
                     return; // Cancelled, stop.
                 }
