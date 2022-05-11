@@ -192,8 +192,7 @@ export class CoreEvents {
         siteId?: string,
     ): CoreEventObserver {
         const listener = CoreEvents.on<Fallback, Event>(eventName, (value) => {
-            setTimeout(() => listener.off(), 0);
-
+            listener.off();
             callBack(value);
         }, siteId);
 
@@ -241,7 +240,7 @@ export class CoreEvents {
             if (siteId) {
                 Object.assign(data || {}, { siteId });
             }
-            this.observables[eventName].next(data);
+            this.observables[eventName].next(data || {});
         }
     }
 
