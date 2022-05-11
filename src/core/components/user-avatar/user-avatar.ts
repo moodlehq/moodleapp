@@ -17,7 +17,7 @@ import { Component, Input, OnInit, OnChanges, OnDestroy, SimpleChange } from '@a
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreUserProvider, CoreUserBasicData } from '@features/user/services/user';
+import { USER_PROFILE_PICTURE_UPDATED, CoreUserBasicData } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreNetwork } from '@services/network';
 
@@ -54,7 +54,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
         this.currentUserId = CoreSites.getCurrentSiteUserId();
 
         this.pictureObserver = CoreEvents.on(
-            CoreUserProvider.PROFILE_PICTURE_UPDATED,
+            USER_PROFILE_PICTURE_UPDATED,
             (data) => {
                 if (data.userId == this.userId) {
                     this.avatarUrl = data.picture;
