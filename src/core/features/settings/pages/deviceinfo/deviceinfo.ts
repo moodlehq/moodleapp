@@ -26,6 +26,7 @@ import { CorePushNotifications } from '@features/pushnotifications/services/push
 import { CoreConfig } from '@services/config';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreNavigator } from '@services/navigator';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Device Info to be shown and copied to clipboard.
@@ -108,7 +109,7 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
                 ' (' + window.screen.width + 'x' + window.screen.height + ')';
         }
 
-        if (appProvider.isMobile()) {
+        if (CorePlatform.isMobile()) {
             this.deviceInfo.deviceType = Platform.is('tablet') ? 'tablet' : 'phone';
             if (appProvider.isAndroid()) {
                 this.deviceInfo.deviceOs = 'android';

@@ -17,7 +17,6 @@ import { MediaObject } from '@ionic-native/media/ngx';
 import { FileEntry } from '@ionic-native/file/ngx';
 import { MediaFile } from '@ionic-native/media-capture/ngx';
 
-import { CoreApp } from '@services/app';
 import { CoreFile, CoreFileProvider } from '@services/file';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
@@ -27,6 +26,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreCaptureError } from '@classes/errors/captureerror';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreText } from '@singletons/text';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Page to capture media in browser, or to capture audio in mobile devices.
@@ -116,7 +116,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
             this.title = 'core.captureimage';
         }
 
-        this.isCordovaAudioCapture = CoreApp.isMobile() && this.isAudio;
+        this.isCordovaAudioCapture = CorePlatform.isMobile() && this.isAudio;
 
         if (this.isCordovaAudioCapture) {
             this.extension = Platform.is('ios') ? 'wav' : 'aac';

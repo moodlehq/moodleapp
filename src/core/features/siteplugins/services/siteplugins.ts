@@ -30,6 +30,7 @@ import { CoreEvents } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSitePluginsModuleHandler } from '../classes/handlers/module-handler';
 import { CorePromisedValue } from '@classes/promised-value';
+import { CorePlatform } from '@services/platform';
 
 const ROOT_CACHE_KEY = 'CoreSitePlugins:';
 
@@ -90,7 +91,7 @@ export class CoreSitePluginsProvider {
             applang: lang,
             appcustomurlscheme: CoreConstants.CONFIG.customurlscheme,
             appisdesktop: false,
-            appismobile: CoreApp.isMobile(),
+            appismobile: CorePlatform.isMobile(),
             appiswide: CoreApp.isWide(),
             appplatform: 'browser',
         };

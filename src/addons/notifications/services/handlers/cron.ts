@@ -14,8 +14,8 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreApp } from '@services/app';
 import { CoreCronHandler } from '@services/cron';
+import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -35,7 +35,7 @@ export class AddonNotificationsCronHandlerService implements CoreCronHandler {
      * @return Time between consecutive executions (in ms).
      */
     getInterval(): number {
-        return CoreApp.isMobile() ? 600000 : 60000; // 1 or 10 minutes.
+        return CorePlatform.isMobile() ? 600000 : 60000; // 1 or 10 minutes.
     }
 
     /**

@@ -29,6 +29,7 @@ import { asyncInstance } from '../utils/async-instance';
 import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CorePromisedValue } from '@classes/promised-value';
 import { Subscription } from 'rxjs';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Factory to provide some global functionalities, like access to the global app database.
@@ -111,7 +112,7 @@ export class CoreAppProvider {
      * Closes the keyboard.
      */
     closeKeyboard(): void {
-        if (this.isMobile()) {
+        if (CorePlatform.isMobile()) {
             Keyboard.hide();
         }
     }
@@ -192,7 +193,7 @@ export class CoreAppProvider {
             return 'market://details?id=' + storesConfig.android;
         }
 
-        if (this.isMobile() && storesConfig.mobile) {
+        if (CorePlatform.isMobile() && storesConfig.mobile) {
             return storesConfig.mobile;
         }
 
@@ -203,7 +204,7 @@ export class CoreAppProvider {
      * Get platform major version number.
      */
     getPlatformMajorVersion(): number {
-        if (!this.isMobile()) {
+        if (!CorePlatform.isMobile()) {
             return 0;
         }
 
@@ -226,7 +227,7 @@ export class CoreAppProvider {
      * @return Whether the app is running in an Android mobile or tablet device.
      */
     isAndroid(): boolean {
-        return this.isMobile() && Platform.is('android');
+        return CorePlatform.isMobile() && Platform.is('android');
     }
 
     /**
@@ -245,7 +246,7 @@ export class CoreAppProvider {
      * @return Whether the app is running in an iOS mobile or tablet device.
      */
     isIOS(): boolean {
-        return this.isMobile() && !Platform.is('android');
+        return CorePlatform.isMobile() && !Platform.is('android');
     }
 
     /**
@@ -309,9 +310,10 @@ export class CoreAppProvider {
      * Checks if the app is running in a mobile or tablet device (Cordova).
      *
      * @return Whether the app is running in a mobile or tablet device.
+     * @deprecated since 4.1. use CorePlatform instead.
      */
     isMobile(): boolean {
-        return Platform.is('cordova');
+        return CorePlatform.isMobile();
     }
 
     /**
@@ -630,7 +632,7 @@ export class CoreAppProvider {
      * @param color RGB color to use as status bar background. If not set the css variable will be read.
      */
     setStatusBarColor(color?: string): void {
-        if (!this.isMobile()) {
+        if (!CorePlatform.isMobile()) {
             return;
         }
 

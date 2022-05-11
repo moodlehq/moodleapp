@@ -37,6 +37,7 @@ import { CoreWSUploadFileResult } from '@services/ws';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
 import { CorePromisedValue } from '@classes/promised-value';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Helper service to upload files.
@@ -551,7 +552,7 @@ export class CoreFileUploaderHelperProvider {
             media = medias[0]; // We used limit 1, we only want 1 media.
         } catch (error) {
 
-            if (isAudio && this.isNoAppError(error) && CoreApp.isMobile()) {
+            if (isAudio && this.isNoAppError(error) && CorePlatform.isMobile()) {
                 // No app to record audio, fallback to capture it ourselves.
                 try {
                     media = await CoreFileUploader.captureAudioInApp();
@@ -574,7 +575,7 @@ export class CoreFileUploaderHelperProvider {
         }
 
         // Make sure the path has the protocol. In iOS it doesn't.
-        if (CoreApp.isMobile() && path.indexOf('file://') == -1) {
+        if (CorePlatform.isMobile() && path.indexOf('file://') == -1) {
             path = 'file://' + path;
         }
 

@@ -27,9 +27,9 @@ import { CoreUrlUtils } from '@services/utils/url';
 import { CoreTextUtils } from '@services/utils/text';
 import { makeSingleton, NavController, Router } from '@singletons';
 import { CoreScreen } from './screen';
-import { CoreApp } from './app';
 import { CoreError } from '@classes/errors/error';
 import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Redirect payload.
@@ -318,7 +318,7 @@ export class CoreNavigatorService {
         // Remove the parameter from our map if it's in there.
         delete this.storedParams[value];
 
-        if (!CoreApp.isMobile() && !storedParam) {
+        if (!CorePlatform.isMobile() && !storedParam) {
             // Try to retrieve the param from local storage in browser.
             const storageParam = localStorage.getItem(value);
             if (storageParam) {
@@ -604,7 +604,7 @@ export class CoreNavigatorService {
             this.storedParams[id] = value;
             queryParams[name] = id;
 
-            if (!CoreApp.isMobile()) {
+            if (!CorePlatform.isMobile()) {
                 // In browser, save the param in local storage to be able to retrieve it if the app is refreshed.
                 localStorage.setItem(id, JSON.stringify(value));
             }

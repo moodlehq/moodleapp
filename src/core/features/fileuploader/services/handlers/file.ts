@@ -20,6 +20,7 @@ import { CoreFileUploaderHandler, CoreFileUploaderHandlerData, CoreFileUploaderH
 import { CoreFileUploaderHelper } from '../fileuploader-helper';
 import { CoreFileUploader } from '../fileuploader';
 import { makeSingleton, Translate } from '@singletons';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Handler to upload any type of file.
@@ -61,7 +62,7 @@ export class CoreFileUploaderFileHandlerService implements CoreFileUploaderHandl
             icon: 'folder', // Cannot use font-awesome in action sheet.
         };
 
-        if (CoreApp.isMobile()) {
+        if (CorePlatform.isMobile()) {
             handler.action = async (
                 maxSize?: number,
                 upload?: boolean,
