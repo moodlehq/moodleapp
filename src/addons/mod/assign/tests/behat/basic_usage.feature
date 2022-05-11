@@ -22,8 +22,7 @@ Feature: Test basic usage of assignment activity in app
   @lms_from3.11
   Scenario: View assign description, due date & View list of student submissions (as teacher) & View own submission or student submission
     # Create, edit and submit as a student
-    Given I entered the course "Course 1" as "student1" in the app
-    When I press "assignment1" in the app
+    Given I entered the assign activity "assignment1" on course "Course 1" as "student1" in the app
     Then the header should be "assignment1" in the app
     And I should find "Test assignment description1" in the app
     And I should find "Due:" in the app
@@ -48,8 +47,7 @@ Feature: Test basic usage of assignment activity in app
     And I should find "Submission test edited" in the app
 
     # View as a teacher
-    Given I entered the course "Course 1" as "teacher1" in the app
-    When I press "assignment1" in the app
+    Given I entered the assign activity "assignment1" on course "Course 1" as "teacher1" in the app
     Then the header should be "assignment1" in the app
 
     When I press "Submitted" in the app
@@ -62,18 +60,16 @@ Feature: Test basic usage of assignment activity in app
 
   Scenario: Edit/Add submission (online text) & Add new attempt from previous submission & Submit for grading
     # Submit first attempt as a student
-    Given I entered the course "Course 1" as "student1" in the app
-    And I press "assignment1" in the app
-    And I press "Add submission" in the app
-    And I set the field "Online text submissions" to "Submission test 1st attempt" in the app
+    Given I entered the assign activity "assignment1" on course "Course 1" as "student1" in the app
+    When I press "Add submission" in the app
+    Then I set the field "Online text submissions" to "Submission test 1st attempt" in the app
     And I press "Save" in the app
     And I press "Submit assignment" in the app
     And I press "OK" in the app
 
     # Allow more attempts as a teacher
-    Given I entered the course "Course 1" as "teacher1" in the app
-    When I press "assignment1" in the app
-    And I press "Participants" in the app
+    Given I entered the assign activity "assignment1" on course "Course 1" as "teacher1" in the app
+    When I press "Participants" in the app
     And I press "Student student" near "assignment1" in the app
     And I press "Grade" in the app
     And I press "Allow another attempt" in the app
@@ -82,8 +78,7 @@ Feature: Test basic usage of assignment activity in app
     And I should find "Not graded" in the app
 
     # Submit second attempt as a student
-    Given I entered the course "Course 1" as "student1" in the app
-    When I press "assignment1" in the app
+    Given I entered the assign activity "assignment1" on course "Course 1" as "student1" in the app
     Then I should find "Reopened" in the app
     And I should find "2 out of Unlimited" in the app
     And I should find "Add a new attempt based on previous submission" in the app
@@ -100,17 +95,15 @@ Feature: Test basic usage of assignment activity in app
     And I press "OK" in the app
 
     # View second attempt as a teacher
-    Given I entered the course "Course 1" as "teacher1" in the app
-    When I press "assignment1" in the app
-    And I press "Participants" in the app
+    Given I entered the assign activity "assignment1" on course "Course 1" as "teacher1" in the app
+    When I press "Participants" in the app
     And I press "Student student" near "assignment1" in the app
     Then I should find "Online text submissions" in the app
     And I should find "Submission test 2nd attempt" in the app
 
   Scenario: Add submission offline (online text) & Submit for grading offline & Sync submissions
-    Given I entered the course "Course 1" as "student1" in the app
-    When I press "assignment1" in the app
-    And I press "Add submission" in the app
+    Given I entered the assign activity "assignment1" on course "Course 1" as "student1" in the app
+    When I press "Add submission" in the app
     And I switch offline mode to "true"
     And I set the field "Online text submissions" to "Submission test" in the app
     And I press "Save" in the app
@@ -127,9 +120,8 @@ Feature: Test basic usage of assignment activity in app
     But I should not find "This Assignment has offline data to be synchronised." in the app
 
   Scenario: Edit an offline submission before synchronising it
-    Given I entered the course "Course 1" as "student1" in the app
-    When I press "assignment1" in the app
-    And I press "Add submission" in the app
+    Given I entered the assign activity "assignment1" on course "Course 1" as "student1" in the app
+    When I press "Add submission" in the app
     And I switch offline mode to "true"
     And I set the field "Online text submissions" to "Submission test original offline" in the app
     And I press "Save" in the app

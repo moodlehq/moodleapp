@@ -18,8 +18,7 @@ Feature: Test chat navigation
       | chat       | Test chat name  | Test chat   | C1     | chat     | 0         |
     # Create sessions
     # TODO use generator instead
-    And I entered the course "Course 1" as "student1" in the app
-    And I press "Test chat name" in the app
+    And I entered the chat activity "Test chat name" on course "Course 1" as "student1" in the app
     And I press "Enter the chat" in the app
     And I set the field "New message" to "Test message" in the app
     And I press "Send" in the app

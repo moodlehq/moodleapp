@@ -101,9 +101,8 @@ Feature: Test basic usage of courses in app
   # TODO remove LMS UI steps in app tests
   Scenario: Links to actions in Timeline work for teachers/students
     # Configure assignment as teacher
-    Given I entered the course "Course 1" as "teacher1" in the app
-    When I press "assignment" in the app
-    And I press "Information" in the app
+    Given I entered the assign activity "assignment" on course "Course 1" as "teacher1" in the app
+    When I press "Information" in the app
     And I press "Open in browser" in the app
     And I switch to the browser tab opened by the app
     And I log in as "teacher1"

@@ -566,7 +566,7 @@ class behat_app extends behat_base {
 
         global $CFG;
 
-        $this->i_set_the_field_in_the_app('Your site', $CFG->wwwroot);
+        $this->i_set_the_field_in_the_app('Your site', $CFG->behat_wwwroot);
         $this->i_press_in_the_app('"Connect to your site"');
         $this->wait_for_pending_js();
     }
@@ -603,7 +603,7 @@ class behat_app extends behat_base {
     /**
      * User enters a course in the app.
      *
-     * @Given /^I enter(ed)? the course "(.+?)"(?: as "(.+)")? in the app$/
+     * @Given /^I enter(ed)? the course "([^"]+)"(?: as "([^"]+)")? in the app$/
      * @param string $coursename Course name
      * @throws DriverException If the button push doesn't work
      */
@@ -622,8 +622,42 @@ class behat_app extends behat_base {
         } else {
             $this->open_moodleapp_custom_url("/course/view.php?id=$courseid", '//page-core-course-index');
         }
+    }
 
+    /**
+     * User enters an activity in a course in the app.
+     *
+     * @Given /^I enter(ed)? the (.+) activity "([^"]+)" on course "([^"]+)"(?: as "([^"]+)")? in the app$/
+     * @param string $coursename Course name
+     * @throws DriverException If the button push doesn't work
+     */
+    public function i_enter_the_activity_in_the_app(bool $unused, string $activity, string $activityname, string $coursename, ?string $username = null) {
+        global $DB;
 
+        $courseid = $DB->get_field('course', 'id', [ 'fullname' => $coursename]);
+        if (!$courseid) {
+            throw new DriverException("Course '$coursename' not found");
+        }
+
+        if ($activity === 'assignment') {
+            $activity = 'assign';
+        }
+
+        $module = $DB->get_record($activity, ['name' => $activityname, 'course' => $courseid ]);
+        if (!$module) {
+            throw new DriverException("'$activityname' activity '$activityname' not found");
+        }
+
+        $cm = get_coursemodule_from_instance($activity, $module->id);
+        $pageurl = "/mod/$activity/view.php?id={$cm->id}";
+
+        if ($username) {
+            $this->i_launch_the_app();
+
+            $this->open_moodleapp_custom_login_url($username, $pageurl);
+        } else {
+            $this->open_moodleapp_custom_url($pageurl);
+        }
     }
 
     /**
@@ -660,7 +694,7 @@ class behat_app extends behat_base {
         $module = $DB->get_record('course_modules', ['idnumber' => $data->module]);
         $discussion = $DB->get_record('forum_discussions', ['name' => $data->discussion]);
         $notification = json_encode([
-            'site' => md5($CFG->wwwroot . $data->username),
+            'site' => md5($CFG->behat_wwwroot . $data->username),
             'courseid' => $discussion->course,
             'moodlecomponent' => 'mod_forum',
             'name' => 'posts',

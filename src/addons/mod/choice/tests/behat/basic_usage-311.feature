@@ -22,15 +22,13 @@ Feature: Test basic usage of choice activity in app
     Given the following "activities" exist:
       | activity | name        | intro                   | course | idnumber | option |
       | choice   | Choice name | Test choice description | C1     | choice1  | Option 1, Option 2, Option 3 |
-    And I entered the course "Course 1" as "student1" in the app
-    Then I press "Choice name" in the app
-    And I select "Option 2" in the app
+    And I entered the choice activity "Choice name" on course "Course 1" as "student1" in the app
+    Then I select "Option 2" in the app
     And I press "Save my choice" in the app
     And I press "OK" in the app
 
     # Download answers as teacher
-    Given I entered the course "Course 1" as "teacher1" in the app
-    When I press "Choice name" in the app
+    Given I entered the choice activity "Choice name" on course "Course 1" as "teacher1" in the app
     Then I should find "Test choice description" in the app
 
     When I press "Information" in the app
