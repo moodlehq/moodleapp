@@ -18,7 +18,7 @@ import { CoreCourseActivitySyncBaseProvider } from '@features/course/classes/act
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreRatingSync } from '@features/rating/services/rating-sync';
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreGroups } from '@services/groups';
 import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
@@ -231,7 +231,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
                 [] as AddonModForumOfflineDiscussion[],
             );
 
-            if (discussions.length !== 0 && !CoreApp.isOnline()) {
+            if (discussions.length !== 0 && !CoreNetwork.isOnline()) {
                 throw new Error('cannot sync in offline');
             }
 
@@ -370,7 +370,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
         if (!replies.length) {
             // Nothing to sync.
             return { warnings: [], updated: false };
-        } else if (!CoreApp.isOnline()) {
+        } else if (!CoreNetwork.isOnline()) {
             // Cannot sync in offline.
             return Promise.reject(null);
         }
@@ -459,7 +459,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
                 [] as AddonModForumOfflineReply[],
             );
 
-            if (replies.length !== 0 && !CoreApp.isOnline()) {
+            if (replies.length !== 0 && !CoreNetwork.isOnline()) {
                 throw new Error('Cannot sync in offline');
             }
 

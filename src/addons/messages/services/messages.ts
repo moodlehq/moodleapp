@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSites } from '@services/sites';
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreUser, CoreUserBasicData } from '@features/user/services/user';
 import {
     AddonMessagesOffline,
@@ -2424,7 +2424,7 @@ export class AddonMessagesProvider {
 
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        if (!CoreApp.isOnline()) {
+        if (!CoreNetwork.isOnline()) {
             // App is offline, store the message.
             return storeOffline();
         }
@@ -2555,7 +2555,7 @@ export class AddonMessagesProvider {
             };
         };
 
-        if (!CoreApp.isOnline()) {
+        if (!CoreNetwork.isOnline()) {
             // App is offline, store the message.
             return storeOffline();
         }

@@ -15,7 +15,7 @@
 import { CoreConstants } from '@/core/constants';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreCourse, CoreCourseAnyModuleData } from '../services/course';
@@ -84,7 +84,7 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
     ): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        if (!CoreApp.isOnline()) {
+        if (!CoreNetwork.isOnline()) {
             // Cannot prefetch in offline.
             throw new CoreNetworkError();
         }

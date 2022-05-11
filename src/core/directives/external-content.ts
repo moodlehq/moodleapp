@@ -35,6 +35,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreSite } from '@classes/site';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreConstants } from '../constants';
+import { CoreNetwork } from '@services/network';
 
 /**
  * Directive to handle external content.
@@ -430,7 +431,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
             clickableEl.addEventListener(eventName, () => {
                 // User played media or opened a downloadable link.
                 // Download the file if in wifi and it hasn't been downloaded already (for big files).
-                if (state !== CoreConstants.DOWNLOADED && state !== CoreConstants.DOWNLOADING && CoreApp.isWifi()) {
+                if (state !== CoreConstants.DOWNLOADED && state !== CoreConstants.DOWNLOADING && CoreNetwork.isWifi()) {
                     // We aren't using the result, so it doesn't matter which of the 2 functions we call.
                     CoreFilepool.getUrlByUrl(site.getId(), url, this.component, this.componentId, 0, false);
                 }

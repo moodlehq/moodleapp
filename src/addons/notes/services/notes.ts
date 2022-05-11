@@ -17,7 +17,7 @@ import { CoreWSError } from '@classes/errors/wserror';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { CoreUser } from '@features/user/services/user';
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalWarning } from '@services/ws';
@@ -58,7 +58,7 @@ export class AddonNotesProvider {
             return false;
         };
 
-        if (!CoreApp.isOnline()) {
+        if (!CoreNetwork.isOnline()) {
             // App is offline, store the note.
             return storeOffline();
         }
@@ -161,7 +161,7 @@ export class AddonNotesProvider {
             return false;
         };
 
-        if (!CoreApp.isOnline()) {
+        if (!CoreNetwork.isOnline()) {
             // App is offline, store the note.
             return storeOffline();
         }

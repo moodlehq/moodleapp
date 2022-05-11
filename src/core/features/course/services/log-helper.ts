@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
@@ -134,7 +134,7 @@ export class CoreCourseLogHelperProvider {
     async log(ws: string, data: Record<string, unknown>, component: string, componentId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
-        if (!CoreApp.isOnline()) {
+        if (!CoreNetwork.isOnline()) {
             // App is offline, store the action.
             return this.storeOffline(ws, data, component, componentId, site.getId());
         }

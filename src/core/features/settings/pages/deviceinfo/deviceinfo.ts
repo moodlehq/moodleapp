@@ -27,6 +27,7 @@ import { CoreConfig } from '@services/config';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreNavigator } from '@services/navigator';
 import { CorePlatform } from '@services/platform';
+import { CoreNetwork } from '@services/network';
 
 /**
  * Device Info to be shown and copied to clipboard.
@@ -92,8 +93,8 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
             versionCode: CoreConstants.CONFIG.versioncode,
             compilationTime: CoreConstants.BUILD.compilationTime || 0,
             lastCommit: CoreConstants.BUILD.lastCommitHash || '',
-            networkStatus: appProvider.isOnline() ? 'online' : 'offline',
-            wifiConnection: appProvider.isWifi() ? 'yes' : 'no',
+            networkStatus: CoreNetwork.isOnline() ? 'online' : 'offline',
+            wifiConnection: CoreNetwork.isWifi() ? 'yes' : 'no',
             localNotifAvailable: CoreLocalNotifications.isAvailable() ? 'yes' : 'no',
             pushId: CorePushNotifications.getPushId(),
             deviceType: '',

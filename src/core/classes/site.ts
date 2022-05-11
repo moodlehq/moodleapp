@@ -16,6 +16,7 @@ import { InAppBrowserObject, InAppBrowserOptions } from '@ionic-native/in-app-br
 import { Md5 } from 'ts-md5/dist/md5';
 
 import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreDB } from '@services/db';
 import { CoreEvents } from '@singletons/events';
 import { CoreFile } from '@services/file';
@@ -536,7 +537,7 @@ export class CoreSite {
         const initialToken = this.token || '';
         data = data || {};
 
-        if (!CoreApp.isOnline() && this.offlineDisabled) {
+        if (!CoreNetwork.isOnline() && this.offlineDisabled) {
             throw new CoreError(Translate.instant('core.errorofflinedisabled'));
         }
 
@@ -994,7 +995,7 @@ export class CoreSite {
         const now = Date.now();
         let expirationTime: number | undefined;
 
-        preSets.omitExpires = preSets.omitExpires || preSets.forceOffline || !CoreApp.isOnline();
+        preSets.omitExpires = preSets.omitExpires || preSets.forceOffline || !CoreNetwork.isOnline();
 
         if (!preSets.omitExpires) {
             expirationTime = entry.expirationTime + this.getExpirationDelay(preSets.updateFrequency);
@@ -1986,7 +1987,7 @@ export class CoreSite {
         updateFrequency = updateFrequency || CoreSite.FREQUENCY_USUALLY;
         let expirationDelay = this.UPDATE_FREQUENCIES[updateFrequency] || this.UPDATE_FREQUENCIES[CoreSite.FREQUENCY_USUALLY];
 
-        if (CoreApp.isNetworkAccessLimited()) {
+        if (CoreNetwork.isNetworkAccessLimited()) {
             // Not WiFi, increase the expiration delay a 50% to decrease the data usage in this case.
             expirationDelay *= 1.5;
         }
@@ -2010,7 +2011,7 @@ export class CoreSite {
         } else if (this.tokenPluginFileWorksPromise) {
             // Check ongoing, use the same promise.
             return this.tokenPluginFileWorksPromise;
-        } else if (!CoreApp.isOnline()) {
+        } else if (!CoreNetwork.isOnline()) {
             // Not online, cannot check it. Assume it's working, but don't save the result.
             return Promise.resolve(true);
         }

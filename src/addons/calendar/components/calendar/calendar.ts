@@ -41,7 +41,7 @@ import {
 import { AddonCalendarFilter, AddonCalendarHelper } from '../../services/calendar-helper';
 import { AddonCalendarOffline } from '../../services/calendar-offline';
 import { CoreCategoryData, CoreCourses } from '@features/courses/services/courses';
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreSwipeSlidesComponent } from '@components/swipe-slides/swipe-slides';
 import {
     CoreSwipeSlidesDynamicItem,
@@ -498,7 +498,7 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
                 // Don't pass courseId and categoryId, we'll filter them locally.
                 result = await AddonCalendar.getMonthlyEvents(year, monthNumber);
             } catch (error) {
-                if (!CoreApp.isOnline()) {
+                if (!CoreNetwork.isOnline()) {
                     // Allow navigating to non-cached months in offline (behave as if using emergency cache).
                     result = await AddonCalendarHelper.getOfflineMonthWeeks(year, monthNumber);
                 } else {

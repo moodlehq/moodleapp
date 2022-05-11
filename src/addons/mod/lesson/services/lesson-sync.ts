@@ -19,7 +19,7 @@ import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreCourseActivitySyncBaseProvider } from '@features/course/classes/activity-sync';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreTimeUtils } from '@services/utils/time';
@@ -275,7 +275,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
 
         if (!attempts.length) {
             return;
-        } else if (!CoreApp.isOnline()) {
+        } else if (!CoreNetwork.isOnline()) {
             // Cannot sync in offline.
             throw new CoreNetworkError();
         }
@@ -420,7 +420,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
             await AddonModLessonOffline.deleteRetake(lessonId, siteId);
 
             return;
-        } else if (!CoreApp.isOnline()) {
+        } else if (!CoreNetwork.isOnline()) {
             // Cannot sync in offline.
             throw new CoreNetworkError();
         }

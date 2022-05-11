@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreEvents } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
@@ -554,7 +554,7 @@ export class CoreCourseProvider {
                 return sections;
             } catch {
                 // The module might still be cached by a request with different parameters.
-                if (!ignoreCache && !CoreApp.isOnline()) {
+                if (!ignoreCache && !CoreNetwork.isOnline()) {
                     if (includeStealth) {
                         // Older versions didn't include the includestealthmodules option.
                         return doRequest(site, courseId, moduleId, modName, false, true);
@@ -1168,7 +1168,7 @@ export class CoreCourseProvider {
             CoreCourseOffline.markCompletedManually(cmId, completed, courseId, undefined, siteId);
 
         // The offline function requires a courseId and it could be missing because it's a calculated field.
-        if (!CoreApp.isOnline()) {
+        if (!CoreNetwork.isOnline()) {
             // App is offline, store the action.
             return storeOffline();
         }

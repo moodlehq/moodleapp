@@ -20,7 +20,7 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreRatingInfo } from '@features/rating/services/rating';
 import { CoreTagItem } from '@features/tag/services/tag';
 import { CoreUser } from '@features/user/services/user';
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreGroups } from '@services/groups';
 import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
@@ -756,7 +756,7 @@ export class AddonModForumProvider {
         } catch (error) {
             // Try to get the data from cache stored with the old WS method.
             if (
-                CoreApp.isOnline() ||
+                CoreNetwork.isOnline() ||
                 method !== 'mod_forum_get_forum_discussions' ||
                 options.sortOrder !== AddonModForumProvider.SORTORDER_LASTPOST_DESC
             ) {
@@ -1065,7 +1065,7 @@ export class AddonModForumProvider {
             return false;
         };
 
-        if (!CoreApp.isOnline() && allowOffline) {
+        if (!CoreNetwork.isOnline() && allowOffline) {
             // App is offline, store the action.
             return storeOffline();
         }

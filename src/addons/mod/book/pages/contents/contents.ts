@@ -25,7 +25,7 @@ import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreTag, CoreTagItem } from '@features/tag/services/tag';
 import { IonRefresher } from '@ionic/angular';
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
@@ -190,7 +190,7 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
 
         if (!module.contents?.length || (refresh && !contentsAlreadyLoaded)) {
             // Try to load the contents.
-            const ignoreCache = refresh && CoreApp.isOnline();
+            const ignoreCache = refresh && CoreNetwork.isOnline();
 
             try {
                 await CoreCourse.loadModuleContents(module, undefined, undefined, false, ignoreCache);

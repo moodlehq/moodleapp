@@ -20,6 +20,7 @@ import { FileEntry, IFile } from '@ionic-native/file/ngx';
 import { MediaFile } from '@ionic-native/media-capture/ngx';
 
 import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreFile, CoreFileProvider, CoreFileProgressEvent } from '@services/file';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
@@ -121,7 +122,7 @@ export class CoreFileUploaderHelperProvider {
             return;
         }
 
-        if (!allowOffline && !CoreApp.isOnline()) {
+        if (!allowOffline && !CoreNetwork.isOnline()) {
             throw new CoreError(Translate.instant('core.fileuploader.errormustbeonlinetoupload'));
         }
 
@@ -131,7 +132,7 @@ export class CoreFileUploaderHelperProvider {
 
         if (size < 0) {
             return CoreDomUtils.showConfirm(Translate.instant('core.fileuploader.confirmuploadunknownsize'));
-        } else if (size >= wifiThreshold || (CoreApp.isNetworkAccessLimited() && size >= limitedThreshold)) {
+        } else if (size >= wifiThreshold || (CoreNetwork.isNetworkAccessLimited() && size >= limitedThreshold)) {
             const readableSize = CoreTextUtils.bytesToSize(size, 2);
 
             return CoreDomUtils.showConfirm(
@@ -364,7 +365,7 @@ export class CoreFileUploaderHelperProvider {
                         return false;
                     }
 
-                    if (!allowOffline && !CoreApp.isOnline()) {
+                    if (!allowOffline && !CoreNetwork.isOnline()) {
                         // Not allowed, show error.
                         CoreDomUtils.showErrorModal('core.fileuploader.errormustbeonlinetoupload', true);
 
@@ -795,7 +796,7 @@ export class CoreFileUploaderHelperProvider {
             return this.uploadFile(path, maxSize, checkSize, options, siteId);
         };
 
-        if (!CoreApp.isOnline()) {
+        if (!CoreNetwork.isOnline()) {
             return errorUploading(Translate.instant('core.fileuploader.errormustbeonlinetoupload'));
         }
 

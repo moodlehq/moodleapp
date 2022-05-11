@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { FileEntry } from '@ionic-native/file/ngx';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreUser } from '@features/user/services/user';
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
 import { CoreTimeUtils } from '@services/utils/time';
@@ -124,7 +124,7 @@ export class AddonModForumHelperProvider {
             await AddonModForumOffline.deleteNewDiscussion(forumId, timeCreated, siteId);
         }
 
-        if (saveOffline || !CoreApp.isOnline()) {
+        if (saveOffline || !CoreNetwork.isOnline()) {
             await storeOffline();
 
             return null;

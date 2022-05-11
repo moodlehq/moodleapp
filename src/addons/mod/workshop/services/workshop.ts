@@ -18,7 +18,7 @@ import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreGradesMenuItem } from '@features/grades/services/grades-helper';
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreTextFormat, defaultTextFormat } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
@@ -729,7 +729,7 @@ export class AddonModWorkshopProvider {
         // If we are editing an offline submission, discard previous first.
         await AddonModWorkshopOffline.deleteSubmissionAction(workshopId, AddonModWorkshopAction.ADD, siteId);
 
-        if (!CoreApp.isOnline() && allowOffline) {
+        if (!CoreNetwork.isOnline() && allowOffline) {
             // App is offline, store the action.
             return storeOffline();
         }
@@ -825,7 +825,7 @@ export class AddonModWorkshopProvider {
         // If we are editing an offline discussion, discard previous first.
         await AddonModWorkshopOffline.deleteSubmissionAction(workshopId, AddonModWorkshopAction.UPDATE, siteId);
 
-        if (!CoreApp.isOnline() && allowOffline) {
+        if (!CoreNetwork.isOnline() && allowOffline) {
             // App is offline, store the action.
             return storeOffline();
         }
@@ -904,7 +904,7 @@ export class AddonModWorkshopProvider {
         // If we are editing an offline discussion, discard previous first.
         await AddonModWorkshopOffline.deleteSubmissionAction(workshopId, AddonModWorkshopAction.DELETE, siteId);
 
-        if (!CoreApp.isOnline()) {
+        if (!CoreNetwork.isOnline()) {
             // App is offline, store the action.
             return storeOffline();
         }
@@ -1173,7 +1173,7 @@ export class AddonModWorkshopProvider {
 
         // If we are editing an offline discussion, discard previous first.
         await AddonModWorkshopOffline.deleteAssessment(workshopId, assessmentId, siteId);
-        if (!CoreApp.isOnline() && allowOffline) {
+        if (!CoreNetwork.isOnline() && allowOffline) {
             // App is offline, store the action.
             return storeOffline();
         }
@@ -1251,7 +1251,7 @@ export class AddonModWorkshopProvider {
 
         // If we are editing an offline discussion, discard previous first.
         await AddonModWorkshopOffline.deleteEvaluateSubmission(workshopId, submissionId, siteId);
-        if (!CoreApp.isOnline()) {
+        if (!CoreNetwork.isOnline()) {
             // App is offline, store the action.
             return storeOffline();
         }
@@ -1342,7 +1342,7 @@ export class AddonModWorkshopProvider {
 
         // If we are editing an offline discussion, discard previous first.
         await AddonModWorkshopOffline.deleteEvaluateAssessment(workshopId, assessmentId, siteId);
-        if (!CoreApp.isOnline()) {
+        if (!CoreNetwork.isOnline()) {
             // App is offline, store the action.
             return storeOffline();
         }

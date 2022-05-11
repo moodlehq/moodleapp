@@ -14,7 +14,7 @@
 
 import { Component, Input, ElementRef, OnInit, OnDestroy, OnChanges, SimpleChange } from '@angular/core';
 
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -111,7 +111,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
      * @return Promise resolved when done.
      */
     async download(): Promise<void> {
-        if (!CoreApp.isOnline()) {
+        if (!CoreNetwork.isOnline()) {
             CoreDomUtils.showErrorModal('core.networkerrormsg', true);
 
             return;
@@ -144,7 +144,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
      */
     protected async attemptDownloadInBg(): Promise<void> {
         if (!this.urlParams || !this.src || !this.siteCanDownload || !CoreH5P.canGetTrustedH5PFileInSite() ||
-                !CoreApp.isOnline()) {
+                !CoreNetwork.isOnline()) {
             return;
         }
 

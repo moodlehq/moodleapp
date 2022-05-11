@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreTextUtils } from '@services/utils/text';
 import {
     AddonMessagesOfflineConversationMessagesDBRecord,
@@ -283,7 +283,7 @@ export class AddonMessagesOfflineProvider {
             conversationid: conversation.id,
             text: message,
             timecreated: Date.now(),
-            deviceoffline: CoreApp.isOnline() ? 0 : 1,
+            deviceoffline: CoreNetwork.isOnline() ? 0 : 1,
             conversation: JSON.stringify({
                 name: conversation.name || '',
                 subname: conversation.subname || '',
@@ -314,7 +314,7 @@ export class AddonMessagesOfflineProvider {
             useridfrom: site.getUserId(),
             smallmessage: message,
             timecreated: new Date().getTime(),
-            deviceoffline: CoreApp.isOnline() ? 0 : 1,
+            deviceoffline: CoreNetwork.isOnline() ? 0 : 1,
         };
 
         await site.getDb().insertRecord(MESSAGES_TABLE, entry);

@@ -21,7 +21,7 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreQuestion, CoreQuestionQuestionParsed } from '@features/question/services/question';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreUtils } from '@services/utils/utils';
@@ -311,7 +311,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
             return this.finishSync(siteId, quiz, courseId, warnings);
         }
 
-        if (!CoreApp.isOnline()) {
+        if (!CoreNetwork.isOnline()) {
             // Cannot sync in offline.
             throw new CoreError(Translate.instant('core.cannotconnect'));
         }

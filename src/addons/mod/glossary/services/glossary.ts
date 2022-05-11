@@ -20,7 +20,7 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreRatingInfo } from '@features/rating/services/rating';
 import { CoreTagItem } from '@features/tag/services/tag';
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
@@ -898,7 +898,7 @@ export class AddonModGlossaryProvider {
             return false;
         };
 
-        if (!CoreApp.isOnline() && otherOptions.allowOffline) {
+        if (!CoreNetwork.isOnline() && otherOptions.allowOffline) {
             // App is offline, store the action.
             return storeOffline();
         }

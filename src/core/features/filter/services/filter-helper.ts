@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreFilterDelegate } from './filter-delegate';
 import {
@@ -299,7 +299,7 @@ export class CoreFilterHelperProvider {
 
         const cachedData = this.moduleContextsCache[siteId][courseId][contextLevel];
 
-        if (!CoreApp.isOnline() || Date.now() <= cachedData.time + site.getExpirationDelay(CoreSite.FREQUENCY_RARELY)) {
+        if (!CoreNetwork.isOnline() || Date.now() <= cachedData.time + site.getExpirationDelay(CoreSite.FREQUENCY_RARELY)) {
             // We can use cache, return the filters if found.
             return cachedData.contexts[contextLevel] && cachedData.contexts[contextLevel][instanceId];
         }
