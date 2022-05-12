@@ -202,8 +202,9 @@ Feature: Test basic usage of messages in app
 
     When I switch offline mode to "false"
     And I run cron tasks in the app
-    And I enter the app as "student1"
-    And I press "Messages" in the app
+
+    Given I entered the app as "student1"
+    When I press "Messages" in the app
     And I press "Teacher teacher" in the app
     Then I should find "heeey student" in the app
     And I should find "byee" in the app

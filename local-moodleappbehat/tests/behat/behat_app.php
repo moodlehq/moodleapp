@@ -113,36 +113,50 @@ class behat_app extends behat_base {
     }
 
     /**
-     * Opens the Moodle App in the browser and introduces the enters the site.
+     * Opens the Moodle App in the browser and optionally logs in.
      *
-     * @Given /^I enter the app$/
+     * @When I enter the app
+     * @Given I entered the app as :username
      * @throws DriverException Issue with configuration or feature file
      * @throws dml_exception Problem with Moodle setup
      * @throws ExpectationException Problem with resizing window
      */
-    public function i_enter_the_app() {
+    public function i_enter_the_app(string $username = null) {
         $this->i_launch_the_app();
-        $this->enter_site();
+
+        if (!is_null($username)) {
+            $this->open_moodleapp_custom_login_url($username);
+
+            return;
+        }
+
+        if (!$this->is_in_login_page()) {
+            // Already in the site.
+            return;
+        }
+
+        global $CFG;
+
+        $this->i_set_the_field_in_the_app('Your site', $CFG->behat_wwwroot);
+        $this->i_press_in_the_app('"Connect to your site"');
+        $this->wait_for_pending_js();
     }
 
     /**
-     * Opens the Moodle App in the browser logged in as a user.
-     *
-     * @Given /^I enter(ed)? the app as "(.+)"$/
-     * @throws DriverException Issue with configuration or feature file
-     * @throws dml_exception Problem with Moodle setup
-     * @throws ExpectationException Problem with resizing window
+     * Check whether the current page is the login form.
      */
-    public function i_entered_the_app_as(bool $unused, string $username) {
-        $this->i_launch_the_app();
+    protected function is_in_login_page(): bool {
+        $page = $this->getSession()->getPage();
+        $logininput = $page->find('xpath', '//page-core-login-site//input[@name="url"]');
 
-        $this->open_moodleapp_custom_login_url($username);
+        return !is_null($logininput);
     }
 
     /**
      * Opens the Moodle App in the browser.
      *
-     * @Given /^I launch the app( runtime)?$/
+     * @When I launch the app :runtime
+     * @When I launch the app
      * @throws DriverException Issue with configuration or feature file
      * @throws dml_exception Problem with Moodle setup
      * @throws ExpectationException Problem with resizing window
@@ -158,7 +172,7 @@ class behat_app extends behat_base {
     }
 
     /**
-     * @Then /^I wait the app to restart$/
+     * @Then I wait the app to restart
      */
     public function i_wait_the_app_to_restart() {
         // Wait window to reload.
@@ -180,9 +194,6 @@ class behat_app extends behat_base {
      * Finds elements in the app.
      *
      * @Then /^I should( not)? find (".+")( inside the .+)? in the app$/
-     * @param bool $not
-     * @param string $locator
-     * @param string $containerName
      */
     public function i_find_in_the_app(bool $not, string $locator, string $containerName = '') {
         $locator = $this->parse_element_locator($locator);
@@ -558,19 +569,6 @@ class behat_app extends behat_base {
         $this->wait_for_pending_js();
     }
 
-    protected function enter_site() {
-        if (!$this->is_in_login_page()) {
-            // Already in the site.
-            return;
-        }
-
-        global $CFG;
-
-        $this->i_set_the_field_in_the_app('Your site', $CFG->behat_wwwroot);
-        $this->i_press_in_the_app('"Connect to your site"');
-        $this->wait_for_pending_js();
-    }
-
     /**
      * Carries out the login steps for the app, assuming the user is on the app login page. Called
      * from behat_auth.php.
@@ -591,7 +589,7 @@ class behat_app extends behat_base {
                 function($context, $args) {
                     $mainmenu = $context->getSession()->getPage()->find('xpath', '//page-core-mainmenu');
                     if ($mainmenu) {
-                        return 'mainpage';
+                        return true;
                     }
                     throw new DriverException('Moodle App main page not loaded after login');
                 }, false, 30);
@@ -601,16 +599,15 @@ class behat_app extends behat_base {
     }
 
     /**
-     * User enters a course in the app.
+     * Shortcut to  let the user enter a course in the app.
      *
-     * @Given /^I enter(ed)? the course "([^"]+)"(?: as "([^"]+)")? in the app$/
+     * @Given I entered the course :coursename as :username in the app
+     * @Given I entered the course :coursename in the app
      * @param string $coursename Course name
      * @throws DriverException If the button push doesn't work
      */
-    public function i_enter_the_course_in_the_app(bool $unused, string $coursename, ?string $username = null) {
-        global $DB;
-
-        $courseid = $DB->get_field('course', 'id', [ 'fullname' => $coursename]);
+    public function i_entered_the_course_in_the_app(string $coursename, ?string $username = null) {
+        $courseid = $this->get_course_id($coursename);
         if (!$courseid) {
             throw new DriverException("Course '$coursename' not found");
         }
@@ -625,30 +622,50 @@ class behat_app extends behat_base {
     }
 
     /**
-     * User enters an activity in a course in the app.
+     * User enters a course in the app.
      *
-     * @Given /^I enter(ed)? the (.+) activity "([^"]+)" on course "([^"]+)"(?: as "([^"]+)")? in the app$/
+     * @Given I enter the course :coursename in the app
      * @param string $coursename Course name
      * @throws DriverException If the button push doesn't work
      */
-    public function i_enter_the_activity_in_the_app(bool $unused, string $activity, string $activityname, string $coursename, ?string $username = null) {
-        global $DB;
-
-        $courseid = $DB->get_field('course', 'id', [ 'fullname' => $coursename]);
-        if (!$courseid) {
-            throw new DriverException("Course '$coursename' not found");
+    public function i_enter_the_course_in_the_app(string $coursename, ?string $username = null) {
+        if (!is_null($username)) {
+            $this->i_enter_the_app();
+            $this->login($username);
         }
 
-        if ($activity === 'assignment') {
-            $activity = 'assign';
+        $mycoursesfound = $this->evaluate_script("return window.behat.find({ text: 'My courses', selector: 'ion-tab-button'});");
+
+        if ($mycoursesfound !== 'OK') {
+            // My courses not present enter from Dashboard.
+            $this->i_press_in_the_app('"Home" "ion-tab-button"');
+            $this->i_press_in_the_app('"Dashboard"');
+            $this->i_press_in_the_app('"'.$coursename.'" near "Course overview"');
+
+            $this->wait_for_pending_js();
+
+            return;
         }
 
-        $module = $DB->get_record($activity, ['name' => $activityname, 'course' => $courseid ]);
-        if (!$module) {
+        $this->i_press_in_the_app('"My courses" "ion-tab-button"');
+        $this->i_press_in_the_app('"'.$coursename.'"');
+
+        $this->wait_for_pending_js();
+    }
+
+    /**
+     * User enters an activity in a course in the app.
+     *
+     * @Given I entered the :activity activity :activityname on course :course as :username in the app
+     * @Given I entered the :activity activity :activityname on course :course in the app
+     * @throws DriverException If the button push doesn't work
+     */
+    public function i_enter_the_activity_in_the_app(string $activity, string $activityname, string $coursename, ?string $username = null) {
+        $cm = $this->get_cm_by_activity_name_and_course($activity, $activityname, $coursename);
+        if (!$cm) {
             throw new DriverException("'$activityname' activity '$activityname' not found");
         }
 
-        $cm = get_coursemodule_from_instance($activity, $module->id);
         $pageurl = "/mod/$activity/view.php?id={$cm->id}";
 
         if ($username) {
@@ -663,7 +680,7 @@ class behat_app extends behat_base {
     /**
      * Presses standard buttons in the app.
      *
-     * @Given /^I press the (back|more menu|page menu|user menu|main menu) button in the app$/
+     * @When /^I press the (back|more menu|page menu|user menu|main menu) button in the app$/
      * @param string $button Button type
      * @throws DriverException If the button push doesn't work
      */
@@ -684,7 +701,7 @@ class behat_app extends behat_base {
     /**
      * Receives push notifications.
      *
-     * @Given /^I receive a push notification in the app for:$/
+     * @When /^I receive a push notification in the app for:$/
      * @param TableNode $data
      */
     public function i_receive_a_push_notification(TableNode $data) {
@@ -788,7 +805,7 @@ class behat_app extends behat_base {
     /**
      * Closes a popup by clicking on the 'backdrop' behind it.
      *
-     * @Given /^I close the popup in the app$/
+     * @When I close the popup in the app
      * @throws DriverException If there isn't a popup to close
      */
     public function i_close_the_popup_in_the_app() {
@@ -896,16 +913,6 @@ class behat_app extends behat_base {
     }
 
     /**
-     * Check whether the current page is the login form.
-     */
-    protected function is_in_login_page(): bool {
-        $page = $this->getSession()->getPage();
-        $logininput = $page->find('xpath', '//page-core-login-site//input[@name="url"]');
-
-        return !is_null($logininput);
-    }
-
-    /**
      * Sets a field to the given text value in the app.
      *
      * Currently this only works for input fields which must be identified using a partial or
@@ -966,7 +973,7 @@ class behat_app extends behat_base {
     /**
      * Check that the app opened a new browser tab.
      *
-     * @Given /^the app should( not)? have opened a browser tab(?: with url "(?P<pattern>[^"]+)")?$/
+     * @Then /^the app should( not)? have opened a browser tab(?: with url "(?P<pattern>[^"]+)")?$/
      * @param bool $not
      * @param string $urlpattern
      */
@@ -1009,7 +1016,7 @@ class behat_app extends behat_base {
      *
      * This assumes the app opened a new tab.
      *
-     * @Given /^I switch to the browser tab opened by the app$/
+     * @Given I switch to the browser tab opened by the app
      * @throws DriverException If there aren't exactly 2 tabs open
      */
     public function i_switch_to_the_browser_tab_opened_by_the_app() {
@@ -1023,7 +1030,7 @@ class behat_app extends behat_base {
     /**
      * Force cron tasks instead of waiting for the next scheduled execution.
      *
-     * @When /^I run cron tasks in the app$/
+     * @When I run cron tasks in the app
      */
     public function i_run_cron_tasks_in_the_app() {
         $session = $this->getSession();
@@ -1050,7 +1057,7 @@ class behat_app extends behat_base {
     /**
      * Wait until loading has finished.
      *
-     * @When /^I wait loading to finish in the app$/
+     * @When I wait loading to finish in the app
      */
     public function i_wait_loading_to_finish_in_the_app() {
         $session = $this->getSession();
@@ -1082,7 +1089,7 @@ class behat_app extends behat_base {
      *
      * This assumes it was opened by the app and you will now get back to the app.
      *
-     * @Given /^I close the browser tab opened by the app$/
+     * @Given I close the browser tab opened by the app
      * @throws DriverException If there aren't exactly 2 tabs open
      */
     public function i_close_the_browser_tab_opened_by_the_app() {
@@ -1339,4 +1346,48 @@ class behat_app extends behat_base {
         return !empty($mobilesettings->forcedurlscheme) ? $mobilesettings->forcedurlscheme : 'moodlemobile';
     }
 
+    /**
+     * Get a coursemodule from an activity name or idnumber with course.
+     *
+     * @param string $activity
+     * @param string $identifier
+     * @param string $coursename
+     * @return cm_info
+     */
+    protected function get_cm_by_activity_name_and_course(string $activity, string $identifier, string $coursename): cm_info {
+        global $DB;
+
+        $courseid = $this->get_course_id($coursename);
+        if (!$courseid) {
+            throw new DriverException("Course '$coursename' not found");
+        }
+
+        if ($activity === 'assignment') {
+            $activity = 'assign';
+        }
+
+        $cmtable = new \core\dml\table('course_modules', 'cm', 'cm');
+        $cmfrom = $cmtable->get_from_sql();
+
+        $acttable = new \core\dml\table($activity, 'a', 'a');
+        $actselect = $acttable->get_field_select();
+        $actfrom = $acttable->get_from_sql();
+
+        $sql = <<<EOF
+    SELECT cm.id as cmid
+      FROM {$cmfrom}
+INNER JOIN {modules} m ON m.id = cm.module AND m.name = :modname
+INNER JOIN {$actfrom} ON cm.instance = a.id AND cm.course = :courseid
+     WHERE cm.idnumber = :idnumber OR a.name = :name
+EOF;
+
+        $result = $DB->get_record_sql($sql, [
+            'modname' => $activity,
+            'idnumber' => $identifier,
+            'name' => $identifier,
+            'courseid' => $courseid,
+        ], MUST_EXIST);
+
+        return get_fast_modinfo($courseid)->get_cm($result->cmid);
+    }
 }
