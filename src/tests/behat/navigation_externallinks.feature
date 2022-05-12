@@ -20,8 +20,8 @@ Feature: It opens external links properly.
 
   # This test is flaky and may fail
   Scenario: Click an external link
-    When I enter the course "Course 1" as "student1" in the app
-    And I press "Test forum" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Test forum" in the app
     And I press "Forum topic" in the app
     And I press "moodle.org external link" in the app
     Then I should find "You are about to leave the app" in the app

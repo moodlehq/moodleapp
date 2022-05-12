@@ -35,9 +35,8 @@ Feature: Test basic usage of courses in app
       | assign   | C1     | assign1  | assignment          | Test assignment description | 1                                   |
 
   Scenario: "Dashboard" tab displayed
-    When I enter the app
-    And I log in as "student1"
-    Then I should see "Dashboard"
+    Given I entered the app as "student1"
+    When I should see "Dashboard"
     And the header should be "Acceptance test site" in the app
     And I should see "Timeline"
     And I press "Site home" in the app
@@ -50,9 +49,8 @@ Feature: Test basic usage of courses in app
     And I should find "Course 3" in the app
 
   Scenario: See my courses
-    When I enter the app
-    And I log in as "student1"
-    Then the header should be "Acceptance test site" in the app
+    Given I entered the app as "student1"
+    When the header should be "Acceptance test site" in the app
     And I press "My courses" in the app
     And I should find "Course 1" in the app
     And I should find "Course 2" in the app
@@ -78,9 +76,8 @@ Feature: Test basic usage of courses in app
     And the header should be "Course 3" in the app
 
   Scenario: Search for a course
-    When I enter the app
-    And I log in as "student1"
-    And I press "Search courses" in the app
+    Given I entered the app as "student1"
+    When I press "Search courses" in the app
     And I set the field "Search" to "Course 4" in the app
     And I press "Search" "button" in the app
     Then I should find "Course 4" in the app
@@ -102,8 +99,8 @@ Feature: Test basic usage of courses in app
   # TODO remove LMS UI steps in app tests
   Scenario: Links to actions in Timeline work for teachers/students
     # Configure assignment as teacher
-    When I enter the course "Course 1" as "teacher1" in the app
-    And I press "assignment" in the app
+    Given I entered the course "Course 1" as "teacher1" in the app
+    When I press "assignment" in the app
     And I press "Information" in the app
     And I press "Open in browser" in the app
     And I switch to the browser tab opened by the app
@@ -116,9 +113,8 @@ Feature: Test basic usage of courses in app
     And I close the browser tab opened by the app
 
     # Submit assignment as student
-    When I enter the app
-    And I log in as "student1"
-    And I press "Add submission" in the app
+    Given I entered the app as "student1"
+    When I press "Add submission" in the app
     Then the header should be "assignment" in the app
     And I should find "Test assignment description" in the app
     And I should find "No attempt" in the app
@@ -135,9 +131,8 @@ Feature: Test basic usage of courses in app
     And I should find "Due:" in the app
 
     # Grade assignment as teacher
-    When I enter the app
-    And I log in as "teacher1"
-    And I press "Grade" in the app
+    Given I entered the app as "teacher1"
+    When I press "Grade" in the app
     Then the header should be "assignment" in the app
     And I should find "Test assignment description" in the app
     And I should find "Time remaining" in the app

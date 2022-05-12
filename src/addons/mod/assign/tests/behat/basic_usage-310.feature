@@ -21,8 +21,8 @@ Feature: Test basic usage of assignment activity in app
 
   Scenario: View assign description, due date & View list of student submissions (as teacher) & View own submission or student submission
     # Create, edit and submit as a student
-    When I enter the course "Course 1" as "student1" in the app
-    And I press "assignment1" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "assignment1" in the app
     Then the header should be "assignment1" in the app
     And I should find "Test assignment description1" in the app
     And I should find "Due date" in the app
@@ -47,8 +47,8 @@ Feature: Test basic usage of assignment activity in app
     And I should find "Submission test edited" in the app
 
     # View as a teacher
-    When I enter the course "Course 1" as "teacher1" in the app
-    And I press "assignment1" in the app
+    Given I entered the course "Course 1" as "teacher1" in the app
+    When I press "assignment1" in the app
     Then the header should be "assignment1" in the app
 
     When I press "Submitted" in the app

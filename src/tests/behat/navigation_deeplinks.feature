@@ -24,9 +24,8 @@ Feature: It navigates properly using deep links.
       | defaulthomepage | 0 |             |
 
   Scenario: Receive a push notification
-    When I enter the app
-    And I log in as "student2"
-    And I press the user menu button in the app
+    Given I entered the app as "student2"
+    When I press the user menu button in the app
     And I press "Log out" in the app
     And I wait the app to restart
     And I press "Add" in the app
@@ -67,9 +66,8 @@ Feature: It navigates properly using deep links.
     And I should not find "Forum message" in the app
 
   Scenario: Open a link with a custom URL that calls WebServices for a logged out site
-    When I enter the app
-    And I log in as "student2"
-    And I press the user menu button in the app
+    Given I entered the app as "student2"
+    When I press the user menu button in the app
     And I press "Log out" in the app
     And I wait the app to restart
     And I open a custom link in the app for:

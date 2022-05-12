@@ -25,8 +25,7 @@ Feature: It navigates properly in pages with a split-view component.
   Scenario: Navigate in grades tab on mobile
 
     # Open user menu
-    Given I enter the app
-    And I log in as "student1"
+    Given I entered the app as "student1"
     And I press the user menu button in the app
 
     # Open grades page
@@ -76,9 +75,8 @@ Feature: It navigates properly in pages with a split-view component.
   Scenario: Navigate in grades tab on tablet
 
     # Open user menu
-    Given I enter the app
+    Given I entered the app as "student1"
     And I change viewport size to "1200x640"
-    And I log in as "student1"
     And I press the user menu button in the app
 
     # Open grades page

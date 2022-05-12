@@ -63,9 +63,8 @@ Feature: Test basic usage of login in app
     And I should find "Wrong Site Address" in the app
 
   Scenario: Delete an account
-    When I enter the app
-    And I log in as "student1"
-    And I press the user menu button in the app
+    Given I entered the app as "student1"
+    When I press the user menu button in the app
     And I press "Log out" in the app
     And I wait the app to restart
     Then I should find "Acceptance test site" in the app

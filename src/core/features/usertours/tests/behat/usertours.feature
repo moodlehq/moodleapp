@@ -17,9 +17,8 @@ Feature: User Tours work properly.
       | disableUserTours | false |
 
   Scenario: Acknowledge User Tours
-    When I enter the app
-    And I log in as "student1"
-    Then I should find "Explore your personal area" in the app
+    Given I entered the app as "student1"
+    When I should find "Explore your personal area" in the app
     But I should not find "Expand to explore" in the app
 
     When I press "Got it" in the app

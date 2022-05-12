@@ -20,9 +20,9 @@ Feature: Check course completion feature.
       | activity | name         | course | idnumber | completion | completionview |
       | forum    | First forum  | C1     | forum1   | 1          | 0              |
       | forum    | Second forum | C1     | forum2   | 1          | 0              |
-    When I enter the course "Course 1" as "student1" in the app
+    And I entered the course "Course 1" as "student1" in the app
     # Set activities as completed.
-    And I should find "0%" in the app
+    Then I should find "0%" in the app
     And I click on "ion-button[title=\"Not completed: First forum. Select to mark as complete.\"]" "css"
     And I should find "50%" in the app
     And I click on "ion-button[title=\"Not completed: Second forum. Select to mark as complete.\"]" "css"

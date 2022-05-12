@@ -88,7 +88,7 @@ Feature: Test glossary navigation
       | glossary | Watermelon | Watermelon is a fruit | student2 |
 
   Scenario: Mobile navigation
-    Given I enter the course "Course 1" as "student1" in the app
+    Given I entered the course "Course 1" as "student1" in the app
 
     # Alphabetically
     When I press "Fruits glossary" in the app
@@ -195,7 +195,7 @@ Feature: Test glossary navigation
     Then I should find "Acerola is a fruit" in the app
 
   Scenario: Tablet navigation
-    Given I enter the course "Course 1" as "student1" in the app
+    Given I entered the course "Course 1" as "student1" in the app
     And I change viewport size to "1200x640"
 
     # Alphabetically

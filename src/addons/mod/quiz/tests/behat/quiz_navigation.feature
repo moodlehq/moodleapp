@@ -30,10 +30,8 @@ Feature: Attempt a quiz in app
       | TF2      | 2    |
 
   Scenario: Next and previous navigation
-    Given I enter the app
-    And I log in as "student1"
-    When I enter the course "Course 1" in the app
-    And I press "Quiz 1" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Quiz 1" in the app
     And I press "Attempt quiz now" in the app
     Then I should find "Text of the first question" in the app
     But I should not find "Text of the second question" in the app

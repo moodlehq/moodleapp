@@ -36,7 +36,7 @@ Feature: Test assignments navigation
       | assignment | student3  | Ipsum      |
 
   Scenario: Mobile navigation
-    Given I enter the course "Course 1" as "teacher1" in the app
+    Given I entered the course "Course 1" as "teacher1" in the app
 
     # Initial status
     When I press "Assignment" in the app
@@ -150,7 +150,7 @@ Feature: Test assignments navigation
     And I should not find "Second Student" in the app
 
   Scenario: Tablet navigation
-    Given I enter the course "Course 1" as "teacher1" in the app
+    Given I entered the course "Course 1" as "teacher1" in the app
     And I change viewport size to "1200x640"
 
     # Initial status

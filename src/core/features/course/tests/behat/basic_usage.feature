@@ -72,7 +72,7 @@ Feature: Test basic usage of one course in app
       | workshop      | Test workshop name    | Test workshop     | C1     | workshop       | 0         | 3       |
 
   Scenario: View course contents
-    When I enter the course "Course 1" as "student1" in the app
+    When I entered the course "Course 1" as "student1" in the app
     Then the header should be "Course 1" in the app
     And I should find "Choice course 1" in the app
     And I should find "assignment" in the app
@@ -147,7 +147,7 @@ Feature: Test basic usage of one course in app
     Then the header should be "Test workshop name" in the app
 
   Scenario: View section contents
-    When I enter the course "Course 1" as "student1" in the app
+    When I entered the course "Course 1" as "student1" in the app
     Then the header should be "Course 1" in the app
     And I should find "Choice course 1" in the app
     And I should find "assignment" in the app
@@ -324,7 +324,7 @@ Feature: Test basic usage of one course in app
     Then the header should be "Test glossary" in the app
 
   Scenario: Navigation between sections using the bottom arrows
-    When I enter the course "Course 1" as "student1" in the app
+    When I entered the course "Course 1" as "student1" in the app
     Then the header should be "Course 1" in the app
     And I should find "Choice course 1" in the app
     And I should find "assignment" in the app
@@ -402,7 +402,7 @@ Feature: Test basic usage of one course in app
 
   @lms_from4.0
   Scenario: Self enrol
-    Given I enter the course "Course 1" as "teacher1" in the app
+    Given I entered the course "Course 1" as "teacher1" in the app
     And I press "Course summary" in the app
     And I press "Open in browser" in the app
     And I switch to the browser tab opened by the app
@@ -411,9 +411,8 @@ Feature: Test basic usage of one course in app
     And I select "Enrolment methods" from the "jump" singleselect
     And I click on "Enable" "icon" in the "Self enrolment (Student)" "table_row"
     And I close the browser tab opened by the app
-    When I enter the app
-    And I log in as "student2"
-    And I press "Site home" in the app
+    Given I entered the app as "student2"
+    When I press "Site home" in the app
     And I press "Available courses" in the app
     And I press "Course 1" in the app
     And I press "Enrol me" in the app
@@ -437,7 +436,7 @@ Feature: Test basic usage of one course in app
 
   @lms_from4.0
   Scenario: Guest access
-    Given I enter the course "Course 1" as "teacher1" in the app
+    Given I entered the course "Course 1" as "teacher1" in the app
     And I press "Course summary" in the app
     And I press "Open in browser" in the app
     And I switch to the browser tab opened by the app
@@ -446,9 +445,8 @@ Feature: Test basic usage of one course in app
     And I select "Enrolment methods" from the "jump" singleselect
     And I click on "Enable" "icon" in the "Guest access" "table_row"
     And I close the browser tab opened by the app
-    When I enter the app
-    And I log in as "student2"
-    And I press "Site home" in the app
+    Given I entered the app as "student2"
+    When I press "Site home" in the app
     And I press "Available courses" in the app
     And I press "Course 1" in the app
 
@@ -476,7 +474,7 @@ Feature: Test basic usage of one course in app
       | blockname        | contextlevel | reference | pagetypepattern | defaultregion | configdata                                                                                                   |
       | html             | Course       | C1        | course-view-*   | site-pre      | Tzo4OiJzdGRDbGFzcyI6Mjp7czo1OiJ0aXRsZSI7czoxNToiSFRNTCB0aXRsZSB0ZXN0IjtzOjQ6InRleHQiO3M6OToiYm9keSB0ZXN0Ijt9 |
       | activity_modules | Course       | C1        | course-view-*   | site-pre      |                                                                                                              |
-    When I enter the course "Course 1" as "student1" in the app
+    And I entered the course "Course 1" as "student1" in the app
     Then the header should be "Course 1" in the app
     And I should find "Choice course 1" in the app
     And I should find "assignment" in the app

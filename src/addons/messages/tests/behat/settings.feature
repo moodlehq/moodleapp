@@ -7,9 +7,8 @@ Feature: Test messages settings
       | student1 |
 
   Scenario: Modify settings
-    When I enter the app
-    And I log in as "student1"
-    And I press "Messages" in the app
+    Given I entered the app as "student1"
+    When I press "Messages" in the app
     And I press "Message preferences" in the app
     And I select "My contacts only" in the app
     Then "My contacts only" should be selected in the app

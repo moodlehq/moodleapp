@@ -21,9 +21,9 @@ Feature: Check course completion feature.
       | activity | name         | course | idnumber | completion | completionview |
       | forum    | First forum  | C1     | forum1   | 1          | 0              |
       | forum    | Second forum | C1     | forum2   | 1          | 0              |
-    When I enter the course "Course 1" as "student1" in the app
+    And I entered the course "Course 1" as "student1" in the app
     # Set activities as completed.
-    And I should find "0%" in the app
+    Then I should find "0%" in the app
     And I press "Mark First forum as done" in the app
     And I should find "50%" in the app
     And I press "Mark Second forum as done" in the app

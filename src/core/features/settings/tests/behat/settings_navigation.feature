@@ -7,8 +7,7 @@ Feature: It navigates properly within settings.
       | student1 |
 
   Scenario: Mobile navigation
-    Given I enter the app
-    And I log in as "student1"
+    Given I entered the app as "student1"
 
     # Settings
     When I press "More" in the app
@@ -47,8 +46,7 @@ Feature: It navigates properly within settings.
     Then I should find "Total space used" in the app
 
   Scenario: Tablet navigation
-    Given I enter the app
-    And I log in as "student1"
+    Given I entered the app as "student1"
     And I change viewport size to "1200x640"
 
     # Settings

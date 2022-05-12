@@ -21,17 +21,15 @@ Feature: Test course list shown on app start tab
 
   @lms_from4.0
   Scenario: View courses (shortnames not displayed)
-    When I enter the app
-    And I log in as "student1"
-    And I press "My courses" in the app
+    Given I entered the app as "student1"
+    When I press "My courses" in the app
     Then I should find "Course 1" in the app
     But I should not find "Course 2" in the app
     But I should not find "C1" in the app
     But I should not find "C2" in the app
 
-    When I enter the app
-    And I log in as "student2"
-    And I press "My courses" in the app
+    Given I entered the app as "student2"
+    When I press "My courses" in the app
     Then I should find "Course 1" in the app
     And I should find "Course 2" in the app
     But I should not find "C1" in the app
@@ -80,9 +78,8 @@ Feature: Test course list shown on app start tab
       | student2 | Z8     | student |
       | student2 | Z9     | student |
       | student2 | Z10    | student |
-    When I enter the app
-    And I log in as "student2"
-    And I press "My courses" in the app
+    Given I entered the app as "student2"
+    When I press "My courses" in the app
     Then I should find "C1" in the app
     And I should find "C2" in the app
     And I should find "C3" in the app

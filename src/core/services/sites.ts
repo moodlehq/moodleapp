@@ -557,14 +557,14 @@ export class CoreSitesProvider {
             }
 
             // Add site to sites list.
-            this.addSite(siteId, siteUrl, token, info, privateToken, config, oauthId);
+            await this.addSite(siteId, siteUrl, token, info, privateToken, config, oauthId);
             this.sites[siteId] = candidateSite;
 
             if (login) {
                 // Turn candidate site into current site.
                 this.currentSite = candidateSite;
                 // Store session.
-                this.login(siteId);
+                await this.login(siteId);
             } else if (this.currentSite && this.currentSite.getId() == siteId) {
                 // Current site has just been updated, trigger the event.
                 CoreEvents.trigger(CoreEvents.SITE_UPDATED, info, siteId);

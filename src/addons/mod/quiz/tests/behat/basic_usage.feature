@@ -56,8 +56,8 @@ Feature: Attempt a quiz in app
       | TF9      | 7    |
 
   Scenario: View a quiz entry page (attempts, status, etc.)
-    When I enter the course "Course 1" as "student1" in the app
-    And I press "Quiz 1" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Quiz 1" in the app
     And I press "Attempt quiz now" in the app
     Then I should find "Text of the first question" in the app
     But I should not find "Text of the second question" in the app
@@ -106,8 +106,8 @@ Feature: Attempt a quiz in app
     And I should find "Question 2" in the app
 
   Scenario: Attempt a quiz (all question types)
-    When I enter the course "Course 1" as "student1" in the app
-    And I press "Quiz 2" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Quiz 2" in the app
     And I press "Attempt quiz now" in the app
     And I press "Four" in the app
     And I press "Three" in the app
@@ -143,8 +143,8 @@ Feature: Attempt a quiz in app
     And I should find "Not yet graded" in the app
 
   Scenario: Submit a quiz & Review a quiz attempt
-    When I enter the course "Course 1" as "student1" in the app
-    And I press "Quiz 1" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Quiz 1" in the app
     And I press "Attempt quiz now" in the app
     And I press "True" in the app
     And I press "Next" near "Question 1" in the app
@@ -154,8 +154,8 @@ Feature: Attempt a quiz in app
     And I press "OK" in the app
     Then I should find "Review" in the app
 
-    When I enter the course "Course 1" as "teacher1" in the app
-    And I press "Quiz 1" in the app
+    Given I entered the course "Course 1" as "teacher1" in the app
+    When I press "Quiz 1" in the app
     And I press "Information" in the app
     And I press "Open in browser" in the app
     And I switch to the browser tab opened by the app

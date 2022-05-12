@@ -126,6 +126,20 @@ class behat_app extends behat_base {
     }
 
     /**
+     * Opens the Moodle app in the browser logged in as a user.
+     *
+     * @Given /^I enter(ed)? the app as "(.+)"$/
+     * @throws DriverException Issue with configuration or feature file
+     * @throws dml_exception Problem with Moodle setup
+     * @throws ExpectationException Problem with resizing window
+     */
+    public function i_entered_the_app_as(bool $unused, string $username) {
+        $this->i_launch_the_app();
+
+        $this->open_moodleapp_custom_login_url($username);
+    }
+
+    /**
      * Opens the Moodle app in the browser.
      *
      * @Given /^I launch the app( runtime)?$/
@@ -587,33 +601,27 @@ class behat_app extends behat_base {
     /**
      * User enters a course in the app.
      *
-     * @Given /^I enter the course "(.+?)"(?: as "(.+)")? in the app$/
+     * @Given /^I enter(ed)? the course "(.+?)"(?: as "(.+)")? in the app$/
      * @param string $coursename Course name
      * @throws DriverException If the button push doesn't work
      */
-    public function i_enter_the_course_in_the_app(string $coursename, ?string $username = null) {
-        if (!is_null($username)) {
-            $this->i_enter_the_app();
-            $this->login($username);
+    public function i_enter_the_course_in_the_app(bool $unused, string $coursename, ?string $username = null) {
+        global $DB;
+
+        $courseid = $DB->get_field('course', 'id', [ 'fullname' => $coursename]);
+        if (!$courseid) {
+            throw new DriverException("Course '$coursename' not found");
         }
 
-        $mycoursesfound = $this->evaluate_script("return window.behat.find({ text: 'My courses', selector: 'ion-tab-button'});");
+        if ($username) {
+            $this->i_launch_the_app();
 
-        if ($mycoursesfound !== 'OK') {
-            // My courses not present enter from Dashboard.
-            $this->i_press_in_the_app('"Home" "ion-tab-button"');
-            $this->i_press_in_the_app('"Dashboard"');
-            $this->i_press_in_the_app('"'.$coursename.'" near "Course overview"');
-
-            $this->wait_for_pending_js();
-
-            return;
+            $this->open_moodleapp_custom_login_url($username, "/course/view.php?id=$courseid", '//page-core-course-index');
+        } else {
+            $this->open_moodleapp_custom_url("/course/view.php?id=$courseid", '//page-core-course-index');
         }
 
-        $this->i_press_in_the_app('"My courses" "ion-tab-button"');
-        $this->i_press_in_the_app('"'.$coursename.'"');
 
-        $this->wait_for_pending_js();
     }
 
     /**
@@ -701,25 +709,21 @@ class behat_app extends behat_base {
         switch ($title) {
             case 'discussion':
                 $discussion = $DB->get_record('forum_discussions', ['name' => $data->discussion]);
-                $pageurl = "{$CFG->behat_wwwroot}/mod/forum/discuss.php?d={$discussion->id}";
+                $pageurl = "/mod/forum/discuss.php?d={$discussion->id}";
 
                 break;
 
             case 'forum':
                 $forumdata = $DB->get_record('forum', ['name' => $data->forum]);
                 $cm = get_coursemodule_from_instance('forum', $forumdata->id);
-                $pageurl = "{$CFG->behat_wwwroot}/mod/forum/view.php?id={$cm->id}";
+                $pageurl = "/mod/forum/view.php?id={$cm->id}";
                 break;
 
             default:
                 throw new DriverException('Invalid custom link title - ' . $title);
         }
 
-        $urlscheme = $this->get_mobile_url_scheme();
-        $url = "$urlscheme://link=" . urlencode($pageurl);
-
-        $this->evaluate_async_script("return window.behat.handleCustomURL('$url')");
-        $this->wait_for_pending_js();
+        $this->open_moodleapp_custom_url($pageurl);
     }
 
     /**
@@ -1163,6 +1167,98 @@ class behat_app extends behat_base {
         $this->evaluate_script("delete window.$promisevariable;");
 
         return $result;
+    }
+
+    /**
+     * Opens a custom URL for automatic login and redirect from the mobile app (and waits to finish.)
+     *
+     * @param string $username Of the user that needs to be logged in.
+     * @param string $path To redirect the user.
+     * @param string $successXPath If a path is declared, the XPath of the element to lookat after redirect.
+     */
+    private function open_moodleapp_custom_login_url($username, $path = '', string $successXPath = '') {
+        global $CFG, $DB;
+
+        require_once($CFG->libdir.'/externallib.php');
+        require_once($CFG->libdir.'/moodlelib.php');
+
+        // Ensure the user exists.
+        $userid = $DB->get_field('user', 'id', [ 'username' => $username ]);
+        if (!$userid) {
+            throw new DriverException("User '$username' not found");
+        }
+
+        // Get or create the user token.
+        $service = $DB->get_record('external_services', ['shortname' => 'moodle_mobile_app']);
+
+        $token_params = [
+            'userid' => $userid,
+            'externalserviceid' => $service->id,
+        ];
+        $usertoken = $DB->get_record('external_tokens', $token_params);
+        if (!$usertoken) {
+            $context = context_system::instance();
+            $token = external_generate_token(EXTERNAL_TOKEN_PERMANENT, $service, $userid, $context);
+            $token_params['token'] = $token;
+            $privatetoken = $DB->get_field('external_tokens', 'privatetoken', $token_params);
+        } else {
+            $token = $usertoken->token;
+            $privatetoken = $usertoken->privatetoken;
+        }
+
+        // Generate custom URL.
+        $parsed_url = parse_url($CFG->behat_wwwroot);
+        $domain = $parsed_url['host'];
+        $url = $this->get_mobile_url_scheme() . "://$username@$domain?token=$token&privatetoken=$privatetoken";
+
+        if (!empty($path)) {
+            $url .= '&redirect='.urlencode($CFG->behat_wwwroot.$path);
+        } else {
+            $successXPath = '//page-core-mainmenu';
+        }
+
+        $this->handle_url_and_wait_page_to_load($url, $successXPath);
+    }
+
+    /**
+     * Opens a custom URL on the mobile app (and waits to finish.)
+     *
+     * @param string $path To navigate.
+     * @param string $successXPath The XPath of the element to lookat after navigation.
+     */
+    private function open_moodleapp_custom_url(string $path, string $successXPath = '') {
+        global $CFG;
+
+        $urlscheme = $this->get_mobile_url_scheme();
+        $url = "$urlscheme://link=" . urlencode($CFG->behat_wwwroot.$path);
+
+        $this->handle_url_and_wait_page_to_load($url);
+    }
+
+    /**
+     * Handles the custom URL on the mobile app (and waits to finish.)
+     *
+     * @param string $customurl To navigate.
+     * @param string $successXPath The XPath of the element to lookat after navigation.
+     */
+    private function handle_url_and_wait_page_to_load(string $customurl, string $successXPath = '') {
+        // Instead of using evaluate_async_script, we wait for the path to load.
+        $this->evaluate_script("return window.behat.handleCustomURL('$customurl')");
+
+        if (!empty($successXPath)) {
+            // Wait until the page appears.
+            $this->spin(
+                function($context, $args) use ($successXPath) {
+                    $found = $context->getSession()->getPage()->find('xpath', $successXPath);
+                    if ($found) {
+                        return true;
+                    }
+                    throw new DriverException('Moodle App custom URL page not loaded');
+                }, false, 30);
+        }
+
+        // Wait for JS to finish as well.
+        $this->wait_for_pending_js();
     }
 
     /**

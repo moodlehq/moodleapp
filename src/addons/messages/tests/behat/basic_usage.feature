@@ -20,9 +20,8 @@ Feature: Test basic usage of messages in app
       | student2 | C1 | student |
 
   Scenario: View recent conversations and contacts
-    When I enter the app
-    And I log in as "teacher1"
-    And I press "Messages" in the app
+    Given I entered the app as "teacher1"
+    When I press "Messages" in the app
     And I press "Contacts" in the app
     Then I should find "No contacts" in the app
 
@@ -37,9 +36,8 @@ Feature: Test basic usage of messages in app
     And I press "Add" near "Are you sure you want to add Student1 student1 to your contacts?" in the app
     Then I should find "Contact request sent" in the app
 
-    When I enter the app
-    And I log in as "student1"
-    And I press "Messages" in the app
+    Given I entered the app as "student1"
+    When I press "Messages" in the app
     And I press "Contacts" in the app
     And I press "Requests" in the app
     And I press "Teacher teacher" in the app
@@ -57,9 +55,8 @@ Feature: Test basic usage of messages in app
     And I should find "heeey student" in the app
 
   Scenario: Search users
-    When I enter the app
-    And I log in as "student1"
-    And I press "Messages" in the app
+    Given I entered the app as "student1"
+    When I press "Messages" in the app
     And I press "Search people and messages" in the app
     And I set the field "Search" to "student2" in the app
     And I press "Search" "button" in the app
@@ -70,9 +67,8 @@ Feature: Test basic usage of messages in app
     Then I should find "Teacher teacher" in the app
 
   Scenario: Send/receive messages in existing conversations
-    When I enter the app
-    And I log in as "teacher1"
-    And I press "Messages" in the app
+    Given I entered the app as "teacher1"
+    When I press "Messages" in the app
     And I press "Contacts" in the app
     And I press "Search people and messages" in the app
     And I set the field "Search" to "student1" in the app
@@ -82,9 +78,8 @@ Feature: Test basic usage of messages in app
     And I press "Send" in the app
     Then I should find "heeey student" in the app
 
-    When I enter the app
-    And I log in as "student1"
-    And I press "Messages" in the app
+    Given I entered the app as "student1"
+    When I press "Messages" in the app
     And I press "Contacts" in the app
     And I press "Search people and messages" in the app
     And I set the field "Search" to "teacher" in the app
@@ -96,9 +91,8 @@ Feature: Test basic usage of messages in app
     And I press "Send" in the app
     Then I should find "hi" in the app
 
-    When I enter the app
-    And I log in as "teacher1"
-    And I press "Messages" in the app
+    Given I entered the app as "teacher1"
+    When I press "Messages" in the app
     And I press "Search people and messages" in the app
     And I set the field "Search" to "student1" in the app
     And I press "Search" "button" in the app
@@ -114,9 +108,8 @@ Feature: Test basic usage of messages in app
 
   # TODO Fix this test in all Moodle versions
   Scenario: User profile: send message, add/remove contact
-    When I enter the app
-    And I log in as "teacher1"
-    And I press "Messages" in the app
+    Given I entered the app as "teacher1"
+    When I press "Messages" in the app
     And I press "Contacts" in the app
     And I press "Search people and messages" in the app
     And I set the field "Search" to "student" in the app
@@ -131,9 +124,8 @@ Feature: Test basic usage of messages in app
     And I press "Add" in the app
     Then I should find "Contact request sent" in the app
 
-    When I enter the app
-    And I log in as "student1"
-    And I press "Messages" in the app
+    Given I entered the app as "student1"
+    When I press "Messages" in the app
     And I press "Contacts" in the app
     And I press "Requests" in the app
     And I press "Teacher teacher" in the app
@@ -165,9 +157,8 @@ Feature: Test basic usage of messages in app
     And I should not find "hi" in the app
 
   Scenario: Send message offline
-    When I enter the app
-    And I log in as "teacher1"
-    And I press "Messages" in the app
+    Given I entered the app as "teacher1"
+    When I press "Messages" in the app
     And I press "Contacts" in the app
     And I press "Search people and messages" in the app
     And I set the field "Search" to "student1" in the app
@@ -188,17 +179,15 @@ Feature: Test basic usage of messages in app
     Then I should find "heeey student" in the app
     And I should find "byee" in the app
 
-    When I enter the app
-    And I log in as "student1"
-    And I press "Messages" in the app
+    Given I entered the app as "student1"
+    When I press "Messages" in the app
     And I press "Teacher teacher" in the app
     Then I should find "heeey student" in the app
     And I should find "byee" in the app
 
   Scenario: Auto-sync messages
-    When I enter the app
-    And I log in as "teacher1"
-    And I press "Messages" in the app
+    Given I entered the app as "teacher1"
+    When I press "Messages" in the app
     And I press "Contacts" in the app
     And I press "Search people and messages" in the app
     And I set the field "Search" to "student1" in the app
@@ -213,17 +202,15 @@ Feature: Test basic usage of messages in app
 
     When I switch offline mode to "false"
     And I run cron tasks in the app
-    And I enter the app
-    And I log in as "student1"
+    And I enter the app as "student1"
     And I press "Messages" in the app
     And I press "Teacher teacher" in the app
     Then I should find "heeey student" in the app
     And I should find "byee" in the app
 
   Scenario: Search for messages
-    When I enter the app
-    And I log in as "teacher1"
-    And I press "Messages" in the app
+    Given I entered the app as "teacher1"
+    When I press "Messages" in the app
     And I press "Search people and messages" in the app
     And I set the field "Search" to "student1" in the app
     And I press "Search" "button" in the app
@@ -236,9 +223,8 @@ Feature: Test basic usage of messages in app
     And I press "Send" in the app
     Then I should find "search this message" in the app
 
-    When I enter the app
-    And I log in as "student1"
-    And I press "Messages" in the app
+    Given I entered the app as "student1"
+    When I press "Messages" in the app
     And I press "Search people and messages" in the app
     And I set the field "Search" to "search this message" in the app
     And I press "Search" "button" in the app
@@ -250,9 +236,8 @@ Feature: Test basic usage of messages in app
     And I should find "search this message" in the app
 
   Scenario: Star/Unstar
-    When I enter the app
-    And I log in as "teacher1"
-    And I press "Messages" in the app
+    Given I entered the app as "teacher1"
+    When I press "Messages" in the app
     And I press "Search people and messages" in the app
     And I set the field "Search" to "student1" in the app
     And I press "Search" "button" in the app
@@ -261,9 +246,8 @@ Feature: Test basic usage of messages in app
     And I press "Send" in the app
     Then I should find "star message" in the app
 
-    When I enter the app
-    And I log in as "student2"
-    And I press "Messages" in the app
+    Given I entered the app as "student2"
+    When I press "Messages" in the app
     And I press "Search people and messages" in the app
     And I set the field "Search" to "student1" in the app
     And I press "Search" "button" in the app
@@ -272,9 +256,8 @@ Feature: Test basic usage of messages in app
     And I press "Send" in the app
     Then I should find "test message student2" in the app
 
-    When I enter the app
-    And I log in as "student1"
-    And I press "Messages" in the app
+    Given I entered the app as "student1"
+    When I press "Messages" in the app
     Then I should find "Private (2)" in the app
     And I should find "Starred (1)" in the app
 
@@ -290,8 +273,8 @@ Feature: Test basic usage of messages in app
     And I should find "Student1 student1" in the app
 
   Scenario: User blocking feature
-    When I enter the course "Course 1" as "student2" in the app
-    And I press "Participants" in the app
+    Given I entered the course "Course 1" as "student2" in the app
+    When I press "Participants" in the app
     And I press "Student1 student1" in the app
     And I press "Message" in the app
     And I press "Display options" in the app
@@ -299,14 +282,14 @@ Feature: Test basic usage of messages in app
     And I press "Block user" near "Are you sure you want to block Student1 student1?" in the app
     Then I should find "You have blocked this user" in the app
 
-    When I enter the course "Course 1" as "student1" in the app
-    And I press "Participants" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Participants" in the app
     And I press "Student2 student2" in the app
     And I press "Message" in the app
     Then I should find "You are unable to message this user" in the app
 
-    When I enter the course "Course 1" as "student2" in the app
-    And I press "Participants" in the app
+    Given I entered the course "Course 1" as "student2" in the app
+    When I press "Participants" in the app
     And I press "Student1 student1" in the app
     And I press "Message" in the app
     And I press "Display options" in the app
@@ -317,8 +300,8 @@ Feature: Test basic usage of messages in app
     And I press "Unblock user" near "Are you sure you want to unblock Student1 student1?" in the app
     Then I should not find "You have blocked this user" in the app
 
-    When I enter the course "Course 1" as "student1" in the app
-    And I press "Participants" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Participants" in the app
     And I press "Student2 student2" in the app
     And I press "Message" in the app
     And I set the field "New message" to "test message" in the app
@@ -327,8 +310,8 @@ Feature: Test basic usage of messages in app
     But I should not find "You are unable to message this user" in the app
 
   Scenario: Mute Unmute conversations
-    When I enter the course "Course 1" as "student1" in the app
-    And I press "Participants" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Participants" in the app
     And I press "Student2 student2" in the app
     And I press "Message" in the app
     And I set the field "New message" to "test message" in the app
@@ -354,9 +337,8 @@ Feature: Test basic usage of messages in app
     And I should find "Muted conversation" in the app
 
   Scenario: Self conversations
-    When I enter the app
-    And I log in as "student1"
-    And I press "Messages" in the app
+    Given I entered the app as "student1"
+    When I press "Messages" in the app
     Then I should find "Starred (1)" in the app
 
     When I press "Student1 student1" in the app

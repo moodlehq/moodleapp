@@ -42,7 +42,7 @@ Feature: Test forum navigation
       | Discussion 05 | Discussion 05 | Discussion 05 first reply |
 
   Scenario: Mobile navigation
-    Given I enter the course "Course 1" as "student1" in the app
+    Given I entered the course "Course 1" as "student1" in the app
 
     # By last reply
     When I press "Forum" in the app
@@ -139,7 +139,7 @@ Feature: Test forum navigation
     # Then I should find "Discussion 20 message" in the app
 
   Scenario: Tablet navigation
-    Given I enter the course "Course 1" as "student1" in the app
+    Given I entered the course "Course 1" as "student1" in the app
     And I change viewport size to "1200x640"
 
     # By last reply

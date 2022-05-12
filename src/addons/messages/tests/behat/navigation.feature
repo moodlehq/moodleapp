@@ -15,9 +15,8 @@ Feature: Test messages navigation in the app
       | student | C1     | student        |
 
   Scenario: Avoid recursive links to profile
-    When I enter the app
-    And I log in as "teacher"
-    And I press "Messages" in the app
+    Given I entered the app as "teacher"
+    When I press "Messages" in the app
     And I press "Contacts" in the app
     And I press "Search people and messages" in the app
     And I set the field "Search" to "student" in the app

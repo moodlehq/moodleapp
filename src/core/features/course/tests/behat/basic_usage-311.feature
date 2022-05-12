@@ -72,7 +72,7 @@ Feature: Test basic usage of one course in app
       | workshop      | Test workshop name    | Test workshop     | C1     | workshop       | 0         | 3       |
 
   Scenario: Self enrol
-    Given I enter the course "Course 1" as "teacher1" in the app
+    Given I entered the course "Course 1" as "teacher1" in the app
     And I press "Course summary" in the app
     And I press "Open in browser" in the app
     And I switch to the browser tab opened by the app
@@ -83,9 +83,8 @@ Feature: Test basic usage of one course in app
     And I follow "Enrolment methods"
     And I click on "Enable" "icon" in the "Self enrolment (Student)" "table_row"
     And I close the browser tab opened by the app
-    When I enter the app
-    And I log in as "student2"
-    And I press "Site home" in the app
+    Given I entered the app as "student2"
+    When I press "Site home" in the app
     And I press "Available courses" in the app
     And I press "Course 1" in the app
     And I press "Enrol me" in the app
@@ -108,7 +107,7 @@ Feature: Test basic usage of one course in app
     And I should find "Test workshop name" in the app
 
   Scenario: Guest access
-    Given I enter the course "Course 1" as "teacher1" in the app
+    Given I entered the course "Course 1" as "teacher1" in the app
     And I press "Course summary" in the app
     And I press "Open in browser" in the app
     And I switch to the browser tab opened by the app
@@ -119,9 +118,8 @@ Feature: Test basic usage of one course in app
     And I follow "Enrolment methods"
     And I click on "Enable" "icon" in the "Guest access" "table_row"
     And I close the browser tab opened by the app
-    When I enter the app
-    And I log in as "student2"
-    And I press "Site home" in the app
+    Given I entered the app as "student2"
+    When I press "Site home" in the app
     And I press "Available courses" in the app
     And I press "Course 1" in the app
 

@@ -7,9 +7,8 @@ Feature: Plugins work properly.
       | studentusername  |
 
   Scenario: See more menu button
-    When I enter the app
-    And I log in as "studentusername"
-    And I press the more menu button in the app
+    Given I entered the app as "studentusername"
+    When I press the more menu button in the app
     Then I should find "Moodle App Behat (auto-generated)" in the app
 
     When I press "Moodle App Behat (auto-generated)" in the app

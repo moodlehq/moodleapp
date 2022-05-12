@@ -25,8 +25,8 @@ Feature: Test basic usage of forum activity in app
       | forum      | Test forum name | Test forum  | C1     | forum    | 0         | 1        | 1     |
 
   Scenario: Create new discussion
-    When I enter the course "Course 1" as "student1" in the app
-    And I press "Test forum name" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Test forum name" in the app
     And I press "Add discussion topic" in the app
     And I set the field "Subject" to "My happy subject" in the app
     And I set the field "Message" to "An awesome message" in the app
@@ -37,8 +37,8 @@ Feature: Test basic usage of forum activity in app
     Then I should find "An awesome message" in the app
 
   Scenario: Reply a post
-    When I enter the course "Course 1" as "student1" in the app
-    And I press "Test forum name" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Test forum name" in the app
     And I press "Add discussion topic" in the app
     And I set the field "Subject" to "DiscussionSubject" in the app
     And I set the field "Message" to "DiscussionMessage" in the app
@@ -53,8 +53,8 @@ Feature: Test basic usage of forum activity in app
     And I should find "ReplyMessage" in the app
 
   Scenario: Star and pin discussions (student)
-    When I enter the course "Course 1" as "student1" in the app
-    And I press "Test forum name" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Test forum name" in the app
     And I press "Add discussion topic" in the app
     And I set the field "Subject" to "starred subject" in the app
     And I set the field "Message" to "starred message" in the app
@@ -87,8 +87,8 @@ Feature: Test basic usage of forum activity in app
     Then I should find "normal message" in the app
 
   Scenario: Star and pin discussions (teacher)
-    When I enter the course "Course 1" as "teacher1" in the app
-    And I press "Test forum name" in the app
+    Given I entered the course "Course 1" as "teacher1" in the app
+    When I press "Test forum name" in the app
     And I press "Add discussion topic" in the app
     And I set the field "Subject" to "Auto-test star" in the app
     And I set the field "Message" to "Auto-test star message" in the app
@@ -117,8 +117,8 @@ Feature: Test basic usage of forum activity in app
     And I should find "Auto-test pin" in the app
 
   Scenario: Edit a not sent reply offline
-    When I enter the course "Course 1" as "student1" in the app
-    And I press "Test forum name" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Test forum name" in the app
     And I press "Add discussion topic" in the app
     And I set the field "Subject" to "Auto-test" in the app
     And I set the field "Message" to "Auto-test message" in the app
@@ -150,8 +150,8 @@ Feature: Test basic usage of forum activity in app
     And I should not find "This Discussion has offline data to be synchronised" in the app
 
   Scenario: Edit a not sent new discussion offline
-    When I enter the course "Course 1" as "student1" in the app
-    And I press "Test forum name" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Test forum name" in the app
     And I switch offline mode to "true"
     And I press "Add discussion topic" in the app
     And I set the field "Subject" to "Auto-test" in the app
@@ -173,8 +173,8 @@ Feature: Test basic usage of forum activity in app
     And I should find "Auto-test message edited" in the app
 
   Scenario: Edit a forum post (only online)
-    When I enter the course "Course 1" as "student1" in the app
-    And I press "Test forum name" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Test forum name" in the app
     And I press "Add discussion topic" in the app
     And I set the field "Subject" to "Auto-test" in the app
     And I set the field "Message" to "Auto-test message" in the app
@@ -200,8 +200,8 @@ Feature: Test basic usage of forum activity in app
 
   # TODO Fix this test in all Moodle versions
   Scenario: Delete a forum post (only online)
-    When I enter the course "Course 1" as "student1" in the app
-    And I press "Test forum name" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Test forum name" in the app
     And I press "Add discussion topic" in the app
     And I set the field "Subject" to "Auto-test" in the app
     And I set the field "Message" to "Auto-test message" in the app
@@ -233,7 +233,7 @@ Feature: Test basic usage of forum activity in app
     Then I should not find "Auto-test" in the app
 
   Scenario: Add/view ratings
-    Given I enter the course "Course 1" as "student1" in the app
+    Given I entered the course "Course 1" as "student1" in the app
     And I press "Test forum name" in the app
     And I press "Add discussion topic" in the app
     And I set the field "Subject" to "Auto-test" in the app
@@ -247,8 +247,8 @@ Feature: Test basic usage of forum activity in app
     And I press "Post to forum" in the app
     Then I should find "test2" "ion-card" in the app
 
-    When I enter the course "Course 1" as "teacher1" in the app
-    And I press "Test forum name" in the app
+    Given I entered the course "Course 1" as "teacher1" in the app
+    When I press "Test forum name" in the app
     And I press "Auto-test" in the app
     Then I should find "Reply" in the app
 
@@ -274,16 +274,16 @@ Feature: Test basic usage of forum activity in app
     And I should find "Average of ratings: 0" in the app
     But I should not find "Average of ratings: -" in the app
 
-    When I enter the course "Course 1" as "student1" in the app
-    And I press "Test forum name" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Test forum name" in the app
     And I press "Auto-test" in the app
     Then I should find "Average of ratings: 1" in the app
     And I should find "Average of ratings: 0" in the app
     But I should not find "Average of ratings: -" in the app
 
   Scenario: Reply a post offline
-    When I enter the course "Course 1" as "student1" in the app
-    And I press "Test forum name" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Test forum name" in the app
     And I press "Add discussion topic" in the app
     And I set the field "Subject" to "DiscussionSubject" in the app
     And I set the field "Message" to "DiscussionMessage" in the app
@@ -312,8 +312,8 @@ Feature: Test basic usage of forum activity in app
     But I should not find "Not sent" in the app
 
   Scenario: New discussion offline & Sync Forum
-    When I enter the course "Course 1" as "student1" in the app
-    And I press "Test forum name" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Test forum name" in the app
     And I switch offline mode to "true"
     And I press "Add discussion topic" in the app
     And I set the field "Subject" to "DiscussionSubject" in the app
@@ -335,8 +335,8 @@ Feature: Test basic usage of forum activity in app
     And I should not find "This Forum has offline data to be synchronised." in the app
 
   Scenario: New discussion offline & Auto-sync forum
-    When I enter the course "Course 1" as "student1" in the app
-    And I press "Test forum name" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Test forum name" in the app
     And I switch offline mode to "true"
     And I press "Add discussion topic" in the app
     And I set the field "Subject" to "DiscussionSubject" in the app
@@ -358,8 +358,8 @@ Feature: Test basic usage of forum activity in app
     And I should not find "This Forum has offline data to be synchronised." in the app
 
   Scenario: Prefetch
-    When I enter the course "Course 1" as "student1" in the app
-    And I press "Test forum name" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Test forum name" in the app
     And I press "Add discussion topic" in the app
     And I set the field "Subject" to "DiscussionSubject 1" in the app
     And I set the field "Message" to "DiscussionMessage 1" in the app
