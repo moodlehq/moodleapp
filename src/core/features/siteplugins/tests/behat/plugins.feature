@@ -10,7 +10,7 @@ Feature: Plugins work properly.
     When I enter the app
     And I log in as "studentusername"
     And I press the more menu button in the app
-    Then I should find "Moodle Mobile language strings" in the app
+    Then I should find "Moodle App Behat (auto-generated)" in the app
 
-    When I press "Moodle Mobile language strings" in the app
+    When I press "Moodle App Behat (auto-generated)" in the app
     Then I should find "studentusername" in the app

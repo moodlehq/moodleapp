@@ -19,6 +19,7 @@ Feature: Test basic usage of assignment activity in app
       | activity | course | idnumber | name                | intro                        | assignsubmission_onlinetext_enabled | duedate    | attemptreopenmethod |
       | assign   | C1     | assign1  | assignment1         | Test assignment description1 | 1                                   | 1029844800 | manual              |
 
+  @lms_from3.11
   Scenario: View assign description, due date & View list of student submissions (as teacher) & View own submission or student submission
     # Create, edit and submit as a student
     When I enter the course "Course 1" as "student1" in the app

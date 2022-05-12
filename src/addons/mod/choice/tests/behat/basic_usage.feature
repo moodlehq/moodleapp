@@ -165,6 +165,7 @@ Feature: Test basic usage of choice activity in app
     But I should not find "This Choice has offline data to be synchronised." in the app
 
   # TODO remove LMS UI steps in app tests
+  @lms_from4.0
   Scenario: Download students choice in text format
     # Submit answer as student
     Given the following "activities" exist:

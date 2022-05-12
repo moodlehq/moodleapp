@@ -198,6 +198,7 @@ Feature: Test basic usage of forum activity in app
     And I press "Save changes" in the app
     Then I should find "There was a problem connecting to the site. Please check your connection and try again." in the app
 
+  # TODO Fix this test in all Moodle versions
   Scenario: Delete a forum post (only online)
     When I enter the course "Course 1" as "student1" in the app
     And I press "Test forum name" in the app

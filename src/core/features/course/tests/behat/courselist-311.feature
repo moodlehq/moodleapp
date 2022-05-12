@@ -1,4 +1,4 @@
-@core @core_course @app @javascript
+@core @core_course @app @javascript @lms_upto3.11
 Feature: Test course list shown on app start tab
   In order to select a course
   As a student
@@ -19,11 +19,9 @@ Feature: Test course list shown on app start tab
       | student2 | C1     | student |
       | student2 | C2     | student |
 
-  @lms_from4.0
   Scenario: View courses (shortnames not displayed)
     When I enter the app
     And I log in as "student1"
-    And I press "My courses" in the app
     Then I should find "Course 1" in the app
     But I should not find "Course 2" in the app
     But I should not find "C1" in the app
@@ -31,13 +29,11 @@ Feature: Test course list shown on app start tab
 
     When I enter the app
     And I log in as "student2"
-    And I press "My courses" in the app
     Then I should find "Course 1" in the app
     And I should find "Course 2" in the app
     But I should not find "C1" in the app
     But I should not find "C2" in the app
 
-  @lms_from4.0
   Scenario: Filter courses
     Given the following config values are set as admin:
       | courselistshortnames | 1 |
@@ -82,7 +78,6 @@ Feature: Test course list shown on app start tab
       | student2 | Z10    | student |
     When I enter the app
     And I log in as "student2"
-    And I press "My courses" in the app
     Then I should find "C1" in the app
     And I should find "C2" in the app
     And I should find "C3" in the app

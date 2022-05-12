@@ -400,6 +400,7 @@ Feature: Test basic usage of one course in app
     And I should not find "Topic 1" in the app
     And I should not find "Topic 2" in the app
 
+  @lms_from4.0
   Scenario: Self enrol
     Given I enter the course "Course 1" as "teacher1" in the app
     And I press "Course summary" in the app
@@ -434,6 +435,7 @@ Feature: Test basic usage of one course in app
     And I should find "Test scorm name" in the app
     And I should find "Test workshop name" in the app
 
+  @lms_from4.0
   Scenario: Guest access
     Given I enter the course "Course 1" as "teacher1" in the app
     And I press "Course summary" in the app

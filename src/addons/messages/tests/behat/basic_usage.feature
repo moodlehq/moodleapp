@@ -112,6 +112,7 @@ Feature: Test basic usage of messages in app
     And I should find "hi" in the app
     And I should find "byee" in the app
 
+  # TODO Fix this test in all Moodle versions
   Scenario: User profile: send message, add/remove contact
     When I enter the app
     And I log in as "teacher1"

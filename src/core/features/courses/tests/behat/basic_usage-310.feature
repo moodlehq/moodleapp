@@ -1,4 +1,4 @@
-@mod @mod_courses @app @javascript
+@mod @mod_courses @app @javascript @lms_upto3.10
 Feature: Test basic usage of courses in app
   In order to participate in the courses while using the mobile app
   As a student
@@ -34,82 +34,17 @@ Feature: Test basic usage of courses in app
       | activity | course | idnumber | name                | intro                       | assignsubmission_onlinetext_enabled |
       | assign   | C1     | assign1  | assignment          | Test assignment description | 1                                   |
 
-  Scenario: "Dashboard" tab displayed
-    When I enter the app
-    And I log in as "student1"
-    Then I should see "Dashboard"
-    And the header should be "Acceptance test site" in the app
-    And I should see "Timeline"
-    And I press "Site home" in the app
-    Then I should find "Dashboard" in the app
-    And the header should be "Acceptance test site" in the app
-
-    When I press "My courses" in the app
-    Then I should find "Course 1" in the app
-    And I should find "Course 2" in the app
-    And I should find "Course 3" in the app
-
-  Scenario: See my courses
-    When I enter the app
-    And I log in as "student1"
-    Then the header should be "Acceptance test site" in the app
-    And I press "My courses" in the app
-    And I should find "Course 1" in the app
-    And I should find "Course 2" in the app
-    And I should find "Course 3" in the app
-
-    When I press "Course 1" in the app
-    Then I should find "Choice course 1" in the app
-    And the header should be "Course 1" in the app
-
-    When I press "Choice course 1" in the app
-    Then I should find "Test choice description" in the app
-    And the header should be "Choice course 1" in the app
-
-    When I press the back button in the app
-    And I press the back button in the app
-    And I press "Course 2" in the app
-    Then I should find "Choice course 2" in the app
-    And the header should be "Course 2" in the app
-
-    When I press the back button in the app
-    And I press "Course 3" in the app
-    Then I should find "Choice course 3" in the app
-    And the header should be "Course 3" in the app
-
-  Scenario: Search for a course
-    When I enter the app
-    And I log in as "student1"
-    And I press "Search courses" in the app
-    And I set the field "Search" to "Course 4" in the app
-    And I press "Search" "button" in the app
-    Then I should find "Course 4" in the app
-    And the header should be "Available courses" in the app
-
-    When I press "Course 4" in the app
-    Then I should find "Course 4" in the app
-    And I should find "Course summary" in the app
-
-    When I press the back button in the app
-    And I set the field "Search" to "Course" in the app
-    And I press "Search" "button" in the app
-    Then I should find "Course 1" in the app
-    And I should find "Course 2" in the app
-    And I should find "Course 3" in the app
-    And I should find "Course 4" in the app
-
-  @lms_from4.0
-  # TODO remove LMS UI steps in app tests
   Scenario: Links to actions in Timeline work for teachers/students
     # Configure assignment as teacher
-    When I enter the course "Course 1" as "teacher1" in the app
+    Given I enter the course "Course 1" as "teacher1" in the app
     And I press "assignment" in the app
     And I press "Information" in the app
     And I press "Open in browser" in the app
     And I switch to the browser tab opened by the app
     And I log in as "teacher1"
-    And I navigate to "Settings" in current page administration
-    And I click on "Expand all" "link"
+    And I press "Actions menu"
+    And I follow "Edit settings"
+    And I press "Expand all"
     And I click on "duedate[enabled]" "checkbox"
     And I click on "gradingduedate[enabled]" "checkbox"
     And I press "Save and return to course"
@@ -118,11 +53,12 @@ Feature: Test basic usage of courses in app
     # Submit assignment as student
     When I enter the app
     And I log in as "student1"
+    Then I press "Open block drawer" in the app
     And I press "Add submission" in the app
     Then the header should be "assignment" in the app
     And I should find "Test assignment description" in the app
     And I should find "No attempt" in the app
-    And I should find "Due:" in the app
+    And I should find "Due date" in the app
 
     When I press "Add submission" in the app
     And I set the field "Online text submissions" to "test" in the app
@@ -132,11 +68,12 @@ Feature: Test basic usage of courses in app
     Then the header should be "assignment" in the app
     And I should find "Test assignment description" in the app
     And I should find "Submitted for grading" in the app
-    And I should find "Due:" in the app
+    And I should find "Due date" in the app
 
     # Grade assignment as teacher
     When I enter the app
     And I log in as "teacher1"
+    Then I press "Open block drawer" in the app
     And I press "Grade" in the app
     Then the header should be "assignment" in the app
     And I should find "Test assignment description" in the app
