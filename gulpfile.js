@@ -71,5 +71,5 @@ gulp.task('watch', () => {
 });
 
 gulp.task('watch-behat', () => {
-    gulp.watch(['./tests/behat'], { interval: 500 }, gulp.parallel('behat'));
+    gulp.watch(['./src/**/*.feature', './local-moodleappbehat'], { interval: 500 }, gulp.parallel('behat'));
 });

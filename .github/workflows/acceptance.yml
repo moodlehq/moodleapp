@@ -1,9 +1,23 @@
-name: Performance
+name: Behat tests
 
-on: [ pull_request, workflow_dispatch ]
+on:
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: 'Execute tags'
+        required: true
+        default: '~@performance'
+      moodle_branch:
+        description: 'Moodle branch'
+        required: true
+        default: 'master'
+      moodle_repository:
+        description: 'Moodle repository'
+        required: true
+        default: 'https://github.com/moodle/moodle'
 
 jobs:
-  performance:
+  behat:
     runs-on: ubuntu-latest
     env:
       MOODLE_DOCKER_DB: pgsql
@@ -18,7 +32,7 @@ jobs:
         node-version: '${{ steps.nvmrc.outputs.node_version }}'
     - name: Additional checkouts
       run: |
-        git clone --branch master --depth 1 https://github.com/moodle/moodle $GITHUB_WORKSPACE/moodle
+        git clone --branch ${{ github.event.inputs.moodle_branch }} --depth 1 ${{ github.event.inputs.moodle_repository }} $GITHUB_WORKSPACE/moodle
         git clone --branch master --depth 1 https://github.com/moodlehq/moodle-docker $GITHUB_WORKSPACE/moodle-docker
     - name: Install npm packages
       run: |
@@ -32,31 +46,20 @@ jobs:
       run: |
         export MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle
         cp $GITHUB_WORKSPACE/moodle-docker/config.docker-template.php $GITHUB_WORKSPACE/moodle/config.php
-        sed -i "59i\        'capabilities' => [" $GITHUB_WORKSPACE/moodle/config.php
-        sed -i "60i\            'extra_capabilities' => [" $GITHUB_WORKSPACE/moodle/config.php
-        sed -i "61i\                'goog:loggingPrefs' => ['performance' => 'ALL']," $GITHUB_WORKSPACE/moodle/config.php
-        sed -i "62i\                'chromeOptions' => ['perfLoggingPrefs' => ['traceCategories' => 'devtools.timeline']]," $GITHUB_WORKSPACE/moodle/config.php
-        sed -i "63i\            ]," $GITHUB_WORKSPACE/moodle/config.php
-        sed -i "64i\        ]," $GITHUB_WORKSPACE/moodle/config.php
-        sed -i "76i\$CFG->behat_ionic_wwwroot = 'http://moodleapp';" $GITHUB_WORKSPACE/moodle/config.php
+        sed -i "61i\$CFG->behat_ionic_wwwroot = 'http://moodleapp';" $GITHUB_WORKSPACE/moodle/config.php
         $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose pull
         $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose up -d
         $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-wait-for-db
     - name: Compile & launch production app with Docker
       run: |
-        docker build -t moodlehq/moodleapp:performance .
-        docker run -d --rm --name moodleapp moodlehq/moodleapp:performance
+        docker build -t moodlehq/moodleapp:behat .
+        docker run -d --rm --name moodleapp moodlehq/moodleapp:behat
         docker network connect moodle-docker_default moodleapp --alias moodleapp
     - name: Init Behat
       run: |
         export MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle
         $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose exec -T webserver sh -c "php admin/tool/behat/cli/init.php"
-    - name: Run performance tests
+    - name: Run Behat tests
       run: |
         export MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle
-        for i in {0..2}
-        do
-          $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose exec -T webserver sh -c "php admin/tool/behat/cli/run.php --tags="@performance" --auto-rerun"
-        done
-    - name: Show performance results
-      run: node ./scripts/print-performance-measures.js $GITHUB_WORKSPACE/moodle/behatperformancemeasures/
+        $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose exec -T webserver sh -c "php admin/tool/behat/cli/run.php --verbose --tags='@app&&${{ github.event.inputs.tags }}' --auto-rerun"
