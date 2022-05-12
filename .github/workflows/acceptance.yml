@@ -1,0 +1,65 @@
+name: Behat tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: 'Execute tags'
+        required: true
+        default: '~@performance'
+      moodle_branch:
+        description: 'Moodle branch'
+        required: true
+        default: 'master'
+      moodle_repository:
+        description: 'Moodle repository'
+        required: true
+        default: 'https://github.com/moodle/moodle'
+
+jobs:
+  behat:
+    runs-on: ubuntu-latest
+    env:
+      MOODLE_DOCKER_DB: pgsql
+      MOODLE_DOCKER_BROWSER: chrome
+      MOODLE_DOCKER_PHP_VERSION: 7.3
+    steps:
+    - uses: actions/checkout@v2
+    - id: nvmrc
+      uses: browniebroke/read-nvmrc-action@v1
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '${{ steps.nvmrc.outputs.node_version }}'
+    - name: Additional checkouts
+      run: |
+        git clone --branch ${{ github.event.inputs.moodle_branch }} --depth 1 ${{ github.event.inputs.moodle_repository }} $GITHUB_WORKSPACE/moodle
+        git clone --branch master --depth 1 https://github.com/moodlehq/moodle-docker $GITHUB_WORKSPACE/moodle-docker
+    - name: Install npm packages
+      run: |
+        npm install -g npm@7
+        npm ci --no-audit
+    - name: Generate Behat tests plugin
+      run: |
+        export MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle
+        npx gulp behat
+    - name: Configure & launch Moodle with Docker
+      run: |
+        export MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle
+        cp $GITHUB_WORKSPACE/moodle-docker/config.docker-template.php $GITHUB_WORKSPACE/moodle/config.php
+        sed -i "61i\$CFG->behat_ionic_wwwroot = 'http://moodleapp';" $GITHUB_WORKSPACE/moodle/config.php
+        $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose pull
+        $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose up -d
+        $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-wait-for-db
+    - name: Compile & launch production app with Docker
+      run: |
+        docker build -t moodlehq/moodleapp:behat .
+        docker run -d --rm --name moodleapp moodlehq/moodleapp:behat
+        docker network connect moodle-docker_default moodleapp --alias moodleapp
+    - name: Init Behat
+      run: |
+        export MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle
+        $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose exec -T webserver sh -c "php admin/tool/behat/cli/init.php"
+    - name: Run Behat tests
+      run: |
+        export MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle
+        $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose exec -T webserver sh -c "php admin/tool/behat/cli/run.php --verbose --tags='@app&&${{ github.event.inputs.tags }}' --auto-rerun"
