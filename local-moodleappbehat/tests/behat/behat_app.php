@@ -72,6 +72,8 @@ class behat_app extends behat_base {
     /** @var array Config overrides */
     protected $appconfig = ['disableUserTours' => true];
 
+    protected $windowsize = '360x720';
+
     /**
      * Register listener.
      *
@@ -147,7 +149,13 @@ class behat_app extends behat_base {
     public function i_wait_the_app_to_restart() {
         // Wait window to reload.
         $this->spin(function() {
-            return $this->evaluate_script("return !window.behat;");
+            $result = $this->evaluate_script("return !window.behat;");
+
+            if (!$result) {
+                throw new DriverException('Window is not reloading properly.');
+            }
+
+            return true;
         });
 
         // Prepare testing runtime again.
@@ -164,15 +172,14 @@ class behat_app extends behat_base {
      */
     public function i_find_in_the_app(bool $not, string $locator, string $containerName = '') {
         $locator = $this->parse_element_locator($locator);
-        $locatorjson = json_encode($locator);
         if (!empty($containerName)) {
             preg_match('/^ inside the (.+)$/', $containerName, $matches);
             $containerName = $matches[1];
         }
         $containerName = json_encode($containerName);
 
-        $this->spin(function() use ($not, $locatorjson, $containerName) {
-            $result = $this->evaluate_script("return window.behat.find($locatorjson, $containerName);");
+        $this->spin(function() use ($not, $locator, $containerName) {
+            $result = $this->evaluate_script("return window.behat.find($locator, $containerName);");
 
             if ($not && $result === 'OK') {
                 throw new DriverException('Error, found an item that should not be found');
@@ -196,10 +203,9 @@ class behat_app extends behat_base {
      */
     public function i_scroll_to_in_the_app(string $locator) {
         $locator = $this->parse_element_locator($locator);
-        $locatorjson = json_encode($locator);
 
-        $this->spin(function() use ($locatorjson) {
-            $result = $this->evaluate_script("return window.behat.scrollTo($locatorjson);");
+        $this->spin(function() use ($locator) {
+            $result = $this->evaluate_script("return window.behat.scrollTo($locator);");
 
             if ($result !== 'OK') {
                 throw new DriverException('Error finding item - ' . $result);
@@ -224,7 +230,7 @@ class behat_app extends behat_base {
         $this->spin(function() use ($not) {
             $result = $this->evaluate_async_script('return window.behat.loadMoreItems();');
 
-            if ($not && $result !== 'ERROR: All items are already loaded') {
+            if ($not && $result !== 'ERROR: All items are already loaded.') {
                 throw new DriverException('It should not have been possible to load more items');
             }
 
@@ -247,7 +253,7 @@ class behat_app extends behat_base {
     public function i_swipe_in_the_app(string $direction) {
         $method = 'swipe' . ucwords($direction);
 
-        $this->evaluate_script("behat.getAngularInstance('ion-content', 'CoreSwipeNavigationDirective').$method()");
+        $this->evaluate_script("window.behat.getAngularInstance('ion-content', 'CoreSwipeNavigationDirective').$method()");
 
         // Wait swipe animation to finish.
         $this->getSession()->wait(300);
@@ -262,10 +268,9 @@ class behat_app extends behat_base {
      */
     public function be_selected_in_the_app(string $locator, bool $not = false) {
         $locator = $this->parse_element_locator($locator);
-        $locatorjson = json_encode($locator);
 
-        $this->spin(function() use ($locatorjson, $not) {
-            $result = $this->evaluate_script("return window.behat.isSelected($locatorjson);");
+        $this->spin(function() use ($locator, $not) {
+            $result = $this->evaluate_script("return window.behat.isSelected($locator);");
 
             switch ($result) {
                 case 'YES':
@@ -347,8 +352,8 @@ class behat_app extends behat_base {
         // Enable mobile service.
         require_once($CFG->dirroot . '/webservice/lib.php');
         $webservicemanager = new webservice();
-        $service = $webservicemanager->get_external_service_by_shortname(
-                MOODLE_OFFICIAL_MOBILE_SERVICE, MUST_EXIST);
+        $service = $webservicemanager->get_external_service_by_shortname(MOODLE_OFFICIAL_MOBILE_SERVICE, MUST_EXIST);
+
         if (!$service->enabled) {
             $service->enabled = 1;
             $webservicemanager->update_external_service($service);
@@ -474,7 +479,7 @@ class behat_app extends behat_base {
 
             // Restart the browser and set its size.
             $this->getSession()->restart();
-            $this->resize_window('360x720', true);
+            $this->resize_window($this->windowsize, true);
 
             if (empty($this->ionicurl)) {
                 $this->ionicurl = $this->start_or_reuse_ionic();
@@ -502,14 +507,13 @@ class behat_app extends behat_base {
             throw new DriverException('Moodle app not found in browser');
         }, false, 60);
 
-        // Inject Behat JavaScript runtime.
-        global $CFG;
+        try {
+            // Init Behat JavaScript runtime.
+            $this->execute_script('window.behatInit();');
+        } catch (Exception $error) {
+            throw new DriverException('Moodle app not running or not running on Automated mode.');
+        }
 
-        $this->execute_script("
-            var script = document.createElement('script');
-            script.src = '{$CFG->behat_wwwroot}/local/moodleappbehat/tests/behat/app_behat_runtime.js';
-            document.body.append(script);
-        ");
 
         if ($restart) {
             // Assert initial page.
@@ -609,11 +613,11 @@ class behat_app extends behat_base {
             $this->login($username);
         }
 
-        $mycoursesfound = $this->evaluate_script("return window.behat.find({ text: 'My courses', near: { text: 'Messages' } });");
+        $mycoursesfound = $this->evaluate_script("return window.behat.find({ text: 'My courses', selector: 'ion-tab-button'});");
 
         if ($mycoursesfound !== 'OK') {
             // My courses not present enter from Dashboard.
-            $this->i_press_in_the_app('"Home" near "Messages"');
+            $this->i_press_in_the_app('"Home" "ion-tab-button"');
             $this->i_press_in_the_app('"Dashboard"');
             $this->i_press_in_the_app('"'.$coursename.'" near "Course overview"');
 
@@ -622,7 +626,7 @@ class behat_app extends behat_base {
             return;
         }
 
-        $this->i_press_in_the_app('"My courses" near "Messages"');
+        $this->i_press_in_the_app('"My courses" "ion-tab-button"');
         $this->i_press_in_the_app('"'.$coursename.'"');
 
         $this->wait_for_pending_js();
@@ -777,10 +781,9 @@ class behat_app extends behat_base {
      */
     public function i_press_in_the_app(string $locator) {
         $locator = $this->parse_element_locator($locator);
-        $locatorjson = json_encode($locator);
 
-        $this->spin(function() use ($locatorjson) {
-            $result = $this->evaluate_script("return window.behat.press($locatorjson);");
+        $this->spin(function() use ($locator) {
+            $result = $this->evaluate_script("return window.behat.press($locator);");
 
             if ($result !== 'OK') {
                 throw new DriverException('Error pressing item - ' . $result);
@@ -807,27 +810,26 @@ class behat_app extends behat_base {
     public function i_select_in_the_app(string $selectedtext, string $locator) {
         $selected = $selectedtext === 'select' ? 'YES' : 'NO';
         $locator = $this->parse_element_locator($locator);
-        $locatorjson = json_encode($locator);
 
-        $this->spin(function() use ($selectedtext, $selected, $locatorjson) {
+        $this->spin(function() use ($selectedtext, $selected, $locator) {
             // Don't do anything if the item is already in the expected state.
-            $result = $this->evaluate_script("return window.behat.isSelected($locatorjson);");
+            $result = $this->evaluate_script("return window.behat.isSelected($locator);");
 
             if ($result === $selected) {
                 return true;
             }
 
             // Press item.
-            $result = $this->evaluate_script("return window.behat.press($locatorjson);");
+            $result = $this->evaluate_script("return window.behat.press($locator);");
 
             if ($result !== 'OK') {
                 throw new DriverException('Error pressing item - ' . $result);
             }
 
             // Check that it worked as expected.
-            usleep(1000000);
+            $this->wait_for_pending_js();
 
-            $result = $this->evaluate_script("return window.behat.isSelected($locatorjson);");
+            $result = $this->evaluate_script("return window.behat.isSelected($locator);");
 
             switch ($result) {
                 case 'YES':
@@ -1045,7 +1047,7 @@ class behat_app extends behat_base {
             $this->getSession()->switchToWindow($names[1]);
         }
 
-        $this->execute_script('window.close()');
+        $this->execute_script('window.close();');
         $this->getSession()->switchToWindow($names[0]);
     }
 
@@ -1064,10 +1066,14 @@ class behat_app extends behat_base {
      * Parse an element locator string.
      *
      * @param string $text Element locator string.
-     * @return object
+     * @return JSON of the locator.
      */
-    public function parse_element_locator(string $text): object {
-        preg_match('/^"((?:[^"]|\\")*?)"(?: "([^"]*?)")?(?: (near|within) "((?:[^"]|\\")*?)"(?: "([^"]*?)")?)?$/', $text, $matches);
+    public function parse_element_locator(string $text): string {
+        preg_match(
+            '/^"((?:[^"]|\\")*?)"(?: "([^"]*?)")?(?: (near|within) "((?:[^"]|\\")*?)"(?: "([^"]*?)")?)?$/',
+            $text,
+            $matches
+        );
 
         $locator = [
             'text' => str_replace('\\"', '"', $matches[1]),
@@ -1081,7 +1087,7 @@ class behat_app extends behat_base {
             ];
         }
 
-        return (object) $locator;
+        return json_encode((object) $locator);
     }
 
     /**
@@ -1143,7 +1149,7 @@ class behat_app extends behat_base {
     }
 
     /**
-     * Evaludate a script that returns a Promise.
+     * Evaluate a script that returns a Promise.
      *
      * @param string $script
      * @return mixed Resolved promise result.
