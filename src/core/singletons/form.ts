@@ -70,7 +70,7 @@ export class CoreForms {
 
         CoreEvents.trigger(CoreEvents.FORM_ACTION, {
             action: CoreEventFormAction.CANCEL,
-            form: formRef.nativeElement,
+            form: formRef.nativeElement || formRef,
         }, siteId);
     }
 
