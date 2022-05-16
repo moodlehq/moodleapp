@@ -59,16 +59,7 @@ class behat_app extends behat_app_helper {
             return;
         }
 
-        if (!$this->is_in_login_page()) {
-            // Already in the site.
-            return;
-        }
-
-        global $CFG;
-
-        $this->i_set_the_field_in_the_app('Your site', $CFG->behat_wwwroot);
-        $this->i_press_in_the_app('"Connect to your site"');
-        $this->wait_for_pending_js();
+        $this->enter_site();
     }
 
     /**
@@ -275,6 +266,22 @@ class behat_app extends behat_app_helper {
                 }, false, 30);
 
         // Wait for JS to finish as well.
+        $this->wait_for_pending_js();
+    }
+
+    /**
+     * Enter site.
+     */
+    protected function enter_site() {
+        if (!$this->is_in_login_page()) {
+            // Already in the site.
+            return;
+        }
+
+        global $CFG;
+
+        $this->i_set_the_field_in_the_app('Your site', $CFG->wwwroot);
+        $this->i_press_in_the_app('"Connect to your site"');
         $this->wait_for_pending_js();
     }
 
