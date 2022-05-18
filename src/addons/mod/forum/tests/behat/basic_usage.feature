@@ -247,7 +247,7 @@ Feature: Test basic usage of forum activity in app
     And I switch offline mode to "true"
     And I press "None" near "test2" in the app
     And I press "0" near "Cancel" in the app
-    Then I should find "Data stored in the device because it couldn't be sent. It will be sent automatically later." inside the toast in the app
+    Then I should find "Data stored in the device because it couldn't be sent. It will be sent automatically later." in the app
     And I should find "Average of ratings: -" in the app
     And I should find "Average of ratings: 1" in the app
 
