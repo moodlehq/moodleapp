@@ -16,9 +16,11 @@ import { CoreApp, CoreAppProvider } from '@services/app';
 import { CoreConfig, CoreConfigProvider } from '@services/config';
 import { CoreDB, CoreDbProvider } from '@services/db';
 import { CoreCustomURLSchemes, CoreCustomURLSchemesProvider } from '@services/urlschemes';
+import { CoreBrowser } from '@singletons/browser';
 import { CoreConstants } from '../constants';
 
 type DevelopmentWindow = Window & {
+    browser?: typeof CoreBrowser;
     appProvider?: CoreAppProvider;
     configProvider?: CoreConfigProvider;
     dbProvider?: CoreDbProvider;
@@ -26,6 +28,7 @@ type DevelopmentWindow = Window & {
 };
 
 function initializeDevelopmentWindow(window: DevelopmentWindow) {
+    window.browser = CoreBrowser;
     window.appProvider = CoreApp.instance;
     window.configProvider = CoreConfig.instance;
     window.dbProvider = CoreDB.instance;
