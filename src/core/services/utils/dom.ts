@@ -1792,12 +1792,12 @@ export class CoreDomUtilsProvider {
 
         const { waitForDismissCompleted, ...popoverOptions } = options;
         const popover = await PopoverController.create(popoverOptions);
-        const zoomLevel = await CoreConfig.get(CoreConstants.SETTINGS_ZOOM_LEVEL, CoreZoomLevel.NORMAL);
+        const zoomLevel = await CoreConfig.get(CoreConstants.SETTINGS_ZOOM_LEVEL, CoreConstants.CONFIG.defaultZoomLevel);
 
         await popover.present();
 
         // Fix popover position if zoom is applied.
-        if (zoomLevel !== CoreZoomLevel.NORMAL) {
+        if (zoomLevel !== CoreZoomLevel.NONE) {
             switch (getMode()) {
                 case 'ios':
                     fixIOSPopoverPosition(popover, options.event);

@@ -23,6 +23,7 @@ import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSites } from './sites';
 import { CoreUtils, PromiseDefer } from './utils/utils';
 import { CoreApp } from './app';
+import { CoreZoomLevel } from '@features/settings/services/settings-helper';
 
 const VERSION_APPLIED = 'version_applied';
 
@@ -69,6 +70,10 @@ export class CoreUpdateManagerProvider {
 
         if (versionCode >= 3950 && versionApplied < 3950 && versionApplied > 0) {
             promises.push(CoreH5P.h5pPlayer.deleteAllContentIndexes());
+        }
+
+        if (versionCode >= 41000 && versionApplied < 41000 && versionApplied > 0) {
+            promises.push(this.upgradeFontSizeNames());
         }
 
         try {
@@ -119,6 +124,19 @@ export class CoreUpdateManagerProvider {
                 },
             },
         });
+    }
+
+    protected async upgradeFontSizeNames(): Promise<void> {
+        const storedFontSizeName = await CoreConfig.get(CoreConstants.SETTINGS_ZOOM_LEVEL);
+        switch (storedFontSizeName) {
+            case 'low':
+                await CoreConfig.set(CoreConstants.SETTINGS_ZOOM_LEVEL, CoreZoomLevel.NONE);
+                break;
+
+            case 'normal':
+                await CoreConfig.set(CoreConstants.SETTINGS_ZOOM_LEVEL, CoreZoomLevel.MEDIUM);
+                break;
+        }
     }
 
 }
