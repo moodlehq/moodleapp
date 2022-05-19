@@ -28,6 +28,28 @@ export class CoreBrowser {
     }
 
     /**
+     * Check whether a development setting is set.
+     *
+     * @param name Setting name.
+     * @returns Whether the development setting is set.
+     */
+    static hasDevelopmentSetting(name: string): boolean {
+        const setting = this.getDevelopmentSettingKey(name);
+
+        return this.hasCookie(setting) || this.hasLocalStorage(setting);
+    }
+
+    /**
+     * Check whether the given localStorage key is set.
+     *
+     * @param key localStorage key.
+     * @returns Whether the key is set.
+     */
+    static hasLocalStorage(key: string): boolean {
+        return localStorage.getItem(key) !== null;
+    }
+
+    /**
      * Read a cookie.
      *
      * @param name Cookie name.
@@ -43,6 +65,62 @@ export class CoreBrowser {
         }, {});
 
         return cookies[name] ?? null;
+    }
+
+    /**
+     * Read a localStorage key.
+     *
+     * @param key localStorage key.
+     * @return localStorage value.
+     */
+    static getLocalStorage(key: string): string | null {
+        return localStorage.getItem(key);
+    }
+
+    /**
+     * Get development setting value.
+     *
+     * @param name Setting name.
+     * @returns Development setting value.
+     */
+    static getDevelopmentSetting(name: string): string | null {
+        const setting = this.getDevelopmentSettingKey(name);
+
+        return this.getCookie(setting) ?? this.getLocalStorage(setting);
+    }
+
+    /**
+     * Set development setting.
+     *
+     * @param name Setting name.
+     * @param value Setting value.
+     */
+    static setDevelopmentSetting(name: string, value: string): void {
+        const setting = this.getDevelopmentSettingKey(name);
+
+        document.cookie = `${setting}=${value};path=/`;
+        localStorage.setItem(setting, value);
+    }
+
+    /**
+     * Unset development setting.
+     *
+     * @param name Setting name.
+     */
+    static clearDevelopmentSetting(name: string): void {
+        const setting = this.getDevelopmentSettingKey(name);
+
+        document.cookie = `${setting}=;path=/;expires=Thu, 01 Jan 1970 00:00:01 GMT`;
+        localStorage.removeItem(setting);
+    }
+
+    /**
+     * Get development setting key.
+     *
+     * @param name Development setting name.
+     */
+    protected static getDevelopmentSettingKey(name: string): string {
+        return `MoodleApp${name}`;
     }
 
 }
