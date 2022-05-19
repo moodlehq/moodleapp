@@ -69,7 +69,7 @@ export class CoreLogger {
     static getInstance(className: string): CoreLogger {
         // Disable log on production and testing.
         if (
-            !CoreBrowser.hasCookie('MoodleAppLoggingEnabled') &&
+            !CoreBrowser.hasDevelopmentSetting('LoggingEnabled') &&
             (CoreConstants.BUILD.isProduction || CoreConstants.BUILD.isTesting)
         ) {
             if (CoreConstants.BUILD.isProduction) {
