@@ -108,7 +108,7 @@ export class CoreCustomURLSchemesProvider {
 
         // Some platforms like Windows add a slash at the end. Remove it.
         // Some sites add a # at the end of the URL. If it's there, remove it.
-        url = url.replace(/\/?#?\/?$/, '');
+        url = url.replace(/\/?(#.*)?\/?$/, '');
 
         const modal = await CoreDomUtils.showModalLoading();
         let data: CoreCustomURLSchemesParams;
