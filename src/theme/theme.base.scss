@@ -1725,3 +1725,8 @@ ion-header.no-title {
         bottom: 0;
     }
 }
+
+// Fix subtitles wider than video.
+video::-webkit-media-text-track-display {
+    white-space: normal !important;
+}
