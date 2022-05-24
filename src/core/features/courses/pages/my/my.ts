@@ -20,6 +20,7 @@ import { CoreCoursesDashboard, CoreCoursesDashboardProvider } from '@features/co
 import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
 import { IonRefresher } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
+import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreCourses } from '../../services/courses';
@@ -90,7 +91,9 @@ export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy {
                 await CoreUtils.nextTicks(2);
 
                 this.myOverviewBlock = this.block?.dynamicComponent?.instance as AddonBlockMyOverviewComponent;
-            } catch {
+            } catch (error) {
+                CoreDomUtils.showErrorModal(error);
+
                 // Cannot get the blocks, just show the block if needed.
                 this.loadFallbackBlock();
             }
