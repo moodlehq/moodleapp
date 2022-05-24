@@ -29,7 +29,6 @@ import { CoreFilepool, CoreFilepoolFileActions, CoreFilepoolFileEventData } from
 import { CoreSites } from '@services/sites';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
-import { Platform } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreError } from '@classes/errors/error';
 import { CoreSite } from '@classes/site';
@@ -304,12 +303,10 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
                         return;
                     }
 
-                    const line = Platform.is('tablet') || CoreApp.isAndroid() ? 90 : 80;
                     // Position all subtitles to a percentage of video height.
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    Array.from(track.cues).forEach((cue: any) => {
+                    Array.from(track.cues).forEach((cue: VTTCue) => {
                         cue.snapToLines = false;
-                        cue.line = line;
+                        cue.line = 90;
                         cue.size = 100; // This solves some Android issue.
                     });
                     // Delete listener.

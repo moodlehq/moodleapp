@@ -201,11 +201,11 @@ export class CoreConfigProvider {
      * Load development config overrides.
      */
     protected loadDevelopmentConfig(): void {
-        if (!CoreConstants.enableDevTools() || !CoreBrowser.hasCookie('MoodleAppConfig')) {
+        if (!CoreConstants.enableDevTools() || !CoreBrowser.hasDevelopmentSetting('Config')) {
             return;
         }
 
-        this.patchEnvironment(JSON.parse(CoreBrowser.getCookie('MoodleAppConfig') ?? '{}'), { patchDefault: true });
+        this.patchEnvironment(JSON.parse(CoreBrowser.getDevelopmentSetting('Config') ?? '{}'), { patchDefault: true });
     }
 
     /**

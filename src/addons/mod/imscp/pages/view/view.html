@@ -28,9 +28,7 @@
             </ion-item>
         </ion-card>
 
-        <div class="addon-mod-imscp-container">
-            <core-iframe *ngIf="loaded" [src]="src" [showFullscreenOnToolbar]="true" [autoFullscreenOnRotate]="true"></core-iframe>
-        </div>
+        <core-iframe *ngIf="loaded" [src]="src" [showFullscreenOnToolbar]="true" [autoFullscreenOnRotate]="true"></core-iframe>
     </core-loading>
 
     <core-navigation-bar collapsible-footer appearOnBottom *ngIf="loaded && navigationItems.length > 1" [items]="navigationItems"
