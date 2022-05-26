@@ -95,51 +95,80 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
      * @param options Other options.
      * @return Promise resolved with array of posts.
      */
-    protected getPostsForPrefetch(
+    protected async getPostsForPrefetch(
         forum: AddonModForumData,
         options: CoreCourseCommonModWSOptions = {},
     ): Promise<AddonModForumPost[]> {
-        const promises = AddonModForum.getAvailableSortOrders().map((sortOrder) => {
+        // Only prefetch selected sort order.
+        const sortOrder = await AddonModForum.getSelectedSortOrder();
+
+        const groupsIds = await this.getGroupsIdsToPrefetch(forum);
+
+        const results = await Promise.all(groupsIds.map(async (groupId) => {
             // Get discussions in first 2 pages.
             const discussionsOptions = {
                 sortOrder: sortOrder.value,
+                groupId: groupId,
                 numPages: 2,
                 ...options, // Include all options.
             };
 
-            return AddonModForum.getDiscussionsInPages(forum.id, discussionsOptions).then((response) => {
-                if (response.error) {
-                    throw new Error('Failed getting discussions');
-                }
+            const response = await AddonModForum.getDiscussionsInPages(forum.id, discussionsOptions);
 
-                const promises: Promise<{ posts: AddonModForumPost[] }>[] = [];
+            if (response.error) {
+                throw new Error('Failed getting discussions');
+            }
 
-                response.discussions.forEach((discussion) => {
-                    promises.push(AddonModForum.getDiscussionPosts(discussion.discussion, options));
+            return await Promise.all(
+                response.discussions.map((discussion) => AddonModForum.getDiscussionPosts(discussion.discussion, options)),
+            );
+        }));
+
+        const posts: AddonModForumPost[] = [];
+        const postIds: Record<number, boolean> = {}; // To make the array unique.
+
+        results.forEach((groupResults) => {
+            groupResults.forEach((groupDiscussion) => {
+                groupDiscussion.posts.forEach((post) => {
+                    if (!postIds[post.id]) {
+                        postIds[post.id] = true;
+                        posts.push(post);
+                    }
                 });
-
-                return Promise.all(promises);
             });
         });
 
-        return Promise.all(promises).then((results) => {
-            // Each order has returned its own list of posts. Merge all the lists, preventing duplicates.
-            const posts: AddonModForumPost[] = [];
-            const postIds = {}; // To make the array unique.
+        return posts;
+    }
 
-            results.forEach((orderResults) => {
-                orderResults.forEach((orderResult) => {
-                    orderResult.posts.forEach((post) => {
-                        if (!postIds[post.id]) {
-                            postIds[post.id] = true;
-                            posts.push(post);
-                        }
-                    });
-                });
-            });
+    /**
+     * Get the group IDs to prefetch in a forum.
+     * Prefetch all participants if the user can view them. Otherwise, prefetch the groups the user can view.
+     *
+     * @param forum Forum instance.
+     * @return Promise resolved with array of group IDs.
+     */
+    protected async getGroupsIdsToPrefetch(forum: AddonModForumData): Promise<number[]> {
+        const groupInfo = await CoreGroups.getActivityGroupInfo(forum.cmid);
 
-            return posts;
-        });
+        const supportsChangeGroup = AddonModForum.isGetDiscussionPostsAvailable();
+        const usesGroups = !!(groupInfo.separateGroups || groupInfo.visibleGroups);
+
+        if (!usesGroups) {
+            return [0];
+        }
+
+        const allPartsGroup = groupInfo.groups?.find(group => group.id === 0);
+        if (allPartsGroup) {
+            return [0]; // Prefetch all participants.
+        }
+
+        if (!supportsChangeGroup) {
+            // Cannot change group, prefetch only the default group.
+            return [groupInfo.defaultGroupId];
+        }
+
+        return groupInfo.groups?.map(group => group.id) ?? [0];
     }
 
     /**
@@ -225,11 +254,6 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
         // Prefetch access information.
         promises.push(AddonModForum.getAccessInformation(forum.id, modOptions));
 
-        // Prefetch sort order preference.
-        if (AddonModForum.isDiscussionListSortingAvailable()) {
-            promises.push(CoreUser.getUserPreference(AddonModForumProvider.PREFERENCE_SORTORDER, siteId));
-        }
-
         // Get course data, needed to determine upload max size if it's configured to be course limit.
         promises.push(CoreUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));
 
@@ -269,34 +293,15 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
 
             // Activity uses groups, prefetch allowed groups.
             const result = await CoreGroups.getActivityAllowedGroups(forum.cmid, undefined, siteId);
-            if (mode === CoreGroupsProvider.SEPARATEGROUPS) {
-                // Groups are already filtered by WS. Prefetch canAddDiscussionToAll to determine if user can pin/attach.
-                await CoreUtils.ignoreErrors(AddonModForum.canAddDiscussionToAll(forum.id, options));
-
-                return;
-            }
-
-            if (canCreateDiscussions) {
-                // Prefetch data to check the visible groups when creating discussions.
-                const response = await CoreUtils.ignoreErrors(
-                    AddonModForum.canAddDiscussionToAll(forum.id, options),
-                    { status: false },
-                );
-
-                if (response.status) {
-                    // User can post to all groups, nothing else to prefetch.
-                    return;
-                }
-
-                // The user can't post to all groups, let's check which groups he can post to.
-                await Promise.all(
-                    result.groups.map(
-                        async (group) => CoreUtils.ignoreErrors(
-                            AddonModForum.canAddDiscussion(forum.id, group.id, options),
-                        ),
+            await Promise.all(
+                result.groups.map(
+                    async (group) => CoreUtils.ignoreErrors(
+                        AddonModForum.canAddDiscussion(forum.id, group.id, options),
                     ),
-                );
-            }
+                ).concat(
+                    CoreUtils.ignoreErrors(AddonModForum.canAddDiscussionToAll(forum.id, options)),
+                ),
+            );
         } catch (error) {
             // Ignore errors if cannot create discussions.
             if (canCreateDiscussions) {

@@ -45,6 +45,8 @@
     "numreplies": "{{numreplies}} replies",
     "pindiscussion": "Pin this discussion",
     "pinupdated": "The pin option has been updated.",
+    "postaddedsuccess": "Your post was successfully added.",
+    "postingroup": "Posting in group \"{{groupname}}\".",
     "postisprivatereply": "This is a private reply. It is only visible to you and anyone with the capability to view private replies, such as teachers or managers.",
     "posttoforum": "Post to forum",
     "posttomygroups": "Post a copy to all groups",

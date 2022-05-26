@@ -49,7 +49,7 @@
                     <ion-label id="addon-mod-forum-groupslabel">{{ 'addon.mod_forum.group' | translate }}</ion-label>
                     <ion-select [(ngModel)]="newDiscussion.groupId" [disabled]="newDiscussion.postToAllGroups"
                         aria-labelledby="addon-mod-forum-groupslabel" interface="action-sheet" name="groupid"
-                        [interfaceOptions]="{header: 'addon.mod_forum.group' | translate}">
+                        [interfaceOptions]="{header: 'addon.mod_forum.group' | translate}" (ionChange)="calculateGroupName()">
                         <ion-select-option *ngFor="let group of groups" [value]="group.id">{{ group.name }}</ion-select-option>
                     </ion-select>
                 </ion-item>
@@ -66,7 +66,11 @@
                     [allowOffline]="true" [courseId]="courseId">
                 </core-attachments>
             </div>
-            <ion-item>
+            <ion-item *ngIf="showGroups && groupName && !newDiscussion.postToAllGroups" class="addon-forum-group-info">
+                <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
+                <ion-label>{{ 'addon.mod_forum.postingroup' | translate:{groupname: groupName} }}</ion-label>
+            </ion-item>
+            <ion-item class="addon-forum-new-discussion-buttons">
                 <ion-label>
                     <ion-row>
                         <ion-col *ngIf="hasOffline">

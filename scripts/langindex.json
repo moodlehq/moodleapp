@@ -654,6 +654,8 @@
   "addon.mod_forum.numreplies": "local_moodlemobileapp",
   "addon.mod_forum.pindiscussion": "forum",
   "addon.mod_forum.pinupdated": "forum",
+  "addon.mod_forum.postaddedsuccess": "forum",
+  "addon.mod_forum.postingroup": "local_moodlemobileapp",
   "addon.mod_forum.postisprivatereply": "forum",
   "addon.mod_forum.posttoforum": "forum",
   "addon.mod_forum.posttomygroups": "forum",
