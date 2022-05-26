@@ -39,6 +39,7 @@ export interface EnvironmentConfig {
     wsservice: string;
     demo_sites: Record<string, CoreSitesDemoSiteData>;
     zoomlevels: Record<CoreZoomLevel, number>;
+    defaultZoomLevel?: CoreZoomLevel; // Set the default zoom level of the app.
     customurlscheme: string;
     siteurl: string;
     sitename: string;

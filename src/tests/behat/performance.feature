@@ -81,13 +81,7 @@ Feature: Measure performance.
     Then "Login" should have taken less than 10 seconds
 
   Scenario: Open Activity
-    When I launch the app
-    Then I should see "Connect to Moodle"
-    But I should not see "Welcome to the Moodle App!"
-
-    And I set the field "Your site" to "$WWWROOT" in the app
-    And I press "Connect to your site" in the app
-    And I log in as "student1"
+    Given I entered the app as "student1"
     Then I press "My courses" in the app
     And I should find "Course 1" in the app
 

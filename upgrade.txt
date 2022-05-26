@@ -1,6 +1,10 @@
 This files describes API changes in the Moodle Mobile app,
 information provided here is intended especially for developers.
 
+=== 4.0.1 ===
+
+- Zoom levels changed from "normal / low / high" to " none / medium / high".
+
 === 4.0.0 ===
 
 - The versioncode in moodle.config.json has changed from 4 digits to 5 digits to match the actual value for the stores: the 4.0.0 version's versioncode is now 40000 instead of 4000. If you maintain a Moodle plugin with mobile support and you use the versioncode that is sent in every request, you might need to check if this change will affect your code.

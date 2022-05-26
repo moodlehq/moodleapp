@@ -32,6 +32,7 @@ import { JitCompilerFactory } from '@angular/platform-browser-dynamic';
 import { CoreCronDelegate } from '@services/cron';
 import { CoreSiteInfoCronHandler } from '@services/handlers/site-info-cron';
 import { moodleTransitionAnimation } from '@classes/page-transition';
+import { BehatTestingModule } from '@/testing/behat-testing.module';
 
 // For translate loader. AoT requires an exported function for factories.
 export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
@@ -59,6 +60,7 @@ export function createTranslateLoader(http: HttpClient): TranslateHttpLoader {
         AppRoutingModule,
         CoreModule,
         AddonsModule,
+        BehatTestingModule,
     ],
     providers: [
         { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
