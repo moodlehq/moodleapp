@@ -1353,14 +1353,15 @@ export class CoreSitesProvider {
      * Mark a site as logged out so the user needs to authenticate again.
      *
      * @param siteId ID of the site.
+     * @param isLoggedOut True if logged out and needs to authenticate again, false otherwise.
      * @return Promise resolved when done.
      */
-    protected async setSiteLoggedOut(siteId: string): Promise<void> {
+    async setSiteLoggedOut(siteId: string, isLoggedOut: boolean = true): Promise<void> {
         const site = await this.getSite(siteId);
 
-        site.setLoggedOut(true);
+        site.setLoggedOut(isLoggedOut);
 
-        await this.sitesTable.update({ loggedOut: 1 }, { id: siteId });
+        await this.sitesTable.update({ loggedOut: isLoggedOut ? 1 : 0 }, { id: siteId });
     }
 
     /**
