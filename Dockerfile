@@ -6,7 +6,6 @@ WORKDIR /app
 # Prepare node dependencies
 RUN apt-get update && apt-get install libsecret-1-0 -y
 COPY package*.json ./
-RUN npm install -g npm@7
 RUN npm ci --no-audit
 
 # Build source
