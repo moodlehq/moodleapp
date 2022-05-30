@@ -89,7 +89,10 @@ export class TestingBehatDomUtilsService {
         text: string,
         options: TestingBehatFindOptions,
     ): ElementsWithExact[] {
-        const attributesSelector = `[aria-label*="${text}"], a[title*="${text}"], img[alt*="${text}"], [placeholder*="${text}"]`;
+        // Escape double quotes to prevent breaking the query selector.
+        const escapedText = text.replace(/"/g, '\\"');
+        const attributesSelector = `[aria-label*="${escapedText}"], a[title*="${escapedText}"], ` +
+            `img[alt*="${escapedText}"], [placeholder*="${escapedText}"]`;
 
         const elements = Array.from(container.querySelectorAll<HTMLElement>(attributesSelector))
             .filter((element => this.isElementVisible(element, container)))
