@@ -420,30 +420,42 @@ class behat_app extends behat_app_helper {
     /**
      * Receives push notifications.
      *
-     * @When /^I receive a push notification in the app for:$/
+     * @When /^I click a push notification in the app for:$/
      * @param TableNode $data Table data
      */
-    public function i_receive_a_push_notification(TableNode $data) {
+    public function i_click_a_push_notification(TableNode $data) {
         global $DB, $CFG;
 
         $data = (object) $data->getColumnsHash()[0];
-        $module = $DB->get_record('course_modules', ['idnumber' => $data->module]);
-        $discussion = $DB->get_record('forum_discussions', ['name' => $data->discussion]);
+
+        if (isset($data->module, $data->discussion)) {
+            $module = $DB->get_record('course_modules', ['idnumber' => $data->module]);
+            $discussion = $DB->get_record('forum_discussions', ['name' => $data->discussion]);
+            $data->name = 'posts';
+            $data->component = 'mod_forum';
+        }
+
         $notification = json_encode([
             'site' => md5($CFG->behat_wwwroot . $data->username),
-            'courseid' => $discussion->course,
-            'moodlecomponent' => 'mod_forum',
-            'name' => 'posts',
+            'subject' => $data->subject ?? null,
+            'userfrom' => $data->userfrom ?? null,
+            'userto' => $data->username ?? null,
+            'message' => $data->message ?? '',
+            'title' => $data->title ?? '',
+            'image' => $data->image ?? null,
+            'courseid' => $discussion->course ?? null,
+            'moodlecomponent' => $data->component ?? null,
+            'name' => $data->name ?? null,
             'contexturl' => '',
             'notif' => 1,
-            'customdata' => [
-                'discussionid' => $discussion->id,
-                'cmid' => $module->id,
-                'instance' => $discussion->forum,
-            ],
+            'customdata' => isset($discussion->id, $module->id, $discussion->forum)
+                ? ['discussionid' => $discussion->id, 'cmid' => $module->id, 'instance' => $discussion->forum]
+                : null,
+            'additionalData' => isset($data->subject) || isset($data->userfrom)
+                ? ['foreground' => true, 'notId' => 23, 'notif' => 1] : null,
         ]);
 
-        $this->zone_js("pushNotifications.notificationClicked($notification)", true);
+        $this->evaluate_script("pushNotifications.notificationClicked($notification)", true);
         $this->wait_for_pending_js();
     }
 
