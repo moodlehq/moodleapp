@@ -888,18 +888,13 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
      *
      * @return Resolved when done.
      */
-    protected waitForFetch(): Promise<void> {
+    protected async waitForFetch(): Promise<void> {
         if (!this.fetching) {
-            return Promise.resolve();
+            return;
         }
 
-        const deferred = CoreUtils.promiseDefer<void>();
-
-        setTimeout(() => this.waitForFetch().finally(() => {
-            deferred.resolve();
-        }), 400);
-
-        return deferred.promise;
+        await CoreUtils.wait(400);
+        await CoreUtils.ignoreErrors(this.waitForFetch());
     }
 
     /**

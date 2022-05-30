@@ -1304,16 +1304,15 @@ export class CoreCourseProvider {
             }
 
             // Wait for plugins to be loaded.
-            const deferred = CoreUtils.promiseDefer<void>();
+            await new Promise((resolve, reject) => {
+                const observer = CoreEvents.on(CoreEvents.SITE_PLUGINS_LOADED, () => {
+                    observer?.off();
 
-            const observer = CoreEvents.on(CoreEvents.SITE_PLUGINS_LOADED, () => {
-                observer?.off();
-
-                CoreCourseFormatDelegate.openCourse(<CoreCourseAnyCourseData> course, navOptions)
-                    .then(deferred.resolve).catch(deferred.reject);
+                    CoreCourseFormatDelegate.openCourse(<CoreCourseAnyCourseData> course, navOptions).then(resolve).catch(reject);
+                });
             });
 
-            return deferred.promise;
+            return;
         } catch (error) {
             // The site plugin failed to load. The user needs to restart the app to try loading it again.
             const message = Translate.instant('core.courses.errorloadplugins');

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CorePromisedValue } from '@classes/promised-value';
 import {
     CoreSitePlugins,
     CoreSitePluginsContent,
@@ -26,7 +27,6 @@ import {
     CoreUserProfileHandlerData,
 } from '@features/user/services/user-delegate';
 import { CoreNavigator } from '@services/navigator';
-import { CoreUtils, PromiseDefer } from '@services/utils/utils';
 import { Md5 } from 'ts-md5';
 import { CoreSitePluginsBaseHandler } from './base-handler';
 
@@ -38,7 +38,7 @@ export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandle
     priority: number;
     type: string;
 
-    protected updatingDefer?: PromiseDefer<void>;
+    protected updatingDefer?: CorePromisedValue<void>;
 
     constructor(
         name: string,
@@ -130,7 +130,7 @@ export class CoreSitePluginsUserProfileHandler extends CoreSitePluginsBaseHandle
      * Mark init being updated.
      */
     updatingInit(): void {
-        this.updatingDefer = CoreUtils.promiseDefer();
+        this.updatingDefer = new CorePromisedValue();
     }
 
 }

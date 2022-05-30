@@ -32,7 +32,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUrlUtils, CoreUrlParams } from '@services/utils/url';
-import { CoreUtils, CoreUtilsOpenInBrowserOptions, PromiseDefer } from '@services/utils/utils';
+import { CoreUtils, CoreUtilsOpenInBrowserOptions } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreError } from '@classes/errors/error';
@@ -46,6 +46,7 @@ import { asyncInstance, AsyncInstance } from '../utils/async-instance';
 import { CoreDatabaseTable } from './database/database-table';
 import { CoreDatabaseCachingStrategy } from './database/database-table-proxy';
 import { CoreSilentError } from './errors/silenterror';
+import { CorePromisedValue } from '@classes/promised-value';
 
 /**
  * QR Code type enumeration.
@@ -779,7 +780,7 @@ export class CoreSite {
         if (preSets.reusePending) {
             const request = this.requestQueue.find((request) => request.cacheId == cacheId);
             if (request) {
-                return request.deferred.promise;
+                return request.deferred;
             }
         }
 
@@ -789,7 +790,7 @@ export class CoreSite {
             data,
             preSets,
             wsPreSets,
-            deferred: CoreUtils.promiseDefer(),
+            deferred: new CorePromisedValue(),
         };
 
         return this.enqueueRequest(request);
@@ -813,7 +814,7 @@ export class CoreSite {
             );
         }
 
-        return request.deferred.promise;
+        return request.deferred;
     }
 
     /**
@@ -2291,7 +2292,7 @@ type RequestQueueItem<T = any> = {
     data: any; // eslint-disable-line @typescript-eslint/no-explicit-any
     preSets: CoreSiteWSPreSets;
     wsPreSets: CoreWSPreSets;
-    deferred: PromiseDefer<T>;
+    deferred: CorePromisedValue<T>;
 };
 
 /**

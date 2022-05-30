@@ -154,6 +154,7 @@ import { ADDON_PRIVATEFILES_SERVICES } from '@addons/privatefiles/privatefiles.m
 // Import some addon modules that define components, directives and pipes. Only import the important ones.
 import { AddonModAssignComponentsModule } from '@addons/mod/assign/components/components.module';
 import { AddonModWorkshopComponentsModule } from '@addons/mod/workshop/components/components.module';
+import { CorePromisedValue } from '@classes/promised-value';
 
 /**
  * Service to provide functionalities regarding compiling dynamic HTML and Javascript.
@@ -352,6 +353,7 @@ export class CoreCompileProvider {
         instance['CoreWindow'] = CoreWindow;
         instance['CoreCache'] = CoreCache;
         instance['CoreDelegate'] = CoreDelegate;
+        instance['CorePromisedValue'] = CorePromisedValue;
         instance['CoreContentLinksHandlerBase'] = CoreContentLinksHandlerBase;
         instance['CoreContentLinksModuleGradeHandler'] = CoreContentLinksModuleGradeHandler;
         instance['CoreContentLinksModuleIndexHandler'] = CoreContentLinksModuleIndexHandler;

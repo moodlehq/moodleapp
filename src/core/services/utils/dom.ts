@@ -678,30 +678,29 @@ export class CoreDomUtilsProvider {
      * Wait an element to exists using the findFunction.
      *
      * @param findFunction The function used to find the element.
+     * @param retries Number of retries before giving up.
+     * @param retryAfter Milliseconds to wait before retrying if the element wasn't found.
      * @return Resolved if found, rejected if too many tries.
      * @deprecated since app 4.0 Use CoreDom.waitToBeInsideElement instead.
      */
-    waitElementToExist(findFunction: () => HTMLElement | null): Promise<HTMLElement> {
-        const promiseInterval = CoreUtils.promiseDefer<HTMLElement>();
-        let tries = 100;
+    async waitElementToExist(
+        findFunction: () => HTMLElement | null,
+        retries: number = 100,
+        retryAfter: number = 100,
+    ): Promise<HTMLElement> {
+        const element = findFunction();
 
-        const clear = setInterval(() => {
-            const element: HTMLElement | null = findFunction();
+        if (!element && retries === 0) {
+            throw Error('Element not found');
+        }
 
-            if (element) {
-                clearInterval(clear);
-                promiseInterval.resolve(element);
-            } else {
-                tries--;
+        if (!element) {
+            await CoreUtils.wait(retryAfter);
 
-                if (tries <= 0) {
-                    clearInterval(clear);
-                    promiseInterval.reject();
-                }
-            }
-        }, 100);
+            return this.waitElementToExist(findFunction, retries - 1);
+        }
 
-        return promiseInterval.promise;
+        return element;
     }
 
     /**

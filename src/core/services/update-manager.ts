@@ -21,9 +21,10 @@ import { makeSingleton } from '@singletons';
 import { CoreH5P } from '@features/h5p/services/h5p';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSites } from './sites';
-import { CoreUtils, PromiseDefer } from './utils/utils';
+import { CoreUtils } from './utils/utils';
 import { CoreApp } from './app';
 import { CoreZoomLevel } from '@features/settings/services/settings-helper';
+import { CorePromisedValue } from '@classes/promised-value';
 
 const VERSION_APPLIED = 'version_applied';
 
@@ -36,11 +37,11 @@ const VERSION_APPLIED = 'version_applied';
 export class CoreUpdateManagerProvider {
 
     protected logger: CoreLogger;
-    protected doneDeferred: PromiseDefer<void>;
+    protected doneDeferred: CorePromisedValue<void>;
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreUpdateManagerProvider');
-        this.doneDeferred = CoreUtils.promiseDefer();
+        this.doneDeferred = new CorePromisedValue();
     }
 
     /**
@@ -49,7 +50,7 @@ export class CoreUpdateManagerProvider {
      * @return Promise resolved when the load function is done.
      */
     get donePromise(): Promise<void> {
-        return this.doneDeferred.promise;
+        return this.doneDeferred;
     }
 
     /**

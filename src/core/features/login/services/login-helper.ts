@@ -1288,34 +1288,27 @@ export class CoreLoginHelperProvider {
      *
      * @return Promise resolved if the user accepts to scan QR.
      */
-    showScanQRInstructions(): Promise<void> {
-        const deferred = CoreUtils.promiseDefer<void>();
-
-        // Show some instructions first.
-        CoreDomUtils.showAlertWithOptions({
-            header: Translate.instant('core.login.faqwhereisqrcode'),
-            message: Translate.instant(
-                'core.login.faqwhereisqrcodeanswer',
-                { $image: CoreLoginHelperProvider.FAQ_QRCODE_IMAGE_HTML },
-            ),
-            buttons: [
-                {
-                    text: Translate.instant('core.cancel'),
-                    role: 'cancel',
-                    handler: (): void => {
-                        deferred.reject(new CoreCanceledError());
+    async showScanQRInstructions(): Promise<void> {
+        await new Promise<void>((resolve, reject) => {
+            CoreDomUtils.showAlertWithOptions({
+                header: Translate.instant('core.login.faqwhereisqrcode'),
+                message: Translate.instant(
+                    'core.login.faqwhereisqrcodeanswer',
+                    { $image: CoreLoginHelperProvider.FAQ_QRCODE_IMAGE_HTML },
+                ),
+                buttons: [
+                    {
+                        text: Translate.instant('core.cancel'),
+                        role: 'cancel',
+                        handler: () => reject(new CoreCanceledError()),
                     },
-                },
-                {
-                    text: Translate.instant('core.next'),
-                    handler: (): void => {
-                        deferred.resolve();
+                    {
+                        text: Translate.instant('core.next'),
+                        handler: () => resolve(),
                     },
-                },
-            ],
+                ],
+            });
         });
-
-        return deferred.promise;
     }
 
     /**

@@ -15,8 +15,8 @@
 import { BehaviorSubject, Subject } from 'rxjs';
 import { CoreEvents } from '@singletons/events';
 import { CoreDelegate, CoreDelegateDisplayHandler, CoreDelegateToDisplay } from './delegate';
-import { CoreUtils } from '@services/utils/utils';
 import { CoreSites } from '@services/sites';
+import { CorePromisedValue } from '@classes/promised-value';
 
 /**
  * Superclass to help creating sorted delegates.
@@ -96,18 +96,17 @@ export class CoreSortedDelegate<
             return this.sortedHandlers;
         }
 
-        const deferred = CoreUtils.promiseDefer<DisplayType[]>();
-
+        const promisedHandlers = new CorePromisedValue<DisplayType[]>();
         const subscription = this.getHandlersObservable().subscribe((handlers) => {
             if (this.loaded) {
                 subscription?.unsubscribe();
 
                 // Return main handlers.
-                deferred.resolve(handlers);
+                promisedHandlers.resolve(handlers);
             }
         });
 
-        return deferred.promise;
+        return promisedHandlers;
     }
 
     /**

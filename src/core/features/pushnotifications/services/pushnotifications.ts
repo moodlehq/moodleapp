@@ -256,14 +256,13 @@ export class CorePushNotificationsProvider {
             return;
         }
 
-        const deferred = CoreUtils.promiseDefer<void>();
+        await new Promise<void>(resolve => {
+            win.PushNotification.enableAnalytics(resolve, (error) => {
+                this.logger.error('Error enabling or disabling Firebase analytics', enable, error);
 
-        win.PushNotification.enableAnalytics(deferred.resolve, (error) => {
-            this.logger.error('Error enabling or disabling Firebase analytics', enable, error);
-            deferred.resolve();
-        }, !!enable);
-
-        await deferred.promise;
+                resolve();
+            }, !!enable);
+        });
     }
 
     /**
@@ -357,14 +356,12 @@ export class CorePushNotificationsProvider {
             return;
         }
 
-        const deferred = CoreUtils.promiseDefer<void>();
-
-        win.PushNotification.logEvent(deferred.resolve, (error) => {
-            this.logger.error('Error logging firebase event', name, error);
-            deferred.resolve();
-        }, name, data, !!filter);
-
-        await deferred.promise;
+        await new Promise<void>(resolve => {
+            win.PushNotification.logEvent(resolve, (error) => {
+                this.logger.error('Error logging firebase event', name, error);
+                resolve();
+            }, name, data, !!filter);
+        });
     }
 
     /**
