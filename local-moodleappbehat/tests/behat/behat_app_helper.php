@@ -513,7 +513,8 @@ class behat_app_helper extends behat_base {
         // Generate custom URL.
         $parsed_url = parse_url($CFG->behat_wwwroot);
         $domain = $parsed_url['host'];
-        $url = $this->get_mobile_url_scheme() . "://$username@$domain?token=$token&privatetoken=$privatetoken";
+        $rootpath = $parsed_url['path'];
+        $url = $this->get_mobile_url_scheme() . "://$username@$domain/$rootpath?token=$token&privatetoken=$privatetoken";
 
         if (!empty($path)) {
             $url .= '&redirect='.urlencode($CFG->behat_wwwroot.$path);
