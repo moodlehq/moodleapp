@@ -48,7 +48,6 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { AddonModForumDiscussionOptionsMenuComponent } from '../discussion-options-menu/discussion-options-menu';
 import { AddonModForumSortOrderSelectorComponent } from '../sort-order-selector/sort-order-selector';
 import { CoreScreen } from '@services/screen';
-import { CoreArray } from '@singletons/array';
 import { AddonModForumPrefetchHandler } from '../../services/handlers/prefetch';
 import { AddonModForumModuleHandlerService } from '../../services/handlers/module';
 import { CoreRatingProvider } from '@features/rating/services/rating';
@@ -561,7 +560,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                         }
 
                         if (this.discussions?.getSource().isOnlineDiscussion(disc)) {
-                            return CoreArray.contains(newDiscussionData.discussionIds ?? [], disc.discussion);
+                            return (newDiscussionData.discussionIds ?? []).includes(disc.discussion);
                         }
 
                         return false;

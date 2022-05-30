@@ -31,7 +31,6 @@ import { CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { CoreInterceptor } from '@classes/interceptor';
 import { makeSingleton, Translate, FileTransfer, Http, NativeHttp } from '@singletons';
-import { CoreArray } from '@singletons/array';
 import { CoreLogger } from '@singletons/logger';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreAjaxError } from '@classes/errors/ajaxerror';
@@ -282,7 +281,7 @@ export class CoreWSProvider {
                 extension = CoreMimetypeUtils.getFileExtension(path) || '';
 
                 // Google Drive extensions will be considered invalid since Moodle usually converts them.
-                if (!extension || CoreArray.contains(['gdoc', 'gsheet', 'gslides', 'gdraw', 'php'], extension)) {
+                if (!extension || ['gdoc', 'gsheet', 'gslides', 'gdraw', 'php'].includes(extension)) {
                     // Not valid, get the file's mimetype.
                     const mimetype = await this.getRemoteFileMimeType(url);
 

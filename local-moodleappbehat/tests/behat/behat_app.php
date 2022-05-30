@@ -681,7 +681,7 @@ class behat_app extends behat_app_helper {
             if (!is_null($urlpattern)) {
                 $this->getSession()->switchToWindow($windowNames[1]);
                 $windowurl = $this->getSession()->getCurrentUrl();
-                $windowhaspattern = preg_match("/$urlpattern/", $windowurl);
+                $windowhaspattern = !!preg_match("/$urlpattern/", $windowurl);
                 $this->getSession()->switchToWindow($windowNames[0]);
 
                 if ($not === $windowhaspattern) {
