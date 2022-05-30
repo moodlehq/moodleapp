@@ -25,7 +25,7 @@ import { AddonCalendarOffline } from '../../services/calendar-offline';
 import { AddonCalendarSync, AddonCalendarSyncEvents, AddonCalendarSyncProvider } from '../../services/calendar-sync';
 import { CoreNetwork } from '@services/network';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDomUtils, ToastDuration } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreSites } from '@services/sites';
 import { CoreLocalNotifications } from '@services/local-notifications';
@@ -556,7 +556,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
             }
 
             if (onlineEventDeleted || this.event.id < 0) {
-                CoreDomUtils.showToast('addon.calendar.eventcalendareventdeleted', true, 3000);
+                CoreDomUtils.showToast('addon.calendar.eventcalendareventdeleted', true, ToastDuration.LONG);
 
                 // Event deleted, close the view.
                 CoreNavigator.back();
@@ -611,7 +611,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         }
 
         if (data.deleted && data.deleted.indexOf(this.eventId) != -1) {
-            CoreDomUtils.showToast('addon.calendar.eventcalendareventdeleted', true, 3000);
+            CoreDomUtils.showToast('addon.calendar.eventcalendareventdeleted', true, ToastDuration.LONG);
 
             // Event was deleted, close the view.
             CoreNavigator.back();

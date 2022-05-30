@@ -16,7 +16,7 @@ import { AddonNotes, AddonNotesPublishState } from '@addons/notes/services/notes
 import { Component, ViewChild, ElementRef, Input } from '@angular/core';
 import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDomUtils, ToastDuration } from '@services/utils/dom';
 import { CoreForms } from '@singletons/form';
 import { ModalController } from '@singletons';
 
@@ -57,7 +57,7 @@ export class AddonNotesAddComponent {
             CoreForms.triggerFormSubmittedEvent(this.formElement, sent, CoreSites.getCurrentSiteId());
 
             ModalController.dismiss(<AddonNotesAddModalReturn>{ type: this.type, sent: true }).finally(() => {
-                CoreDomUtils.showToast(sent ? 'addon.notes.eventnotecreated' : 'core.datastoredoffline', true, 3000);
+                CoreDomUtils.showToast(sent ? 'addon.notes.eventnotecreated' : 'core.datastoredoffline', true, ToastDuration.LONG);
             });
         } catch (error){
             CoreDomUtils.showErrorModal(error);

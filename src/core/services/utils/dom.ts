@@ -1614,23 +1614,19 @@ export class CoreDomUtilsProvider {
     async showToast(
         text: string,
         needsTranslate?: boolean,
-        duration: number = 2000,
+        duration: ToastDuration | number = ToastDuration.SHORT,
         cssClass: string = '',
     ): Promise<HTMLIonToastElement> {
         if (needsTranslate) {
             text = Translate.instant(text);
         }
 
-        const loader = await ToastController.create({
+        return this.showToastWithOptions({
             message: text,
             duration: duration,
             position: 'bottom',
             cssClass: cssClass,
         });
-
-        await loader.present();
-
-        return loader;
     }
 
     /**
@@ -1639,12 +1635,15 @@ export class CoreDomUtilsProvider {
      * @param options Options.
      * @return Promise resolved with Toast instance.
      */
-    async showToastWithOptions(options: ToastOptions): Promise<HTMLIonToastElement> {
-        // Set some default values.
-        options.duration = options.duration ?? 2000;
-        options.position = options.position ?? 'bottom';
+    async showToastWithOptions(options: ShowToastOptions): Promise<HTMLIonToastElement> {
+        // Convert some values and set default values.
+        const toastOptions: ToastOptions = {
+            ...options,
+            duration: CoreConstants.CONFIG.toastDurations[options.duration] ?? options.duration ?? 2000,
+            position: options.position ?? 'bottom',
+        };
 
-        const loader = await ToastController.create(options);
+        const loader = await ToastController.create(toastOptions);
 
         await loader.present();
 
@@ -2130,3 +2129,19 @@ export enum VerticalPoint {
     MID = 'mid',
     BOTTOM = 'bottom',
 }
+
+/**
+ * Toast duration.
+ */
+export enum ToastDuration {
+    LONG = 'long',
+    SHORT = 'short',
+    STICKY = 'sticky',
+}
+
+/**
+ * Options for showToastWithOptions.
+ */
+export type ShowToastOptions = Omit<ToastOptions, 'duration'> & {
+    duration: ToastDuration | number;
+};

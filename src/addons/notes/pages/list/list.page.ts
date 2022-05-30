@@ -23,7 +23,7 @@ import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { IonContent, IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDomUtils, ToastDuration } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -232,7 +232,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
 
                 this.refreshNotes(false);
 
-                CoreDomUtils.showToast('addon.notes.eventnotedeleted', true, 3000);
+                CoreDomUtils.showToast('addon.notes.eventnotedeleted', true, ToastDuration.LONG);
 
             } catch (error) {
                 CoreDomUtils.showErrorModalDefault(error, 'Delete note failed.');

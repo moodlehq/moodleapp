@@ -104,5 +104,10 @@
     },
     "wsrequestqueuelimit": 10,
     "wsrequestqueuedelay": 100,
-    "calendarreminderdefaultvalue": 3600
+    "calendarreminderdefaultvalue": 3600,
+    "toastDurations": {
+        "short": 2000,
+        "long": 3500,
+        "sticky": 0
+    }
 }

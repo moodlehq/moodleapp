@@ -31,7 +31,7 @@ import { ContextLevel, CoreConstants } from '@/core/constants';
 import { CoreNavigator } from '@services/navigator';
 import { NgZone, Translate } from '@singletons';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDomUtils, ToastDuration } from '@services/utils/dom';
 import { CoreUser } from '@features/user/services/user';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreError } from '@classes/errors/error';
@@ -319,7 +319,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
             CoreDomUtils.showToast(
                 commentsResponse ? 'core.comments.eventcommentcreated' : 'core.datastoredoffline',
                 true,
-                3000,
+                ToastDuration.LONG,
             );
 
             if (commentsResponse) {
@@ -417,7 +417,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
 
             this.invalidateComments();
 
-            CoreDomUtils.showToast('core.comments.eventcommentdeleted', true, 3000);
+            CoreDomUtils.showToast('core.comments.eventcommentdeleted', true, ToastDuration.LONG);
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Delete comment failed.');
         }
