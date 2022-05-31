@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 
 import { CoreDB } from '@services/db';
 import { CoreEvents } from '@singletons/events';
-import { CoreUtils, PromiseDefer } from '@services/utils/utils';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 import { makeSingleton, Keyboard, Network, StatusBar, Platform, Device } from '@singletons';
@@ -28,6 +27,8 @@ import { CoreRedirectPayload } from './navigator';
 import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
 import { asyncInstance } from '../utils/async-instance';
 import { CoreDatabaseTable } from '@classes/database/database-table';
+import { CorePromisedValue } from '@classes/promised-value';
+import { Subscription } from 'rxjs';
 
 /**
  * Factory to provide some global functionalities, like access to the global app database.
@@ -47,7 +48,7 @@ export class CoreAppProvider {
 
     protected db?: SQLiteDB;
     protected logger: CoreLogger;
-    protected ssoAuthenticationDeferred?: PromiseDefer<void>;
+    protected ssoAuthenticationDeferred?: CorePromisedValue<void>;
     protected isKeyboardShown = false;
     protected keyboardOpening = false;
     protected keyboardClosing = false;
@@ -451,14 +452,14 @@ export class CoreAppProvider {
      * NOT when the browser is opened.
      */
     startSSOAuthentication(): void {
-        this.ssoAuthenticationDeferred = CoreUtils.promiseDefer<void>();
+        this.ssoAuthenticationDeferred = new CorePromisedValue();
 
         // Resolve it automatically after 10 seconds (it should never take that long).
         const cancelTimeout = setTimeout(() => this.finishSSOAuthentication(), 10000);
 
         // If the promise is resolved because finishSSOAuthentication is called, stop the cancel promise.
         // eslint-disable-next-line promise/catch-or-return
-        this.ssoAuthenticationDeferred.promise.then(() => clearTimeout(cancelTimeout));
+        this.ssoAuthenticationDeferred.then(() => clearTimeout(cancelTimeout));
     }
 
     /**
@@ -486,9 +487,7 @@ export class CoreAppProvider {
      * @return Promise resolved once SSO authentication finishes.
      */
     async waitForSSOAuthentication(): Promise<void> {
-        const promise = this.ssoAuthenticationDeferred?.promise;
-
-        await promise;
+        await this.ssoAuthenticationDeferred;
     }
 
     /**
@@ -497,7 +496,9 @@ export class CoreAppProvider {
      * @param timeout Maximum time to wait, use null to wait forever.
      */
     async waitForResume(timeout: number | null = null): Promise<void> {
-        let deferred: PromiseDefer<void> | null = CoreUtils.promiseDefer<void>();
+        let deferred: CorePromisedValue<void> | null = new CorePromisedValue();
+        let resumeSubscription: Subscription | null = null;
+        let timeoutId: number | null = null;
 
         const stopWaiting = () => {
             if (!deferred) {
@@ -505,16 +506,16 @@ export class CoreAppProvider {
             }
 
             deferred.resolve();
-            resumeSubscription.unsubscribe();
+            resumeSubscription?.unsubscribe();
             timeoutId && clearTimeout(timeoutId);
 
             deferred = null;
         };
 
-        const resumeSubscription = Platform.resume.subscribe(stopWaiting);
-        const timeoutId = timeout ? setTimeout(stopWaiting, timeout) : false;
+        resumeSubscription = Platform.resume.subscribe(stopWaiting);
+        timeoutId = timeout ? window.setTimeout(stopWaiting, timeout) : null;
 
-        await deferred.promise;
+        await deferred;
     }
 
     /**

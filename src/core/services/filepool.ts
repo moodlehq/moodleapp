@@ -26,7 +26,7 @@ import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUrlUtils } from '@services/utils/url';
-import { CoreUtils, CoreUtilsOpenFileOptions, PromiseDefer } from '@services/utils/utils';
+import { CoreUtils, CoreUtilsOpenFileOptions } from '@services/utils/utils';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreError } from '@classes/errors/error';
 import { CoreConstants } from '@/core/constants';
@@ -53,6 +53,7 @@ import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/da
 import { lazyMap, LazyMap } from '../utils/lazy-map';
 import { asyncInstance, AsyncInstance } from '../utils/async-instance';
 import { CoreText } from '@singletons/text';
+import { CorePromisedValue } from '@classes/promised-value';
 
 /*
  * Factory for handling downloading files and retrieve downloaded files.
@@ -94,7 +95,7 @@ export class CoreFilepoolProvider {
     ];
 
     // To handle file downloads using the queue.
-    protected queueDeferreds: { [s: string]: { [s: string]: CoreFilepoolPromiseDefer } } = {};
+    protected queueDeferreds: { [s: string]: { [s: string]: CoreFilepoolPromisedValue } } = {};
     protected sizeCache: {[fileUrl: string]: number} = {}; // A "cache" to store file sizes.
     // Variables to prevent downloading packages/files twice at the same time.
     protected packagesPromises: { [s: string]: { [s: string]: Promise<void> } } = {};
@@ -450,7 +451,7 @@ export class CoreFilepoolProvider {
         this.logger.debug(`File ${fileId} already in queue and does not require update`);
         if (queueDeferred) {
             // If we were able to retrieve the queue deferred before, we use that one.
-            return queueDeferred.promise;
+            return queueDeferred;
         } else {
             // Create a new deferred and return its promise.
             return this.getQueuePromise(siteId, fileId, true, onProgress);
@@ -1889,7 +1890,7 @@ export class CoreFilepoolProvider {
         fileId: string,
         create: boolean = true,
         onProgress?: CoreFilepoolOnProgressCallback,
-    ): CoreFilepoolPromiseDefer | undefined {
+    ): CoreFilepoolPromisedValue | undefined {
         if (!this.queueDeferreds[siteId]) {
             if (!create) {
                 return;
@@ -1900,7 +1901,7 @@ export class CoreFilepoolProvider {
             if (!create) {
                 return;
             }
-            this.queueDeferreds[siteId][fileId] = CoreUtils.promiseDefer();
+            this.queueDeferreds[siteId][fileId] = new CorePromisedValue();
         }
 
         if (onProgress) {
@@ -1938,9 +1939,7 @@ export class CoreFilepoolProvider {
         create: boolean = true,
         onProgress?: CoreFilepoolOnProgressCallback,
     ): Promise<void> | undefined {
-        const deferred = this.getQueueDeferred(siteId, fileId, create, onProgress);
-
-        return deferred?.promise;
+        return this.getQueueDeferred(siteId, fileId, create, onProgress);
     }
 
     /**
@@ -3032,11 +3031,11 @@ export class CoreFilepoolProvider {
      * @param error String identifier for error message, if rejected.
      */
     protected treatQueueDeferred(siteId: string, fileId: string, resolve: boolean, error?: string): void {
-        if (this.queueDeferreds[siteId] && this.queueDeferreds[siteId][fileId]) {
+        if (siteId in this.queueDeferreds && fileId in this.queueDeferreds[siteId]) {
             if (resolve) {
                 this.queueDeferreds[siteId][fileId].resolve();
             } else {
-                this.queueDeferreds[siteId][fileId].reject(error);
+                this.queueDeferreds[siteId][fileId].reject(new Error(error));
             }
             delete this.queueDeferreds[siteId][fileId];
         }
@@ -3138,7 +3137,7 @@ export type CoreFilepoolOnProgressCallback<T = unknown> = (event: T) => void;
 /**
  * Deferred promise for file pool. It's similar to the result of $q.defer() in AngularJS.
  */
-type CoreFilepoolPromiseDefer = PromiseDefer<void> & {
+type CoreFilepoolPromisedValue = CorePromisedValue<void> & {
     onProgress?: CoreFilepoolOnProgressCallback; // On Progress function.
 };
 

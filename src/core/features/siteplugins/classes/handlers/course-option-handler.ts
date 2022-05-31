@@ -27,8 +27,8 @@ import {
     CoreSitePluginsCourseOptionHandlerData,
     CoreSitePluginsPlugin,
 } from '@features/siteplugins/services/siteplugins';
-import { CoreUtils, PromiseDefer } from '@services/utils/utils';
 import { CoreSitePluginsBaseHandler } from './base-handler';
+import { CorePromisedValue } from '@classes/promised-value';
 
 /**
  * Handler to display a site plugin in course options.
@@ -38,7 +38,7 @@ export class CoreSitePluginsCourseOptionHandler extends CoreSitePluginsBaseHandl
     priority: number;
     isMenuHandler: boolean;
 
-    protected updatingDefer?: PromiseDefer<void>;
+    protected updatingDefer?: CorePromisedValue<void>;
 
     constructor(
         name: string,
@@ -59,7 +59,7 @@ export class CoreSitePluginsCourseOptionHandler extends CoreSitePluginsBaseHandl
     async isEnabledForCourse(courseId: number): Promise<boolean> {
         // Wait for "init" result to be updated.
         if (this.updatingDefer) {
-            await this.updatingDefer.promise;
+            await this.updatingDefer;
         }
 
         return CoreSitePlugins.isHandlerEnabledForCourse(
@@ -132,7 +132,7 @@ export class CoreSitePluginsCourseOptionHandler extends CoreSitePluginsBaseHandl
      * Mark init being updated.
      */
     updatingInit(): void {
-        this.updatingDefer = CoreUtils.promiseDefer();
+        this.updatingDefer = new CorePromisedValue();
     }
 
 }

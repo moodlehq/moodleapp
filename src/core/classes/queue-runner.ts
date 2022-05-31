@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreUtils, PromiseDefer } from '@services/utils/utils';
+import { CorePromisedValue } from '@classes/promised-value';
 
 /**
  * Function to add to the queue.
@@ -38,7 +38,7 @@ export type CoreQueueRunnerItem<T = any> = {
     /**
      * Deferred with a promise resolved/rejected with the result of the function.
      */
-    deferred: PromiseDefer<T>;
+    deferred: CorePromisedValue<T>;
 };
 
 /**
@@ -122,7 +122,7 @@ export class CoreQueueRunner {
         if (id in this.queue) {
             if (!options.allowRepeated) {
                 // Item already in queue, return its promise.
-                return this.queue[id].deferred.promise;
+                return this.queue[id].deferred;
             }
 
             id = this.getUniqueId(id);
@@ -132,7 +132,7 @@ export class CoreQueueRunner {
         const item = {
             id,
             fn,
-            deferred: CoreUtils.promiseDefer<T>(),
+            deferred: new CorePromisedValue<T>(),
         };
 
         this.queue[id] = item;
@@ -141,7 +141,7 @@ export class CoreQueueRunner {
         // Process next item if we haven't reached the max yet.
         this.processNextItem();
 
-        return item.deferred.promise;
+        return item.deferred;
     }
 
 }

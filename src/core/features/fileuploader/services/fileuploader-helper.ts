@@ -24,7 +24,7 @@ import { CoreFile, CoreFileProvider, CoreFileProgressEvent } from '@services/fil
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreUtils, PromiseDefer } from '@services/utils/utils';
+import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton, Translate, Camera, Chooser, Platform, ActionSheetController } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
@@ -36,6 +36,7 @@ import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreWSUploadFileResult } from '@services/ws';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
+import { CorePromisedValue } from '@classes/promised-value';
 
 /**
  * Helper service to upload files.
@@ -44,7 +45,7 @@ import { CoreText } from '@singletons/text';
 export class CoreFileUploaderHelperProvider {
 
     protected logger: CoreLogger;
-    protected filePickerDeferred?: PromiseDefer<CoreWSUploadFileResult | FileEntry>;
+    protected filePickerDeferred?: CorePromisedValue<CoreWSUploadFileResult | FileEntry>;
     protected actionSheet?: HTMLIonActionSheetElement;
 
     constructor() {
@@ -349,7 +350,7 @@ export class CoreFileUploaderHelperProvider {
         }];
         const handlers = CoreFileUploaderDelegate.getHandlers(mimetypes);
 
-        this.filePickerDeferred = CoreUtils.promiseDefer();
+        this.filePickerDeferred = new CorePromisedValue();
 
         // Create a button for each handler.
         handlers.forEach((handler) => {
@@ -431,7 +432,7 @@ export class CoreFileUploaderHelperProvider {
             });
         }, 500);
 
-        return this.filePickerDeferred.promise;
+        return this.filePickerDeferred;
     }
 
     /**

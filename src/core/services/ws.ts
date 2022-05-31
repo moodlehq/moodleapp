@@ -26,7 +26,6 @@ import { CoreApp } from '@services/app';
 import { CoreFile, CoreFileFormat } from '@services/file';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextErrorObject, CoreTextUtils } from '@services/utils/text';
-import { CoreUtils, PromiseDefer } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { CoreInterceptor } from '@classes/interceptor';
@@ -38,6 +37,7 @@ import { CoreAjaxWSError } from '@classes/errors/ajaxwserror';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreSite } from '@classes/site';
 import { CoreHttpError } from '@classes/errors/httperror';
+import { CorePromisedValue } from '@classes/promised-value';
 
 /**
  * This service allows performing WS calls and download/upload files.
@@ -76,12 +76,12 @@ export class CoreWSProvider {
             siteUrl,
             data,
             preSets,
-            deferred: CoreUtils.promiseDefer<T>(),
+            deferred: new CorePromisedValue<T>(),
         };
 
         this.retryCalls.push(call);
 
-        return call.deferred.promise;
+        return call.deferred;
     }
 
     /**
@@ -1363,7 +1363,7 @@ type RetryCall = {
     siteUrl: string;
     data: Record<string, unknown>;
     preSets: CoreWSPreSets;
-    deferred: PromiseDefer<unknown>;
+    deferred: CorePromisedValue;
 };
 
 /**

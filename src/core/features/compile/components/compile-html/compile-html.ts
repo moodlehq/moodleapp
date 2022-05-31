@@ -33,6 +33,7 @@ import {
     Type,
     KeyValueDiffer,
 } from '@angular/core';
+import { CorePromisedValue } from '@classes/promised-value';
 
 import { CoreCompile } from '@features/compile/services/compile';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -278,14 +279,14 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
                 return this.pendingCalls[name].defer.promise;
             }
 
-            const defer = CoreUtils.promiseDefer();
+            const defer = new CorePromisedValue();
 
             this.pendingCalls[name] = {
                 params,
                 defer,
             };
 
-            return defer.promise;
+            return defer;
         }
     }
 

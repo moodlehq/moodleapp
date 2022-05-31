@@ -321,17 +321,8 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
             return;
         }
 
-        const deferred = CoreUtils.promiseDefer<void>();
-
-        setTimeout(async () => {
-            try {
-                await this.waitForReady(retries + 1);
-            } finally {
-                deferred.resolve();
-            }
-        }, 250);
-
-        return deferred.promise;
+        await CoreUtils.wait(250);
+        await CoreUtils.ignoreErrors(this.waitForReady(retries + 1));
     }
 
     /**
