@@ -35,9 +35,7 @@ jobs:
         git clone --branch ${{ github.event.inputs.moodle_branch }} --depth 1 ${{ github.event.inputs.moodle_repository }} $GITHUB_WORKSPACE/moodle
         git clone --branch master --depth 1 https://github.com/moodlehq/moodle-docker $GITHUB_WORKSPACE/moodle-docker
     - name: Install npm packages
-      run: |
-        npm install -g npm@7
-        npm ci --no-audit
+      run: npm ci --no-audit
     - name: Generate Behat tests plugin
       run: |
         export MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle

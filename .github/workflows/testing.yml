@@ -14,9 +14,7 @@ jobs:
       with:
         node-version: '14'
     - name: Install npm packages
-      run: |
-        npm install -g npm@7
-        npm ci --no-audit
+      run: npm ci --no-audit
     - name: Check langindex
       run: |
         result=$(cat scripts/langindex.json | grep \"TBD\" | wc -l); test $result -eq 0

@@ -19,7 +19,6 @@ cache:
 
 before_install:
   - nvm install
-  - npm install npm@^7 -g
   - node --version
   - npm --version
   - nvm --version
@@ -48,7 +47,6 @@ jobs:
       - extra-android-m2repository
     before_install:
       - nvm install
-      - npm install npm@^7 -g
       - node --version
       - npm --version
       - nvm --version
