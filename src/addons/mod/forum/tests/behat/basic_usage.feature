@@ -36,6 +36,17 @@ Feature: Test basic usage of forum activity in app
     When I press "My happy subject" in the app
     Then I should find "An awesome message" in the app
 
+  Scenario: New discussion automatically opened in tablet
+    Given I entered the forum activity "Test forum name" on course "Course 1" as "student1" in the app
+    And I change viewport size to "1200x640"
+
+    When I press "Add discussion topic" in the app
+    And I set the field "Subject" to "My happy subject" in the app
+    And I set the field "Message" to "An awesome message" in the app
+    And I press "Post to forum" in the app
+    Then I should find "My happy subject" in the app
+    And I should find "An awesome message" inside the split-view content in the app
+
   Scenario: Reply a post
     Given I entered the forum activity "Test forum name" on course "Course 1" as "student1" in the app
     When I press "Add discussion topic" in the app
