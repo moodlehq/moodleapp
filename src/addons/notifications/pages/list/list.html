@@ -11,66 +11,72 @@
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
-<ion-content class="limited-width">
-    <ion-refresher slot="fixed" [disabled]="!notificationsLoaded" (ionRefresh)="refreshNotifications($event.target)">
-        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
-    </ion-refresher>
-    <core-loading [hideUntil]="notificationsLoaded">
+<ion-content>
+    <core-split-view>
+        <ion-refresher slot="fixed" [disabled]="!notifications.loaded" (ionRefresh)="refreshNotifications($event.target)">
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        </ion-refresher>
+        <core-loading [hideUntil]="notifications.loaded">
 
-        <ion-item *ngFor="let notification of notifications" class="ion-text-wrap" [attr.aria-label]="
-                    notification.timeread
-                    ? notification.subject
-                    : 'addon.notifications.unreadnotification' | translate: {$a: notification.subject}"
-            (click)="openNotification(notification)" button [detail]="false" lines="full">
-            <core-user-avatar *ngIf="notification.useridfrom > 0" [user]="notification" slot="start"
-                [profileUrl]="notification.profileimageurlfrom" [fullname]="notification.userfromfullname"
-                [userId]="notification.useridfrom">
-                <div class="core-avatar-extra-img" *ngIf="notification.iconurl && !notification.modname">
-                    <img [src]="notification.iconurl" alt="" role="presentation">
-                </div>
-                <core-mod-icon *ngIf="notification.modname" [modicon]="notification.iconurl" [modname]="notification.modname"
-                    [showAlt]="false">
-                </core-mod-icon>
-            </core-user-avatar>
+            <ion-item *ngFor="let notification of notifications.items" class="ion-text-wrap"
+                [attr.aria-current]="notifications.getItemAriaCurrent(notification)" [attr.aria-label]="
+                notification.timeread
+                ? notification.subject
+                : 'addon.notifications.unreadnotification' | translate: {$a: notification.subject}"
+                (click)="notifications.select(notification)" button [detail]="false" lines="full">
 
-            <ng-container *ngIf="notification.useridfrom <= 0 && notification.iconurl">
-                <div class="core-notification-icon" *ngIf="!notification.modname" slot="start">
-                    <img [src]="notification.iconurl" alt="" role="presentation">
-                </div>
-                <core-mod-icon *ngIf="notification.modname" [modicon]="notification.iconurl" [modname]="notification.modname"
-                    [showAlt]="false" class="core-notification-icon" slot="start">
-                </core-mod-icon>
-            </ng-container>
+                <core-user-avatar *ngIf="notification.useridfrom > 0" [user]="notification" slot="start"
+                    [profileUrl]="notification.profileimageurlfrom" [fullname]="notification.userfromfullname"
+                    [userId]="notification.useridfrom">
+                    <div class="core-avatar-extra-img" *ngIf="notification.iconurl && !notification.modname">
+                        <img [src]="notification.iconurl" alt="" role="presentation">
+                    </div>
+                    <core-mod-icon *ngIf="notification.modname" [modicon]="notification.iconurl" [modname]="notification.modname"
+                        [showAlt]="false">
+                    </core-mod-icon>
+                </core-user-avatar>
 
-            <ion-label>
-                <p class="item-heading">
-                    <core-format-text [text]="notification.subject" contextLevel="system" [contextInstanceId]="0" [wsNotFiltered]="true">
-                    </core-format-text>
-                </p>
-                <p>{{ notification.timecreated | coreTimeAgo }}<ng-container *ngIf="notification.useridfrom > 0"> · {{
-                        notification.userfromfullname }}</ng-container>
-                </p>
-            </ion-label>
-            <ion-note slot="end" *ngIf="!notification.timeread">
-                <ion-icon name="fas-circle" color="primary" aria-hidden="true"></ion-icon>
-            </ion-note>
-        </ion-item>
+                <ng-container *ngIf="notification.useridfrom <= 0 && notification.iconurl">
+                    <div class="core-notification-icon" *ngIf="!notification.modname" slot="start">
+                        <img [src]="notification.iconurl" alt="" role="presentation">
+                    </div>
+                    <core-mod-icon *ngIf="notification.modname" [modicon]="notification.iconurl" [modname]="notification.modname"
+                        [showAlt]="false" class="core-notification-icon" slot="start">
+                    </core-mod-icon>
+                </ng-container>
 
-        <core-empty-box *ngIf="!notifications || notifications.length <= 0" icon="far-bell"
-            [message]="'addon.notifications.therearentnotificationsyet' | translate">
-        </core-empty-box>
-        <core-infinite-loading [enabled]="canLoadMore" (action)="loadMoreNotifications($event)" [error]="loadMoreError">
-        </core-infinite-loading>
-    </core-loading>
+                <ion-label>
+                    <p class="item-heading">
+                        <core-format-text [text]="notification.subject" contextLevel="system" [contextInstanceId]="0"
+                            [wsNotFiltered]="true">
+                        </core-format-text>
+                    </p>
+                    <p>{{ notification.timecreated | coreTimeAgo }}<ng-container *ngIf="notification.useridfrom > 0"> · {{
+                            notification.userfromfullname }}</ng-container>
+                    </p>
+                </ion-label>
+                <ion-note slot="end" *ngIf="!notification.timeread">
+                    <ion-icon name="fas-circle" color="primary" aria-hidden="true"></ion-icon>
+                </ion-note>
+            </ion-item>
+
+            <core-empty-box *ngIf="!notifications || notifications.empty" icon="far-bell"
+                [message]="'addon.notifications.therearentnotificationsyet' | translate">
+            </core-empty-box>
+            <core-infinite-loading [enabled]="notifications.loaded && !notifications.completed" (action)="fetchMoreNotifications($event)"
+                [error]="fetchMoreNotificationsFailed">
+            </core-infinite-loading>
+        </core-loading>
 
 
-    <div class="mark-all-as-read" slot="fixed" collapsible-footer appearOnBottom>
-        <ion-chip *ngIf="notificationsLoaded && canMarkAllNotificationsAsRead" [disabled]="loadingMarkAllNotificationsAsRead"
-            color="primary" (click)="markAllNotificationsAsRead()">
-            <ion-icon name="fas-eye" aria-hidden="true" *ngIf="!loadingMarkAllNotificationsAsRead"></ion-icon>
-            <ion-spinner [attr.aria-label]="'core.loading' | translate" *ngIf="loadingMarkAllNotificationsAsRead">
-            </ion-spinner>
-            {{ 'addon.notifications.markallread' | translate }}
-        </ion-chip>
-    </div>
+        <div class="mark-all-as-read" slot="fixed" collapsible-footer appearOnBottom>
+            <ion-chip *ngIf="notifications.loaded && canMarkAllNotificationsAsRead" [disabled]="loadingMarkAllNotificationsAsRead"
+                color="primary" (click)="markAllNotificationsAsRead()">
+                <ion-icon name="fas-eye" aria-hidden="true" *ngIf="!loadingMarkAllNotificationsAsRead"></ion-icon>
+                <ion-spinner [attr.aria-label]="'core.loading' | translate" *ngIf="loadingMarkAllNotificationsAsRead">
+                </ion-spinner>
+                {{ 'addon.notifications.markallread' | translate }}
+            </ion-chip>
+        </div>
+    </core-split-view>
 </ion-content>

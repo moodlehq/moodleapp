@@ -12,10 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { conditionalRoutes } from '@/app/app-routing.module';
 import { Injector, NgModule } from '@angular/core';
 import { RouterModule, ROUTES, Routes } from '@angular/router';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
+import { CoreScreen } from '@services/screen';
 import { AddonNotificationsMainMenuHandlerService } from './services/handlers/mainmenu';
 
 function buildRoutes(injector: Injector): Routes {
@@ -27,6 +29,13 @@ function buildRoutes(injector: Injector): Routes {
             },
             loadChildren: () => import('./pages/list/list.module').then(m => m.AddonNotificationsListPageModule),
         },
+        ...conditionalRoutes([
+            {
+                path: 'list/:id',
+                loadChildren: () => import('./pages/notification/notification.module')
+                    .then(m => m.AddonNotificationsNotificationPageModule),
+            },
+        ], () => CoreScreen.isMobile),
         {
             path: 'notification',
             loadChildren: () => import('./pages/notification/notification.module')
