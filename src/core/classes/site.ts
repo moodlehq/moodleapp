@@ -1404,6 +1404,7 @@ export class CoreSite {
             getFromCache: true,
             saveToCache: true,
             emergencyCache: true,
+            cacheKey: this.getPublicConfigCacheKey(),
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
 
@@ -1464,6 +1465,15 @@ export class CoreSite {
                 delete this.ongoingRequests[cacheId];
             }
         }
+    }
+
+    /**
+     * Get cache key for getPublicConfig WS calls.
+     *
+     * @return Cache key.
+     */
+    protected getPublicConfigCacheKey(): string {
+        return 'tool_mobile_get_public_config';
     }
 
     /**

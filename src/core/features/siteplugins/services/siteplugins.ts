@@ -302,11 +302,23 @@ export class CoreSitePluginsProvider {
         const data = await site.read<CoreSitePluginsGetPluginsSupportingMobileWSResponse>(
             'tool_mobile_get_plugins_supporting_mobile',
             {},
-            { getFromCache: false },
+            {
+                getFromCache: false,
+                cacheKey: this.getPluginsCacheKey(),
+            },
         );
 
         // Return enabled plugins.
         return data.plugins.filter((plugin) => this.isSitePluginEnabled(plugin, site));
+    }
+
+    /**
+     * Get cache key for get plugins WS call.
+     *
+     * @return Cache key.
+     */
+    protected getPluginsCacheKey(): string {
+        return ROOT_CACHE_KEY + 'plugins';
     }
 
     /**
