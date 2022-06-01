@@ -20,6 +20,16 @@ import { CoreBrowser } from '@singletons/browser';
 import { makeSingleton, SQLite, Platform } from '@singletons';
 import { CoreAppProvider } from './app';
 
+const tableNameRegex = new RegExp([
+    '^SELECT.*FROM ([^ ]+)',
+    '^INSERT.*INTO ([^ ]+)',
+    '^UPDATE ([^ ]+)',
+    '^DELETE FROM ([^ ]+)',
+    '^CREATE TABLE IF NOT EXISTS ([^ ]+)',
+    '^ALTER TABLE ([^ ]+)',
+    '^DROP TABLE IF EXISTS ([^ ]+)',
+].join('|'));
+
 /**
  * This service allows interacting with the local database to store and retrieve data.
  */
@@ -42,10 +52,11 @@ export class CoreDbProvider {
     /**
      * Print query history in console.
      *
-     * @param format Log format, with the following substitutions: :sql, :duration, and :result.
+     * @param format Log format, with the following substitutions: :dbname, :sql, :duration, and :result.
      */
-    printHistory(format: string = ':sql | Duration: :duration | Result: :result'): void {
-        const substituteParams = ({ sql, params, duration, error }: CoreDbQueryLog) => format
+    printHistory(format: string = ':dbname | :sql | Duration: :duration | Result: :result'): void {
+        const substituteParams = ({ sql, params, duration, error, dbName }: CoreDbQueryLog) => format
+            .replace(':dbname', dbName)
             .replace(':sql', Object
                 .values(params ?? [])
                 .reduce((sql: string, param: string) => sql.replace('?', param) as string, sql) as string)
@@ -57,12 +68,133 @@ export class CoreDbProvider {
     }
 
     /**
+     * Get the table name from a SQL query.
+     *
+     * @param sql SQL query.
+     * @return Table name, undefined if not found.
+     */
+    protected getTableNameFromSql(sql: string): string | undefined {
+        const matches = sql.match(tableNameRegex);
+
+        return matches?.find((matchEntry, index) => index > 0 && !!matchEntry);
+    }
+
+    /**
+     * Check if a value matches a certain filter.
+     *
+     * @param value Value.
+     * @param filter Filter.
+     * @return Whether the value matches the filter.
+     */
+    protected valueMatchesFilter(value: string, filter?: RegExp | string): boolean {
+        if (typeof filter === 'string') {
+            return value === filter;
+        } else if (filter) {
+            return !!value.match(filter);
+        }
+
+        return true;
+    }
+
+    /**
+     * Build an object with the summary data for each db, table and statement.
+     *
+     * @param filters Filters to limit the data stored.
+     * @return Object with the summary data.
+     */
+    protected buildStatementsSummary(
+        filters: TablesSummaryFilters = {},
+    ): Record<string, Record<string, Record<string, CoreDbStatementSummary>>> {
+        const statementsSummary: Record<string, Record<string, Record<string, CoreDbStatementSummary>>> = {};
+
+        this.queryLogs.forEach(log => {
+            if (!this.valueMatchesFilter(log.dbName, filters.dbName)) {
+                return;
+            }
+
+            const statement = log.sql.substring(0, log.sql.indexOf(' '));
+            if (!statement) {
+                console.warn(`Statement not found from sql: ${log.sql}`); // eslint-disable-line no-console
+
+                return;
+            }
+
+            const tableName = this.getTableNameFromSql(log.sql);
+            if (!tableName) {
+                console.warn(`Table name not found from sql: ${log.sql}`); // eslint-disable-line no-console
+
+                return;
+            }
+
+            if (!this.valueMatchesFilter(tableName, filters.tableName)) {
+                return;
+            }
+
+            statementsSummary[log.dbName] = statementsSummary[log.dbName] ?? {};
+            statementsSummary[log.dbName][tableName] = statementsSummary[log.dbName][tableName] ?? {};
+            statementsSummary[log.dbName][tableName][statement] = statementsSummary[log.dbName][tableName][statement] ?? {
+                count: 0,
+                duration: 0,
+                errors: 0,
+            };
+
+            statementsSummary[log.dbName][tableName][statement].count++;
+            statementsSummary[log.dbName][tableName][statement].duration += log.duration;
+            if (log.error) {
+                statementsSummary[log.dbName][tableName][statement].errors++;
+            }
+        });
+
+        return statementsSummary;
+    }
+
+    /**
+     * Print summary of statements for several tables.
+     *
+     * @param filters Filters to limit the results printed.
+     * @param format Log format, with the following substitutions: :dbname, :table, :statement, :count, :duration and :errors.
+     */
+    printTablesSummary(
+        filters: TablesSummaryFilters = {},
+        format = ':dbname, :table, :statement, :count, :duration, :errors',
+    ): void {
+        const statementsSummary = this.buildStatementsSummary(filters);
+
+        const substituteParams = (dbName: string,  tableName: string, statementName: string) => format
+            .replace(':dbname', dbName)
+            .replace(':table', tableName)
+            .replace(':statement', statementName)
+            .replace(':count', String(statementsSummary[dbName][tableName][statementName].count))
+            .replace(':duration', statementsSummary[dbName][tableName][statementName].duration + 'ms')
+            .replace(':errors', String(statementsSummary[dbName][tableName][statementName].errors));
+
+        // eslint-disable-next-line no-console
+        console.log(
+            Object.keys(statementsSummary)
+                .sort()
+                .map(dbName => Object.keys(statementsSummary[dbName])
+                    .sort()
+                    .map(tableName => Object.keys(statementsSummary[dbName][tableName])
+                        .sort()
+                        .map(statementName => substituteParams(dbName, tableName, statementName))
+                        .join('\n')).join('\n')).join('\n'),
+        );
+    }
+
+    /**
      * Log a query.
      *
      * @param log Query log.
      */
     logQuery(log: CoreDbQueryLog): void {
         this.queryLogs.push(log);
+    }
+
+    /**
+     * Clear stored logs.
+     */
+    clearLogs(): void {
+        this.queryLogs = [];
     }
 
     /**
@@ -125,8 +257,26 @@ export const CoreDB = makeSingleton(CoreDbProvider);
  * Database query log entry.
  */
 export interface CoreDbQueryLog {
+    dbName: string;
     sql: string;
     duration: number;
     error?: Error;
     params?: unknown[];
 }
+
+/**
+ * Summary about a certain DB statement.
+ */
+type CoreDbStatementSummary = {
+    count: number;
+    duration: number;
+    errors: number;
+};
+
+/**
+ * Filters to print tables summary.
+ */
+type TablesSummaryFilters = {
+    dbName?: RegExp | string;
+    tableName?: RegExp | string;
+};
