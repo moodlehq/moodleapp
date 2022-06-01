@@ -1169,6 +1169,8 @@ export class SQLiteDB {
      * @returns Spy methods.
      */
     protected getDatabaseSpies(db: SQLiteObject): Partial<SQLiteObject> {
+        const dbName = this.name;
+
         return {
             async executeSql(statement, params) {
                 const start = performance.now();
@@ -1180,6 +1182,7 @@ export class SQLiteDB {
                         params,
                         sql: statement,
                         duration:  performance.now() - start,
+                        dbName,
                     });
 
                     return result;
@@ -1189,6 +1192,7 @@ export class SQLiteDB {
                         error,
                         sql: statement,
                         duration:  performance.now() - start,
+                        dbName,
                     });
 
                     throw error;
@@ -1206,6 +1210,7 @@ export class SQLiteDB {
                     CoreDB.logQuery({
                         sql,
                         duration: performance.now() - start,
+                        dbName,
                     });
 
                     return result;
@@ -1214,6 +1219,7 @@ export class SQLiteDB {
                         sql,
                         error,
                         duration: performance.now() - start,
+                        dbName,
                     });
 
                     throw error;
