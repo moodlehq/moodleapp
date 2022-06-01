@@ -82,10 +82,7 @@ class behat_app extends behat_app_helper {
      * @throws ExpectationException Problem with resizing window
      */
     public function i_launch_the_app(string $runtime = '') {
-        // Check the app tag was set.
-        if (!$this->has_tag('app')) {
-            throw new DriverException('Requires @app tag on scenario or feature.');
-        }
+        $this->check_tags();
 
         // Go to page and prepare browser for app.
         $this->prepare_browser(['skiponboarding' => empty($runtime)]);
