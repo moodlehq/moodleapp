@@ -326,7 +326,7 @@ export class TestsBehatRuntime {
     static setField(field: string, value: string): string {
         this.log('Action - Set field ' + field + ' to: ' + value);
 
-        const found: HTMLElement | HTMLInputElement | HTMLTextAreaElement =TestsBehatDomUtils.findElementBasedOnText(
+        const found: HTMLElement | HTMLInputElement | HTMLTextAreaElement = TestsBehatDomUtils.findElementBasedOnText(
             { text: field, selector: 'input, textarea, [contenteditable="true"]' },
         );
 

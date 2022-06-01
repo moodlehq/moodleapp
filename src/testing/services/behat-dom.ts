@@ -82,7 +82,7 @@ export class TestsBehatDomUtils {
      * @return Elements containing the given text with exact boolean.
      */
     protected static findElementsBasedOnTextWithinWithExact(container: HTMLElement, text: string): ElementsWithExact[] {
-        const attributesSelector = `[aria-label*="${text}"], a[title*="${text}"], img[alt*="${text}"]`;
+        const attributesSelector = `[aria-label*="${text}"], a[title*="${text}"], img[alt*="${text}"], [placeholder*="${text}"]`;
 
         const elements = Array.from(container.querySelectorAll<HTMLElement>(attributesSelector))
             .filter((element => this.isElementVisible(element, container)))
@@ -176,7 +176,8 @@ export class TestsBehatDomUtils {
     protected static checkElementLabel(element: HTMLElement, text: string): boolean {
         return element.title === text ||
             element.getAttribute('alt') === text ||
-            element.getAttribute('aria-label') === text;
+            element.getAttribute('aria-label') === text ||
+            element.getAttribute('placeholder') === text;
     }
 
     /**
@@ -359,7 +360,7 @@ export class TestsBehatDomUtils {
      * Function to find elements based on their text or Aria label.
      *
      * @param locator Element locator.
-     * @param container Container to search in.
+     * @param topContainer Container to search in.
      * @return Found elements
      */
     protected static findElementsBasedOnTextInContainer(

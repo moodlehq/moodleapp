@@ -72,8 +72,9 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     loadMoreError = false;
     loadingMessage: string;
     promisedEntries: CorePromisedValue<AddonModGlossaryEntriesManager>;
-    hasOfflineRatings = false;
 
+    protected hasOfflineEntries = false;
+    protected hasOfflineRatings = false;
     protected syncEventName = AddonModGlossarySyncProvider.AUTO_SYNCED;
     protected addEntryObserver?: CoreEventObserver;
     protected fetchedEntriesCanLoadMore = false;
@@ -128,7 +129,10 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
         this.promisedEntries.resolve(new AddonModGlossaryEntriesManager(source, this));
 
         this.sourceUnsubscribe = source.addListener({
-            onItemsUpdated: items => this.hasOffline = !!items.find(item => source.isOfflineEntry(item)),
+            onItemsUpdated: (items) => {
+                this.hasOfflineEntries = !!items.find(item => source.isOfflineEntry(item));
+                this.hasOffline = this.hasOfflineEntries || this.hasOfflineRatings;
+            },
         });
 
         // When an entry is added, we reload the data.
@@ -146,12 +150,14 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
             if (this.glossary && data.component == 'mod_glossary' && data.ratingArea == 'entry' && data.contextLevel == 'module'
                     && data.instanceId == this.glossary.coursemodule) {
                 this.hasOfflineRatings = true;
+                this.hasOffline = true;
             }
         });
         this.ratingSyncObserver = CoreEvents.on(CoreRatingSyncProvider.SYNCED_EVENT, (data) => {
             if (this.glossary && data.component == 'mod_glossary' && data.ratingArea == 'entry' && data.contextLevel == 'module'
                     && data.instanceId == this.glossary.coursemodule) {
                 this.hasOfflineRatings = false;
+                this.hasOffline = this.hasOfflineEntries;
             }
         });
     }
@@ -198,6 +204,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
         ]);
 
         this.hasOfflineRatings = hasOfflineRatings;
+        this.hasOffline = this.hasOfflineEntries || this.hasOfflineRatings;
     }
 
     /**

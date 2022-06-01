@@ -28,8 +28,7 @@
     <core-loading [hideUntil]="!showLoading">
         <!-- Activity info. -->
         <core-course-module-info *ngIf="!isSearch" [module]="module" [description]="description" [component]="component"
-            [componentId]="componentId" [courseId]="courseId" [hasDataToSync]="hasOffline || hasOfflineRatings"
-            (completionChanged)="onCompletionChange()">
+            [componentId]="componentId" [courseId]="courseId" [hasDataToSync]="hasOffline" (completionChanged)="onCompletionChange()">
         </core-course-module-info>
 
         <ion-list *ngIf="!isSearch && entries && entries.offlineEntries.length > 0">
