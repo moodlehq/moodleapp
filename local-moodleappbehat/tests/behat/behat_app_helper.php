@@ -19,6 +19,7 @@
 require_once(__DIR__ . '/../../../../lib/behat/behat_base.php');
 
 use Behat\Mink\Exception\DriverException;
+use Moodle\BehatExtension\Exception\SkippedException;
 
 /**
  * Behat app listener.
@@ -92,7 +93,6 @@ class behat_app_helper extends behat_base {
      * This updates Moodle configuration and starts Ionic running, if it isn't already.
      */
     public function start_scenario() {
-        $this->skip_restricted_tags_scenarios();
         $this->check_behat_setup();
         $this->fix_moodle_setup();
         $this->ionicurl = $this->start_or_reuse_ionic();
@@ -623,10 +623,13 @@ EOF;
     }
 
     /**
-     * Workaround while MDL-74621 is not integrated in all supported versions.
-     * This function will skip scenarios based on @lms_from and @lms_upto tags.
+     * This function will skip scenarios based on @lms_from and @lms_upto tags and also missing @app tags.
      */
-    public function skip_restricted_tags_scenarios() {
+    public function check_tags() {
+        if (!$this->has_tag('app')) {
+            throw new DriverException('Requires @app tag on scenario or feature.');
+        }
+
         if (is_null($this->lmsversion)) {
             global $CFG;
 
@@ -644,18 +647,18 @@ EOF;
             $this->lmsversion = trim($version, '.');
         }
 
-        if ($this->has_version_restrictions()) {
+        if ($tag = $this->get_first_restricted_version_tag()) {
             // Skip this test.
-            throw new DriverException('Incompatible tags.');
+            throw new SkippedException("LMS version $this->lmsversion is not compatible with tag @$tag.");
         }
     }
 
     /**
      * Gets if version is incompatible with the @lms_from and @lms_upto tags.
      *
-     * @return bool If scenario has any version incompatible tag.
+     * @return string If scenario has any version incompatible tag, return it.
      */
-    protected function has_version_restrictions() : bool {
+    protected function get_first_restricted_version_tag(): ?string {
         $usedtags = behat_hooks::get_tags_for_scenario();
 
         $detectedversioncount = substr_count($this->lmsversion, '.');
@@ -685,15 +688,15 @@ EOF;
             // Installed version OLDER than the one being considered, so do not
             // include any scenarios that only run from the considered version up.
             if ($compare === -1 && $direction === 'from') {
-                return true;
+                return $usedtag;
             }
             // Installed version NEWER than the one being considered, so do not
             // include any scenarios that only run up to that version.
             if ($compare === 1 && $direction === 'upto') {
-                return true;
+                return $usedtag;
             }
         }
 
-        return false;
+        return null;
     }
 }
