@@ -845,8 +845,6 @@ export class AddonModForumProvider {
         forumId: number,
         options: AddonModForumGetDiscussionsInPagesOptions = {},
     ): Promise<{ discussions: AddonModForumDiscussion[]; error: boolean }> {
-        options.page = options.page || 0;
-
         const result = {
             discussions: [] as AddonModForumDiscussion[],
             error: false,
@@ -859,7 +857,10 @@ export class AddonModForumProvider {
 
         const getPage = (page: number): Promise<{ discussions: AddonModForumDiscussion[]; error: boolean }> =>
             // Get page discussions.
-            this.getDiscussions(forumId, options).then((response) => {
+            this.getDiscussions(forumId, {
+                ...options,
+                page,
+            }).then((response) => {
                 result.discussions = result.discussions.concat(response.discussions);
                 numPages--;
 
@@ -876,7 +877,7 @@ export class AddonModForumProvider {
             })
         ;
 
-        return getPage(options.page);
+        return getPage(options.page ?? 0);
     }
 
     /**
