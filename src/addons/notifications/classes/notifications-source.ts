@@ -12,14 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {
+    AddonNotifications,
+    AddonNotificationsGetReadType,
+    AddonNotificationsProvider,
+} from '@addons/notifications/services/notifications';
+import { AddonNotificationsNotificationToRender } from '@addons/notifications/services/notifications-helper';
 import { CoreRoutedItemsManagerSource } from '@classes/items-management/routed-items-manager-source';
-import { AddonNotifications } from '../services/notifications';
-import { AddonNotificationsHelper, AddonNotificationsNotificationToRender } from '../services/notifications-helper';
 
 /**
- * Provides a list of notifications
+ * Provides a list of notifications.
  */
-export class AddonsNotificationsNotificationsSource extends CoreRoutedItemsManagerSource<AddonNotificationsNotificationToRender> {
+export class AddonNotificationsNotificationsSource extends CoreRoutedItemsManagerSource<AddonNotificationsNotificationToRender> {
+
+    protected totals: Record<string, number> = {};
+
+    /**
+     * @inheritdoc
+     */
+    getItemPath(notification: AddonNotificationsNotificationToRender): string {
+        return notification.id.toString();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    reset(): void {
+        this.totals = {};
+
+        super.reset();
+    }
 
     /**
      * @inheritdoc
@@ -28,20 +50,63 @@ export class AddonsNotificationsNotificationsSource extends CoreRoutedItemsManag
         items: AddonNotificationsNotificationToRender[];
         hasMoreItems: boolean;
     }> {
-        // TODO this should be refactored to avoid using the existing items.
-        const { notifications, canLoadMore } = await AddonNotifications.getNotifications(page === 0 ? [] : this.getItems() ?? []);
+        const results = await this.loadNotifications(AddonNotificationsGetReadType.BOTH, page * this.getPageLength());
 
         return {
-            items: notifications.map(notification => AddonNotificationsHelper.formatNotificationText(notification)),
-            hasMoreItems: canLoadMore,
+            items: results.notifications,
+            hasMoreItems: results.hasMoreNotifications,
+        };
+    }
+
+    /**
+     * Load notifications of the given type.
+     *
+     * @param type Type.
+     * @param offset Offset.
+     * @param limit Limit.
+     * @returns Notifications and whether there are any more.
+     */
+    protected async loadNotifications(type: AddonNotificationsGetReadType, offset: number, limit?: number): Promise<{
+        notifications: AddonNotificationsNotificationToRender[];
+        hasMoreNotifications: boolean;
+    }> {
+        limit = limit ?? this.getPageLength();
+
+        if (type in this.totals && this.totals[type] <= offset) {
+            return {
+                notifications: [],
+                hasMoreNotifications: false,
+            };
+        }
+
+        const notifications = await AddonNotifications.getNotificationsWithStatus(type, { offset, limit });
+
+        if (notifications.length < limit) {
+            this.totals[type] = offset + notifications.length;
+        }
+
+        return {
+            notifications,
+            hasMoreNotifications: (this.totals[type] ?? Number.MAX_VALUE) > offset + limit,
         };
     }
 
     /**
      * @inheritdoc
      */
-    getItemPath(notification: AddonNotificationsNotificationToRender): string {
-        return notification.id.toString();
+    protected setItems(notifications: AddonNotificationsNotificationToRender[], hasMoreItems: boolean): void {
+        const sortedNotifications = notifications.slice(0);
+
+        sortedNotifications.sort((a, b) => a.timecreated < b.timecreated ? 1 : -1);
+
+        super.setItems(sortedNotifications, hasMoreItems);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected getPageLength(): number {
+        return AddonNotificationsProvider.LIST_LIMIT;
     }
 
 }
