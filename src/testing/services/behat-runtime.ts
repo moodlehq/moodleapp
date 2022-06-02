@@ -18,6 +18,7 @@ import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { CoreLoginHelperProvider } from '@features/login/services/login-helper';
 import { CoreConfig } from '@services/config';
 import { EnvironmentConfig } from '@/types/config';
+import { NgZone } from '@singletons';
 
 /**
  * Behat runtime servive with public API.
@@ -72,7 +73,9 @@ export class TestsBehatRuntime {
         const blockKey = TestsBehatBlocking.block();
 
         try {
-            await CoreCustomURLSchemes.handleCustomURL(url);
+            await NgZone.run(async () => {
+                await CoreCustomURLSchemes.handleCustomURL(url);
+            });
 
             return 'OK';
         } catch (error) {
