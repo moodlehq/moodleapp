@@ -46,6 +46,7 @@ class behat_app extends behat_app_helper {
      *
      * @When I enter the app
      * @Given I entered the app as :username
+     * @param string $username Username
      * @throws DriverException Issue with configuration or feature file
      * @throws dml_exception Problem with Moodle setup
      * @throws ExpectationException Problem with resizing window
@@ -77,6 +78,7 @@ class behat_app extends behat_app_helper {
      *
      * @When I launch the app :runtime
      * @When I launch the app
+     * @param string $runtime Runtime
      * @throws DriverException Issue with configuration or feature file
      * @throws dml_exception Problem with Moodle setup
      * @throws ExpectationException Problem with resizing window
@@ -111,6 +113,9 @@ class behat_app extends behat_app_helper {
      * Finds elements in the app.
      *
      * @Then /^I should( not)? find (".+")( inside the .+)? in the app$/
+     * @param bool $not Whether assert that the element was not found
+     * @param string $locator Element locator
+     * @param string $containerName Container name
      */
     public function i_find_in_the_app(bool $not, string $locator, string $containerName = '') {
         $locator = $this->parse_element_locator($locator);
@@ -141,7 +146,7 @@ class behat_app extends behat_app_helper {
      * Scroll to an element in the app.
      *
      * @When /^I scroll to (".+") in the app$/
-     * @param string $locator
+     * @param string $locator Element locator
      */
     public function i_scroll_to_in_the_app(string $locator) {
         $locator = $this->parse_element_locator($locator);
@@ -166,7 +171,7 @@ class behat_app extends behat_app_helper {
      * Load more items in a list with an infinite loader.
      *
      * @When /^I (should not be able to )?load more items in the app$/
-     * @param bool $not
+     * @param bool $not Whether assert that it is not possible to load more items
      */
     public function i_load_more_items_in_the_app(bool $not = false) {
         $this->spin(function() use ($not) {
@@ -190,7 +195,7 @@ class behat_app extends behat_app_helper {
      * Trigger swipe gesture.
      *
      * @When /^I swipe to the (left|right) in the app$/
-     * @param string $direction
+     * @param string $direction Swipe direction
      */
     public function i_swipe_in_the_app(string $direction) {
         $method = 'swipe' . ucwords($direction);
@@ -207,8 +212,8 @@ class behat_app extends behat_app_helper {
      * Check if elements are selected in the app.
      *
      * @Then /^(".+") should( not)? be selected in the app$/
-     * @param string $locator
-     * @param bool $not
+     * @param string $locator Element locator
+     * @param bool $not Whether to assert that the element is not selected
      */
     public function be_selected_in_the_app(string $locator, bool $not = false) {
         $locator = $this->parse_element_locator($locator);
@@ -288,6 +293,7 @@ class behat_app extends behat_app_helper {
      * @Given I entered the course :coursename as :username in the app
      * @Given I entered the course :coursename in the app
      * @param string $coursename Course name
+     * @param string $username Username
      * @throws DriverException If the button push doesn't work
      */
     public function i_entered_the_course_in_the_app(string $coursename, ?string $username = null) {
@@ -308,8 +314,10 @@ class behat_app extends behat_app_helper {
     /**
      * User enters a course in the app.
      *
+     * @Given I enter the course :coursename as :username in the app
      * @Given I enter the course :coursename in the app
      * @param string $coursename Course name
+     * @param string $username Username
      * @throws DriverException If the button push doesn't work
      */
     public function i_enter_the_course_in_the_app(string $coursename, ?string $username = null) {
@@ -342,6 +350,10 @@ class behat_app extends behat_app_helper {
      *
      * @Given I entered the :activity activity :activityname on course :course as :username in the app
      * @Given I entered the :activity activity :activityname on course :course in the app
+     * @param string $activity Activity
+     * @param string $activityname Activity name
+     * @param string $coursename Course name
+     * @param string $username Username
      * @throws DriverException If the button push doesn't work
      */
     public function i_enter_the_activity_in_the_app(string $activity, string $activityname, string $coursename, ?string $username = null) {
@@ -386,7 +398,7 @@ class behat_app extends behat_app_helper {
      * Receives push notifications.
      *
      * @When /^I receive a push notification in the app for:$/
-     * @param TableNode $data
+     * @param TableNode $data Table data
      */
     public function i_receive_a_push_notification(TableNode $data) {
         global $DB, $CFG;
@@ -416,6 +428,8 @@ class behat_app extends behat_app_helper {
      * Replace arguments from the content in the given activity field.
      *
      * @Given /^I replace the arguments in "([^"]+)" "([^"]+)"$/
+     * @param string $idnumber Id number
+     * @param string $field Field
      */
     public function i_replace_arguments_in_the_activity(string $idnumber, string $field) {
         global $DB;
@@ -434,7 +448,7 @@ class behat_app extends behat_app_helper {
      * Opens a custom link.
      *
      * @Given /^I open a custom link in the app for:$/
-     * @param TableNode $data
+     * @param TableNode $data Table data
      */
     public function i_open_a_custom_link(TableNode $data) {
         global $DB;
@@ -510,7 +524,7 @@ class behat_app extends behat_app_helper {
      * Override app config.
      *
      * @Given /^the app has the following config:$/
-     * @param TableNode $data
+     * @param TableNode $data Table data
      */
     public function the_app_has_the_following_config(TableNode $data) {
         foreach ($data->getRows() as $configrow) {
@@ -552,8 +566,8 @@ class behat_app extends behat_app_helper {
      * to race conditions.
      *
      * @Then /^I (unselect|select) (".+") in the app$/
-     * @param string $selectedtext
-     * @param string $locator
+     * @param string $selectedtext Text inidicating if the element should be selected or unselected
+     * @param string $locator Element locator
      * @throws DriverException If the press doesn't work
      */
     public function i_select_in_the_app(string $selectedtext, string $locator) {
@@ -658,8 +672,8 @@ class behat_app extends behat_app_helper {
      * Check that the app opened a new browser tab.
      *
      * @Then /^the app should( not)? have opened a browser tab(?: with url "(?P<pattern>[^"]+)")?$/
-     * @param bool $not
-     * @param string $urlpattern
+     * @param bool $not Whether to check if the app did not open a new browser tab
+     * @param string $urlpattern Url pattern
      */
     public function the_app_should_have_opened_a_browser_tab(bool $not = false, ?string $urlpattern = null) {
         $this->spin(function() use ($not, $urlpattern) {
