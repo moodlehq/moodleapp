@@ -882,7 +882,7 @@ export class AddonModForumProvider {
                     .getDiscussionsInPages(forum.id, {
                         cmId: forum.cmid,
                         sortOrder: sortOrder.value,
-                        readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
+                        readingStrategy: CoreSitesReadingStrategy.ONLY_CACHE,
                     })
                     .then((response) => {
                         // Now invalidate the WS calls.
