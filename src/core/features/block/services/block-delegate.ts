@@ -194,7 +194,9 @@ export class CoreBlockDelegateService extends CoreDelegate<CoreBlockHandler> {
      * @return Whether is enabled or disabled in site.
      */
     protected isFeatureDisabled(handler: CoreBlockHandler, site: CoreSite): boolean {
-        return this.areBlocksDisabledInSite(site) || super.isFeatureDisabled(handler, site);
+        // Allow displaying my overview even if all blocks are disabled, to avoid having an empty My Courses.
+        return (this.areBlocksDisabledInSite(site) && handler.blockName !== 'myoverview') ||
+            super.isFeatureDisabled(handler, site);
     }
 
     /**
