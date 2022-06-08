@@ -27,6 +27,7 @@ import { CoreLogger } from '@singletons/logger';
 import { makeSingleton, File, Zip, Platform, WebView } from '@singletons';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreText } from '@singletons/text';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Progress event used when writing a file data into a file.
@@ -1261,7 +1262,7 @@ export class CoreFileProvider {
      * @return Converted src.
      */
     convertFileSrc(src: string): string {
-        return CoreApp.isMobile() ? WebView.convertFileSrc(src) : src;
+        return CorePlatform.isMobile() ? WebView.convertFileSrc(src) : src;
     }
 
     /**
@@ -1271,7 +1272,7 @@ export class CoreFileProvider {
      * @return Unconverted src.
      */
     unconvertFileSrc(src: string): string {
-        if (!CoreApp.isMobile()) {
+        if (!CorePlatform.isMobile()) {
             return src;
         }
 

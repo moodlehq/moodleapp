@@ -26,6 +26,8 @@ import { CorePushNotifications } from '@features/pushnotifications/services/push
 import { CoreConfig } from '@services/config';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreNavigator } from '@services/navigator';
+import { CorePlatform } from '@services/platform';
+import { CoreNetwork } from '@services/network';
 
 /**
  * Device Info to be shown and copied to clipboard.
@@ -91,8 +93,8 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
             versionCode: CoreConstants.CONFIG.versioncode,
             compilationTime: CoreConstants.BUILD.compilationTime || 0,
             lastCommit: CoreConstants.BUILD.lastCommitHash || '',
-            networkStatus: appProvider.isOnline() ? 'online' : 'offline',
-            wifiConnection: appProvider.isWifi() ? 'yes' : 'no',
+            networkStatus: CoreNetwork.isOnline() ? 'online' : 'offline',
+            wifiConnection: CoreNetwork.isWifi() ? 'yes' : 'no',
             localNotifAvailable: CoreLocalNotifications.isAvailable() ? 'yes' : 'no',
             pushId: CorePushNotifications.getPushId(),
             deviceType: '',
@@ -108,7 +110,7 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
                 ' (' + window.screen.width + 'x' + window.screen.height + ')';
         }
 
-        if (appProvider.isMobile()) {
+        if (CorePlatform.isMobile()) {
             this.deviceInfo.deviceType = Platform.is('tablet') ? 'tablet' : 'phone';
             if (appProvider.isAndroid()) {
                 this.deviceInfo.deviceOs = 'android';
@@ -178,7 +180,7 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
         this.onlineObserver = Network.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             NgZone.run(() => {
-                this.deviceInfo.networkStatus = appProvider.isOnline() ? 'online' : 'offline';
+                this.deviceInfo.networkStatus = CoreNetwork.isOnline() ? 'online' : 'offline';
             });
         });
 

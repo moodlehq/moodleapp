@@ -14,7 +14,7 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 
-import { CoreCourseModuleData } from '@features/course/services/course-helper';
+import type { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 
 /**

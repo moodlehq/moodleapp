@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, Input, Output, EventEmitter, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { CoreApp } from '@services/app';
 import { CoreConfig } from '@services/config';
 import { CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
@@ -21,6 +20,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreConstants } from '@/core/constants';
 import { CoreForms } from '@singletons/form';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Component to display a "send message form".
@@ -55,7 +55,7 @@ export class CoreSendMessageFormComponent implements OnInit {
         this.onSubmit = new EventEmitter();
         this.onResize = new EventEmitter();
 
-        CoreConfig.get(CoreConstants.SETTINGS_SEND_ON_ENTER, !CoreApp.isMobile()).then((sendOnEnter) => {
+        CoreConfig.get(CoreConstants.SETTINGS_SEND_ON_ENTER, !CorePlatform.isMobile()).then((sendOnEnter) => {
             this.sendOnEnter = !!sendOnEnter;
 
             return;
@@ -117,7 +117,7 @@ export class CoreSendMessageFormComponent implements OnInit {
             // Enter clicked, send the message.
             e.preventDefault();
             e.stopPropagation();
-        } else if (!this.sendOnEnter && !CoreApp.isMobile() && other == 'control') {
+        } else if (!this.sendOnEnter && !CorePlatform.isMobile() && other == 'control') {
             // Cmd+Enter or Ctrl+Enter, send message.
             e.preventDefault();
             e.stopPropagation();
@@ -138,7 +138,7 @@ export class CoreSendMessageFormComponent implements OnInit {
         if (this.sendOnEnter && !other) {
             // Enter clicked, send the message.
             this.submitForm(e);
-        } else if (!this.sendOnEnter && !CoreApp.isMobile() && other == 'control') {
+        } else if (!this.sendOnEnter && !CorePlatform.isMobile() && other == 'control') {
             // Cmd+Enter or Ctrl+Enter, send message.
             this.submitForm(e);
         }

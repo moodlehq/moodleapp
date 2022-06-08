@@ -60,6 +60,7 @@ import { CoreDatabaseConfiguration, CoreDatabaseTable } from '@classes/database/
 import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
 import { asyncInstance, AsyncInstance } from '../utils/async-instance';
 import { CoreConfig } from './config';
+import { CoreNetwork } from '@services/network';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 export const CORE_SITE_CURRENT_SITE_ID_CONFIG = 'current_site_id';
@@ -89,9 +90,9 @@ export class CoreSitesProvider {
     protected schemasTables: Record<string, AsyncInstance<CoreDatabaseTable<SchemaVersionsDBEntry, 'name'>>> = {};
     protected sitesTable = asyncInstance<CoreDatabaseTable<SiteDBEntry>>();
 
-    constructor(@Optional() @Inject(CORE_SITE_SCHEMAS) siteSchemas: CoreSiteSchema[][] = []) {
+    constructor(@Optional() @Inject(CORE_SITE_SCHEMAS) siteSchemas: CoreSiteSchema[][] | null) {
         this.logger = CoreLogger.getInstance('CoreSitesProvider');
-        this.siteSchemas = CoreArray.flatten(siteSchemas).reduce(
+        this.siteSchemas = CoreArray.flatten(siteSchemas ?? []).reduce(
             (siteSchemas, schema) => {
                 siteSchemas[schema.name] = schema;
 
@@ -216,7 +217,7 @@ export class CoreSitesProvider {
 
         if (!CoreUrlUtils.isHttpURL(siteUrl)) {
             throw new CoreError(Translate.instant('core.login.invalidsite'));
-        } else if (!CoreApp.isOnline()) {
+        } else if (!CoreNetwork.isOnline()) {
             throw new CoreNetworkError();
         }
 
@@ -429,7 +430,7 @@ export class CoreSitesProvider {
         service?: string,
         retry?: boolean,
     ): Promise<CoreSiteUserTokenResponse> {
-        if (!CoreApp.isOnline()) {
+        if (!CoreNetwork.isOnline()) {
             throw new CoreNetworkError();
         }
 

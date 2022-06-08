@@ -18,7 +18,7 @@ import { CoreWSError } from '@classes/errors/wserror';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
@@ -90,7 +90,7 @@ export class AddonModChoiceProvider {
             return false;
         };
 
-        if (!CoreApp.isOnline()) {
+        if (!CoreNetwork.isOnline()) {
             // App is offline, store the action.
             return storeOffline();
         }
@@ -407,7 +407,7 @@ export class AddonModChoiceProvider {
             return false;
         };
 
-        if (!CoreApp.isOnline()) {
+        if (!CoreNetwork.isOnline()) {
             // App is offline, store the action.
             return storeOffline();
         }

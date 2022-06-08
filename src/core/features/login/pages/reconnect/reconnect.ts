@@ -16,6 +16,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/co
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
@@ -201,7 +202,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             return;
         }
 
-        if (!CoreApp.isOnline()) {
+        if (!CoreNetwork.isOnline()) {
             CoreDomUtils.showErrorModal('core.networkerrormsg', true);
 
             return;

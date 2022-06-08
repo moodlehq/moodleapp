@@ -24,7 +24,7 @@ import { CoreGrades } from '@features/grades/services/grades';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreError } from '@classes/errors/error';
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreUtils } from '@services/utils/utils';
 import { AddonModAssignOffline } from './assign-offline';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
@@ -1027,7 +1027,7 @@ export class AddonModAssignProvider {
             return false;
         };
 
-        if (allowOffline && !CoreApp.isOnline()) {
+        if (allowOffline && !CoreNetwork.isOnline()) {
             // App is offline, store the action.
             return storeOffline();
         }
@@ -1137,7 +1137,7 @@ export class AddonModAssignProvider {
             return false;
         };
 
-        if (forceOffline || !CoreApp.isOnline()) {
+        if (forceOffline || !CoreNetwork.isOnline()) {
             // App is offline, store the action.
             return storeOffline();
         }
@@ -1234,7 +1234,7 @@ export class AddonModAssignProvider {
             return false;
         };
 
-        if (!CoreApp.isOnline()) {
+        if (!CoreNetwork.isOnline()) {
             // App is offline, store the action.
             return storeOffline();
         }

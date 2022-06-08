@@ -14,7 +14,7 @@
 
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -156,7 +156,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
         this.onlineObserver = Network.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             NgZone.run(() => {
-                this.isOnline = CoreApp.isOnline();
+                this.isOnline = CoreNetwork.isOnline();
             });
         });
     }
@@ -193,7 +193,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
     async fetchData(sync?: boolean, showErrors?: boolean): Promise<void> {
 
         this.syncIcon = CoreConstants.ICON_LOADING;
-        this.isOnline = CoreApp.isOnline();
+        this.isOnline = CoreNetwork.isOnline();
 
         if (sync) {
             // Try to synchronize offline events.

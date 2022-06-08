@@ -24,7 +24,7 @@ import { CoreRatingSyncProvider } from '@features/rating/services/rating-sync';
 import { CoreUser } from '@features/user/services/user';
 import { CanLeave } from '@guards/can-leave';
 import { IonContent, IonRefresher } from '@ionic/angular';
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CoreSites } from '@services/sites';
@@ -164,12 +164,12 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
             return;
         }
 
-        this.isOnline = CoreApp.isOnline();
+        this.isOnline = CoreNetwork.isOnline();
         this.externalUrl = CoreSites.getCurrentSite()?.createSiteUrl('/mod/forum/discuss.php', { d: this.discussionId.toString() });
         this.onlineObserver = Network.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             NgZone.run(() => {
-                this.isOnline = CoreApp.isOnline();
+                this.isOnline = CoreNetwork.isOnline();
             });
         });
 

@@ -14,7 +14,7 @@
 
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -183,7 +183,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
         this.onlineObserver = Network.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             NgZone.run(() => {
-                this.isOnline = CoreApp.isOnline();
+                this.isOnline = CoreNetwork.isOnline();
             });
         });
     }
@@ -237,7 +237,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
      */
     async fetchData(sync?: boolean): Promise<void> {
         this.syncIcon = CoreConstants.ICON_LOADING;
-        this.isOnline = CoreApp.isOnline();
+        this.isOnline = CoreNetwork.isOnline();
 
         if (sync) {
             await this.sync();
@@ -674,7 +674,7 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
             );
         } catch (error) {
             // Allow navigating to non-cached days in offline (behave as if using emergency cache).
-            if (CoreApp.isOnline()) {
+            if (CoreNetwork.isOnline()) {
                 throw error;
             }
         }

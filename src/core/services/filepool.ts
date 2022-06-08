@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { Md5 } from 'ts-md5/dist/md5';
 
 import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreEventPackageStatusChanged, CoreEvents } from '@singletons/events';
 import { CoreFile } from '@services/file';
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
@@ -506,7 +507,7 @@ export class CoreFilepoolProvider {
         if (this.sizeCache[fileUrl] !== undefined) {
             size = this.sizeCache[fileUrl];
         } else {
-            if (!CoreApp.isOnline()) {
+            if (!CoreNetwork.isOnline()) {
                 // Cannot check size in offline, stop.
                 throw new CoreError(Translate.instant('core.cannotconnect'));
             }
@@ -515,7 +516,7 @@ export class CoreFilepoolProvider {
         }
 
         // Calculate the size of the file.
-        const isWifi = CoreApp.isWifi();
+        const isWifi = CoreNetwork.isWifi();
         const sizeUnknown = size <= 0;
 
         if (!sizeUnknown) {
@@ -550,7 +551,7 @@ export class CoreFilepoolProvider {
      * is not accessible. Also, this will have no effect if the queue is already running.
      */
     protected checkQueueProcessing(): void {
-        if (!CoreFile.isAvailable() || !CoreApp.isOnline()) {
+        if (!CoreFile.isAvailable() || !CoreNetwork.isOnline()) {
             this.queueState = CoreFilepoolProvider.QUEUE_PAUSED;
 
             return;
@@ -1053,7 +1054,7 @@ export class CoreFilepoolProvider {
 
             if (!fileObject ||
                 this.isFileOutdated(fileObject, options.revision, options.timemodified) &&
-                CoreApp.isOnline() &&
+                CoreNetwork.isOnline() &&
                 !ignoreStale
             ) {
                 throw new CoreError('Needs to be downloaded');
@@ -1597,7 +1598,7 @@ export class CoreFilepoolProvider {
                 throw new CoreError('File not downloaded.');
             }
 
-            if (this.isFileOutdated(entry, revision, timemodified) && CoreApp.isOnline()) {
+            if (this.isFileOutdated(entry, revision, timemodified) && CoreNetwork.isOnline()) {
                 throw new CoreError('File is outdated');
             }
         } catch (error) {
@@ -2497,7 +2498,7 @@ export class CoreFilepoolProvider {
             if (this.queueState !== CoreFilepoolProvider.QUEUE_RUNNING) {
                 // Silently ignore, the queue is on pause.
                 throw CoreFilepoolProvider.ERR_QUEUE_ON_PAUSE;
-            } else if (!CoreFile.isAvailable() || !CoreApp.isOnline()) {
+            } else if (!CoreFile.isAvailable() || !CoreNetwork.isOnline()) {
                 throw CoreFilepoolProvider.ERR_FS_OR_NETWORK_UNAVAILABLE;
             }
 
@@ -2817,7 +2818,7 @@ export class CoreFilepoolProvider {
      */
     shouldDownload(size: number): boolean {
         return size <= CoreFilepoolProvider.DOWNLOAD_THRESHOLD ||
-            (CoreApp.isWifi() && size <= CoreFilepoolProvider.WIFI_DOWNLOAD_THRESHOLD);
+            (CoreNetwork.isWifi() && size <= CoreFilepoolProvider.WIFI_DOWNLOAD_THRESHOLD);
     }
 
     /**

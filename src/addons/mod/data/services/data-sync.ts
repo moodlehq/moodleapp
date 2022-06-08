@@ -21,7 +21,7 @@ import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreRatingSync } from '@features/rating/services/rating-sync';
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
@@ -184,7 +184,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
             return result;
         }
 
-        if (!CoreApp.isOnline()) {
+        if (!CoreNetwork.isOnline()) {
             // Cannot sync in offline.
             throw new CoreNetworkError();
         }

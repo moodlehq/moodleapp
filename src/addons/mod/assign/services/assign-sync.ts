@@ -35,7 +35,7 @@ import {
 import { CoreSync } from '@services/sync';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreGradesFormattedItem, CoreGradesHelper } from '@features/grades/services/grades-helper';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
@@ -215,7 +215,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
             return result;
         }
 
-        if (!CoreApp.isOnline()) {
+        if (!CoreNetwork.isOnline()) {
             // Cannot sync in offline.
             throw new CoreNetworkError();
         }

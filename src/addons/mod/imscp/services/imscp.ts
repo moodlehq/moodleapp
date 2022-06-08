@@ -18,7 +18,7 @@ import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreCourse, CoreCourseModuleContentFile } from '@features/course/services/course';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSitesCommonWSOptions, CoreSites } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
@@ -181,7 +181,7 @@ export class AddonModImscpProvider {
             return CoreText.concatenatePaths(dirPath, itemHref);
         } catch (error) {
             // Error getting directory, there was an error downloading or we're in browser. Return online URL if connected.
-            if (CoreApp.isOnline()) {
+            if (CoreNetwork.isOnline()) {
                 const contents = await CoreCourse.getModuleContents(module);
 
                 const indexUrl = this.getFileUrlFromContents(contents, itemHref);

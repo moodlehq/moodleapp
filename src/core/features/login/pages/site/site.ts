@@ -16,6 +16,7 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 
 import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreConfig } from '@services/config';
 import { CoreSites, CoreSiteCheckResponse, CoreLoginSiteInfo, CoreSitesDemoSiteData } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
@@ -242,7 +243,7 @@ export class CoreLoginSitePage implements OnInit {
             return;
         }
 
-        if (!CoreApp.isOnline()) {
+        if (!CoreNetwork.isOnline()) {
             CoreDomUtils.showErrorModal('core.networkerrormsg', true);
 
             return;

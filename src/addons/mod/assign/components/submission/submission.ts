@@ -49,7 +49,7 @@ import { AddonModAssignOffline } from '../../services/assign-offline';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreNavigator } from '@services/navigator';
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuploader-helper';
 import { CoreLang } from '@services/lang';
 import { CoreError } from '@classes/errors/error';
@@ -292,7 +292,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
             return;
         }
 
-        if (!CoreApp.isOnline()) {
+        if (!CoreNetwork.isOnline()) {
             CoreDomUtils.showErrorModal('core.networkerrormsg', true);
 
             return;

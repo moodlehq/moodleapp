@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreSyncBaseProvider, CoreSyncBlockedError } from '@classes/base-sync';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreGroups } from '@services/groups';
 import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
@@ -224,7 +224,7 @@ export class AddonModWikiSyncProvider extends CoreSyncBaseProvider<AddonModWikiS
             return result;
         }
 
-        if (!CoreApp.isOnline()) {
+        if (!CoreNetwork.isOnline()) {
             // Cannot sync in offline.
             throw new CoreNetworkError();
         }

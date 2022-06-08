@@ -1,0 +1,21 @@
+diff --git a/node_modules/eslint-plugin-ecmascript-compat/lib/compatibility.js b/node_modules/eslint-plugin-ecmascript-compat/lib/compatibility.js
+index 57772cd..f3667fd 100644
+--- a/node_modules/eslint-plugin-ecmascript-compat/lib/compatibility.js
++++ b/node_modules/eslint-plugin-ecmascript-compat/lib/compatibility.js
+@@ -1,5 +1,7 @@
+ /* eslint-disable camelcase, no-underscore-dangle */
+ 
++const compareVersions = require('compare-versions').compare;
++
+ function forbiddenFeatures(features, targets) {
+   return features.filter(feature => !isFeatureSupportedByTargets(feature, targets));
+ }
+@@ -30,7 +32,7 @@ function isCompatFeatureSupportedByTarget(compatFeature, target) {
+     return true;
+   }
+ 
+-  return !support.isNone && target.version >= versionAdded;
++  return !support.isNone && target.version.split('-').every(version => compareVersions(version, versionAdded, '>='));
+ }
+ 
+ function getSimpleSupportStatement(compatFeature, target) {

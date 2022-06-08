@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreApp } from '@services/app';
+import { CorePlatform } from '@services/platform';
 import { NativeHttp, Platform } from '@singletons';
 
 export default async function(): Promise<void> {
-    if (!CoreApp.isMobile()) {
+    if (!CorePlatform.isMobile()) {
         return;
     }
 

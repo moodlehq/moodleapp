@@ -26,7 +26,7 @@ import { CoreEvents } from '@singletons/events';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreSites } from '@services/sites';
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreConstants } from '@/core/constants';
 import { CoreUser } from '@features/user/services/user';
 import { CoreError } from '@classes/errors/error';
@@ -193,7 +193,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
         if (!messages.length) {
             // Nothing to sync.
             return result;
-        } else if (!CoreApp.isOnline()) {
+        } else if (!CoreNetwork.isOnline()) {
             // Cannot sync in offline. Mark messages as device offline.
             AddonMessagesOffline.setMessagesDeviceOffline(messages, true);
 
@@ -228,7 +228,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
             } catch (error) {
                 if (!CoreUtils.isWebServiceError(error)) {
                     // Error sending, stop execution.
-                    if (CoreApp.isOnline()) {
+                    if (CoreNetwork.isOnline()) {
                         // App is online, unmark deviceoffline if marked.
                         AddonMessagesOffline.setMessagesDeviceOffline(messages, false);
                     }

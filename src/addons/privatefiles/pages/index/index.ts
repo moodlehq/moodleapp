@@ -16,7 +16,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 import { Md5 } from 'ts-md5/dist/md5';
 
-import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
@@ -154,7 +154,7 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
      * Upload a new file.
      */
     async uploadFile(): Promise<void> {
-        if (!CoreApp.isOnline()) {
+        if (!CoreNetwork.isOnline()) {
             CoreDomUtils.showErrorModal('core.fileuploader.errormustbeonlinetoupload', true);
 
             return;

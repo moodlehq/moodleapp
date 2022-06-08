@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import { CoreCronDelegate } from '@services/cron';
 import { CoreEvents } from '@singletons/events';
 import { CoreFilepool } from '@services/filepool';
@@ -262,10 +263,10 @@ export class CoreSettingsHelperProvider {
         if (site.isLoggedOut()) {
             // Cannot sync logged out sites.
             throw new CoreError(Translate.instant('core.settings.cannotsyncloggedout'));
-        } else if (hasSyncHandlers && !CoreApp.isOnline()) {
+        } else if (hasSyncHandlers && !CoreNetwork.isOnline()) {
             // We need connection to execute sync.
             throw new CoreError(Translate.instant('core.settings.cannotsyncoffline'));
-        } else if (hasSyncHandlers && syncOnlyOnWifi && CoreApp.isNetworkAccessLimited()) {
+        } else if (hasSyncHandlers && syncOnlyOnWifi && CoreNetwork.isNetworkAccessLimited()) {
             throw new CoreError(Translate.instant('core.settings.cannotsyncwithoutwifi'));
         }
 

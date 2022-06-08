@@ -21,7 +21,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreUser, CoreUserProfile, CoreUserProvider } from '@features/user/services/user';
+import { CoreUser, CoreUserProfile, USER_PROFILE_PICTURE_UPDATED, USER_PROFILE_REFRESHED } from '@features/user/services/user';
 import { CoreUserHelper } from '@features/user/services/user-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
@@ -65,7 +65,7 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
             return;
         }
 
-        this.obsProfileRefreshed = CoreEvents.on(CoreUserProvider.PROFILE_REFRESHED, (data) => {
+        this.obsProfileRefreshed = CoreEvents.on(USER_PROFILE_REFRESHED, (data) => {
             if (!this.user || !data.user) {
                 return;
             }
@@ -147,7 +147,7 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
             await CoreSites.updateSiteInfo(this.site.getId());
         } catch {
             // Cannot update site info. Assume the profile image is the right one.
-            CoreEvents.trigger(CoreUserProvider.PROFILE_PICTURE_UPDATED, {
+            CoreEvents.trigger(USER_PROFILE_PICTURE_UPDATED, {
                 userId: this.userId,
                 picture: this.user.profileimageurl,
             }, this.site.getId());
@@ -158,7 +158,7 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
             await this.refreshUser();
         } else {
             // Now they're the same, send event to use the right avatar in the rest of the app.
-            CoreEvents.trigger(CoreUserProvider.PROFILE_PICTURE_UPDATED, {
+            CoreEvents.trigger(USER_PROFILE_PICTURE_UPDATED, {
                 userId: this.userId,
                 picture: this.user.profileimageurl,
             }, this.site.getId());
@@ -181,7 +181,7 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
 
             const profileImageURL = await CoreUser.changeProfilePicture(result.itemid, this.userId, this.site.getId());
 
-            CoreEvents.trigger(CoreUserProvider.PROFILE_PICTURE_UPDATED, {
+            CoreEvents.trigger(USER_PROFILE_PICTURE_UPDATED, {
                 userId: this.userId,
                 picture: profileImageURL,
             }, this.site.getId());
@@ -210,7 +210,7 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
         event?.complete();
 
         if (this.user) {
-            CoreEvents.trigger(CoreUserProvider.PROFILE_REFRESHED, {
+            CoreEvents.trigger(USER_PROFILE_REFRESHED, {
                 courseId: this.courseId,
                 userId: this.userId,
                 user: this.user,

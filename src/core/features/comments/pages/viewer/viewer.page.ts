@@ -40,6 +40,7 @@ import { CoreCommentsOffline } from '@features/comments/services/comments-offlin
 import { CoreCommentsDBRecord } from '@features/comments/services/database/comments';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreApp } from '@services/app';
+import { CoreNetwork } from '@services/network';
 import moment from 'moment';
 import { Subscription } from 'rxjs';
 
@@ -108,11 +109,11 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
             }
         }, CoreSites.getCurrentSiteId());
 
-        this.isOnline = CoreApp.isOnline();
+        this.isOnline = CoreNetwork.isOnline();
         this.onlineObserver = Network.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             NgZone.run(() => {
-                this.isOnline = CoreApp.isOnline();
+                this.isOnline = CoreNetwork.isOnline();
             });
         });
     }

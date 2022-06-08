@@ -21,7 +21,7 @@ import { CoreSite } from '@classes/site';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreUser, CoreUserProfile, CoreUserProvider } from '@features/user/services/user';
+import { CoreUser, CoreUserProfile, USER_PROFILE_REFRESHED } from '@features/user/services/user';
 import { CoreUserHelper } from '@features/user/services/user-helper';
 import {
     CoreUserDelegate,
@@ -64,7 +64,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
     users?: CoreUserSwipeItemsManager;
 
     constructor(private route: ActivatedRoute) {
-        this.obsProfileRefreshed = CoreEvents.on(CoreUserProvider.PROFILE_REFRESHED, (data) => {
+        this.obsProfileRefreshed = CoreEvents.on(USER_PROFILE_REFRESHED, (data) => {
             if (!this.user || !data.user) {
                 return;
             }
@@ -187,7 +187,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
         event?.complete();
 
         if (this.user) {
-            CoreEvents.trigger(CoreUserProvider.PROFILE_REFRESHED, {
+            CoreEvents.trigger(USER_PROFILE_REFRESHED, {
                 courseId: this.courseId,
                 userId: this.userId,
                 user: this.user,
