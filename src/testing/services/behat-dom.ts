@@ -326,7 +326,7 @@ export class TestsBehatDomUtils {
      * @return First found element.
      */
     static findElementBasedOnText(locator: TestBehatElementLocator, containerName = ''): HTMLElement {
-        return this.findElementsBasedOnText(locator, containerName)[0];
+        return this.findElementsBasedOnText(locator, containerName, true)[0];
     }
 
     /**
@@ -334,13 +334,25 @@ export class TestsBehatDomUtils {
      *
      * @param locator Element locator.
      * @param containerName Whether to search only inside a specific container.
+     * @param stopWhenFound Stop looking in containers once an element is found.
      * @return Found elements
      */
-    protected static findElementsBasedOnText(locator: TestBehatElementLocator, containerName = ''): HTMLElement[] {
+    protected static findElementsBasedOnText(
+        locator: TestBehatElementLocator,
+        containerName = '',
+        stopWhenFound = false,
+    ): HTMLElement[] {
         const topContainers = this.getCurrentTopContainerElements(containerName);
+        let elements: HTMLElement[] = [];
 
-        return topContainers.reduce((elements, container) =>
-            elements.concat(this.findElementsBasedOnTextInContainer(locator, container)), <HTMLElement[]> []);
+        for (let i = 0; i < topContainers.length; i++) {
+            elements = elements.concat(this.findElementsBasedOnTextInContainer(locator, topContainers[i]));
+            if (stopWhenFound && elements.length) {
+                break;
+            }
+        }
+
+        return elements;
     }
 
     /**
@@ -357,7 +369,7 @@ export class TestsBehatDomUtils {
         let container: HTMLElement | null = topContainer;
 
         if (locator.within) {
-            const withinElements = this.findElementsBasedOnText(locator.within);
+            const withinElements = this.findElementsBasedOnTextInContainer(locator.within, topContainer);
 
             if (withinElements.length === 0) {
                 throw new Error('There was no match for within text');
@@ -375,7 +387,7 @@ export class TestsBehatDomUtils {
         }
 
         if (topContainer && locator.near) {
-            const nearElements = this.findElementsBasedOnText(locator.near);
+            const nearElements = this.findElementsBasedOnTextInContainer(locator.near, topContainer);
 
             if (nearElements.length === 0) {
                 throw new Error('There was no match for near text');
