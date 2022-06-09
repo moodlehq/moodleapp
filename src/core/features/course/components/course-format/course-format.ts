@@ -23,6 +23,8 @@ import {
     QueryList,
     Type,
     ElementRef,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
 } from '@angular/core';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
@@ -64,6 +66,7 @@ import { CoreUserTourDirectiveOptions } from '@directives/user-tour';
     selector: 'core-course-format',
     templateUrl: 'course-format.html',
     styleUrls: ['course-format.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
@@ -120,6 +123,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     constructor(
         protected content: IonContent,
         protected elementRef: ElementRef,
+        protected changeDetectorRef: ChangeDetectorRef,
     ) {
         // Pass this instance to all components so they can use its methods and properties.
         this.data.coreCourseFormatComponent = this;
@@ -173,6 +177,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                     }
                 }
             }
+            this.changeDetectorRef.markForCheck();
         });
     }
 
@@ -195,6 +200,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         if (changes.sections && this.sections) {
             this.treatSections(this.sections);
         }
+        this.changeDetectorRef.markForCheck();
     }
 
     /**
@@ -229,6 +235,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             this.loadSingleSectionComponent(),
             this.loadAllSectionsComponent(),
         ]);
+        this.changeDetectorRef.markForCheck();
     }
 
     /**
@@ -523,6 +530,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                 CoreCourse.logView(this.course.id, newSection.section, undefined, this.course.fullname),
             );
         }
+        this.changeDetectorRef.markForCheck();
     }
 
     /**
