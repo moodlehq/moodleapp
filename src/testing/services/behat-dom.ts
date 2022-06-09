@@ -220,7 +220,7 @@ export class TestsBehatDomUtils {
         }
 
         return Array.from(uniqueElements);
-    };
+    }
 
     /**
      * Get parent element, including Shadow DOM parents.
@@ -378,7 +378,7 @@ export class TestsBehatDomUtils {
                 const withinElementsAncestors = this.getTopAncestors(withinElements);
 
                 if (withinElementsAncestors.length > 1) {
-                    throw new Error('Too many matches for within text');
+                    throw new Error('Too many matches for within text ('+withinElementsAncestors.length+')');
                 }
 
                 topContainer = container = withinElementsAncestors[0];
@@ -396,7 +396,7 @@ export class TestsBehatDomUtils {
                 const nearElementsAncestors = this.getTopAncestors(nearElements);
 
                 if (nearElementsAncestors.length > 1) {
-                    throw new Error('Too many matches for near text');
+                    throw new Error('Too many matches for near text ('+nearElementsAncestors.length+')');
                 }
 
                 container = this.getParentElement(nearElementsAncestors[0]);

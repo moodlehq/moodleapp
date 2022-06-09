@@ -68,7 +68,6 @@ export class AddonModSurveyHelperProvider {
     formatQuestions(questions: AddonModSurveyQuestion[]): AddonModSurveyQuestionFormatted[] {
         const strIPreferThat = Translate.instant('addon.mod_survey.ipreferthat');
         const strIFoundThat = Translate.instant('addon.mod_survey.ifoundthat');
-        const strChoose = Translate.instant('core.choose');
 
         const formatted: AddonModSurveyQuestionFormatted[] = [];
         const parents = this.getParentQuestions(questions);
@@ -112,9 +111,6 @@ export class AddonModSurveyHelperProvider {
                 // It's a single question.
                 q1.name = 'q' + q1.id;
                 q1.num = num++;
-                if (q1.type > 0) { // Add "choose" option since this question is not required.
-                    q1.optionsArray.unshift(strChoose);
-                }
             }
 
             formatted.push(q1);

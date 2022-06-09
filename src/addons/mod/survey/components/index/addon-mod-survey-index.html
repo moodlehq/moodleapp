@@ -50,14 +50,12 @@
                 <!-- Subquestion -->
                 <ng-container *ngIf="question.parent !== 0">
                     <ion-radio-group [(ngModel)]="answers[question.name]" [required]="question.required" [name]="question.name">
-                        <ion-row *ngIf="question.parent !== 0" class="ion-align-items-center ion-padding-horizontal" [class.even]="isEven">
+                        <ion-row class="ion-align-items-center ion-padding-horizontal" [class.even]="isEven">
 
                             <ion-col size="7">
-                                <ion-label id="addon-mod_survey-{{question.id}}">
-                                    <span [core-mark-required]="question.required">
-                                        <strong>{{question.num}}.</strong> {{ question.text }}
-                                    </span>
-                                </ion-label>
+                                <span id="addon-mod_survey-{{question.name}}" [core-mark-required]="question.required">
+                                    <strong>{{question.num}}.</strong> {{ question.text }}
+                                </span>
                             </ion-col>
 
                             <!-- Tablet view: radio buttons -->
@@ -69,8 +67,8 @@
                             </ion-col>
                             <ion-col class="ion-hide-md-up" size="5">
                                 <ion-select class="ion-padding" [(ngModel)]="answers[question.name]" [required]="question.required"
-                                    [attr.aria-labelledby]="'addon-mod_survey-'+question.id" interface="action-sheet" [name]="question.name"
-                                    [interfaceOptions]="{header: question.text}">
+                                    [attr.aria-labelledby]="'addon-mod_survey-'+question.name" interface="action-sheet"
+                                    [name]="question.name" [interfaceOptions]="{header: question.text}">
                                     <ion-select-option value="-1" selected disabled>{{ 'core.choose' | translate }}</ion-select-option>
                                     <ion-select-option *ngFor="let option of question.optionsArray; let value=index;" [value]="value +1">
                                         {{option}}
@@ -85,17 +83,18 @@
                 <ng-container *ngIf="(!question.multiArray || question.multiArray.length == 0) && question.parent === 0">
                     <ion-row class="ion-align-items-center ion-padding" *ngIf="question.type > 0" [class.even]="isEven">
                         <ion-col size="7">
-                            <ion-label id="addon-mod_survey-{{question.id}}">
-                                <span [core-mark-required]="question.required">
-                                    <strong>{{question.num}}.</strong> {{ question.text }}
-                                </span>
-                            </ion-label>
+                            <span id="addon-mod_survey-{{question.name}}" [core-mark-required]="question.required">
+                                <strong>{{question.num}}.</strong> {{ question.text }}
+                            </span>
                         </ion-col>
                         <ion-col size="5">
                             <ion-select class="ion-padding" [(ngModel)]="answers[question.name]" [required]="question.required"
-                                [attr.aria-labelledby]="'addon-mod_survey-'+question.id" interface="action-sheet" [name]="question.name"
+                                [attr.aria-labelledby]="'addon-mod_survey-'+question.name" interface="action-sheet" [name]="question.name"
                                 [interfaceOptions]="{header: question.text}">
-                                <ion-select-option *ngFor="let option of question.optionsArray; let value=index;" [value]="value">
+                                <ion-select-option [value]="question.required ? '-1' : '0'" selected [disabled]="question.required">
+                                    {{ 'core.choose' | translate }}
+                                </ion-select-option>
+                                <ion-select-option *ngFor="let option of question.optionsArray; let value=index;" [value]="value +1">
                                     {{option}}
                                 </ion-select-option>
                             </ion-select>
@@ -103,13 +102,13 @@
                     </ion-row>
 
                     <ion-item *ngIf="question.type === 0" class="ion-text-wrap" [class.even]="isEven">
-                        <ion-label position="floating" id="addon-mod_survey-{{question.id}}">
+                        <ion-label position="floating" id="addon-mod_survey-{{question.name}}">
                             <span [core-mark-required]="question.required">
                                 <strong>{{question.num}}.</strong> {{ question.text }}
                             </span>
                         </ion-label>
                         <ion-textarea [(ngModel)]="answers[question.name]" [name]="question.name"
-                            [attr.aria-labelledby]="'addon-mod_survey-'+question.id" [required]="question.required">
+                            [attr.aria-labelledby]="'addon-mod_survey-'+question.name" [required]="question.required">
                         </ion-textarea>
                     </ion-item>
                 </ng-container>

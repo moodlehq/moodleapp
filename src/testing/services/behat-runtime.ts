@@ -214,7 +214,7 @@ export class TestsBehatRuntime {
             return 'ERROR: Could not find backdrop';
         }
         if (backdrops.length > 1) {
-            return 'ERROR: Found too many backdrops';
+            return 'ERROR: Found too many backdrops ('+backdrops.length+')';
         }
         const backdrop = backdrops[0];
         backdrop.click();
@@ -378,7 +378,7 @@ export class TestsBehatRuntime {
         titles = titles.filter((title) => TestsBehatDomUtils.isElementVisible(title, document.body));
 
         if (titles.length > 1) {
-            return 'ERROR: Too many possible titles.';
+            return 'ERROR: Too many possible titles ('+titles.length+').';
         } else if (!titles.length) {
             return 'ERROR: No title found.';
         } else {
