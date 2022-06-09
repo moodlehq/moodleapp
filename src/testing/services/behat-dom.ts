@@ -104,7 +104,9 @@ export class TestsBehatDomUtils {
                     }
 
                     if (node instanceof HTMLElement &&
-                        (node.getAttribute('aria-hidden') === 'true' || getComputedStyle(node).display === 'none')) {
+                        (node.getAttribute('aria-hidden') === 'true' ||
+                        node.getAttribute('aria-disabled') === 'true' ||
+                        getComputedStyle(node).display === 'none')) {
                         return NodeFilter.FILTER_REJECT;
                     }
 
