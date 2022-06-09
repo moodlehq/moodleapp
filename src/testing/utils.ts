@@ -19,7 +19,7 @@ import { Observable, Subject } from 'rxjs';
 import { sep } from 'path';
 
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { CoreSingletonProxy, Network, Platform } from '@singletons';
+import { CoreSingletonProxy, Network, Platform, Translate } from '@singletons';
 import { CoreTextUtilsProvider } from '@services/utils/text';
 
 import { TranslatePipeStub } from './stubs/pipes/translate';
@@ -267,5 +267,16 @@ export function wait(time: number): Promise<void> {
         setTimeout(() => {
             resolve();
         }, time);
+    });
+}
+
+/**
+ * Mocks translate service with certain translations.
+ *
+ * @param translations List of translations.
+ */
+export function mockTranslate(translations: Record<string, string>): void {
+    mockSingleton(Translate, {
+        instant: (key) => translations[key] ?? key,
     });
 }
