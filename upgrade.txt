@@ -1,9 +1,10 @@
 This files describes API changes in the Moodle Mobile app,
 information provided here is intended especially for developers.
 
-=== 4.0.1 ===
+=== 4.1.0 ===
 
 - Zoom levels changed from "normal / low / high" to " none / medium / high".
+- --addon-messages-* CSS3 variables have been renamed to --core-messages-*
 
 === 4.0.0 ===
 

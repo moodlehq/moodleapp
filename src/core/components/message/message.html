@@ -1,0 +1,45 @@
+<div *ngIf="message" class="message-box" (longPress)="copyMessage()">
+    <div class="main">
+        <!-- User data. -->
+        <div class="message-user" *ngIf="message.showUserData">
+            <core-user-avatar slot="start" [user]="user" [courseId]="courseId" [linkProfile]="false" aria-hidden="true">
+            </core-user-avatar>
+            <div>{{ userFullname }}</div>
+        </div>
+        <div *ngIf="!message.showUserData" class="sr-only">
+            {{ isMine
+            ? ('addon.messages.you' | translate)
+            : userFullname }}
+        </div>
+
+        <core-format-text class="message-text" [text]="text" (afterRender)="afterRender.emit()" [contextLevel]="contextLevel"
+            [contextInstanceId]="instanceId" [courseId]="courseId">
+        </core-format-text>
+    </div>
+
+    <div class="extra">
+        <div class="message-time">
+            <ng-container *ngIf="!message.pending && !message.deleted">
+                {{ time | coreFormatDate: 'strftimetime' }}
+            </ng-container>
+            <ng-container *ngIf="!message.pending && message.deleted">
+                <ion-icon name="fas-trash" aria-hidden="true"></ion-icon>
+                <span class="ion-text-wrap">
+                    {{ 'core.deletedoffline' | translate }}
+                </span>
+            </ng-container>
+            <ion-icon *ngIf="message.pending" name="fas-clock" [attr.aria-label]="'core.notsent' | translate" role="status"></ion-icon>
+        </div>
+
+        <ion-button *ngIf="showDelete && !message.deleted && message.delete !== false" fill="clear" [@coreSlideInOut]="'fromRight'"
+            color="danger" (click)="delete($event)" [attr.aria-label]="'addon.messages.deletemessage' | translate" class="delete-button">
+            <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
+        </ion-button>
+        <ion-button *ngIf="showDelete && message.deleted" fill="clear" color="danger" (click)="undoDelete($event)"
+            [attr.aria-label]="'core.restore' | translate" class="delete-button">
+            <ion-icon name="fas-undo-alt" slot="icon-only" aria-hidden="true"></ion-icon>
+        </ion-button>
+    </div>
+
+    <div class="tail" *ngIf="message.showTail"></div>
+</div>

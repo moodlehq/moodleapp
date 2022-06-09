@@ -156,7 +156,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
 /**
  * Type with all possible formats of user.
  */
-type CoreUserWithAvatar = CoreUserBasicData & {
+export type CoreUserWithAvatar = CoreUserBasicData & {
     userpictureurl?: string;
     userprofileimageurl?: string;
     profileimageurlsmall?: string;

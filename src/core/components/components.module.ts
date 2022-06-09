@@ -61,6 +61,7 @@ import { CoreHorizontalScrollControlsComponent } from './horizontal-scroll-contr
 import { CoreButtonWithSpinnerComponent } from './button-with-spinner/button-with-spinner';
 import { CoreSwipeSlidesComponent } from './swipe-slides/swipe-slides';
 import { CoreSwipeNavigationTourComponent } from './swipe-navigation-tour/swipe-navigation-tour';
+import { CoreMessageComponent } from './message/message';
 
 @NgModule({
     declarations: [
@@ -84,6 +85,7 @@ import { CoreSwipeNavigationTourComponent } from './swipe-navigation-tour/swipe-
         CoreLoadingComponent,
         CoreLocalFileComponent,
         CoreMarkRequiredComponent,
+        CoreMessageComponent,
         CoreModIconComponent,
         CoreNavBarButtonsComponent,
         CoreNavigationBarComponent,
@@ -134,6 +136,7 @@ import { CoreSwipeNavigationTourComponent } from './swipe-navigation-tour/swipe-
         CoreLoadingComponent,
         CoreLocalFileComponent,
         CoreMarkRequiredComponent,
+        CoreMessageComponent,
         CoreModIconComponent,
         CoreNavBarButtonsComponent,
         CoreNavigationBarComponent,

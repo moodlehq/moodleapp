@@ -37,7 +37,6 @@ import { CoreApp } from '@services/app';
 import { CoreInfiniteLoadingComponent } from '@components/infinite-loading/infinite-loading';
 import { Md5 } from 'ts-md5/dist/md5';
 import moment from 'moment';
-import { CoreAnimations } from '@components/animations';
 import { CoreError } from '@classes/errors/error';
 import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
@@ -53,7 +52,6 @@ import { CoreDom } from '@singletons/dom';
 @Component({
     selector: 'page-addon-messages-discussion',
     templateUrl: 'discussion.html',
-    animations: [CoreAnimations.SLIDE_IN_OUT],
     styleUrls: ['discussion.scss'],
 })
 export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterViewInit {
@@ -305,7 +303,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             } else {
                 if (this.userId) {
                     // Fake the user member info.
-                    promises.push(CoreUser.getProfile(this.userId!).then(async (user) => {
+                    promises.push(CoreUser.getProfile(this.userId).then(async (user) => {
                         this.otherMember = {
                             id: user.id,
                             fullname: user.fullname,
@@ -524,7 +522,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             return;
         }
 
-        const messages = Array.from(this.hostElement.querySelectorAll('.addon-message-not-mine'))
+        const messages = Array.from(this.hostElement.querySelectorAll('core-message:not(.is-mine)'))
             .slice(-this.newMessages)
             .reverse();
 
@@ -555,7 +553,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
         // Try to get the conversationId if we don't have it.
         if (!conversationId && userId) {
             try {
-                if (userId == this.currentUserId && AddonMessages.isSelfConversationEnabled()) {
+                if (userId === this.currentUserId && AddonMessages.isSelfConversationEnabled()) {
                     fallbackConversation = await AddonMessages.getSelfConversation();
                 } else {
                     fallbackConversation = await AddonMessages.getConversationBetweenUsers(userId, undefined, true);
@@ -563,7 +561,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                 conversationId = fallbackConversation.id;
             } catch (error) {
                 // Probably conversation does not exist or user is offline. Try to load offline messages.
-                this.isSelf = userId == this.currentUserId;
+                this.isSelf = userId === this.currentUserId;
 
                 const messages = await AddonMessagesOffline.getMessages(userId);
 
@@ -584,11 +582,15 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             }
         }
 
+        if (!conversationId) {
+            return false;
+        }
+
         // Retrieve the conversation. Invalidate data first to get the right unreadcount.
-        await AddonMessages.invalidateConversation(conversationId!);
+        await AddonMessages.invalidateConversation(conversationId);
 
         try {
-            this.conversation = await AddonMessages.getConversation(conversationId!, undefined, true);
+            this.conversation = await AddonMessages.getConversation(conversationId, undefined, true);
         } catch (error) {
             // Get conversation failed, use the fallback one if we have it.
             if (fallbackConversation) {
@@ -947,7 +949,6 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
         message: AddonMessagesConversationMessageFormatted,
         index: number,
     ): Promise<void> {
-
         const canDeleteAll = this.conversation && this.conversation.candeletemessagesforallusers;
         const langKey = message.pending || canDeleteAll || this.isSelf ? 'core.areyousure' :
             'addon.messages.deletemessageconfirmation';
@@ -1099,7 +1100,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
      */
     scrollToFirstUnreadMessage(): void {
         if (this.newMessages > 0) {
-            const messages = Array.from(this.hostElement.querySelectorAll<HTMLElement>('.addon-message-not-mine'));
+            const messages = Array.from(this.hostElement.querySelectorAll<HTMLElement>('core-message:not(.is-mine)'));
 
             CoreDom.scrollToElement(messages[messages.length - this.newMessages]);
         }
