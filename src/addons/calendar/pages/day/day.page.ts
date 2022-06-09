@@ -669,9 +669,7 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
         try {
             // Don't pass courseId and categoryId, we'll filter them locally.
             result = await AddonCalendar.getDayEvents(day.moment.year(), day.moment.month() + 1, day.moment.date());
-            preloadedDay.onlineEvents = await Promise.all(
-                result.events.map((event) => AddonCalendarHelper.formatEventData(event)),
-            );
+            preloadedDay.onlineEvents = result.events.map((event) => AddonCalendarHelper.formatEventData(event));
         } catch (error) {
             // Allow navigating to non-cached days in offline (behave as if using emergency cache).
             if (CoreNetwork.isOnline()) {

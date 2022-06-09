@@ -46,7 +46,7 @@ export class AddonModLabelModuleHandlerService extends CoreModuleHandlerBase imp
     /**
      * @inheritdoc
      */
-    async getData(module: CoreCourseModuleData): Promise<CoreCourseModuleHandlerData> {
+    getData(module: CoreCourseModuleData): CoreCourseModuleHandlerData {
         // Remove the description from the module so it isn't rendered twice.
         const title = module.description || '';
         module.description = '';

@@ -164,9 +164,9 @@ export class AddonCalendarHelperProvider {
      *
      * @param event Event to format.
      */
-    async formatEventData(
+    formatEventData(
         event: AddonCalendarEvent | AddonCalendarEventBase | AddonCalendarGetEventsEvent,
-    ): Promise<AddonCalendarEventToDisplay> {
+    ): AddonCalendarEventToDisplay {
 
         const eventFormatted: AddonCalendarEventToDisplay = {
             ...event,
@@ -181,7 +181,7 @@ export class AddonCalendarHelperProvider {
         };
 
         if (event.modulename) {
-            eventFormatted.eventIcon = await CoreCourse.getModuleIconSrc(event.modulename);
+            eventFormatted.eventIcon = CoreCourse.getModuleIconSrc(event.modulename);
             eventFormatted.moduleIcon = eventFormatted.eventIcon;
             eventFormatted.iconTitle = CoreCourse.translateModuleName(event.modulename);
         }

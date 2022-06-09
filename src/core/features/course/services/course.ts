@@ -783,7 +783,7 @@ export class CoreCourseProvider {
      * @param modicon The mod icon string to use in case we are not using a core activity.
      * @return The IMG src.
      */
-    async getModuleIconSrc(moduleName: string, modicon?: string, mimetypeIcon = ''): Promise<string> {
+    getModuleIconSrc(moduleName: string, modicon?: string, mimetypeIcon = ''): string {
         if (mimetypeIcon) {
             return mimetypeIcon;
         }

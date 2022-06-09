@@ -76,7 +76,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
             module.description = '';
 
             return {
-                icon: await CoreCourse.getModuleIconSrc(module.modname, icon),
+                icon: CoreCourse.getModuleIconSrc(module.modname, icon),
                 title: title || '',
                 a11yTitle: '',
                 class: this.handlerSchema.displaydata?.class,
@@ -87,7 +87,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
         const showDowloadButton = this.handlerSchema.downloadbutton;
         const handlerData: CoreCourseModuleHandlerData = {
             title: module.name,
-            icon: await CoreCourse.getModuleIconSrc(module.modname, icon),
+            icon: CoreCourse.getModuleIconSrc(module.modname, icon),
             class: this.handlerSchema.displaydata?.class,
             showDownloadButton: showDowloadButton !== undefined ? showDowloadButton : hasOffline,
         };

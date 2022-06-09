@@ -49,12 +49,12 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
     /**
      * @inheritdoc
      */
-    async ngOnChanges(changes: {[name: string]: SimpleChange}): Promise<void> {
+    ngOnChanges(changes: {[name: string]: SimpleChange}): void {
         this.showCourse = !this.course;
 
         if (changes.events || changes.from || changes.to) {
             if (this.events) {
-                const filteredEvents = await this.filterEventsByTime();
+                const filteredEvents = this.filterEventsByTime();
                 this.empty = !filteredEvents || filteredEvents.length <= 0;
 
                 const eventsByDay: Record<number, AddonBlockTimelineEvent[]> = {};
@@ -88,7 +88,7 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
      *
      * @return Filtered events.
      */
-    protected async filterEventsByTime(): Promise<AddonBlockTimelineEvent[]> {
+    protected filterEventsByTime(): AddonBlockTimelineEvent[] {
         const start = AddonBlockTimeline.getDayStart(this.from);
         const end = this.to !== undefined
             ? AddonBlockTimeline.getDayStart(this.to)
@@ -97,7 +97,7 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
         const now = CoreTimeUtils.timestamp();
         const midnight = AddonBlockTimeline.getDayStart();
 
-        return await Promise.all(this.events.filter((event) => {
+        return this.events.filter((event) => {
             if (start > event.timesort || (end && event.timesort >= end)) {
                 return false;
             }
@@ -114,13 +114,13 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
             // When filtering by overdue, we fetch all events due today, in case any have elapsed already and are overdue.
             // This means if filtering by overdue, some events fetched might not be required (eg if due later today).
             return (!this.overdue || event.overdue);
-        }).map(async (event) => {
-            event.iconUrl = await CoreCourse.getModuleIconSrc(event.icon.component);
+        }).map((event) => {
+            event.iconUrl = CoreCourse.getModuleIconSrc(event.icon.component);
             event.modulename = event.modulename || event.icon.component;
             event.iconTitle = CoreCourse.translateModuleName(event.modulename);
 
             return event;
-        }));
+        });
     }
 
     /**
