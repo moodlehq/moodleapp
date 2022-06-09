@@ -39,7 +39,7 @@ export class CoreTime {
         let remainder = totalSecs - (years * CoreConstants.SECONDS_YEAR);
         const days = Math.floor(remainder / CoreConstants.SECONDS_DAY);
 
-        remainder = totalSecs - (days * CoreConstants.SECONDS_DAY);
+        remainder = remainder - (days * CoreConstants.SECONDS_DAY);
 
         const hours = Math.floor(remainder / CoreConstants.SECONDS_HOUR);
         remainder = remainder - (hours * CoreConstants.SECONDS_HOUR);
