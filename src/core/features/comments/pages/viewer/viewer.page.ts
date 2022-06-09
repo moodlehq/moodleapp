@@ -222,13 +222,15 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
      * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
      * @return Resolved when done.
      */
-    loadPrevious(infiniteComplete?: () => void): Promise<void> {
+    async loadPrevious(infiniteComplete?: () => void): Promise<void> {
         this.page++;
         this.canLoadMore = false;
 
-        return this.fetchComments(true).finally(() => {
+        try {
+            await this.fetchComments(true);
+        } finally {
             infiniteComplete && infiniteComplete();
-        });
+        }
     }
 
     /**
