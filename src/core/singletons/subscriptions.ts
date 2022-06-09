@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { EventEmitter } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 /**
  * Subscribable object.
@@ -33,20 +33,29 @@ export class CoreSubscriptions {
      * @param onError Callback to run when the an error happens.
      */
     static once<T>(subscribable: Subscribable<T>, onSuccess: (value: T) => unknown, onError?: (error: unknown) => unknown): void {
-        const subscription = subscribable.subscribe(
+        let unsubscribe = false;
+        let subscription: Subscription | null = null;
+
+        subscription = subscribable.subscribe(
             value => {
-                // Unsubscribe using a timeout because we can receive a value immediately.
-                setTimeout(() => subscription.unsubscribe(), 0);
+                // Subscription variable might not be set because we can receive a value immediately.
+                unsubscribe = true;
+                subscription?.unsubscribe();
 
                 onSuccess(value);
             },
             error => {
-                // Unsubscribe using a timeout because we can receive a value immediately.
-                setTimeout(() => subscription.unsubscribe(), 0);
+                // Subscription variable might not be set because we can receive a value immediately.
+                unsubscribe = true;
+                subscription?.unsubscribe();
 
                 onError && onError(error);
             },
         );
+
+        if (unsubscribe) {
+            subscription.unsubscribe();
+        }
     }
 
 }
