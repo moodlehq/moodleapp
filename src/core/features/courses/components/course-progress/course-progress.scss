@@ -113,6 +113,12 @@
     }
 }
 
+// Common styles.
+// Simulate item[disabled] but keep pointer-events for hidden courses.
+ion-item.core-course-disabled {
+    opacity: .8;
+}
+
 :host-context(.core-horizontal-scroll) {
     @include horizontal_scroll_item(80%, 250px, 300px);
 
