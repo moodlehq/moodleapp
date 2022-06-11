@@ -28,7 +28,7 @@
     </ng-container>
 
     <ion-item class="ion-text-wrap" button detail="false" (click)="openCourse()" [attr.aria-label]="course.displayname || course.fullname"
-        [class.item-disabled]="course.visible == 0">
+        [class.core-course-disabled]="course.visible == 0">
 
         <ng-container *ngIf="layout == 'list' || layout == 'listwithenrol'">
             <ion-icon *ngIf="!course.courseImage" name="fas-graduation-cap" slot="start" class="course-icon core-course-thumb"

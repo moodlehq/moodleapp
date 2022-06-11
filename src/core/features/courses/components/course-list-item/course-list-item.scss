@@ -39,6 +39,11 @@
     color: var(--core-star-color);
 }
 
+// Simulate item[disabled] but keep pointer-events for hidden courses.
+ion-item.core-course-disabled {
+    opacity: .8;
+}
+
 button {
     z-index: 1;
 }
