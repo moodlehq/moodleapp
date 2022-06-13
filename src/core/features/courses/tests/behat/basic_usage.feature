@@ -10,20 +10,23 @@ Feature: Test basic usage of courses in app
       | teacher1 | Teacher | teacher | teacher1@example.com |
       | student1 | Student | student | student1@example.com |
     And the following "courses" exist:
-      | fullname | shortname | category |
-      | Course 1 | C1 | 0 |
-      | Course 2 | C2 | 0 |
-      | Course 3 | C3 | 0 |
-      | Course 4 | C4 | 0 |
+      | fullname | shortname | category | visible |
+      | Course 1 | C1 | 0 | 1 |
+      | Course 2 | C2 | 0 | 1 |
+      | Course 3 | C3 | 0 | 1 |
+      | Course 4 | C4 | 0 | 1 |
+      | Hidden course | CH | 0 | 0 |
     And the following "course enrolments" exist:
       | user | course | role |
       | teacher1 | C1 | editingteacher |
       | teacher1 | C2 | editingteacher |
       | teacher1 | C3 | editingteacher |
       | teacher1 | C4 | editingteacher |
+      | teacher1 | CH | editingteacher |
       | student1 | C1 | student |
       | student1 | C2 | student |
       | student1 | C3 | student |
+      | student1 | CH | student |
     And the following "activities" exist:
       | activity | name            | intro                   | course | idnumber | option                       |
       | choice   | Choice course 1 | Test choice description | C1     | choice1  | Option 1, Option 2, Option 3 |
@@ -48,6 +51,18 @@ Feature: Test basic usage of courses in app
     Then I should find "Course 1" in the app
     And I should find "Course 2" in the app
     And I should find "Course 3" in the app
+
+  @lms_from4.0
+  Scenario: Hidden course is only accessible for teachers
+    Given I entered the app as "teacher1"
+    And I press "My courses" in the app
+    When I press "Hidden course" in the app
+    Then the header should be "Hidden course" in the app
+
+    Given I entered the app as "student1"
+    And I press "My courses" in the app
+    And I should not find "Hidden course" in the app
+
 
   @lms_from4.0
   Scenario: See my courses
