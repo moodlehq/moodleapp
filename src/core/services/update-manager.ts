@@ -128,7 +128,7 @@ export class CoreUpdateManagerProvider {
     }
 
     protected async upgradeFontSizeNames(): Promise<void> {
-        const storedFontSizeName = await CoreConfig.get(CoreConstants.SETTINGS_ZOOM_LEVEL);
+        const storedFontSizeName = await CoreConfig.get<string>(CoreConstants.SETTINGS_ZOOM_LEVEL, CoreZoomLevel.NONE);
         switch (storedFontSizeName) {
             case 'low':
                 await CoreConfig.set(CoreConstants.SETTINGS_ZOOM_LEVEL, CoreZoomLevel.NONE);
