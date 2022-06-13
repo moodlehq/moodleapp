@@ -27,7 +27,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils, OpenFileAction } from '@services/utils/utils';
-import { Network, NgZone, Translate } from '@singletons';
+import { NgZone, Translate } from '@singletons';
 import { Subscription } from 'rxjs';
 import {
     AddonModResource,
@@ -83,7 +83,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
         this.isOnline = CoreNetwork.isOnline();
 
         // Refresh online status when changes.
-        this.onlineObserver = Network.onChange().subscribe(() => {
+        this.onlineObserver = CoreNetwork.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             NgZone.run(() => {
                 this.isOnline = CoreNetwork.isOnline();

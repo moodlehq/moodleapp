@@ -23,7 +23,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { Network, NgZone, Translate } from '@singletons';
+import { NgZone, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { Subscription } from 'rxjs';
 import { AddonModChatUsersModalComponent, AddonModChatUsersModalResult } from '../../components/users-modal/users-modal';
@@ -67,7 +67,7 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
     constructor() {
         this.currentUserId = CoreSites.getCurrentSiteUserId();
         this.isOnline = CoreNetwork.isOnline();
-        this.onlineSubscription = Network.onChange().subscribe(() => {
+        this.onlineSubscription = CoreNetwork.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             NgZone.run(() => {
                 this.isOnline = CoreNetwork.isOnline();

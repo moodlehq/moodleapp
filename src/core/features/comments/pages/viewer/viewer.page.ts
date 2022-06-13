@@ -30,7 +30,7 @@ import {
 import { IonContent, IonRefresher } from '@ionic/angular';
 import { ContextLevel, CoreConstants } from '@/core/constants';
 import { CoreNavigator } from '@services/navigator';
-import { Network, NgZone, Translate } from '@singletons';
+import { NgZone, Translate } from '@singletons';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUser } from '@features/user/services/user';
@@ -110,7 +110,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
         }, CoreSites.getCurrentSiteId());
 
         this.isOnline = CoreNetwork.isOnline();
-        this.onlineObserver = Network.onChange().subscribe(() => {
+        this.onlineObserver = CoreNetwork.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             NgZone.run(() => {
                 this.isOnline = CoreNetwork.isOnline();

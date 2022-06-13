@@ -30,7 +30,7 @@ import { CoreScreen } from '@services/screen';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { Network, NgZone, Translate } from '@singletons';
+import { NgZone, Translate } from '@singletons';
 import { CoreArray } from '@singletons/array';
 import { CoreDom } from '@singletons/dom';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -166,7 +166,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
 
         this.isOnline = CoreNetwork.isOnline();
         this.externalUrl = CoreSites.getCurrentSite()?.createSiteUrl('/mod/forum/discuss.php', { d: this.discussionId.toString() });
-        this.onlineObserver = Network.onChange().subscribe(() => {
+        this.onlineObserver = CoreNetwork.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             NgZone.run(() => {
                 this.isOnline = CoreNetwork.isOnline();

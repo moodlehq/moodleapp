@@ -25,7 +25,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 
-import { makeSingleton, Network, NgZone, Translate, Diagnostic } from '@singletons';
+import { makeSingleton, NgZone, Translate, Diagnostic } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreUrl } from '@singletons/url';
 import { CoreWindow } from '@singletons/window';
@@ -76,7 +76,7 @@ export class CoreIframeUtilsProvider {
             this.addOfflineWarning(element, src, isSubframe);
 
             // If the network changes, check it again.
-            const subscription = Network.onConnect().subscribe(() => {
+            const subscription = CoreNetwork.onConnect().subscribe(() => {
                 // Execute the callback in the Angular zone, so change detection doesn't stop working.
                 NgZone.run(() => {
                     if (!this.checkOnlineFrameInOffline(element, isSubframe)) {

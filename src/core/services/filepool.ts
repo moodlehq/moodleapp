@@ -31,7 +31,7 @@ import { CoreUtils, CoreUtilsOpenFileOptions } from '@services/utils/utils';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreError } from '@classes/errors/error';
 import { CoreConstants } from '@/core/constants';
-import { ApplicationInit, makeSingleton, Network, NgZone, Translate } from '@singletons';
+import { ApplicationInit, makeSingleton, NgZone, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import {
     APP_SCHEMA,
@@ -150,7 +150,7 @@ export class CoreFilepoolProvider {
             this.checkQueueProcessing();
 
             // Start queue when device goes online.
-            Network.onConnect().subscribe(() => {
+            CoreNetwork.onConnect().subscribe(() => {
                 // Execute the callback in the Angular zone, so change detection doesn't stop working.
                 NgZone.run(() => this.checkQueueProcessing());
             });

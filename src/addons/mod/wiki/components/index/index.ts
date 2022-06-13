@@ -27,7 +27,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { Network, Translate, NgZone } from '@singletons';
+import { Translate, NgZone } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreText } from '@singletons/text';
 import { Subscription } from 'rxjs';
@@ -119,7 +119,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
         this.isOnline = CoreNetwork.isOnline();
 
         // Refresh online status when changes.
-        this.onlineSubscription = Network.onChange().subscribe(() => {
+        this.onlineSubscription = CoreNetwork.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             NgZone.run(() => {
                 this.isOnline = CoreNetwork.isOnline();

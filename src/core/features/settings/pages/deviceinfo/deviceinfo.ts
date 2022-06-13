@@ -16,7 +16,7 @@ import { CoreApp } from '@services/app';
 import { Component, OnDestroy } from '@angular/core';
 import { CoreConstants } from '@/core/constants';
 import { CoreLocalNotifications } from '@services/local-notifications';
-import { Device, Platform, Translate, Network, NgZone } from '@singletons';
+import { Device, Platform, Translate, NgZone } from '@singletons';
 import { CoreLang } from '@services/lang';
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
@@ -82,7 +82,6 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
     protected onlineObserver?: Subscription;
 
     constructor() {
-        const appProvider = CoreApp.instance;
         const sitesProvider = CoreSites.instance;
         const device = Device.instance;
         const translate = Translate.instance;
@@ -112,10 +111,10 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
 
         if (CorePlatform.isMobile()) {
             this.deviceInfo.deviceType = Platform.is('tablet') ? 'tablet' : 'phone';
-            if (appProvider.isAndroid()) {
+            if (CoreApp.isAndroid()) {
                 this.deviceInfo.deviceOs = 'android';
                 this.deviceOsTranslated = 'Android';
-            } else if (appProvider.isIOS()) {
+            } else if (CoreApp.isIOS()) {
                 this.deviceInfo.deviceOs = 'ios';
                 this.deviceOsTranslated = 'iOS';
             } else {
@@ -177,7 +176,7 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
         this.deviceInfo.siteVersion = currentSite?.getInfo()?.release;
 
         // Refresh online status when changes.
-        this.onlineObserver = Network.onChange().subscribe(() => {
+        this.onlineObserver = CoreNetwork.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             NgZone.run(() => {
                 this.deviceInfo.networkStatus = CoreNetwork.isOnline() ? 'online' : 'offline';
