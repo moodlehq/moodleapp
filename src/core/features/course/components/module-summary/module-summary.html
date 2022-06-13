@@ -24,8 +24,8 @@
                     </core-format-text>
                 </h1>
             </ion-label>
-            <ion-button fill="clear" *ngIf="displayOptions.displayOpenInBrowser" [href]="externalUrl" core-link [showBrowserWarning]="false"
-                [attr.aria-label]="'core.openinbrowser' | translate" slot="end">
+            <ion-button fill="clear" *ngIf="displayOptions.displayOpenInBrowser && externalUrl" [href]="externalUrl" core-link
+                [showBrowserWarning]="false" [attr.aria-label]="'core.openinbrowser' | translate" slot="end">
                 <ion-icon name="fas-external-link-alt" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-item>
