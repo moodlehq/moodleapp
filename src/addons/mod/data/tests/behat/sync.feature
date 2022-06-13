@@ -36,8 +36,9 @@ Feature: Users can store entries in database activities when offline and sync wh
     And I switch offline mode to "true"
     And I should find "No entries in database" in the app
     When I press "Add entries" in the app
-    And I set the field "URL" to "https://moodle.org/" in the app
-    And I set the field "Description" to "Moodle community site" in the app
+    And I set the following fields to these values in the app:
+      | URL | https://moodle.org/ |
+      | Description | Moodle community site |
     And I press "Save" near "Web links" in the app
     Then I should find "https://moodle.org/" in the app
     And I should find "Moodle community site" in the app
@@ -53,8 +54,9 @@ Feature: Users can store entries in database activities when offline and sync wh
     Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app
     And I should find "No entries in database" in the app
     And I press "Add entries" in the app
-    And I set the field "URL" to "https://moodle.org/" in the app
-    And I set the field "Description" to "Moodle community site" in the app
+    And I set the following fields to these values in the app:
+      | URL | https://moodle.org/ |
+      | Description | Moodle community site |
     And I press "Save" near "Web links" in the app
     And I should find "https://moodle.org/" in the app
     And I should find "Moodle community site" in the app
@@ -63,8 +65,9 @@ Feature: Users can store entries in database activities when offline and sync wh
     And I wait until the page is ready
     And I switch offline mode to "true"
     When I press "Edit" in the app
-    And I set the field "URL" to "https://moodlecloud.com/" in the app
-    And I set the field "Description" to "Moodle Cloud" in the app
+    And I set the following fields to these values in the app:
+      | URL | https://moodlecloud.com/ |
+      | Description | Moodle Cloud |
     And I press "Save" near "Web links" in the app
     Then I should not find "https://moodle.org/" in the app
     And I should not find "Moodle community site" in the app
@@ -100,8 +103,9 @@ Feature: Users can store entries in database activities when offline and sync wh
     Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app
     And I should find "No entries in database" in the app
     And I press "Add entries" in the app
-    And I set the field "URL" to "https://moodle.org/" in the app
-    And I set the field "Description" to "Moodle community site" in the app
+    And I set the following fields to these values in the app:
+      | URL | https://moodle.org/ |
+      | Description | Moodle community site |
     And I press "Save" near "Web links" in the app
     And I should find "https://moodle.org/" in the app
     And I should find "Moodle community site" in the app

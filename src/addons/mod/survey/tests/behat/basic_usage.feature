@@ -76,11 +76,12 @@ Feature: Test basic usage of survey activity in app
       | activity | name                           | intro        | template |course | idnumber | groupmode |
       | survey   | Test survey critical incidents | Test survey1 | 5        | C1    | survey1  | 0         |
     Given I entered the survey activity "Test survey critical incidents" on course "Course 1" as "student1" in the app
-    And I set the field "At what moment in class were you most engaged as a learner?" to "1st answer" in the app
-    And I set the field "At what moment in class were you most distanced as a learner?" to "2nd answer" in the app
-    And I set the field "What action from anyone in the forums did you find most affirming or helpful?" to "3rd answer" in the app
-    And I set the field "What action from anyone in the forums did you find most puzzling or confusing?" to "4th answer" in the app
-    And I set the field "What event surprised you most?" to "5th answer" in the app
+    And I set the following fields to these values in the app:
+      | At what moment in class were you most engaged as a learner? | 1st answer |
+      | At what moment in class were you most distanced as a learner? | 2nd answer |
+      | What action from anyone in the forums did you find most affirming or helpful? | 3rd answer |
+      | What action from anyone in the forums did you find most puzzling or confusing? | 4th answer |
+      | What event surprised you most? | 5th answer |
     And I press "Submit" in the app
     And I press "OK" in the app
     Then I should see "Results"

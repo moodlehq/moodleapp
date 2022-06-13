@@ -27,8 +27,9 @@ Feature: Test basic usage of forum activity in app
   Scenario: Create new discussion
     Given I entered the forum activity "Test forum name" on course "Course 1" as "student1" in the app
     When I press "Add discussion topic" in the app
-    And I set the field "Subject" to "My happy subject" in the app
-    And I set the field "Message" to "An awesome message" in the app
+    And I set the following fields to these values in the app:
+      | Subject | My happy subject |
+      | Message | An awesome message |
     And I press "Post to forum" in the app
     Then I should find "My happy subject" in the app
 
@@ -38,8 +39,9 @@ Feature: Test basic usage of forum activity in app
   Scenario: Reply a post
     Given I entered the forum activity "Test forum name" on course "Course 1" as "student1" in the app
     When I press "Add discussion topic" in the app
-    And I set the field "Subject" to "DiscussionSubject" in the app
-    And I set the field "Message" to "DiscussionMessage" in the app
+    And I set the following fields to these values in the app:
+      | Subject | DiscussionSubject |
+      | Message | DiscussionMessage |
     And I press "Post to forum" in the app
     And I press "DiscussionSubject" in the app
     Then I should find "Reply" in the app
@@ -53,12 +55,14 @@ Feature: Test basic usage of forum activity in app
   Scenario: Star and pin discussions (student)
     Given I entered the forum activity "Test forum name" on course "Course 1" as "student1" in the app
     When I press "Add discussion topic" in the app
-    And I set the field "Subject" to "starred subject" in the app
-    And I set the field "Message" to "starred message" in the app
+    And I set the following fields to these values in the app:
+      | Subject | starred subject |
+      | Message | starred message |
     And I press "Post to forum" in the app
     And I press "Add discussion topic" in the app
-    And I set the field "Subject" to "normal subject" in the app
-    And I set the field "Message" to "normal message" in the app
+    And I set the following fields to these values in the app:
+      | Subject | normal subject |
+      | Message | normal message |
     And I press "Post to forum" in the app
     And I press "starred subject" in the app
     Then I should find "starred message" in the app
@@ -86,16 +90,19 @@ Feature: Test basic usage of forum activity in app
   Scenario: Star and pin discussions (teacher)
     Given I entered the forum activity "Test forum name" on course "Course 1" as "teacher1" in the app
     When I press "Add discussion topic" in the app
-    And I set the field "Subject" to "Auto-test star" in the app
-    And I set the field "Message" to "Auto-test star message" in the app
+    And I set the following fields to these values in the app:
+      | Subject | Auto-test star |
+      | Message | Auto-test star message |
     And I press "Post to forum" in the app
     And I press "Add discussion topic" in the app
-    And I set the field "Subject" to "Auto-test pin" in the app
-    And I set the field "Message" to "Auto-test pin message" in the app
+    And I set the following fields to these values in the app:
+      | Subject | Auto-test pin |
+      | Message | Auto-test pin message |
     And I press "Post to forum" in the app
     And I press "Add discussion topic" in the app
-    And I set the field "Subject" to "Auto-test plain" in the app
-    And I set the field "Message" to "Auto-test plain message" in the app
+    And I set the following fields to these values in the app:
+      | Subject | Auto-test plain |
+      | Message | Auto-test plain message |
     And I press "Post to forum" in the app
     And I press "Display options" near "Auto-test star" in the app
     And I press "Star this discussion" in the app
@@ -115,8 +122,9 @@ Feature: Test basic usage of forum activity in app
   Scenario: Edit a not sent reply offline
     Given I entered the forum activity "Test forum name" on course "Course 1" as "student1" in the app
     When I press "Add discussion topic" in the app
-    And I set the field "Subject" to "Auto-test" in the app
-    And I set the field "Message" to "Auto-test message" in the app
+    And I set the following fields to these values in the app:
+      | Subject | Auto-test |
+      | Message | Auto-test message |
     And I press "Post to forum" in the app
     And I press "Auto-test" near "Sort by last post creation date in descending order" in the app
     And I should find "Reply" in the app
@@ -148,8 +156,9 @@ Feature: Test basic usage of forum activity in app
     Given I entered the forum activity "Test forum name" on course "Course 1" as "student1" in the app
     When I switch offline mode to "true"
     And I press "Add discussion topic" in the app
-    And I set the field "Subject" to "Auto-test" in the app
-    And I set the field "Message" to "Auto-test message" in the app
+    And I set the following fields to these values in the app:
+      | Subject | Auto-test |
+      | Message | Auto-test message |
     And I press "Post to forum" in the app
     And I press "Auto-test" in the app
     And I set the field "Message" to "Auto-test message edited" in the app
@@ -169,8 +178,9 @@ Feature: Test basic usage of forum activity in app
   Scenario: Edit a forum post (only online)
     Given I entered the forum activity "Test forum name" on course "Course 1" as "student1" in the app
     When I press "Add discussion topic" in the app
-    And I set the field "Subject" to "Auto-test" in the app
-    And I set the field "Message" to "Auto-test message" in the app
+    And I set the following fields to these values in the app:
+      | Subject | Auto-test |
+      | Message | Auto-test message |
     And I press "Post to forum" in the app
     Then I should find "Auto-test" in the app
 
@@ -194,8 +204,9 @@ Feature: Test basic usage of forum activity in app
   Scenario: Delete a forum post (only online)
     Given I entered the forum activity "Test forum name" on course "Course 1" as "student1" in the app
     When I press "Add discussion topic" in the app
-    And I set the field "Subject" to "Auto-test" in the app
-    And I set the field "Message" to "Auto-test message" in the app
+    And I set the following fields to these values in the app:
+      | Subject | Auto-test |
+      | Message | Auto-test message |
     And I press "Post to forum" in the app
     Then I should find "Auto-test" in the app
 
@@ -230,8 +241,9 @@ Feature: Test basic usage of forum activity in app
   Scenario: Add/view ratings
     Given I entered the forum activity "Test forum name" on course "Course 1" as "student1" in the app
     When I press "Add discussion topic" in the app
-    And I set the field "Subject" to "Auto-test" in the app
-    And I set the field "Message" to "Auto-test message" in the app
+    And I set the following fields to these values in the app:
+      | Subject | Auto-test |
+      | Message | Auto-test message |
     And I press "Post to forum" in the app
     And I press "Auto-test" in the app
     Then I should find "Reply" in the app
@@ -276,8 +288,9 @@ Feature: Test basic usage of forum activity in app
   Scenario: Reply a post offline
     Given I entered the forum activity "Test forum name" on course "Course 1" as "student1" in the app
     When I press "Add discussion topic" in the app
-    And I set the field "Subject" to "DiscussionSubject" in the app
-    And I set the field "Message" to "DiscussionMessage" in the app
+    And I set the following fields to these values in the app:
+      | Subject | DiscussionSubject |
+      | Message | DiscussionMessage |
     And I press "Post to forum" in the app
     And I press the back button in the app
     And I press "Course downloads" in the app
@@ -306,8 +319,9 @@ Feature: Test basic usage of forum activity in app
     Given I entered the forum activity "Test forum name" on course "Course 1" as "student1" in the app
     When I switch offline mode to "true"
     And I press "Add discussion topic" in the app
-    And I set the field "Subject" to "DiscussionSubject" in the app
-    And I set the field "Message" to "DiscussionMessage" in the app
+    And I set the following fields to these values in the app:
+      | Subject | DiscussionSubject |
+      | Message | DiscussionMessage |
     And I press "Post to forum" in the app
     Then I should find "DiscussionSubject" in the app
     And I should find "Not sent" in the app
@@ -328,8 +342,9 @@ Feature: Test basic usage of forum activity in app
     Given I entered the forum activity "Test forum name" on course "Course 1" as "student1" in the app
     When I switch offline mode to "true"
     And I press "Add discussion topic" in the app
-    And I set the field "Subject" to "DiscussionSubject" in the app
-    And I set the field "Message" to "DiscussionMessage" in the app
+    And I set the following fields to these values in the app:
+      | Subject | DiscussionSubject |
+      | Message | DiscussionMessage |
     And I press "Post to forum" in the app
     Then I should find "DiscussionSubject" in the app
     And I should find "Not sent" in the app
@@ -349,8 +364,9 @@ Feature: Test basic usage of forum activity in app
   Scenario: Prefetch
     Given I entered the forum activity "Test forum name" on course "Course 1" as "student1" in the app
     When I press "Add discussion topic" in the app
-    And I set the field "Subject" to "DiscussionSubject 1" in the app
-    And I set the field "Message" to "DiscussionMessage 1" in the app
+    And I set the following fields to these values in the app:
+      | Subject | DiscussionSubject 1 |
+      | Message | DiscussionMessage 1 |
     And I press "Post to forum" in the app
     Then I should find "DiscussionSubject 1" in the app
 
@@ -362,8 +378,9 @@ Feature: Test basic usage of forum activity in app
 
     When I press "Test forum name" in the app
     And I press "Add discussion topic" in the app
-    And I set the field "Subject" to "DiscussionSubject 2" in the app
-    And I set the field "Message" to "DiscussionMessage 2" in the app
+    And I set the following fields to these values in the app:
+      | Subject | DiscussionSubject 2 |
+      | Message | DiscussionMessage 2 |
     And I press "Post to forum" in the app
     Then I should find "DiscussionSubject 1" in the app
     And I should find "DiscussionSubject 2" in the app

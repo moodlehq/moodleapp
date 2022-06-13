@@ -625,6 +625,21 @@ class behat_app extends behat_app_helper {
     }
 
     /**
+     * Fills a form with field/value data.
+     *
+     * @Given /^I set the following fields to these values in the app:$/
+     * @param TableNode $data
+     */
+    public function i_set_the_following_fields_to_these_values_in_the_app(TableNode $data) {
+        $datahash = $data->getRowsHash();
+
+        // The action depends on the field type.
+        foreach ($datahash as $locator => $value) {
+            $this->i_set_the_field_in_the_app($locator, $value);
+        }
+    }
+
+    /**
      * Checks that the current header stripe in the app contains the expected text.
      *
      * This can be used to see if the app went to the expected page.

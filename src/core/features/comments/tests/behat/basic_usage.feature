@@ -133,8 +133,9 @@ Feature: Test basic usage of comments in app
     # Create glossary entry and comment as a teacher
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "teacher1" in the app
     And I press "Add a new entry" in the app
-    And I set the field "Concept" to "potato" in the app
-    And I set the field "Definition" to "The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae." in the app
+    And I set the following fields to these values in the app:
+      | Concept | potato |
+      | Definition | The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae. |
     And I press "Save" in the app
     And I press "potato" in the app
     And I press "Comments (0)" in the app
@@ -171,8 +172,9 @@ Feature: Test basic usage of comments in app
   Scenario: Add comments offline & Delete comments offline & Sync comments (glossary)
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "teacher1" in the app
     And I press "Add a new entry" in the app
-    And I set the field "Concept" to "potato" in the app
-    And I set the field "Definition" to "The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae." in the app
+    And I set the following fields to these values in the app:
+      | Concept | potato |
+      | Definition | The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae. |
     And I press "Save" in the app
     And I press "potato" in the app
     And I press "Comments (0)" in the app

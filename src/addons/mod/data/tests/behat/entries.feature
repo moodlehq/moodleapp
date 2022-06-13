@@ -35,8 +35,9 @@ Feature: Users can manage entries in database activities
     Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app
     And I should find "No entries in database" in the app
     When I press "Add entries" in the app
-    And I set the field "URL" to "https://moodle.org/" in the app
-    And I set the field "Description" to "Moodle community site" in the app
+    And I set the following fields to these values in the app:
+      | URL | https://moodle.org/ |
+      | Description | Moodle community site |
     And I press "Save" near "Web links" in the app
     Then I should find "https://moodle.org/" in the app
     And I should find "Moodle community site" in the app
@@ -44,13 +45,15 @@ Feature: Users can manage entries in database activities
   Scenario: Browse entry
     Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app
     And I press "Add entries" in the app
-    And I set the field "URL" to "https://moodle.org/" in the app
-    And I set the field "Description" to "Moodle community site" in the app
+    And I set the following fields to these values in the app:
+      | URL | https://moodle.org/ |
+      | Description | Moodle community site |
     And I press "Save" near "Web links" in the app
     And I entered the data activity "Web links" on course "Course 1" as "student2" in the app
     And I press "Add entries" in the app
-    And I set the field "URL" to "https://moodlecloud.com/" in the app
-    And I set the field "Description" to "Moodle Cloud" in the app
+    And I set the following fields to these values in the app:
+      | URL | https://moodlecloud.com/ |
+      | Description | Moodle Cloud |
     And I press "Save" near "Web links" in the app
     And I press "More" near "Moodle community site" in the app
     Then I should find "Moodle community site" in the app
@@ -70,8 +73,9 @@ Feature: Users can manage entries in database activities
   Scenario: Students can not edit or delete other user's entries from list and single view in the app
     Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app
     And I press "Add entries" in the app
-    And I set the field "URL" to "https://moodle.org/" in the app
-    And I set the field "Description" to "Moodle community site" in the app
+    And I set the following fields to these values in the app:
+      | URL | https://moodle.org/ |
+      | Description | Moodle community site |
     And I press "Save" near "Web links" in the app
     And I entered the course "Course 1" as "student2" in the app
     When I press "Web links" near "General" in the app
@@ -84,12 +88,14 @@ Feature: Users can manage entries in database activities
   Scenario: Delete entry (student) & Update entry (student)
     Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app
     And I press "Add entries" in the app
-    And I set the field "URL" to "https://moodle.org/" in the app
-    And I set the field "Description" to "Moodle community site" in the app
+    And I set the following fields to these values in the app:
+      | URL | https://moodle.org/ |
+      | Description | Moodle community site |
     And I press "Save" near "Web links" in the app
     When I press "Edit" in the app
-    And I set the field "URL" to "https://moodlecloud.com/" in the app
-    And I set the field "Description" to "Moodle Cloud" in the app
+    And I set the following fields to these values in the app:
+      | URL | https://moodlecloud.com/ |
+      | Description | Moodle Cloud |
     And I press "Save" near "Web links" in the app
     Then I should not find "https://moodle.org/" in the app
     And I should not find "Moodle community site" in the app
@@ -104,13 +110,15 @@ Feature: Users can manage entries in database activities
     And I press "Delete" in the app
     And I should not find "Moodle Cloud" in the app
     And I press "Add entries" in the app
-    And I set the field "URL" to "https://moodle.org/" in the app
-    And I set the field "Description" to "Moodle community site" in the app
+    And I set the following fields to these values in the app:
+      | URL | https://moodle.org/ |
+      | Description | Moodle community site |
     And I press "Save" near "Web links" in the app
     And I press "More" in the app
     And I press "Edit" in the app
-    And I set the field "URL" to "https://moodlecloud.com/" in the app
-    And I set the field "Description" to "Moodle Cloud" in the app
+    And I set the following fields to these values in the app:
+      | URL | https://moodlecloud.com/ |
+      | Description | Moodle Cloud |
     And I press "Save" near "Web links" in the app
     And I should not find "https://moodle.org/" in the app
     And I should not find "Moodle community site" in the app
@@ -129,20 +137,23 @@ Feature: Users can manage entries in database activities
   Scenario: Delete entry (teacher) & Update entry (teacher)
     Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app
     And I press "Add entries" in the app
-    And I set the field "URL" to "https://moodle.org/" in the app
-    And I set the field "Description" to "Moodle community site" in the app
+    And I set the following fields to these values in the app:
+      | URL | https://moodle.org/ |
+      | Description | Moodle community site |
     And I press "Save" near "Web links" in the app
     And I press "Add entries" in the app
-    And I set the field "URL" to "https://telegram.org/" in the app
-    And I set the field "Description" to "Telegram" in the app
+    And I set the following fields to these values in the app:
+      | URL | https://telegram.org/ |
+      | Description | Telegram |
     And I press "Save" near "Web links" in the app
     And I entered the course "Course 1" as "teacher1" in the app
     When I press "Web links" near "General" in the app
     Then I should find "https://moodle.org/" in the app
     And I should find "Moodle community site" in the app
     And I press "Edit" near "Moodle community site" in the app
-    And I set the field "URL" to "https://moodlecloud.com/" in the app
-    And I set the field "Description" to "Moodle Cloud" in the app
+    And I set the following fields to these values in the app:
+      | URL | https://moodlecloud.com/ |
+      | Description | Moodle Cloud |
     And I press "Save" near "Web links" in the app
     And I should not find "https://moodle.org/" in the app
     And I should not find "Moodle community site" in the app
@@ -160,8 +171,9 @@ Feature: Users can manage entries in database activities
     And I should find "https://telegram.org/" in the app
     And I should find "Telegram" in the app
     And I press "Edit" in the app
-    And I set the field "URL" to "https://moodlecloud.com/" in the app
-    And I set the field "Description" to "Moodle Cloud" in the app
+    And I set the following fields to these values in the app:
+      | URL | https://moodlecloud.com/ |
+      | Description | Moodle Cloud |
     And I press "Save" near "Web links" in the app
     And I should not find "https://telegram.org/" in the app
     And I should not find "Telegram" in the app

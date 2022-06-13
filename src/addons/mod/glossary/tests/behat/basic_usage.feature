@@ -28,16 +28,19 @@ Feature: Test basic usage of glossary in app
   Scenario: View a glossary and its terms
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
     And I press "Add a new entry" in the app
-    And I set the field "Concept" to "potato" in the app
-    And I set the field "Definition" to "The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae." in the app
+    And I set the following fields to these values in the app:
+      | Concept | potato |
+      | Definition | The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae. |
     And I press "Save" in the app
     And I press "Add a new entry" in the app
-    And I set the field "Concept" to "car" in the app
-    And I set the field "Definition" to "A car (or automobile) is a wheeled motor vehicle used for transportation. Most definitions of cars say that they run primarily on roads, seat one to eight people, have four tires, and mainly transport people rather than goods." in the app
+    And I set the following fields to these values in the app:
+      | Concept | car |
+      | Definition | A car (or automobile) is a wheeled motor vehicle used for transportation. Most definitions of cars say that they run primarily on roads, seat one to eight people, have four tires, and mainly transport people rather than goods. |
     And I press "Save" in the app
     And I press "Add a new entry" in the app
-    And I set the field "Concept" to "mountain" in the app
-    And I set the field "Definition" to "A mountain is a large landform that rises above the surrounding land in a limited area, usually in the form of a peak." in the app
+    And I set the following fields to these values in the app:
+      | Concept | mountain |
+      | Definition | A mountain is a large landform that rises above the surrounding land in a limited area, usually in the form of a peak. |
     And I press "Save" in the app
     Then the header should be "Test glossary" in the app
     And I should find "car" in the app
@@ -51,16 +54,19 @@ Feature: Test basic usage of glossary in app
   Scenario: Change filters (include search)
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
     And I press "Add a new entry" in the app
-    And I set the field "Concept" to "potato" in the app
-    And I set the field "Definition" to "The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae." in the app
+    And I set the following fields to these values in the app:
+      | Concept | potato |
+      | Definition | The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae. |
     And I press "Save" in the app
     And I press "Add a new entry" in the app
-    And I set the field "Concept" to "car" in the app
-    And I set the field "Definition" to "A car (or automobile) is a wheeled motor vehicle used for transportation. Most definitions of cars say that they run primarily on roads, seat one to eight people, have four tires, and mainly transport people rather than goods." in the app
+    And I set the following fields to these values in the app:
+      | Concept | car |
+      | Definition | A car (or automobile) is a wheeled motor vehicle used for transportation. Most definitions of cars say that they run primarily on roads, seat one to eight people, have four tires, and mainly transport people rather than goods. |
     And I press "Save" in the app
     And I press "Add a new entry" in the app
-    And I set the field "Concept" to "mountain" in the app
-    And I set the field "Definition" to "A mountain is a large landform that rises above the surrounding land in a limited area, usually in the form of a peak." in the app
+    And I set the following fields to these values in the app:
+      | Concept | mountain |
+      | Definition | A mountain is a large landform that rises above the surrounding land in a limited area, usually in the form of a peak. |
     And I press "Save" in the app
     Then the header should be "Test glossary" in the app
     And I should find "car" in the app
@@ -85,18 +91,21 @@ Feature: Test basic usage of glossary in app
     Given the "glossary" filter is "on"
     And I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
     And I press "Add a new entry" in the app
-    And I set the field "Concept" to "potato" in the app
-    And I set the field "Definition" to "The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae." in the app
+    And I set the following fields to these values in the app:
+      | Concept | potato |
+      | Definition | The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae. |
     And I press "This entry should be automatically linked" in the app
     And I press "Save" in the app
     And I press "Add a new entry" in the app
-    And I set the field "Concept" to "car" in the app
-    And I set the field "Definition" to "A car (or automobile) is a wheeled motor vehicle used for transportation. Most definitions of cars say that they run primarily on roads, seat one to eight people, have four tires, and mainly transport people rather than goods." in the app
+    And I set the following fields to these values in the app:
+      | Concept | car |
+      | Definition | A car (or automobile) is a wheeled motor vehicle used for transportation. Most definitions of cars say that they run primarily on roads, seat one to eight people, have four tires, and mainly transport people rather than goods. |
     And I press "This entry should be automatically linked" in the app
     And I press "Save" in the app
     And I press "Add a new entry" in the app
-    And I set the field "Concept" to "mountain" in the app
-    And I set the field "Definition" to "A mountain is a large landform that rises above the surrounding land in a limited area, usually in the form of a peak." in the app
+    And I set the following fields to these values in the app:
+      | Concept | mountain |
+      | Definition | A mountain is a large landform that rises above the surrounding land in a limited area, usually in the form of a peak. |
     And I press "This entry should be automatically linked" in the app
     And I press "Save" in the app
     Then the header should be "Test glossary" in the app
@@ -126,16 +135,19 @@ Feature: Test basic usage of glossary in app
     # Create entries as a student
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
     And I press "Add a new entry" in the app
-    And I set the field "Concept" to "potato" in the app
-    And I set the field "Definition" to "The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae." in the app
+    And I set the following fields to these values in the app:
+      | Concept | potato |
+      | Definition | The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae. |
     And I press "Save" in the app
     And I press "Add a new entry" in the app
-    And I set the field "Concept" to "car" in the app
-    And I set the field "Definition" to "A car (or automobile) is a wheeled motor vehicle used for transportation. Most definitions of cars say that they run primarily on roads, seat one to eight people, have four tires, and mainly transport people rather than goods." in the app
+    And I set the following fields to these values in the app:
+      | Concept | car |
+      | Definition | A car (or automobile) is a wheeled motor vehicle used for transportation. Most definitions of cars say that they run primarily on roads, seat one to eight people, have four tires, and mainly transport people rather than goods. |
     And I press "Save" in the app
     And I press "Add a new entry" in the app
-    And I set the field "Concept" to "mountain" in the app
-    And I set the field "Definition" to "A mountain is a large landform that rises above the surrounding land in a limited area, usually in the form of a peak." in the app
+    And I set the following fields to these values in the app:
+      | Concept | mountain |
+      | Definition | A mountain is a large landform that rises above the surrounding land in a limited area, usually in the form of a peak. |
     And I press "Save" in the app
     Then the header should be "Test glossary" in the app
     And I should find "car" in the app
@@ -174,16 +186,19 @@ Feature: Test basic usage of glossary in app
   Scenario: Prefetch
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
     And I press "Add a new entry" in the app
-    And I set the field "Concept" to "potato" in the app
-    And I set the field "Definition" to "The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae." in the app
+    And I set the following fields to these values in the app:
+      | Concept | potato |
+      | Definition | The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae. |
     And I press "Save" in the app
     And I press "Add a new entry" in the app
-    And I set the field "Concept" to "car" in the app
-    And I set the field "Definition" to "A car (or automobile) is a wheeled motor vehicle used for transportation. Most definitions of cars say that they run primarily on roads, seat one to eight people, have four tires, and mainly transport people rather than goods." in the app
+    And I set the following fields to these values in the app:
+      | Concept | car |
+      | Definition | A car (or automobile) is a wheeled motor vehicle used for transportation. Most definitions of cars say that they run primarily on roads, seat one to eight people, have four tires, and mainly transport people rather than goods. |
     And I press "Save" in the app
     And I press "Add a new entry" in the app
-    And I set the field "Concept" to "mountain" in the app
-    And I set the field "Definition" to "A mountain is a large landform that rises above the surrounding land in a limited area, usually in the form of a peak." in the app
+    And I set the following fields to these values in the app:
+      | Concept | mountain |
+      | Definition | A mountain is a large landform that rises above the surrounding land in a limited area, usually in the form of a peak. |
     And I press "Save" in the app
     Then the header should be "Test glossary" in the app
     And I should find "car" in the app
@@ -212,16 +227,19 @@ Feature: Test basic usage of glossary in app
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
     And I press "Add a new entry" in the app
     And I switch offline mode to "true"
-    And I set the field "Concept" to "potato" in the app
-    And I set the field "Definition" to "The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae." in the app
+    And I set the following fields to these values in the app:
+      | Concept | potato |
+      | Definition | The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae. |
     And I press "Save" in the app
     And I press "Add a new entry" in the app
-    And I set the field "Concept" to "car" in the app
-    And I set the field "Definition" to "A car (or automobile) is a wheeled motor vehicle used for transportation. Most definitions of cars say that they run primarily on roads, seat one to eight people, have four tires, and mainly transport people rather than goods." in the app
+    And I set the following fields to these values in the app:
+      | Concept | car |
+      | Definition | A car (or automobile) is a wheeled motor vehicle used for transportation. Most definitions of cars say that they run primarily on roads, seat one to eight people, have four tires, and mainly transport people rather than goods. |
     And I press "Save" in the app
     And I press "Add a new entry" in the app
-    And I set the field "Concept" to "mountain" in the app
-    And I set the field "Definition" to "A mountain is a large landform that rises above the surrounding land in a limited area, usually in the form of a peak." in the app
+    And I set the following fields to these values in the app:
+      | Concept | mountain |
+      | Definition | A mountain is a large landform that rises above the surrounding land in a limited area, usually in the form of a peak. |
     And I press "Save" in the app
     Then the header should be "Test glossary" in the app
     And I should find "car" in the app
@@ -232,8 +250,9 @@ Feature: Test basic usage of glossary in app
 
     When I switch offline mode to "false"
     And I press "Add a new entry" in the app
-    And I set the field "Concept" to "testSync" in the app
-    And I set the field "Definition" to "testSync" in the app
+    And I set the following fields to these values in the app:
+      | Concept | testSync |
+      | Definition | testSync |
     And I press "Save" in the app
     And I press "Information" in the app
     And I press "Synchronise now" in the app
@@ -249,16 +268,19 @@ Feature: Test basic usage of glossary in app
     # Create entries as a student
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
     And I press "Add a new entry" in the app
-    And I set the field "Concept" to "potato" in the app
-    And I set the field "Definition" to "The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae." in the app
+    And I set the following fields to these values in the app:
+      | Concept | potato |
+      | Definition | The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae. |
     And I press "Save" in the app
     And I press "Add a new entry" in the app
-    And I set the field "Concept" to "car" in the app
-    And I set the field "Definition" to "A car (or automobile) is a wheeled motor vehicle used for transportation. Most definitions of cars say that they run primarily on roads, seat one to eight people, have four tires, and mainly transport people rather than goods." in the app
+    And I set the following fields to these values in the app:
+      | Concept | car |
+      | Definition | A car (or automobile) is a wheeled motor vehicle used for transportation. Most definitions of cars say that they run primarily on roads, seat one to eight people, have four tires, and mainly transport people rather than goods. |
     And I press "Save" in the app
     And I press "Add a new entry" in the app
-    And I set the field "Concept" to "mountain" in the app
-    And I set the field "Definition" to "A mountain is a large landform that rises above the surrounding land in a limited area, usually in the form of a peak." in the app
+    And I set the following fields to these values in the app:
+      | Concept | mountain |
+      | Definition | A mountain is a large landform that rises above the surrounding land in a limited area, usually in the form of a peak. |
     And I press "Save" in the app
     Then the header should be "Test glossary" in the app
     And I should find "car" in the app
