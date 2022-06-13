@@ -1243,6 +1243,9 @@ export class CoreCourseProvider {
                 CoreCourseModuleDelegate.supportsFeature(module.modname, CoreConstants.FEATURE_NO_VIEW_LINK, false)) {
                 return false;
             }
+            if (CoreCourseModuleDelegate.supportsFeature(module.modname, CoreConstants.FEATURE_HAS_HIDDEN_VIEW, false)){
+                return true;
+            }
         }
 
         return !!module.url;

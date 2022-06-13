@@ -110,6 +110,10 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
             displayGrades: true,
         }, this.displayOptions);
 
+        this.displayOptions.displayOpenInBrowser = this.displayOptions.displayOpenInBrowser &&
+            (!!this.module?.url ||
+            !CoreCourseModuleDelegate.supportsFeature(this.module.modname, CoreConstants.FEATURE_HAS_HIDDEN_VIEW, false));
+
         this.displayOptions.displayGrades = this.displayOptions.displayGrades &&
             CoreCourseModuleDelegate.supportsFeature(this.module.modname, CoreConstants.FEATURE_GRADE_HAS_GRADE, true);
 

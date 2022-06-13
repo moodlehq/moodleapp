@@ -123,6 +123,7 @@ export class CoreConstants {
     static readonly FEATURE_COMPLETION_TRACKS_VIEWS = 'completion_tracks_views'; // True if module tracks whether somebody viewed it.
     static readonly FEATURE_COMPLETION_HAS_RULES = 'completion_has_rules'; // True if module has custom completion rules.
     static readonly FEATURE_NO_VIEW_LINK = 'viewlink'; // True if module has no 'view' page (like label).
+    static readonly FEATURE_HAS_HIDDEN_VIEW = 'hiddenview'; // True if module has a hidden 'view' page (like inline folder).
     static readonly FEATURE_IDNUMBER = 'idnumber'; // True if module wants support for setting the ID number for grade calculation purposes.
     static readonly FEATURE_GROUPS = 'groups'; // True if module supports groups.
     static readonly FEATURE_GROUPINGS = 'groupings'; // True if module supports groupings.
