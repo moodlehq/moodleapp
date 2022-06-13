@@ -48,6 +48,15 @@ import { CoreDatabaseTable } from './database/database-table';
 import { CoreDatabaseCachingStrategy } from './database/database-table-proxy';
 import { CoreSilentError } from './errors/silenterror';
 import { CorePromisedValue } from '@classes/promised-value';
+import {
+    CONFIG_TABLE,
+    CoreSiteConfigDBRecord,
+    CoreSiteLastViewedDBRecord,
+    CoreSiteWSCacheRecord,
+    LAST_VIEWED_TABLE,
+    WSGroups,
+    WS_CACHE_TABLES_PREFIX,
+} from '@services/database/sites';
 
 /**
  * QR Code type enumeration.
@@ -81,11 +90,6 @@ export class CoreSite {
     static readonly FREQUENCY_SOMETIMES = 2;
     static readonly FREQUENCY_RARELY = 3;
 
-    // Variables for the database.
-    static readonly WS_CACHE_TABLE = 'wscache_2';
-    static readonly CONFIG_TABLE = 'core_site_config';
-    static readonly LAST_VIEWED_TABLE = 'core_site_last_viewed';
-
     static readonly MINIMUM_MOODLE_VERSION = '3.5';
 
     // Versions of Moodle releases.
@@ -111,7 +115,7 @@ export class CoreSite {
     // Rest of variables.
     protected logger: CoreLogger;
     protected db?: SQLiteDB;
-    protected cacheTable: AsyncInstance<CoreDatabaseTable<CoreSiteWSCacheRecord>>;
+    protected cacheTables: Record<WSGroups, AsyncInstance<CoreDatabaseTable<CoreSiteWSCacheRecord>>>;
     protected configTable: AsyncInstance<CoreDatabaseTable<CoreSiteConfigDBRecord, 'name'>>;
     protected lastViewedTable: AsyncInstance<CoreDatabaseTable<CoreSiteLastViewedDBRecord, 'component' | 'id'>>;
     protected cleanUnicode = false;
@@ -147,18 +151,25 @@ export class CoreSite {
     ) {
         this.logger = CoreLogger.getInstance('CoreSite');
         this.siteUrl = CoreUrlUtils.removeUrlParams(this.siteUrl); // Make sure the URL doesn't have params.
-        this.cacheTable = asyncInstance(() => CoreSites.getSiteTable(CoreSite.WS_CACHE_TABLE, {
-            siteId: this.getId(),
-            database: this.getDb(),
-            config: { cachingStrategy: CoreDatabaseCachingStrategy.None },
-        }));
-        this.configTable = asyncInstance(() => CoreSites.getSiteTable(CoreSite.CONFIG_TABLE, {
+
+        this.cacheTables = Object.values(WSGroups).reduce((tables, group) => {
+            tables[group] = asyncInstance(() => CoreSites.getSiteTable(WS_CACHE_TABLES_PREFIX + group, {
+                siteId: this.getId(),
+                database: this.getDb(),
+                config: { cachingStrategy: CoreDatabaseCachingStrategy.None },
+            }));
+
+            return tables;
+        }, <Record<WSGroups, AsyncInstance<CoreDatabaseTable<CoreSiteWSCacheRecord>>>> {});
+
+        this.configTable = asyncInstance(() => CoreSites.getSiteTable(CONFIG_TABLE, {
             siteId: this.getId(),
             database: this.getDb(),
             config: { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
             primaryKeyColumns: ['name'],
         }));
-        this.lastViewedTable = asyncInstance(() => CoreSites.getSiteTable(CoreSite.LAST_VIEWED_TABLE, {
+
+        this.lastViewedTable = asyncInstance(() => CoreSites.getSiteTable(LAST_VIEWED_TABLE, {
             siteId: this.getId(),
             database: this.getDb(),
             config: { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
@@ -588,7 +599,7 @@ export class CoreSite {
         const cacheId = this.getCacheId(method, data);
 
         // Check for an ongoing identical request if we're not ignoring cache.
-        if (preSets.getFromCache && this.ongoingRequests[cacheId]) {
+        if (preSets.getFromCache && this.ongoingRequests[cacheId] !== undefined) {
             const response = await this.ongoingRequests[cacheId];
 
             // Clone the data, this may prevent errors if in the callback the object is modified.
@@ -967,14 +978,15 @@ export class CoreSite {
         }
 
         const id = this.getCacheId(method, data);
+        const group = this.getWSGroupFromWSName(method);
         let entry: CoreSiteWSCacheRecord | undefined;
 
         if (preSets.getCacheUsingCacheKey || (emergency && preSets.getEmergencyCacheUsingCacheKey)) {
-            const entries = await this.cacheTable.getMany({ key: preSets.cacheKey });
+            const entries = await this.cacheTables[group].getMany({ key: preSets.cacheKey });
 
             if (!entries.length) {
                 // Cache key not found, get by params sent.
-                entry = await this.cacheTable.getOneByPrimaryKey({ id });
+                entry = await this.cacheTables[group].getOneByPrimaryKey({ id });
             } else {
                 if (entries.length > 1) {
                     // More than one entry found. Search the one with same ID as this call.
@@ -986,7 +998,7 @@ export class CoreSite {
                 }
             }
         } else {
-            entry = await this.cacheTable.getOneByPrimaryKey({ id });
+            entry = await this.cacheTables[group].getOneByPrimaryKey({ id });
         }
 
         if (entry === undefined) {
@@ -1023,6 +1035,25 @@ export class CoreSite {
     }
 
     /**
+     * Get WS group based on a WS name.
+     *
+     * @return WS group.
+     */
+    protected getWSGroupFromWSName(name: string): WSGroups {
+        if (name.startsWith('mod_')) {
+            return WSGroups.MOD;
+        } else if (name.startsWith('tool_')) {
+            return WSGroups.TOOL;
+        } else if (name.startsWith('block_') || name.startsWith('core_block_')) {
+            return WSGroups.BLOCK;
+        } else if (name.startsWith('core_')) {
+            return WSGroups.CORE;
+        } else {
+            return WSGroups.OTHER;
+        }
+    }
+
+    /**
      * Gets the size of cached data for a specific component or component instance.
      *
      * @param component Component name
@@ -1037,7 +1068,7 @@ export class CoreSite {
             extraClause = ' AND componentId = ?';
         }
 
-        return this.cacheTable.reduce(
+        const sizes = await Promise.all(Object.values(this.cacheTables).map(table => table.reduce(
             {
                 sql: 'SUM(length(data))',
                 js: (size, record) => size + record.data.length,
@@ -1048,7 +1079,9 @@ export class CoreSite {
                 sqlParams: params,
                 js: record => record.component === component && (params.length === 1 || record.componentId === componentId),
             },
-        );
+        )));
+
+        return sizes.reduce((totalSize, size) => totalSize + size, 0);
     }
 
     /**
@@ -1070,6 +1103,7 @@ export class CoreSite {
         // Since 3.7, the expiration time contains the time the entry is modified instead of the expiration time.
         // We decided to reuse this field to prevent modifying the database table.
         const id = this.getCacheId(method, data);
+        const group = this.getWSGroupFromWSName(method);
         const entry = {
             id,
             data: JSON.stringify(response),
@@ -1087,7 +1121,7 @@ export class CoreSite {
             }
         }
 
-        await this.cacheTable.insert(entry);
+        await this.cacheTables[group].insert(entry);
     }
 
     /**
@@ -1102,11 +1136,12 @@ export class CoreSite {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     protected async deleteFromCache(method: string, data: any, preSets: CoreSiteWSPreSets, allCacheKey?: boolean): Promise<void> {
         const id = this.getCacheId(method, data);
+        const group = this.getWSGroupFromWSName(method);
 
         if (allCacheKey) {
-            await this.cacheTable.delete({ key: preSets.cacheKey });
+            await this.cacheTables[group].delete({ key: preSets.cacheKey });
         } else {
-            await this.cacheTable.deleteByPrimaryKey({ id });
+            await this.cacheTables[group].deleteByPrimaryKey({ id });
         }
     }
 
@@ -1129,7 +1164,7 @@ export class CoreSite {
             params['componentId'] = componentId;
         }
 
-        await this.cacheTable.delete(params);
+        await Promise.all(Object.values(this.cacheTables).map(table => table.delete(params)));
     }
 
     /*
@@ -1164,7 +1199,7 @@ export class CoreSite {
         this.logger.debug('Invalidate all the cache for site: ' + this.id);
 
         try {
-            await this.cacheTable.update({ expirationTime: 0 });
+            await Promise.all(Object.values(this.cacheTables).map(table => table.update({ expirationTime: 0 })));
         } finally {
             CoreEvents.trigger(CoreEvents.WS_CACHE_INVALIDATED, {}, this.getId());
         }
@@ -1183,7 +1218,7 @@ export class CoreSite {
 
         this.logger.debug('Invalidate cache for key: ' + key);
 
-        await this.cacheTable.update({ expirationTime: 0 }, { key });
+        await Promise.all(Object.values(this.cacheTables).map(table => table.update({ expirationTime: 0 }, { key })));
     }
 
     /**
@@ -1217,11 +1252,11 @@ export class CoreSite {
 
         this.logger.debug('Invalidate cache for key starting with: ' + key);
 
-        await this.cacheTable.updateWhere({ expirationTime: 0 }, {
+        await Promise.all(Object.values(this.cacheTables).map(table => table.updateWhere({ expirationTime: 0 }, {
             sql: 'key LIKE ?',
             sqlParams: [key + '%'],
             js: record => !!record.key?.startsWith(key),
-        });
+        })));
     }
 
     /**
@@ -1289,18 +1324,20 @@ export class CoreSite {
     }
 
     /**
-     * Gets an approximation of the cache table usage of the site.
+     * Gets an approximation of the cache tables usage of the site.
      *
-     * Currently this is just the total length of the data fields in the cache table.
+     * Currently this is just the total length of the data fields in the cache tables.
      *
-     * @return Promise resolved with the total size of all data in the cache table (bytes)
+     * @return Promise resolved with the total size of all data in the cache tables (bytes)
      */
     async getCacheUsage(): Promise<number> {
-        return this.cacheTable.reduce({
+        const sizes = await Promise.all(Object.values(this.cacheTables).map(table => table.reduce({
             sql: 'SUM(length(data))',
             js: (size, record) => size + record.data.length,
             jsInitialValue: 0,
-        });
+        })));
+
+        return sizes.reduce((totalSize, size) => totalSize + size, 0);
     }
 
     /**
@@ -1416,7 +1453,7 @@ export class CoreSite {
         }
 
         // Check for an ongoing identical request if we're not ignoring cache.
-        if (cachePreSets.getFromCache && this.ongoingRequests[cacheId]) {
+        if (cachePreSets.getFromCache && this.ongoingRequests[cacheId] !== undefined) {
             const response = await this.ongoingRequests[cacheId];
 
             return response;
@@ -2453,28 +2490,6 @@ export type CoreSiteCallExternalFunctionsResult = {
         data?: string; // JSON-encoded response data.
         exception?: string; // JSON-encoed exception info.
     }[];
-};
-
-export type CoreSiteConfigDBRecord = {
-    name: string;
-    value: string | number;
-};
-
-export type CoreSiteWSCacheRecord = {
-    id: string;
-    data: string;
-    expirationTime: number;
-    key?: string;
-    component?: string;
-    componentId?: number;
-};
-
-export type CoreSiteLastViewedDBRecord = {
-    component: string;
-    id: number;
-    value: string;
-    timeaccess: number;
-    data?: string;
 };
 
 /**

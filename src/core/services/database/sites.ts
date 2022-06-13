@@ -15,13 +15,28 @@
 import { CoreAppSchema } from '@services/app';
 import { CoreSiteSchema } from '@services/sites';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
-import { CoreSite } from '@classes/site';
 
 /**
  * Database variables for CoreSites service.
  */
 export const SITES_TABLE_NAME = 'sites_2';
 export const SCHEMA_VERSIONS_TABLE_NAME = 'schema_versions';
+
+/**
+ * Database variables for CoreSite class.
+ */
+export enum WSGroups {
+    CORE = 'core',
+    BLOCK = 'block',
+    MOD = 'mod',
+    TOOL = 'tool',
+    OTHER = 'other',
+}
+export const WS_CACHE_OLD_TABLE = 'wscache_2';
+export const WS_CACHE_TABLES_PREFIX = 'wscache_';
+export const CONFIG_TABLE = 'core_site_config';
+export const LAST_VIEWED_TABLE = 'core_site_last_viewed';
+export const WS_CACHE_TABLES = Object.values(WSGroups).map(group => WS_CACHE_TABLES_PREFIX + group);
 
 // Schema to register in App DB.
 export const APP_SCHEMA: CoreAppSchema = {
@@ -78,41 +93,40 @@ export const APP_SCHEMA: CoreAppSchema = {
 // Schema to register for Site DB.
 export const SITE_SCHEMA: CoreSiteSchema = {
     name: 'CoreSitesProvider',
-    version: 3,
-    canBeCleared: [CoreSite.WS_CACHE_TABLE],
-    tables: [
+    version: 4,
+    canBeCleared: [...WS_CACHE_TABLES, WS_CACHE_OLD_TABLE],
+    tables: WS_CACHE_TABLES.concat(WS_CACHE_OLD_TABLE).map(name => <SQLiteDBTableSchema> ({
+        name: name,
+        columns: [
+            {
+                name: 'id',
+                type: 'TEXT',
+                primaryKey: true,
+            },
+            {
+                name: 'data',
+                type: 'TEXT',
+            },
+            {
+                name: 'key',
+                type: 'TEXT',
+            },
+            {
+                name: 'expirationTime',
+                type: 'INTEGER',
+            },
+            {
+                name: 'component',
+                type: 'TEXT',
+            },
+            {
+                name: 'componentId',
+                type: 'INTEGER',
+            },
+        ],
+    })).concat([
         {
-            name: CoreSite.WS_CACHE_TABLE,
-            columns: [
-                {
-                    name: 'id',
-                    type: 'TEXT',
-                    primaryKey: true,
-                },
-                {
-                    name: 'data',
-                    type: 'TEXT',
-                },
-                {
-                    name: 'key',
-                    type: 'TEXT',
-                },
-                {
-                    name: 'expirationTime',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'component',
-                    type: 'TEXT',
-                },
-                {
-                    name: 'componentId',
-                    type: 'INTEGER',
-                },
-            ],
-        },
-        {
-            name: CoreSite.CONFIG_TABLE,
+            name: CONFIG_TABLE,
             columns: [
                 {
                     name: 'name',
@@ -126,7 +140,7 @@ export const SITE_SCHEMA: CoreSiteSchema = {
             ],
         },
         {
-            name: CoreSite.LAST_VIEWED_TABLE,
+            name: LAST_VIEWED_TABLE,
             columns: [
                 {
                     name: 'component',
@@ -152,19 +166,7 @@ export const SITE_SCHEMA: CoreSiteSchema = {
             ],
             primaryKeys: ['component', 'id'],
         },
-    ],
-    async migrate(db: SQLiteDB, oldVersion: number): Promise<void> {
-        if (oldVersion < 2) {
-            await db.migrateTable('wscache', CoreSite.WS_CACHE_TABLE, (record) => ({
-                id: record.id,
-                data: record.data,
-                key: record.key,
-                expirationTime: record.expirationTime,
-                component: null,
-                componentId: null,
-            }));
-        }
-    },
+    ]),
 };
 
 // Table for site DB to include the schema versions. It's not part of SITE_SCHEMA because it needs to be created first.
@@ -197,4 +199,26 @@ export type SiteDBEntry = {
 export type SchemaVersionsDBEntry = {
     name: string;
     version: number;
+};
+
+export type CoreSiteConfigDBRecord = {
+    name: string;
+    value: string | number;
+};
+
+export type CoreSiteWSCacheRecord = {
+    id: string;
+    data: string;
+    expirationTime: number;
+    key?: string;
+    component?: string;
+    componentId?: number;
+};
+
+export type CoreSiteLastViewedDBRecord = {
+    component: string;
+    id: number;
+    value: string;
+    timeaccess: number;
+    data?: string;
 };
