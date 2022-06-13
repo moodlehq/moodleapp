@@ -15,9 +15,11 @@
 import { CoreConstants, ModPurpose } from '@/core/constants';
 import { Injectable, Type } from '@angular/core';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
-import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
+import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
 import { AddonModFolderIndexComponent } from '../../components/index';
+import { AddonModFolder } from '../folder';
 
 /**
  * Handler to support folder modules.
@@ -33,6 +35,7 @@ export class AddonModFolderModuleHandlerService extends CoreModuleHandlerBase im
 
     supportedFeatures = {
         [CoreConstants.FEATURE_MOD_ARCHETYPE]: CoreConstants.MOD_ARCHETYPE_RESOURCE,
+        [CoreConstants.FEATURE_HAS_HIDDEN_VIEW]: true,
         [CoreConstants.FEATURE_GROUPS]: false,
         [CoreConstants.FEATURE_GROUPINGS]: false,
         [CoreConstants.FEATURE_MOD_INTRO]: true,
@@ -43,6 +46,26 @@ export class AddonModFolderModuleHandlerService extends CoreModuleHandlerBase im
         [CoreConstants.FEATURE_SHOW_DESCRIPTION]: true,
         [CoreConstants.FEATURE_MOD_PURPOSE]: ModPurpose.MOD_PURPOSE_CONTENT,
     };
+
+    /**
+     * @inheritdoc
+     */
+    async getData(
+        module: CoreCourseModuleData,
+        courseId: number,
+        sectionId?: number,
+        forCoursePage?: boolean,
+    ): Promise<CoreCourseModuleHandlerData> {
+        const data = await super.getData(module, courseId, sectionId, forCoursePage);
+        if (module.description) {
+            const folderInstance = await AddonModFolder.getFolder(courseId, module.id);
+            if (folderInstance && module.description) {
+                module.description = folderInstance.intro;
+            }
+        }
+
+        return data;
+    }
 
     /**
      * @inheritdoc
