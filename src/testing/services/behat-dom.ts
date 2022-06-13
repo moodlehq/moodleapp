@@ -512,22 +512,33 @@ export class TestsBehatDomUtils {
      * @param element HTML to set.
      * @param value Value to be set.
      */
-    static async setElementValue(element: HTMLElement, value: string): Promise<void> {
+    static async setElementValue(element: HTMLInputElement | HTMLElement, value: string): Promise<void> {
         await NgZone.run(async () => {
             const blockKey = TestsBehatBlocking.block();
 
             // Functions to get/set value depending on field type.
-            let setValue = (text: string) => {
-                element.innerHTML = text;
-            };
-            let getValue = () => element.innerHTML;
+            const setValue = (text: string) => {
+                if (element.tagName === 'ION-SELECT' && 'value' in element) {
+                    value = value.trim();
+                    const optionValue = Array.from(element.querySelectorAll('ion-select-option'))
+                        .find((option) => option.innerHTML.trim() === value);
 
-            if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
-                setValue = (text: string) => {
+                    if (optionValue) {
+                        element.value = optionValue.value;
+                    }
+                } else if ('value' in element) {
                     element.value = text;
-                };
-                getValue = () => element.value;
-            }
+                } else {
+                    element.innerHTML = text;
+                }
+            };
+            const getValue = () => {
+                if ('value' in element) {
+                    return element.value;
+                } else {
+                    return element.innerHTML;
+                }
+            };
 
             // Pretend we have cut and pasted the new text.
             let event: InputEvent;
