@@ -146,8 +146,12 @@ Feature: Test glossary navigation
     When I press the back button in the app
     And I scroll to "Acerola" in the app
     And I press "Search" in the app
-    And I set the field "Search" to "melon" in the app
-    And I press "Search" "button" near "Clear search" in the app
+    And I set the field "Search" to "something" in the app
+    And I press enter
+    Then I should find "No entries were found." in the app
+
+    When I set the field "Search" to "melon" in the app
+    And I press enter
     Then I should find "Honeydew Melon" in the app
     And I should find "Watermelon" in the app
     But I should not find "Acerola" in the app
@@ -250,8 +254,12 @@ Feature: Test glossary navigation
 
     # Search
     When I press "Search" in the app
-    And I set the field "Search" to "melon" in the app
-    And I press "Search" "button" near "Clear search" in the app
+    And I set the field "Search" to "something" in the app
+    And I press enter
+    Then I should find "No entries were found." in the app
+
+    When I set the field "Search" to "melon" in the app
+    And I press enter
     Then I should find "Honeydew Melon" in the app
     And I should find "Watermelon" in the app
     And "Honeydew Melon" near "Watermelon" should be selected in the app

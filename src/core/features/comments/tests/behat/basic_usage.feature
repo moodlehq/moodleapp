@@ -27,6 +27,7 @@ Feature: Test basic usage of comments in app
     # Create database entry and comment as a teacher
     Given I entered the data activity "Data" on course "Course 1" as "teacher1" in the app
     And I press "Information" in the app
+    # TODO Create and use a generator for database fields.
     And I press "Open in browser" in the app
     And I switch to the browser tab opened by the app
     And I log in as "teacher1"
@@ -224,6 +225,7 @@ Feature: Test basic usage of comments in app
       | blog_menu        | Course       | C1        | course-view-*   | site-pre      |            |
     And I entered the course "Course 1" as "teacher1" in the app
     And I press "Course summary" in the app
+    # TODO Create and use a generator blog entries.
     And I press "Open in browser" in the app
     And I switch to the browser tab opened by the app
     And I log in as "teacher1"

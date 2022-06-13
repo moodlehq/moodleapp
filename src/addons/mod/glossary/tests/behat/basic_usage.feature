@@ -24,142 +24,65 @@ Feature: Test basic usage of glossary in app
     And the following "activities" exist:
       | activity   | name            | intro       | course | idnumber | groupmode |
       | forum      | Test forum name | Test forum  | C1     | forum    | 0         |
+    And the following "mod_glossary > categories" exist:
+      | glossary | name            |
+      | gloss1   | The ones I like |
+      | gloss1   | All for you     |
+    And the following "mod_glossary > entries" exist:
+      | glossary | concept  | definition     | user     | categories      | usedynalink |
+      | gloss1   | Eggplant | Sour eggplants | teacher1 | All for you     | 0           |
+      | gloss1   | Cucumber | Sweet cucumber | student1 | The ones I like | 0           |
+      | gloss1   | Potato   | To make chips  | student1 | The ones I like | 1           |
+      | gloss1   | Raddish  | Raphanus sativus | student1 | All for you   | 1           |
 
   Scenario: View a glossary and its terms
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
-    And I press "Add a new entry" in the app
-    And I set the following fields to these values in the app:
-      | Concept | potato |
-      | Definition | The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae. |
-    And I press "Save" in the app
-    And I press "Add a new entry" in the app
-    And I set the following fields to these values in the app:
-      | Concept | car |
-      | Definition | A car (or automobile) is a wheeled motor vehicle used for transportation. Most definitions of cars say that they run primarily on roads, seat one to eight people, have four tires, and mainly transport people rather than goods. |
-    And I press "Save" in the app
-    And I press "Add a new entry" in the app
-    And I set the following fields to these values in the app:
-      | Concept | mountain |
-      | Definition | A mountain is a large landform that rises above the surrounding land in a limited area, usually in the form of a peak. |
-    And I press "Save" in the app
     Then the header should be "Test glossary" in the app
-    And I should find "car" in the app
-    And I should find "mountain" in the app
-    And I should find "potato" in the app
+    And I should find "Eggplant" in the app
+    And I should find "Cucumber" in the app
+    And I should find "Potato" in the app
 
-    When I press "car" in the app
-    Then I should find "car" in the app
-    And I should find "A car (or automobile) is a wheeled motor vehicle used for transportation. Most definitions of cars say that they run primarily on roads, seat one to eight people, have four tires, and mainly transport people rather than goods." in the app
-
-  Scenario: Change filters (include search)
-    Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
-    And I press "Add a new entry" in the app
-    And I set the following fields to these values in the app:
-      | Concept | potato |
-      | Definition | The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae. |
-    And I press "Save" in the app
-    And I press "Add a new entry" in the app
-    And I set the following fields to these values in the app:
-      | Concept | car |
-      | Definition | A car (or automobile) is a wheeled motor vehicle used for transportation. Most definitions of cars say that they run primarily on roads, seat one to eight people, have four tires, and mainly transport people rather than goods. |
-    And I press "Save" in the app
-    And I press "Add a new entry" in the app
-    And I set the following fields to these values in the app:
-      | Concept | mountain |
-      | Definition | A mountain is a large landform that rises above the surrounding land in a limited area, usually in the form of a peak. |
-    And I press "Save" in the app
-    Then the header should be "Test glossary" in the app
-    And I should find "car" in the app
-    And I should find "mountain" in the app
-    And I should find "potato" in the app
-
-    When I press "Search" in the app
-    And I set the field "Search query" to "something" in the app
-    And I press enter
-    Then I should find "No entries were found." in the app
-
-    When I set the field "Search query" to "potato" in the app
-    And I press "Search" near "No entries were found." in the app
-    And I set the field "Search query" to " " in the app
-    And I press "Information" in the app
-    And I press "Refresh" in the app
-    And I press "potato" in the app
-    Then I should find "potato" in the app
-    And I should find "The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae." in the app
+    When I press "Potato" in the app
+    Then I should find "Potato" in the app
+    And I should find "To make chips" in the app
 
   Scenario: Navigate to glossary terms by link (auto-linking)
     Given the "glossary" filter is "on"
     And I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
-    And I press "Add a new entry" in the app
-    And I set the following fields to these values in the app:
-      | Concept | potato |
-      | Definition | The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae. |
-    And I press "This entry should be automatically linked" in the app
-    And I press "Save" in the app
-    And I press "Add a new entry" in the app
-    And I set the following fields to these values in the app:
-      | Concept | car |
-      | Definition | A car (or automobile) is a wheeled motor vehicle used for transportation. Most definitions of cars say that they run primarily on roads, seat one to eight people, have four tires, and mainly transport people rather than goods. |
-    And I press "This entry should be automatically linked" in the app
-    And I press "Save" in the app
-    And I press "Add a new entry" in the app
-    And I set the following fields to these values in the app:
-      | Concept | mountain |
-      | Definition | A mountain is a large landform that rises above the surrounding land in a limited area, usually in the form of a peak. |
-    And I press "This entry should be automatically linked" in the app
-    And I press "Save" in the app
     Then the header should be "Test glossary" in the app
-    And I should find "car" in the app
-    And I should find "mountain" in the app
-    And I should find "potato" in the app
+    And I should find "Eggplant" in the app
+    And I should find "Cucumber" in the app
+    And I should find "Potato" in the app
+    And I should find "Raddish" in the app
 
     When I press the back button in the app
     And I press "Test forum name" in the app
     And I press "Add discussion topic" in the app
     And I set the field "Subject" to "Testing auto-link glossary"
-    And I set the field "Message" to "Glossary terms auto-linked: potato car mountain" in the app
+    And I set the field "Message" to "Glossary terms auto-linked: Raddish Potato" in the app
     And I press "Post to forum" in the app
     And I press "Testing auto-link glossary" in the app
-    Then I should find "car" in the app
+    Then I should find "Raddish" in the app
 
-    When I press "car" in the app
-    Then the header should be "car" in the app
-    And I should find "is a wheeled motor vehicle used for transportation" in the app
+    When I press "Raddish" in the app
+    Then the header should be "Raddish" in the app
+    And I should find "Raphanus sativus" in the app
 
     When I press the back button in the app
-    And I press "mountain" in the app
-    Then the header should be "mountain" in the app
-    And I should find "landform that rises above the surrounding land in a limited area, usually in the form of a peak." in the app
+    And I press "Potato" in the app
+    Then the header should be "Potato" in the app
+    And I should find "To make chips" in the app
 
   Scenario: See comments
-    # Create entries as a student
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
-    And I press "Add a new entry" in the app
-    And I set the following fields to these values in the app:
-      | Concept | potato |
-      | Definition | The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae. |
-    And I press "Save" in the app
-    And I press "Add a new entry" in the app
-    And I set the following fields to these values in the app:
-      | Concept | car |
-      | Definition | A car (or automobile) is a wheeled motor vehicle used for transportation. Most definitions of cars say that they run primarily on roads, seat one to eight people, have four tires, and mainly transport people rather than goods. |
-    And I press "Save" in the app
-    And I press "Add a new entry" in the app
-    And I set the following fields to these values in the app:
-      | Concept | mountain |
-      | Definition | A mountain is a large landform that rises above the surrounding land in a limited area, usually in the form of a peak. |
-    And I press "Save" in the app
     Then the header should be "Test glossary" in the app
-    And I should find "car" in the app
-    And I should find "mountain" in the app
-    And I should find "potato" in the app
 
-    When I press "mountain" in the app
+    When I press "Eggplant" in the app
     Then I should find "Comments (0)" in the app
 
     # Write comments as a teacher
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "teacher1" in the app
-    And I press "mountain" in the app
+    And I press "Eggplant" in the app
     Then I should find "Comments (0)" in the app
 
     When I press "Comments" in the app
@@ -176,7 +99,7 @@ Feature: Test basic usage of glossary in app
 
     # View comments as a student
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
-    And I press "mountain" in the app
+    And I press "Eggplant" in the app
     Then I should find "Comments (2)" in the app
 
     When I press "Comments" in the app
@@ -184,112 +107,101 @@ Feature: Test basic usage of glossary in app
     And I should find "teacher second comment" in the app
 
   Scenario: Prefetch
-    Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
-    And I press "Add a new entry" in the app
-    And I set the following fields to these values in the app:
-      | Concept | potato |
-      | Definition | The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae. |
-    And I press "Save" in the app
-    And I press "Add a new entry" in the app
-    And I set the following fields to these values in the app:
-      | Concept | car |
-      | Definition | A car (or automobile) is a wheeled motor vehicle used for transportation. Most definitions of cars say that they run primarily on roads, seat one to eight people, have four tires, and mainly transport people rather than goods. |
-    And I press "Save" in the app
-    And I press "Add a new entry" in the app
-    And I set the following fields to these values in the app:
-      | Concept | mountain |
-      | Definition | A mountain is a large landform that rises above the surrounding land in a limited area, usually in the form of a peak. |
-    And I press "Save" in the app
-    Then the header should be "Test glossary" in the app
-    And I should find "car" in the app
-    And I should find "mountain" in the app
-    And I should find "potato" in the app
-
-    When I press "Information" in the app
-    And I press "Download" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Course downloads" in the app
+    When I press "Download" within "Test glossary" "ion-item" in the app
     And I press the back button in the app
-    And I press the back button in the app
-    And I enter the course "Course 1" in the app
     And I switch offline mode to "true"
     And I press "Test glossary" in the app
     Then the header should be "Test glossary" in the app
-    And I should find "car" in the app
-    And I should find "mountain" in the app
-    And I should find "potato" in the app
+    And I should find "Cucumber" in the app
+    And I should find "Eggplant" in the app
+    And I should find "Potato" in the app
 
-    When I press "mountain" in the app
-    Then I should find "mountain" in the app
-    And I should find "A mountain is a large landform that rises above the surrounding land in a limited area, usually in the form of a peak." in the app
+    When I press "Eggplant" in the app
+    Then I should find "Eggplant" in the app
+    And I should find "Sour eggplants" in the app
     And I should not see "Comments cannot be retrieved"
     And I should find "Comments (0)" in the app
+
+  Scenario: Add entries (basic info)
+    Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
+    And I press "Add a new entry" in the app
+    And I set the following fields to these values in the app:
+      | Concept | Broccoli |
+      | Definition | Brassica oleracea var. italica |
+    And I press "Save" in the app
+    And I press "Add a new entry" in the app
+    And I set the following fields to these values in the app:
+      | Concept | Cabbage |
+      | Definition | Brassica oleracea var. capitata |
+    And I press "Save" in the app
+    And I press "Add a new entry" in the app
+    And I set the following fields to these values in the app:
+      | Concept | Garlic |
+      | Definition | Allium sativum |
+    And I press "Save" in the app
+    Then the header should be "Test glossary" in the app
+    And I should find "Cucumber" in the app
+    And I should find "Eggplant" in the app
+    And I should find "Potato" in the app
+    And I should find "Broccoli" in the app
+    And I should find "Cabbage" in the app
+    And I should find "Garlic" in the app
+
+    When I press "Garlic" in the app
+    Then I should find "Garlic" in the app
+    And I should find "Allium sativum" in the app
 
   Scenario: Sync
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
     And I press "Add a new entry" in the app
     And I switch offline mode to "true"
     And I set the following fields to these values in the app:
-      | Concept | potato |
-      | Definition | The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae. |
+      | Concept | Broccoli |
+      | Definition | Brassica oleracea var. italica |
     And I press "Save" in the app
     And I press "Add a new entry" in the app
     And I set the following fields to these values in the app:
-      | Concept | car |
-      | Definition | A car (or automobile) is a wheeled motor vehicle used for transportation. Most definitions of cars say that they run primarily on roads, seat one to eight people, have four tires, and mainly transport people rather than goods. |
+      | Concept | Cabbage |
+      | Definition | Brassica oleracea var. capitata |
     And I press "Save" in the app
     And I press "Add a new entry" in the app
     And I set the following fields to these values in the app:
-      | Concept | mountain |
-      | Definition | A mountain is a large landform that rises above the surrounding land in a limited area, usually in the form of a peak. |
+      | Concept | Garlic |
+      | Definition | Allium sativum |
     And I press "Save" in the app
     Then the header should be "Test glossary" in the app
-    And I should find "car" in the app
-    And I should find "mountain" in the app
-    And I should find "potato" in the app
+    And I should find "Cucumber" in the app
+    And I should find "Eggplant" in the app
+    And I should find "Potato" in the app
+    And I should find "Broccoli" in the app
+    And I should find "Cabbage" in the app
+    And I should find "Garlic" in the app
     And I should find "Entries to be synced" in the app
     And I should find "This Glossary has offline data to be synchronised." in the app
 
     When I switch offline mode to "false"
-    And I press "Add a new entry" in the app
-    And I set the following fields to these values in the app:
-      | Concept | testSync |
-      | Definition | testSync |
-    And I press "Save" in the app
     And I press "Information" in the app
     And I press "Synchronise now" in the app
     Then the header should be "Test glossary" in the app
-    And I should find "car" in the app
-    And I should find "mountain" in the app
-    And I should find "potato" in the app
-    And I should find "testSync" in the app
+    And I should find "Cucumber" in the app
+    And I should find "Eggplant" in the app
+    And I should find "Potato" in the app
+    And I should find "Broccoli" in the app
+    And I should find "Cabbage" in the app
+    And I should find "Garlic" in the app
     But I should not see "Entries to be synced"
     And I should not see "This Glossary has offline data to be synchronised."
 
-  Scenario: Add/view ratings
-    # Create entries as a student
-    Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
-    And I press "Add a new entry" in the app
-    And I set the following fields to these values in the app:
-      | Concept | potato |
-      | Definition | The potato is a root vegetable native to the Americas, a starchy tuber of the plant Solanum tuberosum, and the plant itself, a perennial in the family Solanaceae. |
-    And I press "Save" in the app
-    And I press "Add a new entry" in the app
-    And I set the following fields to these values in the app:
-      | Concept | car |
-      | Definition | A car (or automobile) is a wheeled motor vehicle used for transportation. Most definitions of cars say that they run primarily on roads, seat one to eight people, have four tires, and mainly transport people rather than goods. |
-    And I press "Save" in the app
-    And I press "Add a new entry" in the app
-    And I set the following fields to these values in the app:
-      | Concept | mountain |
-      | Definition | A mountain is a large landform that rises above the surrounding land in a limited area, usually in the form of a peak. |
-    And I press "Save" in the app
-    Then the header should be "Test glossary" in the app
-    And I should find "car" in the app
-    And I should find "mountain" in the app
-    And I should find "potato" in the app
+    When I press "Garlic" in the app
+    Then I should find "Garlic" in the app
+    And I should find "Allium sativum" in the app
 
+  Scenario: Add/view ratings
     # Rate entries as teacher1
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "teacher1" in the app
-    And I press "mountain" in the app
+    And I press "Cucumber" in the app
     Then I should find "Average of ratings: -" in the app
 
     When I press "None" in the app
@@ -298,7 +210,7 @@ Feature: Test basic usage of glossary in app
 
     # Rate entries as teacher2
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "teacher2" in the app
-    And I press "mountain" in the app
+    And I press "Cucumber" in the app
     And I switch offline mode to "true"
     And I press "None" in the app
     And I press "0" in the app
@@ -311,11 +223,11 @@ Feature: Test basic usage of glossary in app
 
     When I press "Information" in the app
     And I press "Synchronise now" in the app
-    And I press "mountain" in the app
+    And I press "Cucumber" in the app
     Then I should find "Average of ratings: 0.5" in the app
 
     # View ratings as a student
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
-    And I press "mountain" in the app
-    Then the header should be "mountain" in the app
+    And I press "Cucumber" in the app
+    Then the header should be "Cucumber" in the app
     But I should not see "Average of ratings: 0.5"
