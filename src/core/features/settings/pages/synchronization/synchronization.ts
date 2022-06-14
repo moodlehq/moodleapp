@@ -95,7 +95,7 @@ export class CoreSettingsSynchronizationPage implements OnInit, OnDestroy {
                 return;
             }
 
-            CoreDomUtils.showErrorModalDefault(error, 'core.settings.errorsyncsite', true);
+            CoreDomUtils.showErrorModalDefault(error, 'core.settings.sitesyncfailed', true);
         }
     }
 

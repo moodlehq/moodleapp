@@ -46,7 +46,6 @@ import { CoreViewerImageComponent } from '@features/viewer/components/image/imag
 import { CoreFormFields, CoreForms } from '../../singletons/form';
 import { CoreModalLateralTransitionEnter, CoreModalLateralTransitionLeave } from '@classes/modal-lateral-transition';
 import { CoreZoomLevel } from '@features/settings/services/settings-helper';
-import { CoreErrorWithTitle } from '@classes/errors/errorwithtitle';
 import { AddonFilterMultilangHandler } from '@addons/filter/multilang/services/handlers/multilang';
 import { CoreSites } from '@services/sites';
 import { NavigationStart } from '@angular/router';
@@ -1350,7 +1349,7 @@ export class CoreDomUtilsProvider {
 
         if (this.isNetworkError(message, error)) {
             alertOptions.cssClass = 'core-alert-network-error';
-        } else if (error instanceof CoreErrorWithTitle) {
+        } else if (typeof error !== 'string' && 'title' in error) {
             alertOptions.header = error.title || undefined;
         } else {
             alertOptions.header = Translate.instant('core.error');

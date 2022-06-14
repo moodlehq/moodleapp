@@ -21,7 +21,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { APP_SCHEMA, CRON_TABLE_NAME, CronDBEntry } from '@services/database/cron';
 import { asyncInstance } from '../utils/async-instance';
@@ -81,10 +81,11 @@ export class CoreCronDelegateService {
     protected async checkAndExecuteHandler(name: string, force?: boolean, siteId?: string): Promise<void> {
         if (!this.handlers[name] || !this.handlers[name].execute) {
             // Invalid handler.
-            const message = `Cannot execute handler because is invalid: ${name}`;
-            this.logger.debug(message);
+            this.logger.debug(`Cannot execute cron job because is invalid: ${name}`);
 
-            throw new CoreError(message);
+            throw new CoreError(
+                Translate.instant('core.errorsomethingwrong') + '<br>' + Translate.instant('core.errorsitesupport'),
+            );
         }
 
         const usesNetwork = this.handlerUsesNetwork(name);
@@ -92,11 +93,10 @@ export class CoreCronDelegateService {
 
         if (usesNetwork && !CoreNetwork.isOnline()) {
             // Offline, stop executing.
-            const message = `Cannot execute handler because device is offline: ${name}`;
-            this.logger.debug(message);
+            this.logger.debug(`Cron job failed because your device is not connected to the internet: ${name}`);
             this.stopHandler(name);
 
-            throw new CoreError(message);
+            throw new CoreError(Translate.instant('core.settings.cannotsyncoffline'));
         }
 
         if (isSync) {
@@ -105,11 +105,10 @@ export class CoreCronDelegateService {
 
             if (syncOnlyOnWifi && !CoreNetwork.isWifi()) {
                 // Cannot execute in this network connection, retry soon.
-                const message = `Cannot execute handler because device is using limited connection: ${name}`;
-                this.logger.debug(message);
+                this.logger.debug(`Cron job failed because your device has a limited internet connection: ${name}`);
                 this.scheduleNextExecution(name, CoreCronDelegateService.MIN_INTERVAL);
 
-                throw new CoreError(message);
+                throw new CoreError(Translate.instant('core.settings.cannotsyncwithoutwifi'));
             }
         }
 
@@ -118,7 +117,7 @@ export class CoreCronDelegateService {
             try {
                 await this.executeHandler(name, force, siteId);
 
-                this.logger.debug(`Execution of handler '${name}' was a success.`);
+                this.logger.debug(`Cron job '${name}' was successfully executed.`);
 
                 await CoreUtils.ignoreErrors(this.setHandlerLastExecutionTime(name, Date.now()));
 
@@ -127,11 +126,10 @@ export class CoreCronDelegateService {
                 return;
             } catch (error) {
                 // Handler call failed. Retry soon.
-                const message = `Execution of handler '${name}' failed.`;
-                this.logger.error(message, error);
+                this.logger.error(`Cron job '${name}' failed.`, error);
                 this.scheduleNextExecution(name, CoreCronDelegateService.MIN_INTERVAL);
 
-                throw new CoreError(message);
+                throw error;
             }
         });
 

@@ -94,7 +94,7 @@ export class CoreSitePreferencesPage implements AfterViewInit, OnDestroy {
             if (this.isDestroyed) {
                 return;
             }
-            CoreDomUtils.showErrorModalDefault(error, 'core.settings.errorsyncsite', true);
+            CoreDomUtils.showErrorModalDefault(error, 'core.settings.sitesyncfailed', true);
         }
 
     }

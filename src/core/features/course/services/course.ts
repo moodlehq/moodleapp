@@ -177,7 +177,9 @@ export class CoreCourseProvider {
         CorePlatform.resume.subscribe(() => {
             // Run the handler the app is open to keep user in online status.
             setTimeout(() => {
-                CoreCronDelegate.forceCronHandlerExecution(CoreCourseLogCronHandler.name);
+                CoreUtils.ignoreErrors(
+                    CoreCronDelegate.forceCronHandlerExecution(CoreCourseLogCronHandler.name),
+                );
             }, 1000);
         });
 
