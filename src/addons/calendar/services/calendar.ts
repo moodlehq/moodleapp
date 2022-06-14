@@ -796,7 +796,7 @@ export class AddonCalendarProvider {
      * @param event The event to get its type.
      * @return Event type.
      */
-    getEventType(event: { modulename?: string; eventtype: AddonCalendarEventType}): string {
+    getEventType(event: { modulename?: string; eventtype: AddonCalendarEventType | string }): string {
         if (event.modulename) {
             return 'course';
         }
@@ -1878,7 +1878,7 @@ export type AddonCalendarEventBase = {
     activityname?: string; // Activityname.
     activitystr?: string; // Activitystr.
     instance?: number; // Instance.
-    eventtype: AddonCalendarEventType; // Eventtype.
+    eventtype: AddonCalendarEventType | string; // Eventtype.
     timestart: number; // Timestart.
     timeduration: number; // Timeduration.
     timesort: number; // Timesort.
@@ -2284,7 +2284,7 @@ export type AddonCalendarEventToDisplay = Partial<AddonCalendarCalendarEvent> & 
     timestart: number;
     timeduration: number;
     eventcount: number;
-    eventtype: AddonCalendarEventType;
+    eventtype: AddonCalendarEventType | string;
     courseid?: number;
     offline?: boolean;
     showDate?: boolean; // Calculated in the app. Whether date should be shown before this event.

@@ -107,6 +107,10 @@ export class AddonBlockTimelineProvider {
         searchValue = '',
         siteId?: string,
     ): Promise<{[courseId: string]: { events: AddonCalendarEvent[]; canLoadMore?: number } }> {
+        if (courseIds.length === 0) {
+            return {};
+        }
+
         const site = await CoreSites.getSite(siteId);
 
         const time = this.getDayStart(-14); // Check two weeks ago.

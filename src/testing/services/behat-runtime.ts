@@ -28,6 +28,8 @@ import { CoreCronDelegate } from '@services/cron';
 import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreDom } from '@singletons/dom';
+import { IonRefresher } from '@ionic/angular';
+import { CoreCoursesDashboardPage } from '@features/courses/pages/dashboard/dashboard';
 
 /**
  * Behat runtime servive with public API.
@@ -52,6 +54,7 @@ export class TestsBehatRuntime {
             log: TestsBehatRuntime.log,
             press: TestsBehatRuntime.press,
             pressStandard: TestsBehatRuntime.pressStandard,
+            pullToRefresh: TestsBehatRuntime.pullToRefresh,
             scrollTo: TestsBehatRuntime.scrollTo,
             setField: TestsBehatRuntime.setField,
             handleCustomURL: TestsBehatRuntime.handleCustomURL,
@@ -350,6 +353,39 @@ export class TestsBehatRuntime {
     }
 
     /**
+     * Trigger a pull to refresh gesture in the current page.
+     *
+     * @return OK if successful, or ERROR: followed by message
+     */
+    static async pullToRefresh(): Promise<string> {
+        this.log('Action - pullToRefresh');
+
+        try {
+            // TODO We should generalize this to work with other pages. It's not possible to use
+            // an IonRefresher instance because it doesn't expose any methods to trigger refresh,
+            // so we'll have to find another way.
+
+            const dashboard = this.getAngularInstance<CoreCoursesDashboardPage>(
+                'page-core-courses-dashboard',
+                'CoreCoursesDashboardPage',
+            );
+
+            if (!dashboard) {
+                return 'ERROR: It\'s not possible to pull to refresh the current page '
+                    + '(the dashboard page is the only one supported at the moment).';
+            }
+
+            await new Promise(resolve => {
+                dashboard.refreshDashboard({ complete: resolve } as IonRefresher);
+            });
+
+            return 'OK';
+        } catch (error) {
+            return 'ERROR: ' + error.message;
+        }
+    }
+
+    /**
      * Gets the currently displayed page header.
      *
      * @return OK: followed by header text if successful, or ERROR: followed by message.
@@ -403,7 +439,7 @@ export class TestsBehatRuntime {
      * @param className Constructor class name
      * @return Component instance
      */
-    static getAngularInstance(selector: string, className: string): unknown {
+    static getAngularInstance<T = unknown>(selector: string, className: string): T | null {
         this.log('Action - Get Angular instance ' + selector + ', ' + className);
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

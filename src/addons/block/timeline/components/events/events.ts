@@ -12,16 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, OnChanges, EventEmitter, SimpleChange } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreTimeUtils } from '@services/utils/time';
-import { CoreCourse } from '@features/course/services/course';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
-import { AddonCalendarEvent } from '@addons/calendar/services/calendar';
 import { CoreEnrolledCourseDataWithOptions } from '@features/courses/services/courses-helper';
-import { AddonBlockTimeline } from '../../services/timeline';
+import { AddonBlockTimelineDayEvents } from '@addons/block/timeline/classes/section';
 
 /**
  * Directive to render a list of events in course overview.
@@ -31,105 +28,14 @@ import { AddonBlockTimeline } from '../../services/timeline';
     templateUrl: 'addon-block-timeline-events.html',
     styleUrls: ['events.scss'],
 })
-export class AddonBlockTimelineEventsComponent implements OnChanges {
+export class AddonBlockTimelineEventsComponent {
 
-    @Input() events: AddonBlockTimelineEvent[] = []; // The events to render.
+    @Input() events: AddonBlockTimelineDayEvents[] = []; // The events to render.
     @Input() course?: CoreEnrolledCourseDataWithOptions; // Whether to show the course name.
-    @Input() from = 0; // Number of days from today to offset the events.
-    @Input() to?: number; // Number of days from today to limit the events to. If not defined, no limit.
-    @Input() overdue = false; // If filtering overdue events or not.
+    @Input() showInlineCourse = true; // Whether to show the course name within event items.
     @Input() canLoadMore = false; // Whether more events can be loaded.
+    @Input() loadingMore = false; // Whether loading is ongoing.
     @Output() loadMore = new EventEmitter(); // Notify that more events should be loaded.
-
-    showCourse = false; // Whether to show the course name.
-    empty = true;
-    loadingMore = false;
-    filteredEvents: AddonBlockTimelineEventFilteredEvent[] = [];
-
-    /**
-     * @inheritdoc
-     */
-    ngOnChanges(changes: {[name: string]: SimpleChange}): void {
-        this.showCourse = !this.course;
-
-        if (changes.events || changes.from || changes.to) {
-            if (this.events) {
-                const filteredEvents = this.filterEventsByTime();
-                this.empty = !filteredEvents || filteredEvents.length <= 0;
-
-                const eventsByDay: Record<number, AddonBlockTimelineEvent[]> = {};
-                filteredEvents.forEach((event) => {
-                    const dayTimestamp = CoreTimeUtils.getMidnightForTimestamp(event.timesort);
-
-                    if (eventsByDay[dayTimestamp]) {
-                        eventsByDay[dayTimestamp].push(event);
-                    } else {
-                        eventsByDay[dayTimestamp] = [event];
-                    }
-                });
-
-                this.filteredEvents =  Object.keys(eventsByDay).map((key) => {
-                    const dayTimestamp = parseInt(key);
-
-                    return {
-                        dayTimestamp,
-                        events: eventsByDay[dayTimestamp],
-                    };
-                });
-                this.loadingMore = false;
-            } else {
-                this.empty = true;
-            }
-        }
-    }
-
-    /**
-     * Filter the events by time.
-     *
-     * @return Filtered events.
-     */
-    protected filterEventsByTime(): AddonBlockTimelineEvent[] {
-        const start = AddonBlockTimeline.getDayStart(this.from);
-        const end = this.to !== undefined
-            ? AddonBlockTimeline.getDayStart(this.to)
-            : undefined;
-
-        const now = CoreTimeUtils.timestamp();
-        const midnight = AddonBlockTimeline.getDayStart();
-
-        return this.events.filter((event) => {
-            if (start > event.timesort || (end && event.timesort >= end)) {
-                return false;
-            }
-
-            // Already calculated on 4.0 onwards but this will be live.
-            event.overdue = event.timesort < now;
-
-            if (event.eventtype === 'open' || event.eventtype === 'opensubmission') {
-                const dayTimestamp = CoreTimeUtils.getMidnightForTimestamp(event.timesort);
-
-                return dayTimestamp > midnight;
-            }
-
-            // When filtering by overdue, we fetch all events due today, in case any have elapsed already and are overdue.
-            // This means if filtering by overdue, some events fetched might not be required (eg if due later today).
-            return (!this.overdue || event.overdue);
-        }).map((event) => {
-            event.iconUrl = CoreCourse.getModuleIconSrc(event.icon.component);
-            event.modulename = event.modulename || event.icon.component;
-            event.iconTitle = CoreCourse.translateModuleName(event.modulename);
-
-            return event;
-        });
-    }
-
-    /**
-     * Load more events clicked.
-     */
-    loadMoreEvents(): void {
-        this.loadingMore = true;
-        this.loadMore.emit();
-    }
 
     /**
      * Action clicked.
@@ -157,14 +63,3 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
     }
 
 }
-
-type AddonBlockTimelineEvent = Omit<AddonCalendarEvent, 'eventtype'> & {
-    eventtype: string;
-    iconUrl?: string;
-    iconTitle?: string;
-};
-
-type AddonBlockTimelineEventFilteredEvent = {
-    events: AddonBlockTimelineEvent[];
-    dayTimestamp: number;
-};

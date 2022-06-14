@@ -22,7 +22,7 @@ import { Params } from '@angular/router';
 import { makeSingleton } from '@singletons';
 import { CoreBlockDefaultHandler } from './handlers/default-block';
 import { CoreNavigationOptions } from '@services/navigator';
-import type { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
+import type { ICoreBlockComponent } from '@features/block/classes/base-block-component';
 
 /**
  * Interface that all blocks must implement.
@@ -66,7 +66,7 @@ export interface CoreBlockHandlerData {
      * The component to render the contents of the block.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      */
-    component: Type<CoreBlockBaseComponent>;
+    component: Type<ICoreBlockComponent>;
 
     /**
      * Data to pass to the component. All the properties in this object will be passed to the component as inputs.

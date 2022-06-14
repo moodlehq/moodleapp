@@ -26,7 +26,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursecompletion';
-import { IonSearchbar } from '@ionic/angular';
+import { IonRefresher, IonSearchbar } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 
 const FILTER_PRIORITY: AddonBlockMyOverviewTimeFilters[] =
@@ -86,6 +86,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     protected currentSite!: CoreSite;
     protected allCourses: CoreEnrolledCourseDataWithOptions[] = [];
     protected prefetchIconsInitialized = false;
+    protected isDirty = false;
     protected isDestroyed = false;
     protected coursesObserver?: CoreEventObserver;
     protected updateSiteObserver?: CoreEventObserver;
@@ -159,9 +160,26 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     }
 
     /**
+     * Refresh the data.
+     *
+     * @param refresher Refresher.
+     * @param done Function to call when done.
+     * @return Promise resolved when done.
+     */
+    async doRefresh(refresher?: IonRefresher, done?: () => void): Promise<void> {
+        if (this.loaded) {
+            return this.refreshContent().finally(() => {
+                refresher?.complete();
+                done && done();
+            });
+        }
+    }
+
+    /**
      * @inheritdoc
      */
     async invalidateContent(): Promise<void> {
+        this.isDirty = true;
         const courseIds = this.allCourses.map((course) => course.id);
 
         await this.invalidateCourses(courseIds);
@@ -207,7 +225,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     /**
      * @inheritdoc
      */
-    protected async fetchContent(refresh?: boolean): Promise<void> {
+    protected async fetchContent(): Promise<void> {
         const config = this.block.configsRecord;
 
         const showCategories = config?.displaycategories?.value == '1';
@@ -218,15 +236,15 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             undefined,
             showCategories,
             {
-                readingStrategy: refresh ? CoreSitesReadingStrategy.PREFER_NETWORK : undefined,
+                readingStrategy: this.isDirty ? CoreSitesReadingStrategy.PREFER_NETWORK : undefined,
             },
         );
 
         this.hasCourses = this.allCourses.length > 0;
 
         try {
-            this.gradePeriodAfter = parseInt(await this.currentSite.getConfig('coursegraceperiodafter', refresh), 10);
-            this.gradePeriodBefore = parseInt(await this.currentSite.getConfig('coursegraceperiodbefore', refresh), 10);
+            this.gradePeriodAfter = parseInt(await this.currentSite.getConfig('coursegraceperiodafter', this.isDirty), 10);
+            this.gradePeriodBefore = parseInt(await this.currentSite.getConfig('coursegraceperiodbefore', this.isDirty), 10);
         } catch {
             this.gradePeriodAfter = 0;
             this.gradePeriodBefore = 0;
@@ -235,6 +253,8 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         this.loadSort();
         this.loadLayouts(config?.layouts?.value.split(','));
         this.loadFilters(config);
+
+        this.isDirty = false;
     }
 
     /**

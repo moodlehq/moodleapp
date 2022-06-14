@@ -5,7 +5,7 @@
         <div class="select-icon-inner"></div>
     </div>
 </ion-button>
-<ion-select *ngIf="interface != 'modal'" class="ion-text-start" [(ngModel)]="selection" (ngModelChange)="onChange.emit(selection)"
+<ion-select *ngIf="interface != 'modal'" class="ion-text-start" [(ngModel)]="selection" (ngModelChange)="onValueChanged(selection)"
     [interface]="interface" [attr.aria-label]="label + ': ' + selection" [disabled]="disabled" [hidden]="!!icon">
     <ng-content></ng-content>
 </ion-select>

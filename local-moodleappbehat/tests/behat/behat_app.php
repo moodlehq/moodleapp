@@ -538,7 +538,7 @@ class behat_app extends behat_app_helper {
      * Note it is difficult to use the standard 'click on' or 'press' steps because those do not
      * distinguish visible items and the app always has many non-visible items in the DOM.
      *
-     * @Then /^I press (".+") in the app$/
+     * @When /^I press (".+") in the app$/
      * @param string $locator Element locator
      * @throws DriverException If the press doesn't work
      */
@@ -550,6 +550,26 @@ class behat_app extends behat_app_helper {
 
             if ($result !== 'OK') {
                 throw new DriverException('Error pressing item - ' . $result);
+            }
+
+            return true;
+        });
+
+        $this->wait_for_pending_js();
+    }
+
+    /**
+     * Performs a pull to refresh gesture.
+     *
+     * @When /^I pull to refresh in the app$/
+     * @throws DriverException If the gesture is not available
+     */
+    public function i_pull_to_refresh_in_the_app() {
+        $this->spin(function() {
+            $result = $this->js('await window.behat.pullToRefresh();');
+
+            if ($result !== 'OK') {
+                throw new DriverException('Error pulling to refresh - ' . $result);
             }
 
             return true;
