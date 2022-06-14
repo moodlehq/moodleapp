@@ -80,6 +80,14 @@
             font-size: 16px;
             min-width: 16px;
             @include margin(0, 8px, 0, 0);
+
+            &[slot=start] {
+                @include margin(null, 8px, null, 0);
+            }
+
+            &[slot=end] {
+                @include margin(null, 0, null, 8px);
+            }
         }
 
         ion-label {
