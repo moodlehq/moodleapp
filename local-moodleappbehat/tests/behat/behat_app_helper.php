@@ -318,7 +318,7 @@ class behat_app_helper extends behat_base {
             $initOptions->skipOnBoarding = $options['skiponboarding'] ?? true;
             $initOptions->configOverrides = $this->appconfig;
 
-            $this->execute_script('window.behatInit(' . json_encode($initOptions) . ');');
+            $this->evaluate_script('window.behatInit(' . json_encode($initOptions) . ');');
         } catch (Exception $error) {
             throw new DriverException('Moodle App not running or not running on Automated mode.');
         }
@@ -431,14 +431,6 @@ class behat_app_helper extends behat_base {
         foreach (self::$listeners as $listener) {
             $listener->on_app_unload();
         }
-    }
-
-
-    /**
-     * Trigger Angular change detection.
-     */
-    protected function trigger_angular_change_detection() {
-        $this->getSession()->executeScript('ngZone.run(() => {});');
     }
 
     /**

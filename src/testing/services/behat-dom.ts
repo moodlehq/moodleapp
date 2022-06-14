@@ -468,7 +468,7 @@ export class TestsBehatDomUtils {
      * @param element Element to press.
      */
     static async pressElement(element: HTMLElement): Promise<void> {
-        NgZone.run(async () => {
+        await NgZone.run(async () => {
             const blockKey = TestsBehatBlocking.block();
 
             // Events don't bubble up across Shadow DOM boundaries, and some buttons
@@ -511,7 +511,7 @@ export class TestsBehatDomUtils {
      * @param value Value to be set.
      */
     static async setElementValue(element: HTMLElement, value: string): Promise<void> {
-        NgZone.run(async () => {
+        await NgZone.run(async () => {
             const blockKey = TestsBehatBlocking.block();
 
             // Functions to get/set value depending on field type.

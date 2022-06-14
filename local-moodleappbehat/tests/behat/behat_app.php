@@ -408,7 +408,7 @@ class behat_app extends behat_app_helper {
             ],
         ]);
 
-        $this->evaluate_script("return window.pushNotifications.notificationClicked($notification)");
+        $this->evaluate_script("window.behat.notificationClicked($notification)");
         $this->wait_for_pending_js();
     }
 
@@ -717,25 +717,8 @@ class behat_app extends behat_app_helper {
      * @When I run cron tasks in the app
      */
     public function i_run_cron_tasks_in_the_app() {
-        $session = $this->getSession();
-
-        // Force cron tasks execution and wait until they are completed.
-        $operationid = random_string();
-
-        $session->executeScript(
-            "cronProvider.forceSyncExecution().then(() => { window['behat_{$operationid}_completed'] = true; });"
-        );
-        $this->spin(
-            function() use ($session, $operationid) {
-                return $session->evaluateScript("window['behat_{$operationid}_completed'] || false");
-            },
-            false,
-            60,
-            new ExpectationException('Forced cron tasks in the app took too long to complete', $session)
-        );
-
-        // Trigger Angular change detection.
-        $this->trigger_angular_change_detection();
+        $this->evaluate_script('window.behat.forceSyncExecution()');
+        $this->wait_for_pending_js();
     }
 
     /**
@@ -744,28 +727,8 @@ class behat_app extends behat_app_helper {
      * @When I wait loading to finish in the app
      */
     public function i_wait_loading_to_finish_in_the_app() {
-        $session = $this->getSession();
-
-        $this->spin(
-            function() use ($session) {
-                $this->trigger_angular_change_detection();
-
-                $nodes = $this->find_all('css', 'core-loading ion-spinner');
-
-                foreach ($nodes as $node) {
-                    if (!$node->isVisible()) {
-                        continue;
-                    }
-
-                    return false;
-                }
-
-                return true;
-            },
-            false,
-            60,
-            new ExpectationException('"Loading took too long to complete', $session)
-        );
+        $this->evaluate_script('window.behat.waitLoadingToFinish()');
+        $this->wait_for_pending_js();
     }
 
     /**
@@ -786,7 +749,7 @@ class behat_app extends behat_app_helper {
             $this->getSession()->switchToWindow($names[1]);
         }
 
-        $this->execute_script('window.close();');
+        $this->evaluate_script('window.close();');
         $this->getSession()->switchToWindow($names[0]);
     }
 
@@ -798,7 +761,7 @@ class behat_app extends behat_app_helper {
      * @throws DriverException If the navigator.online mode is not available
      */
     public function i_switch_offline_mode(string $offline) {
-        $this->execute_script("appProvider.setForceOffline($offline);");
+        $this->evaluate_script("window.behat.network.setForceOffline($offline);");
     }
 
 }

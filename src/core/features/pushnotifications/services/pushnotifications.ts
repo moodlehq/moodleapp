@@ -431,7 +431,7 @@ export class CorePushNotificationsProvider {
     /**
      * Function called when a push notification is clicked. Redirect the user to the right state.
      *
-     * @param notification Notification.
+     * @param data Notification data.
      * @return Promise resolved when done.
      */
     async notificationClicked(data: CorePushNotificationsNotificationBasicData): Promise<void> {
