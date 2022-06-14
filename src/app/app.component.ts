@@ -19,7 +19,8 @@ import { BackButtonEvent, ScrollDetail } from '@ionic/core';
 import { CoreLang } from '@services/lang';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreEvents } from '@singletons/events';
-import { Network, NgZone, Platform, SplashScreen, Translate } from '@singletons';
+import { NgZone, Platform, SplashScreen, Translate } from '@singletons';
+import { CoreNetwork } from '@services/network';
 import { CoreApp, CoreAppProvider } from '@services/app';
 import { CoreSites } from '@services/sites';
 import { CoreNavigator } from '@services/navigator';
@@ -32,7 +33,6 @@ import { CoreConstants } from '@/core/constants';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreDom } from '@singletons/dom';
-import { CoreNetwork } from '@services/network';
 
 const MOODLE_VERSION_PREFIX = 'version-';
 const MOODLEAPP_VERSION_PREFIX = 'moodleapp-';
@@ -308,7 +308,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         await Platform.ready();
 
         // Refresh online status when changes.
-        Network.onChange().subscribe(() => {
+        CoreNetwork.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             NgZone.run(() => {
                 const isOnline = CoreNetwork.isOnline();

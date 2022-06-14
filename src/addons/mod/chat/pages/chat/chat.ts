@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
-import { CoreAnimations } from '@components/animations';
 import { CoreSendMessageFormComponent } from '@components/send-message-form/send-message-form';
 import { CanLeave } from '@guards/can-leave';
 import { IonContent } from '@ionic/angular';
@@ -23,7 +22,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { Network, NgZone, Translate } from '@singletons';
+import { NgZone, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { Subscription } from 'rxjs';
 import { AddonModChatUsersModalComponent, AddonModChatUsersModalResult } from '../../components/users-modal/users-modal';
@@ -36,7 +35,6 @@ import { AddonModChatFormattedMessage, AddonModChatHelper } from '../../services
 @Component({
     selector: 'page-addon-mod-chat-chat',
     templateUrl: 'chat.html',
-    animations: [CoreAnimations.SLIDE_IN_OUT],
     styleUrls: ['chat.scss'],
 })
 export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
@@ -67,7 +65,7 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
     constructor() {
         this.currentUserId = CoreSites.getCurrentSiteUserId();
         this.isOnline = CoreNetwork.isOnline();
-        this.onlineSubscription = Network.onChange().subscribe(() => {
+        this.onlineSubscription = CoreNetwork.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             NgZone.run(() => {
                 this.isOnline = CoreNetwork.isOnline();

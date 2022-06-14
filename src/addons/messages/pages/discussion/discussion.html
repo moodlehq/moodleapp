@@ -81,47 +81,16 @@
                     <ion-icon name="fas-arrow-down" aria-hidden="true"></ion-icon>
                 </ion-chip>
 
-                <ion-item class="ion-text-wrap addon-message" (longPress)="copyMessage(message)"
-                    [class.addon-message-mine]="message.useridfrom == currentUserId"
-                    [class.addon-message-not-mine]="message.useridfrom != currentUserId"
-                    [class.addon-message-no-user]="!message.showUserData"
-                    [@coreSlideInOut]="message.useridfrom == currentUserId ? '' : 'fromLeft'">
-                    <ion-label>
-                        <!-- User data. -->
-                        <div *ngIf="message.showUserData" class="item-heading addon-message-user">
-                            <core-user-avatar slot="start" [user]="members[message.useridfrom]" [linkProfile]="false" aria-hidden="true">
-                            </core-user-avatar>
-                            <div>{{ members[message.useridfrom].fullname }}</div>
-                        </div>
-                        <div *ngIf="!message.showUserData" class="sr-only">
-                            {{ message.useridfrom == currentUserId
-                            ? ('addon.messages.you' | translate)
-                            : members[message.useridfrom].fullname }}
-                        </div>
-
-                        <!-- Some messages have <p> and some others don't. Add a <p> so they all have same styles. -->
-                        <div class="addon-message-text">
-                            <core-format-text (afterRender)="last && scrollToBottom()" [text]="message.text" contextLevel="system"
-                                [contextInstanceId]="0"></core-format-text>
-                        </div>
-                    </ion-label>
-                    <ion-note *ngIf="!message.pending" slot="end">{{ message.timecreated | coreFormatDate: "strftimetime" }}</ion-note>
-                    <ion-note *ngIf="message.pending" slot="end">
-                        <ion-icon name="fas-clock" [attr.aria-label]="'core.notsent' | translate" role="status"></ion-icon>
-                    </ion-note>
-                    <ion-button fill="clear" *ngIf="!message.sending && showDelete" (click)="deleteMessage(message, index)"
-                        class="addon-messages-delete-button" [@coreSlideInOut]="'fromRight'"
-                        [attr.aria-label]=" 'addon.messages.deletemessage' | translate" slot="end">
-                        <ion-icon name="fas-trash" color="danger" slot="icon-only" aria-hidden="true"></ion-icon>
-                    </ion-button>
-
-                    <div class="tail" *ngIf="message.showTail"></div>
-                </ion-item>
+                <core-message [message]="message" [user]="members[message.useridfrom]" (afterRender)="last && scrollToBottom()"
+                    [text]="message.text" (onDeleteMessage)="deleteMessage(message, index)" [showDelete]="showDelete"
+                    [time]="message.timecreated">
+                </core-message>
             </ng-container>
         </ion-list>
 
         <core-empty-box *ngIf="!messages || messages.length <= 0" icon="far-comments"
-            [message]="'addon.messages.nomessagesfound' | translate"></core-empty-box>
+            [message]="'addon.messages.nomessagesfound' | translate">
+        </core-empty-box>
     </core-loading>
     <!-- Scroll bottom. -->
     <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="loaded && newMessages > 0">

@@ -104,20 +104,23 @@ Feature: Test forum navigation
     When I press the back button in the app
     And I press "Add discussion topic" in the app
     And I switch offline mode to "true"
-    And I set the field "Subject" to "Offline discussion 1" in the app
-    And I set the field "Message" to "Offline discussion 1 message" in the app
+    And I set the following fields to these values in the app:
+      | Subject | Offline discussion 1 |
+      | Message | Offline discussion 1 message |
     And I press "Post to forum" in the app
     And I press "Add discussion topic" in the app
-    And I set the field "Subject" to "Offline discussion 2" in the app
-    And I set the field "Message" to "Offline discussion 2 message" in the app
+    And I set the following fields to these values in the app:
+      | Subject | Offline discussion 2 |
+      | Message | Offline discussion 2 message |
     And I press "Post to forum" in the app
     Then I should find "Not sent" in the app
     And I should find "Offline discussion 1" in the app
     And I should find "Offline discussion 2" in the app
 
     When I press "Offline discussion 2" in the app
-    And I set the field "Subject" to "Offline discussion 3" in the app
-    And I set the field "Message" to "Offline discussion 3 message" in the app
+    And I set the following fields to these values in the app:
+      | Subject | Offline discussion 3 |
+      | Message | Offline discussion 3 message |
     And I press "Post to forum" in the app
     Then I should find "Not sent" in the app
     And I should find "Offline discussion 1" in the app
@@ -197,20 +200,23 @@ Feature: Test forum navigation
     # Offline
     When I press "Add discussion topic" in the app
     And I switch offline mode to "true"
-    And I set the field "Subject" to "Offline discussion 1" in the app
-    And I set the field "Message" to "Offline discussion 1 message" in the app
+    And I set the following fields to these values in the app:
+      | Subject | Offline discussion 1 |
+      | Message | Offline discussion 1 message |
     And I press "Post to forum" in the app
     And I press "Add discussion topic" in the app
-    And I set the field "Subject" to "Offline discussion 2" in the app
-    And I set the field "Message" to "Offline discussion 2 message" in the app
+    And I set the following fields to these values in the app:
+      | Subject | Offline discussion 2 |
+      | Message | Offline discussion 2 message |
     And I press "Post to forum" in the app
     Then I should find "Not sent" in the app
     And I should find "Offline discussion 1" in the app
     And I should find "Offline discussion 2" in the app
 
     When I press "Offline discussion 2" in the app
-    And I set the field "Subject" to "Offline discussion 3" in the app
-    And I set the field "Message" to "Offline discussion 3 message" in the app
+    And I set the following fields to these values in the app:
+      | Subject | Offline discussion 3 |
+      | Message | Offline discussion 3 message |
     And I press "Post to forum" in the app
     Then I should find "Not sent" in the app
     And I should find "Offline discussion 1" in the app

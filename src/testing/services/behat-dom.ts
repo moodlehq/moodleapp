@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CorePromisedValue } from '@classes/promised-value';
 import { CoreUtils } from '@services/utils/utils';
 import { NgZone } from '@singletons';
-import { TestsBehatBlocking } from './behat-blocking';
 import { TestBehatElementLocator } from './behat-runtime';
 
 // Containers that block containers behind them.
@@ -82,7 +82,7 @@ export class TestsBehatDomUtils {
      * @return Elements containing the given text with exact boolean.
      */
     protected static findElementsBasedOnTextWithinWithExact(container: HTMLElement, text: string): ElementsWithExact[] {
-        const attributesSelector = `[aria-label*="${text}"], a[title*="${text}"], img[alt*="${text}"]`;
+        const attributesSelector = `[aria-label*="${text}"], a[title*="${text}"], img[alt*="${text}"], [placeholder*="${text}"]`;
 
         const elements = Array.from(container.querySelectorAll<HTMLElement>(attributesSelector))
             .filter((element => this.isElementVisible(element, container)))
@@ -104,7 +104,9 @@ export class TestsBehatDomUtils {
                     }
 
                     if (node instanceof HTMLElement &&
-                        (node.getAttribute('aria-hidden') === 'true' || getComputedStyle(node).display === 'none')) {
+                        (node.getAttribute('aria-hidden') === 'true' ||
+                        node.getAttribute('aria-disabled') === 'true' ||
+                        getComputedStyle(node).display === 'none')) {
                         return NodeFilter.FILTER_REJECT;
                     }
 
@@ -176,7 +178,8 @@ export class TestsBehatDomUtils {
     protected static checkElementLabel(element: HTMLElement, text: string): boolean {
         return element.title === text ||
             element.getAttribute('alt') === text ||
-            element.getAttribute('aria-label') === text;
+            element.getAttribute('aria-label') === text ||
+            element.getAttribute('placeholder') === text;
     }
 
     /**
@@ -219,7 +222,7 @@ export class TestsBehatDomUtils {
         }
 
         return Array.from(uniqueElements);
-    };
+    }
 
     /**
      * Get parent element, including Shadow DOM parents.
@@ -359,7 +362,7 @@ export class TestsBehatDomUtils {
      * Function to find elements based on their text or Aria label.
      *
      * @param locator Element locator.
-     * @param container Container to search in.
+     * @param topContainer Container to search in.
      * @return Found elements
      */
     protected static findElementsBasedOnTextInContainer(
@@ -377,7 +380,7 @@ export class TestsBehatDomUtils {
                 const withinElementsAncestors = this.getTopAncestors(withinElements);
 
                 if (withinElementsAncestors.length > 1) {
-                    throw new Error('Too many matches for within text');
+                    throw new Error('Too many matches for within text ('+withinElementsAncestors.length+')');
                 }
 
                 topContainer = container = withinElementsAncestors[0];
@@ -395,7 +398,7 @@ export class TestsBehatDomUtils {
                 const nearElementsAncestors = this.getTopAncestors(nearElements);
 
                 if (nearElementsAncestors.length > 1) {
-                    throw new Error('Too many matches for near text');
+                    throw new Error('Too many matches for near text ('+nearElementsAncestors.length+')');
                 }
 
                 container = this.getParentElement(nearElementsAncestors[0]);
@@ -444,21 +447,23 @@ export class TestsBehatDomUtils {
 
         element.scrollIntoView(false);
 
-        return new Promise<DOMRect>((resolve): void => {
-            requestAnimationFrame(() => {
-                const rect = element.getBoundingClientRect();
+        const promise = new CorePromisedValue<DOMRect>();
 
-                if (initialRect.y !== rect.y) {
-                    setTimeout(() => {
-                        resolve(rect);
-                    }, 300);
+        requestAnimationFrame(() => {
+            const rect = element.getBoundingClientRect();
 
-                    return;
-                }
+            if (initialRect.y !== rect.y) {
+                setTimeout(() => {
+                    promise.resolve(rect);
+                }, 300);
 
-                resolve(rect);
-            });
+                return;
+            }
+
+            promise.resolve(rect);
         });
+
+        return promise;
     };
 
     /**
@@ -467,8 +472,8 @@ export class TestsBehatDomUtils {
      * @param element Element to press.
      */
     static async pressElement(element: HTMLElement): Promise<void> {
-        NgZone.run(async () => {
-            const blockKey = TestsBehatBlocking.block();
+        await NgZone.run(async () => {
+            const promise = new CorePromisedValue<void>();
 
             // Events don't bubble up across Shadow DOM boundaries, and some buttons
             // may not work without doing this.
@@ -498,8 +503,10 @@ export class TestsBehatDomUtils {
                 element.dispatchEvent(new MouseEvent('mouseup', eventOptions));
                 element.click();
 
-                TestsBehatBlocking.unblock(blockKey);
+                promise.resolve();
             }, 300);
+
+            return promise;
         });
     }
 
@@ -509,22 +516,33 @@ export class TestsBehatDomUtils {
      * @param element HTML to set.
      * @param value Value to be set.
      */
-    static async setElementValue(element: HTMLElement, value: string): Promise<void> {
-        NgZone.run(async () => {
-            const blockKey = TestsBehatBlocking.block();
+    static async setElementValue(element: HTMLInputElement | HTMLElement, value: string): Promise<void> {
+        await NgZone.run(async () => {
+            const promise = new CorePromisedValue<void>();
 
             // Functions to get/set value depending on field type.
-            let setValue = (text: string) => {
-                element.innerHTML = text;
-            };
-            let getValue = () => element.innerHTML;
+            const setValue = (text: string) => {
+                if (element.tagName === 'ION-SELECT' && 'value' in element) {
+                    value = value.trim();
+                    const optionValue = Array.from(element.querySelectorAll('ion-select-option'))
+                        .find((option) => option.innerHTML.trim() === value);
 
-            if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
-                setValue = (text: string) => {
+                    if (optionValue) {
+                        element.value = optionValue.value;
+                    }
+                } else if ('value' in element) {
                     element.value = text;
-                };
-                getValue = () => element.value;
-            }
+                } else {
+                    element.innerHTML = text;
+                }
+            };
+            const getValue = () => {
+                if ('value' in element) {
+                    return element.value;
+                } else {
+                    return element.innerHTML;
+                }
+            };
 
             // Pretend we have cut and pasted the new text.
             let event: InputEvent;
@@ -555,7 +573,9 @@ export class TestsBehatDomUtils {
                 element.dispatchEvent(event);
             }
 
-            TestsBehatBlocking.unblock(blockKey);
+            promise.resolve();
+
+            return promise;
         });
     }
 

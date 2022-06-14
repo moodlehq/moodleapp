@@ -24,7 +24,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { Network, NgZone, Translate } from '@singletons';
+import { NgZone, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { Subscription } from 'rxjs';
 import {
@@ -80,7 +80,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
         this.currentSite = CoreSites.getRequiredCurrentSite();
 
         // Refresh online status when changes.
-        this.onlineObserver = Network.onChange().subscribe(() => {
+        this.onlineObserver = CoreNetwork.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             NgZone.run(() => {
                 this.offline = !CoreNetwork.isOnline();

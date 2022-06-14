@@ -318,7 +318,7 @@ class behat_app_helper extends behat_base {
             $initOptions->skipOnBoarding = $options['skiponboarding'] ?? true;
             $initOptions->configOverrides = $this->appconfig;
 
-            $this->execute_script('window.behatInit(' . json_encode($initOptions) . ');');
+            $this->js('window.behatInit(' . json_encode($initOptions) . ');');
         } catch (Exception $error) {
             throw new DriverException('Moodle App not running or not running on Automated mode.');
         }
@@ -433,28 +433,28 @@ class behat_app_helper extends behat_base {
         }
     }
 
-
     /**
-     * Trigger Angular change detection.
-     */
-    protected function trigger_angular_change_detection() {
-        $this->getSession()->executeScript('ngZone.run(() => {});');
-    }
-
-    /**
-     * Evaluate a script that returns a Promise.
+     * Evaluate and execute scripts checking for promises if needed.
      *
      * @param string $script
      * @return mixed Resolved promise result.
      */
-    protected function evaluate_async_script(string $script) {
-        $script = preg_replace('/^return\s+/', '', $script);
-        $script = preg_replace('/;$/', '', $script);
+    protected function js(string $script) {
+        $scriptnoreturn = preg_replace('/^return\s+/', '', $script);
+        $scriptnoreturn = preg_replace('/;$/', '', $scriptnoreturn);
+
+        if (!preg_match('/^await\s+/', $scriptnoreturn)) {
+            // No async.
+            return $this->evaluate_script($script);
+        }
+
+        $script = preg_replace('/^await\s+/', '', $scriptnoreturn);
+
         $start = microtime(true);
         $promisevariable = 'PROMISE_RESULT_' . time();
-        $timeout = self::get_timeout();
+        $timeout = self::get_extended_timeout();
 
-        $this->evaluate_script("Promise.resolve($script)
+        $res = $this->evaluate_script("Promise.resolve($script)
             .then(result => window.$promisevariable = result)
             .catch(error => window.$promisevariable = 'Async code rejected: ' + error?.message);");
 
@@ -463,6 +463,7 @@ class behat_app_helper extends behat_base {
                 throw new DriverException("Async script not resolved after $timeout seconds");
             }
 
+            // 0.1 seconds.
             usleep(100000);
         } while (!$this->evaluate_script("return '$promisevariable' in window;"));
 
@@ -522,7 +523,7 @@ class behat_app_helper extends behat_base {
             $successXPath = '//page-core-mainmenu';
         }
 
-        $this->handle_url_and_wait_page_to_load($url, $successXPath);
+        $this->handle_url($url, $successXPath);
     }
 
     /**
@@ -537,7 +538,7 @@ class behat_app_helper extends behat_base {
         $urlscheme = $this->get_mobile_url_scheme();
         $url = "$urlscheme://link=" . urlencode($CFG->behat_wwwroot.$path);
 
-        $this->handle_url_and_wait_page_to_load($url);
+        $this->handle_url($url);
     }
 
     /**
@@ -546,11 +547,13 @@ class behat_app_helper extends behat_base {
      * @param string $customurl To navigate.
      * @param string $successXPath The XPath of the element to lookat after navigation.
      */
-    protected function handle_url_and_wait_page_to_load(string $customurl, string $successXPath = '') {
+    protected function handle_url(string $customurl, string $successXPath = '') {
         // Instead of using evaluate_async_script, we wait for the path to load.
-        $this->evaluate_script("return window.behat.handleCustomURL('$customurl')");
+        $result = $this->js("return await window.behat.handleCustomURL('$customurl');");
 
-        $this->wait_for_pending_js();
+        if ($result !== 'OK') {
+            throw new DriverException('Error handling url - ' . $result);
+        }
 
         if (!empty($successXPath)) {
             // Wait until the page appears.
@@ -562,10 +565,9 @@ class behat_app_helper extends behat_base {
                     }
                     throw new DriverException('Moodle App custom URL page not loaded');
                 }, false, 30);
-
-            // Wait for JS to finish as well.
-            $this->wait_for_pending_js();
         }
+
+        $this->wait_for_pending_js();
     }
 
     /**

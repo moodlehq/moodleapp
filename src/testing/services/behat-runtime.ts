@@ -18,6 +18,16 @@ import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { CoreLoginHelperProvider } from '@features/login/services/login-helper';
 import { CoreConfig } from '@services/config';
 import { EnvironmentConfig } from '@/types/config';
+import { NgZone } from '@singletons';
+import { CoreNetwork } from '@services/network';
+import {
+    CorePushNotifications,
+    CorePushNotificationsNotificationBasicData,
+} from '@features/pushnotifications/services/pushnotifications';
+import { CoreCronDelegate } from '@services/cron';
+import { CoreLoadingComponent } from '@components/loading/loading';
+import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Behat runtime servive with public API.
@@ -45,6 +55,10 @@ export class TestsBehatRuntime {
             scrollTo: TestsBehatRuntime.scrollTo,
             setField: TestsBehatRuntime.setField,
             handleCustomURL: TestsBehatRuntime.handleCustomURL,
+            notificationClicked: TestsBehatRuntime.notificationClicked,
+            forceSyncExecution: TestsBehatRuntime.forceSyncExecution,
+            waitLoadingToFinish: TestsBehatRuntime.waitLoadingToFinish,
+            network: CoreNetwork.instance,
         };
 
         if (!options) {
@@ -69,17 +83,60 @@ export class TestsBehatRuntime {
      * @return OK if successful, or ERROR: followed by message.
      */
     static async handleCustomURL(url: string): Promise<string> {
-        const blockKey = TestsBehatBlocking.block();
-
         try {
-            await CoreCustomURLSchemes.handleCustomURL(url);
+            await NgZone.run(async () => {
+                await CoreCustomURLSchemes.handleCustomURL(url);
+            });
 
             return 'OK';
         } catch (error) {
             return 'ERROR: ' + error.message;
+        }
+    }
+
+    /**
+     * Function called when a push notification is clicked. Redirect the user to the right state.
+     *
+     * @param data Notification data.
+     * @return Promise resolved when done.
+     */
+    static async notificationClicked(data: CorePushNotificationsNotificationBasicData): Promise<void> {
+        const blockKey = TestsBehatBlocking.block();
+
+        try {
+            await NgZone.run(async () => {
+                await CorePushNotifications.notificationClicked(data);
+            });
         } finally {
             TestsBehatBlocking.unblock(blockKey);
         }
+    }
+
+    /**
+     * Force execution of synchronization cron tasks without waiting for the scheduled time.
+     * Please notice that some tasks may not be executed depending on the network connection and sync settings.
+     *
+     * @return Promise resolved if all handlers are executed successfully, rejected otherwise.
+     */
+    static async forceSyncExecution(): Promise<void> {
+        await NgZone.run(async () => {
+            await CoreCronDelegate.forceSyncExecution();
+        });
+    }
+
+    /**
+     * Wait all controlled components to be rendered.
+     *
+     * @return Promise resolved when all components have been rendered.
+     */
+    static async waitLoadingToFinish(): Promise<void> {
+        await NgZone.run(async () => {
+            const elements = Array.from(document.body.querySelectorAll<HTMLElement>('core-loading'))
+                .filter((element) => CoreDom.isElementVisible(element));
+
+            await Promise.all(elements.map(element =>
+                CoreComponentsRegistry.waitComponentReady(element, CoreLoadingComponent)));
+        });
     }
 
     /**
@@ -88,7 +145,7 @@ export class TestsBehatRuntime {
      * @param button Type of button to press.
      * @return OK if successful, or ERROR: followed by message.
      */
-    static pressStandard(button: string): string {
+    static async pressStandard(button: string): Promise<string> {
         this.log('Action - Click standard button: ' + button);
 
         // Find button
@@ -120,7 +177,7 @@ export class TestsBehatRuntime {
         }
 
         // Click button
-        TestsBehatDomUtils.pressElement(foundButton);
+        await TestsBehatDomUtils.pressElement(foundButton);
 
         return 'OK';
     }
@@ -140,7 +197,7 @@ export class TestsBehatRuntime {
             return 'ERROR: Could not find backdrop';
         }
         if (backdrops.length > 1) {
-            return 'ERROR: Found too many backdrops';
+            return 'ERROR: Found too many backdrops ('+backdrops.length+')';
         }
         const backdrop = backdrops[0];
         backdrop.click();
@@ -274,7 +331,7 @@ export class TestsBehatRuntime {
      * @param locator Element locator.
      * @return OK if successful, or ERROR: followed by message
      */
-    static press(locator: TestBehatElementLocator): string {
+    static async press(locator: TestBehatElementLocator): Promise<string> {
         this.log('Action - Press', locator);
 
         try {
@@ -284,7 +341,7 @@ export class TestsBehatRuntime {
                 return 'ERROR: No element matches locator to press.';
             }
 
-            TestsBehatDomUtils.pressElement(found);
+            await TestsBehatDomUtils.pressElement(found);
 
             return 'OK';
         } catch (error) {
@@ -304,7 +361,7 @@ export class TestsBehatRuntime {
         titles = titles.filter((title) => TestsBehatDomUtils.isElementVisible(title, document.body));
 
         if (titles.length > 1) {
-            return 'ERROR: Too many possible titles.';
+            return 'ERROR: Too many possible titles ('+titles.length+').';
         } else if (!titles.length) {
             return 'ERROR: No title found.';
         } else {
@@ -323,18 +380,18 @@ export class TestsBehatRuntime {
      * @param value New value
      * @return OK or ERROR: followed by message
      */
-    static setField(field: string, value: string): string {
+    static async setField(field: string, value: string): Promise<string> {
         this.log('Action - Set field ' + field + ' to: ' + value);
 
-        const found: HTMLElement | HTMLInputElement | HTMLTextAreaElement =TestsBehatDomUtils.findElementBasedOnText(
-            { text: field, selector: 'input, textarea, [contenteditable="true"]' },
+        const found: HTMLElement | HTMLInputElement = TestsBehatDomUtils.findElementBasedOnText(
+            { text: field, selector: 'input, textarea, [contenteditable="true"], ion-select' },
         );
 
         if (!found) {
             return 'ERROR: No element matches field to set.';
         }
 
-        TestsBehatDomUtils.setElementValue(found, value);
+        await TestsBehatDomUtils.setElementValue(found, value);
 
         return 'OK';
     }

@@ -187,6 +187,9 @@ export const LocalNotifications = makeSingleton(LocalNotificationsService);
 export const Media = makeSingleton(MediaService);
 export const MediaCapture = makeSingleton(MediaCaptureService);
 export const NativeHttp = makeSingleton(HTTP);
+/**
+ * @deprecated on 4.1 use CoreNetwork instead.
+ */
 export const Network = makeSingleton(NetworkService);
 export const Push = makeSingleton(PushService);
 export const QRScanner = makeSingleton(QRScannerService);

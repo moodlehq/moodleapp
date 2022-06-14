@@ -33,7 +33,7 @@ import { CoreCategoryData, CoreCourses, CoreEnrolledCourseData } from '@features
 import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
 import { AddonCalendarFilterComponent } from '../../components/filter/filter';
 import moment from 'moment';
-import { Network, NgZone } from '@singletons';
+import { NgZone } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { Params } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -180,7 +180,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
         );
 
         // Refresh online status when changes.
-        this.onlineObserver = Network.onChange().subscribe(() => {
+        this.onlineObserver = CoreNetwork.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             NgZone.run(() => {
                 this.isOnline = CoreNetwork.isOnline();

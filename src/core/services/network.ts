@@ -14,15 +14,56 @@
 
 import { Injectable } from '@angular/core';
 import { CorePlatform } from '@services/platform';
-import { makeSingleton, Network } from '@singletons';
+import { Network as NetworkService } from '@ionic-native/network/ngx';
+import { makeSingleton } from '@singletons';
+import { Observable, Subject, merge } from 'rxjs';
+
+const Network = makeSingleton(NetworkService);
 
 /**
- * Service to manage network information.
+ * Service to manage network connections.
  */
 @Injectable({ providedIn: 'root' })
-export class CoreNetworkService {
+export class CoreNetworkService extends NetworkService {
 
+    type!: string;
+
+    protected connectObservable = new Subject<'connected'>();
+    protected disconnectObservable = new Subject<'disconnected'>();
     protected forceOffline = false;
+    protected online = false;
+
+    constructor() {
+        super();
+
+        this.checkOnline();
+
+        if (CorePlatform.isMobile()) {
+            Network.onChange().subscribe(() => {
+                this.fireObservable();
+            });
+        } else {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (<any> window).Connection = {
+                UNKNOWN: 'unknown', // eslint-disable-line @typescript-eslint/naming-convention
+                ETHERNET: 'ethernet', // eslint-disable-line @typescript-eslint/naming-convention
+                WIFI: 'wifi', // eslint-disable-line @typescript-eslint/naming-convention
+                CELL_2G: '2g', // eslint-disable-line @typescript-eslint/naming-convention
+                CELL_3G: '3g', // eslint-disable-line @typescript-eslint/naming-convention
+                CELL_4G: '4g', // eslint-disable-line @typescript-eslint/naming-convention
+                CELL: 'cellular', // eslint-disable-line @typescript-eslint/naming-convention
+                NONE: 'none', // eslint-disable-line @typescript-eslint/naming-convention
+            };
+
+            window.addEventListener('online', () => {
+                this.fireObservable();
+            }, false);
+
+            window.addEventListener('offline', () => {
+                this.fireObservable();
+            }, false);
+        }
+    }
 
     /**
      * Set value of forceOffline flag. If true, the app will think the device is offline.
@@ -31,6 +72,7 @@ export class CoreNetworkService {
      */
     setForceOffline(value: boolean): void {
         this.forceOffline = !!value;
+        this.fireObservable();
     }
 
     /**
@@ -39,23 +81,77 @@ export class CoreNetworkService {
      * @return Whether the app is online.
      */
     isOnline(): boolean {
+        return this.online;
+    }
+
+    /**
+     * Returns whether we are online.
+     *
+     * @return Whether the app is online.
+     */
+    checkOnline(): void {
         if (this.forceOffline) {
-            return false;
+            this.online = false;
+
+            return;
         }
 
         if (!CorePlatform.isMobile()) {
-            return navigator.onLine;
+            this.online = navigator.onLine;
+
+            return;
         }
 
-        let online = Network.type !== null && Network.type != Network.Connection.NONE &&
-            Network.type != Network.Connection.UNKNOWN;
+        let online = this.type !== null && this.type != this.Connection.NONE &&
+            this.type != this.Connection.UNKNOWN;
 
         // Double check we are not online because we cannot rely 100% in Cordova APIs.
         if (!online && navigator.onLine) {
             online = true;
         }
 
-        return online;
+        this.online = online;
+    }
+
+    /**
+     * Returns an observable to watch connection changes.
+     *
+     * @return Observable.
+     */
+    onChange(): Observable<'connected' | 'disconnected'> {
+        return merge(this.connectObservable, this.disconnectObservable);
+    }
+
+    /**
+     * Returns an observable to notify when the app is connected.
+     *
+     * @return Observable.
+     */
+    onConnect(): Observable<'connected'> {
+        return this.connectObservable;
+    }
+
+    /**
+     * Returns an observable to notify when the app is disconnected.
+     *
+     * @return Observable.
+     */
+    onDisconnect(): Observable<'disconnected'> {
+        return this.disconnectObservable;
+    }
+
+    /**
+     * Fires the correct observable depending on the connection status.
+     */
+    protected fireObservable(): void {
+        const previousOnline = this.online;
+
+        this.checkOnline();
+        if (this.online && !previousOnline) {
+            this.connectObservable.next('connected');
+        } else if (!this.online && previousOnline) {
+            this.disconnectObservable.next('disconnected');
+        }
     }
 
     /**

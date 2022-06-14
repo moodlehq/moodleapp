@@ -19,11 +19,12 @@ import { Observable, Subject } from 'rxjs';
 import { sep } from 'path';
 
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { CoreSingletonProxy, Network, Platform, Translate } from '@singletons';
+import { CoreSingletonProxy, Platform, Translate } from '@singletons';
 import { CoreTextUtilsProvider } from '@services/utils/text';
 
 import { TranslatePipeStub } from './stubs/pipes/translate';
 import { CoreExternalContentDirectiveStub } from './stubs/directives/core-external-content';
+import { CoreNetwork } from '@services/network';
 
 abstract class WrapperComponent<U> {
 
@@ -37,7 +38,7 @@ let testBedInitialized = false;
 const textUtils = new CoreTextUtilsProvider();
 const DEFAULT_SERVICE_SINGLETON_MOCKS: [CoreSingletonProxy, Record<string, unknown>][] = [
     [Platform, mock({ is: () => false, ready: () => Promise.resolve(), resume: new Subject<void>() })],
-    [Network, { onChange: () => new Observable() }],
+    [CoreNetwork, { onChange: () => new Observable() }],
 ];
 
 async function renderAngularComponent<T>(component: Type<T>, config: RenderConfig): Promise<ComponentFixture<T>> {

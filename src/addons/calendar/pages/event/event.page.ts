@@ -32,7 +32,7 @@ import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreGroups } from '@services/groups';
-import { Network, NgZone, Translate } from '@singletons';
+import { NgZone, Translate } from '@singletons';
 import { Subscription } from 'rxjs';
 import { CoreNavigator } from '@services/navigator';
 import { CoreUtils } from '@services/utils/utils';
@@ -123,7 +123,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         );
 
         // Refresh online status when changes.
-        this.onlineObserver = Network.onChange().subscribe(() => {
+        this.onlineObserver = CoreNetwork.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             NgZone.run(() => {
                 this.isOnline = CoreNetwork.isOnline();

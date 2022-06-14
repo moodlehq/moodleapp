@@ -146,8 +146,12 @@ Feature: Test glossary navigation
     When I press the back button in the app
     And I scroll to "Acerola" in the app
     And I press "Search" in the app
-    And I set the field "Search" to "melon" in the app
-    And I press "Search" "button" near "Clear search" in the app
+    And I set the field "Search" to "something" in the app
+    And I press enter
+    Then I should find "No entries were found." in the app
+
+    When I set the field "Search" to "melon" in the app
+    And I press enter
     Then I should find "Honeydew Melon" in the app
     And I should find "Watermelon" in the app
     But I should not find "Acerola" in the app
@@ -170,12 +174,14 @@ Feature: Test glossary navigation
     And I press "Clear search" in the app
     And I press "Add a new entry" in the app
     And I switch offline mode to "true"
-    And I set the field "Concept" to "Tomato" in the app
-    And I set the field "Definition" to "Tomato is a fruit" in the app
+    And I set the following fields to these values in the app:
+      | Concept | Tomato |
+      | Definition | Tomato is a fruit |
     And I press "Save" in the app
     And I press "Add a new entry" in the app
-    And I set the field "Concept" to "Cashew" in the app
-    And I set the field "Definition" to "Cashew is a fruit" in the app
+    And I set the following fields to these values in the app:
+      | Concept | Cashew |
+      | Definition | Cashew is a fruit |
     And I press "Save" in the app
     Then I should find "Entries to be synced" in the app
     And I should find "Tomato" in the app
@@ -248,8 +254,12 @@ Feature: Test glossary navigation
 
     # Search
     When I press "Search" in the app
-    And I set the field "Search" to "melon" in the app
-    And I press "Search" "button" near "Clear search" in the app
+    And I set the field "Search" to "something" in the app
+    And I press enter
+    Then I should find "No entries were found." in the app
+
+    When I set the field "Search" to "melon" in the app
+    And I press enter
     Then I should find "Honeydew Melon" in the app
     And I should find "Watermelon" in the app
     And "Honeydew Melon" near "Watermelon" should be selected in the app
@@ -265,11 +275,13 @@ Feature: Test glossary navigation
     When I press "Clear search" in the app
     And I press "Add a new entry" in the app
     And I switch offline mode to "true"
-    And I set the field "Concept" to "Tomato" in the app
-    And I set the field "Definition" to "Tomato is a fruit" in the app
+    And I set the following fields to these values in the app:
+      | Concept | Tomato |
+      | Definition | Tomato is a fruit |
     And I press "Save" in the app
-    And I set the field "Concept" to "Cashew" in the app
-    And I set the field "Definition" to "Cashew is a fruit" in the app
+    And I set the following fields to these values in the app:
+      | Concept | Cashew |
+      | Definition | Cashew is a fruit |
     And I press "Save" in the app
     Then I should find "Entries to be synced" in the app
     And I should find "Tomato" in the app

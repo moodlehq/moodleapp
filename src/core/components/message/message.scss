@@ -1,0 +1,138 @@
+@import "~theme/globals";
+
+:host {
+    --message-background: var(--core-messages-message-bg);
+    --message-activated-background: var(--core-messages-message-activated-bg);
+    --message-alignment: flex-start;
+
+    display: flex;
+    justify-content: var(--message-alignment);
+
+
+    .message-box {
+        --background: var(--message-background);
+        --min-height: var(--a11y-min-target-size);
+
+        display: flex;
+        flex-direction: row;
+        position: relative;
+
+        border: 0;
+        border-radius: var(--medium-radius);
+        margin: 8px;
+        width: 90%;
+        max-width: var(--list-item-max-width);
+        min-height: 36px;
+
+        font-size: var(--text-size);
+        color: var(--ion-text-color);
+
+        background: var(--message-background);
+        @include core-transition(width);
+
+        // This is needed to display bubble tails.
+        overflow: visible;
+
+        &:hover {
+            -webkit-filter: drop-shadow(2px 2px 2px rgba(0,0,0,.3));
+            filter: drop-shadow(2px 2px 2px rgba(0,0,0,.3));
+        }
+
+        &[tappable]:active {
+            --message-background: var(--message-activated-background);
+        }
+
+        .main {
+            padding: 8px;
+            flex-grow: 1;
+
+            .message-user {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: .5rem;
+                margin-top: 0;
+                color: var(--ion-text-color);
+
+                core-user-avatar {
+                    display: block;
+                    --core-avatar-size: var(--core-messages-avatar-size);
+                    margin: 0;
+                }
+
+                div {
+                    font-weight: 500;
+                    flex-grow: 1;
+                    padding-left: .5rem;
+                    padding-right: .5rem;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    font-size: 16px;
+                }
+            }
+
+            .message-text {
+                ::ng-deep > p:only-child {
+                    display: inline;
+                    margin: 0;
+                }
+            }
+        }
+
+        .extra {
+            flex-shrink: 1;
+            display: flex;
+            flex-direction: row;
+            padding-left: 8px;
+            padding-right: 8px;
+
+            .message-time {
+                padding-top: 8px;
+                color: var(--core-messages-message-note-text);
+                font-size: var(--core-messages-message-note-font-size);
+            }
+
+            .delete-button {
+                min-height: initial;
+                line-height: initial;
+                margin: 0px;
+                align-self: flex-end;
+
+                ::ng-deep ion-icon {
+                    font-size: 1.2em;
+                }
+            }
+        }
+
+        .tail {
+            content: '';
+            width: 0;
+            height: 0;
+            border: 0.5rem solid transparent;
+            position: absolute;
+            touch-action: none;
+            bottom: 0;
+            border-bottom-color: var(--message-background);
+            @include position(null, null, null, -8px);
+        }
+    }
+
+    &.no-user .message-box {
+        margin-top: 0px;
+    }
+
+    &.is-mine {
+        // Defined when a message is the user's.
+        --message-background: var(--core-messages-message-mine-bg);
+        --message-activated-background: var(--core-messages-message-mine-activated-bg);
+        --message-alignment: flex-end;
+
+        .message-box {
+            .tail {
+                @include position(null, -8px, null, unset);
+            }
+        }
+    }
+}

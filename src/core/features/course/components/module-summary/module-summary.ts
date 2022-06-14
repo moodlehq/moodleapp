@@ -30,7 +30,7 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
-import { ModalController, Network, NgZone } from '@singletons';
+import { ModalController, NgZone } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { Subscription } from 'rxjs';
 
@@ -82,7 +82,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
         this.isOnline = CoreNetwork.isOnline();
 
         // Refresh online status when changes.
-        this.onlineSubscription = Network.onChange().subscribe(() => {
+        this.onlineSubscription = CoreNetwork.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             NgZone.run(() => {
                 this.isOnline = CoreNetwork.isOnline();

@@ -81,8 +81,8 @@ import { FileTransferMock } from './services/file-transfer';
 import { GeolocationMock } from './services/geolocation';
 import { InAppBrowserMock } from './services/inappbrowser';
 import { MediaCaptureMock } from './services/media-capture';
-import { NetworkMock } from './services/network';
 import { ZipMock } from './services/zip';
+import { CoreNetworkService } from '@services/network';
 
 /**
  * This module handles the emulation of Cordova plugins in browser and desktop.
@@ -152,11 +152,7 @@ import { ZipMock } from './services/zip';
             deps: [Platform],
             useFactory: (platform: Platform): MediaCapture => platform.is('cordova') ? new MediaCapture() : new MediaCaptureMock(),
         },
-        {
-            provide: Network,
-            deps: [Platform],
-            useFactory: (platform: Platform): Network => platform.is('cordova') ? new Network() : new NetworkMock(),
-        },
+        CoreNetworkService,
         Push,
         QRScanner,
         SplashScreen,

@@ -32,8 +32,9 @@ Feature: Test basic usage of login in app
     And I press "Connect to your site" in the app
     Then I should find "Acceptance test site" in the app
 
-    When I set the field "Username" to "student1" in the app
-    And I set the field "Password" to "student1" in the app
+    When I set the following fields to these values in the app:
+      | Username | student1 |
+      | Password | student1 |
     And I press "Log in" near "Forgotten your username or password?" in the app
     Then I should find "Acceptance test site" in the app
     But I should not find "Log in" in the app
