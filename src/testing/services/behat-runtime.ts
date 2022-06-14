@@ -83,8 +83,6 @@ export class TestsBehatRuntime {
      * @return OK if successful, or ERROR: followed by message.
      */
     static async handleCustomURL(url: string): Promise<string> {
-        const blockKey = TestsBehatBlocking.block();
-
         try {
             await NgZone.run(async () => {
                 await CoreCustomURLSchemes.handleCustomURL(url);
@@ -93,8 +91,6 @@ export class TestsBehatRuntime {
             return 'OK';
         } catch (error) {
             return 'ERROR: ' + error.message;
-        } finally {
-            TestsBehatBlocking.unblock(blockKey);
         }
     }
 
@@ -123,15 +119,9 @@ export class TestsBehatRuntime {
      * @return Promise resolved if all handlers are executed successfully, rejected otherwise.
      */
     static async forceSyncExecution(): Promise<void> {
-        const blockKey = TestsBehatBlocking.block();
-
-        try {
-            await NgZone.run(async () => {
-                await CoreCronDelegate.forceSyncExecution();
-            });
-        } finally {
-            TestsBehatBlocking.unblock(blockKey);
-        }
+        await NgZone.run(async () => {
+            await CoreCronDelegate.forceSyncExecution();
+        });
     }
 
     /**
@@ -140,20 +130,13 @@ export class TestsBehatRuntime {
      * @return Promise resolved when all components have been rendered.
      */
     static async waitLoadingToFinish(): Promise<void> {
-        const blockKey = TestsBehatBlocking.block();
-
         await NgZone.run(async () => {
-            try {
-                const elements = Array.from(document.body.querySelectorAll<HTMLElement>('core-loading'))
-                    .filter((element) => CoreDom.isElementVisible(element));
+            const elements = Array.from(document.body.querySelectorAll<HTMLElement>('core-loading'))
+                .filter((element) => CoreDom.isElementVisible(element));
 
-                await Promise.all(elements.map(element =>
-                    CoreComponentsRegistry.waitComponentReady(element, CoreLoadingComponent)));
-            } finally {
-                TestsBehatBlocking.unblock(blockKey);
-            }
+            await Promise.all(elements.map(element =>
+                CoreComponentsRegistry.waitComponentReady(element, CoreLoadingComponent)));
         });
-
     }
 
     /**
@@ -162,7 +145,7 @@ export class TestsBehatRuntime {
      * @param button Type of button to press.
      * @return OK if successful, or ERROR: followed by message.
      */
-    static pressStandard(button: string): string {
+    static async pressStandard(button: string): Promise<string> {
         this.log('Action - Click standard button: ' + button);
 
         // Find button
@@ -194,7 +177,7 @@ export class TestsBehatRuntime {
         }
 
         // Click button
-        TestsBehatDomUtils.pressElement(foundButton);
+        await TestsBehatDomUtils.pressElement(foundButton);
 
         return 'OK';
     }
@@ -348,7 +331,7 @@ export class TestsBehatRuntime {
      * @param locator Element locator.
      * @return OK if successful, or ERROR: followed by message
      */
-    static press(locator: TestBehatElementLocator): string {
+    static async press(locator: TestBehatElementLocator): Promise<string> {
         this.log('Action - Press', locator);
 
         try {
@@ -358,7 +341,7 @@ export class TestsBehatRuntime {
                 return 'ERROR: No element matches locator to press.';
             }
 
-            TestsBehatDomUtils.pressElement(found);
+            await TestsBehatDomUtils.pressElement(found);
 
             return 'OK';
         } catch (error) {
@@ -397,7 +380,7 @@ export class TestsBehatRuntime {
      * @param value New value
      * @return OK or ERROR: followed by message
      */
-    static setField(field: string, value: string): string {
+    static async setField(field: string, value: string): Promise<string> {
         this.log('Action - Set field ' + field + ' to: ' + value);
 
         const found: HTMLElement | HTMLInputElement = TestsBehatDomUtils.findElementBasedOnText(
@@ -408,7 +391,7 @@ export class TestsBehatRuntime {
             return 'ERROR: No element matches field to set.';
         }
 
-        TestsBehatDomUtils.setElementValue(found, value);
+        await TestsBehatDomUtils.setElementValue(found, value);
 
         return 'OK';
     }

@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CorePromisedValue } from '@classes/promised-value';
 import { CoreUtils } from '@services/utils/utils';
 import { NgZone } from '@singletons';
-import { TestsBehatBlocking } from './behat-blocking';
 import { TestBehatElementLocator } from './behat-runtime';
 
 // Containers that block containers behind them.
@@ -447,21 +447,23 @@ export class TestsBehatDomUtils {
 
         element.scrollIntoView(false);
 
-        return new Promise<DOMRect>((resolve): void => {
-            requestAnimationFrame(() => {
-                const rect = element.getBoundingClientRect();
+        const promise = new CorePromisedValue<DOMRect>();
 
-                if (initialRect.y !== rect.y) {
-                    setTimeout(() => {
-                        resolve(rect);
-                    }, 300);
+        requestAnimationFrame(() => {
+            const rect = element.getBoundingClientRect();
 
-                    return;
-                }
+            if (initialRect.y !== rect.y) {
+                setTimeout(() => {
+                    promise.resolve(rect);
+                }, 300);
 
-                resolve(rect);
-            });
+                return;
+            }
+
+            promise.resolve(rect);
         });
+
+        return promise;
     };
 
     /**
@@ -471,7 +473,7 @@ export class TestsBehatDomUtils {
      */
     static async pressElement(element: HTMLElement): Promise<void> {
         await NgZone.run(async () => {
-            const blockKey = TestsBehatBlocking.block();
+            const promise = new CorePromisedValue<void>();
 
             // Events don't bubble up across Shadow DOM boundaries, and some buttons
             // may not work without doing this.
@@ -501,8 +503,10 @@ export class TestsBehatDomUtils {
                 element.dispatchEvent(new MouseEvent('mouseup', eventOptions));
                 element.click();
 
-                TestsBehatBlocking.unblock(blockKey);
+                promise.resolve();
             }, 300);
+
+            return promise;
         });
     }
 
@@ -514,7 +518,7 @@ export class TestsBehatDomUtils {
      */
     static async setElementValue(element: HTMLInputElement | HTMLElement, value: string): Promise<void> {
         await NgZone.run(async () => {
-            const blockKey = TestsBehatBlocking.block();
+            const promise = new CorePromisedValue<void>();
 
             // Functions to get/set value depending on field type.
             const setValue = (text: string) => {
@@ -569,7 +573,9 @@ export class TestsBehatDomUtils {
                 element.dispatchEvent(event);
             }
 
-            TestsBehatBlocking.unblock(blockKey);
+            promise.resolve();
+
+            return promise;
         });
     }
 
