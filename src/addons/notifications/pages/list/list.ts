@@ -29,9 +29,10 @@ import { CorePushNotificationsDelegate } from '@features/pushnotifications/servi
 import { CoreSites } from '@services/sites';
 import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
 import { CoreTimeUtils } from '@services/utils/time';
-import { AddonsNotificationsNotificationsSource } from '@addons/notifications/classes/notifications-source';
+import { AddonNotificationsNotificationsSource } from '@addons/notifications/classes/notifications-source';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { AddonNotificationsNotificationToRender } from '@addons/notifications/services/notifications-helper';
+import { AddonLegacyNotificationsNotificationsSource } from '@addons/notifications/classes/legacy-notifications-source';
 
 /**
  * Page that displays the list of notifications.
@@ -44,7 +45,7 @@ import { AddonNotificationsNotificationToRender } from '@addons/notifications/se
 export class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
-    notifications!: CoreListItemsManager<AddonNotificationsNotificationToRender, AddonsNotificationsNotificationsSource>;
+    notifications!: CoreListItemsManager<AddonNotificationsNotificationToRender, AddonNotificationsNotificationsSource>;
     fetchMoreNotificationsFailed = false;
     canMarkAllNotificationsAsRead = false;
     loadingMarkAllNotificationsAsRead = false;
@@ -58,7 +59,9 @@ export class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
     constructor() {
         try {
             const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
-                AddonsNotificationsNotificationsSource,
+                CoreSites.getRequiredCurrentSite().isVersionGreaterEqualThan('4.0')
+                    ? AddonNotificationsNotificationsSource
+                    : AddonLegacyNotificationsNotificationsSource,
                 [],
             );
 

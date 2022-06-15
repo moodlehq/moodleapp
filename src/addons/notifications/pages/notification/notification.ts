@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AddonsNotificationsNotificationsSource } from '@addons/notifications/classes/notifications-source';
+import { AddonLegacyNotificationsNotificationsSource } from '@addons/notifications/classes/legacy-notifications-source';
+import { AddonNotificationsNotificationsSource } from '@addons/notifications/classes/notifications-source';
 import { AddonNotificationsNotificationData } from '@addons/notifications/services/handlers/push-click';
 import {
     AddonNotificationsHelper,
@@ -118,7 +119,9 @@ export class AddonNotificationsNotificationPage implements OnInit, OnDestroy {
      */
     getNotificationById(notificationId: number): AddonNotificationsNotification | undefined {
         const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
-            AddonsNotificationsNotificationsSource,
+            CoreSites.getRequiredCurrentSite().isVersionGreaterEqualThan('4.0')
+                ? AddonNotificationsNotificationsSource
+                : AddonLegacyNotificationsNotificationsSource,
             [],
         );
         const notification = source.getItems()?.find(({ id }) => id === notificationId);
@@ -137,7 +140,7 @@ export class AddonNotificationsNotificationPage implements OnInit, OnDestroy {
      *
      * @param source Notifications source
      */
-    async loadNotifications(source: AddonsNotificationsNotificationsSource): Promise<void> {
+    async loadNotifications(source: AddonNotificationsNotificationsSource): Promise<void> {
         this.notifications = new AddonNotificationSwipeItemsManager(source);
 
         await this.notifications.start();
