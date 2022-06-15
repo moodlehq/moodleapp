@@ -482,9 +482,9 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
      * Mark course as not downloaded.
      */
     protected markCourseAsNotDownloaded(): void {
-        // @TODO This is a workaround that should be more specific solving MOBILE-3305.
-        // Also should take into account all modules are not downloaded.
-        // Check after MOBILE-3188 is integrated.
+        // @TODO In order to correctly check the status of the course we should check all module statuses.
+        // We are currently marking as not downloaded if size is 0 but we should take into account that
+        // resources without files can be downloaded and cached.
 
         CoreCourse.setCourseStatus(this.courseId, CoreConstants.NOT_DOWNLOADED);
     }
@@ -506,7 +506,6 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
      * Confirm and prefetch a section. If the section is "all sections", prefetch all the sections.
      *
      * @param section Section to download.
-     * @param refresh Refresh clicked (not used).
      */
     async prefecthSection(section: AddonStorageManagerCourseSection): Promise<void> {
         section.isCalculating = true;
