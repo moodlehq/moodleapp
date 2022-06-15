@@ -94,6 +94,7 @@ import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/
 import { CoreCourseResourcePrefetchHandlerBase } from '@features/course/classes/resource-prefetch-handler';
 import { CoreGeolocationError, CoreGeolocationErrorReason } from '@services/geolocation';
 import { CORE_ERRORS_CLASSES } from '@classes/errors/errors';
+import { CoreNetwork } from '@services/network';
 
 // Import all core modules that define components, directives and pipes.
 import { CoreSharedModule } from '@/core/shared.module';
@@ -343,6 +344,7 @@ export class CoreCompileProvider {
         instance['CoreLoggerProvider'] = CoreLogger;
         instance['moment'] = moment;
         instance['Md5'] = Md5;
+        instance['Network'] = CoreNetwork.instance;
         instance['CoreSyncBaseProvider'] = CoreSyncBaseProvider;
         instance['CoreArray'] = CoreArray;
         instance['CoreComponentsRegistry'] = CoreComponentsRegistry;

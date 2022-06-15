@@ -14,17 +14,15 @@
 
 import { Injectable } from '@angular/core';
 import { CorePlatform } from '@services/platform';
-import { Network as NetworkService } from '@ionic-native/network/ngx';
+import { Network } from '@ionic-native/network/ngx';
 import { makeSingleton } from '@singletons';
 import { Observable, Subject, merge } from 'rxjs';
-
-const Network = makeSingleton(NetworkService);
 
 /**
  * Service to manage network connections.
  */
 @Injectable({ providedIn: 'root' })
-export class CoreNetworkService extends NetworkService {
+export class CoreNetworkService extends Network {
 
     type!: string;
 
@@ -33,13 +31,14 @@ export class CoreNetworkService extends NetworkService {
     protected forceOffline = false;
     protected online = false;
 
-    constructor() {
-        super();
-
+    /**
+     * Initialize the service.
+     */
+    initialize(): void {
         this.checkOnline();
 
         if (CorePlatform.isMobile()) {
-            Network.onChange().subscribe(() => {
+            this.onChange().subscribe(() => {
                 this.fireObservable();
             });
         } else {
@@ -165,13 +164,13 @@ export class CoreNetworkService extends NetworkService {
         }
 
         const limited = [
-            Network.Connection.CELL_2G,
-            Network.Connection.CELL_3G,
-            Network.Connection.CELL_4G,
-            Network.Connection.CELL,
+            this.Connection.CELL_2G,
+            this.Connection.CELL_3G,
+            this.Connection.CELL_4G,
+            this.Connection.CELL,
         ];
 
-        return limited.indexOf(Network.type) > -1;
+        return limited.indexOf(this.type) > -1;
     }
 
     /**
