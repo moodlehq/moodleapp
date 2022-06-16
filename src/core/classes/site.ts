@@ -536,7 +536,6 @@ export class CoreSite {
      * @param method The WebService method to be called.
      * @param data Arguments to pass to the method.
      * @param preSets Extra options.
-     * @param retrying True if we're retrying the call for some reason. This is to prevent infinite loops.
      * @return Promise resolved with the response, rejected with CoreWSError if it fails.
      * @description
      *
@@ -547,7 +546,7 @@ export class CoreSite {
      * data hasn't expired.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async request<T = unknown>(method: string, data: any, preSets: CoreSiteWSPreSets, retrying?: boolean): Promise<T> {
+    async request<T = unknown>(method: string, data: any, preSets: CoreSiteWSPreSets): Promise<T> {
         if (this.isLoggedOut() && !ALLOWED_LOGGEDOUT_WS.includes(method)) {
             // Site is logged out, it cannot call WebServices.
             CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, {}, this.id);
@@ -556,7 +555,6 @@ export class CoreSite {
             throw new CoreSilentError(Translate.instant('core.lostconnection'));
         }
 
-        const initialToken = this.token || '';
         data = data || {};
 
         if (!CoreNetwork.isOnline() && this.offlineDisabled) {
@@ -616,152 +614,7 @@ export class CoreSite {
             return CoreUtils.clone(response);
         }
 
-        const promise = this.getFromCache<T>(method, data, preSets, false).catch(async () => {
-            if (preSets.forceOffline) {
-                // Don't call the WS, just fail.
-                throw new CoreError(
-                    Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }),
-                );
-            }
-
-            // Call the WS.
-            try {
-                if (method !== 'core_webservice_get_site_info') {
-                    // Send the language to use. Do it after checking cache to prevent losing offline data when changing language.
-                    // Don't send it to core_webservice_get_site_info, that WS is used to check if Moodle version is supported.
-                    data.moodlewssettinglang = preSets.lang ?? await CoreLang.getCurrentLanguage();
-                    // Moodle uses underscore instead of dash.
-                    data.moodlewssettinglang = data.moodlewssettinglang.replace('-', '_');
-                }
-
-                const response = await this.callOrEnqueueRequest<T>(method, data, preSets, wsPreSets);
-
-                if (preSets.saveToCache) {
-                    delete data.moodlewssettinglang;
-                    this.saveToCache(method, data, response, preSets);
-                }
-
-                return response;
-            } catch (error) {
-                let useSilentError = false;
-
-                if (CoreUtils.isExpiredTokenError(error)) {
-                    if (initialToken !== this.token && !retrying) {
-                        // Token has changed, retry with the new token.
-                        preSets.getFromCache = false; // Don't check cache now. Also, it will skip ongoingRequests.
-
-                        return this.request<T>(method, data, preSets, true);
-                    } else if (CoreApp.isSSOAuthenticationOngoing()) {
-                        // There's an SSO authentication ongoing, wait for it to finish and try again.
-                        await CoreApp.waitForSSOAuthentication();
-
-                        return this.request<T>(method, data, preSets, true);
-                    }
-
-                    // Session expired, trigger event.
-                    CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, {}, this.id);
-                    // Change error message. Try to get data from cache, the event will handle the error.
-                    error.message = Translate.instant('core.lostconnection');
-                    useSilentError = true; // Use a silent error, the SESSION_EXPIRED event will display a message if needed.
-                } else if (error.errorcode === 'userdeleted' || error.errorcode === 'wsaccessuserdeleted') {
-                    // User deleted, trigger event.
-                    CoreEvents.trigger(CoreEvents.USER_DELETED, { params: data }, this.id);
-                    error.message = Translate.instant('core.userdeleted');
-
-                    throw new CoreWSError(error);
-                } else if (error.errorcode === 'wsaccessusersuspended') {
-                    // User suspended, trigger event.
-                    CoreEvents.trigger(CoreEvents.USER_SUSPENDED, { params: data }, this.id);
-                    error.message = Translate.instant('core.usersuspended');
-
-                    throw new CoreWSError(error);
-                } else if (error.errorcode === 'wsaccessusernologin') {
-                    // User suspended, trigger event.
-                    CoreEvents.trigger(CoreEvents.USER_NO_LOGIN, { params: data }, this.id);
-                    error.message = Translate.instant('core.usernologin');
-
-                    throw new CoreWSError(error);
-                } else if (error.errorcode === 'forcepasswordchangenotice') {
-                    // Password Change Forced, trigger event. Try to get data from cache, the event will handle the error.
-                    CoreEvents.trigger(CoreEvents.PASSWORD_CHANGE_FORCED, {}, this.id);
-                    error.message = Translate.instant('core.forcepasswordchangenotice');
-                    useSilentError = true; // Use a silent error, the change password page already displays the appropiate info.
-                } else if (error.errorcode === 'usernotfullysetup') {
-                    // User not fully setup, trigger event. Try to get data from cache, the event will handle the error.
-                    CoreEvents.trigger(CoreEvents.USER_NOT_FULLY_SETUP, {}, this.id);
-                    error.message = Translate.instant('core.usernotfullysetup');
-                    useSilentError = true; // Use a silent error, the complete profile page already displays the appropiate info.
-                } else if (error.errorcode === 'sitepolicynotagreed') {
-                    // Site policy not agreed, trigger event.
-                    CoreEvents.trigger(CoreEvents.SITE_POLICY_NOT_AGREED, {}, this.id);
-                    error.message = Translate.instant('core.login.sitepolicynotagreederror');
-
-                    throw new CoreWSError(error);
-                } else if (error.errorcode === 'dmlwriteexception' && CoreTextUtils.hasUnicodeData(data)) {
-                    if (!this.cleanUnicode) {
-                        // Try again cleaning unicode.
-                        this.cleanUnicode = true;
-
-                        return this.request<T>(method, data, preSets);
-                    }
-                    // This should not happen.
-                    error.message = Translate.instant('core.unicodenotsupported');
-
-                    throw new CoreWSError(error);
-                } else if (error.exception === 'required_capability_exception' || error.errorcode === 'nopermission' ||
-                        error.errorcode === 'notingroup') {
-                    // Translate error messages with missing strings.
-                    if (error.message === 'error/nopermission') {
-                        error.message = Translate.instant('core.nopermissionerror');
-                    } else if (error.message === 'error/notingroup') {
-                        error.message = Translate.instant('core.notingroup');
-                    }
-
-                    // Save the error instead of deleting the cache entry so the same content is displayed in offline.
-                    this.saveToCache(method, data, error, preSets);
-
-                    throw new CoreWSError(error);
-                } else if (preSets.cacheErrors && preSets.cacheErrors.indexOf(error.errorcode) != -1) {
-                    // Save the error instead of deleting the cache entry so the same content is displayed in offline.
-                    this.saveToCache(method, data, error, preSets);
-
-                    throw new CoreWSError(error);
-                } else if (preSets.emergencyCache !== undefined && !preSets.emergencyCache) {
-                    this.logger.debug(`WS call '${method}' failed. Emergency cache is forbidden, rejecting.`);
-
-                    throw new CoreWSError(error);
-                }
-
-                if (preSets.deleteCacheIfWSError && CoreUtils.isWebServiceError(error)) {
-                    // Delete the cache entry and return the entry. Don't block the user with the delete.
-                    CoreUtils.ignoreErrors(this.deleteFromCache(method, data, preSets));
-
-                    throw new CoreWSError(error);
-                }
-
-                this.logger.debug(`WS call '${method}' failed. Trying to use the emergency cache.`);
-                preSets.omitExpires = true;
-                preSets.getFromCache = true;
-
-                try {
-                    return await this.getFromCache<T>(method, data, preSets, true);
-                } catch {
-                    if (useSilentError) {
-                        throw new CoreSilentError(error.message);
-                    }
-
-                    throw new CoreWSError(error);
-                }
-            }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        }).then((response: any) => {
-            // Check if the response is an error, this happens if the error was stored in the cache.
-            if (response && (response.exception !== undefined || response.errorcode !== undefined)) {
-                throw new CoreWSError(response);
-            }
-
-            return response;
-        });
+        const promise = this.performRequest<T>(method, data, preSets, wsPreSets);
 
         this.ongoingRequests[cacheId] = promise;
 
@@ -776,6 +629,223 @@ export class CoreSite {
             if (this.ongoingRequests[cacheId] === promise) {
                 delete this.ongoingRequests[cacheId];
             }
+        }
+    }
+
+    /**
+     * Perform a request, getting the response either from cache or WebService.
+     *
+     * @param method The WebService method to be called.
+     * @param data Arguments to pass to the method.
+     * @param preSets Extra options related to the site.
+     * @param wsPreSets Extra options related to the WS call.
+     * @return Promise resolved with the response.
+     */
+    protected async performRequest<T = unknown>(
+        method: string,
+        data: unknown,
+        preSets: CoreSiteWSPreSets,
+        wsPreSets: CoreWSPreSets,
+    ): Promise<T> {
+        let response: T | {exception?: string; errorcode?: string};
+
+        try {
+            response = await this.getFromCache<T>(method, data, preSets, false);
+        } catch {
+            // Not found or expired, call WS.
+            response = await this.getFromWSOrEmergencyCache<T>(method, data, preSets, wsPreSets);
+        }
+
+        if (('exception' in response && response.exception !== undefined) ||
+                ('errorcode' in response && response.errorcode !== undefined)) {
+            throw new CoreWSError(response);
+        }
+
+        return <T> response;
+    }
+
+    /**
+     * Get a request response from WS, if it fails it might try to get it from emergency cache.
+     *
+     * @param method The WebService method to be called.
+     * @param data Arguments to pass to the method.
+     * @param preSets Extra options related to the site.
+     * @param wsPreSets Extra options related to the WS call.
+     * @return Promise resolved with the response.
+     */
+    protected async getFromWSOrEmergencyCache<T = unknown>(
+        method: string,
+        data: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+        preSets: CoreSiteWSPreSets,
+        wsPreSets: CoreWSPreSets,
+    ): Promise<T> {
+        if (preSets.forceOffline) {
+            // Don't call the WS, just fail.
+            throw new CoreError(
+                Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }),
+            );
+        }
+
+        try {
+            const response = await this.getFromWS<T>(method, data, preSets, wsPreSets);
+
+            if (preSets.saveToCache) {
+                this.saveToCache(method, data, response, preSets);
+            }
+
+            return response;
+        } catch (error) {
+            let useSilentError = false;
+
+            if (CoreUtils.isExpiredTokenError(error)) {
+                // Session expired, trigger event.
+                CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, {}, this.id);
+                // Change error message. Try to get data from cache, the event will handle the error.
+                error.message = Translate.instant('core.lostconnection');
+                useSilentError = true; // Use a silent error, the SESSION_EXPIRED event will display a message if needed.
+            } else if (error.errorcode === 'userdeleted' || error.errorcode === 'wsaccessuserdeleted') {
+                // User deleted, trigger event.
+                CoreEvents.trigger(CoreEvents.USER_DELETED, { params: data }, this.id);
+                error.message = Translate.instant('core.userdeleted');
+
+                throw new CoreWSError(error);
+            } else if (error.errorcode === 'wsaccessusersuspended') {
+                // User suspended, trigger event.
+                CoreEvents.trigger(CoreEvents.USER_SUSPENDED, { params: data }, this.id);
+                error.message = Translate.instant('core.usersuspended');
+
+                throw new CoreWSError(error);
+            } else if (error.errorcode === 'wsaccessusernologin') {
+                // User suspended, trigger event.
+                CoreEvents.trigger(CoreEvents.USER_NO_LOGIN, { params: data }, this.id);
+                error.message = Translate.instant('core.usernologin');
+
+                throw new CoreWSError(error);
+            } else if (error.errorcode === 'forcepasswordchangenotice') {
+                // Password Change Forced, trigger event. Try to get data from cache, the event will handle the error.
+                CoreEvents.trigger(CoreEvents.PASSWORD_CHANGE_FORCED, {}, this.id);
+                error.message = Translate.instant('core.forcepasswordchangenotice');
+                useSilentError = true; // Use a silent error, the change password page already displays the appropiate info.
+            } else if (error.errorcode === 'usernotfullysetup') {
+                // User not fully setup, trigger event. Try to get data from cache, the event will handle the error.
+                CoreEvents.trigger(CoreEvents.USER_NOT_FULLY_SETUP, {}, this.id);
+                error.message = Translate.instant('core.usernotfullysetup');
+                useSilentError = true; // Use a silent error, the complete profile page already displays the appropiate info.
+            } else if (error.errorcode === 'sitepolicynotagreed') {
+                // Site policy not agreed, trigger event.
+                CoreEvents.trigger(CoreEvents.SITE_POLICY_NOT_AGREED, {}, this.id);
+                error.message = Translate.instant('core.login.sitepolicynotagreederror');
+
+                throw new CoreWSError(error);
+            } else if (error.errorcode === 'dmlwriteexception' && CoreTextUtils.hasUnicodeData(data)) {
+                if (!this.cleanUnicode) {
+                    // Try again cleaning unicode.
+                    this.cleanUnicode = true;
+
+                    return this.request<T>(method, data, preSets);
+                }
+                // This should not happen.
+                error.message = Translate.instant('core.unicodenotsupported');
+
+                throw new CoreWSError(error);
+            } else if (error.exception === 'required_capability_exception' || error.errorcode === 'nopermission' ||
+                    error.errorcode === 'notingroup') {
+                // Translate error messages with missing strings.
+                if (error.message === 'error/nopermission') {
+                    error.message = Translate.instant('core.nopermissionerror');
+                } else if (error.message === 'error/notingroup') {
+                    error.message = Translate.instant('core.notingroup');
+                }
+
+                if (preSets.saveToCache) {
+                    // Save the error instead of deleting the cache entry so the same content is displayed in offline.
+                    this.saveToCache(method, data, error, preSets);
+                }
+
+                throw new CoreWSError(error);
+            } else if (preSets.cacheErrors && preSets.cacheErrors.indexOf(error.errorcode) != -1) {
+                // Save the error instead of deleting the cache entry so the same content is displayed in offline.
+                this.saveToCache(method, data, error, preSets);
+
+                throw new CoreWSError(error);
+            } else if (preSets.emergencyCache !== undefined && !preSets.emergencyCache) {
+                this.logger.debug(`WS call '${method}' failed. Emergency cache is forbidden, rejecting.`);
+
+                throw new CoreWSError(error);
+            }
+
+            if (preSets.deleteCacheIfWSError && CoreUtils.isWebServiceError(error)) {
+                // Delete the cache entry and return the entry. Don't block the user with the delete.
+                CoreUtils.ignoreErrors(this.deleteFromCache(method, data, preSets));
+
+                throw new CoreWSError(error);
+            }
+
+            this.logger.debug(`WS call '${method}' failed. Trying to use the emergency cache.`);
+            preSets.omitExpires = true;
+            preSets.getFromCache = true;
+
+            try {
+                return await this.getFromCache<T>(method, data, preSets, true);
+            } catch {
+                if (useSilentError) {
+                    throw new CoreSilentError(error.message);
+                }
+
+                throw new CoreWSError(error);
+            }
+        }
+    }
+
+    /**
+     * Get a request response from WS.
+     *
+     * @param method The WebService method to be called.
+     * @param data Arguments to pass to the method.
+     * @param preSets Extra options related to the site.
+     * @param wsPreSets Extra options related to the WS call.
+     * @return Promise resolved with the response.
+     */
+    protected async getFromWS<T = unknown>(
+        method: string,
+        data: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+        preSets: CoreSiteWSPreSets,
+        wsPreSets: CoreWSPreSets,
+    ): Promise<T> {
+        // Call the WS.
+        const initialToken = this.token ?? '';
+
+        // Call the WS.
+        if (method !== 'core_webservice_get_site_info') {
+            // Send the language to use. Do it after checking cache to prevent losing offline data when changing language.
+            // Don't send it to core_webservice_get_site_info, that WS is used to check if Moodle version is supported.
+            data = {
+                ...data,
+                moodlewssettinglang: preSets.lang ?? await CoreLang.getCurrentLanguage(),
+            };
+            // Moodle uses underscore instead of dash.
+            data.moodlewssettinglang = data.moodlewssettinglang.replace('-', '_');
+
+        }
+
+        try {
+            return await this.callOrEnqueueRequest<T>(method, data, preSets, wsPreSets);
+        } catch (error) {
+            if (CoreUtils.isExpiredTokenError(error)) {
+                if (initialToken !== this.token) {
+                    // Token has changed, retry with the new token.
+                    wsPreSets.wsToken = this.token ?? '';
+
+                    return await this.callOrEnqueueRequest<T>(method, data, preSets, wsPreSets);
+                } else if (CoreApp.isSSOAuthenticationOngoing()) {
+                    // There's an SSO authentication ongoing, wait for it to finish and try again.
+                    await CoreApp.waitForSSOAuthentication();
+
+                    return await this.callOrEnqueueRequest<T>(method, data, preSets, wsPreSets);
+                }
+            }
+
+            throw error;
         }
     }
 
