@@ -36,7 +36,6 @@ import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
 import { Media } from '@ionic-native/media/ngx';
 import { MediaCapture } from '@ionic-native/media-capture/ngx';
-import { Network } from '@ionic-native/network/ngx';
 import { Push } from '@ionic-native/push/ngx';
 import { QRScanner } from '@ionic-native/qr-scanner/ngx';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
@@ -62,7 +61,6 @@ export const IONIC_NATIVE_SERVICES = [
     LocalNotifications,
     Media,
     MediaCapture,
-    Network,
     Push,
     QRScanner,
     SplashScreen,
