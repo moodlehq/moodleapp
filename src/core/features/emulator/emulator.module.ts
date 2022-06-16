@@ -142,6 +142,7 @@ import { ZipMock } from './services/zip';
         Keyboard,
         LocalNotifications,
         Media,
+        Network,
         {
             provide: MediaCapture,
             deps: [Platform],

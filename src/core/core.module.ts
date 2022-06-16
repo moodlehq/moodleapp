@@ -40,6 +40,7 @@ import { CoreLangProvider } from '@services/lang';
 import { CoreLocalNotificationsProvider } from '@services/local-notifications';
 import { CoreMimetypeUtilsProvider } from '@services/utils/mimetype';
 import { CoreNavigatorService } from '@services/navigator';
+import { CoreNetworkService } from '@services/network';
 import { CorePluginFileDelegateService } from '@services/plugin-file-delegate';
 import { CoreScreenService } from '@services/screen';
 import { CoreSitesProvider } from '@services/sites';
@@ -69,6 +70,7 @@ export const CORE_SERVICES: Type<unknown>[] = [
     CoreLocalNotificationsProvider,
     CoreMimetypeUtilsProvider,
     CoreNavigatorService,
+    CoreNetworkService,
     CorePluginFileDelegateService,
     CoreScreenService,
     CoreSitesProvider,
