@@ -103,7 +103,7 @@ function get_language {
 
     curl -s $MOODLEORG_URL/$lastversion/$lang.zip --output $lang.zip > /dev/null
     size=$(du -k "$lang.zip" | cut -f 1)
-    if [ ! -n $lang.zip ] || [ $size -le 60 ]; then
+    if [ ! -n $lang.zip ] || [ $size -le 1 ]; then
         echo "Wrong language name or corrupt file for $lang"
         rm $lang.zip
 
@@ -154,7 +154,7 @@ function get_languages {
     for lang in $langs; do
         get_language "$lang"
 
-        if [ $suffix != '' ]; then
+        if [ ! -z $suffix ]; then
             get_language "$lang$suffix"
         fi
     done

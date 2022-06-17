@@ -3,6 +3,7 @@
 # Script to create langindex from available language packs.
 # ./create_langindex.sh [findbetter]
 # If findbetter is set it will try to find a better solution for every key.
+# Edit lang_functions.sh LANGPACKSFOLDER variable to match your system's
 #
 
 source "functions.sh"
