@@ -3,10 +3,10 @@
 # Functions to fetch languages.
 #
 
-LANGPACKSFOLDER='../../moodle-langpacks'
+LANGPACKSFOLDER='../../moodle-langpacks' # Langpacks will be downloaded here.
 BUCKET='moodle-lang-prod'
 MOODLEORG_URL='https://download.moodle.org/download.php/direct/langpack'
-DEFAULT_LASTVERSION='4.0'
+DEFAULT_LASTVERSION='4.1' # Update it every version.
 
 # Checks if AWS is available and configured.
 function check_aws {

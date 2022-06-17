@@ -16,7 +16,7 @@
     "attemptreopenmethod_untilpass": "Automatically until pass",
     "attemptsettings": "Attempt settings",
     "beginassignment": "Begin assignment",
-    "caneditsubmission": "You can submit/edit submission after time limit passed, but it will be marked as late.",
+    "caneditsubmission": "You can edit your submission and submit it after the time limit has expired, but it will be marked as late.",
     "cannoteditduetostatementsubmission": "You can't add or edit a submission in the app because the submission statement could not be retrieved from the site.",
     "cannotgradefromapp": "Certain grading methods are not yet supported by the app and cannot be modified.",
     "cannotsubmitduetostatementsubmission": "You can't make a submission in the app because the submission statement could not be retrieved from the site.",
