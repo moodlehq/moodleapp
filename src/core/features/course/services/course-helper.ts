@@ -721,7 +721,7 @@ export class CoreCourseHelperProvider {
         const mainFile = files[0];
 
         if (!CoreFileHelper.isOpenableInApp(mainFile)) {
-            await CoreFileHelper.showConfirmOpenUnsupportedFile();
+            await CoreFileHelper.showConfirmOpenUnsupportedFile(false, mainFile);
         }
 
         const site = await CoreSites.getSite(siteId);

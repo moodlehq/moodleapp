@@ -163,7 +163,7 @@ export class CoreLinkDirective implements OnInit {
 
         if (!CoreFileHelper.isOpenableInApp({ filename })) {
             try {
-                await CoreFileHelper.showConfirmOpenUnsupportedFile();
+                await CoreFileHelper.showConfirmOpenUnsupportedFile(false, { filename });
             } catch (error) {
                 return; // Cancelled, stop.
             }

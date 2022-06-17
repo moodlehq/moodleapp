@@ -127,7 +127,7 @@ export class CoreLocalFileComponent implements OnInit {
 
         if (!CoreFileHelper.isOpenableInApp(this.file)) {
             try {
-                await CoreFileHelper.showConfirmOpenUnsupportedFile();
+                await CoreFileHelper.showConfirmOpenUnsupportedFile(false, this.file);
             } catch (error) {
                 return; // Cancelled, stop.
             }
