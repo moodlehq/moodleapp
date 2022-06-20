@@ -206,6 +206,7 @@ export class AddonModScormProvider {
      * @param attempt Current attempt.
      * @param newAttempt Whether it should start a new attempt.
      * @param incomplete Whether current attempt is incomplete.
+     * @param canSaveTracks Whether the user can save tracks.
      * @return Mode, attempt number and whether to start a new attempt.
      */
     determineAttemptAndMode(
@@ -214,7 +215,15 @@ export class AddonModScormProvider {
         attempt: number,
         newAttempt?: boolean,
         incomplete?: boolean,
+        canSaveTracks = true,
     ): {mode: string; attempt: number; newAttempt: boolean} {
+        if (!canSaveTracks) {
+            return {
+                mode: scorm.hidebrowse ? AddonModScormProvider.MODENORMAL : mode,
+                attempt,
+                newAttempt: false,
+            };
+        }
 
         if (mode == AddonModScormProvider.MODEBROWSE) {
             if (scorm.hidebrowse) {
