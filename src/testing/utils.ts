@@ -19,12 +19,13 @@ import { Observable, Subject } from 'rxjs';
 import { sep } from 'path';
 
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { CoreSingletonProxy, Platform, Translate } from '@singletons';
+import { CoreSingletonProxy, Translate } from '@singletons';
 import { CoreTextUtilsProvider } from '@services/utils/text';
 
 import { TranslatePipeStub } from './stubs/pipes/translate';
 import { CoreExternalContentDirectiveStub } from './stubs/directives/core-external-content';
 import { CoreNetwork } from '@services/network';
+import { CorePlatform } from '@services/platform';
 
 abstract class WrapperComponent<U> {
 
@@ -37,7 +38,12 @@ type ServiceInjectionToken = AbstractType<unknown> | Type<unknown> | string;
 let testBedInitialized = false;
 const textUtils = new CoreTextUtilsProvider();
 const DEFAULT_SERVICE_SINGLETON_MOCKS: [CoreSingletonProxy, Record<string, unknown>][] = [
-    [Platform, mock({ is: () => false, ready: () => Promise.resolve(), resume: new Subject<void>() })],
+    [CorePlatform, mock({
+        is: () => false,
+        isMobile: () => false,
+        ready: () => Promise.resolve(),
+        resume: new Subject<void>(),
+    })],
     [CoreNetwork, { onChange: () => new Observable() }],
 ];
 

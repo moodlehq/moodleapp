@@ -25,7 +25,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreConfig } from '@services/config';
 import { CoreConstants } from '@/core/constants';
 import { CoreSite, CoreSiteInfo } from '@classes/site';
-import { makeSingleton, Badge, Push, Device, Translate, Platform, ApplicationInit, NgZone } from '@singletons';
+import { makeSingleton, Badge, Push, Device, Translate, ApplicationInit, NgZone } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreEvents } from '@singletons/events';
 import {
@@ -153,7 +153,7 @@ export class CorePushNotificationsProvider {
      * @return Promise resolved when done.
      */
     protected async initializeDefaultChannel(): Promise<void> {
-        await Platform.ready();
+        await CorePlatform.ready();
 
         // Create the default channel.
         this.createDefaultChannel();

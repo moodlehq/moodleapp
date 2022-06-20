@@ -26,7 +26,6 @@ import {
 } from '@angular/core';
 import { JitCompilerFactory } from '@angular/platform-browser-dynamic';
 import {
-    Platform,
     ActionSheetController,
     AlertController,
     LoadingController,
@@ -156,6 +155,7 @@ import { ADDON_PRIVATEFILES_SERVICES } from '@addons/privatefiles/privatefiles.m
 import { AddonModAssignComponentsModule } from '@addons/mod/assign/components/components.module';
 import { AddonModWorkshopComponentsModule } from '@addons/mod/workshop/components/components.module';
 import { CorePromisedValue } from '@classes/promised-value';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Service to provide functionalities regarding compiling dynamic HTML and Javascript.
@@ -168,7 +168,7 @@ export class CoreCompileProvider {
 
     // Other Ionic/Angular providers that don't depend on where they are injected.
     protected readonly OTHER_SERVICES: unknown[] = [
-        TranslateService, HttpClient, Platform, DomSanitizer, ActionSheetController, AlertController, LoadingController,
+        TranslateService, HttpClient, DomSanitizer, ActionSheetController, AlertController, LoadingController,
         ModalController, PopoverController, ToastController, FormBuilder,
     ];
 
@@ -345,9 +345,11 @@ export class CoreCompileProvider {
         instance['moment'] = moment;
         instance['Md5'] = Md5;
         instance['Network'] = CoreNetwork.instance; // @deprecated on 4.1, plugins should use CoreNetworkService instead.
+        instance['Platform'] = CorePlatform.instance; // @deprecated on 4.1, plugins should use CorePlatform instead.
         instance['CoreSyncBaseProvider'] = CoreSyncBaseProvider;
         instance['CoreArray'] = CoreArray;
         instance['CoreComponentsRegistry'] = CoreComponentsRegistry;
+        instance['CorePlatform'] = CorePlatform.instance;
         instance['CoreDom'] = CoreDom;
         instance['CoreForms'] = CoreForms;
         instance['CoreText'] = CoreText;

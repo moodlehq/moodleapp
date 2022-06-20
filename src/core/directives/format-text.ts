@@ -34,7 +34,7 @@ import { CoreIframeUtils, CoreIframeUtilsProvider } from '@services/utils/iframe
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSite } from '@classes/site';
-import { NgZone, Platform, Translate } from '@singletons';
+import { NgZone, Translate } from '@singletons';
 import { CoreExternalContentDirective } from './external-content';
 import { CoreLinkDirective } from './link';
 import { CoreFilter, CoreFilterFilter, CoreFilterFormatTextOptions } from '@features/filter/services/filter';
@@ -49,6 +49,7 @@ import { CoreText } from '@singletons/text';
 import { CoreDom } from '@singletons/dom';
 import { CoreEvents } from '@singletons/events';
 import { CoreRefreshContext, CORE_REFRESH_CONTEXT } from '@/core/utils/refresh-context';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -615,7 +616,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
 
                     if (refreshOnResume && this.refreshContext) {
                         // Refresh the context when the app is resumed.
-                        CoreSubscriptions.once(Platform.resume, () => {
+                        CoreSubscriptions.once(CorePlatform.resume, () => {
                             NgZone.run(async () => {
                                 this.refreshContext?.refreshContext();
                             });

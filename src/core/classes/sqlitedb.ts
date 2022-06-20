@@ -14,9 +14,10 @@
 
 import { SQLiteObject } from '@ionic-native/sqlite/ngx';
 
-import { SQLite, Platform } from '@singletons';
+import { SQLite } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { CoreDB } from '@services/db';
+import { CorePlatform } from '@services/platform';
 
 type SQLiteDBColumnType = 'INTEGER' | 'REAL' | 'TEXT' | 'BLOB';
 
@@ -1157,7 +1158,7 @@ export class SQLiteDB {
      * @returns Database.
      */
     protected async createDatabase(): Promise<SQLiteObject> {
-        await Platform.ready();
+        await CorePlatform.ready();
 
         return SQLite.create({ name: this.name, location: 'default' });
     }

@@ -18,7 +18,7 @@ import { CoreDB } from '@services/db';
 import { CoreEvents } from '@singletons/events';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 
-import { makeSingleton, Keyboard, StatusBar, Platform, Device } from '@singletons';
+import { makeSingleton, Keyboard, StatusBar, Device } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreColors } from '@singletons/colors';
 import { DBNAME, SCHEMA_VERSIONS_TABLE_NAME, SCHEMA_VERSIONS_TABLE_SCHEMA, SchemaVersionsDBEntry } from '@services/database/app';
@@ -227,7 +227,7 @@ export class CoreAppProvider {
      * @return Whether the app is running in an Android mobile or tablet device.
      */
     isAndroid(): boolean {
-        return CorePlatform.isMobile() && Platform.is('android');
+        return CorePlatform.isMobile() && CorePlatform.is('android');
     }
 
     /**
@@ -246,7 +246,7 @@ export class CoreAppProvider {
      * @return Whether the app is running in an iOS mobile or tablet device.
      */
     isIOS(): boolean {
-        return CorePlatform.isMobile() && !Platform.is('android');
+        return CorePlatform.isMobile() && !CorePlatform.is('android');
     }
 
     /**
@@ -322,7 +322,7 @@ export class CoreAppProvider {
      * @return Whether the app the current window is wider than a mobile.
      */
     isWide(): boolean {
-        return Platform.width() > 768;
+        return CorePlatform.width() > 768;
     }
 
     /**
@@ -490,7 +490,7 @@ export class CoreAppProvider {
             deferred = null;
         };
 
-        resumeSubscription = Platform.resume.subscribe(stopWaiting);
+        resumeSubscription = CorePlatform.resume.subscribe(stopWaiting);
         timeoutId = timeout ? window.setTimeout(stopWaiting, timeout) : null;
 
         await deferred;

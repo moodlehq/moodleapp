@@ -24,7 +24,7 @@ import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreQueueRunner } from '@classes/queue-runner';
 import { CoreError } from '@classes/errors/error';
 import { CoreConstants } from '@/core/constants';
-import { makeSingleton, NgZone, Platform, Translate, LocalNotifications, Push } from '@singletons';
+import { makeSingleton, NgZone, Translate, LocalNotifications, Push } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import {
     APP_SCHEMA,
@@ -34,6 +34,7 @@ import {
     CodeRequestsQueueItem,
 } from '@services/database/local-notifications';
 import { CorePromisedValue } from '@classes/promised-value';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Service to handle local notifications.
@@ -68,7 +69,7 @@ export class CoreLocalNotificationsProvider {
      * Init some properties.
      */
     async initialize(): Promise<void> {
-        await Platform.ready();
+        await CorePlatform.ready();
 
         if (!this.isAvailable()) {
             return;

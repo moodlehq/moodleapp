@@ -23,7 +23,7 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreSiteWSPreSets, CoreSite } from '@classes/site';
 import { CoreConstants } from '@/core/constants';
-import { makeSingleton, Platform, Translate } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 
 import {
@@ -52,6 +52,7 @@ import { asyncInstance, AsyncInstance } from '@/core/utils/async-instance';
 import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CoreDatabaseCachingStrategy } from '@classes/database/database-table-proxy';
 import { SQLiteDB } from '@classes/sqlitedb';
+import { CorePlatform } from '@services/platform';
 
 const ROOT_CACHE_KEY = 'mmCourse:';
 
@@ -173,7 +174,7 @@ export class CoreCourseProvider {
      * Initialize.
      */
     initialize(): void {
-        Platform.resume.subscribe(() => {
+        CorePlatform.resume.subscribe(() => {
             // Run the handler the app is open to keep user in online status.
             setTimeout(() => {
                 CoreCronDelegate.forceCronHandlerExecution(CoreCourseLogCronHandler.name);

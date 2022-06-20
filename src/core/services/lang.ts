@@ -19,10 +19,11 @@ import { LangChangeEvent } from '@ngx-translate/core';
 import { CoreAppProvider } from '@services/app';
 import { CoreConfig } from '@services/config';
 import { CoreSubscriptions } from '@singletons/subscriptions';
-import { makeSingleton, Translate, Platform, Http } from '@singletons';
+import { makeSingleton, Translate, Http } from '@singletons';
 
 import * as moment from 'moment';
 import { CoreSite } from '../classes/site';
+import { CorePlatform } from '@services/platform';
 
 /*
  * Service to handle language features, like changing the current language.
@@ -57,7 +58,7 @@ export class CoreLangProvider {
      * Init language.
      */
     protected async initializeCurrentLanguage(): Promise<void> {
-        await Platform.ready();
+        await CorePlatform.ready();
 
         let language: string;
 

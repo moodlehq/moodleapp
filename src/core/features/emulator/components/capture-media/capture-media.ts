@@ -21,7 +21,7 @@ import { CoreFile, CoreFileProvider } from '@services/file';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTimeUtils } from '@services/utils/time';
-import { Platform, ModalController, Media, Translate } from '@singletons';
+import { ModalController, Media, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { CoreCaptureError } from '@classes/errors/captureerror';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
@@ -119,7 +119,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
         this.isCordovaAudioCapture = CorePlatform.isMobile() && this.isAudio;
 
         if (this.isCordovaAudioCapture) {
-            this.extension = Platform.is('ios') ? 'wav' : 'aac';
+            this.extension = CorePlatform.is('ios') ? 'wav' : 'aac';
             this.returnDataUrl = false;
         }
     }
@@ -153,7 +153,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
         // Now create the media instance.
         let absolutePath = CoreText.concatenatePaths(CoreFile.getBasePathInstant(), this.filePath);
 
-        if (Platform.is('ios')) {
+        if (CorePlatform.is('ios')) {
             // In iOS we need to remove the file:// part.
             absolutePath = absolutePath.replace(/^file:\/\//, '');
         }

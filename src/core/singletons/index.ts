@@ -26,7 +26,6 @@ import { HttpClient } from '@angular/common/http';
 import { DomSanitizer as DomSanitizerService } from '@angular/platform-browser';
 
 import {
-    Platform as PlatformService,
     AngularDelegate as AngularDelegateService,
     AlertController as AlertControllerService,
     LoadingController as LoadingControllerService,
@@ -202,7 +201,6 @@ export const Device = makeSingleton(DeviceService);
 // Convert some Angular and Ionic injectables to singletons.
 export const NgZone = makeSingleton(NgZoneService);
 export const Http = makeSingleton(HttpClient);
-export const Platform = makeSingleton(PlatformService);
 export const ActionSheetController = makeSingleton(ActionSheetControllerService);
 export const AngularDelegate = makeSingleton(AngularDelegateService);
 export const AlertController = makeSingleton(AlertControllerService);
