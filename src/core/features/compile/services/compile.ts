@@ -344,11 +344,12 @@ export class CoreCompileProvider {
         instance['CoreLoggerProvider'] = CoreLogger;
         instance['moment'] = moment;
         instance['Md5'] = Md5;
-        instance['Network'] = CoreNetwork.instance; // @deprecated on 4.1, plugins should use CoreNetworkService instead.
+        instance['Network'] = CoreNetwork.instance; // @deprecated on 4.1, plugins should use CoreNetwork instead.
         instance['Platform'] = CorePlatform.instance; // @deprecated on 4.1, plugins should use CorePlatform instead.
         instance['CoreSyncBaseProvider'] = CoreSyncBaseProvider;
         instance['CoreArray'] = CoreArray;
         instance['CoreComponentsRegistry'] = CoreComponentsRegistry;
+        instance['CoreNetwork'] = CoreNetwork.instance;
         instance['CorePlatform'] = CorePlatform.instance;
         instance['CoreDom'] = CoreDom;
         instance['CoreForms'] = CoreForms;
