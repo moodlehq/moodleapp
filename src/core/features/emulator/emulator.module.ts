@@ -13,63 +13,21 @@
 // limitations under the License.
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
-import { Platform } from '@ionic/angular';
 
-import { CoreEmulatorHelperProvider } from './services/emulator-helper';
+import { CoreEmulatorHelper } from './services/emulator-helper';
 import { CoreEmulatorComponentsModule } from './components/components.module';
 
 // Ionic Native services.
-import { Badge } from '@ionic-native/badge/ngx';
 import { Camera } from '@ionic-native/camera/ngx';
-import { Chooser } from '@ionic-native/chooser/ngx';
 import { Clipboard } from '@ionic-native/clipboard/ngx';
-import { Device } from '@ionic-native/device/ngx';
-import { Diagnostic } from '@ionic-native/diagnostic/ngx';
 import { File } from '@ionic-native/file/ngx';
 import { FileOpener } from '@ionic-native/file-opener/ngx';
 import { FileTransfer } from '@ionic-native/file-transfer/ngx';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
-import { HTTP } from '@ionic-native/http/ngx';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
-import { WebView } from '@ionic-native/ionic-webview/ngx';
-import { Keyboard } from '@ionic-native/keyboard/ngx';
-import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
-import { Media } from '@ionic-native/media/ngx';
 import { MediaCapture } from '@ionic-native/media-capture/ngx';
-import { Push } from '@ionic-native/push/ngx';
-import { QRScanner } from '@ionic-native/qr-scanner/ngx';
-import { SplashScreen } from '@ionic-native/splash-screen/ngx';
-import { SQLite } from '@ionic-native/sqlite/ngx';
-import { StatusBar } from '@ionic-native/status-bar/ngx';
-import { WebIntent } from '@ionic-native/web-intent/ngx';
 import { Zip } from '@ionic-native/zip/ngx';
 
-export const IONIC_NATIVE_SERVICES = [
-    Badge,
-    Camera,
-    Chooser,
-    Clipboard,
-    Device,
-    Diagnostic,
-    File,
-    FileOpener,
-    FileTransfer,
-    Geolocation,
-    HTTP,
-    InAppBrowser,
-    Keyboard,
-    LocalNotifications,
-    Media,
-    MediaCapture,
-    Push,
-    QRScanner,
-    SplashScreen,
-    StatusBar,
-    SQLite,
-    WebIntent,
-    WebView,
-    Zip,
-];
 // Mock services.
 import { CameraMock } from './services/camera';
 import { ClipboardMock } from './services/clipboard';
@@ -80,6 +38,7 @@ import { GeolocationMock } from './services/geolocation';
 import { InAppBrowserMock } from './services/inappbrowser';
 import { MediaCaptureMock } from './services/media-capture';
 import { ZipMock } from './services/zip';
+import { CorePlatform } from '@services/platform';
 
 /**
  * This module handles the emulation of Cordova plugins in browser and desktop.
@@ -91,81 +50,54 @@ import { ZipMock } from './services/zip';
  * functions we check if the app is running in mobile or not, and then provide the right service to use.
  */
 @NgModule({
-    declarations: [
-    ],
     imports: [
         CoreEmulatorComponentsModule,
     ],
     providers: [
-        Badge,
         {
             provide: Camera,
-            deps: [Platform],
-            useFactory: (platform: Platform): Camera => platform.is('cordova') ? new Camera() : new CameraMock(),
+            useFactory: (): Camera => CorePlatform.is('cordova') ? new Camera() : new CameraMock(),
         },
-        Chooser,
         {
             provide: Clipboard,
-            deps: [Platform], // Use platform instead of AppProvider to prevent errors with singleton injection.
-            useFactory: (platform: Platform): Clipboard => platform.is('cordova') ? new Clipboard() : new ClipboardMock(),
+            useFactory: (): Clipboard => CorePlatform.is('cordova') ? new Clipboard() : new ClipboardMock(),
         },
-        Device,
-        Diagnostic,
         {
             provide: File,
-            deps: [Platform],
-            useFactory: (platform: Platform): File => platform.is('cordova') ? new File() : new FileMock(),
+            useFactory: (): File => CorePlatform.is('cordova') ? new File() : new FileMock(),
         },
         {
             provide: FileOpener,
-            deps: [Platform],
-            useFactory: (platform: Platform): FileOpener => platform.is('cordova') ? new FileOpener() : new FileOpenerMock(),
+            useFactory: (): FileOpener => CorePlatform.is('cordova') ? new FileOpener() : new FileOpenerMock(),
         },
         {
             provide: FileTransfer,
-            deps: [Platform],
-            useFactory: (platform: Platform): FileTransfer => platform.is('cordova') ? new FileTransfer() : new FileTransferMock(),
+            useFactory: (): FileTransfer => CorePlatform.is('cordova') ? new FileTransfer() : new FileTransferMock(),
         },
         {
             provide: Geolocation,
-            deps: [Platform],
-            useFactory: (platform: Platform): Geolocation => platform.is('cordova') ? new Geolocation() : new GeolocationMock(),
+            useFactory: (): Geolocation => CorePlatform.is('cordova') ? new Geolocation() : new GeolocationMock(),
         },
-        HTTP,
         {
             provide: InAppBrowser,
-            deps: [Platform],
-            useFactory: (platform: Platform): InAppBrowser => platform.is('cordova') ? new InAppBrowser() : new InAppBrowserMock(),
+            useFactory: (): InAppBrowser => CorePlatform.is('cordova') ? new InAppBrowser() : new InAppBrowserMock(),
         },
-        Keyboard,
-        LocalNotifications,
-        Media,
         {
             provide: MediaCapture,
-            deps: [Platform],
-            useFactory: (platform: Platform): MediaCapture => platform.is('cordova') ? new MediaCapture() : new MediaCaptureMock(),
+            useFactory: (): MediaCapture => CorePlatform.is('cordova') ? new MediaCapture() : new MediaCaptureMock(),
         },
-        Push,
-        QRScanner,
-        SplashScreen,
-        SQLite,
-        StatusBar,
-        WebIntent,
-        WebView,
         {
             provide: Zip,
-            deps: [Platform, File],
-            useFactory: (platform: Platform, file: File): Zip => platform.is('cordova') ? new Zip() : new ZipMock(file),
+            useFactory: (): Zip => CorePlatform.is('cordova') ? new Zip() : new ZipMock(),
         },
         {
             provide: APP_INITIALIZER,
-            deps: [Platform, CoreEmulatorHelperProvider],
-            useFactory: (platform: Platform, helperProvider: CoreEmulatorHelperProvider) => () => {
-                if (platform.is('cordova')) {
+            useFactory: () => () => {
+                if (CorePlatform.is('cordova')) {
                     return;
                 }
 
-                return helperProvider.load();
+                return CoreEmulatorHelper.load();
             },
             multi: true,
         },

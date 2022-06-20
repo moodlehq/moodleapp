@@ -41,6 +41,7 @@ import { CoreUserToursModule } from './usertours/user-tours.module';
 import { CoreUserModule } from './user/user.module';
 import { CoreViewerModule } from './viewer/viewer.module';
 import { CoreXAPIModule } from './xapi/xapi.module';
+import { CoreNativeModule } from '@features/native/native.module';
 
 @NgModule({
     imports: [
@@ -50,13 +51,13 @@ import { CoreXAPIModule } from './xapi/xapi.module';
         CoreCourseModule,
         CoreCoursesModule,
         CoreEditorModule,
-        CoreEmulatorModule,
         CoreFileUploaderModule,
         CoreFilterModule,
         CoreGradesModule,
         CoreH5PModule,
         CoreLoginModule,
         CoreMainMenuModule,
+        CoreNativeModule,
         CorePushNotificationsModule,
         CoreQuestionModule,
         CoreRatingModule,
@@ -71,6 +72,9 @@ import { CoreXAPIModule } from './xapi/xapi.module';
         CoreUserModule,
         CoreViewerModule,
         CoreXAPIModule,
+
+        // Import last to allow overrides.
+        CoreEmulatorModule,
     ],
 })
 export class CoreFeaturesModule {}
