@@ -19,9 +19,9 @@ import { CoreCourseContentsPage } from '@features/course/pages/contents/contents
 import { IonContent } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
+import { CorePlatform } from '@services/platform';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { Platform } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { Subscription } from 'rxjs';
 import { AddonModWorkshopModuleHandlerService } from '../../services/handlers/module';
@@ -119,7 +119,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
         }, this.siteId);
 
         // Since most actions will take the user out of the app, we should refresh the view when the app is resumed.
-        this.appResumeSubscription = Platform.resume.subscribe(() => {
+        this.appResumeSubscription = CorePlatform.resume.subscribe(() => {
             this.showLoadingAndRefresh(true);
         });
 

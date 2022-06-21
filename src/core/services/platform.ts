@@ -13,13 +13,14 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { makeSingleton, Platform } from '@singletons';
+import { Platform } from '@ionic/angular';
+import { makeSingleton } from '@singletons';
 
 /**
  * Extend Ionic's Platform service.
  */
 @Injectable({ providedIn: 'root' })
-export class CorePlatformService {
+export class CorePlatformService extends Platform {
 
     /**
      * Checks if the app is running in a mobile or tablet device (Cordova).
@@ -27,7 +28,7 @@ export class CorePlatformService {
      * @return Whether the app is running in a mobile or tablet device.
      */
     isMobile(): boolean {
-        return Platform.is('cordova');
+        return this.is('cordova');
     }
 
 }

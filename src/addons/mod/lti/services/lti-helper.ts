@@ -16,9 +16,10 @@ import { Injectable } from '@angular/core';
 
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
+import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { makeSingleton, Platform } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModLti, AddonModLtiLti } from './lti';
 
@@ -38,7 +39,7 @@ export class AddonModLtiHelperProvider {
     }
 
     watchPendingCompletions(): void {
-        Platform.resume.subscribe(() => {
+        CorePlatform.resume.subscribe(() => {
             // User went back to the app, check pending completions.
             for (const moduleId in this.pendingCheckCompletion) {
                 const data = this.pendingCheckCompletion[moduleId];

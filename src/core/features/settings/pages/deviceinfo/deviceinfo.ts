@@ -16,7 +16,7 @@ import { CoreApp } from '@services/app';
 import { Component, OnDestroy } from '@angular/core';
 import { CoreConstants } from '@/core/constants';
 import { CoreLocalNotifications } from '@services/local-notifications';
-import { Device, Platform, Translate, NgZone } from '@singletons';
+import { Device, Translate, NgZone } from '@singletons';
 import { CoreLang } from '@services/lang';
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
@@ -110,7 +110,7 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
         }
 
         if (CorePlatform.isMobile()) {
-            this.deviceInfo.deviceType = Platform.is('tablet') ? 'tablet' : 'phone';
+            this.deviceInfo.deviceType = CorePlatform.is('tablet') ? 'tablet' : 'phone';
             if (CoreApp.isAndroid()) {
                 this.deviceInfo.deviceOs = 'android';
                 this.deviceOsTranslated = 'Android';

@@ -30,7 +30,7 @@ import {
     CoreCourseOptionsMenuHandlerToDisplay,
 } from '@features/course/services/course-options-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
-import { ActionSheetController, ModalController, NgZone, Platform, Translate } from '@singletons';
+import { ActionSheetController, ModalController, NgZone, Translate } from '@singletons';
 import { CoreCoursesSelfEnrolPasswordComponent } from '../../../courses/components/self-enrol-password/self-enrol-password';
 import { CoreNavigator } from '@services/navigator';
 import { CoreUtils } from '@services/utils/utils';
@@ -39,6 +39,7 @@ import { Subscription } from 'rxjs';
 import { CoreColors } from '@singletons/colors';
 import { CoreText } from '@singletons/text';
 import { CorePromisedValue } from '@classes/promised-value';
+import { CorePlatform } from '@services/platform';
 
 const ENROL_BROWSER_METHODS = ['fee', 'paypal'];
 
@@ -84,7 +85,7 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
 
     constructor() {
         // Refresh the view when the app is resumed.
-        this.appResumeSubscription = Platform.resume.subscribe(() => {
+        this.appResumeSubscription = CorePlatform.resume.subscribe(() => {
             if (!this.waitingForBrowserEnrol || !this.dataLoaded) {
                 return;
             }

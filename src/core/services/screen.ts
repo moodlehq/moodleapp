@@ -16,8 +16,9 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 
-import { makeSingleton, Platform } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Screen breakpoints.
@@ -120,7 +121,7 @@ export class CoreScreenService {
      * Watch orientation changes.
      */
     async watchOrientation(): Promise<void> {
-        await Platform.ready();
+        await CorePlatform.ready();
 
         screen.orientation.addEventListener('change', () => {
             CoreEvents.trigger(CoreEvents.ORIENTATION_CHANGE, { orientation: this.orientation });

@@ -29,7 +29,7 @@ import {
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUser } from '@features/user/services/user';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
-import { Platform, Translate } from '@singletons';
+import { Translate } from '@singletons';
 import { Subscription } from 'rxjs';
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
 import { ActivatedRoute, Params } from '@angular/router';
@@ -37,6 +37,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Page that displays the list of conversations, including group conversations.
@@ -176,7 +177,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         );
 
         // Refresh the view when the app is resumed.
-        this.appResumeSubscription = Platform.resume.subscribe(() => {
+        this.appResumeSubscription = CorePlatform.resume.subscribe(() => {
             if (!this.loaded) {
                 return;
             }

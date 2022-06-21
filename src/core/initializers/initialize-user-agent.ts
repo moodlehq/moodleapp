@@ -13,14 +13,14 @@
 // limitations under the License.
 
 import { CorePlatform } from '@services/platform';
-import { NativeHttp, Platform } from '@singletons';
+import { NativeHttp } from '@singletons';
 
 export default async function(): Promise<void> {
     if (!CorePlatform.isMobile()) {
         return;
     }
 
-    await Platform.ready();
+    await CorePlatform.ready();
 
     NativeHttp.setHeader('*', 'User-Agent', navigator.userAgent);
 }

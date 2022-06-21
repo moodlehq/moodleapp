@@ -28,11 +28,12 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { Subscription } from 'rxjs';
-import { Translate, Platform } from '@singletons';
+import { Translate } from '@singletons';
 import { IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Page that displays the list of discussions.
@@ -114,7 +115,7 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
         );
 
         // Refresh the view when the app is resumed.
-        this.appResumeSubscription = Platform.resume.subscribe(() => {
+        this.appResumeSubscription = CorePlatform.resume.subscribe(() => {
             if (!this.loaded) {
                 return;
             }

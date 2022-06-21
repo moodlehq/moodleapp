@@ -17,8 +17,9 @@ import { Injectable } from '@angular/core';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { SQLiteDBMock } from '@features/emulator/classes/sqlitedb';
 import { CoreBrowser } from '@singletons/browser';
-import { makeSingleton, SQLite, Platform } from '@singletons';
+import { makeSingleton, SQLite } from '@singletons';
 import { CoreAppProvider } from './app';
+import { CorePlatform } from '@services/platform';
 
 const tableNameRegex = new RegExp([
     '^SELECT.*FROM ([^ ]+)',
@@ -208,7 +209,7 @@ export class CoreDbProvider {
      */
     getDB(name: string, forceNew?: boolean): SQLiteDB {
         if (this.dbInstances[name] === undefined || forceNew) {
-            if (Platform.is('cordova')) {
+            if (CorePlatform.is('cordova')) {
                 this.dbInstances[name] = new SQLiteDB(name);
             } else {
                 this.dbInstances[name] = new SQLiteDBMock(name);
@@ -241,7 +242,7 @@ export class CoreDbProvider {
                     location: 'default',
                 });
             }
-        } else if (Platform.is('cordova')) {
+        } else if (CorePlatform.is('cordova')) {
             return SQLite.deleteDatabase({
                 name,
                 location: 'default',

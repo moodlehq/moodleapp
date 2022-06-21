@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, Input } from '@angular/core';
-import { Platform } from '@singletons';
+import { CorePlatform } from '@services/platform';
 
 const enum ScrollPosition {
     START = 'start',
@@ -89,14 +89,14 @@ export class CoreHorizontalScrollControlsComponent {
         }
 
         if (scrollLeft === 0) {
-            return Platform.isRTL ? ScrollPosition.END : ScrollPosition.START;
+            return CorePlatform.isRTL ? ScrollPosition.END : ScrollPosition.START;
         }
 
-        if (!Platform.isRTL && this.target.scrollWidth - scrollLeft === this.target.clientWidth) {
+        if (!CorePlatform.isRTL && this.target.scrollWidth - scrollLeft === this.target.clientWidth) {
             return ScrollPosition.END;
         }
 
-        if (Platform.isRTL && this.target.scrollWidth + scrollLeft === this.target.clientWidth) {
+        if (CorePlatform.isRTL && this.target.scrollWidth + scrollLeft === this.target.clientWidth) {
             return ScrollPosition.START;
         }
 

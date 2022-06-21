@@ -14,13 +14,13 @@
 
 import { createAnimation } from '@ionic/angular';
 import { Animation } from '@ionic/core';
-import { Platform } from '@singletons';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Sliding transition for lateral modals.
  */
 export function CoreModalLateralTransitionEnter(baseEl: HTMLElement): Animation {
-    const OFF_RIGHT = Platform.isRTL ? '-100%' : '100%';
+    const OFF_RIGHT = CorePlatform.isRTL ? '-100%' : '100%';
 
     const otherAnimations: Animation[] = [];
 
@@ -51,7 +51,7 @@ export function CoreModalLateralTransitionEnter(baseEl: HTMLElement): Animation 
 }
 
 export function CoreModalLateralTransitionLeave(baseEl: HTMLElement): Animation {
-    const OFF_RIGHT = Platform.isRTL ? '-100%' : '100%';
+    const OFF_RIGHT = CorePlatform.isRTL ? '-100%' : '100%';
 
     const otherAnimations: Animation[] = [];
 

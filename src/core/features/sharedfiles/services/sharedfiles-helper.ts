@@ -23,7 +23,7 @@ import { CoreFile } from '@services/file';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { AlertController, ApplicationInit, makeSingleton, Platform, Translate } from '@singletons';
+import { AlertController, ApplicationInit, makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSharedFilesListModalComponent } from '../components/list-modal/list-modal';
@@ -31,6 +31,7 @@ import { CoreSharedFiles } from './sharedfiles';
 import { SHAREDFILES_PAGE_NAME } from '../sharedfiles.module';
 import { CoreSharedFilesChooseSitePage } from '../pages/choose-site/choose-site';
 import { CoreError } from '@classes/errors/error';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Helper service to share files with the app.
@@ -57,7 +58,7 @@ export class CoreSharedFilesHelperProvider {
         // Check if there are new files at app start and when the app is resumed.
         this.searchIOSNewSharedFiles();
 
-        Platform.resume.subscribe(() => {
+        CorePlatform.resume.subscribe(() => {
             // Wait a bit to make sure that APP_LAUNCHED_URL is treated before this callback.
             setTimeout(() => {
                 if (Date.now() - lastCheck < 1000) {

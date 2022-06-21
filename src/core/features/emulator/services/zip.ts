@@ -13,20 +13,16 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { File } from '@ionic-native/file/ngx';
 import { Zip } from '@ionic-native/zip/ngx';
 import * as JSZip from 'jszip';
 import { CoreText } from '@singletons/text';
+import { File } from '@singletons';
 
 /**
  * Emulates the Cordova Zip plugin in browser.
  */
 @Injectable()
 export class ZipMock extends Zip {
-
-    constructor(private file: File) {
-        super();
-    }
 
     /**
      * Create a directory. It creates all the foldes in dirPath 1 by 1 to prevent errors.
@@ -42,7 +38,7 @@ export class ZipMock extends Zip {
         for (let i = 0; i < folders.length; i++) {
             const folder = folders[i];
 
-            await this.file.createDir(destination, folder, true);
+            await File.createDir(destination, folder, true);
 
             // Folder created, add it to the destination path.
             destination = CoreText.concatenatePaths(destination, folder);
@@ -69,7 +65,7 @@ export class ZipMock extends Zip {
 
         try {
             // Read the file first.
-            const data = await this.file.readAsArrayBuffer(sourceDir, sourceName);
+            const data = await File.readAsArrayBuffer(sourceDir, sourceName);
 
             // Now load the file using the JSZip library.
             await zip.loadAsync(data);
@@ -83,7 +79,7 @@ export class ZipMock extends Zip {
             const destParent = destination.substring(0, destination.lastIndexOf('/'));
             const destFolderName = destination.substring(destination.lastIndexOf('/') + 1);
 
-            await this.file.createDir(destParent, destFolderName, true);
+            await File.createDir(destParent, destFolderName, true);
 
             const total = Object.keys(zip.files).length;
             let loaded = 0;
@@ -107,7 +103,7 @@ export class ZipMock extends Zip {
                     // File read and parent folder created, now write the file.
                     const parentFolder = CoreText.concatenatePaths(destination, fileDir);
 
-                    await this.file.writeFile(parentFolder, fileName, fileData, { replace: true });
+                    await File.writeFile(parentFolder, fileName, fileData, { replace: true });
                 } else {
                     // It's a folder, create it if it doesn't exist.
                     await this.createDir(destination, name);

@@ -13,11 +13,11 @@
 // limitations under the License.
 
 import { CoreApp } from '@services/app';
+import { CorePlatform } from '@services/platform';
 import { CoreIframeUtils } from '@services/utils/iframe';
-import { Platform } from '@singletons';
 
 export default async function(): Promise<void> {
-    await Platform.ready();
+    await CorePlatform.ready();
 
     if (!CoreApp.isIOS() || !('WKUserScript' in window)) {
         return;

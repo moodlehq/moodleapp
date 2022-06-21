@@ -26,7 +26,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
-import { makeSingleton, Translate, Camera, Chooser, Platform, ActionSheetController } from '@singletons';
+import { makeSingleton, Translate, Camera, Chooser, ActionSheetController } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreError } from '@classes/errors/error';
@@ -644,8 +644,8 @@ export class CoreFileUploaderHelperProvider {
             options.popoverOptions = {
                 x: 10,
                 y: 10,
-                width: Platform.width() - 200,
-                height: Platform.height() - 200,
+                width: CorePlatform.width() - 200,
+                height: CorePlatform.height() - 200,
                 arrowDir: Camera.PopoverArrowDirection.ARROW_ANY,
             };
 

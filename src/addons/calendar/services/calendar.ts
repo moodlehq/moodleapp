@@ -32,7 +32,7 @@ import { AddonCalendarEventDBRecord, AddonCalendarReminderDBRecord, EVENTS_TABLE
 import { CoreCourses } from '@features/courses/services/courses';
 import { ContextLevel, CoreConstants } from '@/core/constants';
 import { CoreWSError } from '@classes/errors/wserror';
-import { ApplicationInit, makeSingleton, Translate, Platform } from '@singletons';
+import { ApplicationInit, makeSingleton, Translate } from '@singletons';
 import { AddonCalendarOfflineEventDBRecord } from './database/calendar-offline';
 import { AddonCalendarMainMenuHandlerService } from './handlers/mainmenu';
 import { SafeUrl } from '@angular/platform-browser';
@@ -41,6 +41,7 @@ import { AddonCalendarFilter } from './calendar-helper';
 import { AddonCalendarSyncEvents, AddonCalendarSyncProvider } from './calendar-sync';
 import { CoreEvents } from '@singletons/events';
 import { CoreText } from '@singletons/text';
+import { CorePlatform } from '@services/platform';
 
 const ROOT_CACHE_KEY = 'mmaCalendar:';
 
@@ -1429,7 +1430,7 @@ export class AddonCalendarProvider {
      * @return Promise resolved when all the notifications have been scheduled.
      */
     async scheduleAllSitesEventsNotifications(): Promise<void> {
-        await Platform.ready();
+        await CorePlatform.ready();
 
         const notificationsEnabled = CoreLocalNotifications.isAvailable();
 

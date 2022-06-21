@@ -17,8 +17,9 @@ import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe
 import { CoreSwipeNavigationTourComponent } from '@components/swipe-navigation-tour/swipe-navigation-tour';
 import { CoreUserTours } from '@features/usertours/services/user-tours';
 import { Gesture, GestureDetail } from '@ionic/angular';
+import { CorePlatform } from '@services/platform';
 import { CoreScreen } from '@services/screen';
-import { GestureController, Platform } from '@singletons';
+import { GestureController } from '@singletons';
 
 const ACTIVATION_THRESHOLD = 150;
 const SWIPE_FRICTION = 0.6;
@@ -105,7 +106,7 @@ export class CoreSwipeNavigationDirective implements AfterViewInit, OnDestroy {
             return;
         }
 
-        Platform.isRTL
+        CorePlatform.isRTL
             ? this.manager?.navigateToPreviousItem()
             : this.manager?.navigateToNextItem();
     }
@@ -118,7 +119,7 @@ export class CoreSwipeNavigationDirective implements AfterViewInit, OnDestroy {
             return;
         }
 
-        Platform.isRTL
+        CorePlatform.isRTL
             ? this.manager?.navigateToNextItem()
             : this.manager?.navigateToPreviousItem();
     }
@@ -131,7 +132,7 @@ export class CoreSwipeNavigationDirective implements AfterViewInit, OnDestroy {
             return false;
         }
 
-        return Platform.isRTL
+        return CorePlatform.isRTL
             ? await this.manager.hasNextItem()
             : await this.manager.hasPreviousItem();
     }
@@ -144,7 +145,7 @@ export class CoreSwipeNavigationDirective implements AfterViewInit, OnDestroy {
             return false;
         }
 
-        return Platform.isRTL
+        return CorePlatform.isRTL
             ? await this.manager.hasPreviousItem()
             : await this.manager.hasNextItem();
     }

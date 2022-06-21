@@ -19,7 +19,7 @@ import { BackButtonEvent, ScrollDetail } from '@ionic/core';
 import { CoreLang } from '@services/lang';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreEvents } from '@singletons/events';
-import { NgZone, Platform, SplashScreen, Translate } from '@singletons';
+import { NgZone, SplashScreen, Translate } from '@singletons';
 import { CoreNetwork } from '@services/network';
 import { CoreApp, CoreAppProvider } from '@services/app';
 import { CoreSites } from '@services/sites';
@@ -33,6 +33,7 @@ import { CoreConstants } from '@/core/constants';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreDom } from '@singletons/dom';
+import { CorePlatform } from '@services/platform';
 
 const MOODLE_VERSION_PREFIX = 'version-';
 const MOODLEAPP_VERSION_PREFIX = 'moodleapp-';
@@ -181,7 +182,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             }
         });
 
-        Platform.resume.subscribe(() => {
+        CorePlatform.resume.subscribe(() => {
             // Wait a second before setting it to false since in iOS there could be some frozen WS calls.
             setTimeout(() => {
                 if (CoreLoginHelper.isWaitingForBrowser()) {
@@ -305,7 +306,7 @@ export class AppComponent implements OnInit, AfterViewInit {
      * Async init function on platform ready.
      */
     protected async onPlatformReady(): Promise<void> {
-        await Platform.ready();
+        await CorePlatform.ready();
 
         // Refresh online status when changes.
         CoreNetwork.onChange().subscribe(() => {

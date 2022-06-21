@@ -15,10 +15,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CoreUserTours } from '@features/usertours/services/user-tours';
+import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { Platform } from '@singletons';
 
 /**
  * Page that displays the developer options.
@@ -45,7 +45,7 @@ export class CoreSettingsDevPage implements OnInit {
     siteId: string | undefined;
 
     async ngOnInit(): Promise<void> {
-        this.rtl = Platform.isRTL;
+        this.rtl = CorePlatform.isRTL;
         this.RTLChanged();
 
         this.forceSafeAreaMargins = document.documentElement.classList.contains('force-safe-area-margins');
