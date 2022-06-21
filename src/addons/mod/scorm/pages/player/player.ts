@@ -415,7 +415,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
                 this.scorm,
                 sco.id,
                 this.attempt,
-                this.userData!,
+                this.userData ?? {},
                 this.mode,
                 this.offline,
                 this.canSaveTracks,

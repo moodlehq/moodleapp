@@ -357,8 +357,8 @@ export class AddonModScormProvider {
                     element = '!';
                 } else if (reOther.test(element)) {
                     // Other symbols = | <> .
-                    matches = element.match(reOther)!;
-                    element = matches[1].trim();
+                    matches = element.match(reOther) ?? [];
+                    element = matches[1]?.trim();
 
                     if (trackData[element] !== undefined) {
                         let value = matches[3].trim().replace(/('|")/gi, '');
@@ -968,7 +968,7 @@ export class AddonModScormProvider {
             return launchUrl;
         }
 
-        const dirPath = await CoreFilepool.getPackageDirUrlByUrl(siteId, scorm.moduleurl!);
+        const dirPath = await CoreFilepool.getPackageDirUrlByUrl(siteId, scorm.moduleurl ?? '');
 
         return CoreText.concatenatePaths(dirPath, launchUrl);
     }
@@ -1573,7 +1573,7 @@ export class AddonModScormProvider {
         userData?: AddonModScormUserDataMap,
     ): boolean {
         if (offline) {
-            return AddonModScormOffline.saveTracksSync(scorm, scoId, attempt, tracks, userData!);
+            return AddonModScormOffline.saveTracksSync(scorm, scoId, attempt, tracks, userData ?? {});
         } else {
             const success = this.saveTracksSyncOnline(scoId, attempt, tracks);
 

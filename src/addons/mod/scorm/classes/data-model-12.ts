@@ -510,8 +510,9 @@ export class AddonModScormDataModel12 {
             // Load default values.
             for (const element in this.dataModel[scoId]) {
                 if (element.match(/\.n\./) === null) {
-                    if (this.dataModel[scoId][element].defaultvalue !== undefined) {
-                        this.currentUserData[scoId].userdata[element] = this.dataModel[scoId][element].defaultvalue!;
+                    const defaultValue = this.dataModel[scoId][element].defaultvalue;
+                    if (defaultValue !== undefined) {
+                        this.currentUserData[scoId].userdata[element] = defaultValue;
                     }
                 }
             }
@@ -519,8 +520,9 @@ export class AddonModScormDataModel12 {
             // Load initial user data for current SCO.
             for (const element in this.def[scoId]) {
                 if (element.match(/\.n\./) === null) {
-                    if (this.dataModel[scoId][element].defaultvalue !== undefined) {
-                        this.currentUserData[scoId].userdata[element] = this.dataModel[scoId][element].defaultvalue!;
+                    const defaultValue = this.dataModel[scoId][element].defaultvalue;
+                    if (defaultValue !== undefined) {
+                        this.currentUserData[scoId].userdata[element] = defaultValue;
                     } else if (this.defExtra[scoId][element] !== undefined) {
                         // Check in user data values.
                         this.currentUserData[scoId].userdata[element] = this.defExtra[scoId][element];
@@ -808,7 +810,7 @@ export class AddonModScormDataModel12 {
 
                 if (this.dataModel[this.scoId][elementModel] !== undefined) {
                     if (this.dataModel[this.scoId][elementModel].mod != 'r') {
-                        expression = new RegExp(this.dataModel[this.scoId][elementModel].format!);
+                        expression = new RegExp(this.dataModel[this.scoId][elementModel].format ?? '');
                         value = value + '';
 
                         const matches = value.match(expression);
