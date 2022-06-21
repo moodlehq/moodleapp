@@ -676,22 +676,59 @@ export class CoreSite {
 
         const run = async () => {
             try {
-                let response: T | {exception?: string; errorcode?: string};
+                let response: T | WSCachedError;
+                let cachedData: WSCachedData<T> | undefined;
 
                 try {
-                    response = await this.getFromCache<T>(method, data, preSets, false);
+                    cachedData = await this.getFromCache<T>(method, data, preSets, false);
+                    response = cachedData.response;
                 } catch {
                     // Not found or expired, call WS.
-                    response = await this.getFromWSOrEmergencyCache<T>(method, data, preSets, wsPreSets);
+                    response = await this.getFromWS<T>(method, data, preSets, wsPreSets);
                 }
 
-                if (('exception' in response && response.exception !== undefined) ||
-                        ('errorcode' in response && response.errorcode !== undefined)) {
-                    throw new CoreWSError(response);
+                if (
+                    typeof response === 'object' && response !== null &&
+                    (
+                        ('exception' in response && response.exception !== undefined) ||
+                        ('errorcode' in response && response.errorcode !== undefined)
+                    )
+                ) {
+                    subject.error(new CoreWSError(response));
+                } else {
+                    subject.next(<T> response);
                 }
 
-                subject.next(<T> response);
-                subject.complete();
+                if (
+                    preSets.updateInBackground &&
+                    !CoreConstants.CONFIG.disableCallWSInBackground &&
+                    cachedData &&
+                    !cachedData.expirationIgnored &&
+                    cachedData.expirationTime !== undefined &&
+                    Date.now() > cachedData.expirationTime
+                ) {
+                    // Update the data in background.
+                    setTimeout(async () => {
+                        try {
+                            preSets = {
+                                ...preSets,
+                                emergencyCache: false,
+                            };
+
+                            const newData = await this.getFromWS<T>(method, data, preSets, wsPreSets);
+
+                            subject.next(newData);
+                        } catch (error) {
+                            // Ignore errors when updating in background.
+                            this.logger.error('Error updating WS data in background', error);
+                        } finally {
+                            subject.complete();
+                        }
+                    });
+                } else {
+                    // No need to update in background, complete the observable.
+                    subject.complete();
+                }
             } catch (error) {
                 subject.error(error);
             }
@@ -711,7 +748,7 @@ export class CoreSite {
      * @param wsPreSets Extra options related to the WS call.
      * @return Promise resolved with the response.
      */
-    protected async getFromWSOrEmergencyCache<T = unknown>(
+    protected async getFromWS<T = unknown>(
         method: string,
         data: any, // eslint-disable-line @typescript-eslint/no-explicit-any
         preSets: CoreSiteWSPreSets,
@@ -725,7 +762,7 @@ export class CoreSite {
         }
 
         try {
-            const response = await this.getFromWS<T>(method, data, preSets, wsPreSets);
+            const response = await this.callOrEnqueueWS<T>(method, data, preSets, wsPreSets);
 
             if (preSets.saveToCache) {
                 this.saveToCache(method, data, response, preSets);
@@ -820,11 +857,26 @@ export class CoreSite {
             }
 
             this.logger.debug(`WS call '${method}' failed. Trying to use the emergency cache.`);
-            preSets.omitExpires = true;
-            preSets.getFromCache = true;
+            preSets = {
+                ...preSets,
+                omitExpires: true,
+                getFromCache: true,
+            };
 
             try {
-                return await this.getFromCache<T>(method, data, preSets, true);
+                const cachedData = await this.getFromCache<T>(method, data, preSets, true);
+
+                if (
+                    typeof cachedData.response === 'object' && cachedData.response !== null &&
+                    (
+                        ('exception' in cachedData.response && cachedData.response.exception !== undefined) ||
+                        ('errorcode' in cachedData.response && cachedData.response.errorcode !== undefined)
+                    )
+                ) {
+                    throw new CoreWSError(cachedData.response);
+                }
+
+                return <T> cachedData.response;
             } catch {
                 if (useSilentError) {
                     throw new CoreSilentError(error.message);
@@ -844,7 +896,7 @@ export class CoreSite {
      * @param wsPreSets Extra options related to the WS call.
      * @return Promise resolved with the response.
      */
-    protected async getFromWS<T = unknown>(
+    protected async callOrEnqueueWS<T = unknown>(
         method: string,
         data: any, // eslint-disable-line @typescript-eslint/no-explicit-any
         preSets: CoreSiteWSPreSets,
@@ -1085,14 +1137,14 @@ export class CoreSite {
      * @param preSets Extra options.
      * @param emergency Whether it's an "emergency" cache call (WS call failed).
      * @param originalData Arguments to pass to the method before being converted to strings.
-     * @return Promise resolved with the WS response.
+     * @return Cached data.
      */
     protected async getFromCache<T = unknown>(
         method: string,
         data: any, // eslint-disable-line @typescript-eslint/no-explicit-any
         preSets: CoreSiteWSPreSets,
         emergency?: boolean,
-    ): Promise<T> {
+    ): Promise<WSCachedData<T>> {
         if (!this.db || !preSets.getFromCache) {
             throw new CoreError('Get from cache is disabled.');
         }
@@ -1128,12 +1180,22 @@ export class CoreSite {
         const now = Date.now();
         let expirationTime: number | undefined;
 
-        preSets.omitExpires = preSets.omitExpires || preSets.forceOffline || !CoreNetwork.isOnline();
+        const forceCache = preSets.omitExpires || preSets.forceOffline || !CoreNetwork.isOnline();
 
-        if (!preSets.omitExpires) {
+        if (!forceCache) {
             expirationTime = entry.expirationTime + this.getExpirationDelay(preSets.updateFrequency);
 
-            if (now > expirationTime) {
+            if (preSets.updateInBackground && !CoreConstants.CONFIG.disableCallWSInBackground) {
+                // Use a extended expiration time.
+                const extendedTime = entry.expirationTime +
+                    (CoreConstants.CONFIG.callWSInBackgroundExpirationTime ?? CoreConstants.SECONDS_WEEK * 1000);
+
+                if (now > extendedTime) {
+                    this.logger.debug('Cached element found, but it is expired even for call WS in background.');
+
+                    throw new CoreError('Cache entry is expired.');
+                }
+            } else if (now > expirationTime) {
                 this.logger.debug('Cached element found, but it is expired');
 
                 throw new CoreError('Cache entry is expired.');
@@ -1148,7 +1210,11 @@ export class CoreSite {
                 this.logger.info(`Cached element found, id: ${id}. Expires in expires in ${expires} seconds`);
             }
 
-            return <T> CoreTextUtils.parseJSON(entry.data, {});
+            return {
+                response: <T> CoreTextUtils.parseJSON(entry.data, {}),
+                expirationIgnored: forceCache,
+                expirationTime,
+            };
         }
 
         throw new CoreError('Cache entry not valid.');
@@ -1591,41 +1657,46 @@ export class CoreSite {
 
         this.ongoingRequests[cacheId] = observable;
 
-        this.getFromCache<CoreSitePublicConfigResponse>(method, {}, cachePreSets, false).catch(async () => {
-            if (cachePreSets.forceOffline) {
-                // Don't call the WS, just fail.
-                throw new CoreError(
-                    Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }),
-                );
-            }
-
-            // Call the WS.
-            try {
-                const config = await this.requestPublicConfig();
-
-                if (cachePreSets.saveToCache) {
-                    this.saveToCache(method, {}, config, cachePreSets);
+        this.getFromCache<CoreSitePublicConfigResponse>(method, {}, cachePreSets, false)
+            .then(cachedData => cachedData.response)
+            .catch(async () => {
+                if (cachePreSets.forceOffline) {
+                    // Don't call the WS, just fail.
+                    throw new CoreError(
+                        Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }),
+                    );
                 }
 
-                return config;
-            } catch (error) {
-                cachePreSets.omitExpires = true;
-                cachePreSets.getFromCache = true;
-
+                // Call the WS.
                 try {
-                    return await this.getFromCache<CoreSitePublicConfigResponse>(method, {}, cachePreSets, true);
-                } catch {
-                    throw error;
-                }
-            }
-        }).then((response) => {
-            subject.next(response);
-            subject.complete();
+                    const config = await this.requestPublicConfig();
 
-            return;
-        }).catch((error) => {
-            subject.error(error);
-        });
+                    if (cachePreSets.saveToCache) {
+                        this.saveToCache(method, {}, config, cachePreSets);
+                    }
+
+                    return config;
+                } catch (error) {
+                    cachePreSets.omitExpires = true;
+                    cachePreSets.getFromCache = true;
+
+                    try {
+                        const cachedData = await this.getFromCache<CoreSitePublicConfigResponse>(method, {}, cachePreSets, true);
+
+                        return cachedData.response;
+                    } catch {
+                        throw error;
+                    }
+                }
+            }).then((response) => {
+                // The app doesn't store exceptions for this call, it's safe to assume type CoreSitePublicConfigResponse.
+                subject.next(<CoreSitePublicConfigResponse> response);
+                subject.complete();
+
+                return;
+            }).catch((error) => {
+                subject.error(error);
+            });
 
         return observable.toPromise();
     }
@@ -2425,6 +2496,12 @@ export type CoreSiteWSPreSets = {
      * can cause the request to fail (see PHP's max_input_vars).
      */
     splitRequest?: CoreWSPreSetsSplitRequest;
+
+    /**
+     * If true, the app will return cached data even if it's expired and then it'll call the WS in the background.
+     * Only enabled if CoreConstants.CONFIG.disableCallWSInBackground isn't true.
+     */
+    updateInBackground?: boolean;
 };
 
 /**
@@ -2625,3 +2702,28 @@ export type CoreSiteStoreLastViewedOptions = {
     data?: string; // Other data.
     timeaccess?: number; // Accessed time. If not set, current time.
 };
+
+/**
+ * Info about cached data.
+ */
+type WSCachedData<T> = {
+    response: T | WSCachedError; // The WS response data, or an error if the WS returned an error and it was cached.
+    expirationIgnored: boolean; // Whether the expiration time was ignored.
+    expirationTime?: number; // Entry expiration time (only if not ignored).
+};
+
+/**
+ * Error data stored in cache.
+ */
+type WSCachedError = {
+    exception?: string;
+    errorcode?: string;
+};
+
+/**
+ * Observable returned when calling WebServices.
+ * If the request uses the "update in background" feature, it will return 2 values: first the cached one, and then the one
+ * coming from the server. After this, it will complete.
+ * Otherwise, it will only return 1 value, either coming from cache or from the server. After this, it will complete.
+ */
+export type WSObservable<T> = Observable<T>;
