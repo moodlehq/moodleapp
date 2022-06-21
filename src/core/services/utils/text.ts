@@ -25,6 +25,7 @@ import { CoreViewerTextComponent } from '@features/viewer/components/text/text';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreDomUtils } from './dom';
 import { CoreText } from '@singletons/text';
+import { CoreUrl } from '@singletons/url';
 
 /**
  * Different type of errors the app can treat.
@@ -155,6 +156,12 @@ export class CoreTextUtilsProvider {
      * @return URL to view the address.
      */
     buildAddressURL(address: string): SafeUrl {
+        const parsedUrl = CoreUrl.parse(address);
+        if (parsedUrl?.protocol) {
+            // It's already a URL, don't convert it.
+            return DomSanitizer.bypassSecurityTrustUrl(address);
+        }
+
         return DomSanitizer.bypassSecurityTrustUrl((CoreApp.isAndroid() ? 'geo:0,0?q=' : 'http://maps.google.com?q=') +
                 encodeURIComponent(address));
     }
