@@ -93,13 +93,6 @@ export class AddonModScormDataModel12 {
     protected errorCode = '0'; // Last error.
     protected timeout?: number; // Timeout to commit changes.
 
-    protected siteId: string;
-    protected scorm: AddonModScormScorm;
-    protected scoId: number;
-    protected attempt: number;
-    protected mode: string;
-    protected offline: boolean;
-
     /**
      * Constructor.
      *
@@ -110,23 +103,18 @@ export class AddonModScormDataModel12 {
      * @param userData The user default data.
      * @param mode Mode being played. By default, MODENORMAL.
      * @param offline Whether the attempt is offline.
+     * @param canSaveTracks Whether the user can save tracks.
      */
     constructor(
-        siteId: string,
-        scorm: AddonModScormScorm,
-        scoId: number,
-        attempt: number,
-        userData: AddonModScormUserDataMap,
-        mode?: string,
-        offline?: boolean,
+        protected siteId: string,
+        protected scorm: AddonModScormScorm,
+        protected scoId: number,
+        protected attempt: number,
+        protected userData: AddonModScormUserDataMap,
+        protected mode = AddonModScormProvider.MODENORMAL,
+        protected offline = false,
+        protected canSaveTracks = true,
     ) {
-        this.siteId = siteId;
-        this.scorm = scorm;
-        this.scoId = scoId;
-        this.attempt = attempt;
-        this.mode = mode || AddonModScormProvider.MODENORMAL;
-        this.offline = !!offline;
-
         this.init(userData);
     }
 
@@ -522,8 +510,9 @@ export class AddonModScormDataModel12 {
             // Load default values.
             for (const element in this.dataModel[scoId]) {
                 if (element.match(/\.n\./) === null) {
-                    if (this.dataModel[scoId][element].defaultvalue !== undefined) {
-                        this.currentUserData[scoId].userdata[element] = this.dataModel[scoId][element].defaultvalue!;
+                    const defaultValue = this.dataModel[scoId][element].defaultvalue;
+                    if (defaultValue !== undefined) {
+                        this.currentUserData[scoId].userdata[element] = defaultValue;
                     }
                 }
             }
@@ -531,8 +520,9 @@ export class AddonModScormDataModel12 {
             // Load initial user data for current SCO.
             for (const element in this.def[scoId]) {
                 if (element.match(/\.n\./) === null) {
-                    if (this.dataModel[scoId][element].defaultvalue !== undefined) {
-                        this.currentUserData[scoId].userdata[element] = this.dataModel[scoId][element].defaultvalue!;
+                    const defaultValue = this.dataModel[scoId][element].defaultvalue;
+                    if (defaultValue !== undefined) {
+                        this.currentUserData[scoId].userdata[element] = defaultValue;
                     } else if (this.defExtra[scoId][element] !== undefined) {
                         // Check in user data values.
                         this.currentUserData[scoId].userdata[element] = this.defExtra[scoId][element];
@@ -820,7 +810,7 @@ export class AddonModScormDataModel12 {
 
                 if (this.dataModel[this.scoId][elementModel] !== undefined) {
                     if (this.dataModel[this.scoId][elementModel].mod != 'r') {
-                        expression = new RegExp(this.dataModel[this.scoId][elementModel].format!);
+                        expression = new RegExp(this.dataModel[this.scoId][elementModel].format ?? '');
                         value = value + '';
 
                         const matches = value.match(expression);
@@ -981,6 +971,10 @@ export class AddonModScormDataModel12 {
      * @return True if success, false otherwise.
      */
     protected storeData(storeTotalTime?: boolean): boolean {
+        if (!this.canSaveTracks) {
+            return true;
+        }
+
         let tracks: AddonModScormDataEntry[];
 
         if (storeTotalTime) {

@@ -484,7 +484,7 @@ export class AddonModScormOfflineProvider {
                 response[scoId] = {
                     scoid: scoId,
                     userdata: {
-                        userid: userId!,
+                        userid: userId ?? site.getUserId(),
                         scoid: scoId,
                         timemodified: 0,
                     },
@@ -492,7 +492,7 @@ export class AddonModScormOfflineProvider {
                 };
             }
 
-            response[scoId].userdata[entry.element] = entry.value!;
+            response[scoId].userdata[entry.element] = entry.value ?? '';
             if (entry.timemodified > Number(response[scoId].userdata.timemodified)) {
                 response[scoId].userdata.timemodified = entry.timemodified;
             }

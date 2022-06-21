@@ -89,7 +89,7 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
         ]);
 
         // Success, return the hash.
-        return scorm.sha1hash!;
+        return scorm.sha1hash ?? '';
     }
 
     /**
@@ -112,7 +112,7 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
         const packageUrl = AddonModScorm.getPackageUrl(scorm);
 
         // Get the folder where the unzipped files will be.
-        const dirPath = await AddonModScorm.getScormFolder(scorm.moduleurl!);
+        const dirPath = await AddonModScorm.getScormFolder(scorm.moduleurl ?? '');
 
         // Notify that the download is starting.
         onProgress && onProgress({ message: 'core.downloading' });
@@ -282,7 +282,7 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
         const scorm = await this.getScorm(module, courseId);
 
         // Get the folder where SCORM should be unzipped.
-        const path = await AddonModScorm.getScormFolder(scorm.moduleurl!);
+        const path = await AddonModScorm.getScormFolder(scorm.moduleurl ?? '');
 
         return CoreFile.getDirectorySize(path);
     }
@@ -388,7 +388,7 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
         const scorm = await this.getScorm(module, courseId, siteId);
 
         // Get the folder where SCORM should be unzipped.
-        const path = await AddonModScorm.getScormFolder(scorm.moduleurl!);
+        const path = await AddonModScorm.getScormFolder(scorm.moduleurl ?? '');
 
         const promises: Promise<unknown>[] = [];
 
