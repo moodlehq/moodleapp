@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import type { AddonModAssignSubmissionPluginBaseComponent } from '@addons/mod/assign/classes/base-submission-plugin-component';
 import { AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin } from '@addons/mod/assign/services/assign';
 import { AddonModAssignSubmissionHandler } from '@addons/mod/assign/services/submission-delegate';
 import { Injectable, Type } from '@angular/core';
@@ -48,7 +49,7 @@ export class AddonModAssignSubmissionCommentsHandlerService implements AddonModA
      * @param edit Whether the user is editing.
      * @return The component (or promise resolved with component) to use, undefined if not found.
      */
-    getComponent(plugin: AddonModAssignPlugin, edit = false): Type<unknown> | undefined {
+    getComponent(plugin: AddonModAssignPlugin, edit = false): Type<AddonModAssignSubmissionPluginBaseComponent> | undefined {
         return edit ? undefined : AddonModAssignSubmissionCommentsComponent;
     }
 

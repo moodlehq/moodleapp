@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AddonModDataFieldPluginComponent } from '@addons/mod/data/classes/field-plugin-component';
+import { AddonModDataFieldPluginBaseComponent } from '@addons/mod/data/classes/base-field-plugin-component';
 import { AddonModDataEntryField } from '@addons/mod/data/services/data';
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
@@ -30,7 +30,7 @@ import { DomSanitizer } from '@singletons';
     selector: 'addon-mod-data-field-latlong',
     templateUrl: 'addon-mod-data-field-latlong.html',
 })
-export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginComponent {
+export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginBaseComponent {
 
     north?: number;
     east?: number;

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component } from '@angular/core';
-import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-component';
+import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-field-plugin-component';
 
 /**
  * Component to render data menu field.
@@ -22,7 +22,7 @@ import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-
     selector: 'addon-mod-data-field-menu',
     templateUrl: 'addon-mod-data-field-menu.html',
 })
-export class AddonModDataFieldMenuComponent extends AddonModDataFieldPluginComponent {
+export class AddonModDataFieldMenuComponent extends AddonModDataFieldPluginBaseComponent {
 
     options: string[] = [];
 

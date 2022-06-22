@@ -75,7 +75,7 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
     /**
      * @inheritdoc
      */
-    protected async invalidateContent(): Promise<void> {
+    async invalidateContent(): Promise<void> {
         const courseIds = this.courses.map((course) => course.id);
 
         await this.invalidateCourses(courseIds);

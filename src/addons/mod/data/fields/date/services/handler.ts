@@ -24,6 +24,7 @@ import { CoreFormFields } from '@singletons/form';
 import { CoreTimeUtils } from '@services/utils/time';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModDataFieldDateComponent } from '../component/date';
+import type { AddonModDataFieldPluginBaseComponent } from '@addons/mod/data/classes/base-field-plugin-component';
 
 /**
  * Handler for date data field plugin.
@@ -37,7 +38,7 @@ export class AddonModDataFieldDateHandlerService implements AddonModDataFieldHan
     /**
      * @inheritdoc
      */
-    getComponent(): Type<unknown>{
+    getComponent(): Type<AddonModDataFieldPluginBaseComponent> {
         return AddonModDataFieldDateComponent;
     }
 

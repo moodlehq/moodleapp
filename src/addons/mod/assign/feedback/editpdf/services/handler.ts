@@ -23,6 +23,7 @@ import { Injectable, Type } from '@angular/core';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModAssignFeedbackEditPdfComponent } from '../component/editpdf';
+import type { IAddonModAssignFeedbackPluginComponent } from '@addons/mod/assign/classes/base-feedback-plugin-component';
 
 /**
  * Handler for edit pdf feedback plugin.
@@ -39,7 +40,7 @@ export class AddonModAssignFeedbackEditPdfHandlerService implements AddonModAssi
      *
      * @return The component (or promise resolved with component) to use, undefined if not found.
      */
-    getComponent(): Type<unknown> {
+    getComponent(): Type<IAddonModAssignFeedbackPluginComponent> {
         return AddonModAssignFeedbackEditPdfComponent;
     }
 

@@ -41,7 +41,7 @@ import {
 } from '../../services/data';
 import { AddonModDataHelper } from '../../services/data-helper';
 import { CoreDom } from '@singletons/dom';
-import { AddonModDataEntryFieldInitialized } from '../../classes/field-plugin-component';
+import { AddonModDataEntryFieldInitialized } from '../../classes/base-field-plugin-component';
 
 /**
  * Page that displays the view edit page.

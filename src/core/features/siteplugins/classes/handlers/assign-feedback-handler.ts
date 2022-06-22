@@ -18,6 +18,7 @@ import { AddonModAssignDefaultFeedbackHandler } from '@addons/mod/assign/service
 import { AddonModAssignPlugin } from '@addons/mod/assign/services/assign';
 import { CoreSitePluginsAssignFeedbackComponent } from '@features/siteplugins/components/assign-feedback/assign-feedback';
 import { Translate } from '@singletons';
+import type{ IAddonModAssignFeedbackPluginComponent } from '@addons/mod/assign/classes/base-feedback-plugin-component';
 
 /**
  * Handler to display an assign feedback site plugin.
@@ -31,7 +32,7 @@ export class CoreSitePluginsAssignFeedbackHandler extends AddonModAssignDefaultF
     /**
      * @inheritdoc
      */
-    getComponent(): Type<unknown> | undefined {
+    getComponent(): Type<IAddonModAssignFeedbackPluginComponent> | undefined {
         return CoreSitePluginsAssignFeedbackComponent;
     }
 

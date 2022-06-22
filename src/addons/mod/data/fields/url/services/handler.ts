@@ -18,6 +18,7 @@ import { CoreFormFields } from '@singletons/form';
 import { Translate, makeSingleton } from '@singletons';
 import { AddonModDataFieldTextHandlerService } from '../../text/services/handler';
 import { AddonModDataFieldUrlComponent } from '../component/url';
+import type { AddonModDataFieldPluginBaseComponent } from '@addons/mod/data/classes/base-field-plugin-component';
 
 /**
  * Handler for url data field plugin.
@@ -31,7 +32,7 @@ export class AddonModDataFieldUrlHandlerService extends AddonModDataFieldTextHan
     /**
      * @inheritdoc
      */
-    getComponent(): Type<unknown>{
+    getComponent(): Type<AddonModDataFieldPluginBaseComponent> {
         return AddonModDataFieldUrlComponent;
     }
 

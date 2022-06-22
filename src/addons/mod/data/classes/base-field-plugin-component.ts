@@ -23,7 +23,7 @@ import { AddonModDataData, AddonModDataEntryField, AddonModDataField, AddonModDa
 @Component({
     template: '',
 })
-export abstract class AddonModDataFieldPluginComponent implements OnInit, OnChanges {
+export abstract class AddonModDataFieldPluginBaseComponent implements OnInit, OnChanges {
 
     @Input() mode!: AddonModDataTemplateMode; // The render mode.
     @Input() field!: AddonModDataField; // The field to render.
