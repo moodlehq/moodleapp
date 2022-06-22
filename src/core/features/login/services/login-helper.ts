@@ -1428,6 +1428,24 @@ export class CoreLoginHelperProvider {
         }
     }
 
+    /**
+     * Get reconnect page route module.
+     *
+     * @returns Reconnect page route module.
+     */
+    async getReconnectRouteModule(): Promise<unknown> {
+        return import('@features/login/pages/reconnect/reconnect.module').then(m => m.CoreLoginReconnectPageModule);
+    }
+
+    /**
+     * Get credentials page route module.
+     *
+     * @returns Credentials page route module.
+     */
+    async getCredentialsRouteModule(): Promise<unknown> {
+        return import('@features/login/pages/credentials/credentials.module').then(m => m.CoreLoginCredentialsPageModule);
+    }
+
 }
 
 export const CoreLoginHelper = makeSingleton(CoreLoginHelperProvider);
