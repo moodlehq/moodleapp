@@ -76,6 +76,16 @@ describe('CoreTextUtilsProvider', () => {
         expect(CoreApp.isAndroid).toHaveBeenCalled();
     });
 
+    it('doesn\'t build address if it\'s already a URL', () => {
+        const address = 'https://moodle.org';
+
+        const url = textUtils.buildAddressURL(address);
+
+        expect(url).toEqual(address);
+
+        expect(DomSanitizer.bypassSecurityTrustUrl).toHaveBeenCalled();
+    });
+
     it('matches glob patterns', () => {
         expect(textUtils.matchesGlob('/foo/bar', '/foo/bar')).toBe(true);
         expect(textUtils.matchesGlob('/foo/bar', '/foo/bar/')).toBe(false);
