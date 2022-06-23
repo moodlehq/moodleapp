@@ -59,6 +59,7 @@ import {
 } from '@services/database/sites';
 import { Observable, Subject } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
+import { firstValueFrom } from '../utils/observables';
 
 /**
  * QR Code type enumeration.
@@ -494,7 +495,7 @@ export class CoreSite {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     read<T = unknown>(method: string, data: any, preSets?: CoreSiteWSPreSets): Promise<T> {
-        return this.readObservable<T>(method, data, preSets).toPromise();
+        return firstValueFrom(this.readObservable<T>(method, data, preSets));
     }
 
     /**
@@ -525,7 +526,7 @@ export class CoreSite {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     write<T = unknown>(method: string, data: any, preSets?: CoreSiteWSPreSets): Promise<T> {
-        return this.writeObservable<T>(method, data, preSets).toPromise();
+        return firstValueFrom(this.writeObservable<T>(method, data, preSets));
     }
 
     /**
@@ -556,7 +557,7 @@ export class CoreSite {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async request<T = unknown>(method: string, data: any, preSets: CoreSiteWSPreSets): Promise<T> {
-        return this.requestObservable<T>(method, data, preSets).toPromise();
+        return firstValueFrom(this.requestObservable<T>(method, data, preSets));
     }
 
     /**
@@ -1640,7 +1641,7 @@ export class CoreSite {
 
         // Check for an ongoing identical request if we're not ignoring cache.
         if (cachePreSets.getFromCache && this.ongoingRequests[cacheId] !== undefined) {
-            return await this.ongoingRequests[cacheId].toPromise();
+            return await firstValueFrom(this.ongoingRequests[cacheId]);
         }
 
         const subject = new Subject<CoreSitePublicConfigResponse>();
@@ -1698,7 +1699,7 @@ export class CoreSite {
                 subject.error(error);
             });
 
-        return observable.toPromise();
+        return firstValueFrom(observable);
     }
 
     /**
