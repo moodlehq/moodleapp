@@ -2,7 +2,7 @@ name: Mirror
 
 on:
   push:
-    branches: [ master, integration ]
+    branches: [ master, main, unscheduled, integration, beta ]
 
 jobs:
   mirror:
