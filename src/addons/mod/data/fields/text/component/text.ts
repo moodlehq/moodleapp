@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component } from '@angular/core';
-import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-component';
+import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-field-plugin-component';
 
 /**
  * Component to render data text field.
@@ -22,7 +22,7 @@ import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-
     selector: 'addon-mod-data-field-text',
     templateUrl: 'addon-mod-data-field-text.html',
 })
-export class AddonModDataFieldTextComponent extends AddonModDataFieldPluginComponent {
+export class AddonModDataFieldTextComponent extends AddonModDataFieldPluginBaseComponent {
 
     /**
      * @inheritdoc

@@ -31,6 +31,7 @@ import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModAssignSubmissionFileComponent } from '../component/file';
 import { FileEntry } from '@ionic-native/file/ngx';
+import type { AddonModAssignSubmissionPluginBaseComponent } from '@addons/mod/assign/classes/base-submission-plugin-component';
 
 /**
  * Handler for file submission plugin.
@@ -110,7 +111,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
      *
      * @return The component (or promise resolved with component) to use, undefined if not found.
      */
-    getComponent(): Type<unknown> {
+    getComponent(): Type<AddonModAssignSubmissionPluginBaseComponent> {
         return AddonModAssignSubmissionFileComponent;
     }
 

@@ -21,6 +21,7 @@ import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { IonRefresher } from '@ionic/angular';
 import { CoreCourseModuleCompletionData, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreCourse } from '@features/course/services/course';
+import type { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 
 /**
  * Component to display single activity format. It will determine the right component to use and instantiate it.
@@ -41,7 +42,7 @@ export class CoreCourseFormatSingleActivityComponent implements OnChanges {
     @Input() moduleId?: number; // The module ID to scroll to. Must be inside the initial selected section.
     @Output() completionChanged = new EventEmitter<CoreCourseModuleCompletionData>(); // Notify when any module completion changes.
 
-    @ViewChild(CoreDynamicComponent) dynamicComponent?: CoreDynamicComponent;
+    @ViewChild(CoreDynamicComponent) dynamicComponent?: CoreDynamicComponent<CoreCourseModuleMainActivityComponent>;
 
     componentClass?: Type<unknown>; // The class of the component to render.
     data: Record<string | number, unknown> = {}; // Data to pass to the component.
@@ -85,7 +86,7 @@ export class CoreCourseFormatSingleActivityComponent implements OnChanges {
             return;
         }
 
-        await this.dynamicComponent?.callComponentFunction('doRefresh', [refresher, done]);
+        await this.dynamicComponent?.callComponentMethod('doRefresh', refresher);
 
         if (this.course) {
             const courseId = this.course.id;
@@ -97,14 +98,14 @@ export class CoreCourseFormatSingleActivityComponent implements OnChanges {
      * User entered the page that contains the component.
      */
     ionViewDidEnter(): void {
-        this.dynamicComponent?.callComponentFunction('ionViewDidEnter');
+        this.dynamicComponent?.callComponentMethod('ionViewDidEnter');
     }
 
     /**
      * User left the page that contains the component.
      */
     ionViewDidLeave(): void {
-        this.dynamicComponent?.callComponentFunction('ionViewDidLeave');
+        this.dynamicComponent?.callComponentMethod('ionViewDidLeave');
     }
 
 }

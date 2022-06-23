@@ -161,7 +161,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     /**
      * @inheritdoc
      */
-    protected async invalidateContent(): Promise<void> {
+    async invalidateContent(): Promise<void> {
         const courseIds = this.allCourses.map((course) => course.id);
 
         await this.invalidateCourses(courseIds);

@@ -13,7 +13,7 @@
 // limitations under the License.
 import { Component } from '@angular/core';
 import { AddonModDataEntryField, AddonModDataProvider } from '@addons/mod/data/services/data';
-import { AddonModDataFieldPluginComponent } from '@addons/mod/data/classes/field-plugin-component';
+import { AddonModDataFieldPluginBaseComponent } from '@addons/mod/data/classes/base-field-plugin-component';
 import { CoreFileSession } from '@services/file-session';
 import { CoreFileEntry } from '@services/file-helper';
 
@@ -24,7 +24,7 @@ import { CoreFileEntry } from '@services/file-helper';
     selector: 'addon-mod-data-field-file',
     templateUrl: 'addon-mod-data-field-file.html',
 })
-export class AddonModDataFieldFileComponent extends AddonModDataFieldPluginComponent {
+export class AddonModDataFieldFileComponent extends AddonModDataFieldPluginBaseComponent {
 
     files: CoreFileEntry[] = [];
     component?: string;

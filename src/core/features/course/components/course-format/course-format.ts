@@ -78,7 +78,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     @Input() initialSectionNumber?: number; // The section to load first (by number).
     @Input() moduleId?: number; // The module ID to scroll to. Must be inside the initial selected section.
 
-    @ViewChildren(CoreDynamicComponent) dynamicComponents?: QueryList<CoreDynamicComponent>;
+    @ViewChildren(CoreDynamicComponent) dynamicComponents?: QueryList<CoreDynamicComponent<any>>;
 
     // All the possible component classes.
     courseFormatComponent?: Type<unknown>;
@@ -567,7 +567,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      */
     async doRefresh(refresher?: IonRefresher, done?: () => void, afterCompletionChange?: boolean): Promise<void> {
         const promises = this.dynamicComponents?.map(async (component) => {
-            await component.callComponentFunction('doRefresh', [refresher, done, afterCompletionChange]);
+            await component.callComponentMethod('doRefresh', refresher, done, afterCompletionChange);
         }) || [];
 
         if (this.course) {
@@ -640,7 +640,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      */
     ionViewDidEnter(): void {
         this.dynamicComponents?.forEach((component) => {
-            component.callComponentFunction('ionViewDidEnter');
+            component.callComponentMethod('ionViewDidEnter');
         });
     }
 
@@ -649,7 +649,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      */
     ionViewDidLeave(): void {
         this.dynamicComponents?.forEach((component) => {
-            component.callComponentFunction('ionViewDidLeave');
+            component.callComponentMethod('ionViewDidLeave');
         });
     }
 

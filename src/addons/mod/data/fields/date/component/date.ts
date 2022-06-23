@@ -15,7 +15,7 @@
 import { Component } from '@angular/core';
 import { CoreTimeUtils } from '@services/utils/time';
 import { Translate } from '@singletons';
-import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-component';
+import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-field-plugin-component';
 
 /**
  * Component to render data date field.
@@ -24,7 +24,7 @@ import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-
     selector: 'addon-mod-data-field-date',
     templateUrl: 'addon-mod-data-field-date.html',
 })
-export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginComponent {
+export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginBaseComponent {
 
     format!: string;
     displayDate?: number;

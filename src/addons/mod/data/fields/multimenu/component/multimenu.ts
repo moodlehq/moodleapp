@@ -14,7 +14,7 @@
 
 import { AddonModDataEntryField } from '@addons/mod/data/services/data';
 import { Component } from '@angular/core';
-import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-component';
+import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-field-plugin-component';
 
 /**
  * Component to render data multimenu field.
@@ -23,7 +23,7 @@ import { AddonModDataFieldPluginComponent } from '../../../classes/field-plugin-
     selector: 'addon-mod-data-field-multimenu',
     templateUrl: 'addon-mod-data-field-multimenu.html',
 })
-export class AddonModDataFieldMultimenuComponent extends AddonModDataFieldPluginComponent {
+export class AddonModDataFieldMultimenuComponent extends AddonModDataFieldPluginBaseComponent {
 
     options: {
         key: string;

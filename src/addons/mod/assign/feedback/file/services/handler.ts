@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import type { IAddonModAssignFeedbackPluginComponent } from '@addons/mod/assign/classes/base-feedback-plugin-component';
 import {
     AddonModAssignPlugin,
     AddonModAssignAssign,
@@ -39,7 +40,7 @@ export class AddonModAssignFeedbackFileHandlerService implements AddonModAssignF
      *
      * @return The component (or promise resolved with component) to use, undefined if not found.
      */
-    getComponent(): Type<unknown> {
+    getComponent(): Type<IAddonModAssignFeedbackPluginComponent> {
         return AddonModAssignFeedbackFileComponent;
     }
 

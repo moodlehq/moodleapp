@@ -70,7 +70,7 @@ export class CoreSitePluginsBlockComponent extends CoreBlockBaseComponent implem
      *
      * @return Promise resolved when done.
      */
-    protected async invalidateContent(): Promise<void> {
+    async invalidateContent(): Promise<void> {
         if (!this.component || !this.method) {
             return;
         }

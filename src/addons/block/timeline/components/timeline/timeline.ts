@@ -101,7 +101,7 @@ export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implemen
      *
      * @return Resolved when done.
      */
-    protected invalidateContent(): Promise<void> {
+    invalidateContent(): Promise<void> {
         const promises: Promise<void>[] = [];
 
         promises.push(AddonBlockTimeline.invalidateActionEventsByTimesort());
