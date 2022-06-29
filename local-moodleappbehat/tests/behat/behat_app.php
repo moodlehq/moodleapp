@@ -126,14 +126,14 @@ class behat_app extends behat_app_helper {
         $containerName = json_encode($containerName);
 
         $this->spin(function() use ($not, $locator, $containerName) {
-            $result = $this->js("return window.behat.find($locator, $containerName);");
+            $result = $this->js("return window.behat.find($locator, { containerName: $containerName });");
 
             if ($not && $result === 'OK') {
-                throw new DriverException('Error, found an item that should not be found');
+                throw new DriverException('Error, found an element that should not be found');
             }
 
             if (!$not && $result !== 'OK') {
-                throw new DriverException('Error finding item - ' . $result);
+                throw new DriverException('Error finding element - ' . $result);
             }
 
             return true;
@@ -155,7 +155,7 @@ class behat_app extends behat_app_helper {
             $result = $this->js("return window.behat.scrollTo($locator);");
 
             if ($result !== 'OK') {
-                throw new DriverException('Error finding item - ' . $result);
+                throw new DriverException('Error finding element - ' . $result);
             }
 
             return true;
@@ -224,16 +224,16 @@ class behat_app extends behat_app_helper {
             switch ($result) {
                 case 'YES':
                     if ($not) {
-                        throw new ExpectationException("Item was selected and shouldn't have", $this->getSession()->getDriver());
+                        throw new ExpectationException("Element was selected and shouldn't have", $this->getSession()->getDriver());
                     }
                     break;
                 case 'NO':
                     if (!$not) {
-                        throw new ExpectationException("Item wasn't selected and should have", $this->getSession()->getDriver());
+                        throw new ExpectationException("Element wasn't selected and should have", $this->getSession()->getDriver());
                     }
                     break;
                 default:
-                    throw new DriverException('Error finding item - ' . $result);
+                    throw new DriverException('Error finding element - ' . $result);
             }
 
             return true;
@@ -536,7 +536,7 @@ class behat_app extends behat_app_helper {
      * Clicks on / touches something that is visible in the app.
      *
      * Note it is difficult to use the standard 'click on' or 'press' steps because those do not
-     * distinguish visible items and the app always has many non-visible items in the DOM.
+     * distinguish visible elements and the app always has many non-visible elements in the DOM.
      *
      * @When /^I press (".+") in the app$/
      * @param string $locator Element locator
@@ -579,6 +579,33 @@ class behat_app extends behat_app_helper {
     }
 
     /**
+     * Checks if elements can be pressed in the app.
+     *
+     * @Then /^I should( not)? be able to press (".+") in the app$/
+     * @param bool $not Whether to assert that the element cannot be pressed
+     * @param string $locator Element locator
+     */
+    public function i_should_be_able_to_press_in_the_app(bool $not, string $locator) {
+        $locator = $this->parse_element_locator($locator);
+
+        $this->spin(function() use ($not, $locator) {
+            $result = $this->js("return window.behat.find($locator, { onlyClickable: true });");
+
+            if ($not && $result === 'OK') {
+                throw new DriverException('Error, found a clickable element that should not be found');
+            }
+
+            if (!$not && $result !== 'OK') {
+                throw new DriverException('Error finding clickable element - ' . $result);
+            }
+
+            return true;
+        });
+
+        $this->wait_for_pending_js();
+    }
+
+    /**
      * Select an item from a list of options, such as a radio button.
      *
      * It may be necessary to use this step instead of "I press..." because radio buttons in Ionic are initialized
@@ -602,11 +629,11 @@ class behat_app extends behat_app_helper {
                 return true;
             }
 
-            // Press item.
+            // Press element.
             $result = $this->js("return await window.behat.press($locator);");
 
             if ($result !== 'OK') {
-                throw new DriverException('Error pressing item - ' . $result);
+                throw new DriverException('Error pressing element - ' . $result);
             }
 
             // Check that it worked as expected.

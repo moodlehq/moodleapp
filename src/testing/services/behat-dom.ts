@@ -79,9 +79,14 @@ export class TestingBehatDomUtils {
      *
      * @param container Parent element to search the element within
      * @param text Text to look for
+     * @param options Search options.
      * @return Elements containing the given text with exact boolean.
      */
-    protected static findElementsBasedOnTextWithinWithExact(container: HTMLElement, text: string): ElementsWithExact[] {
+    protected static findElementsBasedOnTextWithinWithExact(
+        container: HTMLElement,
+        text: string,
+        options: TestingBehatFindOptions,
+    ): ElementsWithExact[] {
         const attributesSelector = `[aria-label*="${text}"], a[title*="${text}"], img[alt*="${text}"], [placeholder*="${text}"]`;
 
         const elements = Array.from(container.querySelectorAll<HTMLElement>(attributesSelector))
@@ -97,16 +102,23 @@ export class TestingBehatDomUtils {
             NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_DOCUMENT_FRAGMENT | NodeFilter.SHOW_TEXT,  // eslint-disable-line no-bitwise
             {
                 acceptNode: node => {
-                    if (node instanceof HTMLStyleElement ||
+                    if (
+                        node instanceof HTMLStyleElement ||
                         node instanceof HTMLLinkElement ||
-                        node instanceof HTMLScriptElement) {
+                        node instanceof HTMLScriptElement
+                    ) {
                         return NodeFilter.FILTER_REJECT;
                     }
 
-                    if (node instanceof HTMLElement &&
-                        (node.getAttribute('aria-hidden') === 'true' ||
-                        node.getAttribute('aria-disabled') === 'true' ||
-                        getComputedStyle(node).display === 'none')) {
+                    if (!(node instanceof HTMLElement)) {
+                        return NodeFilter.FILTER_ACCEPT;
+                    }
+
+                    if (options.onlyClickable && (node.getAttribute('aria-disabled') === 'true' || node.hasAttribute('disabled'))) {
+                        return NodeFilter.FILTER_REJECT;
+                    }
+
+                    if (node.getAttribute('aria-hidden') === 'true' || getComputedStyle(node).display === 'none') {
                         return NodeFilter.FILTER_REJECT;
                     }
 
@@ -160,7 +172,7 @@ export class TestingBehatDomUtils {
                         continue;
                     }
 
-                    elements.push(...this.findElementsBasedOnTextWithinWithExact(childNode, text));
+                    elements.push(...this.findElementsBasedOnTextWithinWithExact(childNode, text, options));
                 }
             }
         }
@@ -187,10 +199,15 @@ export class TestingBehatDomUtils {
      *
      * @param container Parent element to search the element within.
      * @param text Text to look for.
+     * @param options Search options.
      * @return Elements containing the given text.
      */
-    protected static findElementsBasedOnTextWithin(container: HTMLElement, text: string): HTMLElement[] {
-        const elements = this.findElementsBasedOnTextWithinWithExact(container, text);
+    protected static findElementsBasedOnTextWithin(
+        container: HTMLElement,
+        text: string,
+        options: TestingBehatFindOptions,
+    ): HTMLElement[] {
+        const elements = this.findElementsBasedOnTextWithinWithExact(container, text, options);
 
         // Give more relevance to exact matches.
         elements.sort((a, b) => Number(b.exact) - Number(a.exact));
@@ -325,32 +342,33 @@ export class TestingBehatDomUtils {
      * Function to find element based on their text or Aria label.
      *
      * @param locator Element locator.
-     * @param containerName Whether to search only inside a specific container.
+     * @param options Search options.
      * @return First found element.
      */
-    static findElementBasedOnText(locator: TestingBehatElementLocator, containerName = ''): HTMLElement {
-        return this.findElementsBasedOnText(locator, containerName, true)[0];
+    static findElementBasedOnText(
+        locator: TestingBehatElementLocator,
+        options: TestingBehatFindOptions,
+    ): HTMLElement {
+        return this.findElementsBasedOnText(locator, options)[0];
     }
 
     /**
      * Function to find elements based on their text or Aria label.
      *
      * @param locator Element locator.
-     * @param containerName Whether to search only inside a specific container.
-     * @param stopWhenFound Stop looking in containers once an element is found.
+     * @param options Search options.
      * @return Found elements
      */
     protected static findElementsBasedOnText(
         locator: TestingBehatElementLocator,
-        containerName = '',
-        stopWhenFound = false,
+        options: TestingBehatFindOptions,
     ): HTMLElement[] {
-        const topContainers = this.getCurrentTopContainerElements(containerName);
+        const topContainers = this.getCurrentTopContainerElements(options.containerName);
         let elements: HTMLElement[] = [];
 
         for (let i = 0; i < topContainers.length; i++) {
-            elements = elements.concat(this.findElementsBasedOnTextInContainer(locator, topContainers[i]));
-            if (stopWhenFound && elements.length) {
+            elements = elements.concat(this.findElementsBasedOnTextInContainer(locator, topContainers[i], options));
+            if (elements.length) {
                 break;
             }
         }
@@ -363,16 +381,18 @@ export class TestingBehatDomUtils {
      *
      * @param locator Element locator.
      * @param topContainer Container to search in.
+     * @param options Search options.
      * @return Found elements
      */
     protected static findElementsBasedOnTextInContainer(
         locator: TestingBehatElementLocator,
         topContainer: HTMLElement,
+        options: TestingBehatFindOptions,
     ): HTMLElement[] {
         let container: HTMLElement | null = topContainer;
 
         if (locator.within) {
-            const withinElements = this.findElementsBasedOnTextInContainer(locator.within, topContainer);
+            const withinElements = this.findElementsBasedOnTextInContainer(locator.within, topContainer, options);
 
             if (withinElements.length === 0) {
                 throw new Error('There was no match for within text');
@@ -390,7 +410,10 @@ export class TestingBehatDomUtils {
         }
 
         if (topContainer && locator.near) {
-            const nearElements = this.findElementsBasedOnTextInContainer(locator.near, topContainer);
+            const nearElements = this.findElementsBasedOnTextInContainer(locator.near, topContainer, {
+                ...options,
+                onlyClickable: false,
+            });
 
             if (nearElements.length === 0) {
                 throw new Error('There was no match for near text');
@@ -412,7 +435,7 @@ export class TestingBehatDomUtils {
                 break;
             }
 
-            const elements = this.findElementsBasedOnTextWithin(container, locator.text);
+            const elements = this.findElementsBasedOnTextWithin(container, locator.text, options);
 
             let filteredElements: HTMLElement[] = elements;
 

@@ -45,8 +45,9 @@ Feature: Users can manage entries in database activities
 
   Scenario: Browse entry
     Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app
+
     # TODO Create and use a generator for database entries.
-    And I press "Add entries" in the app
+    When I press "Add entries" in the app
     And I set the following fields to these values in the app:
       | URL | https://moodle.org/ |
       | Description | Moodle community site |
@@ -59,16 +60,19 @@ Feature: Users can manage entries in database activities
     And I press "Save" near "Web links" in the app
     And I press "More" near "Moodle community site" in the app
     Then I should find "Moodle community site" in the app
-    And I should not find "Next" in the app
-    And I should find "Previous" in the app
-    And I press "Previous" in the app
-    And I should find "Moodle Cloud" in the app
-    And I should find "Next" in the app
-    And I should not find "Previous" in the app
-    And I press "Next" in the app
-    And I should find "Moodle community site" in the app
-    And I should not find "Moodle Cloud" in the app
-    And I press the back button in the app
+    And I should be able to press "Previous" in the app
+    But I should not be able to press "Next" in the app
+
+    When I press "Previous" in the app
+    Then I should find "Moodle Cloud" in the app
+    And I should be able to press "Next" in the app
+    But I should not be able to press "Previous" in the app
+
+    When I press "Next" in the app
+    Then I should find "Moodle community site" in the app
+    But I should not find "Moodle Cloud" in the app
+
+    When I press the back button in the app
     And I should find "Moodle community site" in the app
     And I should find "Moodle Cloud" in the app
 

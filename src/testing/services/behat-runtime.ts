@@ -153,23 +153,27 @@ export class TestingBehatRuntime {
 
         // Find button
         let foundButton: HTMLElement | undefined;
+        const options: TestingBehatFindOptions = {
+            onlyClickable: true,
+            containerName: '',
+        };
 
         switch (button) {
             case 'back':
-                foundButton = TestingBehatDomUtils.findElementBasedOnText({ text: 'Back' });
+                foundButton = TestingBehatDomUtils.findElementBasedOnText({ text: 'Back' }, options);
                 break;
             case 'main menu': // Deprecated name.
             case 'more menu':
                 foundButton = TestingBehatDomUtils.findElementBasedOnText({
                     text: 'More',
                     selector: 'ion-tab-button',
-                });
+                }, options);
                 break;
             case 'user menu' :
-                foundButton = TestingBehatDomUtils.findElementBasedOnText({ text: 'User account' });
+                foundButton = TestingBehatDomUtils.findElementBasedOnText({ text: 'User account' }, options);
                 break;
             case 'page menu':
-                foundButton = TestingBehatDomUtils.findElementBasedOnText({ text: 'Display options' });
+                foundButton = TestingBehatDomUtils.findElementBasedOnText({ text: 'Display options' }, options);
                 break;
             default:
                 return 'ERROR: Unsupported standard button type';
@@ -215,20 +219,24 @@ export class TestingBehatRuntime {
      * Function to find an arbitrary element based on its text or aria label.
      *
      * @param locator Element locator.
-     * @param containerName Whether to search only inside a specific container content.
+     * @param options Search options.
      * @return OK if successful, or ERROR: followed by message
      */
-    static find(locator: TestingBehatElementLocator, containerName: string): string {
-        this.log('Action - Find', { locator, containerName });
+    static find(locator: TestingBehatElementLocator, options: Partial<TestingBehatFindOptions> = {}): string {
+        this.log('Action - Find', { locator, ...options });
 
         try {
-            const element = TestingBehatDomUtils.findElementBasedOnText(locator, containerName);
+            const element = TestingBehatDomUtils.findElementBasedOnText(locator, {
+                onlyClickable: false,
+                containerName: '',
+                ...options,
+            });
 
             if (!element) {
                 return 'ERROR: No element matches locator to find.';
             }
 
-            this.log('Action - Found', { locator, containerName, element });
+            this.log('Action - Found', { locator, element, ...options });
 
             return 'OK';
         } catch (error) {
@@ -246,7 +254,7 @@ export class TestingBehatRuntime {
         this.log('Action - scrollTo', { locator });
 
         try {
-            let element = TestingBehatDomUtils.findElementBasedOnText(locator);
+            let element = TestingBehatDomUtils.findElementBasedOnText(locator, { onlyClickable: false, containerName: '' });
 
             if (!element) {
                 return 'ERROR: No element matches element to scroll to.';
@@ -320,7 +328,7 @@ export class TestingBehatRuntime {
         this.log('Action - Is Selected', locator);
 
         try {
-            const element = TestingBehatDomUtils.findElementBasedOnText(locator);
+            const element = TestingBehatDomUtils.findElementBasedOnText(locator, { onlyClickable: false, containerName: '' });
 
             return TestingBehatDomUtils.isElementSelected(element, document.body) ? 'YES' : 'NO';
         } catch (error) {
@@ -338,7 +346,7 @@ export class TestingBehatRuntime {
         this.log('Action - Press', locator);
 
         try {
-            const found = TestingBehatDomUtils.findElementBasedOnText(locator);
+            const found = TestingBehatDomUtils.findElementBasedOnText(locator, { onlyClickable: true, containerName: '' });
 
             if (!found) {
                 return 'ERROR: No element matches locator to press.';
@@ -421,6 +429,7 @@ export class TestingBehatRuntime {
 
         const found: HTMLElement | HTMLInputElement = TestingBehatDomUtils.findElementBasedOnText(
             { text: field, selector: 'input, textarea, [contenteditable="true"], ion-select' },
+            { onlyClickable: false, containerName: '' },
         );
 
         if (!found) {
@@ -476,6 +485,11 @@ export type BehatTestsWindow = Window & {
     };
     behatInit?: () => void;
     behat?: unknown;
+};
+
+export type TestingBehatFindOptions = {
+    containerName: string;
+    onlyClickable: boolean;
 };
 
 export type TestingBehatElementLocator = {
