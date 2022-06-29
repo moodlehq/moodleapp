@@ -72,7 +72,7 @@ export class TestingBehatRuntime {
         if (options.configOverrides) {
             // Set the cookie so it's maintained between reloads.
             document.cookie = 'MoodleAppConfig=' + JSON.stringify(options.configOverrides);
-            CoreConfig.patchEnvironment(options.configOverrides);
+            CoreConfig.patchEnvironment(options.configOverrides, { patchDefault: true });
         }
     }
 
