@@ -1,4 +1,4 @@
-name: Behat tests
+name: Acceptance tests (Behat)
 
 on:
   workflow_dispatch:
@@ -15,6 +15,10 @@ on:
         description: 'Moodle repository'
         required: true
         default: 'https://github.com/moodle/moodle'
+  pull_request:
+    branches:
+     - integration
+     - unscheduled
 
 jobs:
   behat:
@@ -23,6 +27,9 @@ jobs:
       MOODLE_DOCKER_DB: pgsql
       MOODLE_DOCKER_BROWSER: chrome
       MOODLE_DOCKER_PHP_VERSION: 7.3
+      MOODLE_BRANCH: ${{ github.event.inputs.moodle_branch || 'master' }}
+      MOODLE_REPOSITORY: ${{ github.event.inputs.moodle_repository || 'https://github.com/moodle/moodle' }}
+      BEHAT_TAGS: ${{ github.event.inputs.tags || '~@performance' }}
     steps:
     - uses: actions/checkout@v2
     - id: nvmrc
@@ -32,7 +39,7 @@ jobs:
         node-version: '${{ steps.nvmrc.outputs.node_version }}'
     - name: Additional checkouts
       run: |
-        git clone --branch ${{ github.event.inputs.moodle_branch }} --depth 1 ${{ github.event.inputs.moodle_repository }} $GITHUB_WORKSPACE/moodle
+        git clone --branch $MOODLE_BRANCH --depth 1 $MOODLE_REPOSITORY $GITHUB_WORKSPACE/moodle
         git clone --branch master --depth 1 https://github.com/moodlehq/moodle-docker $GITHUB_WORKSPACE/moodle-docker
     - name: Install npm packages
       run: npm ci --no-audit
@@ -60,4 +67,4 @@ jobs:
     - name: Run Behat tests
       run: |
         export MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle
-        $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose exec -T webserver sh -c "php admin/tool/behat/cli/run.php --verbose --tags='@app&&${{ github.event.inputs.tags }}' --auto-rerun"
+        $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose exec -T webserver sh -c "php admin/tool/behat/cli/run.php --verbose --tags='@app&&$BEHAT_TAGS' --auto-rerun"
