@@ -15,7 +15,7 @@
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreUtils } from '@services/utils/utils';
 import { NgZone } from '@singletons';
-import { TestBehatElementLocator } from './behat-runtime';
+import { TestingBehatElementLocator, TestingBehatFindOptions } from './behat-runtime';
 
 // Containers that block containers behind them.
 const blockingContainers = ['ION-ALERT', 'ION-POPOVER', 'ION-ACTION-SHEET', 'CORE-USER-TOURS-USER-TOUR', 'ION-PAGE'];
@@ -23,7 +23,7 @@ const blockingContainers = ['ION-ALERT', 'ION-POPOVER', 'ION-ACTION-SHEET', 'COR
 /**
  * Behat Dom Utils helper functions.
  */
-export class TestsBehatDomUtils {
+export class TestingBehatDomUtils {
 
     /**
      * Check if an element is visible.
@@ -328,7 +328,7 @@ export class TestsBehatDomUtils {
      * @param containerName Whether to search only inside a specific container.
      * @return First found element.
      */
-    static findElementBasedOnText(locator: TestBehatElementLocator, containerName = ''): HTMLElement {
+    static findElementBasedOnText(locator: TestingBehatElementLocator, containerName = ''): HTMLElement {
         return this.findElementsBasedOnText(locator, containerName, true)[0];
     }
 
@@ -341,7 +341,7 @@ export class TestsBehatDomUtils {
      * @return Found elements
      */
     protected static findElementsBasedOnText(
-        locator: TestBehatElementLocator,
+        locator: TestingBehatElementLocator,
         containerName = '',
         stopWhenFound = false,
     ): HTMLElement[] {
@@ -366,7 +366,7 @@ export class TestsBehatDomUtils {
      * @return Found elements
      */
     protected static findElementsBasedOnTextInContainer(
-        locator: TestBehatElementLocator,
+        locator: TestingBehatElementLocator,
         topContainer: HTMLElement,
     ): HTMLElement[] {
         let container: HTMLElement | null = topContainer;
