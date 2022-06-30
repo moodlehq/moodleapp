@@ -96,9 +96,8 @@ class behat_app extends behat_app_helper {
     public function i_wait_the_app_to_restart() {
         // Wait window to reload.
         $this->spin(function() {
-            $result = $this->js("return !window.behat;");
-
-            if (!$result) {
+            if ($this->js('window.behat.hasInitialized()')) {
+                // Behat runtime shouldn't be initialized after reload.
                 throw new DriverException('Window is not reloading properly.');
             }
 
