@@ -55,9 +55,9 @@ jobs:
         $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose pull
         $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose up -d
         $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-wait-for-db
-    - name: Compile & launch production app with Docker
+    - name: Compile & launch app with Docker
       run: |
-        docker build -t moodlehq/moodleapp:behat .
+        docker build --build-arg build_command="npm run build:test" -t moodlehq/moodleapp:behat .
         docker run -d --rm --name moodleapp moodlehq/moodleapp:behat
         docker network connect moodle-docker_default moodleapp --alias moodleapp
     - name: Init Behat
