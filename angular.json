@@ -46,6 +46,12 @@
           },
           "configurations": {
             "production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/testing/testing.module.ts",
+                  "with": "src/testing/testing.module.prod.ts"
+                }
+              ],
               "optimization": {
                 "scripts": false,
                 "styles": true

@@ -18,8 +18,7 @@ import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { CoreLoginHelperProvider } from '@features/login/services/login-helper';
 import { CoreConfig } from '@services/config';
 import { EnvironmentConfig } from '@/types/config';
-import { NgZone } from '@singletons';
-import { CoreNetwork } from '@services/network';
+import { makeSingleton, NgZone } from '@singletons';
 import {
     CorePushNotifications,
     CorePushNotificationsNotificationBasicData,
@@ -28,44 +27,35 @@ import { CoreCronDelegate } from '@services/cron';
 import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreDom } from '@singletons/dom';
+import { Injectable } from '@angular/core';
+import { CoreNetwork, CoreNetworkService } from '@services/network';
 
 /**
  * Behat runtime servive with public API.
  */
-export class TestingBehatRuntime {
+@Injectable({ providedIn: 'root' })
+export class TestingBehatRuntimeService {
+
+    protected initialized = false;
+
+    get network(): CoreNetworkService {
+        return CoreNetwork.instance;
+    }
 
     /**
      * Init behat functions and set options like skipping onboarding.
      *
      * @param options Options to set on the app.
      */
-    static init(options?: TestingBehatInitOptions): void {
-        TestingBehatBlocking.init();
-
-        (window as BehatTestsWindow).behat = {
-            closePopup: TestingBehatRuntime.closePopup,
-            find: TestingBehatRuntime.find,
-            getAngularInstance: TestingBehatRuntime.getAngularInstance,
-            getHeader: TestingBehatRuntime.getHeader,
-            isSelected: TestingBehatRuntime.isSelected,
-            loadMoreItems: TestingBehatRuntime.loadMoreItems,
-            log: TestingBehatRuntime.log,
-            press: TestingBehatRuntime.press,
-            pressStandard: TestingBehatRuntime.pressStandard,
-            scrollTo: TestingBehatRuntime.scrollTo,
-            setField: TestingBehatRuntime.setField,
-            handleCustomURL: TestingBehatRuntime.handleCustomURL,
-            notificationClicked: TestingBehatRuntime.notificationClicked,
-            forceSyncExecution: TestingBehatRuntime.forceSyncExecution,
-            waitLoadingToFinish: TestingBehatRuntime.waitLoadingToFinish,
-            network: CoreNetwork.instance,
-        };
-
-        if (!options) {
+    init(options: TestingBehatInitOptions = {}): void {
+        if (this.initialized) {
             return;
         }
 
-        if (options.skipOnBoarding === true) {
+        this.initialized = true;
+        TestingBehatBlocking.init();
+
+        if (options.skipOnBoarding) {
             CoreConfig.set(CoreLoginHelperProvider.ONBOARDING_DONE, 1);
         }
 
@@ -77,12 +67,21 @@ export class TestingBehatRuntime {
     }
 
     /**
+     * Check whether the service has been initialized or not.
+     *
+     * @returns Whether the service has been initialized or not.
+     */
+    hasInitialized(): boolean {
+        return this.initialized;
+    }
+
+    /**
      * Handles a custom URL.
      *
      * @param url Url to open.
      * @return OK if successful, or ERROR: followed by message.
      */
-    static async handleCustomURL(url: string): Promise<string> {
+    async handleCustomURL(url: string): Promise<string> {
         try {
             await NgZone.run(async () => {
                 await CoreCustomURLSchemes.handleCustomURL(url);
@@ -100,7 +99,7 @@ export class TestingBehatRuntime {
      * @param data Notification data.
      * @return Promise resolved when done.
      */
-    static async notificationClicked(data: CorePushNotificationsNotificationBasicData): Promise<void> {
+    async notificationClicked(data: CorePushNotificationsNotificationBasicData): Promise<void> {
         const blockKey = TestingBehatBlocking.block();
 
         try {
@@ -118,7 +117,7 @@ export class TestingBehatRuntime {
      *
      * @return Promise resolved if all handlers are executed successfully, rejected otherwise.
      */
-    static async forceSyncExecution(): Promise<void> {
+    async forceSyncExecution(): Promise<void> {
         await NgZone.run(async () => {
             await CoreCronDelegate.forceSyncExecution();
         });
@@ -129,7 +128,7 @@ export class TestingBehatRuntime {
      *
      * @return Promise resolved when all components have been rendered.
      */
-    static async waitLoadingToFinish(): Promise<void> {
+    async waitLoadingToFinish(): Promise<void> {
         await NgZone.run(async () => {
             const elements = Array.from(document.body.querySelectorAll<HTMLElement>('core-loading'))
                 .filter((element) => CoreDom.isElementVisible(element));
@@ -145,7 +144,7 @@ export class TestingBehatRuntime {
      * @param button Type of button to press.
      * @return OK if successful, or ERROR: followed by message.
      */
-    static async pressStandard(button: string): Promise<string> {
+    async pressStandard(button: string): Promise<string> {
         this.log('Action - Click standard button: ' + button);
 
         // Find button
@@ -191,7 +190,7 @@ export class TestingBehatRuntime {
      *
      * @return OK if successful, or ERROR: followed by message
      */
-    static closePopup(): string {
+    closePopup(): string {
         this.log('Action - Close popup');
 
         let backdrops = Array.from(document.querySelectorAll('ion-backdrop'));
@@ -219,7 +218,7 @@ export class TestingBehatRuntime {
      * @param options Search options.
      * @return OK if successful, or ERROR: followed by message
      */
-    static find(locator: TestingBehatElementLocator, options: Partial<TestingBehatFindOptions> = {}): string {
+    find(locator: TestingBehatElementLocator, options: Partial<TestingBehatFindOptions> = {}): string {
         this.log('Action - Find', { locator, ...options });
 
         try {
@@ -247,7 +246,7 @@ export class TestingBehatRuntime {
      * @param locator Element locator.
      * @return OK if successful, or ERROR: followed by message
      */
-    static scrollTo(locator: TestingBehatElementLocator): string {
+    scrollTo(locator: TestingBehatElementLocator): string {
         this.log('Action - scrollTo', { locator });
 
         try {
@@ -274,7 +273,7 @@ export class TestingBehatRuntime {
      *
      * @return OK if successful, or ERROR: followed by message
      */
-    static async loadMoreItems(): Promise<string> {
+    async loadMoreItems(): Promise<string> {
         this.log('Action - loadMoreItems');
 
         try {
@@ -321,7 +320,7 @@ export class TestingBehatRuntime {
      * @param locator Element locator.
      * @return YES or NO if successful, or ERROR: followed by message
      */
-    static isSelected(locator: TestingBehatElementLocator): string {
+    isSelected(locator: TestingBehatElementLocator): string {
         this.log('Action - Is Selected', locator);
 
         try {
@@ -339,7 +338,7 @@ export class TestingBehatRuntime {
      * @param locator Element locator.
      * @return OK if successful, or ERROR: followed by message
      */
-    static async press(locator: TestingBehatElementLocator): Promise<string> {
+    async press(locator: TestingBehatElementLocator): Promise<string> {
         this.log('Action - Press', locator);
 
         try {
@@ -362,7 +361,7 @@ export class TestingBehatRuntime {
      *
      * @return OK: followed by header text if successful, or ERROR: followed by message.
      */
-    static getHeader(): string {
+    getHeader(): string {
         this.log('Action - Get header');
 
         let titles = Array.from(document.querySelectorAll<HTMLElement>('.ion-page:not(.ion-page-hidden) > ion-header h1'));
@@ -388,7 +387,7 @@ export class TestingBehatRuntime {
      * @param value New value
      * @return OK or ERROR: followed by message
      */
-    static async setField(field: string, value: string): Promise<string> {
+    async setField(field: string, value: string): Promise<string> {
         this.log('Action - Set field ' + field + ' to: ' + value);
 
         const found: HTMLElement | HTMLInputElement = TestingBehatDomUtils.findElementBasedOnText(
@@ -412,7 +411,7 @@ export class TestingBehatRuntime {
      * @param className Constructor class name
      * @return Component instance
      */
-    static getAngularInstance(selector: string, className: string): unknown {
+    getAngularInstance(selector: string, className: string): unknown {
         this.log('Action - Get Angular instance ' + selector + ', ' + className);
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -429,7 +428,7 @@ export class TestingBehatRuntime {
      * Logs information from this Behat runtime JavaScript, including the time and the 'BEHAT'
      * keyword so we can easily filter for it if needed.
      */
-    static log(...args: unknown[]): void {
+    log(...args: unknown[]): void {
         const now = new Date();
         const nowFormatted = String(now.getHours()).padStart(2, '0') + ':' +
                 String(now.getMinutes()).padStart(2, '0') + ':' +
@@ -441,14 +440,14 @@ export class TestingBehatRuntime {
 
 }
 
+export const TestingBehatRuntime = makeSingleton(TestingBehatRuntimeService);
+
 export type BehatTestsWindow = Window & {
     M?: { // eslint-disable-line @typescript-eslint/naming-convention
         util?: {
             pending_js?: string[]; // eslint-disable-line @typescript-eslint/naming-convention
         };
     };
-    behatInit?: () => void;
-    behat?: unknown;
 };
 
 export type TestingBehatFindOptions = {
