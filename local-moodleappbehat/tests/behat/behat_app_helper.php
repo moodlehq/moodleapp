@@ -313,12 +313,12 @@ class behat_app_helper extends behat_base {
 
         try {
             // Init Behat JavaScript runtime.
+            $initoptions = json_encode([
+                'skipOnBoarding' => $options['skiponboarding'] ?? true,
+                'configOverrides' => $this->appconfig,
+            ]);
 
-            $initOptions = new StdClass();
-            $initOptions->skipOnBoarding = $options['skiponboarding'] ?? true;
-            $initOptions->configOverrides = $this->appconfig;
-
-            $this->js('window.behat.init(' . json_encode($initOptions) . ');');
+            $this->runtime_js("init($initoptions)");
         } catch (Exception $error) {
             throw new DriverException('Moodle App not running or not running on Automated mode.');
         }
@@ -456,7 +456,7 @@ class behat_app_helper extends behat_base {
 
         $res = $this->evaluate_script("Promise.resolve($script)
             .then(result => window.$promisevariable = result)
-            .catch(error => window.$promisevariable = 'Async code rejected: ' + error?.message);");
+            .catch(error => window.$promisevariable = 'Async code rejected: ' + error?.message)");
 
         do {
             if (microtime(true) - $start > $timeout) {
@@ -465,13 +465,40 @@ class behat_app_helper extends behat_base {
 
             // 0.1 seconds.
             usleep(100000);
-        } while (!$this->evaluate_script("return '$promisevariable' in window;"));
+        } while (!$this->evaluate_script("'$promisevariable' in window"));
 
-        $result = $this->evaluate_script("return window.$promisevariable;");
+        $result = $this->evaluate_script("window.$promisevariable");
 
-        $this->evaluate_script("delete window.$promisevariable;");
+        $this->evaluate_script("delete window.$promisevariable");
+
+        if (is_string($result) && strrpos($result, 'Async code rejected:') === 0) {
+            throw new DriverException($result);
+        }
 
         return $result;
+    }
+
+    /**
+     * Evaluate and execute methods from the Behat runtime.
+     *
+     * @param string $script
+     * @return mixed Result.
+     */
+    protected function runtime_js(string $script) {
+        return $this->js("window.behat.$script");
+    }
+
+    /**
+     * Evaluate and execute methods from the Behat runtime inside the Angular zone.
+     *
+     * @param string $script
+     * @param bool $blocking
+     * @return mixed Result.
+     */
+    protected function zone_js(string $script, bool $blocking = false) {
+        $blockingjson = json_encode($blocking);
+
+        return $this->runtime_js("runInZone(() => window.behat.$script, $blockingjson)");
     }
 
     /**
@@ -548,8 +575,7 @@ class behat_app_helper extends behat_base {
      * @param string $successXPath The XPath of the element to lookat after navigation.
      */
     protected function handle_url(string $customurl, string $successXPath = '') {
-        // Instead of using evaluate_async_script, we wait for the path to load.
-        $result = $this->js("return await window.behat.handleCustomURL('$customurl');");
+        $result = $this->zone_js("customUrlSchemes.handleCustomURL('$customurl')");
 
         if ($result !== 'OK') {
             throw new DriverException('Error handling url - ' . $result);
