@@ -318,7 +318,7 @@ class behat_app_helper extends behat_base {
             $initOptions->skipOnBoarding = $options['skiponboarding'] ?? true;
             $initOptions->configOverrides = $this->appconfig;
 
-            $this->js('window.behatInit(' . json_encode($initOptions) . ');');
+            $this->js('window.behat.init(' . json_encode($initOptions) . ');');
         } catch (Exception $error) {
             throw new DriverException('Moodle App not running or not running on Automated mode.');
         }
