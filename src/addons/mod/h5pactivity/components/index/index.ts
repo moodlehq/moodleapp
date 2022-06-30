@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Optional, OnInit, OnDestroy } from '@angular/core';
+import { Component, Optional, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 
 import { CoreConstants } from '@/core/constants';
@@ -54,6 +54,8 @@ import { AddonModH5PActivityModuleHandlerService } from '../../services/handlers
     templateUrl: 'addon-mod-h5pactivity-index.html',
 })
 export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
+
+    @Output() onActivityFinish = new EventEmitter<boolean>();
 
     component = AddonModH5PActivityProvider.COMPONENT;
     moduleName = 'h5pactivity';
@@ -464,6 +466,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
                 // Check if the H5P has ended. Final statements don't include a subContentId.
                 const hasEnded = data.statements.some(statement => !statement.object.id.includes('subContentId='));
                 if (hasEnded) {
+                    this.onActivityFinish.emit(hasEnded);
                     this.checkCompletion();
                 }
             }
