@@ -14,16 +14,13 @@
 
 import { TestingBehatDomUtils } from './behat-dom';
 import { TestingBehatBlocking } from './behat-blocking';
-import { CoreCustomURLSchemes } from '@services/urlschemes';
+import { CoreCustomURLSchemes, CoreCustomURLSchemesProvider } from '@services/urlschemes';
 import { CoreLoginHelperProvider } from '@features/login/services/login-helper';
 import { CoreConfig } from '@services/config';
 import { EnvironmentConfig } from '@/types/config';
 import { makeSingleton, NgZone } from '@singletons';
-import {
-    CorePushNotifications,
-    CorePushNotificationsNotificationBasicData,
-} from '@features/pushnotifications/services/pushnotifications';
-import { CoreCronDelegate } from '@services/cron';
+import { CorePushNotifications, CorePushNotificationsProvider } from '@features/pushnotifications/services/pushnotifications';
+import { CoreCronDelegate, CoreCronDelegateService } from '@services/cron';
 import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreDom } from '@singletons/dom';
@@ -38,8 +35,20 @@ export class TestingBehatRuntimeService {
 
     protected initialized = false;
 
+    get cronDelegate(): CoreCronDelegateService {
+        return CoreCronDelegate.instance;
+    }
+
+    get customUrlSchemes(): CoreCustomURLSchemesProvider {
+        return CoreCustomURLSchemes.instance;
+    }
+
     get network(): CoreNetworkService {
         return CoreNetwork.instance;
+    }
+
+    get pushNotifications(): CorePushNotificationsProvider {
+        return CorePushNotifications.instance;
     }
 
     /**
@@ -76,51 +85,23 @@ export class TestingBehatRuntimeService {
     }
 
     /**
-     * Handles a custom URL.
+     * Run an operation inside the angular zone and return result.
      *
-     * @param url Url to open.
+     * @param operation Operation callback.
      * @return OK if successful, or ERROR: followed by message.
      */
-    async handleCustomURL(url: string): Promise<string> {
+    async runInZone(operation: () => unknown, blocking: boolean = false): Promise<string> {
+        const blockKey = blocking && TestingBehatBlocking.block();
+
         try {
-            await NgZone.run(async () => {
-                await CoreCustomURLSchemes.handleCustomURL(url);
-            });
+            await NgZone.run(operation);
 
             return 'OK';
         } catch (error) {
             return 'ERROR: ' + error.message;
-        }
-    }
-
-    /**
-     * Function called when a push notification is clicked. Redirect the user to the right state.
-     *
-     * @param data Notification data.
-     * @return Promise resolved when done.
-     */
-    async notificationClicked(data: CorePushNotificationsNotificationBasicData): Promise<void> {
-        const blockKey = TestingBehatBlocking.block();
-
-        try {
-            await NgZone.run(async () => {
-                await CorePushNotifications.notificationClicked(data);
-            });
         } finally {
-            TestingBehatBlocking.unblock(blockKey);
+            blockKey && TestingBehatBlocking.unblock(blockKey);
         }
-    }
-
-    /**
-     * Force execution of synchronization cron tasks without waiting for the scheduled time.
-     * Please notice that some tasks may not be executed depending on the network connection and sync settings.
-     *
-     * @return Promise resolved if all handlers are executed successfully, rejected otherwise.
-     */
-    async forceSyncExecution(): Promise<void> {
-        await NgZone.run(async () => {
-            await CoreCronDelegate.forceSyncExecution();
-        });
     }
 
     /**

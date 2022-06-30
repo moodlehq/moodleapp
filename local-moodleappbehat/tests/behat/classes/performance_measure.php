@@ -178,7 +178,7 @@ class performance_measure implements behat_app_listener {
      * @return int Current time in milliseconds.
      */
     private function now(): int {
-        return $this->driver->evaluateScript('Date.now();');
+        return $this->driver->evaluateScript('Date.now()');
     }
 
     /**
