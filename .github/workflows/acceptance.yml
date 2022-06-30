@@ -23,48 +23,48 @@ on:
 jobs:
   behat:
     runs-on: ubuntu-latest
-    env:
-      MOODLE_DOCKER_DB: pgsql
-      MOODLE_DOCKER_BROWSER: chrome
-      MOODLE_DOCKER_PHP_VERSION: 7.3
-      MOODLE_BRANCH: ${{ github.event.inputs.moodle_branch || 'master' }}
-      MOODLE_REPOSITORY: ${{ github.event.inputs.moodle_repository || 'https://github.com/moodle/moodle' }}
-      BEHAT_TAGS: ${{ github.event.inputs.tags || '~@performance' }}
+    services:
+      postgres:
+        image: postgres:10
+        env:
+          POSTGRES_USER: 'postgres'
+          POSTGRES_HOST_AUTH_METHOD: 'trust'
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 3
     steps:
-    - uses: actions/checkout@v2
-    - id: nvmrc
-      uses: browniebroke/read-nvmrc-action@v1
-    - uses: actions/setup-node@v1
+    - name: Check out repository code
+      uses: actions/checkout@v2
       with:
-        node-version: '${{ steps.nvmrc.outputs.node_version }}'
-    - name: Additional checkouts
-      run: |
-        git clone --branch $MOODLE_BRANCH --depth 1 $MOODLE_REPOSITORY $GITHUB_WORKSPACE/moodle
-        git clone --branch master --depth 1 https://github.com/moodlehq/moodle-docker $GITHUB_WORKSPACE/moodle-docker
+        path: app
+    - name: Setup PHP 8.0
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 8.0
+        ini-values: max_input_vars=5000
+        coverage: none
+    - name: Setup Node
+      uses: actions/setup-node@v3
+      with:
+        node-version-file: 'app/.nvmrc'
     - name: Install npm packages
-      run: npm ci --no-audit
-    - name: Generate Behat tests plugin
+      run: cd ./app && npm ci --no-audit
+    - name: Generate behat plugin
+      run: cd ./app && npx gulp behat
+      env:
+        MOODLE_APP_BEHAT_PLUGIN_PATH: $GITHUB_PATH/plugin
+    - name: Initialise moodle-plugin-ci
       run: |
-        export MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle
-        npx gulp behat
-    - name: Configure & launch Moodle with Docker
+        composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^3
+        echo $(cd ci/bin; pwd) >> $GITHUB_PATH
+        echo $(cd ci/vendor/bin; pwd) >> $GITHUB_PATH
+        sudo locale-gen en_AU.UTF-8
+        echo "NVM_DIR=$HOME/.nvm" >> $GITHUB_ENV
+    - name: Install moodle-plugin-ci
       run: |
-        export MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle
-        cp $GITHUB_WORKSPACE/moodle-docker/config.docker-template.php $GITHUB_WORKSPACE/moodle/config.php
-        sed -i "61i\$CFG->behat_ionic_wwwroot = 'http://moodleapp';" $GITHUB_WORKSPACE/moodle/config.php
-        $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose pull
-        $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose up -d
-        $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-wait-for-db
-    - name: Compile & launch app with Docker
-      run: |
-        docker build --build-arg build_command="npm run build:test" -t moodlehq/moodleapp:behat .
-        docker run -d --rm --name moodleapp moodlehq/moodleapp:behat
-        docker network connect moodle-docker_default moodleapp --alias moodleapp
-    - name: Init Behat
-      run: |
-        export MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle
-        $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose exec -T webserver sh -c "php admin/tool/behat/cli/init.php"
-    - name: Run Behat tests
-      run: |
-        export MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle
-        $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose exec -T webserver sh -c "php admin/tool/behat/cli/run.php --verbose --tags='@app&&$BEHAT_TAGS' --auto-rerun"
+        moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1
+      env:
+        DB: pgsql
+        MOODLE_BRANCH: master
+    - name: Run acceptance tests
+      run: moodle-plugin-ci behat --profile chrome
