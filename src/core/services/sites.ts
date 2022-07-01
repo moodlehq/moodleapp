@@ -51,7 +51,7 @@ import { CoreRedirectPayload } from './navigator';
 import { CoreSitesFactory } from './sites-factory';
 import { CoreText } from '@singletons/text';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
-import { CoreErrorWithTitle } from '@classes/errors/errorwithtitle';
+import { CoreErrorWithOptions } from '@classes/errors/errorwithtitle';
 import { CoreAjaxError } from '@classes/errors/ajaxerror';
 import { CoreAjaxWSError } from '@classes/errors/ajaxwserror';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
@@ -870,7 +870,7 @@ export class CoreSitesProvider {
 
         const siteUrlAllowed = await CoreLoginHelper.isSiteUrlAllowed(site.getURL(), false);
         if (!siteUrlAllowed) {
-            throw new CoreErrorWithTitle(Translate.instant('core.login.sitenotallowed'));
+            throw new CoreErrorWithOptions(Translate.instant('core.login.sitenotallowed'));
         }
 
         this.currentSite = site;

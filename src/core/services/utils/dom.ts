@@ -1344,7 +1344,6 @@ export class CoreDomUtilsProvider {
 
         const alertOptions: AlertOptions = {
             message: message,
-            buttons: [Translate.instant('core.ok')],
         };
 
         if (this.isNetworkError(message, error)) {
@@ -1353,6 +1352,12 @@ export class CoreDomUtilsProvider {
             alertOptions.header = error.title || undefined;
         } else {
             alertOptions.header = Translate.instant('core.error');
+        }
+
+        if (typeof error !== 'string' && 'buttons' in error && typeof error.buttons !== 'undefined') {
+            alertOptions.buttons = error.buttons;
+        } else {
+            alertOptions.buttons = [Translate.instant('core.ok')];
         }
 
         return this.showAlertWithOptions(alertOptions, autocloseTime);

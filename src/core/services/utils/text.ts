@@ -26,6 +26,7 @@ import { CoreFileHelper } from '@services/file-helper';
 import { CoreDomUtils } from './dom';
 import { CoreText } from '@singletons/text';
 import { CoreUrl } from '@singletons/url';
+import { AlertButton } from '@ionic/angular';
 
 /**
  * Different type of errors the app can treat.
@@ -38,6 +39,7 @@ export type CoreTextErrorObject = {
     debuginfo?: string;
     backtrace?: string;
     title?: string;
+    buttons?: AlertButton[];
 };
 
 /*
@@ -166,7 +168,7 @@ export class CoreTextUtilsProvider {
             improvedError = error;
         }
 
-        improvedError.title = title;
+        improvedError.title = improvedError.title || title;
 
         return improvedError;
     }
