@@ -57,8 +57,8 @@ import {
     WSGroups,
     WS_CACHE_TABLES_PREFIX,
 } from '@services/database/sites';
-import { Observable, Subject } from 'rxjs';
-import { finalize, map } from 'rxjs/operators';
+import { Observable, ObservableInput, ObservedValueOf, OperatorFunction, Subject } from 'rxjs';
+import { finalize, map, mergeMap } from 'rxjs/operators';
 import { firstValueFrom } from '../utils/observables';
 
 /**
@@ -2377,6 +2377,70 @@ export class CoreSite {
         });
     }
 
+}
+
+/**
+ * Operator to chain requests when using observables.
+ *
+ * @param readingStrategy Reading strategy used for the current request.
+ * @param callback Callback called with the result of current request and the reading strategy to use in next requests.
+ * @return Operator.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function chainRequests<T, O extends ObservableInput<any>>(
+    readingStrategy: CoreSitesReadingStrategy | undefined,
+    callback: (data: T, readingStrategy?: CoreSitesReadingStrategy) => O,
+): OperatorFunction<T, ObservedValueOf<O>> {
+    return (source: Observable<T>) => new Observable<{ data: T; readingStrategy?: CoreSitesReadingStrategy }>(subscriber => {
+        let firstValue = true;
+        let isCompleted = false;
+
+        return source.subscribe({
+            next: async (value) => {
+                if (readingStrategy !== CoreSitesReadingStrategy.UPDATE_IN_BACKGROUND) {
+                    // Just use same strategy.
+                    subscriber.next({ data: value, readingStrategy });
+
+                    return;
+                }
+
+                if (!firstValue) {
+                    // Second (last) value. Chained requests should have used cached data already, just return 1 value now.
+                    subscriber.next({
+                        data: value,
+                    });
+
+                    return;
+                }
+
+                firstValue = false;
+
+                // Wait to see if the observable is completed (no more values).
+                await CoreUtils.nextTick();
+
+                if (isCompleted) {
+                    // Current request only returns cached data. Let chained requests update in background.
+                    subscriber.next({ data: value, readingStrategy });
+                } else {
+                    // Current request will update in background. Prefer cached data in the chained requests.
+                    subscriber.next({
+                        data: value,
+                        readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
+                    });
+                }
+            },
+            error: (error) => subscriber.error(error),
+            complete: async () => {
+                isCompleted = true;
+
+                await CoreUtils.nextTick();
+
+                subscriber.complete();
+            },
+        });
+    }).pipe(
+        mergeMap(({ data, readingStrategy }) => callback(data, readingStrategy)),
+    );
 }
 
 /**

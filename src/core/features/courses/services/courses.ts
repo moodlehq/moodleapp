@@ -20,7 +20,9 @@ import { CoreStatusWithWarningsWSResponse, CoreWarningsWSResponse, CoreWSExterna
 import { CoreEvents } from '@singletons/events';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreCourseAnyCourseDataWithExtraInfoAndOptions, CoreCourseWithImageAndColor } from './courses-helper';
-import { CoreUtils } from '@services/utils/utils';
+import { asyncObservable, firstValueFrom, ignoreErrors, zipIncudingComplete } from '@/core/utils/observables';
+import { of, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 const ROOT_CACHE_KEY = 'mmCourses:';
 
@@ -63,8 +65,7 @@ export class CoreCoursesProvider {
     static readonly STATE_HIDDEN = 'hidden';
     static readonly STATE_FAVOURITE = 'favourite';
 
-    protected userCoursesIds: { [id: number]: boolean } = {}; // Use an object to make it faster to search.
-
+    protected userCoursesIds?: Set<number>;
     protected downloadOptionsEnabled = false;
 
     /**
@@ -484,60 +485,91 @@ export class CoreCoursesProvider {
      * @param siteId Site ID. If not defined, use current site.
      * @return Promise resolved with the courses.
      */
-    async getCoursesByField(
+    getCoursesByField(
         field: string = '',
         value: string | number = '',
         siteId?: string,
     ): Promise<CoreCourseSearchedData[]> {
-        siteId = siteId || CoreSites.getCurrentSiteId();
+        return firstValueFrom(this.getCoursesByFieldObservable(field, value, { siteId }));
+    }
 
-        const originalValue = value;
+    /**
+     * Get courses. They can be filtered by field.
+     *
+     * @param field The field to search. Can be left empty for all courses or:
+     *              id: course id.
+     *              ids: comma separated course ids.
+     *              shortname: course short name.
+     *              idnumber: course id number.
+     *              category: category id the course belongs to.
+     * @param value The value to match.
+     * @param options Other options.
+     * @return Observable that returns the courses.
+     */
+    getCoursesByFieldObservable(
+        field: string = '',
+        value: string | number = '',
+        options: CoreSitesCommonWSOptions = {},
+    ): Observable<CoreCourseSearchedData[]> {
+        return asyncObservable(async () => {
+            const siteId = options.siteId || CoreSites.getCurrentSiteId();
+            const originalValue = value;
 
-        const site = await CoreSites.getSite(siteId);
+            const site = await CoreSites.getSite(siteId);
 
-        const fieldParams = await this.fixCoursesByFieldParams(field, value, siteId);
+            // Fix params. Tries to use cached data, no need to use observer.
+            const fieldParams = await this.fixCoursesByFieldParams(field, value, siteId);
 
-        const hasChanged = fieldParams.field != field || fieldParams.value != value;
-        field = fieldParams.field;
-        value = fieldParams.value;
-        const data: CoreCourseGetCoursesByFieldWSParams = {
-            field: field,
-            value: field ? value : '',
-        };
-        const preSets: CoreSiteWSPreSets = {
-            cacheKey: this.getCoursesByFieldCacheKey(field, value),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
-        };
+            const hasChanged = fieldParams.field != field || fieldParams.value != value;
+            field = fieldParams.field;
+            value = fieldParams.value;
+            const data: CoreCourseGetCoursesByFieldWSParams = {
+                field: field,
+                value: field ? value : '',
+            };
+            const preSets: CoreSiteWSPreSets = {
+                cacheKey: this.getCoursesByFieldCacheKey(field, value),
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
+            };
 
-        const response = await site.read<CoreCourseGetCoursesByFieldWSResponse>('core_course_get_courses_by_field', data, preSets);
-        if (!response.courses) {
-            throw Error('WS core_course_get_courses_by_field failed');
-        }
+            const observable = site.readObservable<CoreCourseGetCoursesByFieldWSResponse>(
+                'core_course_get_courses_by_field',
+                data,
+                preSets,
+            );
 
-        if (field == 'ids' && hasChanged) {
-            // The list of courses requestes was changed to optimize it.
-            // Return only the ones that were being requested.
-            const courseIds = String(originalValue).split(',').map((id) => parseInt(id, 10));
+            return observable.pipe(map(response => {
+                if (!response.courses) {
+                    throw Error('WS core_course_get_courses_by_field failed');
+                }
 
-            // Only courses from the original selection.
-            response.courses = response.courses.filter((course) => courseIds.indexOf(course.id) >= 0);
-        }
+                if (field == 'ids' && hasChanged) {
+                    // The list of courses requestes was changed to optimize it.
+                    // Return only the ones that were being requested.
+                    const courseIds = String(originalValue).split(',').map((id) => parseInt(id, 10));
 
-        // Courses will be sorted using sortorder if available.
-        return response.courses.sort((a, b) => {
-            if (a.sortorder === undefined && b.sortorder === undefined) {
-                return b.id - a.id;
-            }
+                    // Only courses from the original selection.
+                    response.courses = response.courses.filter((course) => courseIds.indexOf(course.id) >= 0);
+                }
 
-            if (a.sortorder === undefined) {
-                return 1;
-            }
+                // Courses will be sorted using sortorder if available.
+                return response.courses.sort((a, b) => {
+                    if (a.sortorder === undefined && b.sortorder === undefined) {
+                        return b.id - a.id;
+                    }
 
-            if (b.sortorder === undefined) {
-                return -1;
-            }
+                    if (a.sortorder === undefined) {
+                        return 1;
+                    }
 
-            return a.sortorder - b.sortorder;
+                    if (b.sortorder === undefined) {
+                        return -1;
+                    }
+
+                    return a.sortorder - b.sortorder;
+                });
+            }));
         });
     }
 
@@ -614,25 +646,45 @@ export class CoreCoursesProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with the options for each course.
      */
-    async getCoursesAdminAndNavOptions(
+    getCoursesAdminAndNavOptions(
         courseIds: number[],
         siteId?: string,
     ): Promise<{
             navOptions: CoreCourseUserAdminOrNavOptionCourseIndexed;
             admOptions: CoreCourseUserAdminOrNavOptionCourseIndexed;
         }> {
-        siteId = siteId || CoreSites.getCurrentSiteId();
+        return firstValueFrom(this.getCoursesAdminAndNavOptionsObservable(courseIds, { siteId }));
+    }
 
-        // Get the list of courseIds to use based on the param.
-        courseIds = await this.getCourseIdsForAdminAndNavOptions(courseIds, siteId);
+    /**
+     * Get the navigation and administration options for the given courses.
+     *
+     * @param courseIds IDs of courses to get.
+     * @param options Options.
+     * @return Observable that returns the options for each course.
+     */
+    getCoursesAdminAndNavOptionsObservable(
+        courseIds: number[],
+        options: CoreSitesCommonWSOptions = {},
+    ): Observable<{
+            navOptions: CoreCourseUserAdminOrNavOptionCourseIndexed;
+            admOptions: CoreCourseUserAdminOrNavOptionCourseIndexed;
+        }> {
 
-        // Get user navigation and administration options.
-        const [navOptions, admOptions] = await Promise.all([
-            CoreUtils.ignoreErrors(this.getUserNavigationOptions(courseIds, siteId), {}),
-            CoreUtils.ignoreErrors(this.getUserAdministrationOptions(courseIds, siteId), {}),
-        ]);
+        return asyncObservable(async () => {
+            const siteId = options.siteId || CoreSites.getCurrentSiteId();
 
-        return { navOptions: navOptions, admOptions: admOptions };
+            // Get the list of courseIds to use based on the param. Tries to use cached data, no need to use observer.
+            courseIds = await this.getCourseIdsForAdminAndNavOptions(courseIds, siteId);
+
+            // Get user navigation and administration options.
+            return zipIncudingComplete(
+                ignoreErrors(this.getUserNavigationOptionsObservable(courseIds, options), {}),
+                ignoreErrors(this.getUserAdministrationOptionsObservable(courseIds, options), {}),
+            ).pipe(
+                map(([navOptions, admOptions]) => ({ navOptions, admOptions })),
+            );
+        });
     }
 
     /**
@@ -695,26 +747,46 @@ export class CoreCoursesProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved with administration options for each course.
      */
-    async getUserAdministrationOptions(courseIds: number[], siteId?: string): Promise<CoreCourseUserAdminOrNavOptionCourseIndexed> {
+    getUserAdministrationOptions(courseIds: number[], siteId?: string): Promise<CoreCourseUserAdminOrNavOptionCourseIndexed> {
+        return firstValueFrom(this.getUserAdministrationOptionsObservable(courseIds, { siteId }));
+    }
+
+    /**
+     * Get user administration options for a set of courses.
+     *
+     * @param courseIds IDs of courses to get.
+     * @param options Options.
+     * @return Observable that returns administration options for each course.
+     */
+    getUserAdministrationOptionsObservable(
+        courseIds: number[],
+        options: CoreSitesCommonWSOptions = {},
+    ): Observable<CoreCourseUserAdminOrNavOptionCourseIndexed> {
         if (!courseIds || courseIds.length == 0) {
-            return {};
+            return of({});
         }
 
-        const site = await CoreSites.getSite(siteId);
+        return asyncObservable(async () => {
+            const site = await CoreSites.getSite(options.siteId);
 
-        const params: CoreCourseGetUserAdminOrNavOptionsWSParams = {
-            courseids: courseIds,
-        };
-        const preSets: CoreSiteWSPreSets = {
-            cacheKey: this.getUserAdministrationOptionsCacheKey(courseIds),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
-        };
+            const params: CoreCourseGetUserAdminOrNavOptionsWSParams = {
+                courseids: courseIds,
+            };
+            const preSets: CoreSiteWSPreSets = {
+                cacheKey: this.getUserAdministrationOptionsCacheKey(courseIds),
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
+            };
 
-        const response: CoreCourseGetUserAdminOrNavOptionsWSResponse =
-            await site.read('core_course_get_user_administration_options', params, preSets);
+            const observable = site.readObservable<CoreCourseGetUserAdminOrNavOptionsWSResponse>(
+                'core_course_get_user_administration_options',
+                params,
+                preSets,
+            );
 
-        // Format returned data.
-        return this.formatUserAdminOrNavOptions(response.courses);
+            // Format returned data.
+            return observable.pipe(map(response => this.formatUserAdminOrNavOptions(response.courses)));
+        });
     }
 
     /**
@@ -743,25 +815,45 @@ export class CoreCoursesProvider {
      * @return Promise resolved with navigation options for each course.
      */
     async getUserNavigationOptions(courseIds: number[], siteId?: string): Promise<CoreCourseUserAdminOrNavOptionCourseIndexed> {
+        return firstValueFrom(this.getUserNavigationOptionsObservable(courseIds, { siteId }));
+    }
+
+    /**
+     * Get user navigation options for a set of courses.
+     *
+     * @param courseIds IDs of courses to get.
+     * @param options Options.
+     * @return Observable that returns navigation options for each course.
+     */
+    getUserNavigationOptionsObservable(
+        courseIds: number[],
+        options: CoreSitesCommonWSOptions = {},
+    ): Observable<CoreCourseUserAdminOrNavOptionCourseIndexed> {
         if (!courseIds || courseIds.length == 0) {
-            return {};
+            return of({});
         }
 
-        const site = await CoreSites.getSite(siteId);
+        return asyncObservable(async () => {
+            const site = await CoreSites.getSite(options.siteId);
 
-        const params: CoreCourseGetUserAdminOrNavOptionsWSParams = {
-            courseids: courseIds,
-        };
-        const preSets: CoreSiteWSPreSets = {
-            cacheKey: this.getUserNavigationOptionsCacheKey(courseIds),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
-        };
+            const params: CoreCourseGetUserAdminOrNavOptionsWSParams = {
+                courseids: courseIds,
+            };
+            const preSets: CoreSiteWSPreSets = {
+                cacheKey: this.getUserNavigationOptionsCacheKey(courseIds),
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
+            };
 
-        const response: CoreCourseGetUserAdminOrNavOptionsWSResponse =
-            await site.read('core_course_get_user_navigation_options', params, preSets);
+            const observable = site.readObservable<CoreCourseGetUserAdminOrNavOptionsWSResponse>(
+                'core_course_get_user_navigation_options',
+                params,
+                preSets,
+            );
 
-        // Format returned data.
-        return this.formatUserAdminOrNavOptions(response.courses);
+            // Format returned data.
+            return observable.pipe(map(response => this.formatUserAdminOrNavOptions(response.courses)));
+        });
     }
 
     /**
@@ -818,89 +910,112 @@ export class CoreCoursesProvider {
      *
      * @param preferCache True if shouldn't call WS if data is cached, false otherwise.
      * @param siteId Site to get the courses from. If not defined, use current site.
+     * @param strategy Reading strategy.
      * @return Promise resolved with the courses.
      */
-    async getUserCourses(
+    getUserCourses(
         preferCache: boolean = false,
         siteId?: string,
         strategy?: CoreSitesReadingStrategy,
     ): Promise<CoreEnrolledCourseData[]> {
-        const site = await CoreSites.getSite(siteId);
+        strategy = strategy ?? (preferCache ? CoreSitesReadingStrategy.PREFER_CACHE : undefined);
 
-        const userId = site.getUserId();
-        const wsParams: CoreEnrolGetUsersCoursesWSParams = {
-            userid: userId,
-        };
-        const strategyPreSets = strategy
-            ? CoreSites.getReadingStrategyPreSets(strategy)
-            : { omitExpires: !!preferCache };
+        return this.getUserCoursesObservable({
+            readingStrategy: strategy,
+            siteId,
+        }).toPromise();
+    }
 
-        const preSets = {
-            cacheKey: this.getUserCoursesCacheKey(),
-            getCacheUsingCacheKey: true,
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
-            ...strategyPreSets,
-        };
+    /**
+     * Get user courses.
+     *
+     * @param options Options.
+     * @return Observable that returns the courses.
+     */
+    getUserCoursesObservable(options: CoreSitesCommonWSOptions = {}): Observable<CoreEnrolledCourseData[]> {
+        return asyncObservable(async () => {
+            const site = await CoreSites.getSite(options.siteId);
 
-        if (site.isVersionGreaterEqualThan('3.7')) {
-            wsParams.returnusercount = false;
-        }
+            const userId = site.getUserId();
+            const wsParams: CoreEnrolGetUsersCoursesWSParams = {
+                userid: userId,
+            };
 
-        const courses = await site.read<CoreEnrolGetUsersCoursesWSResponse>('core_enrol_get_users_courses', wsParams, preSets);
+            const preSets: CoreSiteWSPreSets = {
+                cacheKey: this.getUserCoursesCacheKey(),
+                getCacheUsingCacheKey: true,
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
+            };
 
-        if (this.userCoursesIds) {
-            // Check if the list of courses has changed.
-            const added: number[] = [];
-            const removed: number[] = [];
-            const previousIds = Object.keys(this.userCoursesIds);
-            const currentIds = {}; // Use an object to make it faster to search.
+            if (site.isVersionGreaterEqualThan('3.7')) {
+                wsParams.returnusercount = false;
+            }
 
-            courses.forEach((course) => {
-                // Move category field to categoryid on a course.
-                course.categoryid = course.category;
-                delete course.category;
+            const observable = site.readObservable<CoreEnrolGetUsersCoursesWSResponse>(
+                'core_enrol_get_users_courses',
+                wsParams,
+                preSets,
+            );
 
-                currentIds[course.id] = true;
+            return observable.pipe(map(courses => {
+                if (this.userCoursesIds) {
+                    // Check if the list of courses has changed.
+                    const added: number[] = [];
+                    const removed: number[] = [];
+                    const previousIds = this.userCoursesIds;
+                    const currentIds = new Set<number>();
 
-                if (!this.userCoursesIds[course.id]) {
-                    // Course added.
-                    added.push(course.id);
-                }
-            });
+                    courses.forEach((course) => {
+                        // Move category field to categoryid on a course.
+                        course.categoryid = course.category;
+                        delete course.category;
 
-            if (courses.length - added.length != previousIds.length) {
-                // A course was removed, check which one.
-                previousIds.forEach((id) => {
-                    if (!currentIds[id]) {
-                        // Course removed.
-                        removed.push(Number(id));
+                        currentIds.add(course.id);
+
+                        if (!previousIds.has(course.id)) {
+                            // Course added.
+                            added.push(course.id);
+                        }
+                    });
+
+                    if (courses.length - added.length !== previousIds.size) {
+                        // A course was removed, check which one.
+                        previousIds.forEach((id) => {
+                            if (!currentIds.has(id)) {
+                                // Course removed.
+                                removed.push(Number(id));
+                            }
+                        });
                     }
-                });
-            }
 
-            if (added.length || removed.length) {
-                // At least 1 course was added or removed, trigger the event.
-                CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_CHANGED, {
-                    added: added,
-                    removed: removed,
-                }, site.getId());
-            }
+                    if (added.length || removed.length) {
+                        // At least 1 course was added or removed, trigger the event.
+                        CoreEvents.trigger(CoreCoursesProvider.EVENT_MY_COURSES_CHANGED, {
+                            added: added,
+                            removed: removed,
+                        }, site.getId());
+                    }
 
-            this.userCoursesIds = currentIds;
-        } else {
-            this.userCoursesIds = {};
+                    this.userCoursesIds = currentIds;
+                } else {
+                    const coursesIds = new Set<number>();
 
-            // Store the list of courses.
-            courses.forEach((course) => {
-                // Move category field to categoryid on a course.
-                course.categoryid = course.category;
-                delete course.category;
+                    // Store the list of courses.
+                    courses.forEach((course) => {
+                        coursesIds.add(course.id);
 
-                this.userCoursesIds[course.id] = true;
-            });
-        }
+                        // Move category field to categoryid on a course.
+                        course.categoryid = course.category;
+                        delete course.category;
+                    });
 
-        return courses;
+                    this.userCoursesIds = coursesIds;
+                }
+
+                return courses;
+            }));
+        });
     }
 
     /**
@@ -1312,12 +1427,12 @@ export type CoreEnrolledCourseData = CoreEnrolledCourseBasicData & {
     completionhascriteria?: boolean; // If completion criteria is set.
     completionusertracked?: boolean; // If the user is completion tracked.
     progress?: number | null; // Progress percentage.
-    completed?: boolean; // Whether the course is completed.
-    marker?: number; // Course section marker.
-    lastaccess?: number; // Last access to the course (timestamp).
+    completed?: boolean; //  @since 3.6. Whether the course is completed.
+    marker?: number; //  @since 3.6. Course section marker.
+    lastaccess?: number; // @since 3.6. Last access to the course (timestamp).
     isfavourite?: boolean; // If the user marked this course a favourite.
     hidden?: boolean; // If the user hide the course from the dashboard.
-    overviewfiles?: CoreWSExternalFile[];
+    overviewfiles?: CoreWSExternalFile[]; // @since 3.6.
     showactivitydates?: boolean; // @since 3.11. Whether the activity dates are shown or not.
     showcompletionconditions?: boolean; // @since 3.11. Whether the activity completion conditions are shown or not.
     timemodified?: number; // @since 4.0. Last time course settings were updated (timestamp).
