@@ -151,9 +151,9 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
             // Will be displayed in an iframe. Check if we need to auto-login.
             const currentSite = CoreSites.getCurrentSite();
 
-            if (currentSite?.containsUrl(this.url)) {
-                // Format the URL to add auto-login.
-                this.url = await currentSite.getAutoLoginUrl(this.url!, false);
+            if (currentSite && this.url) {
+                // Format the URL to add auto-login if needed.
+                this.url = await currentSite.getAutoLoginUrl(this.url, false);
             }
         }
     }

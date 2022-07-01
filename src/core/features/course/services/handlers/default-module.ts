@@ -67,7 +67,7 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
                     e.preventDefault();
                     e.stopPropagation();
 
-                    CoreSites.getRequiredCurrentSite().openInBrowserWithAutoLoginIfSameSite(url);
+                    CoreSites.getRequiredCurrentSite().openInBrowserWithAutoLogin(url);
                 },
             }];
         }

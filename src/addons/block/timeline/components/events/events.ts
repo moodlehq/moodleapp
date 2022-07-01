@@ -149,7 +149,7 @@ export class AddonBlockTimelineEventsComponent implements OnChanges {
         try {
             const treated = await CoreContentLinksHelper.handleLink(url);
             if (!treated) {
-                return CoreSites.getRequiredCurrentSite().openInBrowserWithAutoLoginIfSameSite(url);
+                return CoreSites.getRequiredCurrentSite().openInBrowserWithAutoLogin(url);
             }
         } finally {
             modal.dismiss();

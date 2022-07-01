@@ -166,7 +166,7 @@ export class CoreMainMenuMorePage implements OnInit, OnDestroy {
 
             if (!treated) {
                 // Can't handle it, open it in browser.
-                CoreSites.getCurrentSite()?.openInBrowserWithAutoLoginIfSameSite(text);
+                CoreSites.getCurrentSite()?.openInBrowserWithAutoLogin(text);
             }
         } else {
             // It's not a URL, open it in a modal so the user can see it and copy it.

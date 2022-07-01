@@ -221,7 +221,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
         }
 
         // The resource cannot be downloaded, open the activity in browser.
-        await CoreSites.getCurrentSite()?.openInBrowserWithAutoLoginIfSameSite(this.module.url || '');
+        await CoreSites.getCurrentSite()?.openInBrowserWithAutoLogin(this.module.url || '');
     }
 
     /**

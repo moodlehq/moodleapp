@@ -418,7 +418,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
             const treated = await CoreContentLinksHelper.handleLink(this.siteAfterSubmit);
 
             if (!treated) {
-                await this.currentSite.openInBrowserWithAutoLoginIfSameSite(this.siteAfterSubmit);
+                await this.currentSite.openInBrowserWithAutoLogin(this.siteAfterSubmit);
             }
         } finally {
             modal.dismiss();

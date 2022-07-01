@@ -1533,13 +1533,14 @@ export class CoreSite {
      * @param alertMessage If defined, an alert will be shown before opening the browser.
      * @param options Other options.
      * @return Promise resolved when done, rejected otherwise.
+     * @deprecated since 4.1. Use openInBrowserWithAutoLogin instead, now it always checks that URL belongs to same site.
      */
     async openInBrowserWithAutoLoginIfSameSite(
         url: string,
         alertMessage?: string,
         options: CoreUtilsOpenInBrowserOptions = {},
     ): Promise<void> {
-        await this.openWithAutoLoginIfSameSite(false, url, options, alertMessage);
+        return this.openInBrowserWithAutoLogin(url, alertMessage, options);
     }
 
     /**
@@ -1563,15 +1564,14 @@ export class CoreSite {
      * @param options Override default options passed to inappbrowser.
      * @param alertMessage If defined, an alert will be shown before opening the inappbrowser.
      * @return Promise resolved when done.
+     * @deprecated since 4.1. Use openInAppWithAutoLogin instead, now it always checks that URL belongs to same site.
      */
     async openInAppWithAutoLoginIfSameSite(
         url: string,
         options?: InAppBrowserOptions,
         alertMessage?: string,
     ): Promise<InAppBrowserObject> {
-        const iabInstance = <InAppBrowserObject> await this.openWithAutoLoginIfSameSite(true, url, options, alertMessage);
-
-        return iabInstance;
+        return this.openInAppWithAutoLogin(url, options, alertMessage);
     }
 
     /**
@@ -1623,6 +1623,7 @@ export class CoreSite {
      * @param options Override default options passed to inappbrowser.
      * @param alertMessage If defined, an alert will be shown before opening the browser/inappbrowser.
      * @return Promise resolved when done. Resolve param is returned only if inApp=true.
+     * @deprecated since 4.1. Use openWithAutoLogin instead, now it always checks that URL belongs to same site.
      */
     async openWithAutoLoginIfSameSite(
         inApp: boolean,
@@ -1630,15 +1631,7 @@ export class CoreSite {
         options: InAppBrowserOptions & CoreUtilsOpenInBrowserOptions = {},
         alertMessage?: string,
     ): Promise<InAppBrowserObject | void> {
-        if (this.containsUrl(url)) {
-            return this.openWithAutoLogin(inApp, url, options, alertMessage);
-        } else {
-            if (inApp) {
-                return Promise.resolve(CoreUtils.openInApp(url, options));
-            } else {
-                CoreUtils.openInBrowser(url, options);
-            }
-        }
+        return this.openWithAutoLogin(inApp, url, options, alertMessage);
     }
 
     /**
@@ -1819,6 +1812,11 @@ export class CoreSite {
     async getAutoLoginUrl(url: string, showModal: boolean = true): Promise<string> {
         if (!this.privateToken) {
             // No private token, don't change the URL.
+            return url;
+        }
+
+        if (!this.containsUrl(url)) {
+            // URL doesn't belong to the site, don't auto login.
             return url;
         }
 

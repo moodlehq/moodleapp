@@ -41,11 +41,7 @@ export class CoreLinkDirective implements OnInit {
     @Input() href?: string | SafeUrl; // Link URL.
     @Input() capture?: boolean | string; // If the link needs to be captured by the app.
     @Input() inApp?: boolean | string; // True to open in embedded browser, false to open in system browser.
-    /* Whether the link should be opened with auto-login. Accepts the following values:
-       "yes" -> Always auto-login.
-       "no" -> Never auto-login.
-       "check" -> Auto-login only if it points to the current site. Default value. */
-    @Input() autoLogin = 'check';
+    @Input() autoLogin: boolean | string = true; // Whether to try to use auto-login. Values yes/no/check are deprecated.
     @Input() showBrowserWarning = true; // Whether to show a warning before opening browser. Defaults to true.
 
     protected element: HTMLElement;
@@ -61,8 +57,6 @@ export class CoreLinkDirective implements OnInit {
      * Function executed when the component is initialized.
      */
     ngOnInit(): void {
-        this.inApp = this.inApp === undefined ? this.inApp : CoreUtils.isTrueOrOne(this.inApp);
-
         if (this.element.tagName != 'BUTTON' && this.element.tagName != 'A') {
             this.element.setAttribute('tabindex', '0');
             this.element.setAttribute('role', 'button');
@@ -184,10 +178,16 @@ export class CoreLinkDirective implements OnInit {
      * @return Promise resolved when done.
      */
     protected async openExternalLink(href: string, openIn?: string | null): Promise<void> {
-        // It's an external link, we will open with browser. Check if we need to auto-login.
+        // Priority order is: core-link inApp attribute > forceOpenLinksIn setting > data-open-in HTML attribute.
+        const openInApp = this.inApp !== undefined ?
+            CoreUtils.isTrueOrOne(this.inApp) :
+            (CoreConstants.CONFIG.forceOpenLinksIn !== 'browser' &&
+                (CoreConstants.CONFIG.forceOpenLinksIn === 'app' || openIn === 'app'));
+
+        // Check if we need to auto-login.
         if (!CoreSites.isLoggedIn()) {
             // Not logged in, cannot auto-login.
-            if (this.inApp) {
+            if (openInApp) {
                 CoreUtils.openInApp(href);
             } else {
                 CoreUtils.openInBrowser(href, { showBrowserWarning: this.showBrowserWarning });
@@ -221,37 +221,21 @@ export class CoreLinkDirective implements OnInit {
             }
         }
 
-        if (this.autoLogin == 'yes') {
-            if (this.inApp) {
+        const autoLogin = typeof this.autoLogin === 'boolean' ?
+            this.autoLogin :
+            !CoreUtils.isFalseOrZero(this.autoLogin) && this.autoLogin !== 'no'; // Support deprecated values yes/no/check.
+
+        if (autoLogin) {
+            if (openInApp) {
                 await currentSite.openInAppWithAutoLogin(href);
             } else {
                 await currentSite.openInBrowserWithAutoLogin(href, undefined, { showBrowserWarning: this.showBrowserWarning });
             }
-        } else if (this.autoLogin == 'no') {
-            if (this.inApp) {
+        } else {
+            if (openInApp) {
                 CoreUtils.openInApp(href);
             } else {
                 CoreUtils.openInBrowser(href, { showBrowserWarning: this.showBrowserWarning });
-            }
-        } else {
-            // Priority order is: core-link inApp attribute > forceOpenLinksIn setting > data-open-in HTML attribute.
-            let openInApp = this.inApp;
-            if (this.inApp === undefined) {
-                if (CoreConstants.CONFIG.forceOpenLinksIn == 'browser') {
-                    openInApp = false;
-                } else if (CoreConstants.CONFIG.forceOpenLinksIn == 'app' || openIn == 'app') {
-                    openInApp = true;
-                }
-            }
-
-            if (openInApp) {
-                await currentSite.openInAppWithAutoLoginIfSameSite(href);
-            } else {
-                await currentSite.openInBrowserWithAutoLoginIfSameSite(
-                    href,
-                    undefined,
-                    { showBrowserWarning: this.showBrowserWarning },
-                );
             }
         }
     }

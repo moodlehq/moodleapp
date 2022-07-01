@@ -89,7 +89,7 @@ export class AddonBlockRecentlyAccessedItemsComponent extends CoreBlockBaseCompo
         try {
             const treated = await CoreContentLinksHelper.handleLink(url);
             if (!treated) {
-                return CoreSites.getCurrentSite()?.openInBrowserWithAutoLoginIfSameSite(url);
+                return CoreSites.getCurrentSite()?.openInBrowserWithAutoLogin(url);
             }
         } finally {
             modal.dismiss();

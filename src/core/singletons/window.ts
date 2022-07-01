@@ -112,7 +112,7 @@ export class CoreWindow {
                     // Not logged in, cannot auto-login.
                     CoreUtils.openInBrowser(url);
                 } else {
-                    await CoreSites.getRequiredCurrentSite().openInBrowserWithAutoLoginIfSameSite(url);
+                    await CoreSites.getRequiredCurrentSite().openInBrowserWithAutoLogin(url);
                 }
             }
         }
