@@ -20,6 +20,7 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 
-    <addon-mod-h5pactivity-index [module]="module" [courseId]="courseId" (dataRetrieved)="updateData($event)">
+    <addon-mod-h5pactivity-index [module]="module" [courseId]="courseId" (dataRetrieved)="updateData($event)"
+        (onActivityFinish)="setCanleaveSafely($event)">
     </addon-mod-h5pactivity-index>
 </ion-content>

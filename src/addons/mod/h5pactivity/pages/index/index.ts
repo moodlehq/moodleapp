@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
 
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { CanLeave } from '@guards/can-leave';
@@ -28,7 +28,10 @@ import { AddonModH5PActivityIndexComponent } from '../../components/index';
     templateUrl: 'index.html',
 })
 export class AddonModH5PActivityIndexPage extends CoreCourseModuleMainActivityPage<AddonModH5PActivityIndexComponent>
-    implements CanLeave {
+    implements CanLeave, OnDestroy {
+
+    canLeaveSafely = false;
+    remainingTimeout?: ReturnType<typeof setTimeout>;
 
     @ViewChild(AddonModH5PActivityIndexComponent) activityComponent?: AddonModH5PActivityIndexComponent;
 
@@ -40,12 +43,42 @@ export class AddonModH5PActivityIndexPage extends CoreCourseModuleMainActivityPa
             return true;
         }
 
-        try {
-            await CoreDomUtils.showConfirm(Translate.instant('core.confirmleaveunknownchanges'));
+        if (!this.canLeaveSafely) {
+            try {
+                await CoreDomUtils.showConfirm(Translate.instant('core.confirmleaveunknownchanges'));
 
-            return true;
-        } catch {
-            return false;
+                return true;
+            } catch {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Set if this activity can be leaved safely (withow showing warning modal) if activity is finished
+     * 10 seconds before.
+     *
+     * @param isDone the H5P activity is done.
+     */
+    setCanleaveSafely(isDone: boolean): void {
+        this.canLeaveSafely = isDone;
+        if (this.remainingTimeout) {
+            clearTimeout(this.remainingTimeout);
+        }
+        // When user finish an activity, he have 10 seconds to leave safely (without show alert).
+        this.remainingTimeout = setTimeout(() => {
+            this.canLeaveSafely = false;
+        }, 10000);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        if (this.remainingTimeout) {
+            clearTimeout(this.remainingTimeout);
         }
     }
 
