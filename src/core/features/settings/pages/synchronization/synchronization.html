@@ -17,7 +17,7 @@
 </ion-header>
 <ion-content class="limited-width">
     <core-loading [hideUntil]="sitesLoaded">
-        <ion-list>
+        <ion-list class="core-sitelist">
             <ion-item-divider>
                 <ion-label>
                     <h2>{{ 'core.settings.syncsettings' | translate }}</h2>
@@ -30,24 +30,75 @@
             </ion-item>
             <ion-item-divider>
                 <ion-label>
-                    <h2>{{ 'core.settings.sites' | translate }}</h2>
+                    <h2>{{ 'core.accounts' | translate }}</h2>
                 </ion-label>
             </ion-item-divider>
-            <ion-item *ngFor="let site of sites" [class.item-current]="site.id == currentSiteId" class="ion-text-wrap">
-                <ion-label>
-                    <p class="item-heading">
-                        <core-format-text [text]="site.siteName" clean="true" [siteId]="site.id"></core-format-text>
-                    </p>
-                    <p>{{ site.fullName }}</p>
-                    <p>{{ site.siteUrlWithoutProtocol }}</p>
-                </ion-label>
-                <core-button-with-spinner [loading]="isSynchronizing(site.id)" slot="end">
-                    <ion-button fill="clear" (click)="synchronize(site.id)" [title]="site.siteName"
-                        [attr.aria-label]="'core.settings.synchronizenow' | translate">
-                        <ion-icon name="fas-sync-alt" slot="icon-only" aria-hidden="true"></ion-icon>
-                    </ion-button>
-                </core-button-with-spinner>
-            </ion-item>
+
+            <ion-card *ngIf="accountsList.currentSite">
+                <ion-item-divider sticky="true" class="core-sitelist-sitename">
+                    <ion-label>
+                        <h2>
+                            <core-format-text [text]="accountsList.currentSite.siteName" clean="true"
+                                [siteId]="accountsList.currentSite.id"></core-format-text>
+                        </h2>
+                        <p><a [href]="accountsList.currentSite.siteUrl" core-link autoLogin="yes">{{
+                                accountsList.currentSite.siteUrlWithoutProtocol }}</a>
+                        </p>
+                    </ion-label>
+                </ion-item-divider>
+
+                <ion-item class="item-current">
+                    <ion-avatar slot="start">
+                        <img [src]="accountsList.currentSite.avatar" core-external-content [siteId]="accountsList.currentSite.id"
+                            alt="{{ 'core.pictureof' | translate:{$a: accountsList.currentSite.fullName} }}"
+                            onError="this.src='assets/img/user-avatar.png'">
+                    </ion-avatar>
+                    <ion-label>
+                        <p class="item-heading">{{accountsList.currentSite.fullName}}</p>
+                    </ion-label>
+                    <core-button-with-spinner [loading]="isSynchronizing(accountsList.currentSite.id)" slot="end">
+                        <ion-button fill="clear" (click)="synchronize(accountsList.currentSite.id)"
+                            [attr.aria-label]="'core.settings.synchronizenow' | translate" [disabled]="accountsList.currentSite.loggedOut">
+                            <ion-icon name="fas-sync-alt" slot="icon-only" aria-hidden="true"></ion-icon>
+                        </ion-button>
+                    </core-button-with-spinner>
+                </ion-item>
+
+                <ng-container *ngTemplateOutlet="siteList; context: {sites: accountsList.sameSite}"></ng-container>
+            </ion-card>
+
+            <ion-card *ngFor="let sites of accountsList.otherSites">
+                <ion-item-divider sticky="true" *ngIf="sites[0]" class="core-sitelist-sitename">
+                    <ion-label>
+                        <h2>
+                            <core-format-text [text]="sites[0].siteName" clean="true" [siteId]="sites[0].id"></core-format-text>
+                        </h2>
+                        <p><a [href]="sites[0].siteUrl" core-link autoLogin="no">{{ sites[0].siteUrlWithoutProtocol }}</a></p>
+                    </ion-label>
+                </ion-item-divider>
+
+                <ng-container *ngTemplateOutlet="siteList; context: {sites: sites}"></ng-container>
+            </ion-card>
+
         </ion-list>
     </core-loading>
 </ion-content>
+
+<!-- Template to render a list of sites. -->
+<ng-template #siteList let-sites="sites">
+    <ion-item *ngFor="let site of sites">
+        <ion-avatar slot="start">
+            <img [src]="site.avatar" core-external-content [siteId]="site.id" alt="{{ 'core.pictureof' | translate:{$a: site.fullName} }}"
+                onError="this.src='assets/img/user-avatar.png'">
+        </ion-avatar>
+        <ion-label>
+            <p class="item-heading">{{site.fullName}}</p>
+        </ion-label>
+        <core-button-with-spinner [loading]="isSynchronizing(site.id)" slot="end">
+            <ion-button fill="clear" (click)="synchronize(site.id)" [attr.aria-label]="'core.settings.synchronizenow' | translate"
+                [disabled]="site.loggedOut">
+                <ion-icon name="fas-sync-alt" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </core-button-with-spinner>
+    </ion-item>
+</ng-template>

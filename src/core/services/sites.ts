@@ -1185,6 +1185,7 @@ export class CoreSitesProvider {
                     siteName: CoreConstants.CONFIG.sitename == '' ? siteInfo?.sitename: CoreConstants.CONFIG.sitename,
                     avatar: siteInfo?.userpictureurl,
                     siteHomeId: siteInfo?.siteid || 1,
+                    loggedOut: !!site.loggedOut,
                 };
                 formattedSites.push(basicInfo);
             }
@@ -1923,6 +1924,7 @@ export type CoreSiteBasicInfo = {
     avatar?: string; // User's avatar.
     badge?: number; // Badge to display in the site.
     siteHomeId?: number; // Site home ID.
+    loggedOut: boolean; // If Site is logged out.
 };
 
 /**

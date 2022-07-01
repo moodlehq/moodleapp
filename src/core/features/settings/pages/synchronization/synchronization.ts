@@ -16,11 +16,12 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { CoreConstants } from '@/core/constants';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreSites, CoreSiteBasicInfo } from '@services/sites';
+import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreConfig } from '@services/config';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 import { Translate } from '@singletons';
+import { CoreAccountsList, CoreLoginHelper } from '@features/login/services/login-helper';
 
 /**
  * Page that displays the synchronization settings.
@@ -28,43 +29,67 @@ import { Translate } from '@singletons';
 @Component({
     selector: 'page-core-app-settings-synchronization',
     templateUrl: 'synchronization.html',
+    styleUrls: ['../../../login/sitelist.scss'],
 })
 export class CoreSettingsSynchronizationPage implements OnInit, OnDestroy {
 
-    sites: CoreSiteBasicInfo[] = [];
+    accountsList: CoreAccountsList = {
+        sameSite: [],
+        otherSites: [],
+        count: 0,
+    };
+
     sitesLoaded = false;
-    currentSiteId = '';
     syncOnlyOnWifi = false;
     protected isDestroyed = false;
     protected sitesObserver: CoreEventObserver;
 
     constructor() {
 
-        this.currentSiteId = CoreSites.getCurrentSiteId();
-
         this.sitesObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, async (data) => {
-            const site = await CoreSites.getSite(data.siteId);
+            const siteId = data.siteId;
 
-            const siteEntry = this.sites.find((siteEntry) => siteEntry.id == site.id);
-            if (siteEntry) {
-                const siteInfo = site.getInfo();
+            let siteEntry = siteId === this.accountsList.currentSite?.id
+                ? this.accountsList.currentSite
+                : undefined;
 
-                siteEntry.siteName = site.getSiteName();
+            if (!siteEntry) {
+                siteEntry = this.accountsList.sameSite.find((siteEntry) => siteEntry.id === siteId);
+            }
 
-                if (siteInfo) {
-                    siteEntry.siteUrl = siteInfo.siteurl;
-                    siteEntry.fullName = siteInfo.fullname;
-                }
+            if (!siteEntry) {
+                this.accountsList.otherSites.some((sites) => {
+                    siteEntry = sites.find((siteEntry) => siteEntry.id === siteId);
+
+                    return siteEntry;
+                });
+            }
+
+            if (!siteEntry) {
+                return;
+            }
+
+            const site = await CoreSites.getSite(siteId);
+
+            const siteInfo = site.getInfo();
+
+            siteEntry.siteName = site.getSiteName();
+
+            if (siteInfo) {
+                siteEntry.siteUrl = siteInfo.siteurl;
+                siteEntry.fullName = siteInfo.fullname;
             }
         });
     }
 
     /**
-     * View loaded.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
+        const currentSiteId = CoreSites.getCurrentSiteId();
+
         try {
-            this.sites = await CoreSites.getSortedSites();
+            this.accountsList = await CoreLoginHelper.getAccountsList(currentSiteId);
         } catch {
             // Ignore errors.
         }
