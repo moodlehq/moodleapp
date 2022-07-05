@@ -56,7 +56,7 @@ async function main() {
 
     // Copy plugin template.
     const { version: appVersion } = require(projectPath('package.json'));
-    const templatePath = projectPath('local-moodleappbehat');
+    const templatePath = projectPath('local_moodleappbehat');
 
     for await (const file of getDirectoryFiles(templatePath)) {
         if (isExcluded(file, exclusions)) {
