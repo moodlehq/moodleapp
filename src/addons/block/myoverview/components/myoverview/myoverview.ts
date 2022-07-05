@@ -252,7 +252,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
         this.loadSort();
         this.loadLayouts(config?.layouts?.value.split(','));
-        this.loadFilters(config);
+        await this.loadFilters(config);
 
         this.isDirty = false;
     }
@@ -280,9 +280,9 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      *
      * @param config Block configuration.
      */
-    protected loadFilters(
+    protected async loadFilters(
         config?: Record<string, { name: string; value: string; type: string }>,
-    ): void {
+    ): Promise<void> {
         if (!this.hasCourses) {
             return;
         }
@@ -320,7 +320,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             this.saveFilters('all');
         }
 
-        this.filterCourses();
+        await this.filterCourses();
     }
 
     /**
@@ -369,6 +369,8 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     protected async refreshCourseList(data: CoreCoursesMyCoursesUpdatedEventData): Promise<void> {
         if (data.action == CoreCoursesProvider.ACTION_ENROL) {
             // Always update if user enrolled in a course.
+            this.loaded = false;
+
             return this.refreshContent();
         }
 
@@ -376,6 +378,8 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         if (data.action == CoreCoursesProvider.ACTION_STATE_CHANGED) {
             if (!course) {
                 // Not found, use WS update.
+                this.loaded = false;
+
                 return this.refreshContent();
             }
 
@@ -394,6 +398,8 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         if (data.action == CoreCoursesProvider.ACTION_VIEW && data.courseId != CoreSites.getCurrentSiteHomeId()) {
             if (!course) {
                 // Not found, use WS update.
+                this.loaded = false;
+
                 return this.refreshContent();
             }
 
@@ -463,7 +469,9 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             const customFilterValue = this.filters.customFilters[timeFilter.substring(7)]?.value;
 
             if (customFilterName !== undefined && customFilterValue !== undefined) {
+                const alreadyLoading = this.loaded === false;
                 this.loaded = false;
+
                 try {
                     const courses = await CoreCourses.getEnrolledCoursesByCustomField(customFilterName, customFilterValue);
 
@@ -471,10 +479,18 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
                     const courseIds = courses.map((course) => course.id);
 
                     this.filteredCourses = this.filteredCourses.filter((course) => courseIds.includes(course.id));
+                    this.saveFilters(timeFilter);
                 } catch (error) {
+                    if (alreadyLoading) {
+                        throw error; // Pass the error to the caller so it's treated there.
+                    }
+
                     CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError);
                 } finally {
-                    this.loaded = true;
+                    if (!alreadyLoading) {
+                        // Only set loaded to true if there was no other data being loaded.
+                        this.loaded = true;
+                    }
                 }
             }
         } else {
