@@ -601,7 +601,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
                 }
 
                 if (openInApp) {
-                    site.openInAppWithAutoLoginIfSameSite(url);
+                    site.openInAppWithAutoLogin(url);
 
                     if (refreshOnResume && this.refreshContext) {
                         // Refresh the context when the IAB is closed.
@@ -610,7 +610,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
                         });
                     }
                 } else {
-                    site.openInBrowserWithAutoLoginIfSameSite(url, undefined, {
+                    site.openInBrowserWithAutoLogin(url, undefined, {
                         showBrowserWarning: !confirmMessage,
                     });
 

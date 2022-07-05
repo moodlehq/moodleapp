@@ -510,7 +510,7 @@ export class CoreIframeUtilsProvider {
             if (!CoreSites.isLoggedIn()) {
                 CoreUtils.openInBrowser(link.href);
             } else {
-                await CoreSites.getCurrentSite()!.openInBrowserWithAutoLoginIfSameSite(link.href);
+                await CoreSites.getCurrentSite()?.openInBrowserWithAutoLogin(link.href);
             }
         } else if (link.target == '_parent' || link.target == '_top' || link.target == '_blank') {
             // Opening links with _parent, _top or _blank can break the app. We'll open it in InAppBrowser.
