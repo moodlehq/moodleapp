@@ -172,6 +172,7 @@
     "jest": "^26.5.2",
     "jest-preset-angular": "^8.3.1",
     "jsonc-parser": "^2.3.1",
+    "minimatch": "^5.1.0",
     "native-run": "^1.4.0",
     "patch-package": "^6.4.7",
     "terser-webpack-plugin": "^4.2.3",

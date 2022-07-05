@@ -1,0 +1,18 @@
+name: Update Behat plugin
+
+on: ['push']
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v3
+    - name: Install npm packages
+      run: npm ci --no-audit
+    - name: Update Behat plugin
+      env:
+        GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+        BEHAT_PLUGIN_GITHUB_REPOSITORY: ${{ secrets.BEHAT_PLUGIN_GITHUB_REPOSITORY }}
+        BEHAT_PLUGIN_BRANCH: ${{ secrets.BEHAT_PLUGIN_BRANCH }}
+      run: ./.github/scripts/update_behat_plugin.sh
