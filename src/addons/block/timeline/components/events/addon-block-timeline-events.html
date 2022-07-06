@@ -7,7 +7,7 @@
         </h3>
     </ion-label>
 </ion-item>
-<ion-item-group *ngFor="let dayEvents of filteredEvents">
+<ion-item-group *ngFor="let dayEvents of events">
     <ion-item>
         <ion-label>
             <h4 [class.core-bold]="!course">{{ dayEvents.dayTimestamp * 1000 | coreFormatDate:"strftimedaydate" }}</h4>
@@ -30,15 +30,15 @@
                                 <p class="item-heading addon-block-timeline-activity-name-with-status">
                                     <span>
                                         <core-format-text [text]="event.activityname || event.name" contextLevel="module"
-                                            [contextInstanceId]="event.id" [courseId]="event.course && event.course.id">
+                                            [contextInstanceId]="event.id" [courseId]="event.course?.id">
                                         </core-format-text>
                                     </span>
                                     <ion-badge *ngIf="event.overdue" color="danger">{{ 'addon.block_timeline.overdue' | translate }}
                                     </ion-badge>
                                 </p>
-                                <p *ngIf="(showCourse && event.course) || event.activitystr"
+                                <p *ngIf="(showInlineCourse && event.course) || event.activitystr"
                                     class="addon-block-timeline-activity-course-activity">
-                                    <span *ngIf="showCourse && event.course">
+                                    <span *ngIf="showInlineCourse && event.course">
                                         <core-format-text [text]="event.course.fullnamedisplay" contextLevel="course"
                                             [contextInstanceId]="event.course.id">
                                         </core-format-text>
@@ -52,7 +52,7 @@
                             </ion-col>
                         </ion-row>
                     </ion-col>
-                    <ion-col class="addon-block-timeline-activity-action ion-no-padding" *ngIf="event.action?.actionable">
+                    <ion-col class="addon-block-timeline-activity-action ion-no-padding" *ngIf="event.action && event.action.actionable">
                         <ion-button fill="outline" (click)="action($event, event.action.url)" [title]="event.action.name" class="chip">
                             {{event.action.name}}
                             <ion-badge slot="end" class="ion-margin-start" *ngIf="event.action.showitemcount">
@@ -66,18 +66,10 @@
     </ng-container>
 </ion-item-group>
 
-<div class="ion-padding ion-text-center" *ngIf="canLoadMore && !empty">
+<div class="ion-padding ion-text-center" *ngIf="canLoadMore">
     <!-- Button and spinner to show more attempts. -->
-    <ion-button expand="block" (click)="loadMoreEvents()" fill="outline" *ngIf="!loadingMore">
+    <ion-button expand="block" (click)="loadMore.emit()" fill="outline" *ngIf="!loadingMore">
         {{ 'core.loadmore' | translate }}
     </ion-button>
     <ion-spinner *ngIf="loadingMore" [attr.aria-label]="'core.loading' | translate"></ion-spinner>
 </div>
-
-<ion-item *ngIf="empty && course">
-    <ion-label class="ion-text-wrap">
-        <p>{{'addon.block_timeline.noevents' | translate}}</p>
-    </ion-label>
-</ion-item>
-<core-empty-box *ngIf="empty && !course" image="assets/img/icons/activities.svg" [message]="'addon.block_timeline.noevents' | translate">
-</core-empty-box>

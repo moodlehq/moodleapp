@@ -64,7 +64,7 @@ export class AddonCalendarHelperProvider {
      * @param eventType Type of the event.
      * @return Event icon.
      */
-    getEventIcon(eventType: AddonCalendarEventType): string {
+    getEventIcon(eventType: AddonCalendarEventType | string): string {
         if (this.eventTypeIcons.length == 0) {
             CoreUtils.enumKeys(AddonCalendarEventType).forEach((name) => {
                 const value = AddonCalendarEventType[name];
@@ -164,9 +164,9 @@ export class AddonCalendarHelperProvider {
      *
      * @param event Event to format.
      */
-    async formatEventData(
+    formatEventData(
         event: AddonCalendarEvent | AddonCalendarEventBase | AddonCalendarGetEventsEvent,
-    ): Promise<AddonCalendarEventToDisplay> {
+    ): AddonCalendarEventToDisplay {
 
         const eventFormatted: AddonCalendarEventToDisplay = {
             ...event,
@@ -181,7 +181,7 @@ export class AddonCalendarHelperProvider {
         };
 
         if (event.modulename) {
-            eventFormatted.eventIcon = await CoreCourse.getModuleIconSrc(event.modulename);
+            eventFormatted.eventIcon = CoreCourse.getModuleIconSrc(event.modulename);
             eventFormatted.moduleIcon = eventFormatted.eventIcon;
             eventFormatted.iconTitle = CoreCourse.translateModuleName(event.modulename);
         }

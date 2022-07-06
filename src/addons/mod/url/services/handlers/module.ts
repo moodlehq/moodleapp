@@ -55,7 +55,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
     /**
      * @inheritdoc
      */
-    async getData(module: CoreCourseModuleData): Promise<CoreCourseModuleHandlerData> {
+    getData(module: CoreCourseModuleData): CoreCourseModuleHandlerData {
 
         /**
          * Open the URL.
@@ -80,7 +80,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
         };
 
         const handlerData: CoreCourseModuleHandlerData = {
-            icon: await CoreCourse.getModuleIconSrc(module.modname, module.modicon),
+            icon: CoreCourse.getModuleIconSrc(module.modname, module.modicon),
             title: module.name,
             class: 'addon-mod_url-handler',
             showDownloadButton: false,
@@ -109,7 +109,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
             }],
         };
 
-        this.hideLinkButton(module).then(async (hideButton) => {
+        this.hideLinkButton(module).then((hideButton) => {
             if (!handlerData.buttons) {
                 return;
             }
@@ -120,7 +120,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
                 const icon = AddonModUrl.guessIcon(module.contents[0].fileurl);
 
                 // Calculate the icon to use.
-                handlerData.icon = await CoreCourse.getModuleIconSrc(module.modname, module.modicon, icon);
+                handlerData.icon = CoreCourse.getModuleIconSrc(module.modname, module.modicon, icon);
             }
 
             return;

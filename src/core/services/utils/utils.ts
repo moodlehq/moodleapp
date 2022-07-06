@@ -81,12 +81,12 @@ export class CoreUtilsProvider {
      * @param promises Promises.
      * @return Promise resolved if all promises are resolved and rejected if at least 1 promise fails.
      */
-    async allPromises(promises: Promise<unknown>[]): Promise<void> {
+    async allPromises(promises: unknown[]): Promise<void> {
         if (!promises || !promises.length) {
-            return Promise.resolve();
+            return;
         }
 
-        const getPromiseError = async (promise): Promise<Error | void> => {
+        const getPromiseError = async (promise: unknown): Promise<Error | void> => {
             try {
                 await promise;
             } catch (error) {

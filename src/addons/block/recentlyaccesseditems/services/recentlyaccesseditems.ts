@@ -54,15 +54,15 @@ export class AddonBlockRecentlyAccessedItemsProvider {
 
         const cmIds: number[] = [];
 
-        items = await Promise.all(items.map(async (item) => {
+        items = items.map((item) => {
             const modicon = item.icon && CoreDomUtils.getHTMLElementAttribute(item.icon, 'src');
 
-            item.iconUrl = await CoreCourse.getModuleIconSrc(item.modname, modicon || undefined);
+            item.iconUrl = CoreCourse.getModuleIconSrc(item.modname, modicon || undefined);
             item.iconTitle = item.icon && CoreDomUtils.getHTMLElementAttribute(item.icon, 'title');
             cmIds.push(item.cmid);
 
             return item;
-        }));
+        });
 
         // Check if the viewed module should be updated for each activity.
         const lastViewedMap = await CoreCourse.getCertainModulesViewed(cmIds, site.getId());

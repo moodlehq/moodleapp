@@ -14,7 +14,7 @@
 
 import { Type } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import type { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
+import type { ICoreBlockComponent } from '@features/block/classes/base-block-component';
 import { CoreBlockPreRenderedComponent } from '@features/block/components/pre-rendered-block/pre-rendered-block';
 import { CoreBlockDelegate, CoreBlockHandler, CoreBlockHandlerData } from '@features/block/services/block-delegate';
 import { CoreCourseBlock } from '@features/course/services/course';
@@ -52,7 +52,7 @@ export class CoreSitePluginsBlockHandler extends CoreSitePluginsBaseHandler impl
         instanceId: number,
     ): Promise<CoreBlockHandlerData> {
         const className = this.handlerSchema.displaydata?.class || 'block_' + block.name;
-        let component: Type<CoreBlockBaseComponent> | undefined;
+        let component: Type<ICoreBlockComponent> | undefined;
 
         if (this.handlerSchema.displaydata?.type == 'title') {
             component = CoreSitePluginsOnlyTitleBlockComponent;

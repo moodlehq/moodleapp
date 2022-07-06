@@ -12,18 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
+import { ICoreBlockComponent } from '@features/block/classes/base-block-component';
 import { AddonBlockTimeline } from '../../services/timeline';
-import { AddonCalendarEvent } from '@addons/calendar/services/calendar';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCoursesHelper, CoreEnrolledCourseDataWithOptions } from '@features/courses/services/courses-helper';
-import { CoreSite } from '@classes/site';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
-import { CoreNavigator } from '@services/navigator';
+import { BehaviorSubject, combineLatest, Observable, of, Subject } from 'rxjs';
+import { catchError, distinctUntilChanged, map, share, tap } from 'rxjs/operators';
+import { AddonBlockTimelineDateRange, AddonBlockTimelineSection } from '@addons/block/timeline/classes/section';
+import { FormControl } from '@angular/forms';
+import { formControlValue, resolved } from '@/core/utils/rxjs';
+import { CoreLogger } from '@singletons/logger';
 
 /**
  * Component to render a timeline block.
@@ -32,251 +35,286 @@ import { CoreNavigator } from '@services/navigator';
     selector: 'addon-block-timeline',
     templateUrl: 'addon-block-timeline.html',
     styleUrls: ['timeline.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AddonBlockTimelineComponent extends CoreBlockBaseComponent implements OnInit {
+export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent {
 
-    sort = 'sortbydates';
-    filter = 'next30days';
-    currentSite!: CoreSite;
-    timeline: {
-        events: AddonCalendarEvent[];
-        loaded: boolean;
-        canLoadMore?: number;
-    } = {
-        events: <AddonCalendarEvent[]> [],
-        loaded: false,
-    };
+    sort = new FormControl();
+    sort$!: Observable<AddonBlockTimelineSort>;
+    sortOptions!: AddonBlockTimelineOption<AddonBlockTimelineSort>[];
+    filter = new FormControl();
+    filter$!: Observable<AddonBlockTimelineFilter>;
+    statusFilterOptions!: AddonBlockTimelineOption<AddonBlockTimelineFilter>[];
+    dateFilterOptions!: AddonBlockTimelineOption<AddonBlockTimelineFilter>[];
+    search$: Subject<string | null>;
+    sections$!: Observable<AddonBlockTimelineSection[]>;
+    loaded = false;
 
-    timelineCourses: {
-        courses: AddonBlockTimelineCourse[];
-        loaded: boolean;
-        canLoadMore?: number;
-    } = {
-        courses: [],
-        loaded: false,
-    };
-
-    dataFrom?: number;
-    dataTo?: number;
-    overdue = false;
-
-    searchEnabled = false;
-    searchText = '';
-
+    protected logger: CoreLogger;
     protected courseIdsToInvalidate: number[] = [];
     protected fetchContentDefaultError = 'Error getting timeline data.';
-    protected gradePeriodAfter = 0;
-    protected gradePeriodBefore = 0;
 
     constructor() {
-        super('AddonBlockTimelineComponent');
+        this.logger = CoreLogger.getInstance('AddonBlockTimelineComponent');
+        this.search$ = new BehaviorSubject(null);
+        this.initializeSort();
+        this.initializeFilter();
+        this.initializeSections();
+    }
+
+    get AddonBlockTimelineSort(): typeof AddonBlockTimelineSort {
+        return AddonBlockTimelineSort;
     }
 
     /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        try {
-            this.currentSite = CoreSites.getRequiredCurrentSite();
-        } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+        const currentSite = CoreSites.getRequiredCurrentSite();
+        const [sort, filter, search] = await Promise.all([
+            currentSite.getLocalSiteConfig('AddonBlockTimelineSort', AddonBlockTimelineSort.ByDates),
+            currentSite.getLocalSiteConfig('AddonBlockTimelineFilter', AddonBlockTimelineFilter.Next30Days),
+            currentSite.isVersionGreaterEqualThan('4.0') ? '' : null,
+        ]);
 
-            CoreNavigator.back();
-
-            return;
-        }
-
-        this.filter = await this.currentSite.getLocalSiteConfig('AddonBlockTimelineFilter', this.filter);
-        this.switchFilter(this.filter);
-
-        this.sort = await this.currentSite.getLocalSiteConfig('AddonBlockTimelineSort', this.sort);
-
-        this.searchEnabled = this.currentSite.isVersionGreaterEqualThan('4.0');
-
-        super.ngOnInit();
+        this.sort.setValue(sort);
+        this.filter.setValue(filter);
+        this.search$.next(search);
     }
 
     /**
-     * Perform the invalidate content function.
+     * Sort changed.
      *
-     * @return Resolved when done.
+     * @param sort New sort.
      */
-    invalidateContent(): Promise<void> {
-        const promises: Promise<void>[] = [];
-
-        promises.push(AddonBlockTimeline.invalidateActionEventsByTimesort());
-        promises.push(AddonBlockTimeline.invalidateActionEventsByCourses());
-        promises.push(CoreCourses.invalidateUserCourses());
-        promises.push(CoreCourseOptionsDelegate.clearAndInvalidateCoursesOptions());
-        if (this.courseIdsToInvalidate.length > 0) {
-            promises.push(CoreCourses.invalidateCoursesByField('ids', this.courseIdsToInvalidate.join(',')));
-        }
-
-        return CoreUtils.allPromises(promises);
+    sortChanged(sort: AddonBlockTimelineSort): void {
+        CoreSites.getRequiredCurrentSite().setLocalSiteConfig('AddonBlockTimelineSort', sort);
     }
 
     /**
-     * Fetch the courses for my overview.
-     *
-     * @return Promise resolved when done.
-     */
-    protected async fetchContent(): Promise<void> {
-        if (this.sort == 'sortbydates') {
-            return this.fetchMyOverviewTimeline().finally(() => {
-                this.timeline.loaded = true;
-            });
-        }
-
-        if (this.sort == 'sortbycourses') {
-            return this.fetchMyOverviewTimelineByCourses().finally(() => {
-                this.timelineCourses.loaded = true;
-            });
-        }
-    }
-
-    /**
-     * Load more events.
-     *
-     * @param course Course. If defined, it will update the course events, timeline otherwise.
-     * @return Promise resolved when done.
-     */
-    async loadMore(course?: AddonBlockTimelineCourse): Promise<void> {
-        try {
-            if (course) {
-                const courseEvents =
-                    await AddonBlockTimeline.getActionEventsByCourse(course.id, course.canLoadMore, this.searchText);
-                course.events = course.events?.concat(courseEvents.events);
-                course.canLoadMore = courseEvents.canLoadMore;
-            } else {
-                await this.fetchMyOverviewTimeline(this.timeline.canLoadMore);
-            }
-        } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError);
-        }
-    }
-
-    /**
-     * Fetch the timeline.
-     *
-     * @param afterEventId The last event id.
-     * @return Promise resolved when done.
-     */
-    protected async fetchMyOverviewTimeline(afterEventId?: number): Promise<void> {
-        const events = await AddonBlockTimeline.getActionEventsByTimesort(afterEventId, this.searchText);
-
-        this.timeline.events = afterEventId ? this.timeline.events.concat(events.events) : events.events;
-        this.timeline.canLoadMore = events.canLoadMore;
-    }
-
-    /**
-     * Fetch the timeline by courses.
-     *
-     * @return Promise resolved when done.
-     */
-    protected async fetchMyOverviewTimelineByCourses(): Promise<void> {
-        try {
-            this.gradePeriodAfter = parseInt(await this.currentSite.getConfig('coursegraceperiodafter'), 10);
-            this.gradePeriodBefore = parseInt(await this.currentSite.getConfig('coursegraceperiodbefore'), 10);
-        } catch {
-            this.gradePeriodAfter = 0;
-            this.gradePeriodBefore = 0;
-        }
-
-        // Do not filter courses by date because they can contain activities due.
-        this.timelineCourses.courses = await CoreCoursesHelper.getUserCoursesWithOptions();
-        this.courseIdsToInvalidate = this.timelineCourses.courses.map((course) => course.id);
-
-        // Filter only in progress courses.
-        this.timelineCourses.courses = this.timelineCourses.courses.filter((course) =>
-            !course.hidden &&
-            !CoreCoursesHelper.isPastCourse(course, this.gradePeriodAfter) &&
-            !CoreCoursesHelper.isFutureCourse(course, this.gradePeriodAfter, this.gradePeriodBefore));
-
-        if (this.timelineCourses.courses.length > 0) {
-            const courseEvents = await AddonBlockTimeline.getActionEventsByCourses(this.courseIdsToInvalidate, this.searchText);
-
-            this.timelineCourses.courses = this.timelineCourses.courses.filter((course) => {
-                if (courseEvents[course.id].events.length == 0) {
-                    return false;
-                }
-
-                course.events = courseEvents[course.id].events;
-                course.canLoadMore = courseEvents[course.id].canLoadMore;
-
-                return true;
-            });
-        }
-    }
-
-    /**
-     * Change timeline filter being viewed.
+     * Filter changed.
      *
      * @param filter New filter.
      */
-    switchFilter(filter: string): void {
-        this.filter = filter;
-        this.currentSite.setLocalSiteConfig('AddonBlockTimelineFilter', this.filter);
-        this.overdue = this.filter === 'overdue';
-
-        switch (this.filter) {
-            case 'overdue':
-                this.dataFrom = -14;
-                this.dataTo = 1;
-                break;
-            case 'next7days':
-                this.dataFrom = 0;
-                this.dataTo = 7;
-                break;
-            case 'next30days':
-                this.dataFrom = 0;
-                this.dataTo = 30;
-                break;
-            case 'next3months':
-                this.dataFrom = 0;
-                this.dataTo = 90;
-                break;
-            case 'next6months':
-                this.dataFrom = 0;
-                this.dataTo = 180;
-                break;
-            default:
-            case 'all':
-                this.dataFrom = -14;
-                this.dataTo = undefined;
-                break;
-        }
-    }
-
-    /**
-     * Change timeline sort being viewed.
-     *
-     * @param sort New sorting.
-     */
-    switchSort(sort: string): void {
-        this.sort = sort;
-        this.currentSite.setLocalSiteConfig('AddonBlockTimelineSort', this.sort);
-
-        if (!this.timeline.loaded && this.sort == 'sortbydates') {
-            this.fetchContent();
-        } else if (!this.timelineCourses.loaded && this.sort == 'sortbycourses') {
-            this.fetchContent();
-        }
+    filterChanged(filter: AddonBlockTimelineFilter): void {
+        CoreSites.getRequiredCurrentSite().setLocalSiteConfig('AddonBlockTimelineFilter', filter);
     }
 
     /**
      * Search text changed.
      *
-     * @param searchValue Search value
+     * @param search New search.
      */
-    searchTextChanged(searchValue = ''): void {
-        this.searchText = searchValue || '';
+    searchChanged(search: string): void {
+        this.search$.next(search);
+    }
 
-        this.fetchContent();
+    /**
+     * @inheritdoc
+     */
+    async invalidateContent(): Promise<void> {
+        await CoreUtils.allPromises([
+            AddonBlockTimeline.invalidateActionEventsByTimesort(),
+            AddonBlockTimeline.invalidateActionEventsByCourses(),
+            CoreCourses.invalidateUserCourses(),
+            CoreCourseOptionsDelegate.clearAndInvalidateCoursesOptions(),
+            CoreCourses.invalidateCoursesByField('ids', this.courseIdsToInvalidate.join(',')),
+        ]);
+    }
+
+    /**
+     * Initialize sort properties.
+     */
+    protected initializeSort(): void {
+        this.sort$ = formControlValue(this.sort);
+        this.sortOptions = Object.values(AddonBlockTimelineSort).map(value => ({
+            value,
+            name: `addon.block_timeline.${value}`,
+        }));
+    }
+
+    /**
+     * Initialize filter properties.
+     */
+    protected initializeFilter(): void {
+        this.filter$ = formControlValue(this.filter);
+        this.statusFilterOptions = [
+            { value: AddonBlockTimelineFilter.All, name: 'core.all' },
+            { value: AddonBlockTimelineFilter.Overdue, name: 'addon.block_timeline.overdue' },
+        ];
+        this.dateFilterOptions = [
+            AddonBlockTimelineFilter.Next7Days,
+            AddonBlockTimelineFilter.Next30Days,
+            AddonBlockTimelineFilter.Next3Months,
+            AddonBlockTimelineFilter.Next6Months,
+        ]
+            .map(value => ({
+                value,
+                name: `addon.block_timeline.${value}`,
+            }));
+    }
+
+    /**
+     * Initialize sections properties.
+     */
+    protected initializeSections(): void {
+        const filtersRange: Record<AddonBlockTimelineFilter, AddonBlockTimelineDateRange> = {
+            all: { from: -14 },
+            overdue: { from: -14, to: 1 },
+            next7days: { from: 0, to: 7 },
+            next30days: { from: 0, to: 30 },
+            next3months: { from: 0, to: 90 },
+            next6months: { from: 0, to: 180 },
+        };
+        const sortValue = this.sort.valueChanges as Observable<AddonBlockTimelineSort>;
+        const courses = sortValue.pipe(
+            distinctUntilChanged(),
+            map(async sort => {
+                switch (sort) {
+                    case AddonBlockTimelineSort.ByDates:
+                        return [];
+                    case AddonBlockTimelineSort.ByCourses:
+                        return CoreCoursesHelper.getUserCoursesWithOptions();
+                }
+            }),
+            resolved(),
+            map(courses => {
+                this.courseIdsToInvalidate = courses.map(course => course.id);
+
+                return courses;
+            }),
+        );
+
+        this.sections$ = combineLatest([this.filter$, sortValue, this.search$, courses]).pipe(
+            map(async ([filter, sort, search, courses]) => {
+                const includeOverdue = filter === AddonBlockTimelineFilter.Overdue;
+                const dateRange = filtersRange[filter];
+
+                switch (sort) {
+                    case AddonBlockTimelineSort.ByDates:
+                        return this.getSectionsByDates(search, includeOverdue, dateRange);
+                    case AddonBlockTimelineSort.ByCourses:
+                        return this.getSectionsByCourse(search, includeOverdue, dateRange, courses);
+                }
+            }),
+            resolved(),
+            catchError(error => {
+                // An error ocurred in the function, log the error and just resolve the observable so the workflow continues.
+                this.logger.error(error);
+
+                // Error getting data, fail.
+                CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError, true);
+
+                return of([]);
+            }),
+            share(),
+            tap(() => (this.loaded = true)),
+        );
+    }
+
+    /**
+     * Get sections sorted by dates.
+     *
+     * @param search Search string.
+     * @param overdue Whether to filter overdue events or not.
+     * @param dateRange Date range to filter events by.
+     * @returns Sections.
+     */
+    protected async getSectionsByDates(
+        search: string | null,
+        overdue: boolean,
+        dateRange: AddonBlockTimelineDateRange,
+    ): Promise<AddonBlockTimelineSection[]> {
+        const section = new AddonBlockTimelineSection(search, overdue, dateRange);
+
+        await section.loadMore();
+
+        return section.data$.value.events.length > 0 ? [section] : [];
+    }
+
+    /**
+     * Get sections sorted by courses.
+     *
+     * @param search Search string.
+     * @param overdue Whether to filter overdue events or not.
+     * @param dateRange Date range to filter events by.
+     * @param courses Courses.
+     * @returns Sections.
+     */
+    protected async getSectionsByCourse(
+        search: string | null,
+        overdue: boolean,
+        dateRange: AddonBlockTimelineDateRange,
+        courses: CoreEnrolledCourseDataWithOptions[],
+    ): Promise<AddonBlockTimelineSection[]> {
+        // Do not filter courses by date because they can contain activities due.
+        const courseIds = courses.map(course => course.id);
+        const gracePeriod = await this.getCoursesGracePeriod();
+        const courseEvents = await AddonBlockTimeline.getActionEventsByCourses(courseIds, search ?? '');
+
+        return courses
+            .filter(
+                course =>
+                    !course.hidden &&
+                    !CoreCoursesHelper.isPastCourse(course, gracePeriod.after) &&
+                    !CoreCoursesHelper.isFutureCourse(course, gracePeriod.after, gracePeriod.before) &&
+                    courseEvents[course.id].events.length > 0,
+            )
+            .map(course => new AddonBlockTimelineSection(
+                search,
+                overdue,
+                dateRange,
+                course,
+                courseEvents[course.id].events,
+                courseEvents[course.id].canLoadMore,
+            ))
+            .filter(section => section.data$.value.events.length > 0);
+    }
+
+    /**
+     * Get courses grace period for the current site.
+     *
+     * @returns Courses grace period.
+     */
+    protected async getCoursesGracePeriod(): Promise<{ before: number; after: number }> {
+        try {
+            const currentSite = CoreSites.getRequiredCurrentSite();
+
+            return {
+                before: parseInt(await currentSite.getConfig('coursegraceperiodbefore'), 10),
+                after: parseInt(await currentSite.getConfig('coursegraceperiodafter'), 10),
+            };
+        } catch {
+            return { before: 0, after: 0 };
+        }
     }
 
 }
 
-export type AddonBlockTimelineCourse = CoreEnrolledCourseDataWithOptions & {
-    events?: AddonCalendarEvent[];
-    canLoadMore?: number;
-};
+/**
+ * Sort options.
+ */
+export enum AddonBlockTimelineSort {
+    ByDates = 'sortbydates',
+    ByCourses = 'sortbycourses',
+}
+
+/**
+ * Filter options.
+ */
+export const enum AddonBlockTimelineFilter {
+    All = 'all',
+    Overdue = 'overdue',
+    Next7Days = 'next7days',
+    Next30Days = 'next30days',
+    Next3Months = 'next3months',
+    Next6Months = 'next6months',
+}
+
+/**
+ * Select option.
+ */
+export interface AddonBlockTimelineOption<Value> {
+    value: Value;
+    name: string;
+}

@@ -1005,6 +1005,10 @@ export class CoreCoursesProvider {
      * @return Promise resolved when the data is invalidated.
      */
     async invalidateCoursesByField(field: string = '', value: number | string = '', siteId?: string): Promise<void> {
+        if (typeof value === 'string' && value.length === 0) {
+            return;
+        }
+
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         const result = await this.fixCoursesByFieldParams(field, value, siteId);

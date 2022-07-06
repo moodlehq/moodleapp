@@ -391,7 +391,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
     async getModuleIconSrc(modname: string, modicon?: string, module?: CoreCourseModuleData): Promise<string> {
         const icon = await this.executeFunctionOnEnabled<Promise<string>>(modname, 'getIconSrc', [module]);
 
-        return icon || await CoreCourse.getModuleIconSrc(modname, modicon) || '';
+        return icon || CoreCourse.getModuleIconSrc(modname, modicon) || '';
     }
 
     /**
