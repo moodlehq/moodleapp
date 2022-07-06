@@ -1890,16 +1890,28 @@ export class CoreSite {
     getConfig(name?: undefined, ignoreCache?: boolean): Promise<CoreSiteConfig>;
     getConfig(name: string, ignoreCache?: boolean): Promise<string>;
     getConfig(name?: string, ignoreCache?: boolean): Promise<string | CoreSiteConfig> {
+        return firstValueFrom(
+            this.getConfigObservable(<string> name, ignoreCache ? CoreSitesReadingStrategy.ONLY_NETWORK : undefined),
+        );
+    }
+
+    /**
+     * Get the config of this site.
+     * It is recommended to use getStoredConfig instead since it's faster and doesn't use network.
+     *
+     * @param name Name of the setting to get. If not set or false, all settings will be returned.
+     * @param readingStrategy Reading strategy.
+     * @return Observable returning site config.
+     */
+    getConfigObservable(name?: undefined, readingStrategy?: CoreSitesReadingStrategy): Observable<CoreSiteConfig>;
+    getConfigObservable(name: string, readingStrategy?: CoreSitesReadingStrategy): Observable<string>;
+    getConfigObservable(name?: string, readingStrategy?: CoreSitesReadingStrategy): Observable<string | CoreSiteConfig> {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getConfigCacheKey(),
+            ...CoreSites.getReadingStrategyPreSets(readingStrategy),
         };
 
-        if (ignoreCache) {
-            preSets.getFromCache = false;
-            preSets.emergencyCache = false;
-        }
-
-        return this.read('tool_mobile_get_config', {}, preSets).then((config: CoreSiteConfigResponse) => {
+        return this.readObservable<CoreSiteConfigResponse>('tool_mobile_get_config', {}, preSets).pipe(map(config => {
             if (name) {
                 // Return the requested setting.
                 for (const x in config.settings) {
@@ -1918,7 +1930,7 @@ export class CoreSite {
 
                 return settings;
             }
-        });
+        }));
     }
 
     /**

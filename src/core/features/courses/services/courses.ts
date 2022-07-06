@@ -585,7 +585,7 @@ export class CoreCoursesProvider {
     }
 
     /**
-     * Get courses matching the given custom field. Only works in online.
+     * Get courses matching the given custom field. By default it will try not to use cache.
      *
      * @param customFieldName Custom field name.
      * @param customFieldValue Custom field value.
@@ -593,30 +593,49 @@ export class CoreCoursesProvider {
      * @return Promise resolved with the list of courses.
      * @since 3.8
      */
-    async getEnrolledCoursesByCustomField(
+    getEnrolledCoursesByCustomField(
         customFieldName: string,
         customFieldValue: string,
         siteId?: string,
     ): Promise<CoreCourseSummaryData[]> {
-        const site = await CoreSites.getSite(siteId);
-        const params: CoreCourseGetEnrolledCoursesByTimelineClassificationWSParams = {
-            classification: 'customfield',
-            customfieldname: customFieldName,
-            customfieldvalue: customFieldValue,
-        };
-        const preSets: CoreSiteWSPreSets = {
-            getFromCache: false,
-        };
-        const courses = await site.read<CoreCourseGetEnrolledCoursesByTimelineClassificationWSResponse>(
-            'core_course_get_enrolled_courses_by_timeline_classification',
-            params,
-            preSets,
-        );
-        if (courses.courses) {
-            return courses.courses;
-        }
+        return firstValueFrom(this.getEnrolledCoursesByCustomFieldObservable(customFieldName, customFieldValue, {
+            readingStrategy: CoreSitesReadingStrategy.PREFER_NETWORK,
+            siteId,
+        }));
+    }
 
-        throw Error('WS core_course_get_enrolled_courses_by_timeline_classification failed');
+    /**
+     * Get courses matching the given custom field.
+     *
+     * @param customFieldName Custom field name.
+     * @param customFieldValue Custom field value.
+     * @param options Common options.
+     * @return Promise resolved with the list of courses.
+     * @since 3.8
+     */
+    getEnrolledCoursesByCustomFieldObservable(
+        customFieldName: string,
+        customFieldValue: string,
+        options: CoreSitesCommonWSOptions,
+    ): Observable<CoreCourseSummaryData[]> {
+        return asyncObservable(async () => {
+            const site = await CoreSites.getSite(options. siteId);
+
+            const params: CoreCourseGetEnrolledCoursesByTimelineClassificationWSParams = {
+                classification: 'customfield',
+                customfieldname: customFieldName,
+                customfieldvalue: customFieldValue,
+            };
+            const preSets: CoreSiteWSPreSets = {
+                ...CoreSites.getReadingStrategyPreSets(options.readingStrategy ?? CoreSitesReadingStrategy.PREFER_NETWORK),
+            };
+
+            return site.readObservable<CoreCourseGetEnrolledCoursesByTimelineClassificationWSResponse>(
+                'core_course_get_enrolled_courses_by_timeline_classification',
+                params,
+                preSets,
+            ).pipe(map(response => response.courses));
+        });
     }
 
     /**
