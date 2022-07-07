@@ -1106,7 +1106,7 @@ type CoreUserGetUserPreferencesWSParams = {
 type CoreUserGetUserPreferencesWSResponse = {
     preferences: { // User custom fields (also known as user profile fields).
         name: string; // The name of the preference.
-        value: string; // The value of the preference.
+        value: string | null; // The value of the preference.
     }[];
     warnings?: CoreWSExternalWarning[];
 };
