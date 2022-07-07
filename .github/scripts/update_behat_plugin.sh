@@ -47,9 +47,9 @@ sed -i s/\$plugin-\>version\ =\ [0-9]\\+\;/\$plugin-\>version\ =\ $newpluginvers
 # Apply new changes
 print_title "Applying changes to repository..."
 
-cd tmp/local_moodleappbehat
-
 diff=`get_behat_plugin_changes_diff`
+
+cd tmp/local_moodleappbehat
 
 # Set up Github Actions bot user
 # See https://github.community/t/github-actions-bot-email-address/17204/6
