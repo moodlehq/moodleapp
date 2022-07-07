@@ -9,11 +9,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Use Node.js
-      uses: actions/setup-node@v1
+    - uses: actions/setup-node@v3
       with:
-        node-version: '14.x'
-    - run: npm ci
+        node-version-file: '.nvmrc'
+    - run: npm ci --no-audit
     - run: result=$(find src -type f -iname '*.html' -exec sh -c 'cat {} | tr "\n" " " | grep -Eo "class=\"[^\"]+\"[^>]+class=\"" ' \; | wc -l); test $result -eq 0
     - run: npm install -D @ionic/v4-migration-tslint
     - run: npx tslint -c ionic-migration.json -p tsconfig.json

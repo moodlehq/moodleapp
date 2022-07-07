@@ -32,11 +32,9 @@ jobs:
       BEHAT_TAGS: ${{ github.event.inputs.behat_tags || '~@performance' }}
     steps:
     - uses: actions/checkout@v2
-    - id: nvmrc
-      uses: browniebroke/read-nvmrc-action@v1
-    - uses: actions/setup-node@v1
+    - uses: actions/setup-node@v3
       with:
-        node-version: '${{ steps.nvmrc.outputs.node_version }}'
+        node-version-file: '.nvmrc'
     - name: Additional checkouts
       run: |
         git clone --branch $MOODLE_BRANCH --depth 1 $MOODLE_REPOSITORY $GITHUB_WORKSPACE/moodle

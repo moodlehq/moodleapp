@@ -11,11 +11,9 @@ jobs:
       MOODLE_DOCKER_PHP_VERSION: 7.3
     steps:
     - uses: actions/checkout@v2
-    - id: nvmrc
-      uses: browniebroke/read-nvmrc-action@v1
-    - uses: actions/setup-node@v1
+    - uses: actions/setup-node@v3
       with:
-        node-version: '${{ steps.nvmrc.outputs.node_version }}'
+        node-version-file: '.nvmrc'
     - name: Additional checkouts
       run: |
         git clone --branch master --depth 1 https://github.com/moodle/moodle $GITHUB_WORKSPACE/moodle
