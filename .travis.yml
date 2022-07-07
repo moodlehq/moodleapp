@@ -68,21 +68,3 @@ jobs:
       homebrew:
         packages:
         - jq
-  - stage: test
-    name: "End to end tests (mod_forum and mod_messages)"
-    services:
-    - docker
-    if: type = cron
-    script: scripts/test_e2e.sh "@app&&@mod_forum" "@app&&@mod_messages"
-  - stage: test
-    name: "End to end tests (mod_course, core_course and mod_courses)"
-    services:
-    - docker
-    if: type = cron
-    script: scripts/test_e2e.sh "@app&&@mod_course" "@app&&@core_course" "@app&&@mod_courses"
-  - stage: test
-    name: "End to end tests (others)"
-    services:
-    - docker
-    if: type = cron
-    script: scripts/test_e2e.sh "@app&&~@mod_forum&&~@mod_messages&&~@mod_course&&~@core_course&&~@mod_courses"

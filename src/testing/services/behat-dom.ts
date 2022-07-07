@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { Injectable } from '@angular/core';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreUtils } from '@services/utils/utils';
-import { NgZone } from '@singletons';
-import { TestBehatElementLocator } from './behat-runtime';
+import { makeSingleton, NgZone } from '@singletons';
+import { TestingBehatElementLocator, TestingBehatFindOptions } from './behat-runtime';
 
 // Containers that block containers behind them.
 const blockingContainers = ['ION-ALERT', 'ION-POPOVER', 'ION-ACTION-SHEET', 'CORE-USER-TOURS-USER-TOUR', 'ION-PAGE'];
@@ -23,7 +24,8 @@ const blockingContainers = ['ION-ALERT', 'ION-POPOVER', 'ION-ACTION-SHEET', 'COR
 /**
  * Behat Dom Utils helper functions.
  */
-export class TestsBehatDomUtils {
+@Injectable({ providedIn: 'root' })
+export class TestingBehatDomUtilsService {
 
     /**
      * Check if an element is visible.
@@ -32,7 +34,7 @@ export class TestsBehatDomUtils {
      * @param container Container.
      * @return Whether the element is visible or not.
      */
-    static isElementVisible(element: HTMLElement, container: HTMLElement): boolean {
+    isElementVisible(element: HTMLElement, container: HTMLElement): boolean {
         if (element.getAttribute('aria-hidden') === 'true' || getComputedStyle(element).display === 'none') {
             return false;
         }
@@ -56,7 +58,7 @@ export class TestsBehatDomUtils {
      * @param container Container.
      * @return Whether the element is selected or not.
      */
-    static isElementSelected(element: HTMLElement, container: HTMLElement): boolean {
+    isElementSelected(element: HTMLElement, container: HTMLElement): boolean {
         const ariaCurrent = element.getAttribute('aria-current');
         if (
             (ariaCurrent && ariaCurrent !== 'false') ||
@@ -79,9 +81,14 @@ export class TestsBehatDomUtils {
      *
      * @param container Parent element to search the element within
      * @param text Text to look for
+     * @param options Search options.
      * @return Elements containing the given text with exact boolean.
      */
-    protected static findElementsBasedOnTextWithinWithExact(container: HTMLElement, text: string): ElementsWithExact[] {
+    protected findElementsBasedOnTextWithinWithExact(
+        container: HTMLElement,
+        text: string,
+        options: TestingBehatFindOptions,
+    ): ElementsWithExact[] {
         const attributesSelector = `[aria-label*="${text}"], a[title*="${text}"], img[alt*="${text}"], [placeholder*="${text}"]`;
 
         const elements = Array.from(container.querySelectorAll<HTMLElement>(attributesSelector))
@@ -97,16 +104,23 @@ export class TestsBehatDomUtils {
             NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_DOCUMENT_FRAGMENT | NodeFilter.SHOW_TEXT,  // eslint-disable-line no-bitwise
             {
                 acceptNode: node => {
-                    if (node instanceof HTMLStyleElement ||
+                    if (
+                        node instanceof HTMLStyleElement ||
                         node instanceof HTMLLinkElement ||
-                        node instanceof HTMLScriptElement) {
+                        node instanceof HTMLScriptElement
+                    ) {
                         return NodeFilter.FILTER_REJECT;
                     }
 
-                    if (node instanceof HTMLElement &&
-                        (node.getAttribute('aria-hidden') === 'true' ||
-                        node.getAttribute('aria-disabled') === 'true' ||
-                        getComputedStyle(node).display === 'none')) {
+                    if (!(node instanceof HTMLElement)) {
+                        return NodeFilter.FILTER_ACCEPT;
+                    }
+
+                    if (options.onlyClickable && (node.getAttribute('aria-disabled') === 'true' || node.hasAttribute('disabled'))) {
+                        return NodeFilter.FILTER_REJECT;
+                    }
+
+                    if (node.getAttribute('aria-hidden') === 'true' || getComputedStyle(node).display === 'none') {
                         return NodeFilter.FILTER_REJECT;
                     }
 
@@ -160,7 +174,7 @@ export class TestsBehatDomUtils {
                         continue;
                     }
 
-                    elements.push(...this.findElementsBasedOnTextWithinWithExact(childNode, text));
+                    elements.push(...this.findElementsBasedOnTextWithinWithExact(childNode, text, options));
                 }
             }
         }
@@ -175,7 +189,7 @@ export class TestsBehatDomUtils {
      * @param text Text to check.
      * @return If text matches any of the label attributes.
      */
-    protected static checkElementLabel(element: HTMLElement, text: string): boolean {
+    protected checkElementLabel(element: HTMLElement, text: string): boolean {
         return element.title === text ||
             element.getAttribute('alt') === text ||
             element.getAttribute('aria-label') === text ||
@@ -187,10 +201,15 @@ export class TestsBehatDomUtils {
      *
      * @param container Parent element to search the element within.
      * @param text Text to look for.
+     * @param options Search options.
      * @return Elements containing the given text.
      */
-    protected static findElementsBasedOnTextWithin(container: HTMLElement, text: string): HTMLElement[] {
-        const elements = this.findElementsBasedOnTextWithinWithExact(container, text);
+    protected findElementsBasedOnTextWithin(
+        container: HTMLElement,
+        text: string,
+        options: TestingBehatFindOptions,
+    ): HTMLElement[] {
+        const elements = this.findElementsBasedOnTextWithinWithExact(container, text, options);
 
         // Give more relevance to exact matches.
         elements.sort((a, b) => Number(b.exact) - Number(a.exact));
@@ -206,7 +225,7 @@ export class TestsBehatDomUtils {
      * @param elements Elements list.
      * @return Top ancestors.
      */
-    protected static getTopAncestors(elements: HTMLElement[]): HTMLElement[] {
+    protected getTopAncestors(elements: HTMLElement[]): HTMLElement[] {
         const uniqueElements = new Set(elements);
 
         for (const element of uniqueElements) {
@@ -230,7 +249,7 @@ export class TestsBehatDomUtils {
      * @param element Element.
      * @return Parent element.
      */
-    protected static getParentElement(element: HTMLElement): HTMLElement | null {
+    protected getParentElement(element: HTMLElement): HTMLElement | null {
         return element.parentElement ||
             (element.getRootNode() && (element.getRootNode() as ShadowRoot).host as HTMLElement) ||
             null;
@@ -244,7 +263,7 @@ export class TestsBehatDomUtils {
      * @param container Topmost container to search within.
      * @return Closest matching element.
      */
-    protected static getClosestMatching(element: HTMLElement, selector: string, container: HTMLElement | null): HTMLElement | null {
+    protected getClosestMatching(element: HTMLElement, selector: string, container: HTMLElement | null): HTMLElement | null {
         if (element.matches(selector)) {
             return element;
         }
@@ -262,7 +281,7 @@ export class TestsBehatDomUtils {
      * @param containerName Whether to search inside the a container name.
      * @return Found top container elements.
      */
-    protected static getCurrentTopContainerElements(containerName: string): HTMLElement[] {
+    protected getCurrentTopContainerElements(containerName: string): HTMLElement[] {
         const topContainers: HTMLElement[] = [];
         let containers = Array.from(document.querySelectorAll<HTMLElement>([
             'ion-alert.hydrated',
@@ -325,32 +344,33 @@ export class TestsBehatDomUtils {
      * Function to find element based on their text or Aria label.
      *
      * @param locator Element locator.
-     * @param containerName Whether to search only inside a specific container.
+     * @param options Search options.
      * @return First found element.
      */
-    static findElementBasedOnText(locator: TestBehatElementLocator, containerName = ''): HTMLElement {
-        return this.findElementsBasedOnText(locator, containerName, true)[0];
+    findElementBasedOnText(
+        locator: TestingBehatElementLocator,
+        options: TestingBehatFindOptions,
+    ): HTMLElement {
+        return this.findElementsBasedOnText(locator, options)[0];
     }
 
     /**
      * Function to find elements based on their text or Aria label.
      *
      * @param locator Element locator.
-     * @param containerName Whether to search only inside a specific container.
-     * @param stopWhenFound Stop looking in containers once an element is found.
+     * @param options Search options.
      * @return Found elements
      */
-    protected static findElementsBasedOnText(
-        locator: TestBehatElementLocator,
-        containerName = '',
-        stopWhenFound = false,
+    protected findElementsBasedOnText(
+        locator: TestingBehatElementLocator,
+        options: TestingBehatFindOptions,
     ): HTMLElement[] {
-        const topContainers = this.getCurrentTopContainerElements(containerName);
+        const topContainers = this.getCurrentTopContainerElements(options.containerName);
         let elements: HTMLElement[] = [];
 
         for (let i = 0; i < topContainers.length; i++) {
-            elements = elements.concat(this.findElementsBasedOnTextInContainer(locator, topContainers[i]));
-            if (stopWhenFound && elements.length) {
+            elements = elements.concat(this.findElementsBasedOnTextInContainer(locator, topContainers[i], options));
+            if (elements.length) {
                 break;
             }
         }
@@ -363,16 +383,18 @@ export class TestsBehatDomUtils {
      *
      * @param locator Element locator.
      * @param topContainer Container to search in.
+     * @param options Search options.
      * @return Found elements
      */
-    protected static findElementsBasedOnTextInContainer(
-        locator: TestBehatElementLocator,
+    protected findElementsBasedOnTextInContainer(
+        locator: TestingBehatElementLocator,
         topContainer: HTMLElement,
+        options: TestingBehatFindOptions,
     ): HTMLElement[] {
         let container: HTMLElement | null = topContainer;
 
         if (locator.within) {
-            const withinElements = this.findElementsBasedOnTextInContainer(locator.within, topContainer);
+            const withinElements = this.findElementsBasedOnTextInContainer(locator.within, topContainer, options);
 
             if (withinElements.length === 0) {
                 throw new Error('There was no match for within text');
@@ -390,7 +412,10 @@ export class TestsBehatDomUtils {
         }
 
         if (topContainer && locator.near) {
-            const nearElements = this.findElementsBasedOnTextInContainer(locator.near, topContainer);
+            const nearElements = this.findElementsBasedOnTextInContainer(locator.near, topContainer, {
+                ...options,
+                onlyClickable: false,
+            });
 
             if (nearElements.length === 0) {
                 throw new Error('There was no match for near text');
@@ -412,7 +437,7 @@ export class TestsBehatDomUtils {
                 break;
             }
 
-            const elements = this.findElementsBasedOnTextWithin(container, locator.text);
+            const elements = this.findElementsBasedOnTextWithin(container, locator.text, options);
 
             let filteredElements: HTMLElement[] = elements;
 
@@ -442,7 +467,7 @@ export class TestsBehatDomUtils {
      *
      * @param element Element.
      */
-    protected static async ensureElementVisible(element: HTMLElement): Promise<DOMRect> {
+    protected async ensureElementVisible(element: HTMLElement): Promise<DOMRect> {
         const initialRect = element.getBoundingClientRect();
 
         element.scrollIntoView(false);
@@ -471,7 +496,7 @@ export class TestsBehatDomUtils {
      *
      * @param element Element to press.
      */
-    static async pressElement(element: HTMLElement): Promise<void> {
+    async pressElement(element: HTMLElement): Promise<void> {
         await NgZone.run(async () => {
             const promise = new CorePromisedValue<void>();
 
@@ -516,7 +541,7 @@ export class TestsBehatDomUtils {
      * @param element HTML to set.
      * @param value Value to be set.
      */
-    static async setElementValue(element: HTMLInputElement | HTMLElement, value: string): Promise<void> {
+    async setElementValue(element: HTMLInputElement | HTMLElement, value: string): Promise<void> {
         await NgZone.run(async () => {
             const promise = new CorePromisedValue<void>();
 
@@ -580,6 +605,8 @@ export class TestsBehatDomUtils {
     }
 
 }
+
+export const TestingBehatDomUtils = makeSingleton(TestingBehatDomUtilsService);
 
 type ElementsWithExact = {
     element: HTMLElement;

@@ -14,21 +14,23 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { CoreAppProvider } from '@services/app';
-import { TestsBehatBlockingService } from './services/behat-blocking';
-import { BehatTestsWindow, TestsBehatRuntime } from './services/behat-runtime';
+import { TestingBehatRuntime, TestingBehatRuntimeService } from './services/behat-runtime';
 
-function initializeBehatTestsWindow(window: BehatTestsWindow) {
-    // Make functions publicly available for Behat to call.
-    window.behatInit = TestsBehatRuntime.init;
+type AutomatedTestsWindow = Window & {
+    behat?: TestingBehatRuntimeService;
+};
+
+function initializeAutomatedTestsWindow(window: AutomatedTestsWindow) {
+    if (!CoreAppProvider.isAutomated()) {
+        return;
+    }
+
+    window.behat = TestingBehatRuntime.instance;
 }
 
 @NgModule({
-    providers:
-        CoreAppProvider.isAutomated()
-            ? [
-                { provide: APP_INITIALIZER, multi: true, useValue: () => initializeBehatTestsWindow(window) },
-                TestsBehatBlockingService,
-            ]
-            : [],
+    providers: [
+        { provide: APP_INITIALIZER, multi: true, useValue: () => initializeAutomatedTestsWindow(window) },
+    ],
 })
-export class BehatTestingModule {}
+export class TestingModule {}

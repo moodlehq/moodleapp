@@ -18,4 +18,4 @@ import { NgModule } from '@angular/core';
  * Stub used in production to avoid including testing code in production bundles.
  */
 @NgModule({})
-export class BehatTestingModule {}
+export class TestingModule {}

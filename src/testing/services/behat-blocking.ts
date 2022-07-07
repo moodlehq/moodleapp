@@ -15,13 +15,13 @@
 import { Injectable } from '@angular/core';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton, NgZone } from '@singletons';
-import { BehatTestsWindow, TestsBehatRuntime } from './behat-runtime';
+import { BehatTestsWindow, TestingBehatRuntime } from './behat-runtime';
 
 /**
  * Behat block JS manager.
  */
 @Injectable({ providedIn: 'root' })
-export class TestsBehatBlockingService {
+export class TestingBehatBlockingService {
 
     protected waitingBlocked = false;
     protected recentMutation = false;
@@ -48,7 +48,7 @@ export class TestsBehatBlockingService {
         win.M.util = win.M.util ?? {};
         win.M.util.pending_js = win.M.util.pending_js ?? [];
 
-        TestsBehatRuntime.log('Initialized!');
+        TestingBehatRuntime.log('Initialized!');
     }
 
     /**
@@ -90,7 +90,7 @@ export class TestsBehatBlockingService {
         }
         this.pendingList.push(key);
 
-        TestsBehatRuntime.log('PENDING+: ' + this.pendingList);
+        TestingBehatRuntime.log('PENDING+: ' + this.pendingList);
 
         return key;
     }
@@ -105,7 +105,7 @@ export class TestsBehatBlockingService {
         // Remove the key immediately.
         this.pendingList = this.pendingList.filter((x) => x !== key);
 
-        TestsBehatRuntime.log('PENDING-: ' + this.pendingList);
+        TestingBehatRuntime.log('PENDING-: ' + this.pendingList);
 
         // If the only thing left is DELAY, then remove that as well, later...
         if (this.pendingList.length === 1) {
@@ -124,7 +124,7 @@ export class TestsBehatBlockingService {
             // Only remove it if the pending array is STILL empty after all that.
             if (this.pendingList.length === 1) {
                 this.pendingList = [];
-                TestsBehatRuntime.log('PENDING-: ' + this.pendingList);
+                TestingBehatRuntime.log('PENDING-: ' + this.pendingList);
             }
         }
     }
@@ -221,16 +221,16 @@ export class TestsBehatBlockingService {
 
                 try {
                 // Add to the list of pending requests.
-                    TestsBehatBlocking.block(key);
+                    TestingBehatBlocking.block(key);
 
                     // Detect when it finishes and remove it from the list.
                     this.addEventListener('loadend', () => {
-                        TestsBehatBlocking.unblock(key);
+                        TestingBehatBlocking.unblock(key);
                     });
 
                     return realOpen.apply(this, args);
                 } catch (error) {
-                    TestsBehatBlocking.unblock(key);
+                    TestingBehatBlocking.unblock(key);
                     throw error;
                 }
             });
@@ -239,4 +239,4 @@ export class TestsBehatBlockingService {
 
 }
 
-export const TestsBehatBlocking = makeSingleton(TestsBehatBlockingService);
+export const TestingBehatBlocking = makeSingleton(TestingBehatBlockingService);
