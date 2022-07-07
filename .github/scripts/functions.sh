@@ -65,10 +65,15 @@ function notify_on_error_exit {
 }
 
 function get_behat_plugin_changes_diff {
-    i=0
-    previoushash=""
+    # Grab hashes from app repository
     currenthash=`git rev-parse HEAD`
     initialhash=`git rev-list HEAD | tail -n 1`
+
+    # Move into plugin repository to find previous hash
+    cd tmp/local_moodleappbehat
+
+    i=0
+    previoushash=""
     totalcommits=`git log --oneline | wc -l`
     repositoryname=`echo $GITHUB_REPOSITORY | sed "s/\\//\\\\\\\\\\//"`
 
