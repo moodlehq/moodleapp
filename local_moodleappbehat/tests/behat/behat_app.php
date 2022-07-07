@@ -565,7 +565,7 @@ class behat_app extends behat_app_helper {
      */
     public function i_pull_to_refresh_in_the_app() {
         $this->spin(function() {
-            $result = $this->js('await window.behat.pullToRefresh();');
+            $result = $this->runtime_js('pullToRefresh()');
 
             if ($result !== 'OK') {
                 throw new DriverException('Error pulling to refresh - ' . $result);
@@ -824,7 +824,7 @@ class behat_app extends behat_app_helper {
             $this->getSession()->switchToWindow($names[1]);
         }
 
-        $this->js('window.close()');
+        $this->evaluate_script('window.close()');
         $this->getSession()->switchToWindow($names[0]);
     }
 
