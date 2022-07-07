@@ -95,6 +95,12 @@ class behat_app_helper extends behat_base {
     public function start_scenario() {
         $this->check_behat_setup();
         $this->fix_moodle_setup();
+
+        if ($this->apprunning) {
+            $this->notify_unload();
+            $this->apprunning = false;
+        }
+
         $this->ionicurl = $this->start_or_reuse_ionic();
     }
 
@@ -274,17 +280,15 @@ class behat_app_helper extends behat_base {
      * @throws DriverException If the app fails to load properly
      */
     protected function prepare_browser(array $options = []) {
-        $restart = $options['restart'] ?? true;
+        $restart = false;
 
-        if ($restart) {
-            if ($this->apprunning) {
-                $this->notify_unload();
-            }
+        if (!$this->apprunning) {
+            $this->check_tags();
 
-            // Restart the browser and set its size.
-            $this->getSession()->restart();
+            $restart = true;
+
+            // Reset its size.
             $this->resize_window($this->windowsize, true);
-
             if (empty($this->ionicurl)) {
                 $this->ionicurl = $this->start_or_reuse_ionic();
             }
@@ -536,7 +540,6 @@ class behat_app_helper extends behat_base {
         if ($result !== 'OK') {
             throw new DriverException('Error handling url - ' . $result);
         }
-
         if (!empty($successXPath)) {
             // Wait until the page appears.
             $this->spin(
@@ -550,6 +553,8 @@ class behat_app_helper extends behat_base {
         }
 
         $this->wait_for_pending_js();
+
+        $this->i_wait_the_app_to_restart();
     }
 
     /**

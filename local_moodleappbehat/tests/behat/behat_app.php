@@ -91,8 +91,6 @@ class behat_app extends behat_app_helper {
      * @throws ExpectationException Problem with resizing window
      */
     public function i_launch_the_app(string $runtime = '') {
-        $this->check_tags();
-
         // Go to page and prepare browser for app.
         $this->prepare_browser(['skiponboarding' => empty($runtime)]);
     }
@@ -101,18 +99,13 @@ class behat_app extends behat_app_helper {
      * @Then I wait the app to restart
      */
     public function i_wait_the_app_to_restart() {
-        // Wait window to reload.
-        $this->spin(function() {
-            if ($this->runtime_js('hasInitialized()')) {
-                // Behat runtime shouldn't be initialized after reload.
-                throw new DriverException('Window is not reloading properly.');
-            }
-
-            return true;
-        });
+        if ($this->runtime_js('hasInitialized()')) {
+            // Already initialized.
+            return;
+        }
 
         // Prepare testing runtime again.
-        $this->prepare_browser(['restart' => false]);
+        $this->prepare_browser();
     }
 
     /**

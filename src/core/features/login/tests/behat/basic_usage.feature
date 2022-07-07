@@ -26,8 +26,7 @@ Feature: Test basic usage of login in app
     And I should find "Connect to Moodle" in the app
 
   Scenario: Add a new account in the app & Site name in displayed when adding a new account
-    When I enter the app
-    And I press the back button in the app
+    When I launch the app
     And I set the field "Your site" to "$WWWROOT" in the app
     And I press "Connect to your site" in the app
     Then I should find "Acceptance test site" in the app
