@@ -434,58 +434,13 @@ class behat_app_helper extends behat_base {
     }
 
     /**
-     * Evaluate and execute scripts checking for promises if needed.
-     *
-     * @param string $script
-     * @return mixed Resolved promise result.
-     */
-    protected function js(string $script) {
-        $scriptnoreturn = preg_replace('/^return\s+/', '', $script);
-        $scriptnoreturn = preg_replace('/;$/', '', $scriptnoreturn);
-
-        if (!preg_match('/^await\s+/', $scriptnoreturn)) {
-            // No async.
-            return $this->evaluate_script($script);
-        }
-
-        $script = preg_replace('/^await\s+/', '', $scriptnoreturn);
-
-        $start = microtime(true);
-        $promisevariable = 'PROMISE_RESULT_' . time();
-        $timeout = self::get_extended_timeout();
-
-        $res = $this->evaluate_script("Promise.resolve($script)
-            .then(result => window.$promisevariable = result)
-            .catch(error => window.$promisevariable = 'Async code rejected: ' + error?.message)");
-
-        do {
-            if (microtime(true) - $start > $timeout) {
-                throw new DriverException("Async script not resolved after $timeout seconds");
-            }
-
-            // 0.1 seconds.
-            usleep(100000);
-        } while (!$this->evaluate_script("'$promisevariable' in window"));
-
-        $result = $this->evaluate_script("window.$promisevariable");
-
-        $this->evaluate_script("delete window.$promisevariable");
-
-        if (is_string($result) && strrpos($result, 'Async code rejected:') === 0) {
-            throw new DriverException($result);
-        }
-
-        return $result;
-    }
-
-    /**
      * Evaluate and execute methods from the Behat runtime.
      *
      * @param string $script
      * @return mixed Result.
      */
     protected function runtime_js(string $script) {
-        return $this->js("window.behat.$script");
+        return $this->evaluate_script("window.behat.$script");
     }
 
     /**
