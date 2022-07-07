@@ -5,7 +5,7 @@
     </ion-button>
 
     <div class="core-h5p-placeholder-download-container">
-        <core-download-refresh [status]="state" [enabled]="canDownload" [loading]="calculating" [canTrustDownload]="true"
+        <core-download-refresh [status]="state" [enabled]="canDownload$ | async" [loading]="calculating$ | async" [canTrustDownload]="true"
             (action)="download()">
         </core-download-refresh>
     </div>

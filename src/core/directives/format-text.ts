@@ -25,6 +25,7 @@ import {
     ViewChild,
     OnDestroy,
     Inject,
+    ChangeDetectorRef,
 } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 
@@ -176,6 +177,9 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
         extContent.poster = element.getAttribute('poster') || undefined;
 
         extContent.ngAfterViewInit();
+
+        const changeDetectorRef = this.viewContainerRef.injector.get(ChangeDetectorRef);
+        changeDetectorRef.markForCheck();
 
         return extContent;
     }
