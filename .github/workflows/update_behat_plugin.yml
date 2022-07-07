@@ -17,4 +17,5 @@ jobs:
         GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
         BEHAT_PLUGIN_GITHUB_REPOSITORY: ${{ secrets.BEHAT_PLUGIN_GITHUB_REPOSITORY }}
         BEHAT_PLUGIN_BRANCH: ${{ secrets.BEHAT_PLUGIN_BRANCH }}
+        BEHAT_PLUGIN_EXCLUDE_FEATURES: ${{ secrets.BEHAT_PLUGIN_EXCLUDE_FEATURES }}
       run: ./.github/scripts/update_behat_plugin.sh
