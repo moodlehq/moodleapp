@@ -1278,7 +1278,7 @@ export class CoreSitesProvider {
     /**
      * Logout the user.
      *
-     * @param forceLogout If true, site will be marked as logged out, no matter the value tool_mobile_forcelogout.
+     * @param options Logout options.
      * @return Promise resolved when the user is logged out.
      */
     async logout(options: CoreSitesLogoutOptions = {}): Promise<void> {

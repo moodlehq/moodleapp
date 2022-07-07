@@ -280,6 +280,11 @@ class behat_app_helper extends behat_base {
      * @throws DriverException If the app fails to load properly
      */
     protected function prepare_browser(array $options = []) {
+        if ($this->evaluate_script('window.behat') && $this->runtime_js('hasInitialized()')) {
+            // Already initialized.
+            return;
+        }
+
         $restart = false;
 
         if (!$this->apprunning) {
@@ -509,6 +514,8 @@ class behat_app_helper extends behat_base {
         } else {
             $successXPath = '//page-core-mainmenu';
         }
+
+        $this->i_log_out_in_app(false);
 
         $this->handle_url($url, $successXPath);
     }

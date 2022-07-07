@@ -99,13 +99,27 @@ class behat_app extends behat_app_helper {
      * @Then I wait the app to restart
      */
     public function i_wait_the_app_to_restart() {
-        if ($this->runtime_js('hasInitialized()')) {
-            // Already initialized.
-            return;
-        }
-
         // Prepare testing runtime again.
         $this->prepare_browser();
+    }
+
+    /**
+     * @Then I log out in the app
+     *
+     * @param bool $force If force logout or not.
+     */
+    public function i_log_out_in_app($force = true) {
+        $options = json_encode([
+            'forceLogout' => $force,
+        ]);
+
+        $result = $this->zone_js("sites.logout($options)");
+
+        if ($result !== 'OK') {
+            throw new DriverException('Error on log out - ' . $result);
+        }
+
+        $this->i_wait_the_app_to_restart();
     }
 
     /**

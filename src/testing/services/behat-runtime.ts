@@ -28,6 +28,7 @@ import { CoreDom } from '@singletons/dom';
 import { IonRefresher } from '@ionic/angular';
 import { CoreCoursesDashboardPage } from '@features/courses/pages/dashboard/dashboard';
 import { Injectable } from '@angular/core';
+import { CoreSites, CoreSitesProvider } from '@services/sites';
 
 /**
  * Behat runtime servive with public API.
@@ -51,6 +52,10 @@ export class TestingBehatRuntimeService {
 
     get pushNotifications(): CorePushNotificationsProvider {
         return CorePushNotifications.instance;
+    }
+
+    get sites(): CoreSitesProvider {
+        return CoreSites.instance;
     }
 
     /**
