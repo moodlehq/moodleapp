@@ -400,12 +400,13 @@ export class TestingBehatDomUtilsService {
             const withinElements = this.findElementsBasedOnTextInContainer(locator.within, topContainer, options);
 
             if (withinElements.length === 0) {
-                throw new Error('There was no match for within text');
+                return [];
             } else if (withinElements.length > 1) {
                 const withinElementsAncestors = this.getTopAncestors(withinElements);
 
                 if (withinElementsAncestors.length > 1) {
-                    throw new Error('Too many matches for within text ('+withinElementsAncestors.length+')');
+                    // Too many matches for within text.
+                    return [];
                 }
 
                 topContainer = container = withinElementsAncestors[0];
@@ -421,12 +422,13 @@ export class TestingBehatDomUtilsService {
             });
 
             if (nearElements.length === 0) {
-                throw new Error('There was no match for near text');
+                return [];
             } else if (nearElements.length > 1) {
                 const nearElementsAncestors = this.getTopAncestors(nearElements);
 
                 if (nearElementsAncestors.length > 1) {
-                    throw new Error('Too many matches for near text ('+nearElementsAncestors.length+')');
+                    // Too many matches for near text.
+                    return [];
                 }
 
                 container = this.getParentElement(nearElementsAncestors[0]);
