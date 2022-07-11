@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CoreSiteInfo } from '@classes/site';
 import { CoreUserTourDirectiveOptions } from '@directives/user-tour';
 import { CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/services/user-tours';
@@ -35,6 +35,7 @@ import { CoreMainMenuUserMenuComponent } from '../user-menu/user-menu';
 })
 export class CoreMainMenuUserButtonComponent implements OnInit {
 
+    @Input() alwaysShow = false;
     siteInfo?: CoreSiteInfo;
     isMainScreen = false;
     userTour: CoreUserTourDirectiveOptions = {
