@@ -29,7 +29,7 @@ import {
     CoreWSUploadFileResult,
     CoreWSPreSetsSplitRequest,
 } from '@services/ws';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDomUtils, ToastDuration } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUrlUtils, CoreUrlParams } from '@services/utils/url';
@@ -572,7 +572,7 @@ export class CoreSite {
 
         if (wsPreSets.cleanUnicode && CoreTextUtils.hasUnicodeData(data)) {
             // Data will be cleaned, notify the user.
-            CoreDomUtils.showToast('core.unicodenotsupported', true, 3000);
+            CoreDomUtils.showToast('core.unicodenotsupported', true, ToastDuration.LONG);
         } else {
             // No need to clean data in this call.
             wsPreSets.cleanUnicode = false;

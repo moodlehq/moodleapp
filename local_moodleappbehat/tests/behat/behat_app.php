@@ -37,7 +37,14 @@ class behat_app extends behat_app_helper {
     protected $ionicurl = '';
 
     /** @var array Config overrides */
-    protected $appconfig = ['disableUserTours' => true];
+    protected $appconfig = [
+        'disableUserTours' => true,
+        'toastDurations' => [ // Extend toast durations in Behat so they don't disappear too soon.
+            'short' => 7500,
+            'long' => 10000,
+            'sticky' => 0,
+        ],
+    ];
 
     protected $windowsize = '360x720';
 

@@ -86,5 +86,5 @@ export type CoreUserDBRecord = CoreUserBasicData;
 export type CoreUserPreferenceDBRecord = {
     name: string;
     value: string;
-    onlinevalue: string;
+    onlinevalue: string | null;
 };

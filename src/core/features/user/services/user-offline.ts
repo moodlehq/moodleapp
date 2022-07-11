@@ -58,19 +58,12 @@ export class CoreUserOfflineProvider {
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
-    async setPreference(name: string, value: string, onlineValue?: string, siteId?: string): Promise<void> {
+    async setPreference(name: string, value: string, onlineValue?: string | null , siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
-        if (onlineValue === undefined) {
-            const preference = await this.getPreference(name, site.id);
-
-            onlineValue = preference.onlinevalue;
-        }
-
-        const record: CoreUserPreferenceDBRecord = {
+        const record: Partial<CoreUserPreferenceDBRecord> = {
             name,
             value,
-            onlinevalue: onlineValue,
         };
 
         await site.getDb().insertRecord(PREFERENCES_TABLE_NAME, record);

@@ -18,6 +18,7 @@ import { CoreSitesDemoSiteData } from '@services/sites';
 import { OpenFileAction } from '@services/utils/utils';
 import { CoreLoginSiteSelectorListMethod } from '@features/login/services/login-helper';
 import { CoreDatabaseConfiguration } from '@classes/database/database-table';
+import { ToastDuration } from '@services/utils/dom';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
@@ -69,4 +70,5 @@ export interface EnvironmentConfig {
     calendarreminderdefaultvalue: number; // Initial value for default reminders (in seconds). User can change it later.
     removeaccountonlogout?: boolean; // True to remove the account when the user clicks logout. Doesn't affect switch account.
     uselegacycompletion?: boolean; // Whether to use legacy completion by default in all course formats.
+    toastDurations: Record<ToastDuration, number>;
 }

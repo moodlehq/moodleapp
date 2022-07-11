@@ -1,0 +1,22 @@
+@import "~theme/globals";
+
+:host {
+    .addon-forum-group-info {
+        > ion-icon[slot] {
+            color: var(--ion-color-info);
+            @include margin-horizontal(null, 16px);
+        }
+    }
+
+    .addon-forum-new-discussion-buttons {
+        ion-label {
+            margin-top: 0;
+        }
+
+        ion-col {
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+    }
+
+}

@@ -20,7 +20,7 @@ import { CanLeave } from '@guards/can-leave';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDomUtils, ToastDuration } from '@services/utils/dom';
 import { CoreFormFields, CoreForms } from '@singletons/form';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -467,7 +467,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
     async timeUp(): Promise<void> {
         this.timeUpToast = await CoreDomUtils.showToastWithOptions({
             message: Translate.instant('addon.mod_assign.caneditsubmission'),
-            duration: 0,
+            duration: ToastDuration.STICKY,
             buttons: [Translate.instant('core.dismiss')],
             cssClass: 'core-danger-toast',
         });
