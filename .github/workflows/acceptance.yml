@@ -61,8 +61,8 @@ jobs:
     - name: Init Behat
       run: |
         export MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle
-        $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose exec -T webserver sh -c "php admin/tool/behat/cli/init.php"
+         $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose exec -T webserver sh -c "php admin/tool/behat/cli/init.php --parallel=8 --optimize-runs='@app&&$BEHAT_TAGS'"
     - name: Run Behat tests
       run: |
         export MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle
-        $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose exec -T webserver sh -c "php admin/tool/behat/cli/run.php --verbose --tags='@app&&$BEHAT_TAGS' --auto-rerun"
+        $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose exec -T webserver sh -c "php admin/tool/behat/cli/run.php --verbose --tags='@app&&$BEHAT_TAGS' --auto-rerun=3"
