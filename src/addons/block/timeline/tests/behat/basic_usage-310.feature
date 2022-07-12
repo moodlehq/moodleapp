@@ -1,4 +1,4 @@
-@block @block_timeline @app @javascript
+@block @block_timeline @app @javascript @lms_upto3.10
 Feature: Timeline block.
 
   Background:
@@ -46,7 +46,6 @@ Feature: Timeline block.
       | assign   | C3                   | assign24  | Assignment 24 | ##+1 year##    |
       | assign   | C3                   | assign25  | Assignment 25 | ##+1 year##    |
 
-  @lms_from3.11
   Scenario: See courses inside block
     Given I entered the app as "student1"
     And I press "Open block drawer" in the app
