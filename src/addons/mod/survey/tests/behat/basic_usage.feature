@@ -233,12 +233,12 @@ Feature: Test basic usage of survey activity in app
       | activity | name                           | intro        | template | course | idnumber | groupmode |
       | survey   | Test survey critical incidents | Test survey1 | 5        | C1     | survey1  | 0         |
     Given I entered the survey activity "Test survey critical incidents" on course "Course 1" as "student1" in the app
-    And I switch offline mode to "true"
+    And I switch network connection to offline
     And I press "Submit" in the app
     And I press "OK" in the app
     Then I should see "This Survey has offline data to be synchronised."
 
-    When I switch offline mode to "false"
+    When I switch network connection to wifi
     And I press the back button in the app
     And I press "Test survey critical incidents" in the app
     And I press "Information" in the app
@@ -255,7 +255,7 @@ Feature: Test basic usage of survey activity in app
     And I press "Course downloads" in the app
     And I press "Download" within "Test survey critical incidents" "ion-item" in the app
     And I press the back button in the app
-    And I switch offline mode to "true"
+    And I switch network connection to offline
     And I press "Test survey name" in the app
     Then I should see "There was a problem connecting to the site. Please check your connection and try again."
 
@@ -266,7 +266,7 @@ Feature: Test basic usage of survey activity in app
     And I press "OK" in the app
     Then I should see "This Survey has offline data to be synchronised."
 
-    When I switch offline mode to "false"
+    When I switch network connection to wifi
     And I run cron tasks in the app
     Then I should not see "This Survey has offline data to be synchronised."
     And I should see "You have completed this survey."

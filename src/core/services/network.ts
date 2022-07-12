@@ -18,7 +18,7 @@ import { Network } from '@ionic-native/network/ngx';
 import { makeSingleton } from '@singletons';
 import { Observable, Subject, merge } from 'rxjs';
 
-enum CoreNetworkConnection {
+export enum CoreNetworkConnection {
     UNKNOWN = 'unknown',
     ETHERNET = 'ethernet',
     WIFI = 'wifi',
@@ -39,8 +39,20 @@ export class CoreNetworkService extends Network {
 
     protected connectObservable = new Subject<'connected'>();
     protected disconnectObservable = new Subject<'disconnected'>();
-    protected forceOffline = false;
+    protected forceConnectionMode?: CoreNetworkConnection;
     protected online = false;
+
+    get connectionType(): CoreNetworkConnection {
+        if (this.forceConnectionMode !== undefined) {
+            return this.forceConnectionMode;
+        }
+
+        if (CorePlatform.isMobile()) {
+            return this.type as CoreNetworkConnection;
+        }
+
+        return  this.online ? CoreNetworkConnection.WIFI : CoreNetworkConnection.NONE;
+    }
 
     /**
      * Initialize the service.
@@ -81,12 +93,13 @@ export class CoreNetworkService extends Network {
     }
 
     /**
-     * Set value of forceOffline flag. If true, the app will think the device is offline.
+     * Set value of forceConnectionMode flag.
+     * The app will think the device is offline or limited connection.
      *
      * @param value Value to set.
      */
-    setForceOffline(value: boolean): void {
-        this.forceOffline = !!value;
+    setForceConnectionMode(value: CoreNetworkConnection): void {
+        this.forceConnectionMode = value;
         this.fireObservable();
     }
 
@@ -105,24 +118,15 @@ export class CoreNetworkService extends Network {
      * @return Whether the app is online.
      */
     checkOnline(): void {
-        if (this.forceOffline) {
+        if (this.forceConnectionMode === CoreNetworkConnection.NONE) {
             this.online = false;
-            this.type = CoreNetworkConnection.NONE;
 
             return;
         }
 
-        if (!CorePlatform.isMobile()) {
-            this.online = navigator.onLine;
-            this.type = this.online
-                ? CoreNetworkConnection.WIFI
-                : CoreNetworkConnection.NONE;
+        const type = this.connectionType;
 
-            return;
-        }
-
-        let online = this.type !== null && this.type !== CoreNetworkConnection.NONE &&
-            this.type !== CoreNetworkConnection.UNKNOWN;
+        let online = type !== null && type !== CoreNetworkConnection.NONE && type !== CoreNetworkConnection.UNKNOWN;
 
         // Double check we are not online because we cannot rely 100% in Cordova APIs.
         if (!online && navigator.onLine) {
@@ -179,18 +183,16 @@ export class CoreNetworkService extends Network {
      * @return Whether the device uses a limited connection.
      */
     isNetworkAccessLimited(): boolean {
-        if (!CorePlatform.isMobile()) {
-            return false;
-        }
-
-        const limited: string[] = [
+        const limited: CoreNetworkConnection[] = [
             CoreNetworkConnection.CELL_2G,
             CoreNetworkConnection.CELL_3G,
             CoreNetworkConnection.CELL_4G,
             CoreNetworkConnection.CELL,
         ];
 
-        return limited.indexOf(this.type) > -1;
+        const type = this.connectionType;
+
+        return limited.indexOf(type) > -1;
     }
 
     /**

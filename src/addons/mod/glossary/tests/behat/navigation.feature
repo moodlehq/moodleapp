@@ -173,7 +173,7 @@ Feature: Test glossary navigation
     When I press the back button in the app
     And I press "Clear search" in the app
     And I press "Add a new entry" in the app
-    And I switch offline mode to "true"
+    And I switch network connection to offline
     And I set the following fields to these values in the app:
       | Concept | Tomato |
       | Definition | Tomato is a fruit |
@@ -274,7 +274,7 @@ Feature: Test glossary navigation
     # Offline
     When I press "Clear search" in the app
     And I press "Add a new entry" in the app
-    And I switch offline mode to "true"
+    And I switch network connection to offline
     And I set the following fields to these values in the app:
       | Concept | Tomato |
       | Definition | Tomato is a fruit |

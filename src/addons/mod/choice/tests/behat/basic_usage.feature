@@ -72,7 +72,7 @@ Feature: Test basic usage of choice activity in app
       | choice   | Test single choice name | Test single choice description | C1     | choice1  | Option 1, Option 2, Option 3 | 0             | 0           | 1           |
     And I entered the choice activity "Test single choice name" on course "Course 1" as "student1" in the app
     When I select "Option 1" in the app
-    And I switch offline mode to "true"
+    And I switch network connection to offline
     And I select "Option 2" in the app
     And I press "Save my choice" in the app
     Then I should find "Are you sure" in the app
@@ -85,7 +85,7 @@ Feature: Test basic usage of choice activity in app
     And I should not find "Option 2: 1" in the app
     And I should not find "Option 3: 0" in the app
 
-    When I switch offline mode to "false"
+    When I switch network connection to wifi
     And I press the back button in the app
     And I press "Test single choice name" in the app
     Then I should find "Test single choice description" in the app
@@ -103,7 +103,7 @@ Feature: Test basic usage of choice activity in app
       | choice   | Test single choice name | Test single choice description | C1     | choice1  | Option 1, Option 2, Option 3 | 0             | 0           | 1           |
     And I entered the choice activity "Test single choice name" on course "Course 1" as "student1" in the app
     When I select "Option 1" in the app
-    And I switch offline mode to "true"
+    And I switch network connection to offline
     And I select "Option 2" in the app
     And I press "Save my choice" in the app
     Then I should find "Are you sure" in the app
@@ -114,7 +114,7 @@ Feature: Test basic usage of choice activity in app
     And I should not find "Option 2: 1" in the app
     And I should not find "Option 3: 0" in the app
 
-    When I switch offline mode to "false"
+    When I switch network connection to wifi
     And I run cron tasks in the app
     And I wait loading to finish in the app
     Then I should find "Option 1: 0" in the app
@@ -133,7 +133,7 @@ Feature: Test basic usage of choice activity in app
     Then I should find "Downloaded" within "Test single choice name" "ion-item" in the app
     And I press the back button in the app
 
-    When I switch offline mode to "true"
+    When I switch network connection to offline
     And I press "Test multi choice name" in the app
     Then I should find "There was a problem connecting to the site. Please check your connection and try again." in the app
 
@@ -152,7 +152,7 @@ Feature: Test basic usage of choice activity in app
     And I should not find "Option 2: 1" in the app
     And I should not find "Option 3: 0" in the app
 
-    When I switch offline mode to "false"
+    When I switch network connection to wifi
     And I press the back button in the app
     And I press "Test single choice name" in the app
     Then I should find "Option 1: 0" in the app

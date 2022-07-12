@@ -103,7 +103,7 @@ Feature: Test forum navigation
     # Offline
     When I press the back button in the app
     And I press "Add discussion topic" in the app
-    And I switch offline mode to "true"
+    And I switch network connection to offline
     And I set the following fields to these values in the app:
       | Subject | Offline discussion 1 |
       | Message | Offline discussion 1 message |
@@ -199,7 +199,7 @@ Feature: Test forum navigation
 
     # Offline
     When I press "Add discussion topic" in the app
-    And I switch offline mode to "true"
+    And I switch network connection to offline
     And I set the following fields to these values in the app:
       | Subject | Offline discussion 1 |
       | Message | Offline discussion 1 message |

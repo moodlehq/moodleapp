@@ -104,14 +104,14 @@ Feature: Test basic usage of assignment activity in app
   Scenario: Add submission offline (online text) & Submit for grading offline & Sync submissions
     Given I entered the assign activity "assignment1" on course "Course 1" as "student1" in the app
     When I press "Add submission" in the app
-    And I switch offline mode to "true"
+    And I switch network connection to offline
     And I set the field "Online text submissions" to "Submission test" in the app
     And I press "Save" in the app
     And I press "Submit assignment" in the app
     And I press "OK" in the app
     Then I should find "This Assignment has offline data to be synchronised." in the app
 
-    When I switch offline mode to "false"
+    When I switch network connection to wifi
     And I press the back button in the app
     And I press "assignment1" in the app
     And I press "Information" in the app
@@ -122,7 +122,7 @@ Feature: Test basic usage of assignment activity in app
   Scenario: Edit an offline submission before synchronising it
     Given I entered the assign activity "assignment1" on course "Course 1" as "student1" in the app
     When I press "Add submission" in the app
-    And I switch offline mode to "true"
+    And I switch network connection to offline
     And I set the field "Online text submissions" to "Submission test original offline" in the app
     And I press "Save" in the app
     Then I should find "This Assignment has offline data to be synchronised." in the app
@@ -139,7 +139,7 @@ Feature: Test basic usage of assignment activity in app
     And I press "OK" in the app
     Then I should find "This Assignment has offline data to be synchronised." in the app
 
-    When I switch offline mode to "false"
+    When I switch network connection to wifi
     And I press the back button in the app
     And I press "assignment1" in the app
     Then I should find "Submitted for grading" in the app

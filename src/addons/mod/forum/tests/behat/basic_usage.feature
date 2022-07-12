@@ -96,7 +96,7 @@ Feature: Test basic usage of forum activity in app
     Then I should find "Reply" in the app
 
     When I press the back button in the app
-    And I switch offline mode to "true"
+    And I switch network connection to offline
     And I press "Initial discussion" in the app
     And I press "Reply" in the app
     And I set the field "Message" to "not sent reply" in the app
@@ -110,7 +110,7 @@ Feature: Test basic usage of forum activity in app
     Then I should find "Not sent" in the app
     And I should find "This Discussion has offline data to be synchronised" in the app
 
-    When I switch offline mode to "false"
+    When I switch network connection to wifi
     And I press the back button in the app
     And I press "Initial discussion" in the app
     Then I should not find "Not sent" in the app
@@ -118,7 +118,7 @@ Feature: Test basic usage of forum activity in app
 
   Scenario: Edit a not sent new discussion offline
     Given I entered the forum activity "Test forum name" on course "Course 1" as "student1" in the app
-    When I switch offline mode to "true"
+    When I switch network connection to offline
     And I press "Add discussion topic" in the app
     And I set the following fields to these values in the app:
       | Subject | Auto-test |
@@ -129,7 +129,7 @@ Feature: Test basic usage of forum activity in app
     And I press "Post to forum" in the app
     Then I should find "This Forum has offline data to be synchronised." in the app
 
-    When I switch offline mode to "false"
+    When I switch network connection to wifi
     And I press "Auto-test" in the app
     Then I should find "Post to forum" in the app
 
@@ -151,7 +151,7 @@ Feature: Test basic usage of forum activity in app
     Then I should find "Edit" in the app
 
     When I press "Edit" in the app
-    And I switch offline mode to "true"
+    And I switch network connection to offline
     And I set the field "Message" to "Auto-test message edited" in the app
     And I press "Save changes" in the app
     Then I should find "There was a problem connecting to the site. Please check your connection and try again." in the app
@@ -163,7 +163,7 @@ Feature: Test basic usage of forum activity in app
     And I press "Edit" in the app
     Then I should find "There was a problem connecting to the site. Please check your connection and try again." in the app
 
-    When I switch offline mode to "false"
+    When I switch network connection to wifi
     And I press "OK" in the app
     And I press "Edit" in the app
     And I set the field "Message" to "Auto-test message edited" in the app
@@ -183,7 +183,7 @@ Feature: Test basic usage of forum activity in app
 
     When I press "Delete" in the app
     And I press "Cancel" in the app
-    And I switch offline mode to "true"
+    And I switch network connection to offline
     And I press "Display options" near "Reply" in the app
     Then I should find "Delete" in the app
 
@@ -192,7 +192,7 @@ Feature: Test basic usage of forum activity in app
 
     When I press "OK" in the app
     And I close the popup in the app
-    And I switch offline mode to "false"
+    And I switch network connection to wifi
     And I press "Display options" near "Reply" in the app
     And I press "Delete" in the app
     And I press "Delete" in the app
@@ -215,14 +215,14 @@ Feature: Test basic usage of forum activity in app
     When I press "Auto-test" in the app
     And I press "None" near "Auto-test message" in the app
     And I press "1" near "Cancel" in the app
-    And I switch offline mode to "true"
+    And I switch network connection to offline
     And I press "None" near "test2" in the app
     And I press "0" near "Cancel" in the app
     Then I should find "Data stored in the device because it couldn't be sent. It will be sent automatically later." in the app
     And I should find "Average of ratings: -" in the app
     And I should find "Average of ratings: 1" in the app
 
-    When I switch offline mode to "false"
+    When I switch network connection to wifi
     And I press the back button in the app
     Then I should find "This Forum has offline data to be synchronised." in the app
 
@@ -244,7 +244,7 @@ Feature: Test basic usage of forum activity in app
   Scenario: Reply a post offline
     Given I entered the forum activity "Test forum name" on course "Course 1" as "student1" in the app
     When I press "Initial discussion" in the app
-    And I switch offline mode to "true"
+    And I switch network connection to offline
     Then I should find "Reply" in the app
 
     When I press "Reply" in the app
@@ -255,7 +255,7 @@ Feature: Test basic usage of forum activity in app
     And I should find "Not sent" in the app
 
     When I press the back button in the app
-    And I switch offline mode to "false"
+    And I switch network connection to wifi
     And I press "Initial discussion" in the app
     Then I should find "Initial discussion message" in the app
     And I should find "ReplyMessage" in the app
@@ -263,7 +263,7 @@ Feature: Test basic usage of forum activity in app
 
   Scenario: New discussion offline & Sync Forum
     Given I entered the forum activity "Test forum name" on course "Course 1" as "student1" in the app
-    When I switch offline mode to "true"
+    When I switch network connection to offline
     And I press "Add discussion topic" in the app
     And I set the following fields to these values in the app:
       | Subject | DiscussionSubject |
@@ -273,7 +273,7 @@ Feature: Test basic usage of forum activity in app
     And I should find "Not sent" in the app
     And I should find "This Forum has offline data to be synchronised." in the app
 
-    When I switch offline mode to "false"
+    When I switch network connection to wifi
     And I press the back button in the app
     And I press "Test forum name" in the app
     And I press "Information" in the app
@@ -286,7 +286,7 @@ Feature: Test basic usage of forum activity in app
 
   Scenario: New discussion offline & Auto-sync forum
     Given I entered the forum activity "Test forum name" on course "Course 1" as "student1" in the app
-    When I switch offline mode to "true"
+    When I switch network connection to offline
     And I press "Add discussion topic" in the app
     And I set the following fields to these values in the app:
       | Subject | DiscussionSubject |
@@ -296,7 +296,7 @@ Feature: Test basic usage of forum activity in app
     And I should find "Not sent" in the app
     And I should find "This Forum has offline data to be synchronised." in the app
 
-    When I switch offline mode to "false"
+    When I switch network connection to wifi
     And I run cron tasks in the app
     And I wait loading to finish in the app
     Then I should not find "Not sent" in the app
@@ -314,7 +314,7 @@ Feature: Test basic usage of forum activity in app
     Then I should find "Downloaded" within "Test forum name" "ion-item" in the app
 
     When I press the back button in the app
-    And I switch offline mode to "true"
+    And I switch network connection to offline
     And I press "Test forum name" in the app
     Then I should find "Initial discussion" in the app
 

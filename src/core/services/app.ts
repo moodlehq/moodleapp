@@ -30,7 +30,7 @@ import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CorePromisedValue } from '@classes/promised-value';
 import { Subscription } from 'rxjs';
 import { CorePlatform } from '@services/platform';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork, CoreNetworkConnection } from '@services/network';
 
 /**
  * Factory to provide some global functionalities, like access to the global app database.
@@ -644,10 +644,10 @@ export class CoreAppProvider {
      * Set value of forceOffline flag. If true, the app will think the device is offline.
      *
      * @param value Value to set.
-     * @deprecated since 4.1.0. Use CoreNetwork instead.
+     * @deprecated since 4.1.0. Use CoreNetwork.setForceConnectionMode instead.
      */
     setForceOffline(value: boolean): void {
-        CoreNetwork.setForceOffline(value);
+        CoreNetwork.setForceConnectionMode(value ? CoreNetworkConnection.NONE : CoreNetworkConnection.WIFI);
     }
 
     /**
