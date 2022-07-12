@@ -20,8 +20,11 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreConfig } from '@services/config';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
-import { Translate } from '@singletons';
+import { NgZone, Translate } from '@singletons';
 import { CoreAccountsList, CoreLoginHelper } from '@features/login/services/login-helper';
+import { CoreNetwork } from '@services/network';
+import { Subscription } from 'rxjs';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Page that displays the synchronization settings.
@@ -40,9 +43,13 @@ export class CoreSettingsSynchronizationPage implements OnInit, OnDestroy {
     };
 
     sitesLoaded = false;
-    syncOnlyOnWifi = false;
+    dataSaver = false;
+    limitedConnection = false;
+    isOnline = true;
+
     protected isDestroyed = false;
     protected sitesObserver: CoreEventObserver;
+    protected networkObserver: Subscription;
 
     constructor() {
 
@@ -80,6 +87,18 @@ export class CoreSettingsSynchronizationPage implements OnInit, OnDestroy {
                 siteEntry.fullName = siteInfo.fullname;
             }
         });
+
+        this.isOnline = CoreNetwork.isOnline();
+        this.limitedConnection = this.isOnline && CoreNetwork.isNetworkAccessLimited();
+
+        this.networkObserver = CoreNetwork.onChange().subscribe(() => {
+            // Execute the callback in the Angular zone, so change detection doesn't stop working.
+            NgZone.run(() => {
+                this.isOnline = CoreNetwork.isOnline();
+                this.limitedConnection = this.isOnline && CoreNetwork.isNetworkAccessLimited();
+            });
+        });
+
     }
 
     /**
@@ -96,18 +115,18 @@ export class CoreSettingsSynchronizationPage implements OnInit, OnDestroy {
 
         this.sitesLoaded = true;
 
-        this.syncOnlyOnWifi = await CoreConfig.get(CoreConstants.SETTINGS_SYNC_ONLY_ON_WIFI, true);
+        this.dataSaver = await CoreConfig.get(CoreConstants.SETTINGS_SYNC_ONLY_ON_WIFI, true);
     }
 
     /**
      * Called when sync only on wifi setting is enabled or disabled.
      */
     syncOnlyOnWifiChanged(): void {
-        CoreConfig.set(CoreConstants.SETTINGS_SYNC_ONLY_ON_WIFI, this.syncOnlyOnWifi ? 1 : 0);
+        CoreConfig.set(CoreConstants.SETTINGS_SYNC_ONLY_ON_WIFI, this.dataSaver ? 1 : 0);
     }
 
     /**
-     * Syncrhonizes a site.
+     * Synchronizes a site.
      *
      * @param siteId Site ID.
      */
@@ -122,6 +141,16 @@ export class CoreSettingsSynchronizationPage implements OnInit, OnDestroy {
 
             CoreDomUtils.showErrorModalDefault(error, 'core.settings.sitesyncfailed', true);
         }
+    }
+
+    /**
+     * Changes site.
+     *
+     * @param siteId Site ID.
+     */
+    async login(siteId: string): Promise<void> {
+        // This navigation will logout and navigate to the site home.
+        await CoreNavigator.navigateToSiteHome({ preferCurrentTab: false , siteId });
     }
 
     /**
@@ -145,11 +174,12 @@ export class CoreSettingsSynchronizationPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Page destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.isDestroyed = true;
-        this.sitesObserver?.off();
+        this.sitesObserver.off();
+        this.networkObserver.unsubscribe();
     }
 
 }

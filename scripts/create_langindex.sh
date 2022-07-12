@@ -68,6 +68,8 @@ function do_match {
         print_message "$2"
         tput setaf 6
         grep "$match" $LANGPACKSFOLDER/en/*.php
+    else
+        coincidence=0
     fi
 }
 
