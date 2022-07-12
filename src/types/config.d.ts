@@ -14,7 +14,7 @@
 
 import { CoreColorScheme, CoreZoomLevel } from '@features/settings/services/settings-helper';
 import { CoreMainMenuLocalizedCustomItem } from '@features/mainmenu/services/mainmenu';
-import { CoreSitesDemoSiteData } from '@services/sites';
+import { CoreLoginSiteInfo, CoreSitesDemoSiteData } from '@services/sites';
 import { OpenFileAction } from '@services/utils/utils';
 import { CoreLoginSiteSelectorListMethod } from '@features/login/services/login-helper';
 import { CoreDatabaseConfiguration } from '@classes/database/database-table';
@@ -42,7 +42,7 @@ export interface EnvironmentConfig {
     zoomlevels: Record<CoreZoomLevel, number>;
     defaultZoomLevel?: CoreZoomLevel; // Set the default zoom level of the app.
     customurlscheme: string;
-    siteurl: string;
+    siteurl: string | CoreLoginSiteInfo[];
     sitename: string;
     multisitesdisplay: CoreLoginSiteSelectorListMethod;
     sitefindersettings: Record<string, unknown>;
