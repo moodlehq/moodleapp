@@ -100,6 +100,7 @@ Feature: Test basic usage of glossary in app
     # View comments as a student
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
     And I press "Eggplant" in the app
+    When I pull to refresh in the app
     Then I should find "Comments (2)" in the app
 
     When I press "Comments" in the app

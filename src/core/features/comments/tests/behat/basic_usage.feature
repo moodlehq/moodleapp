@@ -36,8 +36,8 @@ Feature: Test basic usage of comments in app
         | Field description | Test field description |
     And I press "Save"
     And I close the browser tab opened by the app
-    When I entered the course "Course 1" as "teacher1" in the app
-    And I press "Data" in the app
+
+    When I pull to refresh in the app
     And I press "Add entries" in the app
     And I set the field "Test field name" to "Test" in the app
     And I press "Save" in the app
@@ -75,7 +75,7 @@ Feature: Test basic usage of comments in app
 
   Scenario: Add comments offline & Delete comments offline & Sync comments (database)
     Given I entered the data activity "Data" on course "Course 1" as "teacher1" in the app
-    When I press "Information" in the app
+    And I press "Information" in the app
     And I press "Open in browser" in the app
     And I switch to the browser tab opened by the app
     And I log in as "teacher1"
@@ -85,8 +85,8 @@ Feature: Test basic usage of comments in app
     And I press "Save"
     And I close the browser tab opened by the app
 
-    Given I entered the data activity "Data" on course "Course 1" as "teacher1" in the app
-    Then I press "Add entries" in the app
+    When I pull to refresh in the app
+    And I press "Add entries" in the app
     And I set the field "Test field name" to "Test" in the app
     And I press "Save" in the app
     And I press "More" in the app

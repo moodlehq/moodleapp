@@ -574,7 +574,7 @@ class behat_app extends behat_app_helper {
     /**
      * Performs a pull to refresh gesture.
      *
-     * @When /^I pull to refresh in the app$/
+     * @When I pull to refresh in the app
      * @throws DriverException If the gesture is not available
      */
     public function i_pull_to_refresh_in_the_app() {

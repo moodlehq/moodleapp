@@ -411,6 +411,7 @@ Feature: Test basic usage of one course in app
     And I select "Enrolment methods" from the "jump" singleselect
     And I click on "Enable" "icon" in the "Self enrolment (Student)" "table_row"
     And I close the browser tab opened by the app
+
     Given I entered the app as "student2"
     When I press "Site home" in the app
     And I press "Available courses" in the app

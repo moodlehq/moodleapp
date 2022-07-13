@@ -79,6 +79,7 @@ Feature: Test basic usage of assignment activity in app
 
     # Submit second attempt as a student
     Given I entered the assign activity "assignment1" on course "Course 1" as "student1" in the app
+    When I pull to refresh in the app
     Then I should find "Reopened" in the app
     And I should find "2 out of Unlimited" in the app
     And I should find "Add a new attempt based on previous submission" in the app
@@ -97,6 +98,7 @@ Feature: Test basic usage of assignment activity in app
     # View second attempt as a teacher
     Given I entered the assign activity "assignment1" on course "Course 1" as "teacher1" in the app
     When I press "Participants" in the app
+    And I pull to refresh in the app
     And I press "Student student" near "assignment1" in the app
     Then I should find "Online text submissions" in the app
     And I should find "Submission test 2nd attempt" in the app
