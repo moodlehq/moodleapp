@@ -63,6 +63,7 @@ Feature: Users can store entries in database activities when offline and sync wh
     And I press "Information" in the app
     And I press "Download" in the app
     And I wait until the page is ready
+    And I close the popup in the app
     And I switch network connection to offline
     When I press "Edit" in the app
     And I set the following fields to these values in the app:
@@ -112,6 +113,7 @@ Feature: Users can store entries in database activities when offline and sync wh
     And I press "Information" in the app
     And I press "Download" in the app
     And I wait until the page is ready
+    And I close the popup in the app
     When I switch network connection to offline
     And I press "Delete" in the app
     And I should find "Are you sure you want to delete this entry?" in the app

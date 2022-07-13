@@ -18,9 +18,6 @@ import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton, NgZone } from '@singletons';
 import { TestingBehatElementLocator, TestingBehatFindOptions } from './behat-runtime';
 
-// Containers that block containers behind them.
-const blockingContainers = ['ION-ALERT', 'ION-POPOVER', 'ION-ACTION-SHEET', 'CORE-USER-TOURS-USER-TOUR', 'ION-PAGE'];
-
 /**
  * Behat Dom Utils helper functions.
  */
@@ -331,13 +328,14 @@ export class TestingBehatDomUtilsService {
         }
 
         // Get containers until one blocks other views.
-        containers.find(container => {
+        containers.some(container => {
             if (container.tagName === 'ION-TOAST') {
                 container = container.shadowRoot?.querySelector('.toast-container') || container;
             }
             topContainers.push(container);
 
-            return blockingContainers.includes(container.tagName);
+            // If container has backdrop it blocks the rest of the UI.
+            return container.querySelector(':scope > ion-backdrop') || container.classList.contains('backdrop');
         });
 
         return topContainers;

@@ -49,7 +49,6 @@ Feature: Timeline block.
   @lms_from3.11
   Scenario: See courses inside block
     Given I entered the app as "student1"
-    And I press "Open block drawer" in the app
     Then I should find "Assignment 00" within "Timeline" "ion-card" in the app
     And I should find "Assignment 02" within "Timeline" "ion-card" in the app
     And I should find "Assignment 05" within "Timeline" "ion-card" in the app

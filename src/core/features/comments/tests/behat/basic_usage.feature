@@ -36,6 +36,7 @@ Feature: Test basic usage of comments in app
         | Field description | Test field description |
     And I press "Save"
     And I close the browser tab opened by the app
+    And I close the popup in the app
 
     When I pull to refresh in the app
     And I press "Add entries" in the app
@@ -84,6 +85,7 @@ Feature: Test basic usage of comments in app
         | Field description | Test field description |
     And I press "Save"
     And I close the browser tab opened by the app
+    And I close the popup in the app
 
     When I pull to refresh in the app
     And I press "Add entries" in the app

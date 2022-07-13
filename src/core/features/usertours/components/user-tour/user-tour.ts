@@ -62,6 +62,7 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
     @Output() afterDismiss = new EventEmitter<void>();
     @HostBinding('class.is-active') active = false;
     @HostBinding('class.is-popover') popover = false;
+    @HostBinding('class.backdrop') backdrop = true;
     @ViewChild('wrapper') wrapper?: ElementRef<HTMLElement>;
 
     focusStyles?: string;
