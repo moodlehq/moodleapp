@@ -1041,13 +1041,13 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * @param courseId Course ID the module belongs to.
      * @return Promise resolved when finished.
      */
-    syncModules(modules: CoreCourseModuleData[], courseId: number): Promise<unknown> {
-        return Promise.all(modules.map(async (module) => {
-            await this.syncModule(module, courseId);
-
+    async syncModules(modules: CoreCourseModuleData[], courseId: number): Promise<void> {
+        try {
+            await Promise.all(modules.map((module) => this.syncModule(module, courseId)));
+        } finally {
             // Invalidate course updates.
             await CoreUtils.ignoreErrors(this.invalidateCourseUpdates(courseId));
-        }));
+        }
     }
 
     /**
