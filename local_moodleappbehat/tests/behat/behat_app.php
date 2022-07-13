@@ -91,8 +91,6 @@ class behat_app extends behat_app_helper {
      * @throws ExpectationException Problem with resizing window
      */
     public function i_launch_the_app(string $runtime = '') {
-        $this->check_tags();
-
         // Go to page and prepare browser for app.
         $this->prepare_browser(['skiponboarding' => empty($runtime)]);
     }
@@ -101,18 +99,27 @@ class behat_app extends behat_app_helper {
      * @Then I wait the app to restart
      */
     public function i_wait_the_app_to_restart() {
-        // Wait window to reload.
-        $this->spin(function() {
-            if ($this->runtime_js('hasInitialized()')) {
-                // Behat runtime shouldn't be initialized after reload.
-                throw new DriverException('Window is not reloading properly.');
-            }
-
-            return true;
-        });
-
         // Prepare testing runtime again.
-        $this->prepare_browser(['restart' => false]);
+        $this->prepare_browser();
+    }
+
+    /**
+     * @Then I log out in the app
+     *
+     * @param bool $force If force logout or not.
+     */
+    public function i_log_out_in_app($force = true) {
+        $options = json_encode([
+            'forceLogout' => $force,
+        ]);
+
+        $result = $this->zone_js("sites.logout($options)");
+
+        if ($result !== 'OK') {
+            throw new DriverException('Error on log out - ' . $result);
+        }
+
+        $this->i_wait_the_app_to_restart();
     }
 
     /**
@@ -567,7 +574,7 @@ class behat_app extends behat_app_helper {
     /**
      * Performs a pull to refresh gesture.
      *
-     * @When /^I pull to refresh in the app$/
+     * @When I pull to refresh in the app
      * @throws DriverException If the gesture is not available
      */
     public function i_pull_to_refresh_in_the_app() {
@@ -841,9 +848,31 @@ class behat_app extends behat_app_helper {
      * @Given /^I switch offline mode to "(true|false)"$/
      * @param string $offline New value for navigator online mode
      * @throws DriverException If the navigator.online mode is not available
+     * @deprecated since 4.1 use i_switch_network_connection instead.
      */
     public function i_switch_offline_mode(string $offline) {
-        $this->runtime_js("network.setForceOffline($offline)");
+        $this->i_switch_network_connection($offline == 'true' ? 'offline' : 'wifi');
+    }
+
+    /**
+     * Switch network connection.
+     *
+     * @When /^I switch network connection to (wifi|cellular|offline)$/
+     * @param string $more New network mode.
+     * @throws DriverException If the navigator.online mode is not available
+     */
+    public function i_switch_network_connection(string $mode) {
+        switch ($mode) {
+            case 'wifi':
+                $this->runtime_js("network.setForceConnectionMode('$mode');");
+                break;
+            case 'cellular':
+                $this->runtime_js("network.setForceConnectionMode('$mode');");
+                break;
+            case 'offline':
+                $this->runtime_js("network.setForceConnectionMode('none');");
+                break;
+        }
     }
 
 }

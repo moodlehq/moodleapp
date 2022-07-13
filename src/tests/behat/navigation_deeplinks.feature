@@ -25,9 +25,7 @@ Feature: It navigates properly using deep links.
 
   Scenario: Receive a push notification
     Given I entered the app as "student2"
-    When I press the user menu button in the app
-    And I press "Log out" in the app
-    And I wait the app to restart
+    When I log out in the app
     And I press "Add" in the app
     And I set the field "Your site" to "$WWWROOT" in the app
     And I press "Connect to your site" in the app
@@ -67,9 +65,7 @@ Feature: It navigates properly using deep links.
 
   Scenario: Open a link with a custom URL that calls WebServices for a logged out site
     Given I entered the app as "student2"
-    When I press the user menu button in the app
-    And I press "Log out" in the app
-    And I wait the app to restart
+    When I log out in the app
     And I open a custom link in the app for:
       | forum      |
       | Test forum |

@@ -18,6 +18,17 @@ import { Network } from '@ionic-native/network/ngx';
 import { makeSingleton } from '@singletons';
 import { Observable, Subject, merge } from 'rxjs';
 
+export enum CoreNetworkConnection {
+    UNKNOWN = 'unknown',
+    ETHERNET = 'ethernet',
+    WIFI = 'wifi',
+    CELL_2G = '2g',
+    CELL_3G = '3g',
+    CELL_4G = '4g',
+    CELL = 'cellular',
+    NONE = 'none',
+};
+
 /**
  * Service to manage network connections.
  */
@@ -28,8 +39,20 @@ export class CoreNetworkService extends Network {
 
     protected connectObservable = new Subject<'connected'>();
     protected disconnectObservable = new Subject<'disconnected'>();
-    protected forceOffline = false;
+    protected forceConnectionMode?: CoreNetworkConnection;
     protected online = false;
+
+    get connectionType(): CoreNetworkConnection {
+        if (this.forceConnectionMode !== undefined) {
+            return this.forceConnectionMode;
+        }
+
+        if (CorePlatform.isMobile()) {
+            return this.type as CoreNetworkConnection;
+        }
+
+        return  this.online ? CoreNetworkConnection.WIFI : CoreNetworkConnection.NONE;
+    }
 
     /**
      * Initialize the service.
@@ -38,20 +61,25 @@ export class CoreNetworkService extends Network {
         this.checkOnline();
 
         if (CorePlatform.isMobile()) {
-            this.onChange().subscribe(() => {
+            // We cannot directly listen to onChange because it depends on
+            // onConnect and onDisconnect that have been already overriden.
+            super.onConnect().subscribe(() => {
+                this.fireObservable();
+            });
+            super.onDisconnect().subscribe(() => {
                 this.fireObservable();
             });
         } else {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (<any> window).Connection = {
-                UNKNOWN: 'unknown', // eslint-disable-line @typescript-eslint/naming-convention
-                ETHERNET: 'ethernet', // eslint-disable-line @typescript-eslint/naming-convention
-                WIFI: 'wifi', // eslint-disable-line @typescript-eslint/naming-convention
-                CELL_2G: '2g', // eslint-disable-line @typescript-eslint/naming-convention
-                CELL_3G: '3g', // eslint-disable-line @typescript-eslint/naming-convention
-                CELL_4G: '4g', // eslint-disable-line @typescript-eslint/naming-convention
-                CELL: 'cellular', // eslint-disable-line @typescript-eslint/naming-convention
-                NONE: 'none', // eslint-disable-line @typescript-eslint/naming-convention
+                UNKNOWN: CoreNetworkConnection.UNKNOWN, // eslint-disable-line @typescript-eslint/naming-convention
+                ETHERNET: CoreNetworkConnection.ETHERNET, // eslint-disable-line @typescript-eslint/naming-convention
+                WIFI: CoreNetworkConnection.WIFI, // eslint-disable-line @typescript-eslint/naming-convention
+                CELL_2G: CoreNetworkConnection.CELL_2G, // eslint-disable-line @typescript-eslint/naming-convention
+                CELL_3G: CoreNetworkConnection.CELL_3G, // eslint-disable-line @typescript-eslint/naming-convention
+                CELL_4G: CoreNetworkConnection.CELL_4G, // eslint-disable-line @typescript-eslint/naming-convention
+                CELL: CoreNetworkConnection.CELL, // eslint-disable-line @typescript-eslint/naming-convention
+                NONE: CoreNetworkConnection.NONE, // eslint-disable-line @typescript-eslint/naming-convention
             };
 
             window.addEventListener('online', () => {
@@ -65,12 +93,13 @@ export class CoreNetworkService extends Network {
     }
 
     /**
-     * Set value of forceOffline flag. If true, the app will think the device is offline.
+     * Set value of forceConnectionMode flag.
+     * The app will think the device is offline or limited connection.
      *
      * @param value Value to set.
      */
-    setForceOffline(value: boolean): void {
-        this.forceOffline = !!value;
+    setForceConnectionMode(value: CoreNetworkConnection): void {
+        this.forceConnectionMode = value;
         this.fireObservable();
     }
 
@@ -89,20 +118,15 @@ export class CoreNetworkService extends Network {
      * @return Whether the app is online.
      */
     checkOnline(): void {
-        if (this.forceOffline) {
+        if (this.forceConnectionMode === CoreNetworkConnection.NONE) {
             this.online = false;
 
             return;
         }
 
-        if (!CorePlatform.isMobile()) {
-            this.online = navigator.onLine;
+        const type = this.connectionType;
 
-            return;
-        }
-
-        let online = this.type !== null && this.type != this.Connection.NONE &&
-            this.type != this.Connection.UNKNOWN;
+        let online = type !== null && type !== CoreNetworkConnection.NONE && type !== CoreNetworkConnection.UNKNOWN;
 
         // Double check we are not online because we cannot rely 100% in Cordova APIs.
         if (!online && navigator.onLine) {
@@ -123,6 +147,7 @@ export class CoreNetworkService extends Network {
 
     /**
      * Returns an observable to notify when the app is connected.
+     * It will also be fired when connection type changes.
      *
      * @return Observable.
      */
@@ -143,12 +168,11 @@ export class CoreNetworkService extends Network {
      * Fires the correct observable depending on the connection status.
      */
     protected fireObservable(): void {
-        const previousOnline = this.online;
-
         this.checkOnline();
-        if (this.online && !previousOnline) {
+
+        if (this.online) {
             this.connectObservable.next('connected');
-        } else if (!this.online && previousOnline) {
+        } else {
             this.disconnectObservable.next('disconnected');
         }
     }
@@ -159,18 +183,16 @@ export class CoreNetworkService extends Network {
      * @return Whether the device uses a limited connection.
      */
     isNetworkAccessLimited(): boolean {
-        if (!CorePlatform.isMobile()) {
-            return false;
-        }
-
-        const limited = [
-            this.Connection.CELL_2G,
-            this.Connection.CELL_3G,
-            this.Connection.CELL_4G,
-            this.Connection.CELL,
+        const limited: CoreNetworkConnection[] = [
+            CoreNetworkConnection.CELL_2G,
+            CoreNetworkConnection.CELL_3G,
+            CoreNetworkConnection.CELL_4G,
+            CoreNetworkConnection.CELL,
         ];
 
-        return limited.indexOf(this.type) > -1;
+        const type = this.connectionType;
+
+        return limited.indexOf(type) > -1;
     }
 
     /**

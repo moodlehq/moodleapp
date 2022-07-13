@@ -95,6 +95,12 @@ class behat_app_helper extends behat_base {
     public function start_scenario() {
         $this->check_behat_setup();
         $this->fix_moodle_setup();
+
+        if ($this->apprunning) {
+            $this->notify_unload();
+            $this->apprunning = false;
+        }
+
         $this->ionicurl = $this->start_or_reuse_ionic();
     }
 
@@ -274,17 +280,20 @@ class behat_app_helper extends behat_base {
      * @throws DriverException If the app fails to load properly
      */
     protected function prepare_browser(array $options = []) {
-        $restart = $options['restart'] ?? true;
+        if ($this->evaluate_script('window.behat') && $this->runtime_js('hasInitialized()')) {
+            // Already initialized.
+            return;
+        }
 
-        if ($restart) {
-            if ($this->apprunning) {
-                $this->notify_unload();
-            }
+        $restart = false;
 
-            // Restart the browser and set its size.
-            $this->getSession()->restart();
+        if (!$this->apprunning) {
+            $this->check_tags();
+
+            $restart = true;
+
+            // Reset its size.
             $this->resize_window($this->windowsize, true);
-
             if (empty($this->ionicurl)) {
                 $this->ionicurl = $this->start_or_reuse_ionic();
             }
@@ -506,6 +515,8 @@ class behat_app_helper extends behat_base {
             $successXPath = '//page-core-mainmenu';
         }
 
+        $this->i_log_out_in_app(false);
+
         $this->handle_url($url, $successXPath);
     }
 
@@ -536,7 +547,6 @@ class behat_app_helper extends behat_base {
         if ($result !== 'OK') {
             throw new DriverException('Error handling url - ' . $result);
         }
-
         if (!empty($successXPath)) {
             // Wait until the page appears.
             $this->spin(
@@ -550,6 +560,8 @@ class behat_app_helper extends behat_base {
         }
 
         $this->wait_for_pending_js();
+
+        $this->i_wait_the_app_to_restart();
     }
 
     /**

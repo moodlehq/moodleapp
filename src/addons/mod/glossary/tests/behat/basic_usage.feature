@@ -100,6 +100,7 @@ Feature: Test basic usage of glossary in app
     # View comments as a student
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
     And I press "Eggplant" in the app
+    When I pull to refresh in the app
     Then I should find "Comments (2)" in the app
 
     When I press "Comments" in the app
@@ -111,7 +112,7 @@ Feature: Test basic usage of glossary in app
     When I press "Course downloads" in the app
     When I press "Download" within "Test glossary" "ion-item" in the app
     And I press the back button in the app
-    And I switch offline mode to "true"
+    And I switch network connection to offline
     And I press "Test glossary" in the app
     Then the header should be "Test glossary" in the app
     And I should find "Cucumber" in the app
@@ -156,7 +157,7 @@ Feature: Test basic usage of glossary in app
   Scenario: Sync
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
     And I press "Add a new entry" in the app
-    And I switch offline mode to "true"
+    And I switch network connection to offline
     And I set the following fields to these values in the app:
       | Concept | Broccoli |
       | Definition | Brassica oleracea var. italica |
@@ -181,7 +182,7 @@ Feature: Test basic usage of glossary in app
     And I should find "Entries to be synced" in the app
     And I should find "This Glossary has offline data to be synchronised." in the app
 
-    When I switch offline mode to "false"
+    When I switch network connection to wifi
     And I press "Information" in the app
     And I press "Synchronise now" in the app
     Then the header should be "Test glossary" in the app
@@ -211,13 +212,13 @@ Feature: Test basic usage of glossary in app
     # Rate entries as teacher2
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "teacher2" in the app
     And I press "Cucumber" in the app
-    And I switch offline mode to "true"
+    And I switch network connection to offline
     And I press "None" in the app
     And I press "0" in the app
     Then I should find "Data stored in the device because it couldn't be sent. It will be sent automatically later." in the app
     And I should find "Average of ratings: 1" in the app
 
-    When I switch offline mode to "false"
+    When I switch network connection to wifi
     And I press the back button in the app
     Then I should find "This Glossary has offline data to be synchronised." in the app
 

@@ -746,11 +746,7 @@ export class CorePushNotificationsProvider {
                 CoreEvents.trigger(CoreEvents.DEVICE_REGISTERED_IN_MOODLE, {}, site.getId());
 
                 // Insert the device in the local DB.
-                try {
-                    await this.registeredDevicesTables[site.getId()].insert(data);
-                } catch (err) {
-                    // Ignore errors.
-                }
+                await CoreUtils.ignoreErrors(this.registeredDevicesTables[site.getId()].insert(data));
             }
         } finally {
             // Remove pending unregisters for this site.

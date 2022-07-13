@@ -163,7 +163,7 @@ Feature: Test basic usage of messages in app
     And I set the field "Search" to "student1" in the app
     And I press "Search" "button" in the app
     And I press "Student1 student1" in the app
-    And I switch offline mode to "true"
+    And I switch network connection to offline
     And I set the field "New message" to "heeey student" in the app
     And I press "Send" in the app
     Then I should find "heeey student" in the app
@@ -172,7 +172,7 @@ Feature: Test basic usage of messages in app
     And I press "Send" in the app
     Then I should find "byee" in the app
 
-    When I switch offline mode to "false"
+    When I switch network connection to wifi
     And I press the back button in the app
     And I press "Student1 student1" in the app
     Then I should find "heeey student" in the app
@@ -192,14 +192,14 @@ Feature: Test basic usage of messages in app
     And I set the field "Search" to "student1" in the app
     And I press "Search" "button" in the app
     And I press "Student1 student1" in the app
-    And I switch offline mode to "true"
+    And I switch network connection to offline
     And I set the field "New message" to "heeey student" in the app
     And I press "Send" in the app
     And I set the field "New message" to "byee" in the app
     And I press "Send" in the app
     Then I should find "byee" in the app
 
-    When I switch offline mode to "false"
+    When I switch network connection to wifi
     And I run cron tasks in the app
 
     Given I entered the app as "student1"
@@ -346,12 +346,12 @@ Feature: Test basic usage of messages in app
     And I press "Send" in the app
     Then I should find "self conversation online" in the app
 
-    When I switch offline mode to "true"
+    When I switch network connection to offline
     And I set the field "New message" to "self conversation offline" in the app
     And I press "Send" in the app
     Then I should find "self conversation offline" in the app
 
-    When I switch offline mode to "false"
+    When I switch network connection to wifi
     And I press the back button in the app
     And I press "Student1 student1" in the app
     And I press "Display options" in the app

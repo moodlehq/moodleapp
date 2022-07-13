@@ -29,6 +29,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { Observable, Subject } from 'rxjs';
+import { CoreTextUtils } from '@services/utils/text';
 
 /**
  * Object with space usage and cache entries that can be erased.
@@ -260,6 +261,7 @@ export class CoreSettingsHelperProvider {
         const site = await CoreSites.getSite(siteId);
         const hasSyncHandlers = CoreCronDelegate.hasManualSyncHandlers();
 
+        // All these errors should not happen on manual sync because are prevented on UI.
         if (site.isLoggedOut()) {
             // Cannot sync logged out sites.
             throw new CoreError(Translate.instant('core.settings.cannotsyncloggedout'));
@@ -286,6 +288,8 @@ export class CoreSettingsHelperProvider {
 
         try {
             await syncPromise;
+        } catch (error) {
+            throw CoreTextUtils.addTitleToError(error, Translate.instant('core.settings.sitesyncfailed'));
         } finally {
             delete this.syncPromises[siteId];
         }

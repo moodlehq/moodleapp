@@ -8,9 +8,10 @@
             </ion-button>
             <ion-slides [options]="slidesOpts" [dir]="direction" role="tablist" [attr.aria-label]="description">
                 <ng-container *ngFor="let tab of tabs">
-                    <ion-slide role="presentation" [id]="tab.id! + '-tab'" tabindex="-1" [class.selected]="selected == tab.id">
+                    <ion-slide role="presentation" [id]="tab.id! + '-tab'" tabindex="-1" [class.selected]="selected == tab.id"
+                        class="{{tab.class}}">
                         <ion-tab-button (ionTabButtonClick)="selectTab(tab.id, $event)" (keydown)="tabAction.keyDown($event)"
-                            (keyup)="tabAction.keyUp(tab.id, $event)" [tab]="tab.page" [layout]="layout" class="{{tab.class}}" role="tab"
+                            (keyup)="tabAction.keyUp(tab.id, $event)" [tab]="tab.page" [layout]="layout" role="tab"
                             [attr.aria-controls]="tab.id" [attr.aria-selected]="selected == tab.id"
                             [tabindex]="selected == tab.id ? 0 : -1">
                             <ion-icon *ngIf="tab.icon" [name]="tab.icon" aria-hidden="true"></ion-icon>

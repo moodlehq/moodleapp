@@ -33,7 +33,7 @@ Feature: Users can store entries in database activities when offline and sync wh
 
   Scenario: Create entry (offline)
     Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app
-    And I switch offline mode to "true"
+    And I switch network connection to offline
     And I should find "No entries in database" in the app
     When I press "Add entries" in the app
     And I set the following fields to these values in the app:
@@ -44,7 +44,7 @@ Feature: Users can store entries in database activities when offline and sync wh
     And I should find "Moodle community site" in the app
     And I should find "This Database has offline data to be synchronised" in the app
     And I press the back button in the app
-    And I switch offline mode to "false"
+    And I switch network connection to wifi
     And I press "Web links" near "General" in the app
     And I should find "https://moodle.org/" in the app
     And I should find "Moodle community site" in the app
@@ -63,7 +63,8 @@ Feature: Users can store entries in database activities when offline and sync wh
     And I press "Information" in the app
     And I press "Download" in the app
     And I wait until the page is ready
-    And I switch offline mode to "true"
+    And I close the popup in the app
+    And I switch network connection to offline
     When I press "Edit" in the app
     And I set the following fields to these values in the app:
       | URL | https://moodlecloud.com/ |
@@ -75,7 +76,7 @@ Feature: Users can store entries in database activities when offline and sync wh
     And I should find "Moodle Cloud" in the app
     And I should find "This Database has offline data to be synchronised" in the app
     And I press the back button in the app
-    And I switch offline mode to "false"
+    And I switch network connection to wifi
     And I press "Web links" near "General" in the app
     And I should not find "https://moodle.org/" in the app
     And I should not find "Moodle community site" in the app
@@ -85,7 +86,7 @@ Feature: Users can store entries in database activities when offline and sync wh
     And I press "Information" in the app
     And I press "Refresh" in the app
     And I wait until the page is ready
-    And I switch offline mode to "true"
+    And I switch network connection to offline
     And I press "Delete" in the app
     And I should find "Are you sure you want to delete this entry?" in the app
     And I press "Delete" in the app
@@ -93,7 +94,7 @@ Feature: Users can store entries in database activities when offline and sync wh
     And I should find "Moodle Cloud" in the app
     And I should find "This Database has offline data to be synchronised" in the app
     And I press the back button in the app
-    And I switch offline mode to "false"
+    And I switch network connection to wifi
     And I press "Web links" near "General" in the app
     And I should not find "https://moodlecloud.com/" in the app
     And I should not find "Moodle Cloud" in the app
@@ -112,7 +113,8 @@ Feature: Users can store entries in database activities when offline and sync wh
     And I press "Information" in the app
     And I press "Download" in the app
     And I wait until the page is ready
-    When I switch offline mode to "true"
+    And I close the popup in the app
+    When I switch network connection to offline
     And I press "Delete" in the app
     And I should find "Are you sure you want to delete this entry?" in the app
     And I press "Delete" in the app
@@ -121,7 +123,7 @@ Feature: Users can store entries in database activities when offline and sync wh
     And I should find "This Database has offline data to be synchronised" in the app
     And I press "Restore" in the app
     And I press the back button in the app
-    And I switch offline mode to "false"
+    And I switch network connection to wifi
     And I press "Web links" near "General" in the app
     Then I should find "https://moodle.org/" in the app
     And I should find "Moodle community site" in the app

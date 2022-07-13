@@ -36,8 +36,9 @@ Feature: Test basic usage of comments in app
         | Field description | Test field description |
     And I press "Save"
     And I close the browser tab opened by the app
-    When I entered the course "Course 1" as "teacher1" in the app
-    And I press "Data" in the app
+    And I close the popup in the app
+
+    When I pull to refresh in the app
     And I press "Add entries" in the app
     And I set the field "Test field name" to "Test" in the app
     And I press "Save" in the app
@@ -75,7 +76,7 @@ Feature: Test basic usage of comments in app
 
   Scenario: Add comments offline & Delete comments offline & Sync comments (database)
     Given I entered the data activity "Data" on course "Course 1" as "teacher1" in the app
-    When I press "Information" in the app
+    And I press "Information" in the app
     And I press "Open in browser" in the app
     And I switch to the browser tab opened by the app
     And I log in as "teacher1"
@@ -84,14 +85,15 @@ Feature: Test basic usage of comments in app
         | Field description | Test field description |
     And I press "Save"
     And I close the browser tab opened by the app
+    And I close the popup in the app
 
-    Given I entered the data activity "Data" on course "Course 1" as "teacher1" in the app
-    Then I press "Add entries" in the app
+    When I pull to refresh in the app
+    And I press "Add entries" in the app
     And I set the field "Test field name" to "Test" in the app
     And I press "Save" in the app
     And I press "More" in the app
     And I press "Comments (0)" in the app
-    And I switch offline mode to "true"
+    And I switch network connection to offline
     And I set the field "Add a comment..." to "comment test" in the app
     And I press "Send" in the app
     Then I should find "Data stored in the device because it couldn't be sent. It will be sent automatically later." in the app
@@ -100,7 +102,7 @@ Feature: Test basic usage of comments in app
 
     When I press the back button in the app
     And I press "Comments (0)" in the app
-    And I switch offline mode to "false"
+    And I switch network connection to wifi
     And I press "Display options" in the app
     And I press "Synchronise now" in the app
     And I close the popup in the app
@@ -109,7 +111,7 @@ Feature: Test basic usage of comments in app
 
     When I press the back button in the app
     And I press "Comments (1)" in the app
-    And I switch offline mode to "true"
+    And I switch network connection to offline
     And I press "Toggle delete buttons" in the app
     And I press "Delete" in the app
     And I press "Delete" near "Cancel" in the app
@@ -120,7 +122,7 @@ Feature: Test basic usage of comments in app
 
     When I press the back button in the app
     And I press "Comments (1)" in the app
-    And I switch offline mode to "false"
+    And I switch network connection to wifi
     And I press "Display options" in the app
     And I press "Synchronise now" in the app
     And I close the popup in the app
@@ -179,7 +181,7 @@ Feature: Test basic usage of comments in app
     And I press "Save" in the app
     And I press "potato" in the app
     And I press "Comments (0)" in the app
-    And I switch offline mode to "true"
+    And I switch network connection to offline
     And I set the field "Add a comment..." to "comment test" in the app
     And I press "Send" in the app
     Then I should find "Data stored in the device because it couldn't be sent. It will be sent automatically later." in the app
@@ -188,7 +190,7 @@ Feature: Test basic usage of comments in app
 
     When I press the back button in the app
     And I press "Comments (0)" in the app
-    And I switch offline mode to "false"
+    And I switch network connection to wifi
     And I press "Display options" in the app
     And I press "Synchronise now" in the app
     And I close the popup in the app
@@ -197,7 +199,7 @@ Feature: Test basic usage of comments in app
 
     When I press the back button in the app
     And I press "Comments (1)" in the app
-    And I switch offline mode to "true"
+    And I switch network connection to offline
     And I press "Toggle delete buttons" in the app
     And I press "Delete" in the app
     And I press "Delete" near "Cancel" in the app
@@ -208,7 +210,7 @@ Feature: Test basic usage of comments in app
 
     When I press the back button in the app
     And I press "Comments (1)" in the app
-    And I switch offline mode to "false"
+    And I switch network connection to wifi
     And I press "Display options" in the app
     And I press "Synchronise now" in the app
     And I close the popup in the app
@@ -262,7 +264,7 @@ Feature: Test basic usage of comments in app
     And I should find "Blog body" in the app
 
     When I press "Comments (0)" in the app
-    And I switch offline mode to "true"
+    And I switch network connection to offline
     And I set the field "Add a comment..." to "comment test" in the app
     And I press "Send" in the app
     Then I should find "Data stored in the device because it couldn't be sent. It will be sent automatically later." in the app
@@ -271,7 +273,7 @@ Feature: Test basic usage of comments in app
 
     When I press the back button in the app
     And I press "Comments (0)" in the app
-    And I switch offline mode to "false"
+    And I switch network connection to wifi
     And I press "Display options" in the app
     And I press "Synchronise now" in the app
     And I close the popup in the app
@@ -280,7 +282,7 @@ Feature: Test basic usage of comments in app
 
     When I press the back button in the app
     And I press "Comments (1)" in the app
-    And I switch offline mode to "true"
+    And I switch network connection to offline
     And I press "Toggle delete buttons" in the app
     And I press "Delete" in the app
     And I press "Delete" near "Cancel" in the app
@@ -291,7 +293,7 @@ Feature: Test basic usage of comments in app
 
     When I press the back button in the app
     And I press "Comments (1)" in the app
-    And I switch offline mode to "false"
+    And I switch network connection to wifi
     And I press "Display options" in the app
     And I press "Synchronise now" in the app
     And I close the popup in the app

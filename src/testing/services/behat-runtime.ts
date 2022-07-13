@@ -25,9 +25,8 @@ import { CoreCronDelegate, CoreCronDelegateService } from '@services/cron';
 import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreDom } from '@singletons/dom';
-import { IonRefresher } from '@ionic/angular';
-import { CoreCoursesDashboardPage } from '@features/courses/pages/dashboard/dashboard';
 import { Injectable } from '@angular/core';
+import { CoreSites, CoreSitesProvider } from '@services/sites';
 
 /**
  * Behat runtime servive with public API.
@@ -51,6 +50,10 @@ export class TestingBehatRuntimeService {
 
     get pushNotifications(): CorePushNotificationsProvider {
         return CorePushNotifications.instance;
+    }
+
+    get sites(): CoreSitesProvider {
+        return CoreSites.instance;
     }
 
     /**
@@ -348,23 +351,17 @@ export class TestingBehatRuntimeService {
         this.log('Action - pullToRefresh');
 
         try {
-            // TODO We should generalize this to work with other pages. It's not possible to use
-            // an IonRefresher instance because it doesn't expose any methods to trigger refresh,
-            // so we'll have to find another way.
-
-            const dashboard = this.getAngularInstance<CoreCoursesDashboardPage>(
-                'page-core-courses-dashboard',
-                'CoreCoursesDashboardPage',
+            // 'el' is protected, but there's no other way to trigger refresh programatically.
+            const ionRefresher = this.getAngularInstance<{ el: HTMLIonRefresherElement }>(
+                'ion-refresher',
+                'IonRefresher',
             );
 
-            if (!dashboard) {
-                return 'ERROR: It\'s not possible to pull to refresh the current page '
-                    + '(the dashboard page is the only one supported at the moment).';
+            if (!ionRefresher) {
+                return 'ERROR: It\'s not possible to pull to refresh the current page.';
             }
 
-            await new Promise(resolve => {
-                dashboard.refreshDashboard({ complete: resolve } as IonRefresher);
-            });
+            ionRefresher.el.dispatchEvent(new CustomEvent('ionRefresh'));
 
             return 'OK';
         } catch (error) {

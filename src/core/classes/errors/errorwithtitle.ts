@@ -12,20 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { AlertButton } from '@ionic/angular';
 import { CoreError } from './error';
 
 /**
  * Error with an explicit title describing the problem (instead of just "Error" or a generic message).
  * This title should be used to communicate the problem with users, and if it's undefined it should be omitted.
+ * The error also may contain customizable action buttons.
  */
-export class CoreErrorWithTitle extends CoreError {
+export class CoreErrorWithOptions extends CoreError {
 
     title?: string;
+    buttons?: AlertButton[];
 
-    constructor(message?: string, title?: string) {
+    constructor(message?: string, title?: string, buttons?: AlertButton[]) {
         super(message);
 
         this.title = title;
+        this.buttons = buttons;
     }
 
 }

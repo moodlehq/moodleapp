@@ -51,7 +51,7 @@ import { CoreRedirectPayload } from './navigator';
 import { CoreSitesFactory } from './sites-factory';
 import { CoreText } from '@singletons/text';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
-import { CoreErrorWithTitle } from '@classes/errors/errorwithtitle';
+import { CoreErrorWithOptions } from '@classes/errors/errorwithtitle';
 import { CoreAjaxError } from '@classes/errors/ajaxerror';
 import { CoreAjaxWSError } from '@classes/errors/ajaxwserror';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
@@ -870,7 +870,7 @@ export class CoreSitesProvider {
 
         const siteUrlAllowed = await CoreLoginHelper.isSiteUrlAllowed(site.getURL(), false);
         if (!siteUrlAllowed) {
-            throw new CoreErrorWithTitle(Translate.instant('core.login.sitenotallowed'));
+            throw new CoreErrorWithOptions(Translate.instant('core.login.sitenotallowed'));
         }
 
         this.currentSite = site;
@@ -1185,6 +1185,7 @@ export class CoreSitesProvider {
                     siteName: CoreConstants.CONFIG.sitename == '' ? siteInfo?.sitename: CoreConstants.CONFIG.sitename,
                     avatar: siteInfo?.userpictureurl,
                     siteHomeId: siteInfo?.siteid || 1,
+                    loggedOut: !!site.loggedOut,
                 };
                 formattedSites.push(basicInfo);
             }
@@ -1277,7 +1278,7 @@ export class CoreSitesProvider {
     /**
      * Logout the user.
      *
-     * @param forceLogout If true, site will be marked as logged out, no matter the value tool_mobile_forcelogout.
+     * @param options Logout options.
      * @return Promise resolved when the user is logged out.
      */
     async logout(options: CoreSitesLogoutOptions = {}): Promise<void> {
@@ -1923,6 +1924,7 @@ export type CoreSiteBasicInfo = {
     avatar?: string; // User's avatar.
     badge?: number; // Badge to display in the site.
     siteHomeId?: number; // Site home ID.
+    loggedOut: boolean; // If Site is logged out.
 };
 
 /**
