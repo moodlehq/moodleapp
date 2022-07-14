@@ -51,7 +51,7 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
         courseId: number,
         regex?: RegExp,
         siteId?: string,
-    ): Promise<void> {
+    ): Promise<boolean> {
         regex = regex || /^.*files$|^timers/;
 
         return super.prefetchAfterUpdate(prefetchHandler, module, courseId, regex, siteId);

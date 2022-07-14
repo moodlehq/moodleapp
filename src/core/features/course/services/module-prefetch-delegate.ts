@@ -772,13 +772,17 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
             return { status: CoreConstants.NOT_DOWNLOADABLE };
         }
 
-        // Get the stored data to get the status and downloadTime.
-        const data = await CoreFilepool.getPackageData(siteId, handler.component, module.id);
+        try {
+            // Get the stored data to get the status and downloadTime.
+            const data = await CoreFilepool.getPackageData(siteId, handler.component, module.id);
 
-        return {
-            status: data.status || CoreConstants.NOT_DOWNLOADED,
-            downloadTime: data.downloadTime || 0,
-        };
+            return {
+                status: data.status || CoreConstants.NOT_DOWNLOADED,
+                downloadTime: data.downloadTime || 0,
+            };
+        } catch {
+            return { status: CoreConstants.NOT_DOWNLOADED };
+        }
     }
 
     /**
