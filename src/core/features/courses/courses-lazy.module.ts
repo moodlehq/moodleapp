@@ -15,6 +15,7 @@
 import { Injector, NgModule } from '@angular/core';
 import { RouterModule, ROUTES, Routes } from '@angular/router';
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
+import { CoreCoursesHelper } from './services/courses-helper';
 import { CoreCoursesMyCoursesMainMenuHandlerService } from './services/handlers/my-courses-mainmenu';
 
 function buildRoutes(injector: Injector): Routes {
@@ -24,7 +25,7 @@ function buildRoutes(injector: Injector): Routes {
             data: {
                 mainMenuTabRoot: CoreCoursesMyCoursesMainMenuHandlerService.PAGE_NAME,
             },
-            loadChildren: () => import('./pages/my/my.module').then(m => m.CoreCoursesMyCoursesPageModule),
+            loadChildren: () => CoreCoursesHelper.getMyRouteModule(),
         },
         {
             path: 'categories',
