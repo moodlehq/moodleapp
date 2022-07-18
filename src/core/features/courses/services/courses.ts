@@ -20,7 +20,7 @@ import { CoreStatusWithWarningsWSResponse, CoreWarningsWSResponse, CoreWSExterna
 import { CoreEvents } from '@singletons/events';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreCourseAnyCourseDataWithExtraInfoAndOptions, CoreCourseWithImageAndColor } from './courses-helper';
-import { asyncObservable, firstValueFrom, ignoreErrors, zipIncudingComplete } from '@/core/utils/observables';
+import { asyncObservable, firstValueFrom, ignoreErrors, zipIncludingComplete } from '@/core/utils/rxjs';
 import { of, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -697,7 +697,7 @@ export class CoreCoursesProvider {
             courseIds = await this.getCourseIdsForAdminAndNavOptions(courseIds, siteId);
 
             // Get user navigation and administration options.
-            return zipIncudingComplete(
+            return zipIncludingComplete(
                 ignoreErrors(this.getUserNavigationOptionsObservable(courseIds, options), {}),
                 ignoreErrors(this.getUserAdministrationOptionsObservable(courseIds, options), {}),
             ).pipe(

@@ -21,7 +21,7 @@ import { makeSingleton } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { asyncObservable, firstValueFrom } from '@/core/utils/observables';
+import { asyncObservable, firstValueFrom } from '@/core/utils/rxjs';
 
 const ROOT_CACHE_KEY = 'CoreCoursesDashboard:';
 

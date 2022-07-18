@@ -27,7 +27,7 @@ import { CoreWSExternalFile } from '@services/ws';
 import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursecompletion';
 import moment from 'moment-timezone';
 import { Observable, of } from 'rxjs';
-import { firstValueFrom, zipIncudingComplete } from '@/core/utils/observables';
+import { firstValueFrom, zipIncludingComplete } from '@/core/utils/rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { chainRequests } from '@classes/site';
 
@@ -259,7 +259,7 @@ export class CoreCoursesHelperProvider {
                 };
                 courses = this.filterAndSortCoursesWithOptions(courses, options);
 
-                return zipIncudingComplete(
+                return zipIncludingComplete(
                     this.loadCoursesExtraInfoObservable(courses, options.loadCategoryNames, newOptions),
                     CoreCourses.getCoursesAdminAndNavOptionsObservable(courseIds, newOptions).pipe(map(courseOptions => {
                         courses.forEach((course: CoreEnrolledCourseDataWithOptions) => {

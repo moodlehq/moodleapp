@@ -59,7 +59,7 @@ import {
 } from '@services/database/sites';
 import { Observable, ObservableInput, ObservedValueOf, OperatorFunction, Subject } from 'rxjs';
 import { finalize, map, mergeMap } from 'rxjs/operators';
-import { firstValueFrom } from '../utils/observables';
+import { firstValueFrom } from '../utils/rxjs';
 
 /**
  * QR Code type enumeration.
