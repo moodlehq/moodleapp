@@ -99,6 +99,53 @@ describe('CoreObject singleton', () => {
         expect(CoreObject.isEmpty({ foo: 1 })).toEqual(false);
     });
 
+    it('creates a copy of an object with certain properties (using a list)', () => {
+        const originalObject = {
+            foo: 1,
+            bar: 2,
+            baz: 3,
+        };
+
+        expect(CoreObject.only(originalObject, [])).toEqual({});
+        expect(CoreObject.only(originalObject, ['foo'])).toEqual({
+            foo: 1,
+        });
+        expect(CoreObject.only(originalObject, ['foo', 'baz'])).toEqual({
+            foo: 1,
+            baz: 3,
+        });
+        expect(CoreObject.only(originalObject, ['foo', 'bar', 'baz'])).toEqual(originalObject);
+        expect(originalObject).toEqual({
+            foo: 1,
+            bar: 2,
+            baz: 3,
+        });
+    });
+
+    it('creates a copy of an object with certain properties (using a regular expression)', () => {
+        const originalObject = {
+            foo: 1,
+            bar: 2,
+            baz: 3,
+        };
+
+        expect(CoreObject.only(originalObject, /.*/)).toEqual(originalObject);
+        expect(CoreObject.only(originalObject, /^ba.*/)).toEqual({
+            bar: 2,
+            baz: 3,
+        });
+        expect(CoreObject.only(originalObject, /(foo|bar)/)).toEqual({
+            foo: 1,
+            bar: 2,
+        });
+        expect(CoreObject.only(originalObject, /notfound/)).toEqual({});
+        expect(originalObject).toEqual({
+            foo: 1,
+            bar: 2,
+            baz: 3,
+        });
+    });
+
     it('creates a copy of an object without certain properties', () => {
         const originalObject = {
             foo: 1,

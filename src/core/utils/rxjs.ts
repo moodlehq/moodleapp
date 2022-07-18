@@ -126,6 +126,7 @@ type GetObservablesReturnTypes<T> = { [key in keyof T]: T[key] extends Observabl
  */
 type ZipObservableData<T = unknown> = {
     values: T[];
+    hasValueForIndex: boolean[];
     completed: boolean;
     subscription?: Subscription;
 };
@@ -159,7 +160,7 @@ export function zipIncludingComplete<T extends Observable<unknown>[]>(
             }
 
             // Check if any observable still doesn't have data for the index.
-            const notReady = observablesData.some(data => !data.completed && data.values[nextIndex] === undefined);
+            const notReady = observablesData.some(data => !data.completed && !data.hasValueForIndex[nextIndex]);
             if (notReady) {
                 return;
             }
@@ -177,15 +178,22 @@ export function zipIncludingComplete<T extends Observable<unknown>[]>(
             }
         };
 
+        // Before subscribing, initialize the data for all observables.
         observables.forEach((observable, obsIndex) => {
-            const observableData: ZipObservableData = {
+            observablesData[obsIndex] = {
                 values: [],
+                hasValueForIndex: [],
                 completed: false,
             };
+        });
+
+        observables.forEach((observable, obsIndex) => {
+            const observableData = observablesData[obsIndex];
 
             observableData.subscription = observable.subscribe({
                 next: (value) => {
                     observableData.values.push(value);
+                    observableData.hasValueForIndex.push(true);
                     treatEmitted();
                 },
                 error: (error) => {
@@ -198,8 +206,6 @@ export function zipIncludingComplete<T extends Observable<unknown>[]>(
                     treatEmitted(true);
                 },
             });
-
-            observablesData[obsIndex] = observableData;
         });
 
         // When unsubscribing, unsubscribe from all observables.

@@ -1116,16 +1116,22 @@ ion-button.chip {
 }
 
 ion-chip {
-    line-height: 1.1;
-    font-size: 12px;
     padding: 4px 8px;
-    min-height: 24px;
     height: auto;
 
-    // Chips are not currently clickable.
-    &.ion-activatable {
+    // Chips are not currently clickable, only if specified explicitly.
+    &.ion-activatable:not(.clickable) {
         cursor: auto;
         pointer-events: none;
+    }
+    &.clickable {
+        cursor: pointer;
+        pointer-events: auto;
+    }
+
+    &.fab-chip {
+        padding: 8px 12px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, .4);
     }
 
     &.ion-color {
@@ -1134,6 +1140,10 @@ ion-chip {
             background-color: transparent;
             border-color: var(--ion-color-base);
             color: var(--ion-color-base);
+        }
+        &.fab-chip {
+            background: var(--ion-color);
+            color: var(--ion-color-contrast);
         }
 
         &.ion-color-light,
@@ -1738,4 +1748,13 @@ ion-header.no-title {
 // Fix subtitles wider than video.
 video::-webkit-media-text-track-display {
     white-space: normal !important;
+}
+
+ion-modal.core-modal-no-background {
+    --background: transparent;
+    pointer-events: none;
+
+    ion-backdrop {
+        display: none;
+    }
 }

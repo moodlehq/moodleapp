@@ -71,7 +71,7 @@
 
         <div class="mark-all-as-read" slot="fixed" collapsible-footer appearOnBottom>
             <ion-chip *ngIf="notifications.loaded && canMarkAllNotificationsAsRead" [disabled]="loadingMarkAllNotificationsAsRead"
-                color="primary" (click)="markAllNotificationsAsRead()">
+                color="info" class="clickable fab-chip" (click)="markAllNotificationsAsRead()">
                 <ion-icon name="fas-eye" aria-hidden="true" *ngIf="!loadingMarkAllNotificationsAsRead"></ion-icon>
                 <ion-spinner [attr.aria-label]="'core.loading' | translate" *ngIf="loadingMarkAllNotificationsAsRead">
                 </ion-spinner>

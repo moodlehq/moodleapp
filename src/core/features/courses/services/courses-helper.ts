@@ -227,7 +227,7 @@ export class CoreCoursesHelperProvider {
         filter?: string,
         loadCategoryNames: boolean = false,
         options: CoreSitesCommonWSOptions = {},
-    ): Promise<CoreEnrolledCourseDataWithOptions[]> {
+    ): Promise<CoreEnrolledCourseDataWithExtraInfoAndOptions[]> {
         return firstValueFrom(this.getUserCoursesWithOptionsObservable({
             sort,
             slice,
@@ -245,7 +245,8 @@ export class CoreCoursesHelperProvider {
      */
     getUserCoursesWithOptionsObservable(
         options: CoreCoursesGetWithOptionsOptions = {},
-    ): Observable<CoreEnrolledCourseDataWithOptions[]> {
+    ): Observable<CoreEnrolledCourseDataWithExtraInfoAndOptions[]> {
+
         return CoreCourses.getUserCoursesObservable(options).pipe(
             chainRequests(options.readingStrategy, (courses, newReadingStrategy) => {
                 if (courses.length <= 0) {
