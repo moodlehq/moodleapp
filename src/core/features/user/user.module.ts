@@ -35,7 +35,7 @@ import { CoreUserProvider } from './services/user';
 import { CoreUserHelperProvider } from './services/user-helper';
 import { CoreUserOfflineProvider } from './services/user-offline';
 import { CoreUserSyncProvider } from './services/user-sync';
-import { conditionalRoutes } from '@/app/app-routing.module';
+import { AppRoutingModule, conditionalRoutes } from '@/app/app-routing.module';
 import { CoreScreen } from '@services/screen';
 import { COURSE_PAGE_NAME } from '@features/course/course.module';
 import { COURSE_INDEX_PATH } from '@features/course/course-lazy.module';
@@ -50,6 +50,13 @@ export const CORE_USER_SERVICES: Type<unknown>[] = [
 ];
 
 export const PARTICIPANTS_PAGE_NAME = 'participants';
+
+const appRoutes: Routes = [
+    {
+        path: 'user',
+        loadChildren: () => import('@features/user/user-app-lazy.module').then(m => m.CoreUserAppLazyModule),
+    },
+];
 
 const routes: Routes = [
     {
@@ -76,6 +83,7 @@ const courseIndexRoutes: Routes = [
 
 @NgModule({
     imports: [
+        AppRoutingModule.forChild(appRoutes),
         CoreMainMenuTabRoutingModule.forChild(routes),
         CoreCourseIndexRoutingModule.forChild({ children: courseIndexRoutes }),
         CoreUserComponentsModule,

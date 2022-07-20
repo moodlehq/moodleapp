@@ -34,6 +34,7 @@ import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreDom } from '@singletons/dom';
 import { CorePlatform } from '@services/platform';
+import { CoreUserHelper } from '@features/user/services/user-helper';
 
 const MOODLE_VERSION_PREFIX = 'version-';
 const MOODLEAPP_VERSION_PREFIX = 'moodleapp-';
@@ -110,7 +111,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             CoreLoginHelper.passwordChangeForced(data.siteId!);
         });
         CoreEvents.on(CoreEvents.USER_NOT_FULLY_SETUP, (data) => {
-            CoreLoginHelper.openInAppForEdit(data.siteId!, '/user/edit.php', 'core.usernotfullysetup');
+            CoreUserHelper.openCompleteProfile(data.siteId!);
         });
 
         // Listen for sitepolicynotagreed event to accept the site policy.

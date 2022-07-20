@@ -5,8 +5,8 @@
         </ion-buttons>
 
         <ion-title>
-            <h1 *ngIf="!changingPassword">{{ 'core.login.changepassword' | translate }}</h1>
-            <h1 *ngIf="changingPassword">{{ 'core.login.reconnecttosite' | translate }}</h1>
+            <h1 *ngIf="!editingProfile">{{ 'core.user.completeyourprofile' | translate }}</h1>
+            <h1 *ngIf="editingProfile">{{ 'core.login.reconnecttosite' | translate }}</h1>
         </ion-title>
 
         <ion-buttons slot="end">
@@ -18,20 +18,20 @@
 </ion-header>
 <ion-content>
     <ion-list class="list-item-limited-width">
-        <ng-container *ngIf="!changingPassword">
+        <ng-container *ngIf="!editingProfile">
             <ion-item class="ion-text-wrap">
                 <ion-label>
-                    <h2>{{ 'core.login.forcepasswordchangenotice' | translate }}</h2>
+                    <p>{{ 'core.user.completeprofilenotice' | translate }}</p>
                 </ion-label>
             </ion-item>
-            <ion-button class="ion-text-wrap ion-margin" expand="block" (click)="openChangePasswordPage()">
-                {{ 'core.login.changepasswordbutton' | translate }}
+            <ion-button class="ion-text-wrap ion-margin" expand="block" (click)="openCompleteProfilePage()">
+                {{ 'core.user.completeprofile' | translate }}
             </ion-button>
         </ng-container>
-        <ng-container *ngIf="changingPassword">
+        <ng-container *ngIf="editingProfile">
             <ion-item class="ion-text-wrap">
                 <ion-label>
-                    <p>{{ 'core.login.changepasswordreconnectinstructions' | translate }}</p>
+                    <p>{{ 'core.user.completeprofilereconnectinstructions' | translate }}</p>
                 </ion-label>
             </ion-item>
             <ion-button class="ion-text-wrap ion-margin" expand="block" (click)="login()">
