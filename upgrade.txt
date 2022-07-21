@@ -6,6 +6,7 @@ information provided here is intended especially for developers.
 - Zoom levels changed from "normal / low / high" to " none / medium / high".
 - --addon-messages-* CSS3 variables have been renamed to --core-messages-*
 - The database constants in CoreSite (WS_CACHE_TABLE, CONFIG_TABLE, LAST_VIEWED_TABLE) and the DBRecord types have been moved to src/core/services/database.
+- The component <core-block> will no longer detect changes of properties inside the extraData object, it will only detect changes if the object itself changes.
 
 === 4.0.0 ===
 
