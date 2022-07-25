@@ -1796,7 +1796,7 @@ export class CoreSitesProvider {
                     getFromCache: false,
                     emergencyCache: false,
                 };
-            case CoreSitesReadingStrategy.UPDATE_IN_BACKGROUND:
+            case CoreSitesReadingStrategy.STALE_WHILE_REVALIDATE:
                 return {
                     updateInBackground: true,
                     getFromCache: true,
@@ -2023,7 +2023,7 @@ export const enum CoreSitesReadingStrategy {
     PREFER_CACHE,
     ONLY_NETWORK,
     PREFER_NETWORK,
-    UPDATE_IN_BACKGROUND,
+    STALE_WHILE_REVALIDATE,
 }
 
 /**

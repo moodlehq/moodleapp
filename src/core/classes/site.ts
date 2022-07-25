@@ -2409,7 +2409,7 @@ export function chainRequests<T, O extends ObservableInput<any>>(
 
         return source.subscribe({
             next: async (value) => {
-                if (readingStrategy !== CoreSitesReadingStrategy.UPDATE_IN_BACKGROUND) {
+                if (readingStrategy !== CoreSitesReadingStrategy.STALE_WHILE_REVALIDATE) {
                     // Just use same strategy.
                     subscriber.next({ data: value, readingStrategy });
 

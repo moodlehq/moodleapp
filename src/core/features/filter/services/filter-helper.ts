@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 
 import { CoreNetwork } from '@services/network';
-import { CoreSites } from '@services/sites';
+import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreFilterDelegate } from './filter-delegate';
 import {
     CoreFilter,
@@ -31,6 +31,7 @@ import { CoreEvents, CoreEventSiteData } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSite } from '@classes/site';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { firstValueFrom } from '@/core/utils/rxjs';
 
 /**
  * Helper service to provide filter functionalities.
@@ -75,7 +76,11 @@ export class CoreFilterHelperProvider {
      * @return Promise resolved with the contexts.
      */
     async getBlocksContexts(courseId: number, siteId?: string): Promise<CoreFiltersGetAvailableInContextWSParamContext[]> {
-        const blocks = await CoreCourse.getCourseBlocks(courseId, siteId);
+        // Use stale while revalidate, but always use the first value. If data is updated it will be stored in DB.
+        const blocks = await firstValueFrom(CoreCourse.getCourseBlocksObservable(courseId, {
+            readingStrategy: CoreSitesReadingStrategy.STALE_WHILE_REVALIDATE,
+            siteId,
+        }));
 
         const contexts: CoreFiltersGetAvailableInContextWSParamContext[] = [];
 
@@ -153,7 +158,12 @@ export class CoreFilterHelperProvider {
      * @return Promise resolved with the contexts.
      */
     async getCourseModulesContexts(courseId: number, siteId?: string): Promise<CoreFiltersGetAvailableInContextWSParamContext[]> {
-        const sections = await CoreCourse.getSections(courseId, false, true, undefined, siteId);
+        // Use stale while revalidate, but always use the first value. If data is updated it will be stored in DB.
+        const sections = await firstValueFrom(CoreCourse.getSectionsObservable(courseId, {
+            excludeContents: true,
+            readingStrategy: CoreSitesReadingStrategy.STALE_WHILE_REVALIDATE,
+            siteId,
+        }));
 
         const contexts: CoreFiltersGetAvailableInContextWSParamContext[] = [];
 
