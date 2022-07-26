@@ -59,4 +59,18 @@ describe('CoreSubscriptions singleton', () => {
         expect(error).not.toHaveBeenCalled();
     });
 
+    it('allows unsubscribing from outside the once function', async () => {
+        const subject = new Subject();
+        const success = jest.fn();
+        const error = jest.fn();
+
+        const unsubscribe = CoreSubscriptions.once(subject, success, error);
+        unsubscribe();
+
+        subject.next('foo');
+        subject.error('bar');
+        expect(success).not.toHaveBeenCalled();
+        expect(error).not.toHaveBeenCalled();
+    });
+
 });

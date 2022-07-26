@@ -31,8 +31,13 @@ export class CoreSubscriptions {
      * @param subscribable Subscribable to listen to.
      * @param onSuccess Callback to run when the subscription is updated.
      * @param onError Callback to run when the an error happens.
+     * @return A function to unsubscribe.
      */
-    static once<T>(subscribable: Subscribable<T>, onSuccess: (value: T) => unknown, onError?: (error: unknown) => unknown): void {
+    static once<T>(
+        subscribable: Subscribable<T>,
+        onSuccess: (value: T) => unknown,
+        onError?: (error: unknown) => unknown,
+    ): () => void {
         let unsubscribe = false;
         let subscription: Subscription | null = null;
 
@@ -56,6 +61,8 @@ export class CoreSubscriptions {
         if (unsubscribe) {
             subscription.unsubscribe();
         }
+
+        return () => subscription?.unsubscribe();
     }
 
 }
