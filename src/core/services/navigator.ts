@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { ActivatedRoute, ActivatedRouteSnapshot, Params } from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot, NavigationEnd, Params } from '@angular/router';
 
 import { NavigationOptions } from '@ionic/angular/providers/nav-controller';
 
@@ -30,6 +30,8 @@ import { CoreScreen } from './screen';
 import { CoreError } from '@classes/errors/error';
 import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
 import { CorePlatform } from '@services/platform';
+import { filter } from 'rxjs/operators';
+import { CorePromisedValue } from '@classes/promised-value';
 
 /**
  * Redirect payload.
@@ -562,6 +564,13 @@ export class CoreNavigatorService {
             return this.navigate(`/main/${path}`, options);
         }
 
+        if (this.isCurrent('/main')) {
+            // Main menu is loaded, but no tab selected yet. Wait for a tab to be loaded.
+            await this.waitForMainMenuTab();
+
+            return this.navigate(`/main/${this.getCurrentMainMenuTab()}/${path}`, options);
+        }
+
         // Open the path within in main menu.
         return this.navigate('/main', {
             ...options,
@@ -665,6 +674,30 @@ export class CoreNavigatorService {
      */
     currentRouteCanBlockLeave(): boolean {
         return !!this.getCurrentRoute().snapshot.routeConfig?.canDeactivate?.length;
+    }
+
+    /**
+     * Wait for a main menu tab route to be loaded.
+     *
+     * @return Promise resolved when the route is loaded.
+     */
+    protected waitForMainMenuTab(): Promise<void> {
+        if (this.getCurrentMainMenuTab()) {
+            return Promise.resolve();
+        }
+
+        const promise = new CorePromisedValue<void>();
+
+        const navSubscription = Router.events
+            .pipe(filter(event => event instanceof NavigationEnd))
+            .subscribe(() => {
+                if (this.getCurrentMainMenuTab()) {
+                    navSubscription?.unsubscribe();
+                    promise.resolve();
+                }
+            });
+
+        return promise;
     }
 
 }
