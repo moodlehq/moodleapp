@@ -40,7 +40,7 @@ import { CoreCommentsDBRecord } from '@features/comments/services/database/comme
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreApp } from '@services/app';
 import { CoreNetwork } from '@services/network';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { Subscription } from 'rxjs';
 import { CoreAnimations } from '@components/animations';
 

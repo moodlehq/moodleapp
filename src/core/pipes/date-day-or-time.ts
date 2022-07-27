@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Pipe, PipeTransform } from '@angular/core';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 import { CoreTimeUtils } from '@services/utils/time';
 import { Translate } from '@singletons';

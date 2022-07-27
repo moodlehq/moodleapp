@@ -25,7 +25,7 @@ import {
 import { makeSingleton, Translate } from '@singletons';
 import { CoreWSExternalFile } from '@services/ws';
 import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursecompletion';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 /**
  * Helper to gather some common courses functions.

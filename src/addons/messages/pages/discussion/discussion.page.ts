@@ -36,7 +36,7 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreApp } from '@services/app';
 import { CoreInfiniteLoadingComponent } from '@components/infinite-loading/infinite-loading';
 import { Md5 } from 'ts-md5/dist/md5';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { CoreError } from '@classes/errors/error';
 import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';

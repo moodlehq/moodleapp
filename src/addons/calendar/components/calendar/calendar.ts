@@ -48,7 +48,7 @@ import {
     CoreSwipeSlidesDynamicItemsManagerSource,
 } from '@classes/items-management/swipe-slides-dynamic-items-manager-source';
 import { CoreSwipeSlidesDynamicItemsManager } from '@classes/items-management/swipe-slides-dynamic-items-manager';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 /**
  * Component that displays a calendar.

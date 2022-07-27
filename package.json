@@ -119,6 +119,7 @@
     "jszip": "^3.7.1",
     "mathjax": "2.7.7",
     "moment": "^2.29.2",
+    "moment-timezone": "^0.5.34",
     "nl.kingsquare.cordova.background-audio": "^1.0.1",
     "rxjs": "~6.5.5",
     "ts-md5": "^1.2.7",

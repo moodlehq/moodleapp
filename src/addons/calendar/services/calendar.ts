@@ -27,7 +27,7 @@ import { ILocalNotification } from '@ionic-native/local-notifications';
 import { AddonCalendarOffline } from './calendar-offline';
 import { CoreUser } from '@features/user/services/user';
 import { CoreWSExternalWarning, CoreWSDate } from '@services/ws';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { AddonCalendarEventDBRecord, AddonCalendarReminderDBRecord, EVENTS_TABLE, REMINDERS_TABLE } from './database/calendar';
 import { CoreCourses } from '@features/courses/services/courses';
 import { ContextLevel, CoreConstants } from '@/core/constants';
