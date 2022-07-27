@@ -82,6 +82,7 @@ import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreDom } from '@singletons/dom';
 import { CoreForms } from '@singletons/form';
 import { CoreText } from '@singletons/text';
+import { CoreTime } from '@singletons/time';
 import { CoreUrl } from '@singletons/url';
 import { CoreWindow } from '@singletons/window';
 import { CoreCache } from '@classes/cache';
@@ -354,6 +355,7 @@ export class CoreCompileProvider {
         instance['CoreDom'] = CoreDom;
         instance['CoreForms'] = CoreForms;
         instance['CoreText'] = CoreText;
+        instance['CoreTime'] = CoreTime;
         instance['CoreUrl'] = CoreUrl;
         instance['CoreWindow'] = CoreWindow;
         instance['CoreCache'] = CoreCache;

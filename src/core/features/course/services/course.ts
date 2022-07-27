@@ -1418,7 +1418,7 @@ export class CoreCourseProvider {
                 id: courseId,
                 status: status,
                 previous: previousStatus,
-                updated: new Date().getTime(),
+                updated: Date.now(),
                 downloadTime: downloadTime,
                 previousDownloadTime: previousDownloadTime,
             });

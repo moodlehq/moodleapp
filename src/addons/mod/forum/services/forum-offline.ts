@@ -170,7 +170,7 @@ export class AddonModForumOfflineProvider {
             options: JSON.stringify(options || {}),
             groupid: groupId || AddonModForumProvider.ALL_PARTICIPANTS,
             userid: userId || site.getUserId(),
-            timecreated: timeCreated || new Date().getTime(),
+            timecreated: timeCreated || Date.now(),
         };
 
         await site.getDb().insertRecord(DISCUSSIONS_TABLE, data);
@@ -325,7 +325,7 @@ export class AddonModForumOfflineProvider {
             message: message,
             options: JSON.stringify(options || {}),
             userid: userId || site.getUserId(),
-            timecreated: new Date().getTime(),
+            timecreated: Date.now(),
         };
 
         await site.getDb().insertRecord(REPLIES_TABLE, data);

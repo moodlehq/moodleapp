@@ -1125,7 +1125,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             useridfrom: this.currentUserId,
             smallmessage: text,
             text: text,
-            timecreated: new Date().getTime(),
+            timecreated: Date.now(),
         };
         message.showDate = this.showDate(message, this.messages[this.messages.length - 1]);
         this.addMessage(message, false);

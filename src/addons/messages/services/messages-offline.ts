@@ -313,7 +313,7 @@ export class AddonMessagesOfflineProvider {
             touserid: toUserId,
             useridfrom: site.getUserId(),
             smallmessage: message,
-            timecreated: new Date().getTime(),
+            timecreated: Date.now(),
             deviceoffline: CoreNetwork.isOnline() ? 0 : 1,
         };
 
