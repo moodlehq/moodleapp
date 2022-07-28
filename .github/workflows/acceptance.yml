@@ -26,7 +26,7 @@ jobs:
     env:
       MOODLE_DOCKER_DB: pgsql
       MOODLE_DOCKER_BROWSER: chrome
-      MOODLE_DOCKER_PHP_VERSION: 7.3
+      MOODLE_DOCKER_PHP_VERSION: 7.4
       MOODLE_BRANCH: ${{ github.event.inputs.moodle_branch || 'master' }}
       MOODLE_REPOSITORY: ${{ github.event.inputs.moodle_repository || 'https://github.com/moodle/moodle' }}
       BEHAT_TAGS: ${{ github.event.inputs.behat_tags || '~@performance' }}
