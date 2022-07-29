@@ -90,3 +90,52 @@ Feature: Test basic usage of login in app
       | minimumversion | 11.0.0 | tool_mobile |
     When I enter the app
     Then I should find "App update required" in the app
+
+  Scenario: Force password change
+    Given I force a password change for user "student1"
+    When I enter the app
+    And I log in as "student1"
+    Then I should find "Change your password" in the app
+    And I should find "You must change your password to proceed." in the app
+
+    When I press "Change password" in the app
+    Then the app should have opened a browser tab with url "webserver"
+
+    When I close the browser tab opened by the app
+    Then I should find "If you didn't change your password correctly, you'll be asked to do it again." in the app
+    But I should not find "Change your password" in the app
+
+    When I press "Reconnect" in the app
+    Then I should find "Change your password" in the app
+    But I should not find "Reconnect" in the app
+
+    When I press "Switch account" in the app
+    Then I should find "Accounts" in the app
+    And I should find "david student" in the app
+
+    When I press "david student" in the app
+    Then I should find "Change your password" in the app
+    But I should not find "Reconnect" in the app
+
+    When I press "Change password" in the app
+    Then the app should have opened a browser tab with url "webserver"
+
+    When I switch to the browser tab opened by the app
+    And I set the field "username" to "student1"
+    And I set the field "password" to "student1"
+    And I click on "Log in" "button"
+    Then I should see "You must change your password to proceed"
+
+    When I set the field "Current password" to "student1"
+    And I set the field "New password" to "NewPassword1*"
+    And I set the field "New password (again)" to "NewPassword1*"
+    And I click on "Sign out everywhere" "checkbox"
+    And I click on "Save changes" "button"
+    Then I should see "Password has been changed"
+
+    When I close the browser tab opened by the app
+    Then I should find "If you didn't change your password correctly, you'll be asked to do it again." in the app
+    But I should not find "Change your password" in the app
+
+    When I press "Reconnect" in the app
+    Then I should find "Acceptance test site" in the app

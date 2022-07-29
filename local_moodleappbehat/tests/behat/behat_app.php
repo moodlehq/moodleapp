@@ -273,8 +273,10 @@ class behat_app extends behat_app_helper {
         // Wait until the main page appears.
         $this->spin(
                 function($context, $args) {
-                    $mainmenu = $context->getSession()->getPage()->find('xpath', '//page-core-mainmenu');
-                    if ($mainmenu) {
+                    $initialpage = $context->getSession()->getPage()->find('xpath', '//page-core-mainmenu') ??
+                        $context->getSession()->getPage()->find('xpath', '//page-core-login-change-password') ??
+                        $context->getSession()->getPage()->find('xpath', '//page-core-user-complete-profile');
+                    if ($initialpage) {
                         return true;
                     }
                     throw new DriverException('Moodle App main page not loaded after login');
