@@ -16,8 +16,8 @@ Feature: Test basic usage of assignment activity in app
       | teacher1 | C1 | editingteacher |
       | student1 | C1 | student |
     And the following "activities" exist:
-      | activity | course | idnumber | name                | intro                        | assignsubmission_onlinetext_enabled | duedate    | attemptreopenmethod |
-      | assign   | C1     | assign1  | assignment1         | Test assignment description1 | 1                                   | 1029844800 | manual              |
+      | activity | course | idnumber | name         | intro                        | assignsubmission_onlinetext_enabled | duedate                       | attemptreopenmethod |
+      | assign   | C1     | assign1  | assignment1  | Test assignment description1 | 1                                   | ## 20 August 2002 12:00 PM ## | manual              |
 
   @lms_from3.11
   Scenario: View assign description, due date & View list of student submissions (as teacher) & View own submission or student submission

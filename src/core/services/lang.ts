@@ -21,7 +21,7 @@ import { CoreConfig } from '@services/config';
 import { CoreSubscriptions } from '@singletons/subscriptions';
 import { makeSingleton, Translate, Http } from '@singletons';
 
-import * as moment from 'moment';
+import moment from 'moment-timezone';
 import { CoreSite } from '../classes/site';
 import { CorePlatform } from '@services/platform';
 

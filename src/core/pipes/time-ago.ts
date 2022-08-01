@@ -15,7 +15,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 /**
  * Pipe to turn a UNIX timestamp to "time ago".

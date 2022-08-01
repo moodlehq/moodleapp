@@ -20,6 +20,7 @@ import { CoreContentLinksAction } from '@features/contentlinks/services/contentl
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 import { AddonCalendar } from '../calendar';
+import moment from 'moment-timezone';
 
 const SUPPORTED_VIEWS = ['month', 'mini', 'minithree', 'day', 'upcoming', 'upcoming_mini'];
 
@@ -54,9 +55,9 @@ export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandler
                     };
                     const timestamp = params.time ? Number(params.time) * 1000 : Date.now();
 
-                    const date = new Date(timestamp);
-                    stateParams.year = date.getFullYear();
-                    stateParams.month = date.getMonth() + 1;
+                    const momentInstance = moment(timestamp);
+                    stateParams.year = momentInstance.year();
+                    stateParams.month = momentInstance.month() + 1;
 
                     CoreNavigator.navigateToSitePath('/calendar/index', {
                         params: stateParams,
@@ -71,10 +72,10 @@ export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandler
                     };
                     const timestamp = params.time ? Number(params.time) * 1000 : Date.now();
 
-                    const date = new Date(timestamp);
-                    stateParams.year = date.getFullYear();
-                    stateParams.month = date.getMonth() + 1;
-                    stateParams.day = date.getDate();
+                    const momentInstance = moment(timestamp);
+                    stateParams.year = momentInstance.year();
+                    stateParams.month = momentInstance.month() + 1;
+                    stateParams.day = momentInstance.date();
 
                     CoreNavigator.navigateToSitePath('/calendar/day', { params: stateParams, siteId });
 

@@ -32,7 +32,7 @@ import { AddonCalendarSync, AddonCalendarSyncProvider } from '../../services/cal
 import { CoreCategoryData, CoreCourses, CoreEnrolledCourseData } from '@features/courses/services/courses';
 import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
 import { AddonCalendarFilterComponent } from '../../components/filter/filter';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { NgZone } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { Params } from '@angular/router';

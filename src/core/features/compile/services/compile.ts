@@ -72,7 +72,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { FormBuilder, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { CoreConstants } from '@/core/constants';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { Md5 } from 'ts-md5/dist/md5';
 
 // Import core classes that can be useful for site plugins.
@@ -82,6 +82,7 @@ import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreDom } from '@singletons/dom';
 import { CoreForms } from '@singletons/form';
 import { CoreText } from '@singletons/text';
+import { CoreTime } from '@singletons/time';
 import { CoreUrl } from '@singletons/url';
 import { CoreWindow } from '@singletons/window';
 import { CoreCache } from '@classes/cache';
@@ -354,6 +355,7 @@ export class CoreCompileProvider {
         instance['CoreDom'] = CoreDom;
         instance['CoreForms'] = CoreForms;
         instance['CoreText'] = CoreText;
+        instance['CoreTime'] = CoreTime;
         instance['CoreUrl'] = CoreUrl;
         instance['CoreWindow'] = CoreWindow;
         instance['CoreCache'] = CoreCache;

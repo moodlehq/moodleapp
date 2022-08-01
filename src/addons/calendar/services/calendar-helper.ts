@@ -31,7 +31,7 @@ import { CoreConfig } from '@services/config';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreCourse } from '@features/course/services/course';
 import { ContextLevel, CoreConstants } from '@/core/constants';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { makeSingleton } from '@singletons';
 import { AddonCalendarSyncInvalidateEvent } from './calendar-sync';
 import { AddonCalendarOfflineEventDBRecord } from './database/calendar-offline';
@@ -136,8 +136,8 @@ export class AddonCalendarHelperProvider {
         const result = {};
 
         events.forEach((event) => {
-            const treatedDay = moment(new Date(event.timestart * 1000));
-            const endDay = moment(new Date((event.timestart + event.timeduration) * 1000));
+            const treatedDay = moment(event.timestart * 1000);
+            const endDay = moment((event.timestart + event.timeduration) * 1000);
 
             // Add the event to all the days it lasts.
             while (!treatedDay.isAfter(endDay, 'day')) {
@@ -661,7 +661,7 @@ export class AddonCalendarHelperProvider {
 
             // Fetch months and days.
             fetchTimestarts.map((fetchTime) => {
-                const day = moment(new Date(fetchTime * 1000));
+                const day = moment(fetchTime * 1000);
 
                 const monthId = this.getMonthId(day);
                 if (!treatedMonths[monthId]) {
@@ -697,7 +697,7 @@ export class AddonCalendarHelperProvider {
 
             // Invalidate months and days.
             invalidateTimestarts.map((fetchTime) => {
-                const day = moment(new Date(fetchTime * 1000));
+                const day = moment(fetchTime * 1000);
 
                 const monthId = this.getMonthId(day);
                 if (!treatedMonths[monthId]) {

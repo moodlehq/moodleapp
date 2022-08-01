@@ -114,7 +114,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
 
         if (this.user.lastaccess) {
             // If the time has passed, don't show the online status.
-            const time = new Date().getTime() - this.timetoshowusers;
+            const time = Date.now() - this.timetoshowusers;
 
             return this.user.lastaccess * 1000 >= time;
         } else {

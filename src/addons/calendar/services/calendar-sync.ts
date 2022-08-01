@@ -29,7 +29,7 @@ import { AddonCalendarHelper } from './calendar-helper';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreSync } from '@services/sync';
 import { CoreNetworkError } from '@classes/errors/network-error';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 /**
  * Service to sync calendar.

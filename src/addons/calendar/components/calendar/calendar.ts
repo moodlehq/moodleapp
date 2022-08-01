@@ -48,7 +48,7 @@ import {
     CoreSwipeSlidesDynamicItemsManagerSource,
 } from '@classes/items-management/swipe-slides-dynamic-items-manager-source';
 import { CoreSwipeSlidesDynamicItemsManager } from '@classes/items-management/swipe-slides-dynamic-items-manager';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 /**
  * Component that displays a calendar.
@@ -509,7 +509,7 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
 
         const weekDays = AddonCalendar.getWeekDays(result.daynames[0].dayno);
         const weeks = result.weeks as AddonCalendarWeek[];
-        const currentDay = new Date().getDate();
+        const currentDay = moment().date();
         const currentTime = CoreTimeUtils.timestamp();
 
         const preloadedMonth: PreloadedMonth = {

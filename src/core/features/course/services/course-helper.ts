@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import {

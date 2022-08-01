@@ -14,23 +14,33 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { CoreAppProvider } from '@services/app';
+import moment from 'moment-timezone';
 import { TestingBehatRuntime, TestingBehatRuntimeService } from './services/behat-runtime';
 
 type AutomatedTestsWindow = Window & {
     behat?: TestingBehatRuntimeService;
 };
 
-function initializeAutomatedTestsWindow(window: AutomatedTestsWindow) {
+function initializeAutomatedTests(window: AutomatedTestsWindow) {
     if (!CoreAppProvider.isAutomated()) {
         return;
     }
 
     window.behat = TestingBehatRuntime.instance;
+
+    // Force timezone for automated tests. Use the same timezone forced for LMS in tests.
+    moment.tz.setDefault('Australia/Perth');
 }
 
 @NgModule({
     providers: [
-        { provide: APP_INITIALIZER, multi: true, useValue: () => initializeAutomatedTestsWindow(window) },
+        {
+            provide: APP_INITIALIZER,
+            multi: true,
+            useValue: () => {
+                initializeAutomatedTests(window);
+            },
+        },
     ],
 })
 export class TestingModule {}

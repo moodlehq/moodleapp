@@ -22,7 +22,7 @@ import {
     AddonCalendarGetActionEventsByTimesortWSParams,
     AddonCalendarGetActionEventsByCoursesWSParams,
 } from '@addons/calendar/services/calendar';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { makeSingleton } from '@singletons';
 import { CoreSiteWSPreSets } from '@classes/site';
 

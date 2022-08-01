@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { makeSingleton, Translate } from '@singletons';
-import * as moment from 'moment';
+import moment from 'moment-timezone';
 import { AddonModChatMessage, AddonModChatSessionMessage } from './chat';
 
 const patternTo = new RegExp(/^To\s([^:]+):(.*)/);

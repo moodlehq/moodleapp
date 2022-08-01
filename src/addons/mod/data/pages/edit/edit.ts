@@ -270,7 +270,7 @@ export class AddonModDataEditPage implements OnInit {
             const modal = await CoreDomUtils.showModalLoading('core.sending', true);
 
             // Create an ID to assign files.
-            const entryTemp = this.entryId ? this.entryId : - (new Date().getTime());
+            const entryTemp = this.entryId ? this.entryId : - (Date.now());
             let editData: AddonModDataEntryWSField[] = [];
 
             try {
