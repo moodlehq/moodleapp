@@ -118,7 +118,9 @@ Feature: Test basic usage of courses in app
     When I press "Open block drawer" in the app
     And I press "Grade" in the app
     Then the header should be "assignment" in the app
-    And I should find "Test assignment description" in the app
+
+    When I pull to refresh in the app
+    Then I should find "Test assignment description" in the app
     And I should find "Time remaining" in the app
 
     When I press "Needs grading" in the app
