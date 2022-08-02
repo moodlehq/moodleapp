@@ -1,4 +1,4 @@
-@block @block_timeline @app @javascript @lms_upto3.10
+@block @block_timeline @app @javascript @lms_upto3.11
 Feature: Timeline block.
 
   Background:
