@@ -670,7 +670,7 @@ export class CoreDomUtilsProvider {
      * @param error Error to check.
      * @return Whether it's a canceled error.
      */
-    isSilentError(error: CoreError | CoreTextErrorObject | string): boolean {
+    isSilentError(error: CoreAnyError): boolean {
         return error instanceof CoreSilentError;
     }
 
@@ -1378,8 +1378,8 @@ export class CoreDomUtilsProvider {
         needsTranslate = false,
         autocloseTime?: number,
     ): Promise<HTMLIonAlertElement | null> {
-        if (this.isCanceledError(error)) {
-            // It's a canceled error, don't display an error.
+        if (this.isCanceledError(error) || this.isSilentError(error)) {
+            // It's a canceled or a silent error, don't display an error.
             return null;
         }
 
