@@ -38,7 +38,7 @@ import {
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
-import { CoreCourseHelper, CoreCourseModuleData, CoreCourseModuleCompletionData } from './course-helper';
+import { CoreCourseHelper, CoreCourseModuleData, CoreCourseModuleCompletionData, CoreCourseModuleDate } from './course-helper';
 import { CoreCourseFormatDelegate } from './format-delegate';
 import { CoreCronDelegate } from '@services/cron';
 import { CoreCourseLogCronHandler } from './handlers/log-cron';
@@ -53,6 +53,7 @@ import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CoreDatabaseCachingStrategy } from '@classes/database/database-table-proxy';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CorePlatform } from '@services/platform';
+import { CoreTime } from '@singletons/time';
 
 const ROOT_CACHE_KEY = 'mmCourse:';
 
@@ -648,11 +649,39 @@ export class CoreCourseProvider {
             };
         }
 
+        let formattedDates: CoreCourseModuleDate[] | undefined;
+
+        if (module.dates) {
+            formattedDates = module.dates.map(date => {
+                let readableTime = '';
+                if (!date.relativeto) {
+                    readableTime = CoreTimeUtils.userDate(date.timestamp * 1000, 'core.strftimedatetime', true);
+                } else {
+                    readableTime = Translate.instant(
+                        'core.course.relativedatessubmissionduedate' + (date.timestamp > date.relativeto ? 'after' : 'before'),
+                        {
+                            $a: {
+                                datediffstr: date.relativeto === date.timestamp ?
+                                    '0 ' + Translate.instant('core.secs') :
+                                    CoreTime.formatTime(date.relativeto - date.timestamp, 3),
+                            },
+                        },
+                    );
+                }
+
+                return {
+                    ...date,
+                    readableTime,
+                };
+            });
+        }
+
         return  {
             ...module,
             course: courseId,
             section: sectionId,
             completiondata: completionData,
+            dates: formattedDates,
         };
     }
 
@@ -1697,10 +1726,7 @@ export type CoreCourseGetContentsWSModule = {
     completiondata?: CoreCourseModuleWSCompletionData; // Module completion data.
     contents?: CoreCourseModuleContentFile[];
     downloadcontent?: number; // @since 4.0 The download content value.
-    dates?: {
-        label: string;
-        timestamp: number;
-    }[]; // @since 3.11. Activity dates.
+    dates?: CoreCourseGetContentsWSModuleDate[]; // @since 3.11. Activity dates.
     contentsinfo?: { // @since v3.7.6 Contents summary information.
         filescount: number; // Total number of files.
         filessize: number; // Total files size.
@@ -1708,6 +1734,16 @@ export type CoreCourseGetContentsWSModule = {
         mimetypes: string[]; // Files mime types.
         repositorytype?: string; // The repository type for the main file.
     };
+};
+
+/**
+ * Activity date.
+ */
+export type CoreCourseGetContentsWSModuleDate = {
+    label: string;
+    timestamp: number;
+    relativeto?: number; // @since 4.1. Relative date timestamp.
+    dataid?: string; // @since 4.1. ID to identify the text.
 };
 
 /**

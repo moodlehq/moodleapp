@@ -27,6 +27,7 @@ import {
     CoreCourseModuleCompletionTracking,
     CoreCourseModuleCompletionStatus,
     CoreCourseGetContentsWSModule,
+    CoreCourseGetContentsWSModuleDate,
 } from './course';
 import { CoreConstants } from '@/core/constants';
 import { CoreLogger } from '@singletons/logger';
@@ -2059,12 +2060,20 @@ export type CoreCourseSectionWithStatus = CoreCourseSection & {
 /**
  * Module with calculated data.
  */
-export type CoreCourseModuleData = Omit<CoreCourseGetContentsWSModule, 'completiondata'> & {
+export type CoreCourseModuleData = Omit<CoreCourseGetContentsWSModule, 'completiondata'|'dates'> & {
     course: number; // The course id.
     isStealth?: boolean;
     handlerData?: CoreCourseModuleHandlerData;
     completiondata?: CoreCourseModuleCompletionData;
     section: number;
+    dates?: CoreCourseModuleDate[];
+};
+
+/**
+ * Module date with calculated data.
+ */
+export type CoreCourseModuleDate = CoreCourseGetContentsWSModuleDate & {
+    readableTime: string;
 };
 
 /**
