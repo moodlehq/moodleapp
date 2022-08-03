@@ -50,15 +50,15 @@ import { AsyncComponent } from '@classes/async-component';
 })
 export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, AsyncComponent {
 
-    @Input() hideUntil = false; // Determine when should the contents be shown.
+    @Input() hideUntil: unknown = false; // Determine when should the contents be shown.
     @Input() message?: string; // Message to show while loading.
     @Input() fullscreen = true; // Use the whole screen.
 
     uniqueId: string;
     loaded = false;
 
-    protected scroll = 0;
     protected element: HTMLElement; // Current element.
+    protected lastScrollPosition = Promise.resolve<number | undefined>(undefined);
     protected onReadyPromise = new CorePromisedValue<void>();
 
     constructor(element: ElementRef) {
@@ -85,7 +85,7 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
      * @inheritdoc
      */
     ngAfterViewInit(): void {
-        this.changeState(this.hideUntil);
+        this.changeState(!!this.hideUntil);
     }
 
     /**
@@ -93,7 +93,7 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if (changes.hideUntil) {
-            this.changeState(this.hideUntil);
+            this.changeState(!!this.hideUntil);
         }
     }
 
@@ -103,7 +103,7 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
      * @param loaded True to load, false otherwise.
      * @return Promise resolved when done.
      */
-    async changeState(loaded: boolean): Promise<void> {
+    changeState(loaded: boolean): void {
         this.element.classList.toggle('core-loading-loaded', loaded);
         this.element.setAttribute('aria-busy', loaded ?  'false' : 'true');
 
@@ -111,16 +111,13 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
             return;
         }
 
-        if (!loaded) {
-            await this.saveScrollPosition();
-        }
         this.loaded = loaded;
 
         if (loaded) {
             this.onReadyPromise.resolve();
-
-            // Recover last scroll.
-            await this.recoverScrollPosition();
+            this.restoreScrollPosition();
+        } else {
+            this.lastScrollPosition = this.getScrollPosition();
         }
 
         // Event has been deprecated since app 4.0.
@@ -131,41 +128,36 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
     }
 
     /**
-     * Saves current scroll position.
+     * Gets current scroll position.
      */
-    protected async saveScrollPosition(): Promise<void> {
+    protected async getScrollPosition(): Promise<number | undefined> {
         const content = this.element.closest('ion-content');
-        if (!content) {
-            return;
-        }
+        const scrollElement = await content?.getScrollElement();
 
-        const scrollElement = await content.getScrollElement();
-        this.scroll = scrollElement.scrollTop;
+        return scrollElement?.scrollTop;
     }
 
     /**
-     * Recovers last set scroll position.
+     * Restores last known scroll position.
      */
-    protected async recoverScrollPosition(): Promise<void> {
-        if (this.scroll <= 0) {
+    protected async restoreScrollPosition(): Promise<void> {
+        const scrollPosition = await this.lastScrollPosition;
+
+        if (scrollPosition === undefined) {
             return;
         }
 
         const content = this.element.closest('ion-content');
-        if (!content) {
-            return;
-        }
+        const scrollElement = await content?.getScrollElement();
 
-        const scrollElement = await content.getScrollElement();
-
-        scrollElement.scrollTo(0, this.scroll);
+        scrollElement?.scrollTo({ top: scrollPosition });
     }
 
     /**
      * @inheritdoc
      */
     async ready(): Promise<void> {
-        return await this.onReadyPromise;
+        await this.onReadyPromise;
     }
 
 }
