@@ -41,14 +41,15 @@ Feature: Main Menu opens the right page
     And I should find "Course 1" in the app
     And "My courses" "text" should appear before "Home" "text" in the ".mainmenu-tabs" "css_element"
 
-  @lms_from4.0
-  Scenario: Opens first tab after Site Home, Dashboard, and My Courses are disabled
-    Given I entered the app as "student"
-    Then "Dashboard" should be selected in the app
+# @todo MOBILE-4119: This test is too flaky to run in CI until the race condition is fixed.
+#   @lms_from4.0
+#   Scenario: Opens first tab after Site Home, Dashboard, and My Courses are disabled
+#     Given I entered the app as "student"
+#     Then "Dashboard" should be selected in the app
 
-    When the following config values are set as admin:
-      | disabledfeatures | $mmSideMenuDelegate_mmaFrontpage,CoreMainMenuDelegate_CoreCoursesDashboard,$mmSideMenuDelegate_mmCourses | tool_mobile |
-    And I restart the app
-    Then I should find "Contacts" in the app
-    But I should not find "Home" in the app
-    And I should not find "My courses" in the app
+#     When the following config values are set as admin:
+#       | disabledfeatures | $mmSideMenuDelegate_mmaFrontpage,CoreMainMenuDelegate_CoreCoursesDashboard,$mmSideMenuDelegate_mmCourses | tool_mobile |
+#     And I restart the app
+#     Then I should find "Contacts" in the app
+#     But I should not find "Home" in the app
+#     And I should not find "My courses" in the app
