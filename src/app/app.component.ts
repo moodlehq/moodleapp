@@ -52,13 +52,6 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     /**
      * Component being initialized.
-     *
-     * @todo Review all old code to see if something is missing:
-     * - IAB events listening.
-     * - Platform pause/resume subscriptions.
-     * - handleOpenURL and openWindowSafely.
-     * - Back button registering to close modal first.
-     * - Note: HideKeyboardFormAccessoryBar has been moved to config.xml.
      */
     ngOnInit(): void {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -98,24 +91,6 @@ export class AppComponent implements OnInit, AfterViewInit {
 
             const scrollElement = await content.getScrollElement();
             content.classList.toggle('core-footer-shadow', !CoreDom.scrollIsBottom(scrollElement));
-        });
-
-        // Listen for session expired events.
-        CoreEvents.on(CoreEvents.SESSION_EXPIRED, (data) => {
-            CoreLoginHelper.sessionExpired(data);
-        });
-
-        // Listen for passwordchange and usernotfullysetup events to open InAppBrowser.
-        CoreEvents.on(CoreEvents.PASSWORD_CHANGE_FORCED, (data) => {
-            CoreLoginHelper.passwordChangeForced(data.siteId!);
-        });
-        CoreEvents.on(CoreEvents.USER_NOT_FULLY_SETUP, (data) => {
-            CoreLoginHelper.openInAppForEdit(data.siteId!, '/user/edit.php', 'core.usernotfullysetup');
-        });
-
-        // Listen for sitepolicynotagreed event to accept the site policy.
-        CoreEvents.on(CoreEvents.SITE_POLICY_NOT_AGREED, (data) => {
-            CoreLoginHelper.sitePolicyNotAgreed(data.siteId);
         });
 
         // Check URLs loaded in any InAppBrowser.
@@ -279,6 +254,9 @@ export class AppComponent implements OnInit, AfterViewInit {
                 CoreApp.closeApp();
             });
         });
+
+        // @todo: Pause Youtube videos in Android when app is put in background or screen is locked?
+        // See: https://github.com/moodlehq/moodleapp/blob/ionic3/src/app/app.component.ts#L312
     }
 
     /**

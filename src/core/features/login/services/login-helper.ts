@@ -784,10 +784,12 @@ export class CoreLoginHelperProvider {
     /**
      * Function that should be called when password change is forced. Reserved for core use.
      *
-     * @param siteId The site ID.
+     * @param siteId The site ID. Undefined for current site.
      */
-    async passwordChangeForced(siteId: string): Promise<void> {
+    async passwordChangeForced(siteId?: string): Promise<void> {
         const currentSite = CoreSites.getCurrentSite();
+        siteId = siteId ?? currentSite?.getId();
+
         if (!currentSite || siteId !== currentSite.getId()) {
             return; // Site that triggered the event is not current site.
         }

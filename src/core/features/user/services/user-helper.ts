@@ -13,6 +13,8 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreNavigator } from '@services/navigator';
+import { CoreSites } from '@services/sites';
 
 import { makeSingleton, Translate } from '@singletons';
 import { CoreUserRole } from './user';
@@ -58,6 +60,27 @@ export class CoreUserHelperProvider {
 
             return translation.indexOf('core.user.') < 0 ? translation : value.shortname;
         }).join(separator + ' ');
+    }
+
+    /**
+     * Open a page with instructions on how to complete profile.
+     *
+     * @param siteId The site ID. Undefined for current site.
+     */
+    async openCompleteProfile(siteId?: string): Promise<void> {
+        const currentSite = CoreSites.getCurrentSite();
+        siteId = siteId ?? currentSite?.getId();
+
+        if (!currentSite || siteId !== currentSite.getId()) {
+            return; // Site that triggered the event is not current site.
+        }
+
+        // If current page is already complete profile, stop.
+        if (CoreNavigator.isCurrent('/user/completeprofile')) {
+            return;
+        }
+
+        await CoreNavigator.navigate('/user/completeprofile', { params: { siteId }, reset: true });
     }
 
 }

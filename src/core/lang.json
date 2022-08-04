@@ -340,6 +340,7 @@
     "vieweditor": "View editor",
     "viewembeddedcontent": "View embedded content",
     "viewprofile": "View profile",
+    "wanttochangesite": "Want to change sites or log out?",
     "warningofflinedatadeleted": "Offline data from {{component}} '{{name}}' has been deleted. {{error}}",
     "warnopeninbrowser": "<p>You are about to leave the app to open the following URL in your device's browser. Do you want to continue?</p>\n<p><b>{{url}}</b></p>",
     "week": "Week",

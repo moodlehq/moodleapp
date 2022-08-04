@@ -23,15 +23,15 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreUtils } from '@services/utils/utils';
 
 /**
- * Page that shows instructions to change the password.
+ * Page that shows instructions to complete the profile.
  */
 @Component({
-    selector: 'page-core-login-change-password',
-    templateUrl: 'change-password.html',
+    selector: 'page-core-user-complete-profile',
+    templateUrl: 'complete-profile.html',
 })
-export class CoreLoginChangePasswordPage implements OnDestroy {
+export class CoreUserCompleteProfilePage implements OnDestroy {
 
-    changingPassword = false;
+    editingProfile = false;
     logoutLabel: string;
 
     protected urlLoadedObserver?: CoreEventObserver;
@@ -45,6 +45,7 @@ export class CoreLoginChangePasswordPage implements OnDestroy {
      * Show a help modal.
      */
     showHelp(): void {
+        // @todo MOBILE-4059: Change this message.
         CoreDomUtils.showAlert(
             Translate.instant('core.help'),
             Translate.instant('core.login.changepasswordhelp'),
@@ -52,17 +53,17 @@ export class CoreLoginChangePasswordPage implements OnDestroy {
     }
 
     /**
-     * Open the change password page in a browser.
+     * Open the edit profile page in a browser.
      */
-    openChangePasswordPage(): void {
+    openCompleteProfilePage(): void {
         CoreLoginHelper.openInAppForEdit(
             CoreSites.getCurrentSiteId(),
-            '/login/change_password.php',
+            '/user/edit.php',
             undefined,
             true,
         );
-        this.changingPassword = true;
-        this.detectPasswordChanged();
+        this.editingProfile = true;
+        this.detectProileEdited();
     }
 
     /**
@@ -70,7 +71,7 @@ export class CoreLoginChangePasswordPage implements OnDestroy {
      */
     login(): void {
         CoreNavigator.navigateToSiteHome();
-        this.changingPassword = false;
+        this.editingProfile = false;
     }
 
     /**
@@ -78,21 +79,21 @@ export class CoreLoginChangePasswordPage implements OnDestroy {
      */
     logout(): void {
         CoreSites.logout();
-        this.changingPassword = false;
+        this.editingProfile = false;
     }
 
     /**
-     * Try to detect if the user changed password in browser.
+     * Try to detect if the user edited the profile in browser.
      */
-    detectPasswordChanged(): void {
+    detectProileEdited(): void {
         if (this.urlLoadedObserver) {
             // Already listening (shouldn't happen).
             return;
         }
 
         this.urlLoadedObserver = CoreEvents.on(CoreEvents.IAB_LOAD_START, (event) => {
-            if (event.url.match(/\/login\/change_password\.php.*return=1/)) {
-                // Password should have changed.
+            if (event.url.match(/\/user\/preferences.php/)) {
+                // Profile should be complete now.
                 CoreUtils.closeInAppBrowser();
                 this.login();
             }

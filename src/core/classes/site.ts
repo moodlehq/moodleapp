@@ -675,10 +675,12 @@ export class CoreSite {
                     // Password Change Forced, trigger event. Try to get data from cache, the event will handle the error.
                     CoreEvents.trigger(CoreEvents.PASSWORD_CHANGE_FORCED, {}, this.id);
                     error.message = Translate.instant('core.forcepasswordchangenotice');
+                    useSilentError = true; // Use a silent error, the change password page already displays the appropiate info.
                 } else if (error.errorcode === 'usernotfullysetup') {
                     // User not fully setup, trigger event. Try to get data from cache, the event will handle the error.
                     CoreEvents.trigger(CoreEvents.USER_NOT_FULLY_SETUP, {}, this.id);
                     error.message = Translate.instant('core.usernotfullysetup');
+                    useSilentError = true; // Use a silent error, the complete profile page already displays the appropiate info.
                 } else if (error.errorcode === 'sitepolicynotagreed') {
                     // Site policy not agreed, trigger event.
                     CoreEvents.trigger(CoreEvents.SITE_POLICY_NOT_AGREED, {}, this.id);

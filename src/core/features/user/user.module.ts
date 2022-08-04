@@ -32,13 +32,14 @@ import { CoreCourseOptionsDelegate } from '@features/course/services/course-opti
 import { CoreUserCourseOptionHandler } from './services/handlers/course-option';
 import { CoreUserProfileFieldDelegateService } from './services/user-profile-field-delegate';
 import { CoreUserProvider } from './services/user';
-import { CoreUserHelperProvider } from './services/user-helper';
+import { CoreUserHelper, CoreUserHelperProvider } from './services/user-helper';
 import { CoreUserOfflineProvider } from './services/user-offline';
 import { CoreUserSyncProvider } from './services/user-sync';
-import { conditionalRoutes } from '@/app/app-routing.module';
+import { AppRoutingModule, conditionalRoutes } from '@/app/app-routing.module';
 import { CoreScreen } from '@services/screen';
 import { COURSE_PAGE_NAME } from '@features/course/course.module';
 import { COURSE_INDEX_PATH } from '@features/course/course-lazy.module';
+import { CoreEvents } from '@singletons/events';
 
 export const CORE_USER_SERVICES: Type<unknown>[] = [
     CoreUserDelegateService,
@@ -50,6 +51,13 @@ export const CORE_USER_SERVICES: Type<unknown>[] = [
 ];
 
 export const PARTICIPANTS_PAGE_NAME = 'participants';
+
+const appRoutes: Routes = [
+    {
+        path: 'user',
+        loadChildren: () => import('@features/user/user-app-lazy.module').then(m => m.CoreUserAppLazyModule),
+    },
+];
 
 const routes: Routes = [
     {
@@ -76,6 +84,7 @@ const courseIndexRoutes: Routes = [
 
 @NgModule({
     imports: [
+        AppRoutingModule.forChild(appRoutes),
         CoreMainMenuTabRoutingModule.forChild(routes),
         CoreCourseIndexRoutingModule.forChild({ children: courseIndexRoutes }),
         CoreUserComponentsModule,
@@ -98,6 +107,10 @@ const courseIndexRoutes: Routes = [
                 CoreCronDelegate.register(CoreUserSyncCronHandler.instance);
                 CoreTagAreaDelegate.registerHandler(CoreUserTagAreaHandler.instance);
                 CoreCourseOptionsDelegate.registerHandler(CoreUserCourseOptionHandler.instance);
+
+                CoreEvents.on(CoreEvents.USER_NOT_FULLY_SETUP, (data) => {
+                    CoreUserHelper.openCompleteProfile(data.siteId);
+                });
             },
         },
     ],
