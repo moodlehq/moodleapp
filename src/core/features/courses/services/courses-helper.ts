@@ -339,6 +339,15 @@ export class CoreCoursesHelperProvider {
         return startDate > Date.now();
     }
 
+    /**
+     * Retrieves my courses page module.
+     *
+     * @returns My courses page module.
+     */
+    async getMyRouteModule(): Promise<unknown> {
+        return import('../pages/my/my.module').then(m => m.CoreCoursesMyCoursesPageModule);
+    }
+
 }
 
 export const CoreCoursesHelper = makeSingleton(CoreCoursesHelperProvider);
