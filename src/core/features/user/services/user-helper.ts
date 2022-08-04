@@ -65,10 +65,12 @@ export class CoreUserHelperProvider {
     /**
      * Open a page with instructions on how to complete profile.
      *
-     * @param siteId The site ID.
+     * @param siteId The site ID. Undefined for current site.
      */
-    async openCompleteProfile(siteId: string): Promise<void> {
+    async openCompleteProfile(siteId?: string): Promise<void> {
         const currentSite = CoreSites.getCurrentSite();
+        siteId = siteId ?? currentSite?.getId();
+
         if (!currentSite || siteId !== currentSite.getId()) {
             return; // Site that triggered the event is not current site.
         }
