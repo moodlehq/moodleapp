@@ -62,6 +62,7 @@ import { CoreButtonWithSpinnerComponent } from './button-with-spinner/button-wit
 import { CoreSwipeSlidesComponent } from './swipe-slides/swipe-slides';
 import { CoreSwipeNavigationTourComponent } from './swipe-navigation-tour/swipe-navigation-tour';
 import { CoreMessageComponent } from './message/message';
+import { CoreGroupSelectorComponent } from './group-selector/group-selector';
 
 @NgModule({
     declarations: [
@@ -78,6 +79,7 @@ import { CoreMessageComponent } from './message/message';
         CoreEmptyBoxComponent,
         CoreFileComponent,
         CoreFilesComponent,
+        CoreGroupSelectorComponent,
         CoreIconComponent,
         CoreIframeComponent,
         CoreInfiniteLoadingComponent,
@@ -129,6 +131,7 @@ import { CoreMessageComponent } from './message/message';
         CoreEmptyBoxComponent,
         CoreFileComponent,
         CoreFilesComponent,
+        CoreGroupSelectorComponent,
         CoreIconComponent,
         CoreIframeComponent,
         CoreInfiniteLoadingComponent,

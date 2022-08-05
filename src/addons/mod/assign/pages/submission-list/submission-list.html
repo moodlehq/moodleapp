@@ -21,18 +21,9 @@
         </ion-refresher>
         <core-loading [hideUntil]="submissions.loaded">
             <ion-list>
-                <ion-item class="ion-text-wrap core-group-selector" *ngIf="(groupInfo.separateGroups || groupInfo.visibleGroups)">
-                    <ion-label id="addon-assign-groupslabel-list">
-                        <ng-container *ngIf="groupInfo.separateGroups">{{'core.groupsseparate' | translate }}</ng-container>
-                        <ng-container *ngIf="groupInfo.visibleGroups">{{'core.groupsvisible' | translate }}</ng-container>
-                    </ion-label>
-                    <ion-select [(ngModel)]="groupId" (ionChange)="reloadSubmissions()" aria-labelledby="addon-assign-groupslabel-list"
-                        interface="action-sheet" slot="end" [interfaceOptions]="{header: 'core.group' | translate}">
-                        <ion-select-option *ngFor="let groupOpt of groupInfo.groups" [value]="groupOpt.id">
-                            {{groupOpt.name}}
-                        </ion-select-option>
-                    </ion-select>
-                </ion-item>
+                <core-group-selector [groupInfo]="groupInfo" [(selected)]="groupId" (selectedChange)="reloadSubmissions()">
+                </core-group-selector>
+
                 <!-- List of submissions. -->
                 <ng-container *ngFor="let submission of submissions.items">
                     <ion-item class="ion-text-wrap" (click)="submissions.select(submission)" button

@@ -178,20 +178,7 @@
                     <h2 *ngIf="workshop!.phase > PHASE_SUBMISSION">{{ 'addon.mod_workshop.gradesreport' | translate }}</h2>
                 </ion-label>
             </ion-item-divider>
-            <ion-item class="ion-text-wrap core-group-selector" *ngIf="groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)">
-                <ion-label id="addon-workshop-groupslabel" *ngIf="groupInfo.separateGroups">
-                    {{ 'core.groupsseparate' | translate }}
-                </ion-label>
-                <ion-label id="addon-workshop-groupslabel" *ngIf="groupInfo.visibleGroups">
-                    {{ 'core.groupsvisible' | translate }}
-                </ion-label>
-                <ion-select [(ngModel)]="group" (ionChange)="setGroup(group)" aria-labelledby="addon-workshop-groupslabel"
-                    interface="action-sheet" [interfaceOptions]="{header: 'core.group' | translate}">
-                    <ion-select-option *ngFor="let groupOpt of groupInfo.groups" [value]="groupOpt.id">
-                        {{groupOpt.name}}
-                    </ion-select-option>
-                </ion-select>
-            </ion-item>
+            <core-group-selector [groupInfo]="groupInfo" [(selected)]="group" (selectedChange)="setGroup(group)"></core-group-selector>
 
             <ng-container *ngFor="let submission of grades">
                 <addon-mod-workshop-submission [submission]="submission" [courseId]="workshop!.course" [module]="module"
