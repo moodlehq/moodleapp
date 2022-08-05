@@ -96,6 +96,17 @@ class behat_app extends behat_app_helper {
     }
 
     /**
+     * Restart the app.
+     *
+     * @When I restart the app
+     */
+    public function i_restart_the_app() {
+        $this->getSession()->visit($this->ionicurl);
+
+        $this->i_wait_the_app_to_restart();
+    }
+
+    /**
      * @Then I wait the app to restart
      */
     public function i_wait_the_app_to_restart() {
