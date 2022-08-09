@@ -35,6 +35,7 @@ import { CoreSite } from '@classes/site';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreConstants } from '../constants';
 import { CoreNetwork } from '@services/network';
+import { Translate } from '@singletons';
 
 /**
  * Directive to handle external content.
@@ -217,7 +218,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
         if (!site.canDownloadFiles() && isSiteFile) {
             this.element.parentElement?.removeChild(this.element); // Remove element since it'll be broken.
 
-            throw new CoreError('Site doesn\'t allow downloading files.');
+            throw new CoreError(Translate.instant('core.cannotdownloadfiles'));
         }
 
         const finalUrl = await this.getUrlToUse(targetAttr, url, site);

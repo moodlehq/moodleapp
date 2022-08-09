@@ -374,7 +374,7 @@ export class CoreFilepoolProvider {
 
         const site = await CoreSites.getSite(siteId);
         if (!site.canDownloadFiles()) {
-            throw new CoreError('Site doesn\'t allow downloading files.');
+            throw new CoreError(Translate.instant('core.cannotdownloadfiles'));
         }
 
         if (!alreadyFixed) {
@@ -745,7 +745,7 @@ export class CoreFilepoolProvider {
 
         this.filePromises[siteId][downloadId] = CoreSites.getSite(siteId).then(async (site) => {
             if (!site.canDownloadFiles()) {
-                throw new CoreError('Site doesn\'t allow downloading files.');
+                throw new CoreError(Translate.instant('core.cannotdownloadfiles'));
             }
 
             const entry = await CoreWS.downloadFile(fileUrl, path, addExtension, onProgress);
