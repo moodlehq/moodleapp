@@ -29,7 +29,7 @@ export class CoreLongPressDirective implements OnInit, OnDestroy {
 
     element: HTMLElement;
     pressGesture?: Gesture;
-    timeout?: NodeJS.Timeout;
+    timeout?: number;
 
     @Output() longPress = new EventEmitter();
 
@@ -48,7 +48,7 @@ export class CoreLongPressDirective implements OnInit, OnDestroy {
             disableScroll: true,
             gestureName: 'longpress',
             onStart: (event) => {
-                this.timeout = setTimeout(() => {
+                this.timeout = window.setTimeout(() => {
                     this.longPress.emit(event);
 
                     delete this.timeout;
