@@ -178,6 +178,7 @@ export class AddonCalendarHelperProvider {
             format: 1,
             visible: 1,
             offline: false,
+            purpose: 'purpose' in event ? event.purpose : undefined,
         };
 
         if (event.modulename) {

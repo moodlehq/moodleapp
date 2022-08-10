@@ -1949,6 +1949,7 @@ export type AddonCalendarEventBase = {
  */
 export type AddonCalendarEvent = AddonCalendarEventBase & {
     url: string; // Url.
+    purpose?: string; // Purpose. @since 4.0
     action?: {
         name: string; // Name.
         url: string; // Url.
@@ -2302,6 +2303,7 @@ export type AddonCalendarEventToDisplay = Partial<AddonCalendarCalendarEvent> & 
     ispast?: boolean; // Calculated in the app. Whether the event is in the past.
     contextLevel?: ContextLevel;
     contextInstanceId?: number;
+    purpose?: string; // Purpose. @since 4.0
 };
 
 /**
