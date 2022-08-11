@@ -406,18 +406,10 @@ Feature: Test basic usage of one course in app
 
   @lms_from4.0
   Scenario: Self enrol
-    Given I entered the course "Course 1" as "teacher1" in the app
-    And I press "Course summary" in the app
-    And I press "Open in browser" in the app
-    And I switch to the browser tab opened by the app
-    And I log in as "teacher1"
-    And I click on "Participants" "link"
-    And I select "Enrolment methods" from the "jump" singleselect
-    And I click on "Enable" "icon" in the "Self enrolment (Student)" "table_row"
-    And I close the browser tab opened by the app
-    And I close the popup in the app
-
-    Given I entered the app as "student2"
+    Given I log in as "teacher1"
+    And I add "Self enrolment" enrolment method in "Course 1" with:
+      | Custom instance name | Student self enrolment |
+    And I entered the app as "student2"
     When I press "Site home" in the app
     And I press "Available courses" in the app
     And I press "Course 1" in the app
