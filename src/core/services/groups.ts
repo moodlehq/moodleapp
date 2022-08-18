@@ -170,19 +170,17 @@ export class CoreGroupsProvider {
             };
         }
 
-        if (result.groups.length <= 0) {
-            groupInfo.separateGroups = false;
-            groupInfo.visibleGroups = false;
+        if (!result.groups.length) {
             groupInfo.defaultGroupId = 0;
         } else {
             if (result.canaccessallgroups || groupInfo.visibleGroups) {
-                groupInfo.groups!.push({ id: 0, name: Translate.instant('core.allparticipants') });
+                groupInfo.groups.push({ id: 0, name: Translate.instant('core.allparticipants') });
                 groupInfo.defaultGroupId = 0;
             } else {
                 groupInfo.defaultGroupId = result.groups[0].id;
             }
 
-            groupInfo.groups = groupInfo.groups!.concat(result.groups);
+            groupInfo.groups = groupInfo.groups.concat(result.groups);
         }
 
         return groupInfo;
@@ -458,7 +456,7 @@ export type CoreGroupInfo = {
     /**
      * List of groups.
      */
-    groups?: CoreGroup[];
+    groups: CoreGroup[];
 
     /**
      * Whether it's separate groups.

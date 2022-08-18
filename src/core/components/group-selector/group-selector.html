@@ -1,4 +1,4 @@
-<ng-container *ngIf="groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)">
+<ng-container *ngIf="groupInfo && groupInfo.groups.length > 0 && (groupInfo.separateGroups || groupInfo.visibleGroups)">
     <ion-card class="core-info-card" *ngIf="multipleGroupsMessage && groupInfo.groups && groupInfo.groups.length > 1">
         <ion-item>
             <ion-icon name="fas-question-circle" slot="start" aria-hidden="true"></ion-icon>

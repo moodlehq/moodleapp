@@ -431,7 +431,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
     ): Promise<void> {
         const groupInfo = await CoreGroups.getActivityGroupInfo(moduleId, false, undefined, modOptions.siteId, true);
 
-        await Promise.all(groupInfo.groups?.map(async (group) => {
+        await Promise.all(groupInfo.groups.map(async (group) => {
             await AddonModLesson.getRetakesOverview(lessonId, {
                 groupId: group.id,
                 ...modOptions, // Include all options.

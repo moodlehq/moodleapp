@@ -1,5 +1,6 @@
 {
     "cannoteditpage": "You can not edit this page.",
+    "cannotviewpage": "You can not view this page.",
     "createpage": "Create page",
     "editingpage": "Editing this page '{{$a}}'",
     "errorloadingpage": "An error occurred while loading the page.",
