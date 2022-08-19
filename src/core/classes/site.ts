@@ -389,6 +389,16 @@ export class CoreSite {
     }
 
     /**
+     * Check if current user is Admin.
+     * Works properly since v3.8. See more in: {@link} https://tracker.moodle.org/browse/MDL-65550
+     *
+     * @returns Whether the user is Admin.
+     */
+    isAdmin(): boolean {
+        return this.getInfo()?.userissiteadmin ?? false;
+    }
+
+    /**
      * Check if the user authenticated in the site using an OAuth method.
      *
      * @return Whether the user authenticated in the site using an OAuth method.
