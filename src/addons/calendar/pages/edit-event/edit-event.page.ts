@@ -160,14 +160,20 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
      * @return Promise resolved when done.
      */
     protected async fetchData(): Promise<void> {
-        let accessInfo: AddonCalendarGetCalendarAccessInformationWSResponse;
-
         this.error = false;
 
         // Get access info.
         try {
-            accessInfo = await AddonCalendar.getAccessInformation(this.courseId);
-            this.types = await AddonCalendar.getAllowedEventTypes(this.courseId);
+            const [types, accessInfo] = await Promise.all([
+                AddonCalendar.getAllowedEventTypes(this.courseId),
+                CoreUtils.ignoreErrors(AddonCalendar.getAccessInformation(this.courseId), {
+                    canmanageentries: false,
+                    canmanageownentries: false,
+                    canmanagegroupentries: false,
+                } as AddonCalendarGetCalendarAccessInformationWSResponse),
+            ]);
+
+            this.types = types;
 
             const promises: Promise<void>[] = [];
             const eventTypes = AddonCalendarHelper.getEventTypeOptions(this.types);
