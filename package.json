@@ -80,7 +80,7 @@
     "@moodlehq/cordova-plugin-local-notification": "0.9.0-moodle.3",
     "@moodlehq/cordova-plugin-qrscanner": "3.0.1-moodle.4",
     "@moodlehq/cordova-plugin-zip": "3.1.0-moodle.1",
-    "@moodlehq/phonegap-plugin-push": "2.0.0-moodle.4",
+    "@moodlehq/phonegap-plugin-push": "4.0.0-moodle.1",
     "@ngx-translate/core": "^13.0.0",
     "@ngx-translate/http-loader": "^6.0.0",
     "@types/chart.js": "^2.9.31",
@@ -232,9 +232,8 @@
       "@moodlehq/cordova-plugin-zip": {},
       "cordova-sqlite-storage": {},
       "@moodlehq/phonegap-plugin-push": {
-        "ANDROID_SUPPORT_V13_VERSION": "28.0.0",
-        "FCM_VERSION": "18.+",
-        "IOS_FIREBASE_MESSAGING_VERSION": "~> 6.32.2"
+        "ANDROIDX_CORE_VERSION": "1.6.+",
+        "FCM_VERSION": "23.+"
       },
       "com-darryncampbell-cordova-plugin-intent": {},
       "nl.kingsquare.cordova.background-audio": {},
