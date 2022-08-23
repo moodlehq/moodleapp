@@ -35,6 +35,7 @@ export class CoreSettingsAboutPage {
     feedbackFormUrl = CoreConstants.CONFIG.feedbackFormUrl ?? 'https://feedback.moodle.org/mobileapp';
     a11yStatement = CoreConstants.CONFIG.a11yStatement ?? 'https://apps.moodle.com/admin/tool/policy/view.php?versionid=5';
     currentSite?: CoreSite;
+    showSurvey: boolean | undefined = false;
 
     constructor() {
         this.currentSite = CoreSites.getCurrentSite();
@@ -45,6 +46,7 @@ export class CoreSettingsAboutPage {
         // Calculate the privacy policy to use.
         this.privacyPolicy = (this.currentSite && (this.currentSite.getStoredConfig('tool_mobile_apppolicy') ||
         this.currentSite.getStoredConfig('sitepolicy'))) || CoreConstants.CONFIG.privacypolicy;
+        this.showSurvey = this.currentSite?.isAdmin();
     }
 
     /**
