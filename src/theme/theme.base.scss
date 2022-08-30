@@ -698,6 +698,16 @@ body.core-iframe-fullscreen ion-router-outlet {
     }
 }
 
+.core-modal-transparent-no-filter {
+    @extend .core-modal-transparent;
+    ion-backdrop {
+        backdrop-filter: none;
+    }
+    .modal-wrapper {
+        backdrop-filter: none;
+    }
+}
+
 @each $breakpoint, $width in $screen-breakpoints {
     .core-modal-lateral-#{$breakpoint} {
         --modal-lateral-max-width: #{$width};
