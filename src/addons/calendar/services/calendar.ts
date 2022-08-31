@@ -503,7 +503,7 @@ export class AddonCalendarProvider {
     async getAllEventsFromLocalDb(siteId?: string): Promise<AddonCalendarEventDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
 
-        return await site.getDb().getAllRecords(EVENTS_TABLE);
+        return site.getDb().getAllRecords(EVENTS_TABLE);
     }
 
     /**
@@ -916,7 +916,7 @@ export class AddonCalendarProvider {
     async getEventReminders(id: number, siteId?: string): Promise<AddonCalendarReminderDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
 
-        return await site.getDb().getRecords(REMINDERS_TABLE, { eventid: id }, 'timecreated ASC, time ASC');
+        return site.getDb().getRecords(REMINDERS_TABLE, { eventid: id }, 'timecreated ASC, time ASC');
     }
 
     /**
@@ -1021,7 +1021,7 @@ export class AddonCalendarProvider {
     async getLocalEventsByRepeatIdFromLocalDb(repeatId: number, siteId?: string): Promise<AddonCalendarEventDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
 
-        return await site.getDb().getRecords(EVENTS_TABLE, { repeatid: repeatId });
+        return site.getDb().getRecords(EVENTS_TABLE, { repeatid: repeatId });
     }
 
     /**

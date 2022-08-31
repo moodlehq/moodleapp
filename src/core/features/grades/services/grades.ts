@@ -108,7 +108,7 @@ export class CoreGradesProvider {
 
         userId = userId || site.getUserId();
 
-        return await this.getCourseGradesItems(courseId, userId, groupId, siteId, ignoreCache);
+        return this.getCourseGradesItems(courseId, userId, groupId, siteId, ignoreCache);
     }
 
     /**

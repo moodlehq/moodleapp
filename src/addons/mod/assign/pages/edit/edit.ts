@@ -329,7 +329,7 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
                 // Cannot submit in online, prepare for offline usage.
                 this.saveOffline = true;
 
-                return await AddonModAssignHelper.prepareSubmissionPluginData(
+                return AddonModAssignHelper.prepareSubmissionPluginData(
                     this.assign!,
                     this.userSubmission,
                     inputData,

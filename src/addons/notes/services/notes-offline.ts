@@ -115,7 +115,7 @@ export class AddonNotesOfflineProvider {
 
         const site = await CoreSites.getSite(siteId);
 
-        return await site.getDb().getRecords(NOTES_TABLE, { userid: userId, courseid: courseId });
+        return site.getDb().getRecords(NOTES_TABLE, { userid: userId, courseid: courseId });
     }
 
     /**
@@ -141,7 +141,7 @@ export class AddonNotesOfflineProvider {
     async getNotesForUser(userId: number, siteId?: string): Promise<AddonNotesDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
 
-        return await site.getDb().getRecords(NOTES_TABLE, { userid: userId });
+        return site.getDb().getRecords(NOTES_TABLE, { userid: userId });
     }
 
     /**
@@ -154,7 +154,7 @@ export class AddonNotesOfflineProvider {
     async getNotesWithPublishState(state: AddonNotesPublishState, siteId?: string): Promise<AddonNotesDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
 
-        return await site.getDb().getRecords(NOTES_TABLE, { publishstate: state });
+        return site.getDb().getRecords(NOTES_TABLE, { publishstate: state });
     }
 
     /**

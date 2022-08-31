@@ -242,7 +242,7 @@ export class CoreLangProvider {
         // Get current language from config (user might have changed it).
         try {
             return await CoreConfig.get<string>('current_language');
-        } catch (e) {
+        } catch {
             // Try will return, ignore errors here to avoid nesting.
         }
 

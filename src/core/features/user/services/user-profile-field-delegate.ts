@@ -139,7 +139,7 @@ export class CoreUserProfileFieldDelegateService extends CoreDelegate<CoreUserPr
             const name = 'profile_field_' + field.shortname;
 
             if (handler.getData) {
-                return await handler.getData(field, signup, registerAuth, formValues);
+                return handler.getData(field, signup, registerAuth, formValues);
             } else if (field.shortname && formValues[name] !== undefined) {
                 // Handler doesn't implement the function, but the form has data for the field.
                 return {

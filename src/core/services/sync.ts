@@ -100,7 +100,7 @@ export class CoreSyncProvider {
     async getSyncRecord(component: string, id: string | number, siteId?: string): Promise<CoreSyncRecord> {
         const db = await CoreSites.getSiteDb(siteId);
 
-        return await db.getRecord(SYNC_TABLE_NAME, { component: component, id: String(id) });
+        return db.getRecord(SYNC_TABLE_NAME, { component: component, id: String(id) });
     }
 
     /**

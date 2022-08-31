@@ -96,7 +96,7 @@ export class AddonReportInsightsActionLinkHandlerService extends CoreContentLink
             return false;
         }
 
-        return await AddonReportInsights.canSendActionInSite(siteId);
+        return AddonReportInsights.canSendActionInSite(siteId);
     }
 
 }

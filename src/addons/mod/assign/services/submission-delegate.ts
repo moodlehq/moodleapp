@@ -293,7 +293,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
     ): Promise<boolean | undefined> {
-        return await this.executeFunctionOnEnabled(plugin.type, 'canEditOffline', [assign, submission, plugin]);
+        return this.executeFunctionOnEnabled(plugin.type, 'canEditOffline', [assign, submission, plugin]);
     }
 
     /**
@@ -330,7 +330,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
         userId?: number,
         siteId?: string,
     ): Promise<void | undefined> {
-        return await this.executeFunctionOnEnabled(
+        return this.executeFunctionOnEnabled(
             plugin.type,
             'copySubmissionData',
             [assign, plugin, pluginData, userId, siteId],
@@ -354,7 +354,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
         offlineData: AddonModAssignSubmissionsDBRecordFormatted,
         siteId?: string,
     ): Promise<void> {
-        return await this.executeFunctionOnEnabled(
+        return this.executeFunctionOnEnabled(
             plugin.type,
             'deleteOfflineData',
             [assign, submission, plugin, offlineData, siteId],
@@ -372,7 +372,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
         plugin: AddonModAssignPlugin,
         edit?: boolean,
     ): Promise<Type<AddonModAssignSubmissionPluginBaseComponent> | undefined> {
-        return await this.executeFunctionOnEnabled(plugin.type, 'getComponent', [plugin, edit]);
+        return this.executeFunctionOnEnabled(plugin.type, 'getComponent', [plugin, edit]);
     }
 
     /**
@@ -415,7 +415,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
      * @return Promise resolved with size.
      */
     async getPluginSizeForCopy(assign: AddonModAssignAssign, plugin: AddonModAssignPlugin): Promise<number | undefined> {
-        return await this.executeFunctionOnEnabled(plugin.type, 'getSizeForCopy', [assign, plugin]);
+        return this.executeFunctionOnEnabled(plugin.type, 'getSizeForCopy', [assign, plugin]);
     }
 
     /**
@@ -433,7 +433,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
         plugin: AddonModAssignPlugin,
         inputData: CoreFormFields,
     ): Promise<number | undefined> {
-        return await this.executeFunctionOnEnabled(
+        return this.executeFunctionOnEnabled(
             plugin.type,
             'getSizeForEdit',
             [assign, submission, plugin, inputData],
@@ -455,7 +455,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
         plugin: AddonModAssignPlugin,
         inputData: CoreFormFields,
     ): Promise<boolean | undefined> {
-        return await this.executeFunctionOnEnabled(
+        return this.executeFunctionOnEnabled(
             plugin.type,
             'hasDataChanged',
             [assign, submission, plugin, inputData],
@@ -479,7 +479,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
      * @return Whether it's supported for edit.
      */
     async isPluginSupportedForEdit(pluginType: string): Promise<boolean | undefined> {
-        return await this.executeFunctionOnEnabled(pluginType, 'isEnabledForEdit');
+        return this.executeFunctionOnEnabled(pluginType, 'isEnabledForEdit');
     }
 
     /**
@@ -508,7 +508,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
         plugin: AddonModAssignPlugin,
         siteId?: string,
     ): Promise<void> {
-        return await this.executeFunctionOnEnabled(plugin.type, 'prefetch', [assign, submission, plugin, siteId]);
+        return this.executeFunctionOnEnabled(plugin.type, 'prefetch', [assign, submission, plugin, siteId]);
     }
 
     /**
@@ -535,7 +535,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
         siteId?: string,
     ): Promise<void | undefined> {
 
-        return await this.executeFunctionOnEnabled(
+        return this.executeFunctionOnEnabled(
             plugin.type,
             'prepareSubmissionData',
             [assign, submission, plugin, inputData, pluginData, offline, userId, siteId],

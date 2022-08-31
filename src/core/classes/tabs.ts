@@ -569,7 +569,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
      * @inheritdoc
      */
     async ready(): Promise<void> {
-        return await this.onReadyPromise;
+        return this.onReadyPromise;
     }
 
     /**

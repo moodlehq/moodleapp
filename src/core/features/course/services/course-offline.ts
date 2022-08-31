@@ -46,7 +46,7 @@ export class CoreCourseOfflineProvider {
     async getAllManualCompletions(siteId?: string): Promise<CoreCourseManualCompletionDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
 
-        return await site.getDb().getRecords(MANUAL_COMPLETION_TABLE);
+        return site.getDb().getRecords(MANUAL_COMPLETION_TABLE);
     }
 
     /**
@@ -59,7 +59,7 @@ export class CoreCourseOfflineProvider {
     async getCourseManualCompletions(courseId: number, siteId?: string): Promise<CoreCourseManualCompletionDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
 
-        return await site.getDb().getRecords(MANUAL_COMPLETION_TABLE, { courseid: courseId });
+        return site.getDb().getRecords(MANUAL_COMPLETION_TABLE, { courseid: courseId });
     }
 
     /**
@@ -72,7 +72,7 @@ export class CoreCourseOfflineProvider {
     async getManualCompletion(cmId: number, siteId?: string): Promise<CoreCourseManualCompletionDBRecord> {
         const site = await CoreSites.getSite(siteId);
 
-        return await site.getDb().getRecord(MANUAL_COMPLETION_TABLE, { cmid: cmId });
+        return site.getDb().getRecord(MANUAL_COMPLETION_TABLE, { cmid: cmId });
     }
 
     /**

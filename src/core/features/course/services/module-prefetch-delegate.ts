@@ -103,7 +103,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
         }
 
         if (handler.canUseCheckUpdates) {
-            return await handler.canUseCheckUpdates(module, courseId);
+            return handler.canUseCheckUpdates(module, courseId);
         }
 
         // By default, modules can use check updates.
@@ -510,7 +510,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
 
         if (handler?.getFiles) {
             // The handler defines a function to get files, use it.
-            return await handler.getFiles(module, courseId);
+            return handler.getFiles(module, courseId);
         } else if (handler?.loadContents) {
             // The handler defines a function to load contents, use it before returning module contents.
             await handler.loadContents(module, courseId);
@@ -1000,7 +1000,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
 
         if (handler?.hasUpdates) {
             // Handler implements its own function to check the updates, use it.
-            return await handler.hasUpdates(module, courseId, moduleUpdates);
+            return handler.hasUpdates(module, courseId, moduleUpdates);
         } else if (!moduleUpdates || !moduleUpdates.updates || !moduleUpdates.updates.length) {
             // Module doesn't have any update.
             return false;

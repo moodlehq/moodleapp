@@ -203,7 +203,7 @@ export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonMod
         plugin: AddonModAssignPlugin,
         siteId?: string,
     ): Promise<void> {
-        return await this.executeFunctionOnEnabled(plugin.type, 'discardDraft', [assignId, userId, siteId]);
+        return this.executeFunctionOnEnabled(plugin.type, 'discardDraft', [assignId, userId, siteId]);
     }
 
     /**
@@ -215,7 +215,7 @@ export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonMod
     async getComponentForPlugin(
         plugin: AddonModAssignPlugin,
     ): Promise<Type<IAddonModAssignFeedbackPluginComponent> | undefined> {
-        return await this.executeFunctionOnEnabled(plugin.type, 'getComponent', [plugin]);
+        return this.executeFunctionOnEnabled(plugin.type, 'getComponent', [plugin]);
     }
 
     /**
@@ -233,7 +233,7 @@ export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonMod
         plugin: AddonModAssignPlugin,
         siteId?: string,
     ): Promise<T | undefined> {
-        return await this.executeFunctionOnEnabled(plugin.type, 'getDraft', [assignId, userId, siteId]);
+        return this.executeFunctionOnEnabled(plugin.type, 'getDraft', [assignId, userId, siteId]);
     }
 
     /**
@@ -285,7 +285,7 @@ export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonMod
         inputData: CoreFormFields,
         userId: number,
     ): Promise<boolean | undefined> {
-        return await this.executeFunctionOnEnabled(
+        return this.executeFunctionOnEnabled(
             plugin.type,
             'hasDataChanged',
             [assign, submission, plugin, inputData, userId],
@@ -307,7 +307,7 @@ export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonMod
         plugin: AddonModAssignPlugin,
         siteId?: string,
     ): Promise<boolean | undefined> {
-        return await this.executeFunctionOnEnabled(plugin.type, 'hasDraftData', [assignId, userId, siteId]);
+        return this.executeFunctionOnEnabled(plugin.type, 'hasDraftData', [assignId, userId, siteId]);
     }
 
     /**
@@ -335,7 +335,7 @@ export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonMod
         plugin: AddonModAssignPlugin,
         siteId?: string,
     ): Promise<void> {
-        return await this.executeFunctionOnEnabled(plugin.type, 'prefetch', [assign, submission, plugin, siteId]);
+        return this.executeFunctionOnEnabled(plugin.type, 'prefetch', [assign, submission, plugin, siteId]);
     }
 
     /**
@@ -356,7 +356,7 @@ export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonMod
         siteId?: string,
     ): Promise<void> {
 
-        return await this.executeFunctionOnEnabled(
+        return this.executeFunctionOnEnabled(
             plugin.type,
             'prepareFeedbackData',
             [assignId, userId, plugin, pluginData, siteId],
@@ -380,7 +380,7 @@ export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonMod
         inputData: CoreFormFields,
         siteId?: string,
     ): Promise<void> {
-        return await this.executeFunctionOnEnabled(
+        return this.executeFunctionOnEnabled(
             plugin.type,
             'saveDraft',
             [assignId, userId, plugin, inputData, siteId],

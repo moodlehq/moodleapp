@@ -326,7 +326,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
         courseId: number,
         options?: CoreNavigationOptions,
     ): Promise<void> {
-        return await this.executeFunctionOnEnabled<void>(
+        return this.executeFunctionOnEnabled<void>(
             modname,
             'openActivityPage',
             [module, courseId, options],

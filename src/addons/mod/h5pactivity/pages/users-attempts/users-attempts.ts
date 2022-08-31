@@ -143,7 +143,7 @@ export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
         h5pActivity: AddonModH5PActivityData,
         users: AddonModH5PActivityUserAttempts[],
     ): Promise<AddonModH5PActivityUserAttemptsFormatted[]> {
-        return await Promise.all(users.map(async (user: AddonModH5PActivityUserAttemptsFormatted) => {
+        return Promise.all(users.map(async (user: AddonModH5PActivityUserAttemptsFormatted) => {
             user.user = await CoreUser.getProfile(user.userid, this.courseId, true);
 
             // Calculate the score of the user.

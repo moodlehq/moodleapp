@@ -1260,7 +1260,7 @@ export class CoreSitesProvider {
     async getSitesInstances(): Promise<CoreSite[]> {
         const siteIds = await this.getSitesIds();
 
-        return await Promise.all(siteIds.map(async (siteId) => await this.getSite(siteId)));
+        return Promise.all(siteIds.map(async (siteId) => await this.getSite(siteId)));
     }
 
     /**
@@ -1572,7 +1572,7 @@ export class CoreSitesProvider {
      * @return Promise resolved with config if available.
      */
     protected async getSiteConfig(site: CoreSite): Promise<CoreSiteConfig | undefined> {
-        return await site.getConfig(undefined, true);
+        return site.getConfig(undefined, true);
     }
 
     /**

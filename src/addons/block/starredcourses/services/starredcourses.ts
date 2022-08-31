@@ -47,7 +47,7 @@ export class AddonBlockStarredCoursesProvider {
             cacheKey: this.getStarredCoursesCacheKey(),
         };
 
-        return await site.read<AddonBlockStarredCourse[]>('block_starredcourses_get_starred_courses', undefined, preSets);
+        return site.read<AddonBlockStarredCourse[]>('block_starredcourses_get_starred_courses', undefined, preSets);
     }
 
     /**

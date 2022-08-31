@@ -166,7 +166,7 @@ export class AddonModBBBService {
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
-        return await site.read<AddonModBBBMeetingInfoWSResponse>(
+        return site.read<AddonModBBBMeetingInfoWSResponse>(
             'mod_bigbluebuttonbn_meeting_info',
             params,
             preSets,

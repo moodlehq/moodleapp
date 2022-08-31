@@ -177,7 +177,7 @@ export class AddonNotesProvider {
                 throw error;
             }
 
-            return await storeOffline();
+            return storeOffline();
         }
     }
 

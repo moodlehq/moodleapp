@@ -75,7 +75,7 @@ export class CoreTagAreaDelegateService extends CoreDelegate<CoreTagAreaHandler>
     async parseContent(component: string, itemType: string, content: string): Promise<unknown[] | undefined> {
         const type = component + '/' + itemType;
 
-        return await this.executeFunctionOnEnabled(type, 'parseContent', [content]);
+        return this.executeFunctionOnEnabled(type, 'parseContent', [content]);
     }
 
     /**
@@ -88,7 +88,7 @@ export class CoreTagAreaDelegateService extends CoreDelegate<CoreTagAreaHandler>
     async getComponent(component: string, itemType: string): Promise<Type<unknown> | undefined> {
         const type = component + '/' + itemType;
 
-        return await this.executeFunctionOnEnabled(type, 'getComponent');
+        return this.executeFunctionOnEnabled(type, 'getComponent');
     }
 
 }

@@ -225,7 +225,7 @@ export class AddonModFeedbackHelperProvider {
     protected async addImageProfile(
         entries: (AddonModFeedbackWSAttempt | AddonModFeedbackWSNonRespondent)[],
     ): Promise<(AddonModFeedbackAttempt | AddonModFeedbackNonRespondent)[]> {
-        return await Promise.all(entries.map(async (entry: AddonModFeedbackAttempt | AddonModFeedbackNonRespondent) => {
+        return Promise.all(entries.map(async (entry: AddonModFeedbackAttempt | AddonModFeedbackNonRespondent) => {
             try {
                 const user = await CoreUser.getProfile(entry.userid, entry.courseid, true);
 

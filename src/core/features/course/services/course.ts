@@ -978,7 +978,7 @@ export class CoreCourseProvider {
     async getViewedModules(courseId: number, siteId?: string): Promise<CoreCourseViewedModulesDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
 
-        return await this.viewedModulesTables[site.getId()].getMany({ courseId }, {
+        return this.viewedModulesTables[site.getId()].getMany({ courseId }, {
             sorting: [
                 { timeaccess: 'desc' },
             ],

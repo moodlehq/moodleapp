@@ -145,7 +145,7 @@ export class CoreCoursesDashboardProvider {
     ): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
-        return await site.invalidateWsCacheForKey(this.getDashboardBlocksCacheKey(myPage, userId));
+        return site.invalidateWsCacheForKey(this.getDashboardBlocksCacheKey(myPage, userId));
     }
 
     /**

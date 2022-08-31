@@ -1620,13 +1620,12 @@ export class AddonMessagesProvider {
             preSets.emergencyCache = false;
         }
 
-        return await this.getMessages(params, preSets, siteId);
+        return this.getMessages(params, preSets, siteId);
     }
 
     /**
      * Invalidate all contacts cache.
      *
-     * @param userId The user ID.
      * @param siteId Site ID. If not defined, current site.
      * @return Resolved when done.
      */
@@ -2517,7 +2516,7 @@ export class AddonMessagesProvider {
             messages,
         };
 
-        return await site.write('core_message_send_instant_messages', data);
+        return site.write('core_message_send_instant_messages', data);
     }
 
     /**
@@ -2651,7 +2650,7 @@ export class AddonMessagesProvider {
             })),
         };
 
-        return await site.write('core_message_send_messages_to_conversation', params);
+        return site.write('core_message_send_messages_to_conversation', params);
     }
 
     /**

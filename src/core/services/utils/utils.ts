@@ -689,7 +689,7 @@ export class CoreUtilsProvider {
                 throw new Error('Countries not found.');
             }
 
-            return await this.getCountryKeysListForLanguage(fallbackLang);
+            return this.getCountryKeysListForLanguage(fallbackLang);
         }
     }
 
@@ -1611,7 +1611,7 @@ export class CoreUtilsProvider {
      * @return Promise resolved with the captured text or undefined if cancelled or error.
      */
     async scanQR(title?: string): Promise<string | undefined> {
-        return await CoreDomUtils.openModal<string>({
+        return CoreDomUtils.openModal<string>({
             component: CoreViewerQRScannerComponent,
             cssClass: 'core-modal-fullscreen',
             componentProps: {
