@@ -37,7 +37,7 @@ import { CoreColors } from '@singletons/colors';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
 
-type TreeNode<T> = T & { children: TreeNode<T>[] };
+export type TreeNode<T> = T & { children: TreeNode<T>[] };
 
 /*
  * "Utils" service with helper functions.
@@ -562,18 +562,30 @@ export class CoreUtilsProvider {
         const mapDepth = {};
         const tree: TreeNode<T>[] = [];
 
+        // Create a map first to avoid problems with not sorted.
         list.forEach((node: TreeNode<T>, index): void => {
             const id = node[idFieldName];
-            const parent = node[parentFieldName];
-            node.children = [];
 
-            if (!id || !parent) {
+            if (id === undefined) {
+                this.logger.error(`Node with incorrect ${idFieldName}:${id} found on formatTree`);
+            }
+
+            if (node.children === undefined) {
+                node.children = [];
+            }
+            map[id] = index;
+        });
+
+        list.forEach((node: TreeNode<T>): void => {
+            const id = node[idFieldName];
+            const parent = node[parentFieldName];
+
+            if (id === undefined || parent === undefined) {
                 this.logger.error(`Node with incorrect ${idFieldName}:${id} or ${parentFieldName}:${parent} found on formatTree`);
             }
 
             // Use map to look-up the parents.
-            map[id] = index;
-            if (parent != rootParentId) {
+            if (parent !== rootParentId) {
                 const parentNode = list[map[parent]] as TreeNode<T>;
                 if (parentNode) {
                     if (mapDepth[parent] == maxDepth) {
