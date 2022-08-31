@@ -52,10 +52,8 @@ export abstract class CoreBlockBaseComponent implements OnInit, ICoreBlockCompon
      */
     async ngOnInit(): Promise<void> {
         if (this.block.configs && this.block.configs.length > 0) {
-            this.block.configs.map((config) => {
+            this.block.configs.forEach((config) => {
                 config.value = CoreTextUtils.parseJSON(config.value);
-
-                return config;
             });
 
             this.block.configsRecord = CoreUtils.arrayToObject(this.block.configs, 'name');

@@ -292,7 +292,7 @@ export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource
 
                 discussion.userfullname = user.fullname;
                 discussion.userpictureurl = user.profileimageurl;
-            } catch (error) {
+            } catch {
                 // Ignore errors.
             }
         });

@@ -16,12 +16,12 @@
             .contact-status {
                 width: 24px !important;
                 height: 24px !important;
-                right: calc(50% - 12px -  var(--core-avatar-size) / 2) !important;
+                right: calc(50% - 12px - var(--core-avatar-size) / 2) !important;
             }
 
             .edit-avatar {
                 position: absolute;
-                right: calc(50% - 15px -  var(--core-avatar-size) / 2);
+                right: calc(50% - 15px - var(--core-avatar-size) / 2);
                 bottom: -12px;
 
                 :host-context([dir="rtl"]) & {

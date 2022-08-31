@@ -723,7 +723,7 @@ export class AddonModDataHelperProvider {
             try {
                 await AddonModData.invalidateEntryData(dataId, entryId, siteId);
                 await AddonModData.invalidateEntriesData(dataId, siteId);
-            } catch (error) {
+            } catch {
                 // Ignore errors.
             }
 

@@ -220,7 +220,7 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
             }
 
             return id;
-        } catch (error) {
+        } catch {
             // Ignore errors.
             return id;
         }

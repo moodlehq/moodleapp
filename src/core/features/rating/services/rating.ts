@@ -404,17 +404,15 @@ export class CoreRatingProvider {
             true,
         ));
 
+        const ratingsResults = await Promise.all(promises);
+
         if (!site.isVersionGreaterEqualThan([' 3.6.5', '3.7.1', '3.8'])) {
-            promises.map((promise) => promise.then(async (ratings) => {
-                const userIds = ratings.map((rating: CoreRatingItemRating) => rating.userid);
+            const ratings: CoreRatingItemRating[] = [].concat.apply([], ratingsResults);
 
-                await CoreUser.prefetchProfiles(userIds, courseId, site.id);
+            const userIds = ratings.map((rating) => rating.userid);
 
-                return;
-            }));
+            await CoreUser.prefetchProfiles(userIds, courseId, site.id);
         }
-
-        await Promise.all(promises);
     }
 
     /**

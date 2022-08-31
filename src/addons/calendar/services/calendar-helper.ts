@@ -661,7 +661,7 @@ export class AddonCalendarHelperProvider {
             const finalPromises: Promise<unknown>[] =[AddonCalendar.invalidateAllUpcomingEvents()];
 
             // Fetch months and days.
-            fetchTimestarts.map((fetchTime) => {
+            fetchTimestarts.forEach((fetchTime) => {
                 const day = moment(fetchTime * 1000);
 
                 const monthId = this.getMonthId(day);
@@ -697,7 +697,7 @@ export class AddonCalendarHelperProvider {
             });
 
             // Invalidate months and days.
-            invalidateTimestarts.map((fetchTime) => {
+            invalidateTimestarts.forEach((fetchTime) => {
                 const day = moment(fetchTime * 1000);
 
                 const monthId = this.getMonthId(day);

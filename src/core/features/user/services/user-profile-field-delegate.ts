@@ -181,7 +181,7 @@ export class CoreUserProfileFieldDelegateService extends CoreDelegate<CoreUserPr
                 if (data) {
                     result.push(data);
                 }
-            } catch (error) {
+            } catch {
                 // Ignore errors.
             }
         }));

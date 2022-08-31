@@ -625,13 +625,10 @@ export class CorePushNotificationsProvider {
 
         const total = counters.reduce((previous, counter) => previous + counter, 0);
 
-        if (!CorePlatform.isMobile()) {
-            // Browser doesn't have an app badge, stop.
-            return total;
+        if (CorePlatform.isMobile()) {
+            // Set the app badge on mobile.
+            await Badge.set(total);
         }
-
-        // Set the app badge.
-        await Badge.set(total);
 
         return total;
     }

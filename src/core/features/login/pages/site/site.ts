@@ -360,7 +360,7 @@ export class CoreLoginSitePage implements OnInit {
                     params: pageParams,
                 });
             }
-        } catch (error) {
+        } catch {
             // Ignore errors.
         }
     }
@@ -546,7 +546,7 @@ export class CoreLoginSitePage implements OnInit {
                     },
                 });
             }
-        } catch (error) {
+        } catch {
             // Ignore errors.
         } finally {
             modal.dismiss();

@@ -459,7 +459,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
                 try {
                     // Invalidate attempts.
                     await AddonModH5PActivity.invalidateUserAttempts(this.h5pActivity.id, undefined, this.siteId);
-                } catch (error) {
+                } catch {
                     // Ignore errors.
                 }
 

@@ -486,7 +486,7 @@ export class CoreUtilsProvider {
      * @param ...args All the params sent after checkAll will be passed to isEnabledFn.
      * @return Promise resolved with the list of enabled sites.
      */
-    filterEnabledSites<P extends unknown[]>(
+    async filterEnabledSites<P extends unknown[]>(
         siteIds: string[],
         isEnabledFn: (siteId, ...args: P) => boolean | Promise<boolean>,
         checkAll?: boolean,
@@ -507,16 +507,14 @@ export class CoreUtilsProvider {
             }
         }
 
-        return this.allPromises(promises).catch(() => {
-            // Ignore errors.
-        }).then(() => {
-            if (!checkAll) {
-                // Checking 1 was enough, so it will either return all the sites or none.
-                return enabledSites.length ? siteIds : [];
-            } else {
-                return enabledSites;
-            }
-        });
+        await CoreUtils.ignoreErrors(this.allPromises(promises));
+
+        if (!checkAll) {
+            // Checking 1 was enough, so it will either return all the sites or none.
+            return enabledSites.length ? siteIds : [];
+        } else {
+            return enabledSites;
+        }
     }
 
     /**
@@ -639,21 +637,21 @@ export class CoreUtilsProvider {
      *
      * @return Promise resolved with the list of countries.
      */
-    getCountryList(): Promise<Record<string, string>> {
+    async getCountryList(): Promise<Record<string, string>> {
         // Get the keys of the countries.
-        return this.getCountryKeysList().then((keys) => {
-            // Now get the code and the translated name.
-            const countries = {};
+        const keys = await this.getCountryKeysList();
 
-            keys.forEach((key) => {
-                if (key.indexOf('assets.countries.') === 0) {
-                    const code = key.replace('assets.countries.', '');
-                    countries[code] = Translate.instant(key);
-                }
-            });
+        // Now get the code and the translated name.
+        const countries: Record<string, string> = {};
 
-            return countries;
+        keys.forEach((key) => {
+            if (key.indexOf('assets.countries.') === 0) {
+                const code = key.replace('assets.countries.', '');
+                countries[code] = Translate.instant(key);
+            }
         });
+
+        return countries;
     }
 
     /**
@@ -661,18 +659,14 @@ export class CoreUtilsProvider {
      *
      * @return Promise resolved with the list of countries.
      */
-    getCountryListSorted(): Promise<CoreCountry[]> {
+    async getCountryListSorted(): Promise<CoreCountry[]> {
         // Get the keys of the countries.
-        return this.getCountryList().then((countries) => {
-            // Sort translations.
-            const sortedCountries: { code: string; name: string }[] = [];
+        const countries = await this.getCountryList();
 
-            Object.keys(countries).sort((a, b) => countries[a].localeCompare(countries[b])).forEach((key) => {
-                sortedCountries.push({ code: key, name: countries[key] });
-            });
-
-            return sortedCountries;
-        });
+        // Sort translations.
+        return Object.keys(countries)
+            .sort((a, b) => countries[a].localeCompare(countries[b]))
+            .map((code) => ({ code, name: countries[code] }));
     }
 
     /**
@@ -680,11 +674,13 @@ export class CoreUtilsProvider {
      *
      * @return Promise resolved with the countries list. Rejected if not translated.
      */
-    protected getCountryKeysList(): Promise<string[]> {
+    protected async getCountryKeysList(): Promise<string[]> {
         // It's possible that the current language isn't translated, so try with default language first.
         const defaultLang = CoreLang.getDefaultLanguage();
 
-        return this.getCountryKeysListForLanguage(defaultLang).catch(() => {
+        try {
+            return await this.getCountryKeysListForLanguage(defaultLang);
+        } catch {
             // Not translated, try to use the fallback language.
             const fallbackLang = CoreLang.getFallbackLanguage();
 
@@ -693,8 +689,8 @@ export class CoreUtilsProvider {
                 throw new Error('Countries not found.');
             }
 
-            return this.getCountryKeysListForLanguage(fallbackLang);
-        });
+            return await this.getCountryKeysListForLanguage(fallbackLang);
+        }
     }
 
     /**
@@ -732,17 +728,19 @@ export class CoreUtilsProvider {
      * @param url The URL of the file.
      * @return Promise resolved with the mimetype.
      */
-    getMimeTypeFromUrl(url: string): Promise<string> {
+    async getMimeTypeFromUrl(url: string): Promise<string> {
         // First check if it can be guessed from the URL.
         const extension = CoreMimetypeUtils.guessExtensionFromUrl(url);
-        const mimetype = extension && CoreMimetypeUtils.getMimeType(extension);
+        let mimetype = extension && CoreMimetypeUtils.getMimeType(extension);
 
         if (mimetype) {
-            return Promise.resolve(mimetype);
+            return mimetype;
         }
 
         // Can't be guessed, get the remote mimetype.
-        return CoreWS.getRemoteFileMimeType(url).then(mimetype => mimetype || '');
+        mimetype = await CoreWS.getRemoteFileMimeType(url);
+
+        return mimetype || '';
     }
 
     /**
@@ -772,7 +770,7 @@ export class CoreUtilsProvider {
     /**
      * Check if an unknown value is a FileEntry.
      *
-     * @param value Value to check.
+     * @param file Object to check.
      * @return Type guard indicating if the file is a FileEntry.
      */
     valueIsFileEntry(file: unknown): file is FileEntry {
@@ -1029,7 +1027,7 @@ export class CoreUtilsProvider {
         this.iabInstance = InAppBrowser.create(url, '_blank', options);
 
         if (CorePlatform.isMobile()) {
-            let loadStopSubscription;
+            let loadStopSubscription: Subscription | undefined;
             const loadStartUrls: string[] = [];
 
             // Trigger global events when a url is loaded or the window is closed. This is to make it work like in Ionic 1.
@@ -1720,7 +1718,7 @@ export class CoreUtilsProvider {
      * Ignore errors from a promise.
      *
      * @param promise Promise to ignore errors.
-     * @param fallbackResult Value to return if the promise is rejected.
+     * @param fallback Value to return if the promise is rejected.
      * @return Promise with ignored errors, resolving to the fallback result if provided.
      */
     async ignoreErrors<Result>(promise: Promise<Result>): Promise<Result | undefined>;

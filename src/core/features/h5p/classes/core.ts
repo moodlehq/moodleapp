@@ -292,7 +292,7 @@ export class CoreH5PCore {
                 // Update library usage.
                 try {
                     await this.h5pFramework.deleteLibraryUsage(content.id, siteId);
-                } catch (error) {
+                } catch {
                     // Ignore errors.
                 }
 

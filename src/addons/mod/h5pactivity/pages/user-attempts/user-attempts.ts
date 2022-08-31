@@ -133,7 +133,7 @@ export class AddonModH5PActivityUserAttemptsPage implements OnInit {
     protected async fetchUserProfile(): Promise<void> {
         try {
             this.user = await CoreUser.getProfile(this.userId, this.courseId, true);
-        } catch (error) {
+        } catch {
             // Ignore errors.
         }
     }

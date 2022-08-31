@@ -126,7 +126,7 @@ export class AddonModAssignSubmissionsSource extends CoreRoutedItemsManagerSourc
                         CoreSites.getCurrentSiteId(),
                     );
                 }
-            } catch (error) {
+            } catch {
                 // Ignore errors, probably user is offline or sync is blocked.
             }
         }

@@ -544,7 +544,7 @@ export class CoreUrlUtilsProvider {
         url = url.replace(/\/webservice\/pluginfile\.php\//, '/pluginfile.php/');
 
         // Make sure the URL doesn't contain the token.
-        url.replace(/([?&])token=[^&]*&?/, '$1');
+        url = url.replace(/([?&])token=[^&]*&?/, '$1');
 
         return url;
     }

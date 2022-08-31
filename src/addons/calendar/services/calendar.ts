@@ -529,7 +529,7 @@ export class AddonCalendarProvider {
         // Convert the array to an object.
         const result = {};
         if (response.allowedeventtypes) {
-            response.allowedeventtypes.map((type) => {
+            response.allowedeventtypes.forEach((type) => {
                 result[type] = true;
             });
         }

@@ -474,7 +474,7 @@ class AddonModGlossaryEntriesManager extends CoreListItemsManager<AddonModGlossa
             await AddonModGlossary.logView(glossary.id, viewMode, glossary.name);
 
             CoreCourse.checkModuleCompletion(this.page.courseId, this.page.module.completiondata);
-        } catch (error) {
+        } catch {
             // Ignore errors.
         }
     }

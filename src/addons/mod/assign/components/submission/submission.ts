@@ -525,7 +525,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
                             submitId: this.submitId,
                         }, this.siteId);
                     }
-                } catch (error) {
+                } catch {
                     // Ignore errors, probably user is offline or sync is blocked.
                 }
             }

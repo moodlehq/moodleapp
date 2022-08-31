@@ -53,8 +53,9 @@ export class CoreSiteHomeIndexLinkHandlerService extends CoreContentLinksHandler
     /**
      * @inheritdoc
      */
-    async isEnabled(siteId: string, url: string, params: Record<string, string>, courseId?: number): Promise<boolean> {
-        courseId = parseInt(params.id, 10);
+    async isEnabled(siteId: string, url: string, params: Record<string, string>): Promise<boolean> {
+        const courseId = parseInt(params.id, 10);
+
         if (!courseId) {
             return url.includes('index.php');
         }
