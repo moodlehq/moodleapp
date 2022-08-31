@@ -60,7 +60,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
 
     removeFilesLoading = false;
     prefetchLoading = false;
-    canPrefetch = false;;
+    canPrefetch = false;
     prefetchDisabled = false;
     size?: number; // Size in bytes
     downloadTimeReadable = ''; // Last download time in a readable format.
