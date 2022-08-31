@@ -126,6 +126,8 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
                     return;
                 }
 
+                syncedDiscussionIds.push(reply.discussionid);
+
                 const result = force
                     ? await this.syncDiscussionReplies(reply.discussionid, reply.userid, siteId)
                     : await this.syncDiscussionRepliesIfNeeded(reply.discussionid, reply.userid, siteId);
