@@ -1205,7 +1205,7 @@ export class CoreFileProvider {
             });
 
             await Promise.all(promises);
-        } catch (error) {
+        } catch {
             // Ignore errors, maybe it doesn't exist.
         }
     }

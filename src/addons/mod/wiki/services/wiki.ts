@@ -723,7 +723,7 @@ export class AddonModWikiProvider {
 
         try {
             // Try to create it in online.
-            return this.newPageOnline(title, content, options);
+            return await this.newPageOnline(title, content, options);
         } catch (error) {
             if (CoreUtils.isWebServiceError(error)) {
                 // The WebService has thrown an error, this means that the page cannot be added.

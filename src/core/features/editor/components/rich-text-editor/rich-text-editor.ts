@@ -973,7 +973,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
                     this.showMessage('core.editor.textrecovered', this.RESTORE_MESSAGE_CLEAR_TIME);
                 }
             }
-        } catch (error) {
+        } catch {
             // Ignore errors, shouldn't happen.
         }
     }

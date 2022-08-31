@@ -43,7 +43,7 @@ export class CoreFormatDatePipe implements PipeTransform {
         timestamp = timestamp || Date.now();
         format = format || 'strftimedaydatetime';
 
-        if (typeof timestamp == 'string') {
+        if (typeof timestamp === 'string') {
             // Convert the value to a number.
             const numberTimestamp = parseInt(timestamp, 10);
             if (isNaN(numberTimestamp)) {
@@ -55,7 +55,7 @@ export class CoreFormatDatePipe implements PipeTransform {
         }
 
         // Add "core." if needed.
-        if (format.indexOf('strf') == 0 || format.indexOf('df') == 0) {
+        if (format.indexOf('strf') === 0 || format.indexOf('df') === 0) {
             format = 'core.' + format;
         }
 

@@ -1467,7 +1467,7 @@ export class CoreFilepoolProvider {
                 const fileSize = await CoreFile.getFileSize(file.path);
 
                 size += fileSize;
-            } catch (error) {
+            } catch {
                 // Ignore failures, maybe some file was deleted.
             }
         }));

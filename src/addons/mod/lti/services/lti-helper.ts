@@ -118,7 +118,7 @@ export class AddonModLtiHelperProvider {
             await AddonModLti.logView(ltiId, name, siteId);
 
             CoreCourse.checkModuleCompletion(courseId, module.completiondata);
-        } catch (error) {
+        } catch {
             // Ignore errors.
         }
     }

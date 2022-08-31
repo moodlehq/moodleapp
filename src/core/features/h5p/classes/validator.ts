@@ -273,7 +273,7 @@ export class CoreH5PValidator {
 
                     const parts = entry.name.split('.'); // The language code is in parts[0].
                     langIndex[parts[0]] = langFileData;
-                } catch (error) {
+                } catch {
                     // Ignore this language.
                 }
             }));

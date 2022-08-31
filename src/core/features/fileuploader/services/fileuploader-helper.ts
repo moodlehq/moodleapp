@@ -812,7 +812,7 @@ export class CoreFileUploaderHelperProvider {
                 file = await CoreFile.getFileObjectFromFileEntry(fileEntry);
 
                 size = file.size;
-            } catch (error) {
+            } catch {
                 // Ignore failures.
             }
         }

@@ -987,7 +987,7 @@ export class AddonModDataProvider {
 
         options.groupId = options.groupId || 0;
         options.sort = options.sort || 0;
-        options.order || options.order || 'DESC';
+        options.order = options.order || 'DESC';
         options.page = options.page || 0;
         options.perPage = options.perPage || AddonModDataProvider.PER_PAGE;
         options.readingStrategy = options.readingStrategy || CoreSitesReadingStrategy.PREFER_NETWORK;

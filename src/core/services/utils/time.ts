@@ -170,7 +170,7 @@ export class CoreTimeUtilsProvider {
     /**
      * Converts a number of seconds into a short human readable format: minutes and seconds, in fromat: 3' 27''.
      *
-     * @param seconds Seconds
+     * @param duration Seconds
      * @return Short human readable text.
      * @deprecated since app 4.0. Use CoreTime.formatTimeShort instead.
      */

@@ -30,21 +30,12 @@ export class CoreUserProfileLinkHandlerService extends CoreContentLinksHandlerBa
     pattern = /((\/user\/view\.php)|(\/user\/profile\.php)).*([?&]id=\d+)/;
 
     /**
-     * Get the list of actions for a link (url).
-     *
-     * @param siteIds List of sites the URL belongs to.
-     * @param url The URL to treat.
-     * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
-     * @param courseId Course ID related to the URL. Optional but recommended.
-     * @param data Extra data to handle the URL.
-     * @return List of (or promise resolved with list of) actions.
+     * @inheritdoc
      */
     getActions(
         siteIds: string[],
         url: string,
         params: Record<string, string>,
-        courseId?: number, // eslint-disable-line @typescript-eslint/no-unused-vars
-        data?: unknown, // eslint-disable-line @typescript-eslint/no-unused-vars
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
             action: (siteId): void => {
@@ -59,17 +50,9 @@ export class CoreUserProfileLinkHandlerService extends CoreContentLinksHandlerBa
     }
 
     /**
-     * Check if the handler is enabled for a certain site (site + user) and a URL.
-     * If not defined, defaults to true.
-     *
-     * @param siteId The site ID.
-     * @param url The URL to treat.
-     * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
-     * @param courseId Course ID related to the URL. Optional but recommended.
-     * @return Whether the handler is enabled for the URL and site.
+     * @inheritdoc
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async isEnabled(siteId: string, url: string, params: Record<string, string>, courseId?: number): Promise<boolean> {
+    async isEnabled(siteId: string, url: string): Promise<boolean> {
         return url.indexOf('/grade/report/') == -1;
     }
 

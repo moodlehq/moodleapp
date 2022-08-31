@@ -103,6 +103,8 @@ export const AddonBlockRecentlyAccessedItems = makeSingleton(AddonBlockRecentlyA
 
 /**
  * Result of WS block_recentlyaccesseditems_get_recent_items.
+ *
+ * The most recently accessed activities/resources by the logged user.
  */
 export type AddonBlockRecentlyAccessedItemsItem = {
     id: number; // Id.
@@ -116,6 +118,7 @@ export type AddonBlockRecentlyAccessedItemsItem = {
     viewurl: string; // Viewurl.
     courseviewurl: string; // Courseviewurl.
     icon: string; // Icon.
+    purpose?: string; // Purpose. @since 4.0
 } & AddonBlockRecentlyAccessedItemsItemCalculatedData;
 
 /**

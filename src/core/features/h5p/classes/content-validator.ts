@@ -191,7 +191,7 @@ export class CoreH5PContentValidator {
     /**
      * Validate given value against number semantics.
      *
-     * @param num Number to validate.
+     * @param value Number to validate.
      * @param semantics Semantics.
      * @return Validated number.
      */
@@ -497,9 +497,7 @@ export class CoreH5PContentValidator {
                 let validateFunction: undefined | ((...args: unknown[]) => unknown);
                 let field: CoreH5PSemantics | undefined;
 
-                for (let i = 0; i < semantics.fields.length; i++) {
-                    field = semantics.fields[i];
-
+                for (const field of semantics.fields) {
                     if (field.name == key) {
                         if (semantics.optional) {
                             field.optional = true;
@@ -778,8 +776,7 @@ export class CoreH5PContentValidator {
                     if (matches && matches.length > 1) {
                         if (allowedStyles && attrName === 'style') {
                             // Allow certain styles.
-                            for (let i = 0; i < allowedStyles.length; i++) {
-                                const pattern = allowedStyles[i];
+                            for (const pattern of allowedStyles) {
                                 if (matches[1].match(pattern)) {
                                     // All patterns are start to end patterns, and CKEditor adds one span per style.
                                     attrArray.push('style="' + matches[1] + '"');
@@ -1122,7 +1119,7 @@ export class CoreH5PContentValidator {
             },
         ];
 
-        return this.metadataSemantics!;
+        return this.metadataSemantics;
     }
 
     /**
@@ -1266,7 +1263,7 @@ export class CoreH5PContentValidator {
             ],
         };
 
-        return this.copyrightSemantics!;
+        return this.copyrightSemantics;
     }
 
     /**

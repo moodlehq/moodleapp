@@ -565,7 +565,7 @@ export class AddonModAssignProvider {
         };
 
         try {
-            return this.getSubmissionStatus(assign.id, newOptions);
+            return await this.getSubmissionStatus(assign.id, newOptions);
         } catch {
             // Error, return the first result even if it doesn't have the user submission.
             return response;

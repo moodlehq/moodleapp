@@ -741,7 +741,7 @@ export class CoreTextUtilsProvider {
      * @returns Treated text.
      */
     replaceArguments(text: string, replacements: Record<string, string> = {}, encoding?: 'uri'): string {
-        let match;
+        let match: RegExpMatchArray | null = null;
 
         while ((match = text.match(/\{\{([^}]+)\}\}/))) {
             const argument = match[1].trim();
@@ -829,7 +829,7 @@ export class CoreTextUtilsProvider {
     /**
      * Replace @@PLUGINFILE@@ wildcards with the real URL in a text.
      *
-     * @param Text to treat.
+     * @param text to treat.
      * @param files Files to extract the pluginfile URL from. They need to have the URL in a url or fileurl attribute.
      * @return Treated text.
      */
@@ -847,8 +847,10 @@ export class CoreTextUtilsProvider {
     /**
      * Restore original draftfile URLs.
      *
-     * @param text Text to treat, including pluginfile URLs.
-     * @param replaceMap Map of the replacements that were done.
+     * @param siteUrl Site URL.
+     * @param treatedText Treated text with replacements.
+     * @param originalText Original text.
+     * @param files List of files to search and replace.
      * @return Treated text.
      */
     restoreDraftfileUrls(siteUrl: string, treatedText: string, originalText: string, files: CoreWSFile[]): string {
@@ -1053,7 +1055,6 @@ export class CoreTextUtilsProvider {
      *
      * @param title Title of the new state.
      * @param content Content of the text to be expanded.
-     * @param component Component to link the embedded files to.
      * @param options Options.
      * @return Promise resolved when the modal is displayed.
      */

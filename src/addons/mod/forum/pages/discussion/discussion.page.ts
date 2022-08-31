@@ -358,7 +358,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
                         // Not set, use default sort.
                         // @TODO add fallback to $CFG->forum_displaymode.
                 }
-            } catch (error) {
+            } catch {
                 // Ignore errors.
             }
         }
@@ -511,7 +511,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
                 }
 
                 await Promise.all(promises);
-            } catch (error) {
+            } catch {
                 // Ignore errors.
             }
 

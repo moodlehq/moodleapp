@@ -229,7 +229,7 @@ export class CoreH5PFileStorage {
             try {
                 // Delete the index.html.
                 await this.deleteContentIndex(entry.foldername, site.getId());
-            } catch (error) {
+            } catch {
                 // Ignore errors.
             }
         });
@@ -463,7 +463,7 @@ export class CoreH5PFileStorage {
         // Delete existing library version.
         try {
             await CoreFile.removeDir(folderPath);
-        } catch (error) {
+        } catch {
             // Ignore errors, maybe it doesn't exist.
         }
 

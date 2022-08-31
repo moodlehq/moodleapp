@@ -47,7 +47,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
     canDownload$ = new BehaviorSubject(false);
     calculating$ = new BehaviorSubject(true);
     displayOptions?: CoreH5PDisplayOptions;
-    urlParams?: {[name: string]: string};
+    urlParams: {[name: string]: string} = {};
 
     protected site: CoreSite;
     protected siteId: string;
@@ -60,7 +60,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
     ) {
 
         this.logger = CoreLogger.getInstance('CoreH5PPlayerComponent');
-        this.site = CoreSites.getCurrentSite()!;
+        this.site = CoreSites.getRequiredCurrentSite();
         this.siteId = this.site.getId();
         this.siteCanDownload = this.site.canDownloadFiles() && !CoreH5P.isOfflineDisabledInSite();
     }
@@ -100,7 +100,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
 
         // Download the package in background if the size is low.
         try {
-            this.attemptDownloadInBg();
+            await this.attemptDownloadInBg();
         } catch (error) {
             this.logger.error('Error downloading H5P in background', error);
         }
@@ -120,12 +120,12 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
 
         try {
             // Get the file size and ask the user to confirm.
-            const size = await CorePluginFileDelegate.getFileSize({ fileurl: this.urlParams!.url }, this.siteId);
+            const size = await CorePluginFileDelegate.getFileSize({ fileurl: this.urlParams.url }, this.siteId);
 
             await CoreDomUtils.confirmDownloadSize({ size: size, total: true });
 
             // User confirmed, add to the queue.
-            await CoreFilepool.addToQueueByUrl(this.siteId, this.urlParams!.url, this.component, this.componentId);
+            await CoreFilepool.addToQueueByUrl(this.siteId, this.urlParams.url, this.component, this.componentId);
 
         } catch (error) {
             if (CoreDomUtils.isCanceledError(error)) {
@@ -191,7 +191,6 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
     /**
      * Calculate state of the file.
      *
-     * @param fileUrl The H5P file URL.
      * @return Promise resolved when done.
      */
     protected async calculateState(): Promise<void> {
@@ -199,7 +198,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
 
         // Get the status of the file.
         try {
-            const state = await CoreFilepool.getFileStateByUrl(this.siteId, this.urlParams!.url);
+            const state = await CoreFilepool.getFileStateByUrl(this.siteId, this.urlParams.url);
 
             this.canDownload$.next(true);
             this.state = state;

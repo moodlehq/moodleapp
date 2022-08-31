@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreConstants } from '@/core/constants';
+import { CoreConstants, ModPurpose } from '@/core/constants';
 import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChange } from '@angular/core';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -31,10 +31,11 @@ const fallbackModName = 'external-tool';
 })
 export class CoreModIconComponent implements OnInit, OnChanges {
 
-    @Input() modname?; // The module name. Used also as component if set.
-    @Input() componentId?; // Component Id for external icons.
+    @Input() modname?: string; // The module name. Used also as component if set.
+    @Input() componentId?: number; // Component Id for external icons.
     @Input() modicon?: string; // Module icon url or local url.
     @Input() showAlt = true; // Show alt otherwise it's only presentation icon.
+    @Input() purpose: ModPurpose = ModPurpose.MOD_PURPOSE_OTHER; // Purpose of the module.
 
     icon = '';
     modNameTranslated = '';
@@ -62,10 +63,15 @@ export class CoreModIconComponent implements OnInit, OnChanges {
         this.modNameTranslated = this.modname ? CoreCourse.translateModuleName(this.modname) || '' : '';
         if (CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.0')) {
             this.legacyIcon = false;
-            const purposeClass =
-                CoreCourseModuleDelegate.supportsFeature<string>(this.modname, CoreConstants.FEATURE_MOD_PURPOSE, '');
 
-            if (purposeClass != '') {
+            const purposeClass =
+                CoreCourseModuleDelegate.supportsFeature<ModPurpose>(
+                    this.modname || '',
+                    CoreConstants.FEATURE_MOD_PURPOSE,
+                    this.purpose,
+                );
+
+            if (purposeClass) {
                 const element: HTMLElement = this.el.nativeElement;
                 element.classList.add(purposeClass);
             }
@@ -94,8 +100,8 @@ export class CoreModIconComponent implements OnInit, OnChanges {
         // If modname is not set icon won't be cached.
         // Also if the url matches the regexp (the theme will manage the image so it's not cached).
         this.linkIconWithComponent =
-            this.modname &&
-            this.componentId &&
+            !!this.modname &&
+            !!this.componentId &&
             !this.isLocalUrl &&
             !this.icon.match('/theme/image.php/[^/]+/' + this.modname + '/[-0-9]*/');
     }

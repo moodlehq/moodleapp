@@ -663,13 +663,12 @@ export class AddonModGlossaryProvider {
 
         // No more pages and the entry wasn't found. Reject.
         throw new CoreError('Entry not found.');
-    };
+    }
 
     /**
      * Performs the whole fetch of the entries using the proper function and arguments.
      *
      * @param fetchFunction Function to fetch.
-     * @param fetchArguments Arguments to call the fetching.
      * @param options Other options.
      * @return Promise resolved with all entrries.
      */
@@ -682,7 +681,7 @@ export class AddonModGlossaryProvider {
         const entries: AddonModGlossaryEntry[] = [];
 
         const fetchMoreEntries = async (): Promise<AddonModGlossaryEntry[]> => {
-            const result = await fetchFunction({
+            const result = fetchFunction({
                 from: entries.length,
                 ...options, // Include all options.
             });
@@ -915,7 +914,14 @@ export class AddonModGlossaryProvider {
 
         try {
             // Try to add it in online.
-            return this.addEntryOnline(glossaryId, concept, definition, entryOptions, <number> attachments, otherOptions.siteId);
+            return await this.addEntryOnline(
+                glossaryId,
+                concept,
+                definition,
+                entryOptions,
+                <number> attachments,
+                otherOptions.siteId,
+            );
         } catch (error) {
             if (otherOptions.allowOffline && !CoreUtils.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
