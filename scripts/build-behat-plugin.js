@@ -93,7 +93,7 @@ async function main() {
             }
 
             const newPath = featurePath.substring(0, featurePath.length - ('/tests/behat'.length));
-            const searchRegExp = new RegExp('/', 'g');
+            const searchRegExp = /\//g;
             const prefix = relative(behatTempFeaturesPath, newPath).replace(searchRegExp,'-') || 'core';
             const featureFilename = prefix + '-' + basename(featureFile);
             renameSync(featureFile, behatFeaturesPath + '/' + featureFilename);

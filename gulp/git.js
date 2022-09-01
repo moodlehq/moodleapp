@@ -33,7 +33,7 @@ class Git {
         return new Promise((resolve, reject) => {
             exec(`git format-patch ${range} --stdout`, (err, result) => {
                 if (err) {
-                    reject(err || 'Cannot create patch.');
+                    reject(err);
                     return;
                 }
 
