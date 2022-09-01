@@ -412,12 +412,9 @@ class behat_app_helper extends behat_base {
         preg_match_all("/\\$\\{([^:}]+):([^}]+)\\}/", $text, $matches);
 
         foreach ($matches[0] as $index => $match) {
-            switch ($matches[2][$index]) {
-                case 'cmid':
-                    $coursemodule = $DB->get_record('course_modules', ['idnumber' => $matches[1][$index]]);
-                    $text = str_replace($match, $coursemodule->id, $text);
-
-                    break;
+            if ($matches[2][$index] == 'cmid') {
+                $coursemodule = $DB->get_record('course_modules', ['idnumber' => $matches[1][$index]]);
+                $text = str_replace($match, $coursemodule->id, $text);
             }
         }
 
@@ -550,7 +547,7 @@ class behat_app_helper extends behat_base {
         if (!empty($successXPath)) {
             // Wait until the page appears.
             $this->spin(
-                function($context, $args) use ($successXPath) {
+                function($context) use ($successXPath) {
                     $found = $context->getSession()->getPage()->find('xpath', $successXPath);
                     if ($found) {
                         return true;
@@ -597,7 +594,6 @@ class behat_app_helper extends behat_base {
         $cmfrom = $cmtable->get_from_sql();
 
         $acttable = new \core\dml\table($activity, 'a', 'a');
-        $actselect = $acttable->get_field_select();
         $actfrom = $acttable->get_from_sql();
 
         $sql = <<<EOF
@@ -662,7 +658,7 @@ EOF;
         // Set up relevant tags for each version.
         $usedtags = array_keys($usedtags);
         foreach ($usedtags as $usedtag) {
-            if (!preg_match('~^lms_(from|upto)([0-9]+(?:\.[0-9]+)*)$~', $usedtag, $matches)) {
+            if (!preg_match('~^lms_(from|upto)(\d+(?:\.\d+)*)$~', $usedtag, $matches)) {
                 // No match, ignore.
                 continue;
             }

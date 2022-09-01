@@ -39,7 +39,7 @@ if (!defined('SERIALIZED')) {
 
 $moodlepath = $argv[1];
 $wsname = $argv[2];
-$useparams = !!(isset($argv[3]) && $argv[3]);
+$useparams = (bool)(isset($argv[3]) && $argv[3]);
 
 define('CLI_SCRIPT', true);
 

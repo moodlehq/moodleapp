@@ -247,13 +247,13 @@ class performance_measure implements behat_app_listener {
      * Analyse long tasks.
      */
     private function analyseLongTasks(): void {
-        $blocking = 0;
+        $blockingDuration = 0;
 
         foreach ($this->longTasks as $longTask) {
-            $blocking += $longTask['duration'] - 50;
+            $blockingDuration += $longTask['duration'] - 50;
         }
 
-        $this->blocking = $blocking;
+        $this->blocking = $blockingDuration;
     }
 
     /**
@@ -269,15 +269,15 @@ class performance_measure implements behat_app_listener {
     private function analysePerformanceLogs(): void {
         global $CFG;
 
-        $scripting = 0;
-        $styling = 0;
-        $networking = 0;
+        $scriptingDuration = 0;
+        $stylingDuration = 0;
+        $networkingCount = 0;
         $logs = $this->getPerformanceLogs();
 
         foreach ($logs as $log) {
             // TODO this should filter by end time as well, but it seems like the timestamps are not
             // working as expected.
-            if (($log['timestamp'] < $this->start)) {
+            if ($log['timestamp'] < $this->start) {
                 continue;
             }
 
@@ -285,27 +285,27 @@ class performance_measure implements behat_app_listener {
             $messagename = $message->params->name ?? '';
 
             if (in_array($messagename, ['FunctionCall', 'GCEvent', 'MajorGC', 'MinorGC', 'EvaluateScript'])) {
-                $scripting += $message->params->dur;
+                $scriptingDuration += $message->params->dur;
 
                 continue;
             }
 
             if (in_array($messagename, ['UpdateLayoutTree', 'RecalculateStyles', 'ParseAuthorStyleSheet'])) {
-                $styling += $message->params->dur;
+                $stylingDuration += $message->params->dur;
 
                 continue;
             }
 
             if (in_array($messagename, ['XHRLoad']) && !str_starts_with($message->params->args->data->url, $CFG->behat_ionic_wwwroot)) {
-                $networking++;
+                $networkingCount++;
 
                 continue;
             }
         }
 
-        $this->scripting = round($scripting / 1000);
-        $this->styling = round($styling / 1000);
-        $this->networking = $networking;
+        $this->scripting = round($scriptingDuration / 1000);
+        $this->styling = round($stylingDuration / 1000);
+        $this->networking = $networkingCount;
     }
 
     /**

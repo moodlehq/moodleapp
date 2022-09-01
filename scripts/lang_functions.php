@@ -302,7 +302,7 @@ function build_lang($lang) {
                 $text = str_replace(['{{{', '}}}'], ['{{', '}}'], $text);
             } else {
                 // @TODO: Remove that line when core.cannotconnect and core.login.invalidmoodleversion are completelly changed to use $a
-                if (($appkey == 'core.cannotconnect' || $appkey == 'core.login.invalidmoodleversion') && strpos($text, '2.4') != false) {
+                if (($appkey == 'core.cannotconnect' || $appkey == 'core.login.invalidmoodleversion') && strpos($text, '2.4')) {
                     $text = str_replace('2.4', '{{$a}}', $text);
                 }
                 $local++;
@@ -471,13 +471,10 @@ function override_component_lang_files($translations) {
         }
         switch($type) {
             case 'core':
-                switch($component) {
-                    case 'moodle':
-                        $path .= 'core/lang.json';
-                        break;
-                    default:
-                        $path .= 'core/features/'.str_replace('_', '/', $component).'/lang.json';
-                        break;
+                if ($component == 'moodle') {
+                    $path .= 'core/lang.json';
+                } else {
+                    $path .= 'core/features/'.str_replace('_', '/', $component).'/lang.json';
                 }
                 break;
             case 'addon':

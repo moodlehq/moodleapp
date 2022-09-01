@@ -42,7 +42,7 @@ $versions = array('master', '310', '39', '38', '37', '36', '35', '34', '33', '32
 
 $moodlespath = $argv[1];
 $wsname = $argv[2];
-$useparams = !!(isset($argv[3]) && $argv[3]);
+$useparams = (bool)(isset($argv[3]) && $argv[3]);
 $pathseparator = '/';
 
 // Get the path to the script.
