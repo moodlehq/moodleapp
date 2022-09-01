@@ -16,6 +16,7 @@ import { CoreConstants } from '@/core/constants';
 import { Component, OnInit, Optional } from '@angular/core';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
+import { CoreCourse } from '@features/course/services/course';
 import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSync } from '@services/sync';
@@ -542,6 +543,11 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
         this.dataSentObserver = CoreEvents.on(AddonModScormProvider.DATA_SENT_EVENT, (data) => {
             if (data.scormId === this.scorm!.id) {
                 this.dataSent = true;
+
+                if (this.module.completiondata && CoreCourse.isIncompleteAutomaticCompletion(this.module.completiondata)) {
+                    // Always invalidate section data when data is sent, the SCORM could have a link to a section.
+                    CoreCourse.invalidateSections(this.courseId);
+                }
             }
         }, this.siteId);
 

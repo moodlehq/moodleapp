@@ -227,8 +227,7 @@ export class CoreCourseProvider {
      * @param completion Completion status of the module.
      */
     checkModuleCompletion(courseId: number, completion?: CoreCourseModuleCompletionData): void {
-        if (completion && completion.tracking === CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_AUTOMATIC &&
-            completion.state === CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE) {
+        if (completion && this.isIncompleteAutomaticCompletion(completion)) {
             this.invalidateSections(courseId).finally(() => {
                 CoreEvents.trigger(CoreEvents.COMPLETION_MODULE_VIEWED, {
                     courseId: courseId,
@@ -236,6 +235,17 @@ export class CoreCourseProvider {
                 });
             });
         }
+    }
+
+    /**
+     * Given some completion data, return whether it's an automatic completion that hasn't been completed yet.
+     *
+     * @param completion Completion data.
+     * @return Whether it's an automatic completion that hasn't been completed yet.
+     */
+    isIncompleteAutomaticCompletion(completion: CoreCourseModuleCompletionData): boolean {
+        return completion.tracking === CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_AUTOMATIC &&
+            completion.state === CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE;
     }
 
     /**

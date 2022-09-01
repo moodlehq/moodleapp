@@ -417,8 +417,16 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         this.dataSentObserver?.off();
 
         this.dataSentObserver = CoreEvents.on(AddonModLessonProvider.DATA_SENT_EVENT, (data) => {
-            // Ignore launch sending because it only affects timers.
-            if (data.lessonId === this.lesson?.id && data.type != 'launch') {
+            if (data.lessonId !== this.lesson?.id || data.type === 'launch') {
+                // Ignore launch sending because it only affects timers.
+                return;
+            }
+
+            if (data.type === 'finish') {
+                // Lesson finished, check completion now.
+                this.dataSent = false;
+                this.checkCompletion();
+            } else {
                 this.dataSent = true;
             }
         }, this.siteId);
