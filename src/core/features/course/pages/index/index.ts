@@ -26,7 +26,6 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CONTENTS_PAGE_NAME } from '@features/course/course.module';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreCourseSummaryPage } from '../course-summary/course-summary';
 import { CoreCoursesHelper, CoreCourseWithImageAndColor } from '@features/courses/services/courses-helper';
 import { CoreColors } from '@singletons/colors';
 import { CoreText } from '@singletons/text';
@@ -288,17 +287,9 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
      * Open the course summary
      */
     openCourseSummary(): void {
-        if (!this.course) {
-            return;
+        if (this.course) {
+            CoreCourseHelper.openCourseSummary(this.course);
         }
-
-        CoreDomUtils.openSideModal<void>({
-            component: CoreCourseSummaryPage,
-            componentProps: {
-                courseId: this.course.id,
-                course: this.course,
-            },
-        });
     }
 
     /**

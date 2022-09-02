@@ -70,6 +70,8 @@ import { CoreSiteHome } from '@features/sitehome/services/sitehome';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CoreSiteHomeHomeHandlerService } from '@features/sitehome/services/handlers/sitehome-home';
 import { CoreStatusWithWarningsWSResponse } from '@services/ws';
+import { CoreCourseWithImageAndColor } from '@features/courses/services/courses-helper';
+import { CoreCourseSummaryPage } from '../pages/course-summary/course-summary';
 
 /**
  * Prefetch info of a module.
@@ -2031,6 +2033,30 @@ export class CoreCourseHelperProvider {
         } finally {
             modal.dismiss();
         }
+    }
+
+    /**
+     * Retrieves course summary page module.
+     *
+     * @returns Course summary page module.
+     */
+    async getCourseSummaryRouteModule(): Promise<unknown> {
+        return import('../pages/course-summary/course-summary.module').then(m => m.CoreCourseSummaryPageModule);
+    }
+
+    /**
+     * Open course summary in side modal.
+     *
+     * @param course Course selected
+     */
+    openCourseSummary(course: CoreCourseWithImageAndColor & CoreCourseAnyCourseData): void {
+        CoreDomUtils.openSideModal<void>({
+            component: CoreCourseSummaryPage,
+            componentProps: {
+                courseId: course.id,
+                course: course,
+            },
+        });
     }
 
 }
