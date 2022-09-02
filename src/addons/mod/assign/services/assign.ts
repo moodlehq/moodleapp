@@ -1825,7 +1825,7 @@ export enum AddonModAssignSubmissionStatusValues {
     NO_ONLINE_SUBMISSIONS = 'noonlinesubmissions',
     NO_SUBMISSION = 'nosubmission',
     GRADED_FOLLOWUP_SUBMIT = 'gradedfollowupsubmit',
-};
+}
 
 /**
  * Grading status.
@@ -1837,7 +1837,7 @@ export enum AddonModAssignGradingStates {
     // Added by App Statuses.
     MARKING_WORKFLOW_STATE_RELEASED = 'released', // with ASSIGN_MARKING_WORKFLOW_STATE_RELEASED
     GRADED_FOLLOWUP_SUBMIT = 'gradedfollowupsubmit',
-};
+}
 
 /**
  * Reopen attempt methods.
@@ -1847,4 +1847,4 @@ export enum AddonModAssignAttemptReopenMethodValues {
     NONE = 'none',
     MANUAL = 'manual',
     UNTILPASS = 'untilpass',
-};
+}

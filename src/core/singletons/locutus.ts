@@ -444,4 +444,4 @@ export class Locutus {
         return substr_replace(str, replace, start, length);
     }
 
-};
+}

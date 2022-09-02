@@ -71,7 +71,7 @@ export class TestingBehatDomUtilsService {
         }
 
         return this.isElementSelected(parentElement, container);
-    };
+    }
 
     /**
      * Finds elements within a given container with exact info.
@@ -180,7 +180,7 @@ export class TestingBehatDomUtilsService {
         }
 
         return elements;
-    };
+    }
 
     /**
      * Checks an element has exactly the same label (title, alt or aria-label).
@@ -215,7 +215,7 @@ export class TestingBehatDomUtilsService {
         elements.sort((a, b) => Number(b.exact) - Number(a.exact));
 
         return elements.map(element => element.element);
-    };
+    }
 
     /**
      * Given a list of elements, get the top ancestors among all of them.
@@ -273,7 +273,7 @@ export class TestingBehatDomUtilsService {
         }
 
         return this.getClosestMatching(element.parentElement, selector, container);
-    };
+    }
 
     /**
      * Function to find top container elements.
@@ -339,7 +339,7 @@ export class TestingBehatDomUtilsService {
         });
 
         return topContainers;
-    };
+    }
 
     /**
      * Function to find element based on their text or Aria label.
@@ -463,7 +463,7 @@ export class TestingBehatDomUtilsService {
         } while (container !== topContainer && (container = this.getParentElement(container)) && container !== topContainer);
 
         return [];
-    };
+    }
 
     /**
      * Make sure that an element is visible and wait to trigger the callback.
@@ -492,7 +492,7 @@ export class TestingBehatDomUtilsService {
         });
 
         return promise;
-    };
+    }
 
     /**
      * Press an element.

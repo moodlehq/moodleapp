@@ -2410,7 +2410,7 @@ export enum CoreSiteInfoUserHomepage {
     HOMEPAGE_SITE = 0, // Site home.
     HOMEPAGE_MY = 1, // Dashboard.
     HOMEPAGE_MYCOURSES = 3, // My courses.
-};
+}
 
 /**
  * Result of WS tool_mobile_get_config.

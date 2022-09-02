@@ -44,7 +44,7 @@ export interface TransitionOptions extends NavOptions {
     baseEl: HTMLElement;
     enteringEl: HTMLElement;
     leavingEl: HTMLElement | undefined;
-};
+}
 
 export const shadow = <T extends Element>(el: T): ShadowRoot | T => el.shadowRoot || el;
 

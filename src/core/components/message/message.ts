@@ -56,7 +56,7 @@ export class CoreMessageComponent implements OnInit {
 
     @HostBinding('class.no-user') get showUser(): boolean {
         return !this.message?.showUserData;
-    };
+    }
 
     get userId(): number | undefined {
         return this.user && (this.user.userid || this.user.id);
