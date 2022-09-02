@@ -13,27 +13,8 @@
         [courseId]="courseId" (completionChanged)="onCompletionChange()">
     </core-course-module-info>
 
-    <ng-container *ngIf="groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)">
-        <ion-card class="core-info-card" *ngIf="groupInfo.groups && groupInfo.groups.length > 1">
-            <ion-item>
-                <ion-icon name="fas-question-circle" slot="start" aria-hidden="true"></ion-icon>
-                <ion-label>{{ 'addon.mod_bigbluebuttonbn.view_groups_selection_warning' | translate }}</ion-label>
-            </ion-item>
-        </ion-card>
-
-        <ion-item class="ion-text-wrap core-group-selector">
-            <ion-label id="addon-bigbluebuttonbn-groupslabel">
-                <ng-container *ngIf="groupInfo.separateGroups">{{ 'core.groupsseparate' | translate }}</ng-container>
-                <ng-container *ngIf="groupInfo.visibleGroups">{{ 'core.groupsvisible' | translate }}</ng-container>
-            </ion-label>
-            <ion-select [(ngModel)]="groupId" (ionChange)="groupChanged()" aria-labelledby="addon-bigbluebuttonbn-groupslabel"
-                interface="action-sheet" [interfaceOptions]="{header: 'core.group' | translate}">
-                <ion-select-option *ngFor="let groupOpt of groupInfo.groups" [value]="groupOpt.id">
-                    {{groupOpt.name}}
-                </ion-select-option>
-            </ion-select>
-        </ion-item>
-    </ng-container>
+    <core-group-selector [groupInfo]="groupInfo" [(selected)]="groupId" (selectedChange)="groupChanged()"
+        [multipleGroupsMessage]="'addon.mod_bigbluebuttonbn.view_groups_selection_warning' | translate"></core-group-selector>
 
     <ng-container *ngIf="meetingInfo">
         <ion-item class="ion-text-wrap" *ngIf="meetingInfo.openingtime">

@@ -56,20 +56,8 @@
         <core-tab *ngIf="canViewReports" [title]="'addon.mod_lesson.reports' | translate" (ionSelect)="reportsSelected()">
             <ng-template>
                 <core-loading [hideUntil]="reportLoaded">
-                    <!-- Group selector if the activity uses groups. -->
-                    <ion-item class="ion-text-wrap core-group-selector"
-                        *ngIf="groupInfo && (groupInfo.separateGroups || groupInfo.visibleGroups)">
-                        <ion-label id="addon-mod_lesson-groupslabel">
-                            <span *ngIf="groupInfo.separateGroups">{{ 'core.groupsseparate' | translate }}</span>
-                            <span *ngIf="groupInfo.visibleGroups">{{ 'core.groupsvisible' | translate }}</span>
-                        </ion-label>
-                        <ion-select [(ngModel)]="group" (ionChange)="setGroup(group)" aria-labelledby="addon-mod_lesson-groupslabel"
-                            interface="action-sheet" [interfaceOptions]="{header: 'core.group' | translate}">
-                            <ion-select-option *ngFor="let groupOpt of groupInfo.groups" [value]="groupOpt.id">
-                                {{groupOpt.name}}
-                            </ion-select-option>
-                        </ion-select>
-                    </ion-item>
+                    <core-group-selector [groupInfo]="groupInfo" [(selected)]="group" (selectedChange)="setGroup(group)">
+                    </core-group-selector>
 
                     <!-- No lesson retakes. -->
                     <core-empty-box *ngIf="!overview && selectedGroupName" icon="fas-chart-bar"

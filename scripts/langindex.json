@@ -984,6 +984,7 @@
   "addon.mod_url.modulenameplural": "url",
   "addon.mod_url.pointingtourl": "local_moodlemobileapp",
   "addon.mod_wiki.cannoteditpage": "wiki",
+  "addon.mod_wiki.cannotviewpage": "wiki",
   "addon.mod_wiki.createpage": "wiki",
   "addon.mod_wiki.editingpage": "wiki",
   "addon.mod_wiki.errorloadingpage": "local_moodlemobileapp",

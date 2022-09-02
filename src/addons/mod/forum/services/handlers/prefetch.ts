@@ -158,7 +158,7 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
             return [0];
         }
 
-        const allPartsGroup = groupInfo.groups?.find(group => group.id === 0);
+        const allPartsGroup = groupInfo.groups.find(group => group.id === 0);
         if (allPartsGroup) {
             return [0]; // Prefetch all participants.
         }
@@ -168,7 +168,7 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
             return [groupInfo.defaultGroupId];
         }
 
-        return groupInfo.groups?.map(group => group.id) ?? [0];
+        return groupInfo.groups.map(group => group.id) ?? [0];
     }
 
     /**

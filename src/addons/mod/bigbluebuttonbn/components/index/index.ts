@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, Optional } from '@angular/core';
+import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { IonContent } from '@ionic/angular';
@@ -67,6 +68,10 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
         this.groupInfo = await CoreGroups.getActivityGroupInfo(this.module.id, false);
 
         this.groupId = CoreGroups.validateGroupId(this.groupId, this.groupInfo);
+
+        if (this.groupInfo.separateGroups && !this.groupInfo.groups.length) {
+            throw new CoreError(Translate.instant('addon.mod_bigbluebuttonbn.view_nojoin'));
+        }
 
         await this.fetchMeetingInfo();
     }

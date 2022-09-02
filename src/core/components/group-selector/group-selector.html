@@ -1,0 +1,22 @@
+<ng-container *ngIf="groupInfo && groupInfo.groups.length > 0 && (groupInfo.separateGroups || groupInfo.visibleGroups)">
+    <ion-card class="core-info-card" *ngIf="multipleGroupsMessage && groupInfo.groups && groupInfo.groups.length > 1">
+        <ion-item>
+            <ion-icon name="fas-question-circle" slot="start" aria-hidden="true"></ion-icon>
+            <ion-label>{{ multipleGroupsMessage }}</ion-label>
+        </ion-item>
+    </ion-card>
+
+    <ion-item class="ion-text-wrap core-group-selector">
+        <ion-label id="core-groups-selector-groupslabel-{{id}}">
+            <ng-container *ngIf="groupInfo.separateGroups">{{'core.groupsseparate' | translate }}</ng-container>
+            <ng-container *ngIf="groupInfo.visibleGroups">{{'core.groupsvisible' | translate }}</ng-container>
+        </ion-label>
+        <ion-select [(ngModel)]="selected" (ionChange)="selectedChange.emit(selected)"
+            [attr.aria-labelledby]="'core-groups-selector-groupslabel-' + id" interface="action-sheet"
+            [interfaceOptions]="{header: 'core.group' | translate}">
+            <ion-select-option *ngFor="let groupOpt of groupInfo.groups" [value]="groupOpt.id">
+                {{groupOpt.name}}
+            </ion-select-option>
+        </ion-select>
+    </ion-item>
+</ng-container>

@@ -179,7 +179,7 @@ export class AddonModDataEditPage implements OnInit {
 
                 if (refresh) {
                     groupInfo = await CoreGroups.getActivityGroupInfo(this.database.coursemodule);
-                    if (groupInfo.visibleGroups && groupInfo.groups?.length) {
+                    if (groupInfo.visibleGroups && groupInfo.groups.length) {
                         // There is a bug in Moodle with All participants and visible groups (MOBILE-3597). Remove it.
                         groupInfo.groups = groupInfo.groups.filter(group => group.id !== 0);
                         groupInfo.defaultGroupId = groupInfo.groups[0].id;

@@ -249,6 +249,10 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                 // Get real groupmode, in case it's forced by the course.
                 const groupInfo = await CoreGroups.getActivityGroupInfo(this.wiki.coursemodule);
 
+                if (groupInfo.separateGroups && !groupInfo.groups.length) {
+                    throw new CoreError(Translate.instant('addon.mod_wiki.cannotviewpage'));
+                }
+
                 await this.createSubwikiList(groupInfo.groups);
             } else {
                 this.subwikiData.count = subwikiList.count;
@@ -867,7 +871,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      * @param userGroups Groups.
      * @return Promise resolved when done.
      */
-    protected async createSubwikiList(userGroups?: CoreGroup[]): Promise<void> {
+    protected async createSubwikiList(userGroups: CoreGroup[]): Promise<void> {
         const subwikiList: AddonModWikiSubwikiListSubwiki[] = [];
         let allParticipants = false;
         let showMyGroupsLabel = false;
@@ -895,7 +899,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                     allParticipants = true;
                 }
             } else {
-                if (subwiki.groupid != 0 && userGroups && userGroups.length > 0) {
+                if (subwiki.groupid != 0 && userGroups.length > 0) {
                     // Get groupLabel if it has groupId.
                     const group = userGroups.find(group => group.id == subwiki.groupid);
                     groupLabel = group?.name || '';
