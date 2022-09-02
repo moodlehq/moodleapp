@@ -666,7 +666,7 @@ export class CoreCoursesProvider {
             cacheKey: this.getRecentCoursesCacheKey(userId),
         };
 
-        return await site.read<CoreCourseSummaryData[]>('core_course_get_recent_courses', params, preSets);
+        return site.read<CoreCourseSummaryData[]>('core_course_get_recent_courses', params, preSets);
     }
 
     /**
@@ -720,7 +720,6 @@ export class CoreCoursesProvider {
     /**
      * Get the common part of the cache keys for user navigation options WS calls.
      *
-     * @param courseIds IDs of courses to get.
      * @return Cache key.
      */
     protected getUserNavigationOptionsCommonCacheKey(): string {

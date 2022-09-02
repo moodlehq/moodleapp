@@ -1017,10 +1017,10 @@ export class CoreCourseHelperProvider {
         if (prefetchHandler) {
             // Use the prefetch handler to download the module.
             if (prefetchHandler.download) {
-                return await prefetchHandler.download(module, courseId);
+                return prefetchHandler.download(module, courseId);
             }
 
-            return await prefetchHandler.prefetch(module, courseId, true);
+            return prefetchHandler.prefetch(module, courseId, true);
         }
 
         // There's no prefetch handler for the module, just download the files.

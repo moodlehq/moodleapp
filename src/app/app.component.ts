@@ -41,7 +41,6 @@ const MOODLEAPP_VERSION_PREFIX = 'moodleapp-';
 @Component({
     selector: 'app-root',
     templateUrl: 'app.component.html',
-    styleUrls: ['app.component.scss'],
 })
 export class AppComponent implements OnInit, AfterViewInit {
 

@@ -159,14 +159,14 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
         if (data.action == CoreCoursesProvider.ACTION_ENROL) {
             // Always update if user enrolled in a course.
             // New courses shouldn't be favourite by default, but just in case.
-            return await this.refreshContent();
+            return this.refreshContent();
         }
 
         if (data.action == CoreCoursesProvider.ACTION_STATE_CHANGED && data.state == CoreCoursesProvider.STATE_FAVOURITE) {
             const courseIndex = this.courses.findIndex((course) => course.id == data.courseId);
             if (courseIndex < 0) {
                 // Not found, use WS update. Usually new favourite.
-                return await this.refreshContent();
+                return this.refreshContent();
             }
 
             const course = this.courses[courseIndex];

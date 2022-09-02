@@ -394,7 +394,7 @@ export class CoreCourseFormatDelegateService extends CoreDelegate<CoreCourseForm
      * @return Whether course view should be refreshed when an activity completion changes.
      */
     async shouldRefreshWhenCompletionChanges(course: CoreCourseAnyCourseData): Promise<boolean | undefined> {
-        return await this.executeFunctionOnEnabled(course.format || '', 'shouldRefreshWhenCompletionChanges', [course]);
+        return this.executeFunctionOnEnabled(course.format || '', 'shouldRefreshWhenCompletionChanges', [course]);
     }
 
 }

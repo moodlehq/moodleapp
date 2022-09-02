@@ -176,7 +176,7 @@ export class CoreCommentsProvider {
             comments: comments,
         };
 
-        return await site.write('core_comment_add_comments', data);
+        return site.write('core_comment_add_comments', data);
     }
 
     /**

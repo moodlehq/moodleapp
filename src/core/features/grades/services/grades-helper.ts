@@ -442,7 +442,7 @@ export class CoreGradesHelperProvider {
         // Find href containing "/mod/xxx/xxx.php".
         const regex = /href="([^"]*\/mod\/[^"|^/]*\/[^"|^.]*\.php[^"]*)/;
 
-        return await Promise.all(table.tabledata.filter((row) => {
+        return Promise.all(table.tabledata.filter((row) => {
             if (row.itemname && row.itemname.content) {
                 const matches = row.itemname.content.match(regex);
 

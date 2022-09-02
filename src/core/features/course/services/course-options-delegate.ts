@@ -484,7 +484,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
         // Load course options if missing.
         await this.loadCourseOptions(course, refresh);
 
-        return await this.hasHandlersForDefault(course.id, refresh, course.navOptions, course.admOptions);
+        return this.hasHandlersForDefault(course.id, refresh, course.navOptions, course.admOptions);
     }
 
     /**

@@ -74,7 +74,7 @@ export class AddonCalendarOfflineProvider {
     async getAllDeletedEvents(siteId?: string): Promise<AddonCalendarOfflineDeletedEventDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
 
-        return await site.getDb().getRecords(DELETED_EVENTS_TABLE);
+        return site.getDb().getRecords(DELETED_EVENTS_TABLE);
     }
 
     /**
@@ -98,7 +98,7 @@ export class AddonCalendarOfflineProvider {
     async getAllEditedEvents(siteId?: string): Promise<AddonCalendarOfflineEventDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
 
-        return await site.getDb().getRecords(EVENTS_TABLE);
+        return site.getDb().getRecords(EVENTS_TABLE);
     }
 
     /**
@@ -126,7 +126,7 @@ export class AddonCalendarOfflineProvider {
             id: eventId,
         };
 
-        return await site.getDb().getRecord(DELETED_EVENTS_TABLE, conditions);
+        return site.getDb().getRecord(DELETED_EVENTS_TABLE, conditions);
     }
 
     /**
@@ -142,7 +142,7 @@ export class AddonCalendarOfflineProvider {
             id: eventId,
         };
 
-        return await site.getDb().getRecord(EVENTS_TABLE, conditions);
+        return site.getDb().getRecord(EVENTS_TABLE, conditions);
     }
 
     /**
@@ -209,7 +209,7 @@ export class AddonCalendarOfflineProvider {
             timemodified: Date.now(),
         };
 
-        return await site.getDb().insertRecord(DELETED_EVENTS_TABLE, event);
+        return site.getDb().insertRecord(DELETED_EVENTS_TABLE, event);
     }
 
     /**

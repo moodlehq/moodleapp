@@ -119,7 +119,7 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
                 throw new Error('Failed getting discussions');
             }
 
-            return await Promise.all(
+            return Promise.all(
                 response.discussions.map((discussion) => AddonModForum.getDiscussionPosts(discussion.discussion, options)),
             );
         }));

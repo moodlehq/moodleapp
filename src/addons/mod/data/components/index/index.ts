@@ -103,7 +103,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         num: number;
         max: number;
         reseturl: string;
-    };;
+    };
 
     hasOfflineRatings = false;
 

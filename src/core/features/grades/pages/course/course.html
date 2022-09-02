@@ -16,7 +16,7 @@
         <core-empty-box *ngIf="rows && rows.length === 0" icon="fas-chart-bar" [message]="'core.grades.nogradesreturned' | translate">
         </core-empty-box>
         <div *ngIf="rows && rows.length > 0" class="core-grades-container">
-            <table cellspacing="0" cellpadding="0" class="core-grades-table" [class.summary]="showSummary">
+            <table class="core-grades-table" [class.summary]="showSummary">
                 <thead>
                     <tr>
                         <th *ngFor="let column of columns" id="{{column.name}}" class="ion-text-start"

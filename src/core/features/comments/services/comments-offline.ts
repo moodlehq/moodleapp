@@ -116,7 +116,7 @@ export class CoreCommentsOfflineProvider {
     async getAllDeletedComments(siteId?: string): Promise<CoreCommentsDeletedDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
 
-        return await site.getDb().getRecords(COMMENTS_DELETED_TABLE);
+        return site.getDb().getRecords(COMMENTS_DELETED_TABLE);
     }
 
     /**

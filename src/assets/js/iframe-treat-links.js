@@ -13,9 +13,9 @@
 // limitations under the License.
 
 (function () {
-    var url = location.href;
+    const locationHref = location.href;
 
-    if (url.match(/^moodleappfs:\/\/localhost/i) || !url.match(/^[a-z0-9]+:\/\//i)) {
+    if (locationHref.match(/^moodleappfs:\/\/localhost/i) || !locationHref.match(/^[a-z0-9]+:\/\//i)) {
         // Same domain as the app, stop.
         return;
     }
@@ -41,14 +41,14 @@
     };
 
     // Handle link clicks.
-    document.addEventListener('click', (event) => {
-        if (event.defaultPrevented) {
+    document.addEventListener('click', (documentClickEvent) => {
+        if (documentClickEvent.defaultPrevented) {
             // Event already prevented by some other code.
             return;
         }
 
         // Find the link being clicked.
-        var el = event.target;
+        let el = documentClickEvent.target;
         while (el && (el.tagName !== 'A' && el.tagName !== 'a')) {
             el = el.parentElement;
         }
@@ -59,8 +59,8 @@
 
         // Add click listener to the link, this way if the iframe has added a listener to the link it will be executed first.
         el.treated = true;
-        el.addEventListener('click', function(event) {
-            linkClicked(el, event);
+        el.addEventListener('click', function(elementClickEvent) {
+            linkClicked(el, elementClickEvent);
         });
     }, {
         capture: true // Use capture to fix this listener not called if the element clicked is too deep in the DOM.
@@ -82,8 +82,8 @@
             return leftPath;
         }
 
-        var lastCharLeft = leftPath.slice(-1);
-        var firstCharRight = rightPath.charAt(0);
+        const lastCharLeft = leftPath.slice(-1);
+        const firstCharRight = rightPath.charAt(0);
 
         if (lastCharLeft === '/' && firstCharRight === '/') {
             return leftPath + rightPath.substr(1);
@@ -119,7 +119,7 @@
             return;
         }
 
-        var matches = url.match(/^([a-z][a-z0-9+\-.]*):/);
+        const matches = url.match(/^([a-z][a-z0-9+\-.]*):/);
         if (matches && matches[1]) {
             return matches[1];
         }
@@ -164,9 +164,9 @@
             return;
         }
 
-        var linkScheme = getUrlScheme(link.href);
-        var pageScheme = getUrlScheme(location.href);
-        var isTargetSelf = !link.target || link.target == '_self';
+        const linkScheme = getUrlScheme(link.href);
+        const pageScheme = getUrlScheme(location.href);
+        const isTargetSelf = !link.target || link.target == '_self';
 
         if (!link.href || linkScheme == 'javascript') {
             // Links with no URL and Javascript links are ignored.
@@ -207,7 +207,7 @@
         }
 
         // It's a relative URL, use the frame src to create the full URL.
-        var pathToDir = location.href.substring(0, location.href.lastIndexOf('/'));
+        const pathToDir = location.href.substring(0, location.href.lastIndexOf('/'));
 
         return concatenatePaths(pathToDir, url);
     }

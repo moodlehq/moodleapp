@@ -301,7 +301,7 @@ export class CoreContentLinksDelegateService {
             return true;
         }
 
-        return await handler.isEnabled(siteId, url, params, courseId);
+        return handler.isEnabled(siteId, url, params, courseId);
     }
 
     /**

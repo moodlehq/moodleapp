@@ -175,7 +175,7 @@ export class CoreDom {
             slot.removeEventListener('slotchange', slotListener);
         };
 
-        slot.addEventListener('slotchange', slotListener);;
+        slot.addEventListener('slotchange', slotListener);
     }
 
     /**

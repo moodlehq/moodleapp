@@ -1782,7 +1782,7 @@ export class CoreDomUtilsProvider {
             leaveAnimation: CoreModalLateralTransitionLeave,
         }, options);
 
-        return await this.openModal<T>(options);
+        return this.openModal<T>(options);
     }
 
     /**

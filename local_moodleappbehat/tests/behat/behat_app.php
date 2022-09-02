@@ -283,7 +283,7 @@ class behat_app extends behat_app_helper {
 
         // Wait until the main page appears.
         $this->spin(
-                function($context, $args) {
+                function($context) {
                     $initialpage = $context->getSession()->getPage()->find('xpath', '//page-core-mainmenu') ??
                         $context->getSession()->getPage()->find('xpath', '//page-core-login-change-password') ??
                         $context->getSession()->getPage()->find('xpath', '//page-core-user-complete-profile');
@@ -780,7 +780,7 @@ class behat_app extends behat_app_helper {
             if (!is_null($urlpattern)) {
                 $this->getSession()->switchToWindow($windowNames[1]);
                 $windowurl = $this->getSession()->getCurrentUrl();
-                $windowhaspattern = !!preg_match("/$urlpattern/", $windowurl);
+                $windowhaspattern = (bool)preg_match("/$urlpattern/", $windowurl);
                 $this->getSession()->switchToWindow($windowNames[0]);
 
                 if ($not === $windowhaspattern) {
@@ -884,6 +884,8 @@ class behat_app extends behat_app_helper {
                 break;
             case 'offline':
                 $this->runtime_js("network.setForceConnectionMode('none');");
+                break;
+            default:
                 break;
         }
     }

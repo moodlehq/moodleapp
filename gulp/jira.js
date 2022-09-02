@@ -170,11 +170,11 @@ class Jira {
             return data;
         } catch (error) {
             // MDK not available or not configured. Ask for the data.
-            const data = await this.askTrackerData();
+            const trackerData = await this.askTrackerData();
 
-            data.fromInput = true;
+            trackerData.fromInput = true;
 
-            return data;
+            return trackerData;
         }
     }
 
@@ -208,14 +208,14 @@ class Jira {
                     return;
                 }
 
-                exec('mdk config show tracker.username', (err, username) => {
+                exec('mdk config show tracker.username', (error, username) => {
                     if (username) {
                         resolve({
                             url: url.replace('\n', ''),
                             username: username.replace('\n', ''),
                         });
                     } else {
-                        reject(err | 'Username not found.');
+                        reject(error || 'Username not found.');
                     }
                 });
             });
@@ -234,7 +234,7 @@ class Jira {
         }
 
         // Get tracker URL and username.
-        const trackerData = await this.getTrackerData();
+        let trackerData = await this.getTrackerData();
 
         this.url = trackerData.url;
         this.username = trackerData.username;
@@ -316,15 +316,15 @@ class Jira {
                 auth: `${this.username}:${this.password}`,
                 headers: headers,
             };
-            const request = https.request(url, options);
+            const buildRequest = https.request(url, options);
 
             // Add data.
             if (data) {
-                request.write(data);
+                buildRequest.write(data);
             }
 
             // Treat response.
-            request.on('response', (response) => {
+            buildRequest.on('response', (response) => {
                 // Read the result.
                 let result = '';
                 response.on('data', (chunk) => {
@@ -344,24 +344,24 @@ class Jira {
                 });
             });
 
-            request.on('error', (e) => {
+            buildRequest.on('error', (e) => {
                 reject(e);
             });
 
             // Send the request.
-            request.end();
+            buildRequest.end();
         });
     }
 
     /**
      * Sets a set of fields for a certain issue in Jira.
      *
-     * @param key Key to identify the issue. E.g. MOBILE-1234.
+     * @param issueId Key to identify the issue. E.g. MOBILE-1234.
      * @param updates Object with the fields to update.
      * @return Promise resolved when done.
      */
-    async setCustomFields(key, updates) {
-        const issue = await this.getIssue(key);
+    async setCustomFields(issueId, updates) {
+        const issue = await this.getIssue(issueId);
         const update = {'fields': {}};
 
         // Detect which fields have changed.
@@ -372,9 +372,10 @@ class Jira {
             if (!remoteValue || remoteValue != updateValue) {
                 // Map the label of the field with the field code.
                 let fieldKey;
-                for (const key in issue.names) {
-                    if (issue.names[key] == updateName) {
-                        fieldKey = key;
+
+                for (const id in issue.names) {
+                    if (issue.names[id] == updateName) {
+                        fieldKey = id;
                         break;
                     }
                 }
@@ -439,7 +440,7 @@ class Jira {
         headers = headers || {};
         headers['Content-Type'] = 'multipart/form-data';
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             // Add the file to the form data.
             const formData = {};
             formData[fieldName] = {
@@ -462,7 +463,7 @@ class Jira {
                 formData: formData,
             };
 
-            request(options, (err, httpResponse, body) => {
+            request(options, (_err, httpResponse, body) => {
                 resolve({
                     status: httpResponse.statusCode,
                     data: body,

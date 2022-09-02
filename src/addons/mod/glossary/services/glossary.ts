@@ -673,7 +673,7 @@ export class AddonModGlossaryProvider {
      * @return Promise resolved with all entrries.
      */
     fetchAllEntries(
-        fetchFunction: (options?: AddonModGlossaryGetEntriesOptions) => AddonModGlossaryGetEntriesWSResponse,
+        fetchFunction: (options?: AddonModGlossaryGetEntriesOptions) => Promise<AddonModGlossaryGetEntriesWSResponse>,
         options: CoreCourseCommonModWSOptions = {},
     ): Promise<AddonModGlossaryEntry[]> {
         options.siteId = options.siteId || CoreSites.getCurrentSiteId();
@@ -681,7 +681,7 @@ export class AddonModGlossaryProvider {
         const entries: AddonModGlossaryEntry[] = [];
 
         const fetchMoreEntries = async (): Promise<AddonModGlossaryEntry[]> => {
-            const result = fetchFunction({
+            const result = await fetchFunction({
                 from: entries.length,
                 ...options, // Include all options.
             });

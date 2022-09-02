@@ -518,7 +518,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
             };
         }
 
-        return await AddonModH5PActivitySync.syncActivity(this.h5pActivity.context, this.site.getId());
+        return AddonModH5PActivitySync.syncActivity(this.h5pActivity.context, this.site.getId());
     }
 
     /**

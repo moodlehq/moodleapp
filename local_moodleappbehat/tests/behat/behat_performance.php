@@ -78,10 +78,8 @@ class behat_performance extends behat_base {
         $spaceindex = strpos($text, ' ');
         $value = floatval(substr($text, 0, $spaceindex));
 
-        switch (substr($text, $spaceindex + 1)) {
-            case 'seconds':
-                $value *= 1000;
-                break;
+        if (substr($text, $spaceindex + 1) == 'seconds') {
+            $value *= 1000;
         }
 
         return $value;
@@ -108,6 +106,8 @@ class behat_performance extends behat_base {
                 return function ($a, $b) {
                     return $a === $b;
                 };
+            default:
+                break;
         }
     }
 

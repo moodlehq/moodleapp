@@ -2134,7 +2134,7 @@ export class CoreSite {
     async getLastViewed(component: string, id: number): Promise<CoreSiteLastViewedDBRecord | undefined> {
         try {
             return await this.lastViewedTable.getOneByPrimaryKey({ component, id });
-        } catch (error) {
+        } catch {
             // Not found.
         }
     }
@@ -2162,7 +2162,7 @@ export class CoreSite {
                 sqlParams: whereAndParams.params,
                 js: (record) => record.component === component && ids.includes(record.id),
             });
-        } catch (error) {
+        } catch {
             // Not found.
         }
     }
