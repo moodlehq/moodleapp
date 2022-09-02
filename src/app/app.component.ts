@@ -47,7 +47,6 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     @ViewChild(IonRouterOutlet) outlet?: IonRouterOutlet;
 
-    protected lastUrls: Record<string, number> = {};
     protected lastInAppUrl?: string;
 
     /**
@@ -156,30 +155,6 @@ export class AppComponent implements OnInit, AfterViewInit {
                 }
             }, 1000);
         });
-
-        // Handle app launched with a certain URL (custom URL scheme).
-        win.handleOpenURL = (url: string): void => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            NgZone.run(() => {
-                // First check that the URL hasn't been treated a few seconds ago. Sometimes this function is called more than once.
-                if (this.lastUrls[url] && Date.now() - this.lastUrls[url] < 3000) {
-                    // Function called more than once, stop.
-                    return;
-                }
-
-                if (!CoreCustomURLSchemes.isCustomURL(url)) {
-                    // Not a custom URL, ignore.
-                    return;
-                }
-
-                this.lastUrls[url] = Date.now();
-
-                CoreEvents.trigger(CoreEvents.APP_LAUNCHED_URL, { url });
-                CoreCustomURLSchemes.handleCustomURL(url).catch((error) => {
-                    CoreCustomURLSchemes.treatHandleCustomURLError(error);
-                });
-            });
-        };
 
         // "Expose" CoreWindow.open.
         win.openWindowSafely = (url: string, name?: string): void => {
