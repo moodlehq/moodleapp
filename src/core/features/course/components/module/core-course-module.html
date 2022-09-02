@@ -82,9 +82,8 @@
                     <!-- Activity dates. -->
                     <div *ngIf="showActivityDates && module.dates && module.dates.length" class="core-module-dates">
                         <p *ngFor="let date of module.dates">
-                            <ion-icon name="fas-calendar" aria-hidden="true"></ion-icon><strong>{{ date.label }}</strong> {{ date.timestamp
-                            *
-                            1000 | coreFormatDate:'strftimedatetime' }}
+                            <ion-icon name="fas-calendar" aria-hidden="true"></ion-icon><strong>{{ date.label }}</strong>
+                            {{ date.readableTime }}
                         </p>
                     </div>
 

@@ -50,6 +50,8 @@
     "previousactivity": "Previous activity",
     "previousactivitynotfound": "Previous activity not found. It's possible that it has been hidden or deleted.",
     "refreshcourse": "Refresh course",
+    "relativedatessubmissionduedateafter": "{{$a.datediffstr}} after course start",
+    "relativedatessubmissionduedatebefore": "{{$a.datediffstr}} before course start",
     "section": "Section",
     "startdate": "Course start date",
     "thisweek": "This week",

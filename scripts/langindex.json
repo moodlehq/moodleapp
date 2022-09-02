@@ -1582,6 +1582,8 @@
   "core.course.previousactivity": "local_moodlemobileapp",
   "core.course.previousactivitynotfound": "local_moodlemobileapp",
   "core.course.refreshcourse": "local_moodlemobileapp",
+  "core.course.relativedatessubmissionduedateafter": "course",
+  "core.course.relativedatessubmissionduedatebefore": "course",
   "core.course.section": "moodle",
   "core.course.startdate": "moodle",
   "core.course.thisweek": "format_weeks/currentsection",
