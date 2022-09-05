@@ -559,6 +559,16 @@ class behat_app extends behat_app_helper {
     }
 
     /**
+     * Check whether the moodle site is compatible with the current feature file
+     * and skip it otherwise. This will be checked looking at tags such as @lms_uptoXXX
+     *
+     * @Given the Moodle site is compatible with this feature
+     */
+    public function the_moodle_site_is_compatible_with_this_feature() {
+        $this->check_tags();
+    }
+
+    /**
      * Clicks on / touches something that is visible in the app.
      *
      * Note it is difficult to use the standard 'click on' or 'press' steps because those do not

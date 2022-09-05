@@ -34,8 +34,8 @@ Feature: Test basic usage of courses in app
       | choice   | Choice course 3 | Test choice description | C3     | choice1  | Option 1, Option 2, Option 3 |
       | choice   | Choice course 4 | Test choice description | C4     | choice1  | Option 1, Option 2, Option 3 |
     And the following "activities" exist:
-      | activity | course | idnumber | name                | intro                       | assignsubmission_onlinetext_enabled |
-      | assign   | C1     | assign1  | assignment          | Test assignment description | 1                                   |
+      | activity | course | idnumber | name                | intro                       | assignsubmission_onlinetext_enabled | duedate      | gradingduedate |
+      | assign   | C1     | assign1  | assignment          | Test assignment description | 1                                   | ##tomorrow## | ##tomorrow##   |
 
   @lms_from4.0
   Scenario: "Dashboard" tab displayed
@@ -113,21 +113,7 @@ Feature: Test basic usage of courses in app
     And I should find "Course 4" in the app
 
   @lms_from4.0
-  # TODO remove LMS UI steps in app tests
   Scenario: Links to actions in Timeline work for teachers/students
-    # Configure assignment as teacher
-    Given I entered the assign activity "assignment" on course "Course 1" as "teacher1" in the app
-    When I press "Information" in the app
-    And I press "Open in browser" in the app
-    And I switch to the browser tab opened by the app
-    And I log in as "teacher1"
-    And I navigate to "Settings" in current page administration
-    And I click on "Expand all" "link"
-    And I click on "duedate[enabled]" "checkbox"
-    And I click on "gradingduedate[enabled]" "checkbox"
-    And I press "Save and return to course"
-    And I close the browser tab opened by the app
-
     # Submit assignment as student
     Given I entered the app as "student1"
     When I press "Add submission" in the app

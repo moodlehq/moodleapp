@@ -22,25 +22,13 @@ Feature: Test basic usage of comments in app
     And the following "activities" exist:
       | activity | name      | intro        | course | idnumber | comments |
       | data     | Data      | Data info    | C1     | data1    | 1        |
+    And the following "mod_data > fields" exist:
+      | database | type | name              | description              |
+      | data1    | text | Test field name   | Test field description   |
 
-  # Skip in master until MDL-75353 is fixed
-  @lms_upto4.0
   Scenario: Add comments & Delete comments (database)
     # Create database entry and comment as a teacher
     Given I entered the data activity "Data" on course "Course 1" as "teacher1" in the app
-    And I press "Information" in the app
-    # TODO Create and use a generator for database fields.
-    And I press "Open in browser" in the app
-    And I switch to the browser tab opened by the app
-    And I log in as "teacher1"
-    And I add a "Text input" field to "Data" database and I fill the form with:
-        | Field name | Test field name |
-        | Field description | Test field description |
-    And I press "Save"
-    And I close the browser tab opened by the app
-    And I close the popup in the app
-
-    When I pull to refresh in the app
     And I press "Add entries" in the app
     And I set the field "Test field name" to "Test" in the app
     And I press "Save" in the app
@@ -76,22 +64,8 @@ Feature: Test basic usage of comments in app
     When I press the back button in the app
     Then I should find "Comments (1)" in the app
 
-  # Skip in master until MDL-75353 is fixed
-  @lms_upto4.0
   Scenario: Add comments offline & Delete comments offline & Sync comments (database)
     Given I entered the data activity "Data" on course "Course 1" as "teacher1" in the app
-    And I press "Information" in the app
-    And I press "Open in browser" in the app
-    And I switch to the browser tab opened by the app
-    And I log in as "teacher1"
-    And I add a "Text input" field to "Data" database and I fill the form with:
-        | Field name | Test field name |
-        | Field description | Test field description |
-    And I press "Save"
-    And I close the browser tab opened by the app
-    And I close the popup in the app
-
-    When I pull to refresh in the app
     And I press "Add entries" in the app
     And I set the field "Test field name" to "Test" in the app
     And I press "Save" in the app
