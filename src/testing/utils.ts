@@ -31,7 +31,7 @@ abstract class WrapperComponent<U> {
 
     child!: U;
 
-};
+}
 
 type ServiceInjectionToken = AbstractType<unknown> | Type<unknown> | string;
 

@@ -35,7 +35,7 @@ export enum CoreIonicColorNames {
     MEDIUM = 'medium',
     LIGHT = 'light',
     NONE = '',
-};
+}
 
 /**
  * Singleton with helper functions for colors.

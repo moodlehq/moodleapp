@@ -36,7 +36,7 @@ export const enum ModPurpose {
     MOD_PURPOSE_ADMINISTRATION = 'administration',
     MOD_PURPOSE_INTERFACE = 'interface',
     MOD_PURPOSE_OTHER = 'other',
-};
+}
 
 /**
  * Static class to contain all the core constants.
@@ -168,4 +168,4 @@ interface EnvironmentBuild {
     isDevelopment: boolean;
     lastCommitHash: string;
     compilationTime: number;
-};
+}

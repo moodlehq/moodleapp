@@ -259,4 +259,4 @@ export enum AddonModAssignListFilterName {
     NEED_GRADING = 'needgrading',
     DRAFT = 'draft',
     SUBMITTED = 'submitted',
-};
+}

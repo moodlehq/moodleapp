@@ -27,7 +27,7 @@ export enum CoreNetworkConnection {
     CELL_4G = '4g',
     CELL = 'cellular',
     NONE = 'none',
-};
+}
 
 /**
  * Service to manage network connections.

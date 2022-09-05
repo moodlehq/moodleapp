@@ -194,7 +194,7 @@ export class CoreCoursesCourseLinkHandlerService extends CoreContentLinksHandler
                 CoreSites.getCurrentSite()?.openInBrowserWithAutoLogin(url, undefined, { showBrowserWarning: false });
             } catch {
                 // User cancelled.
-            };
+            }
 
             throw new CoreError(notEnrolledMessage);
         }

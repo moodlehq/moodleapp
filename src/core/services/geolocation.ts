@@ -185,4 +185,4 @@ interface GeolocationPositionError {
     PERMISSION_DENIED: number; // eslint-disable-line @typescript-eslint/naming-convention
     POSITION_UNAVAILABLE: number; // eslint-disable-line @typescript-eslint/naming-convention
     TIMEOUT: number; // eslint-disable-line @typescript-eslint/naming-convention
-};
+}

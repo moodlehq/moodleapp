@@ -856,4 +856,4 @@ export class AddonQtypeDdImageOrTextQuestionDocStructure {
         return divDrag;
     }
 
-};
+}

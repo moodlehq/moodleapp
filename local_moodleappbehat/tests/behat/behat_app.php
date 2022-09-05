@@ -224,7 +224,7 @@ class behat_app extends behat_app_helper {
     public function i_swipe_in_the_app(string $direction) {
         $method = 'swipe' . ucwords($direction);
 
-        $this->runtime_js("getAngularInstance('ion-content', 'CoreSwipeNavigationDirective').$method()");
+        $this->zone_js("getAngularInstance('ion-content', 'CoreSwipeNavigationDirective').$method()");
 
         $this->wait_for_pending_js();
 
