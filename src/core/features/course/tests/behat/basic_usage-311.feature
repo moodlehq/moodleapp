@@ -72,7 +72,8 @@ Feature: Test basic usage of one course in app
       | workshop      | Test workshop name    | Test workshop     | C1     | workshop       | 0         | 3       |
 
   Scenario: Self enrol
-    Given I log in as "teacher1"
+    Given the Moodle site is compatible with this feature
+    And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I add "Self enrolment" enrolment method with:
       | Custom instance name | Student self enrolment |
