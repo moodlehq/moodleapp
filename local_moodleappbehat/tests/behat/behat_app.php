@@ -824,6 +824,18 @@ class behat_app extends behat_app_helper {
     }
 
     /**
+     * Switches to the app if the user is in a browser tab.
+     *
+     * @Given I switch back to the app
+     */
+    public function i_switch_back_to_the_app() {
+        $windowNames = $this->getSession()->getWindowNames();
+        if (count($windowNames) > 1) {
+            $this->getSession()->switchToWindow($windowNames[0]);
+        }
+    }
+
+    /**
      * Force cron tasks instead of waiting for the next scheduled execution.
      *
      * @When I run cron tasks in the app
