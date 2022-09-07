@@ -1446,6 +1446,15 @@ export class CoreLoginHelperProvider {
         return import('@features/login/pages/credentials/credentials.module').then(m => m.CoreLoginCredentialsPageModule);
     }
 
+    /**
+     * Retrieve login methods.
+     *
+     * @returns Login methods found.
+     */
+    async getLoginMethods(): Promise<CoreLoginMethod[]> {
+        return [];
+    }
+
 }
 
 export const CoreLoginHelper = makeSingleton(CoreLoginHelperProvider);
@@ -1560,3 +1569,9 @@ export type CoreLoginSiteSelectorListMethod =
     'sitefinder'|
     'list'|
     '';
+
+export type CoreLoginMethod = {
+    name: string; // Name of the login method.
+    icon: string; // Icon of the provider.
+    action: () => unknown; // Action to execute on button click.
+};
