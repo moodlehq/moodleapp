@@ -12,13 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export type CoreObjectWithoutEmpty<T> = {
-    [k in keyof T]: T[k] extends undefined | null ? never : T[k];
-};
+import { Pretty } from '@/core/utils/types';
 
-export type CoreObjectWithoutUndefined<T> = {
-    [k in keyof T]: T[k] extends undefined ? never : T[k];
-};
+type ValueWithoutEmpty<T> = T extends null | undefined ? never : T;
+type ValueWithoutUndefined<T> = T extends undefined ? never : T;
+
+export type CoreObjectWithoutEmpty<T> = Pretty<{
+    [k in keyof T]: ValueWithoutEmpty<T[k]>;
+}>;
+
+export type CoreObjectWithoutUndefined<T> = Pretty<{
+    [k in keyof T]: ValueWithoutUndefined<T[k]>;
+}>;
 
 /**
  * Singleton with helper functions for objects.
