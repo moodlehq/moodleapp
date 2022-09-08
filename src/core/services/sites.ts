@@ -84,6 +84,7 @@ export class CoreSitesProvider {
     protected sessionRestored = false;
     protected currentSite?: CoreSite;
     protected sites: { [s: string]: CoreSite } = {};
+    protected sitesMigrated: { [s: string]: boolean } = {};
     protected siteSchemasMigration: { [siteId: string]: Promise<void> } = {};
     protected siteSchemas: { [name: string]: CoreRegisteredSiteSchema } = {};
     protected pluginsSiteSchemas: { [name: string]: CoreRegisteredSiteSchema } = {};
@@ -128,7 +129,7 @@ export class CoreSitesProvider {
     async initializeDatabase(): Promise<void> {
         try {
             await CoreApp.createTablesFromSchema(APP_SCHEMA);
-        } catch (e) {
+        } catch {
             // Ignore errors.
         }
 
@@ -218,7 +219,9 @@ export class CoreSitesProvider {
 
         if (!CoreUrlUtils.isHttpURL(siteUrl)) {
             throw new CoreError(Translate.instant('core.login.invalidsite'));
-        } else if (!CoreNetwork.isOnline()) {
+        }
+
+        if (!CoreNetwork.isOnline()) {
             throw new CoreNetworkError();
         }
 
@@ -303,14 +306,18 @@ export class CoreSitesProvider {
                 errorDetails: Translate.instant('core.login.webservicesnotenabled'),
                 critical: true,
             });
-        } else if (!config.enablemobilewebservice) {
+        }
+
+        if (!config.enablemobilewebservice) {
             throw this.createCannotConnectLoginError(config.httpswwwroot || config.wwwroot, {
                 supportConfig: new CoreUserGuestSupportConfig(config),
                 errorcode: 'mobileservicesnotenabled',
                 errorDetails: Translate.instant('core.login.mobileservicesnotenabled'),
                 critical: true,
             });
-        } else if (config.maintenanceenabled) {
+        }
+
+        if (config.maintenanceenabled) {
             let message = Translate.instant('core.sitemaintenance');
             if (config.maintenancemessage) {
                 message += config.maintenancemessage;
@@ -497,39 +504,41 @@ export class CoreSitesProvider {
                     ? Translate.instant('core.siteunavailablehelp', { site: this.currentSite?.siteUrl })
                     : Translate.instant('core.sitenotfoundhelp'),
             );
-        } else {
-            if (data.token !== undefined) {
-                return { token: data.token, siteUrl, privateToken: data.privatetoken };
-            } else {
-                if (data.error !== undefined) {
-                    // We only allow one retry (to avoid loops).
-                    if (!retry && data.errorcode == 'requirecorrectaccess') {
-                        siteUrl = CoreUrlUtils.addOrRemoveWWW(siteUrl);
+        }
 
-                        return this.getUserToken(siteUrl, username, password, service, true);
-                    } else if (data.errorcode == 'missingparam') {
-                        // It seems the server didn't receive all required params, it could be due to a redirect.
-                        const redirect = await CoreUtils.checkRedirect(loginUrl);
+        if (data.token !== undefined) {
+            return { token: data.token, siteUrl, privateToken: data.privatetoken };
+        }
 
-                        if (redirect) {
-                            throw this.createCannotConnectLoginError(siteUrl, {
-                                supportConfig: await CoreUserGuestSupportConfig.forSite(siteUrl),
-                                errorcode: 'sitehasredirect',
-                                errorDetails: Translate.instant('core.login.sitehasredirect'),
-                            });
-                        }
-                    }
+        if (data.error === undefined) {
+            throw new CoreError(Translate.instant('core.login.invalidaccount'));
+        }
 
-                    throw this.createCannotConnectLoginError(siteUrl, {
-                        supportConfig: await CoreUserGuestSupportConfig.forSite(siteUrl),
-                        errorcode: data.errorcode,
-                        errorDetails: data.error,
-                    });
-                }
+        // We only allow one retry (to avoid loops).
+        if (!retry && data.errorcode == 'requirecorrectaccess') {
+            siteUrl = CoreUrlUtils.addOrRemoveWWW(siteUrl);
 
-                throw new CoreError(Translate.instant('core.login.invalidaccount'));
+            return this.getUserToken(siteUrl, username, password, service, true);
+        }
+
+        if (data.errorcode == 'missingparam') {
+            // It seems the server didn't receive all required params, it could be due to a redirect.
+            const redirect = await CoreUtils.checkRedirect(loginUrl);
+
+            if (redirect) {
+                throw this.createCannotConnectLoginError(siteUrl, {
+                    supportConfig: await CoreUserGuestSupportConfig.forSite(siteUrl),
+                    errorcode: 'sitehasredirect',
+                    errorDetails: Translate.instant('core.login.sitehasredirect'),
+                });
             }
         }
+
+        throw this.createCannotConnectLoginError(siteUrl, {
+            supportConfig: await CoreUserGuestSupportConfig.forSite(siteUrl),
+            errorcode: data.errorcode,
+            errorDetails: data.error,
+        });
     }
 
     /**
@@ -549,19 +558,19 @@ export class CoreSitesProvider {
         login: boolean = true,
         oauthId?: number,
     ): Promise<string> {
-        if (typeof login != 'boolean') {
+        if (typeof login !== 'boolean') {
             login = true;
         }
 
         // Create a "candidate" site to fetch the site info.
-        let candidateSite = CoreSitesFactory.makeSite(undefined, siteUrl, token, undefined, privateToken, undefined, undefined);
+        let candidateSite = CoreSitesFactory.makeSite(undefined, siteUrl, token, undefined, privateToken);
         let isNewSite = true;
 
         try {
             const info = await candidateSite.fetchSiteInfo();
 
             const result = this.isValidMoodleVersion(info);
-            if (result != CoreSitesProvider.VALID_VERSION) {
+            if (result !== CoreSitesProvider.VALID_VERSION) {
                 return this.treatInvalidAppVersion(result);
             }
 
@@ -1080,19 +1089,28 @@ export class CoreSitesProvider {
             }
 
             throw new CoreError('No current site found.');
-        } else if (this.currentSite && this.currentSite.getId() == siteId) {
-            return this.currentSite;
-        } else if (this.sites[siteId] !== undefined) {
-            return this.sites[siteId];
-        } else {
-            // Retrieve and create the site.
-            try {
-                const data = await this.sitesTable.getOneByPrimaryKey({ id: siteId });
+        }
 
-                return this.addSiteFromSiteListEntry(data);
-            } catch {
-                throw new CoreError('SiteId not found');
-            }
+        if (this.currentSite && this.currentSite.getId() === siteId) {
+            return this.currentSite;
+        }
+
+        if (this.sites[siteId] !== undefined) {
+            return this.sites[siteId];
+        }
+
+        // Retrieve and create the site.
+        let record: SiteDBEntry;
+        try {
+            record = await this.sitesTable.getOneByPrimaryKey({ id: siteId });
+        } catch {
+            throw new CoreError('SiteId not found.');
+        }
+
+        try {
+            return await this.addSiteFromSiteListEntry(record);
+        } catch {
+            throw new CoreError('Site database installation or update failed.');
         }
     }
 
@@ -1123,10 +1141,6 @@ export class CoreSitesProvider {
     async getSiteByUrl(siteUrl: string): Promise<CoreSite> {
         const data = await this.sitesTable.getOne({ siteUrl });
 
-        if (this.sites[data.id] !== undefined) {
-            return this.sites[data.id];
-        }
-
         return this.addSiteFromSiteListEntry(data);
     }
 
@@ -1148,16 +1162,20 @@ export class CoreSitesProvider {
      * @param entry Site list entry.
      * @return Promised resolved with the created site.
      */
-    addSiteFromSiteListEntry(entry: SiteDBEntry): Promise<CoreSite> {
+    async addSiteFromSiteListEntry(entry: SiteDBEntry): Promise<CoreSite> {
+        if (this.sites[entry.id] !== undefined) {
+            return this.sites[entry.id];
+        }
+
         // Parse info and config.
         const site = this.makeSiteFromSiteListEntry(entry);
 
-        return this.migrateSiteSchemas(site).then(() => {
-            // Set site after migrating schemas, or a call to getSite could get the site while tables are being created.
-            this.sites[entry.id] = site;
+        await this.migrateSiteSchemas(site);
 
-            return site;
-        });
+        // Set site after migrating schemas, or a call to getSite could get the site while tables are being created.
+        this.sites[entry.id] = site;
+
+        return site;
     }
 
     /**
@@ -1167,8 +1185,8 @@ export class CoreSitesProvider {
      * @return Site.
      */
     makeSiteFromSiteListEntry(entry: SiteDBEntry): CoreSite {
-        const info = entry.info ? <CoreSiteInfo> CoreTextUtils.parseJSON(entry.info) : undefined;
-        const config = entry.config ? <CoreSiteConfig> CoreTextUtils.parseJSON(entry.config) : undefined;
+        const info = entry.info ? CoreTextUtils.parseJSON<CoreSiteInfo>(entry.info) : undefined;
+        const config = entry.config ? CoreTextUtils.parseJSON<CoreSiteConfig>(entry.config) : undefined;
 
         const site = CoreSitesFactory.makeSite(
             entry.id,
@@ -1321,13 +1339,13 @@ export class CoreSitesProvider {
     async getSitesInstances(): Promise<CoreSite[]> {
         const siteIds = await this.getSitesIds();
 
-        return Promise.all(siteIds.map(async (siteId) => await this.getSite(siteId)));
+        return Promise.all(siteIds.map((siteId) => this.getSite(siteId)));
     }
 
     /**
      * Login the user in a site.
      *
-     * @param siteid ID of the site the user is accessing.
+     * @param siteId ID of the site the user is accessing.
      * @return Promise resolved when current site is stored.
      */
     async login(siteId: string): Promise<void> {
@@ -1479,7 +1497,7 @@ export class CoreSitesProvider {
     /**
      * Updates a site's info.
      *
-     * @param siteid Site's ID.
+     * @param siteId Site's ID.
      * @return A promise resolved when the site is updated.
      */
     async updateSiteInfo(siteId?: string): Promise<void> {
@@ -1500,7 +1518,7 @@ export class CoreSitesProvider {
 
             try {
                 config = await this.getSiteConfig(site);
-            } catch (error) {
+            } catch {
                 // Error getting config, keep the current one.
             }
 
@@ -1561,14 +1579,14 @@ export class CoreSitesProvider {
             if (CoreUrlUtils.isAbsoluteURL(url)) {
                 // It has some protocol. Return empty array.
                 return [];
-            } else {
-                // No protocol, probably a relative URL. Return current site.
-                if (this.currentSite) {
-                    return [this.currentSite.getId()];
-                } else {
-                    return [];
-                }
             }
+
+            // No protocol, probably a relative URL. Return current site.
+            if (this.currentSite) {
+                return [this.currentSite.getId()];
+            }
+
+            return [];
         }
 
         try {
@@ -1576,9 +1594,7 @@ export class CoreSitesProvider {
             const ids: string[] = [];
 
             await Promise.all(siteEntries.map(async (site) => {
-                if (!this.sites[site.id]) {
-                    await this.addSiteFromSiteListEntry(site);
-                }
+                await this.addSiteFromSiteListEntry(site);
 
                 if (this.sites[site.id].containsUrl(url)) {
                     if (!username || this.sites[site.id].getInfo()?.username === username) {
@@ -1694,24 +1710,30 @@ export class CoreSitesProvider {
      * @param site Site.
      * @return Promise resolved when done.
      */
-    migrateSiteSchemas(site: CoreSite): Promise<void> {
+    async migrateSiteSchemas(site: CoreSite): Promise<void> {
         if (!site.id) {
-            return Promise.resolve();
+            return;
         }
 
         const siteId = site.id;
 
-        if (this.siteSchemasMigration[site.id] !== undefined) {
-            return this.siteSchemasMigration[site.id];
+        if (this.siteSchemasMigration[siteId] !== undefined) {
+            return this.siteSchemasMigration[siteId];
         }
 
-        this.logger.debug(`Migrating all schemas of ${site.id}`);
+        if (this.sitesMigrated[siteId] !== undefined) {
+            throw new CoreError('Site already migrated.');
+        }
+
+        this.sitesMigrated[siteId] = true;
+
+        this.logger.debug(`Migrating all schemas of ${siteId}`);
 
         // First create tables not registerd with name/version.
         const promise = site.getDb().createTableFromSchema(SCHEMA_VERSIONS_TABLE_SCHEMA)
             .then(() => this.applySiteSchemas(site, this.siteSchemas));
 
-        this.siteSchemasMigration[site.id] = promise;
+        this.siteSchemasMigration[siteId] = promise;
 
         return promise.finally(() => {
             delete this.siteSchemasMigration[siteId];
@@ -1768,6 +1790,9 @@ export class CoreSitesProvider {
 
         if (schema.tables) {
             await db.createTablesFromSchema(schema.tables);
+        }
+        if (schema.install && oldVersion == 0) {
+            await schema.install(db, site.id);
         }
         if (schema.migrate && oldVersion > 0) {
             await schema.migrate(db, oldVersion, site.id);
@@ -2032,7 +2057,7 @@ export type CoreSiteSchema = {
     /**
      * Migrates the schema in a site to the latest version.
      *
-     * Called when installing and upgrading the schema, after creating the defined tables.
+     * Called when upgrading the schema, after creating the defined tables.
      *
      * @param db Site database.
      * @param oldVersion Old version of the schema or 0 if not installed.
@@ -2040,6 +2065,17 @@ export type CoreSiteSchema = {
      * @return Promise resolved when done.
      */
     migrate?(db: SQLiteDB, oldVersion: number, siteId: string): Promise<void> | void;
+
+    /**
+     * Make changes to install the schema in a site.
+     *
+     * Called when installing the schema, after creating the defined tables.
+     *
+     * @param db Site database.
+     * @param siteId Site Id to migrate.
+     * @return Promise resolved when done.
+     */
+    install?(db: SQLiteDB, siteId: string): Promise<void> | void;
 };
 
 /**
