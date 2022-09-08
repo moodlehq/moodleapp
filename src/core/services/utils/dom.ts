@@ -1553,14 +1553,18 @@ export class CoreDomUtilsProvider {
                 // Default buttons.
                 options.buttons = [
                     {
-                        text: buttons && 'cancelText' in buttons ? buttons.cancelText : Translate.instant('core.cancel'),
+                        text: buttons && 'cancelText' in buttons
+                            ? buttons.cancelText as string
+                            : Translate.instant('core.cancel'),
                         role: 'cancel',
                         handler: () => {
                             reject();
                         },
                     },
                     {
-                        text: buttons && 'okText' in buttons ? buttons.okText : Translate.instant('core.ok'),
+                        text: buttons && 'okText' in buttons
+                            ? buttons.okText as string
+                            : Translate.instant('core.ok'),
                         handler: resolvePromise,
                     },
                 ];
