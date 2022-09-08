@@ -125,7 +125,7 @@ export class CoreSite {
     protected lastAutoLogin = 0;
     protected offlineDisabled = false;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    protected ongoingRequests: { [cacheId: string]: Observable<any> } = {};
+    protected ongoingRequests: { [cacheId: string]: WSObservable<any> } = {};
     protected requestQueue: RequestQueueItem[] = [];
     protected requestQueueTimeout: number | null = null;
     protected tokenPluginFileWorks?: boolean;
@@ -504,10 +504,10 @@ export class CoreSite {
      * @param method WS method to use.
      * @param data Data to send to the WS.
      * @param preSets Extra options.
-     * @return Observable.
+     * @return Observable returning the WS data.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    readObservable<T = unknown>(method: string, data: any, preSets?: CoreSiteWSPreSets): Observable<T> {
+    readObservable<T = unknown>(method: string, data: any, preSets?: CoreSiteWSPreSets): WSObservable<T> {
         preSets = preSets || {};
         preSets.getFromCache = preSets.getFromCache ?? true;
         preSets.saveToCache = preSets.saveToCache ?? true;
@@ -535,10 +535,10 @@ export class CoreSite {
      * @param method WS method to use.
      * @param data Data to send to the WS.
      * @param preSets Extra options.
-     * @return Observable.
+     * @return Observable returning the WS data.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    writeObservable<T = unknown>(method: string, data: any, preSets?: CoreSiteWSPreSets): Observable<T> {
+    writeObservable<T = unknown>(method: string, data: any, preSets?: CoreSiteWSPreSets): WSObservable<T> {
         preSets = preSets || {};
         preSets.getFromCache = preSets.getFromCache ?? false;
         preSets.saveToCache = preSets.saveToCache ?? false;
@@ -566,7 +566,7 @@ export class CoreSite {
      * @param method The WebService method to be called.
      * @param data Arguments to pass to the method.
      * @param preSets Extra options.
-     * @return Observable
+     * @return Observable returning the WS data.
      * @description
      *
      * Sends a webservice request to the site. This method will automatically add the
@@ -576,7 +576,7 @@ export class CoreSite {
      * data hasn't expired.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    requestObservable<T = unknown>(method: string, data: any, preSets: CoreSiteWSPreSets): Observable<T> {
+    requestObservable<T = unknown>(method: string, data: any, preSets: CoreSiteWSPreSets): WSObservable<T> {
         if (this.isLoggedOut() && !ALLOWED_LOGGEDOUT_WS.includes(method)) {
             // Site is logged out, it cannot call WebServices.
             CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, {}, this.id);
@@ -665,14 +665,14 @@ export class CoreSite {
      * @param data Arguments to pass to the method.
      * @param preSets Extra options related to the site.
      * @param wsPreSets Extra options related to the WS call.
-     * @return Observable.
+     * @return Observable returning the WS data.
      */
     protected performRequest<T = unknown>(
         method: string,
         data: unknown,
         preSets: CoreSiteWSPreSets,
         wsPreSets: CoreWSPreSets,
-    ): Observable<T> {
+    ): WSObservable<T> {
         const subject = new Subject<T>();
 
         const run = async () => {
@@ -1903,9 +1903,9 @@ export class CoreSite {
      * @param readingStrategy Reading strategy.
      * @return Observable returning site config.
      */
-    getConfigObservable(name?: undefined, readingStrategy?: CoreSitesReadingStrategy): Observable<CoreSiteConfig>;
-    getConfigObservable(name: string, readingStrategy?: CoreSitesReadingStrategy): Observable<string>;
-    getConfigObservable(name?: string, readingStrategy?: CoreSitesReadingStrategy): Observable<string | CoreSiteConfig> {
+    getConfigObservable(name?: undefined, readingStrategy?: CoreSitesReadingStrategy): WSObservable<CoreSiteConfig>;
+    getConfigObservable(name: string, readingStrategy?: CoreSitesReadingStrategy): WSObservable<string>;
+    getConfigObservable(name?: string, readingStrategy?: CoreSitesReadingStrategy): WSObservable<string | CoreSiteConfig> {
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getConfigCacheKey(),
             ...CoreSites.getReadingStrategyPreSets(readingStrategy),
@@ -2403,7 +2403,7 @@ export function chainRequests<T, O extends ObservableInput<any>>(
     readingStrategy: CoreSitesReadingStrategy | undefined,
     callback: (data: T, readingStrategy?: CoreSitesReadingStrategy) => O,
 ): OperatorFunction<T, ObservedValueOf<O>> {
-    return (source: Observable<T>) => new Observable<{ data: T; readingStrategy?: CoreSitesReadingStrategy }>(subscriber => {
+    return (source: WSObservable<T>) => new Observable<{ data: T; readingStrategy?: CoreSitesReadingStrategy }>(subscriber => {
         let firstValue = true;
         let isCompleted = false;
 

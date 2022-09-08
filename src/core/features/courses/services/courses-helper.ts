@@ -26,10 +26,10 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreWSExternalFile } from '@services/ws';
 import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursecompletion';
 import moment from 'moment-timezone';
-import { Observable, of } from 'rxjs';
+import { of } from 'rxjs';
 import { firstValueFrom, zipIncludingComplete } from '@/core/utils/rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { chainRequests } from '@classes/site';
+import { chainRequests, WSObservable } from '@classes/site';
 
 /**
  * Helper to gather some common courses functions.
@@ -134,7 +134,7 @@ export class CoreCoursesHelperProvider {
         courses: CoreEnrolledCourseDataWithExtraInfo[],
         loadCategoryNames: boolean = false,
         options: CoreSitesCommonWSOptions = {},
-    ): Observable<CoreEnrolledCourseDataWithExtraInfo[]> {
+    ): WSObservable<CoreEnrolledCourseDataWithExtraInfo[]> {
         if (!courses.length) {
             return of([]);
         }
@@ -245,7 +245,7 @@ export class CoreCoursesHelperProvider {
      */
     getUserCoursesWithOptionsObservable(
         options: CoreCoursesGetWithOptionsOptions = {},
-    ): Observable<CoreEnrolledCourseDataWithExtraInfoAndOptions[]> {
+    ): WSObservable<CoreEnrolledCourseDataWithExtraInfoAndOptions[]> {
 
         return CoreCourses.getUserCoursesObservable(options).pipe(
             chainRequests(options.readingStrategy, (courses, newReadingStrategy) => {
@@ -338,7 +338,7 @@ export class CoreCoursesHelperProvider {
     protected loadCourseCompletedStatus(
         course: CoreEnrolledCourseDataWithExtraInfo,
         options: CoreSitesCommonWSOptions = {},
-    ): Observable<CoreEnrolledCourseDataWithExtraInfo> {
+    ): WSObservable<CoreEnrolledCourseDataWithExtraInfo> {
         if (course.completed !== undefined) {
             // The WebService already returns the completed status, no need to fetch it.
             return of(course);

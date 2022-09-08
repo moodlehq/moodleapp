@@ -17,12 +17,11 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreCourses } from '@features/courses/services/courses';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite, CoreSiteWSPreSets, WSObservable } from '@classes/site';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { asyncObservable, firstValueFrom } from '@/core/utils/rxjs';
-import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 const ROOT_CACHE_KEY = 'mmaCourseCompletion:';
@@ -119,7 +118,7 @@ export class AddonCourseCompletionProvider {
     getCompletionObservable(
         courseId: number,
         options: AddonCourseCompletionGetCompletionOptions = {},
-    ): Observable<AddonCourseCompletionCourseCompletionStatus> {
+    ): WSObservable<AddonCourseCompletionCourseCompletionStatus> {
         return asyncObservable(async () => {
             const site = await CoreSites.getSite(options.siteId);
 

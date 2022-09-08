@@ -14,12 +14,11 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite, CoreSiteWSPreSets, WSObservable } from '@classes/site';
 import { CoreCourseBlock } from '@features/course/services/course';
 import { CoreStatusWithWarningsWSResponse } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreError } from '@classes/errors/error';
-import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { asyncObservable, firstValueFrom } from '@/core/utils/rxjs';
 
@@ -73,7 +72,7 @@ export class CoreCoursesDashboardProvider {
      * @return Observable that returns the list of blocks.
      * @since 3.6
      */
-    getDashboardBlocksFromWSObservable(options: GetDashboardBlocksOptions = {}): Observable<CoreCourseBlock[]> {
+    getDashboardBlocksFromWSObservable(options: GetDashboardBlocksOptions = {}): WSObservable<CoreCourseBlock[]> {
         return asyncObservable(async () => {
             const site = await CoreSites.getSite(options.siteId);
 
@@ -142,7 +141,7 @@ export class CoreCoursesDashboardProvider {
      * @param options Options.
      * @return observable that returns the list of blocks.
      */
-    getDashboardBlocksObservable(options: GetDashboardBlocksOptions = {}): Observable<CoreCoursesDashboardBlocks> {
+    getDashboardBlocksObservable(options: GetDashboardBlocksOptions = {}): WSObservable<CoreCoursesDashboardBlocks> {
         return this.getDashboardBlocksFromWSObservable(options).pipe(map(blocks => {
             let mainBlocks: CoreCourseBlock[] = [];
             let sideBlocks: CoreCourseBlock[] = [];

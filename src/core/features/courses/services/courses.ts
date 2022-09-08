@@ -14,14 +14,14 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite, CoreSiteWSPreSets, WSObservable } from '@classes/site';
 import { makeSingleton } from '@singletons';
 import { CoreStatusWithWarningsWSResponse, CoreWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { CoreEvents } from '@singletons/events';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreCourseAnyCourseDataWithExtraInfoAndOptions, CoreCourseWithImageAndColor } from './courses-helper';
 import { asyncObservable, firstValueFrom, ignoreErrors, zipIncludingComplete } from '@/core/utils/rxjs';
-import { of, Observable } from 'rxjs';
+import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 const ROOT_CACHE_KEY = 'mmCourses:';
@@ -510,7 +510,7 @@ export class CoreCoursesProvider {
         field: string = '',
         value: string | number = '',
         options: CoreSitesCommonWSOptions = {},
-    ): Observable<CoreCourseSearchedData[]> {
+    ): WSObservable<CoreCourseSearchedData[]> {
         return asyncObservable(async () => {
             const siteId = options.siteId || CoreSites.getCurrentSiteId();
             const originalValue = value;
@@ -617,7 +617,7 @@ export class CoreCoursesProvider {
         customFieldName: string,
         customFieldValue: string,
         options: CoreSitesCommonWSOptions,
-    ): Observable<CoreCourseSummaryData[]> {
+    ): WSObservable<CoreCourseSummaryData[]> {
         return asyncObservable(async () => {
             const site = await CoreSites.getSite(options. siteId);
 
@@ -685,7 +685,7 @@ export class CoreCoursesProvider {
     getCoursesAdminAndNavOptionsObservable(
         courseIds: number[],
         options: CoreSitesCommonWSOptions = {},
-    ): Observable<{
+    ): WSObservable<{
             navOptions: CoreCourseUserAdminOrNavOptionCourseIndexed;
             admOptions: CoreCourseUserAdminOrNavOptionCourseIndexed;
         }> {
@@ -780,7 +780,7 @@ export class CoreCoursesProvider {
     getUserAdministrationOptionsObservable(
         courseIds: number[],
         options: CoreSitesCommonWSOptions = {},
-    ): Observable<CoreCourseUserAdminOrNavOptionCourseIndexed> {
+    ): WSObservable<CoreCourseUserAdminOrNavOptionCourseIndexed> {
         if (!courseIds || courseIds.length == 0) {
             return of({});
         }
@@ -847,7 +847,7 @@ export class CoreCoursesProvider {
     getUserNavigationOptionsObservable(
         courseIds: number[],
         options: CoreSitesCommonWSOptions = {},
-    ): Observable<CoreCourseUserAdminOrNavOptionCourseIndexed> {
+    ): WSObservable<CoreCourseUserAdminOrNavOptionCourseIndexed> {
         if (!courseIds || courseIds.length == 0) {
             return of({});
         }
@@ -939,10 +939,10 @@ export class CoreCoursesProvider {
     ): Promise<CoreEnrolledCourseData[]> {
         strategy = strategy ?? (preferCache ? CoreSitesReadingStrategy.PREFER_CACHE : undefined);
 
-        return this.getUserCoursesObservable({
+        return firstValueFrom(this.getUserCoursesObservable({
             readingStrategy: strategy,
             siteId,
-        }).toPromise();
+        }));
     }
 
     /**
@@ -951,7 +951,7 @@ export class CoreCoursesProvider {
      * @param options Options.
      * @return Observable that returns the courses.
      */
-    getUserCoursesObservable(options: CoreSitesCommonWSOptions = {}): Observable<CoreEnrolledCourseData[]> {
+    getUserCoursesObservable(options: CoreSitesCommonWSOptions = {}): WSObservable<CoreEnrolledCourseData[]> {
         return asyncObservable(async () => {
             const site = await CoreSites.getSite(options.siteId);
 

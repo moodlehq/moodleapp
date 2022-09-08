@@ -21,7 +21,7 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreSiteWSPreSets, CoreSite } from '@classes/site';
+import { CoreSiteWSPreSets, CoreSite, WSObservable } from '@classes/site';
 import { CoreConstants } from '@/core/constants';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
@@ -54,7 +54,6 @@ import { CoreDatabaseCachingStrategy } from '@classes/database/database-table-pr
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CorePlatform } from '@services/platform';
 import { CoreTime } from '@singletons/time';
-import { Observable } from 'rxjs';
 import { asyncObservable, firstValueFrom } from '@/core/utils/rxjs';
 import { map } from 'rxjs/operators';
 
@@ -417,7 +416,7 @@ export class CoreCourseProvider {
      * @return Observable that returns the blocks.
      * @since 3.7
      */
-    getCourseBlocksObservable(courseId: number, options: CoreSitesCommonWSOptions = {}): Observable<CoreCourseBlock[]> {
+    getCourseBlocksObservable(courseId: number, options: CoreSitesCommonWSOptions = {}): WSObservable<CoreCourseBlock[]> {
         return asyncObservable(async () => {
             const site = await CoreSites.getSite(options.siteId);
 
@@ -955,7 +954,7 @@ export class CoreCourseProvider {
     getSectionsObservable(
         courseId: number,
         options: CoreCourseGetSectionsOptions = {},
-    ): Observable<CoreCourseWSSection[]> {
+    ): WSObservable<CoreCourseWSSection[]> {
         options.includeStealthModules = options.includeStealthModules ?? true;
 
         return asyncObservable(async () => {
