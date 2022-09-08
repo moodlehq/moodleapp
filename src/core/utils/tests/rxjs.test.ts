@@ -234,4 +234,29 @@ describe('RXJS Utils', () => {
         });
     });
 
+    it('zipIncludingComplete emits all pending values when last observable completes', () => {
+        const scheduler = new TestScheduler((actual, expected) => {
+            expect(actual).toEqual(expected);
+        });
+
+        scheduler.run(({ expectObservable, cold }) => {
+            expectObservable(zipIncludingComplete(
+                cold('-a-b-|', {
+                    a: 'A1',
+                    b: 'A2',
+                    c: 'A3',
+                }),
+                cold('-a-----|', {
+                    a: 'B1',
+                }),
+            )).toBe(
+                '-a-----(b|)',
+                {
+                    a: ['A1','B1'],
+                    b: ['A2','B1'],
+                },
+            );
+        });
+    });
+
 });
