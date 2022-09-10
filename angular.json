@@ -118,7 +118,7 @@
           }
         },
         "ionic-cordova-build": {
-          "builder": "@ionic/angular-toolkit:cordova-build",
+          "builder": "@ionic/cordova-builders:cordova-build",
           "options": {
             "browserTarget": "app:build"
           },
@@ -145,6 +145,7 @@
     }
   },
   "cli": {
+    "analytics": "ffb73033-26bb-4c53-bd06-1e1cdf68b03b",
     "defaultCollection": "@ionic/angular-toolkit"
   },
   "schematics": {
