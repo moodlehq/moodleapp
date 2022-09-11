@@ -1,4 +1,4 @@
-Moodle App
+The IELTS Daily Challenge
 =================
 
 This is the primary repository of source code for the official mobile app for Moodle.
