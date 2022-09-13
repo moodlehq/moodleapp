@@ -672,9 +672,14 @@ export class CorePushNotificationsProvider {
 
             const pushObject = Push.init(options);
 
-            pushObject.on('notification').subscribe((notification: NotificationEventResponse) => {
+            pushObject.on('notification').subscribe((notification: NotificationEventResponse | {registrationType: string}) => {
                 // Execute the callback in the Angular zone, so change detection doesn't stop working.
                 NgZone.run(() => {
+                    if ('registrationType' in notification) {
+                        // Not a valid notification, ignore.
+                        return;
+                    }
+
                     this.logger.log('Received a notification', notification);
                     this.onMessageReceived(notification);
                 });
