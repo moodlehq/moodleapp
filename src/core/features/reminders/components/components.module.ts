@@ -12,27 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
-
 import { CoreSharedModule } from '@/core/shared.module';
-
-import { AddonCalendarCalendarComponent } from './calendar/calendar';
-import { AddonCalendarUpcomingEventsComponent } from './upcoming-events/upcoming-events';
-import { AddonCalendarFilterComponent } from './filter/filter';
+import { NgModule } from '@angular/core';
+import { CoreRemindersSetReminderCustomComponent } from './set-reminder-custom/set-reminder-custom';
+import { CoreRemindersSetReminderMenuComponent } from './set-reminder-menu/set-reminder-menu';
 
 @NgModule({
     declarations: [
-        AddonCalendarCalendarComponent,
-        AddonCalendarUpcomingEventsComponent,
-        AddonCalendarFilterComponent,
+        CoreRemindersSetReminderMenuComponent,
+        CoreRemindersSetReminderCustomComponent,
     ],
     imports: [
         CoreSharedModule,
     ],
     exports: [
-        AddonCalendarCalendarComponent,
-        AddonCalendarUpcomingEventsComponent,
-        AddonCalendarFilterComponent,
+        CoreRemindersSetReminderMenuComponent,
+        CoreRemindersSetReminderCustomComponent,
     ],
 })
-export class AddonCalendarComponentsModule {}
+export class CoreRemindersComponentsModule {}

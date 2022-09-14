@@ -1138,7 +1138,7 @@ export class CoreDomUtilsProvider {
     /**
      * Show an alert modal with a button to close it.
      *
-     * @param title Title to show.
+     * @param header Title to show.
      * @param message Message to show.
      * @param buttonText Text of the button.
      * @param autocloseTime Number of milliseconds to wait to close the modal. If not defined, modal won't be closed.
@@ -1230,7 +1230,7 @@ export class CoreDomUtilsProvider {
     /**
      * Show an alert modal with a button to close it, translating the values supplied.
      *
-     * @param title Title to show.
+     * @param header Title to show.
      * @param message Message to show.
      * @param buttonText Text of the button.
      * @param autocloseTime Number of milliseconds to wait to close the modal. If not defined, modal won't be closed.
@@ -1669,7 +1669,6 @@ export class CoreDomUtilsProvider {
      * @param needsTranslate Whether the 'text' needs to be translated.
      * @param duration Duration in ms of the dimissable toast.
      * @param cssClass Class to add to the toast.
-     * @param dismissOnPageChange Dismiss the Toast on page change.
      * @return Toast instance.
      */
     async showToast(

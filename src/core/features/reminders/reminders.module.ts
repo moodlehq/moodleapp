@@ -14,6 +14,7 @@
 
 import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
+import { CoreRemindersComponentsModule } from './components/components.module';
 import { REMINDERS_SITE_SCHEMA } from './services/database/reminders';
 import { CoreReminders, CoreRemindersService } from './services/reminders';
 
@@ -23,6 +24,7 @@ export const CORE_REMINDERS_SERVICES: Type<unknown>[] = [
 
 @NgModule({
     imports: [
+        CoreRemindersComponentsModule,
     ],
     providers: [
         {

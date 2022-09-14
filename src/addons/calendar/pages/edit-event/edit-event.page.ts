@@ -31,7 +31,6 @@ import {
     AddonCalendarEventType,
     AddonCalendar,
     AddonCalendarSubmitCreateUpdateFormDataWSParams,
-    AddonCalendarReminderUnits,
 } from '../../services/calendar';
 import { AddonCalendarOffline } from '../../services/calendar-offline';
 import { AddonCalendarEventTypeOption, AddonCalendarHelper } from '../../services/calendar-helper';
@@ -45,7 +44,8 @@ import { CoreNavigator } from '@services/navigator';
 import { CanLeave } from '@guards/can-leave';
 import { CoreForms } from '@singletons/form';
 import { CoreLocalNotifications } from '@services/local-notifications';
-import { AddonCalendarReminderTimeModalComponent } from '@addons/calendar/components/reminder-time-modal/reminder-time-modal';
+import { CoreReminders, CoreRemindersService, CoreRemindersUnits } from '@features/reminders/services/reminders';
+import { CoreRemindersSetReminderMenuComponent } from '@features/reminders/components/set-reminder-menu/set-reminder-menu';
 
 /**
  * Page that displays a form to create/edit an event.
@@ -134,7 +134,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.eventId = CoreNavigator.getRouteNumberParam('eventId') || undefined;
@@ -657,13 +657,13 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
             return;
         }
 
-        const data = AddonCalendarProvider.convertSecondsToValueAndUnit(defaultTime);
+        const data = CoreRemindersService.convertSecondsToValueAndUnit(defaultTime);
 
         // Add default reminder.
         this.reminders.push({
             value: data.value,
             unit: data.unit,
-            label: AddonCalendar.getUnitValueLabel(data.value, data.unit, true),
+            label: CoreReminders.getUnitValueLabel(data.value, data.unit, true),
         });
     }
 
@@ -671,8 +671,9 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
      * Add a reminder.
      */
     async addReminder(): Promise<void> {
-        const reminderTime = await CoreDomUtils.openModal<number>({
-            component: AddonCalendarReminderTimeModalComponent,
+        const reminderTime = await CoreDomUtils.openPopover<{timeBefore: number}>({
+            component: CoreRemindersSetReminderMenuComponent,
+            // TODO: Add event to open the popover in place.
         });
 
         if (reminderTime === undefined) {
@@ -680,14 +681,14 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
             return;
         }
 
-        const data = AddonCalendarProvider.convertSecondsToValueAndUnit(reminderTime);
+        const data = CoreRemindersService.convertSecondsToValueAndUnit(reminderTime.timeBefore);
 
         // Add reminder.
         this.reminders.push({
-            time: reminderTime,
+            time: reminderTime.timeBefore,
             value: data.value,
             unit: data.unit,
-            label: AddonCalendar.getUnitValueLabel(data.value, data.unit),
+            label: CoreReminders.getUnitValueLabel(data.value, data.unit),
         });
     }
 
@@ -704,7 +705,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
     }
 
     /**
-     * Page destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.unblockSync();
@@ -716,6 +717,6 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 type AddonCalendarEventCandidateReminder =  {
     time?: number; // Undefined for default reminder.
     value: number; // Amount of time.
-    unit: AddonCalendarReminderUnits; // Units.
+    unit: CoreRemindersUnits; // Units.
     label: string; // Label to represent the reminder.
 };

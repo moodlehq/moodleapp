@@ -46,6 +46,8 @@ import {
     CoreReminders,
     CoreRemindersPushNotificationData,
     CoreRemindersService,
+    CoreRemindersUnits,
+    CoreReminderValueAndUnit,
 } from '@features/reminders/services/reminders';
 import { CoreReminderDBRecord } from '@features/reminders/services/database/reminders';
 
@@ -64,6 +66,8 @@ export enum AddonCalendarEventType {
 
 /**
  * Units to set a reminder.
+ *
+ * @deprecated since 4.1 Use CoreReminderUnits instead.
  */
 export enum AddonCalendarReminderUnits {
     MINUTE = CoreConstants.SECONDS_MINUTE,
@@ -91,21 +95,6 @@ declare module '@singletons/events' {
 
 }
 
-const REMINDER_UNITS_LABELS = {
-    single: {
-        [AddonCalendarReminderUnits.MINUTE]: 'core.minute',
-        [AddonCalendarReminderUnits.HOUR]: 'core.hour',
-        [AddonCalendarReminderUnits.DAY]: 'core.day',
-        [AddonCalendarReminderUnits.WEEK]: 'core.week',
-    },
-    multi: {
-        [AddonCalendarReminderUnits.MINUTE]: 'core.minutes',
-        [AddonCalendarReminderUnits.HOUR]: 'core.hours',
-        [AddonCalendarReminderUnits.DAY]: 'core.days',
-        [AddonCalendarReminderUnits.WEEK]: 'core.weeks',
-    },
-};
-
 /**
  * Service to handle calendar events.
  */
@@ -127,7 +116,7 @@ export class AddonCalendarProvider {
     static readonly CALENDAR_TF_24 = '%H:%M'; // Calendar time in 24 hours format.
     static readonly CALENDAR_TF_12 = '%I:%M %p'; // Calendar time in 12 hours format.
 
-    static readonly DEFAULT_NOTIFICATION_DISABLED = 0;
+    static readonly DEFAULT_NOTIFICATION_DISABLED = -1;
 
     protected weekDays: AddonCalendarWeekDaysTranslationKeys[] = [
         {
@@ -196,34 +185,10 @@ export class AddonCalendarProvider {
      *
      * @param seconds Number of seconds.
      * @return Value and unit.
+     * @deprecated since 4.1 Use CoreRemindersService.convertSecondsToValueAndUnit instead.
      */
-    static convertSecondsToValueAndUnit(seconds: number): AddonCalendarValueAndUnit {
-        if (seconds <= 0) {
-            return {
-                value: 0,
-                unit: AddonCalendarReminderUnits.MINUTE,
-            };
-        } else if (seconds % AddonCalendarReminderUnits.WEEK === 0) {
-            return {
-                value: seconds / AddonCalendarReminderUnits.WEEK,
-                unit: AddonCalendarReminderUnits.WEEK,
-            };
-        } else if (seconds % AddonCalendarReminderUnits.DAY === 0) {
-            return {
-                value: seconds / AddonCalendarReminderUnits.DAY,
-                unit: AddonCalendarReminderUnits.DAY,
-            };
-        } else if (seconds % AddonCalendarReminderUnits.HOUR === 0) {
-            return {
-                value: seconds / AddonCalendarReminderUnits.HOUR,
-                unit: AddonCalendarReminderUnits.HOUR,
-            };
-        } else {
-            return {
-                value: seconds / AddonCalendarReminderUnits.MINUTE,
-                unit: AddonCalendarReminderUnits.MINUTE,
-            };
-        }
+    static convertSecondsToValueAndUnit(seconds: number): CoreReminderValueAndUnit {
+        return CoreRemindersService.convertSecondsToValueAndUnit(seconds);
     }
 
     /**
@@ -1140,26 +1105,10 @@ export class AddonCalendarProvider {
      * @param unit Unit.
      * @param addDefaultLabel Whether to add the "Default" text.
      * @return Translated label.
+     * @deprecated since 4.1 Use CoreReminders.getUnitValueLabel instead.
      */
-    getUnitValueLabel(value: number, unit: AddonCalendarReminderUnits, addDefaultLabel = false): string {
-        if (value === 0) {
-            return Translate.instant('core.settings.disabled');
-        }
-
-        const unitsLabel = value === 1 ?
-            REMINDER_UNITS_LABELS.single[unit] :
-            REMINDER_UNITS_LABELS.multi[unit];
-
-        const label = Translate.instant('addon.calendar.timebefore', {
-            units: Translate.instant(unitsLabel),
-            value: value,
-        });
-
-        if (addDefaultLabel) {
-            return Translate.instant('core.defaultvalue', { $a: label });
-        }
-
-        return label;
+    getUnitValueLabel(value: number, unit: CoreRemindersUnits, addDefaultLabel = false): string {
+        return CoreReminders.getUnitValueLabel(value, unit, addDefaultLabel);
     }
 
     /**
@@ -2318,11 +2267,10 @@ export type AddonCalendarUpdatedEventEvent = {
 
 /**
  * Value and unit for reminders.
+ *
+ * @deprecated since 4.1, use CoreReminderValueAndUnit instead.
  */
-export type AddonCalendarValueAndUnit = {
-    value: number;
-    unit: AddonCalendarReminderUnits;
-};
+export type AddonCalendarValueAndUnit = CoreReminderValueAndUnit;
 
 /**
  * Options to pass to submit event.

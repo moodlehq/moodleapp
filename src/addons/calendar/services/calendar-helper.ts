@@ -337,8 +337,8 @@ export class AddonCalendarHelperProvider {
         let defaultLabel: string | undefined;
 
         if (defaultTime > AddonCalendarProvider.DEFAULT_NOTIFICATION_DISABLED) {
-            const data = AddonCalendarProvider.convertSecondsToValueAndUnit(defaultTime);
-            defaultLabel = AddonCalendar.getUnitValueLabel(data.value, data.unit, true);
+            const data = CoreRemindersService.convertSecondsToValueAndUnit(defaultTime);
+            defaultLabel = CoreReminders.getUnitValueLabel(data.value, data.unit, true);
         }
 
         return reminders.map((reminder) => {
@@ -353,8 +353,8 @@ export class AddonCalendarHelperProvider {
                     formatted.timestamp = eventTimestart - defaultTime;
                 }
             } else {
-                const data = AddonCalendarProvider.convertSecondsToValueAndUnit(reminder.timebefore);
-                formatted.label = AddonCalendar.getUnitValueLabel(data.value, data.unit, false);
+                const data = CoreRemindersService.convertSecondsToValueAndUnit(reminder.timebefore);
+                formatted.label = CoreReminders.getUnitValueLabel(data.value, data.unit, false);
                 formatted.timestamp = eventTimestart - reminder.timebefore;
             }
 

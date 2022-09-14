@@ -17,10 +17,36 @@ import { Injectable } from '@angular/core';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreSites } from '@services/sites';
 import { CoreTimeUtils } from '@services/utils/time';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreReminderDBRecord, REMINDERS_TABLE } from './database/reminders';
 import { ILocalNotification } from '@ionic-native/local-notifications';
 import { CorePlatform } from '@services/platform';
+import { CoreConstants } from '@/core/constants';
+
+/**
+ * Units to set a reminder.
+ */
+export enum CoreRemindersUnits {
+    MINUTE = CoreConstants.SECONDS_MINUTE,
+    HOUR = CoreConstants.SECONDS_HOUR,
+    DAY = CoreConstants.SECONDS_DAY,
+    WEEK = CoreConstants.SECONDS_WEEK,
+}
+
+const REMINDER_UNITS_LABELS = {
+    single: {
+        [CoreRemindersUnits.MINUTE]: 'core.minute',
+        [CoreRemindersUnits.HOUR]: 'core.hour',
+        [CoreRemindersUnits.DAY]: 'core.day',
+        [CoreRemindersUnits.WEEK]: 'core.week',
+    },
+    multi: {
+        [CoreRemindersUnits.MINUTE]: 'core.minutes',
+        [CoreRemindersUnits.HOUR]: 'core.hours',
+        [CoreRemindersUnits.DAY]: 'core.days',
+        [CoreRemindersUnits.WEEK]: 'core.weeks',
+    },
+};
 
 /**
  * Service to handle reminders.
@@ -274,6 +300,80 @@ export class CoreRemindersService {
         }));
     }
 
+    /**
+     * Given a value and a unit, return the translated label.
+     *
+     * @param value Value.
+     * @param unit Unit.
+     * @param addDefaultLabel Whether to add the "Default" text.
+     * @return Translated label.
+     */
+    getUnitValueLabel(value: number, unit: CoreRemindersUnits, addDefaultLabel = false): string {
+        if (value === AddonCalendarProvider.DEFAULT_NOTIFICATION_DISABLED) {
+            // TODO: It will need a migration of date to set 0 to -1 when needed.
+            return Translate.instant('core.settings.disabled');
+        }
+
+        if (value === 0) {
+            return Translate.instant('core.reminders.atthetime');
+        }
+
+        const unitsLabel = value === 1 ?
+            REMINDER_UNITS_LABELS.single[unit] :
+            REMINDER_UNITS_LABELS.multi[unit];
+
+        const label = Translate.instant('core.reminders.timebefore', {
+            units: Translate.instant(unitsLabel),
+            value: value,
+        });
+
+        if (addDefaultLabel) {
+            return Translate.instant('core.defaultvalue', { $a: label });
+        }
+
+        return label;
+    }
+
+    /**
+     * Given a number of seconds, convert it to a unit&value format compatible with reminders.
+     *
+     * @param seconds Number of seconds.
+     * @return Value and unit.
+     */
+    static convertSecondsToValueAndUnit(seconds?: number): CoreReminderValueAndUnit {
+        if (seconds === undefined || seconds < 0) {
+            return {
+                value: AddonCalendarProvider.DEFAULT_NOTIFICATION_DISABLED,
+                unit: CoreRemindersUnits.MINUTE,
+            };
+        } else if (seconds === 0) {
+            return {
+                value: 0,
+                unit: CoreRemindersUnits.MINUTE,
+            };
+        } else if (seconds % CoreRemindersUnits.WEEK === 0) {
+            return {
+                value: seconds / CoreRemindersUnits.WEEK,
+                unit: CoreRemindersUnits.WEEK,
+            };
+        } else if (seconds % CoreRemindersUnits.DAY === 0) {
+            return {
+                value: seconds / CoreRemindersUnits.DAY,
+                unit: CoreRemindersUnits.DAY,
+            };
+        } else if (seconds % CoreRemindersUnits.HOUR === 0) {
+            return {
+                value: seconds / CoreRemindersUnits.HOUR,
+                unit: CoreRemindersUnits.HOUR,
+            };
+        } else {
+            return {
+                value: seconds / CoreRemindersUnits.MINUTE,
+                unit: CoreRemindersUnits.MINUTE,
+            };
+        }
+    }
+
 }
 
 export const CoreReminders = makeSingleton(CoreRemindersService);
@@ -291,6 +391,14 @@ export type CoreRemindersPushNotificationData = {
 
 export type CoreReminderNotificationOptions = {
     title: string;
+};
+
+/**
+ * Value and unit for reminders.
+ */
+export type CoreReminderValueAndUnit = {
+    value: number;
+    unit: CoreRemindersUnits;
 };
 
 export type CoreReminderSelector = {

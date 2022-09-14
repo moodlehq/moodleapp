@@ -98,7 +98,6 @@ export class CoreContentLinksHelperProvider {
      * @param pageName Name of the page to go.
      * @param pageParams Params to send to the page.
      * @param siteId Site ID. If not defined, current site.
-     * @param checkMenu If true, check if the root page of a main menu tab. Only the page name will be checked.
      * @return Promise resolved when done.
      * @deprecated since 3.9.5. Use CoreNavigator.navigateToSitePath instead.
      */
