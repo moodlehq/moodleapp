@@ -76,17 +76,20 @@
             {{ 'core.login.forgotten' | translate }}
         </ion-button>
 
+        <!-- Login methods -->
+        <core-login-methods></core-login-methods>
+
         <!-- Identity providers. -->
-        <ion-list *ngIf="identityProviders && identityProviders.length" class="ion-padding-top core-login-identity-providers">
+        <ion-list *ngIf="identityProviders?.length" class="ion-padding-top core-login-identity-providers">
             <ion-item class="ion-text-wrap">
                 <ion-label>
                     <h3 class="item-heading">{{ 'core.login.potentialidps' | translate }}</h3>
                 </ion-label>
             </ion-item>
-            <ion-button fill="outline" *ngFor="let provider of identityProviders" class="ion-text-wrap ion-margin core-oauth-provider"
+            <ion-button [fill]="'outline'" *ngFor="let provider of identityProviders" class="ion-text-wrap ion-margin core-oauth-provider"
                 (click)="oauthClicked(provider)" [attr.aria-label]="provider.name" expand="block">
                 <img [src]="provider.iconurl" alt="" width="32" height="32" slot="start">
-                <ion-label>{{provider.name}}</ion-label>
+                <ion-label>{{ provider.name }}</ion-label>
             </ion-button>
         </ion-list>
 

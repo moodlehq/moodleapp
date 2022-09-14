@@ -17,12 +17,14 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreLoginSiteOnboardingComponent } from './site-onboarding/site-onboarding';
 import { CoreLoginSiteHelpComponent } from './site-help/site-help';
 import { CoreLoginSitesComponent } from './sites/sites';
+import { CoreLoginMethodsComponent } from './login-methods/login-methods';
 
 @NgModule({
     declarations: [
         CoreLoginSiteOnboardingComponent,
         CoreLoginSiteHelpComponent,
         CoreLoginSitesComponent,
+        CoreLoginMethodsComponent,
     ],
     imports: [
         CoreSharedModule,
@@ -31,6 +33,7 @@ import { CoreLoginSitesComponent } from './sites/sites';
         CoreLoginSiteOnboardingComponent,
         CoreLoginSiteHelpComponent,
         CoreLoginSitesComponent,
+        CoreLoginMethodsComponent,
     ],
 })
 export class CoreLoginComponentsModule {}
