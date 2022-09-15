@@ -146,7 +146,7 @@
                         <ion-label position="stacked">
                             <span core-mark-required="true">{{ 'core.user.' + nameField | translate }}</span>
                         </ion-label>
-                        <ion-input type="text" name="nameField" placeholder="{{ 'core.user.' + nameField | translate }}"
+                        <ion-input type="text" [name]="nameField" placeholder="{{ 'core.user.' + nameField | translate }}"
                             formControlName="{{nameField}}" autocorrect="off">
                         </ion-input>
                         <core-input-errors [control]="signupForm.controls[nameField]" [errorMessages]="namefieldsErrors![nameField]">
