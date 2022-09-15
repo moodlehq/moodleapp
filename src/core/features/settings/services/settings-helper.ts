@@ -459,9 +459,10 @@ export class CoreSettingsHelperProvider {
      * @param enable True to enable dark mode, false to disable.
      */
     protected toggleDarkMode(enable: boolean = false): void {
-        const isDark = document.body.classList.contains('dark');
+        const isDark = CoreDomUtils.hasModeClass('dark');
+
         if (isDark !== enable) {
-            document.body.classList.toggle('dark', enable);
+            CoreDomUtils.toggleModeClass('dark', enable);
             this.darkModeObservable.next(enable);
 
             CoreApp.setStatusBarColor();

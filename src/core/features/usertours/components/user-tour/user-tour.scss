@@ -57,6 +57,6 @@
 
 }
 
-:host-context(body.dark) {
+:host-context(html.dark) {
     --popover-background: var(--gray-700);
 }

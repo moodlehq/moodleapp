@@ -35,7 +35,7 @@
     }
 }
 
-:host-context(body.dark) {
+:host-context(html.dark) {
     .addon-mod_h5pactivity-result-table-row.item:nth-child(even) {
         --background: var(--gray-900);
     }

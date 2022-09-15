@@ -29,7 +29,7 @@
 }
 
 
-:host-context(body.dark) {
+:host-context(html.dark) {
     --button-background: rgba(0, 0, 0, 0.3);
 }
 

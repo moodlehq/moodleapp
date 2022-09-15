@@ -5,7 +5,7 @@
  * http://ionicframework.com/docs/theming/
  */
 
-:root {
+html {
 
     // Color palette
     --black: #{$black};
@@ -44,7 +44,7 @@
     --ion-color-step-1000: var(--black);
 
     @each $color-name, $unused in $colors {
-        @include generate-color($color-name, $colors);
+        @include generate-color($color-name, $colors, 'light');
     }
 
     // Accessibility vars.

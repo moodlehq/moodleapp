@@ -5,7 +5,7 @@
  * http://ionicframework.com/docs/theming/
  */
 
-:root body.dark {
+html.dark {
 
     // Ionic shades, defined for ionic internal use.
     --ion-color-step-0:    var(--black);
@@ -29,6 +29,10 @@
     --ion-color-step-900:  var(--gray-100);
     --ion-color-step-950:  var(--gray-100);
     --ion-color-step-1000: var(--white);
+
+    @each $color-name, $unused in $colors {
+        @include generate-color($color-name, $colors, 'dark');
+    }
 
     --ion-background-color:     #{$background-color-dark};
     --ion-background-color-rgb: #{$background-color-dark-rgb};
