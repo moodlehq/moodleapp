@@ -8,6 +8,6 @@
     }
 }
 
-:host-context(body.dark) {
+:host-context(html.dark) {
     --mod-icon-filter: brightness(0) invert(1);
 }

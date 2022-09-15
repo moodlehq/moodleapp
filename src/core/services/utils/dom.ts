@@ -1945,6 +1945,38 @@ export class CoreDomUtilsProvider {
         return this.waitForResizeDone(windowWidth, windowHeight, retries+1);
     }
 
+    /**
+     * Check whether a CSS class indicating an app mode is set.
+     *
+     * @param className Class name.
+     * @return Whether the CSS class is set.
+     */
+    hasModeClass(className: string): boolean {
+        return document.documentElement.classList.contains(className);
+    }
+
+    /**
+     * Get active mode CSS classes.
+     *
+     * @return Mode classes.
+     */
+    getModeClasses(): string[] {
+        return Array.from(document.documentElement.classList);
+    }
+
+    /**
+     * Toggle a CSS class in the root element used to indicate app modes.
+     *
+     * @param className Class name.
+     * @param enable Whether to add or remove the class.
+     */
+    toggleModeClass(className: string, enable?: boolean): void {
+        document.documentElement.classList.toggle(className, enable);
+
+        // @deprecated since 4.1
+        document.body.classList.toggle(className, enable);
+    }
+
 }
 
 /**

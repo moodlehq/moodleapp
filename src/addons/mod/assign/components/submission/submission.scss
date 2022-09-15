@@ -40,7 +40,7 @@
     }
 }
 
-:host-context(body.dark) ::ng-deep {
+:host-context(html.dark) ::ng-deep {
     ion-item.submissioneditable p {
         color: var(--danger-tint);
     }

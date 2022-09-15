@@ -56,7 +56,7 @@ $addon-mod-wiki-toc-level-padding:    12px !default;
     }
 }
 
-:host-context(body.dark) {
+:host-context(html.dark) {
     --addon-mod-wiki-newentry-link-color: var(--danger-tint);
     --addon-mod-wiki-toc-background-color: var(--medium);
 }

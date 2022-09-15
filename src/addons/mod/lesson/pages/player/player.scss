@@ -2,7 +2,7 @@
    --background-odd: var(--light);
 }
 
-:host-context(body.dark) {
+:host-context(html.dark) {
    --background-odd: var(--medium);
 }
 

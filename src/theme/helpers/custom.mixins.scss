@@ -25,17 +25,15 @@
   // Generates the color classes and variables based on the
   // colors map
 
-  @mixin generate-color($color-name, $colors) {
-      $base: map-get($colors, $color-name);
-      $light: map-get($base, 'light');
+  @mixin generate-color($color-name, $colors, $theme) {
+      $color-themes: map-get($colors, $color-name);
+      $base: map-get($color-themes, $theme);
 
-      @include generate-color-variants($color-name, $light);
-
-      body.dark {
-          $dark: map-get($base, 'dark');
-          $dark: mix($light, white, 80%) !default;
-          @include generate-color-variants($color-name, $dark);
+      @if $theme == 'dark' {
+          $base: mix(map-get($color-themes, 'light'), white, 80%) !default;
       }
+
+      @include generate-color-variants($color-name, $base);
   }
 
   @mixin generate-color-variants($color-name, $base) {
@@ -210,7 +208,7 @@
 @mixin darkmode() {
     $root: #{&};
 
-    @at-root #{add-root-selector($root, "body.dark")} {
+    @at-root #{add-root-selector($root, "html.dark")} {
         @content;
     }
 }

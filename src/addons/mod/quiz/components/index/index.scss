@@ -20,7 +20,7 @@
     }
 }
 
-:host-context(body.dark) {
+:host-context(html.dark) {
     .addon-mod_quiz-table {
         .addon-mod_quiz-highlighted,
         .item.addon-mod_quiz-highlighted,
