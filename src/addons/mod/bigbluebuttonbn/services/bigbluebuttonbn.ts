@@ -151,7 +151,7 @@ export class AddonModBBBService {
     async getMeetingInfo(
         id: number,
         groupId: number = 0,
-        options: CoreCourseCommonModWSOptions = {},
+        options: AddonModBBBGetMeetingInfoOptions = {},
     ): Promise<AddonModBBBMeetingInfoWSResponse> {
         const site = await CoreSites.getSite(options.siteId);
 
@@ -161,10 +161,16 @@ export class AddonModBBBService {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getMeetingInfoCacheKey(id, groupId),
+            getCacheUsingCacheKey: true,
+            uniqueCacheKey: true,
             component: AddonModBBBService.COMPONENT,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
+        if (options.updateCache) {
+            params.updatecache = true;
+            preSets.getFromCache = false;
+        }
 
         return site.read<AddonModBBBMeetingInfoWSResponse>(
             'mod_bigbluebuttonbn_meeting_info',
@@ -379,4 +385,11 @@ export type AddonModBBBViewBigBlueButtonBNWSParams = {
 export type AddonModBBBEndMeetingWSParams = {
     bigbluebuttonbnid: number; // Bigbluebuttonbn instance id.
     groupid?: number; // Bigbluebuttonbn group id.
+};
+
+/**
+ * Options for getMeetingInfo.
+ */
+export type AddonModBBBGetMeetingInfoOptions = CoreCourseCommonModWSOptions & {
+    updateCache?: boolean;
 };

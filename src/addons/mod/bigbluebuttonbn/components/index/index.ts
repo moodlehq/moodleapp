@@ -17,6 +17,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { IonContent } from '@ionic/angular';
+import { CoreApp } from '@services/app';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
@@ -79,9 +80,10 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
     /**
      * Get meeting info.
      *
+     * @param updateCache Whether to update info cached data (in server).
      * @return Promise resolved when done.
      */
-    async fetchMeetingInfo(): Promise<void> {
+    async fetchMeetingInfo(updateCache?: boolean): Promise<void> {
         if (!this.bbb) {
             return;
         }
@@ -89,6 +91,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
         try {
             this.meetingInfo = await AddonModBBB.getMeetingInfo(this.bbb.id, this.groupId, {
                 cmId: this.module.id,
+                updateCache,
             });
 
             if (this.meetingInfo.statusrunning && this.meetingInfo.userlimit > 0) {
@@ -120,9 +123,10 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
     /**
      * Update meeting info.
      *
+     * @param updateCache Whether to update info cached data (in server).
      * @return Promise resolved when done.
      */
-    async updateMeetingInfo(): Promise<void> {
+    async updateMeetingInfo(updateCache?: boolean): Promise<void> {
         if (!this.bbb) {
             return;
         }
@@ -132,7 +136,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
         try {
             await AddonModBBB.invalidateAllGroupsMeetingInfo(this.bbb.id);
 
-            await this.fetchMeetingInfo();
+            await this.fetchMeetingInfo(updateCache);
         } finally {
             this.showLoading = false;
         }
@@ -182,11 +186,14 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
         try {
             const joinUrl = await AddonModBBB.getJoinUrl(this.module.id, this.groupId);
 
-            CoreUtils.openInBrowser(joinUrl, {
+            await CoreUtils.openInBrowser(joinUrl, {
                 showBrowserWarning: false,
             });
 
-            this.updateMeetingInfo();
+            // Leave some time for the room to load.
+            await CoreApp.waitForResume(10000);
+
+            this.updateMeetingInfo(true);
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
         } finally {
