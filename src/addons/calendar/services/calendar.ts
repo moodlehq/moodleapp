@@ -1384,10 +1384,6 @@ export class AddonCalendarProvider {
     async updateAllSitesEventReminders(): Promise<void> {
         await CorePlatform.ready();
 
-        if (!CoreLocalNotifications.isAvailable()) {
-            return;
-        }
-
         const siteIds = await CoreSites.getSitesIds();
 
         await Promise.all(siteIds.map((siteId: string) => async () => {
@@ -1430,11 +1426,6 @@ export class AddonCalendarProvider {
         events: ({ id: number; timestart: number; name: string})[],
         siteId: string,
     ): Promise<void> {
-
-        if (!CoreLocalNotifications.isAvailable()) {
-            return;
-        }
-
         await Promise.all(events.map(async (event) => {
             if (event.timestart * 1000 <= Date.now()) {
                 // The event has already started, don't schedule it.

@@ -25,6 +25,7 @@ import { FileOpener } from '@ionic-native/file-opener/ngx';
 import { FileTransfer } from '@ionic-native/file-transfer/ngx';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
+import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
 import { MediaCapture } from '@ionic-native/media-capture/ngx';
 import { Zip } from '@ionic-native/zip/ngx';
 
@@ -36,9 +37,11 @@ import { FileOpenerMock } from './services/file-opener';
 import { FileTransferMock } from './services/file-transfer';
 import { GeolocationMock } from './services/geolocation';
 import { InAppBrowserMock } from './services/inappbrowser';
+import { LocalNotificationsMock } from './services/local-notifications';
 import { MediaCaptureMock } from './services/media-capture';
 import { ZipMock } from './services/zip';
 import { CorePlatform } from '@services/platform';
+import { CoreLocalNotifications } from '@services/local-notifications';
 
 /**
  * This module handles the emulation of Cordova plugins in browser and desktop.
@@ -89,6 +92,12 @@ import { CorePlatform } from '@services/platform';
         {
             provide: Zip,
             useFactory: (): Zip => CorePlatform.is('cordova') ? new Zip() : new ZipMock(),
+        },
+        {
+            provide: LocalNotifications,
+            useFactory: (): LocalNotifications => CoreLocalNotifications.isPluginAvailable()
+                ? new LocalNotifications()
+                : new LocalNotificationsMock(),
         },
         {
             provide: APP_INITIALIZER,

@@ -15,8 +15,8 @@
                     iconAction="fas-th-list" (action)="toggleDisplay()"></core-context-menu-item>
                 <core-context-menu-item *ngIf="!showCalendar" [priority]="800" [content]="'addon.calendar.monthlyview' | translate"
                     iconAction="fas-calendar-alt" (action)="toggleDisplay()"></core-context-menu-item>
-                <core-context-menu-item [hidden]="!notificationsEnabled" [priority]="600" [content]="'core.settings.settings' | translate"
-                    (action)="openSettings()" iconAction="fas-cogs">
+                <core-context-menu-item [priority]="600" [content]="'core.settings.settings' | translate" (action)="openSettings()"
+                    iconAction="fas-cogs">
                 </core-context-menu-item>
                 <core-context-menu-item [hidden]="!loaded || !hasOffline || !isOnline" [priority]="400"
                     [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(undefined, $event, true)"

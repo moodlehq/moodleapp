@@ -67,7 +67,7 @@ export class CoreRemindersService {
      * @return Promise resolved when done.
      */
     async initialize(): Promise<void> {
-        if (!CoreLocalNotifications.isAvailable()) {
+        if (!this.isEnabled()) {
             return;
         }
 
@@ -92,7 +92,7 @@ export class CoreRemindersService {
      * @return True if reminders are enabled and available, false otherwise.
      */
     isEnabled(): boolean {
-        return CoreLocalNotifications.isAvailable();
+        return true;
     }
 
     /**
@@ -314,7 +314,8 @@ export class CoreRemindersService {
     async scheduleAllNotifications(): Promise<void> {
         await CorePlatform.ready();
 
-        if (!this.isEnabled()) {
+        if (CoreLocalNotifications.isPluginAvailable()) {
+            // Notifications are already scheduled.
             return;
         }
 
