@@ -66,6 +66,35 @@ export class CoreObject {
     }
 
     /**
+     * Return an object including only certain keys.
+     *
+     * @param obj Object.
+     * @param keysOrRegex If array is supplied, keys to include. Otherwise, regular expression used to filter keys.
+     * @return New object with only the specified keys.
+     */
+    static only<T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K>;
+    static only<T>(obj: T, regex: RegExp): Partial<T>;
+    static only<T, K extends keyof T>(obj: T, keysOrRegex: K[] | RegExp): Pick<T, K> | Partial<T> {
+        const newObject: Partial<T> = {};
+
+        if (Array.isArray(keysOrRegex)) {
+            for (const key of keysOrRegex) {
+                newObject[key] = obj[key];
+            }
+        } else {
+            const originalKeys = Object.keys(obj);
+
+            for (const key of originalKeys) {
+                if (key.match(keysOrRegex)) {
+                    newObject[key] = obj[key];
+                }
+            }
+        }
+
+        return newObject;
+    }
+
+    /**
      * Create a new object without the specified keys.
      *
      * @param obj Object.

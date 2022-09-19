@@ -21,6 +21,8 @@ import { CoreCourseBlock } from '../../course/services/course';
 import { Params } from '@angular/router';
 import { ContextLevel } from '@/core/constants';
 import { CoreNavigationOptions } from '@services/navigator';
+import { AsyncComponent } from '@classes/async-component';
+import { CorePromisedValue } from '@classes/promised-value';
 
 /**
  * Template class to easily create components for blocks.
@@ -28,7 +30,7 @@ import { CoreNavigationOptions } from '@services/navigator';
 @Component({
     template: '',
 })
-export abstract class CoreBlockBaseComponent implements OnInit, ICoreBlockComponent {
+export abstract class CoreBlockBaseComponent implements OnInit, ICoreBlockComponent, AsyncComponent {
 
     @Input() title!: string; // The block title.
     @Input() block!: CoreCourseBlock; // The block to render.
@@ -38,8 +40,9 @@ export abstract class CoreBlockBaseComponent implements OnInit, ICoreBlockCompon
     @Input() linkParams?: Params; // Link params to go when clicked.
     @Input() navOptions?: CoreNavigationOptions; // Navigation options.
 
-    loaded = false; // If the component has been loaded.
+    loaded = false; // If false, the UI should display a loading.
     protected fetchContentDefaultError = ''; // Default error to show when loading contents.
+    protected onReadyPromise = new CorePromisedValue<void>();
 
     protected logger: CoreLogger;
 
@@ -65,9 +68,14 @@ export abstract class CoreBlockBaseComponent implements OnInit, ICoreBlockCompon
     /**
      * Perform the refresh content function.
      *
+     * @param showLoading Whether to show loading.
      * @return Resolved when done.
      */
-    protected async refreshContent(): Promise<void> {
+    protected async refreshContent(showLoading?: boolean): Promise<void> {
+        if (showLoading) {
+            this.loaded = false;
+        }
+
         // Wrap the call in a try/catch so the workflow isn't interrupted if an error occurs.
         try {
             await this.invalidateContent();
@@ -102,6 +110,7 @@ export abstract class CoreBlockBaseComponent implements OnInit, ICoreBlockCompon
         }
 
         this.loaded = true;
+        this.onReadyPromise.resolve();
     }
 
     /**
@@ -111,6 +120,28 @@ export abstract class CoreBlockBaseComponent implements OnInit, ICoreBlockCompon
      */
     protected async fetchContent(): Promise<void> {
         return;
+    }
+
+    /**
+     * Reload content without invalidating data.
+     *
+     * @return Promise resolved when done.
+     */
+    async reloadContent(): Promise<void> {
+        if (!this.loaded) {
+            // Content being loaded, don't do anything.
+            return;
+        }
+
+        this.loaded = false;
+        await this.loadContent();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async ready(): Promise<void> {
+        return await this.onReadyPromise;
     }
 
 }

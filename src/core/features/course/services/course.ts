@@ -21,7 +21,7 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreSiteWSPreSets, CoreSite } from '@classes/site';
+import { CoreSiteWSPreSets, CoreSite, WSObservable } from '@classes/site';
 import { CoreConstants } from '@/core/constants';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
@@ -54,6 +54,8 @@ import { CoreDatabaseCachingStrategy } from '@classes/database/database-table-pr
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CorePlatform } from '@services/platform';
 import { CoreTime } from '@singletons/time';
+import { asyncObservable, firstValueFrom } from '@/core/utils/rxjs';
+import { map } from 'rxjs/operators';
 
 const ROOT_CACHE_KEY = 'mmCourse:';
 
@@ -402,19 +404,36 @@ export class CoreCourseProvider {
      * @return Promise resolved with the list of blocks.
      * @since 3.7
      */
-    async getCourseBlocks(courseId: number, siteId?: string): Promise<CoreCourseBlock[]> {
-        const site = await CoreSites.getSite(siteId);
-        const params: CoreBlockGetCourseBlocksWSParams = {
-            courseid: courseId,
-            returncontents: true,
-        };
-        const preSets: CoreSiteWSPreSets = {
-            cacheKey: this.getCourseBlocksCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
-        };
-        const result = await site.read<CoreCourseBlocksWSResponse>('core_block_get_course_blocks', params, preSets);
+    getCourseBlocks(courseId: number, siteId?: string): Promise<CoreCourseBlock[]> {
+        return firstValueFrom(this.getCourseBlocksObservable(courseId, { siteId }));
+    }
 
-        return result.blocks || [];
+    /**
+     * Get course blocks.
+     *
+     * @param courseId Course ID.
+     * @param options Options.
+     * @return Observable that returns the blocks.
+     * @since 3.7
+     */
+    getCourseBlocksObservable(courseId: number, options: CoreSitesCommonWSOptions = {}): WSObservable<CoreCourseBlock[]> {
+        return asyncObservable(async () => {
+            const site = await CoreSites.getSite(options.siteId);
+
+            const params: CoreBlockGetCourseBlocksWSParams = {
+                courseid: courseId,
+                returncontents: true,
+            };
+            const preSets: CoreSiteWSPreSets = {
+                cacheKey: this.getCourseBlocksCacheKey(courseId),
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
+            };
+
+            return site.readObservable<CoreCourseBlocksWSResponse>('core_block_get_course_blocks', params, preSets).pipe(
+                map(result => result.blocks),
+            );
+        });
     }
 
     /**
@@ -908,7 +927,7 @@ export class CoreCourseProvider {
      * @param includeStealthModules Whether to include stealth modules. Defaults to true.
      * @return The reject contains the error message, else contains the sections.
      */
-    async getSections(
+    getSections(
         courseId: number,
         excludeModules: boolean = false,
         excludeContents: boolean = false,
@@ -916,61 +935,81 @@ export class CoreCourseProvider {
         siteId?: string,
         includeStealthModules: boolean = true,
     ): Promise<CoreCourseWSSection[]> {
-
-        const site = await CoreSites.getSite(siteId);
-        preSets = preSets || {};
-        preSets.cacheKey = this.getSectionsCacheKey(courseId);
-        preSets.updateFrequency = preSets.updateFrequency || CoreSite.FREQUENCY_RARELY;
-
-        const params: CoreCourseGetContentsParams = {
-            courseid: courseId,
-        };
-        params.options = [
-            {
-                name: 'excludemodules',
-                value: excludeModules,
-            },
-            {
-                name: 'excludecontents',
-                value: excludeContents,
-            },
-        ];
-
-        if (this.canRequestStealthModules(site)) {
-            params.options.push({
-                name: 'includestealthmodules',
-                value: includeStealthModules,
-            });
-        }
-
-        let sections: CoreCourseGetContentsWSSection[];
-        try {
-            sections = await site.read('core_course_get_contents', params, preSets);
-        } catch {
-            // Error getting the data, it could fail because we added a new parameter and the call isn't cached.
-            // Retry without the new parameter and forcing cache.
-            preSets.omitExpires = true;
-            params.options.splice(-1, 1);
-            sections = await site.read('core_course_get_contents', params, preSets);
-        }
-
-        const siteHomeId = site.getSiteHomeId();
-        let showSections = true;
-        if (courseId == siteHomeId) {
-            const storedNumSections = site.getStoredConfig('numsections');
-            showSections = storedNumSections !== undefined && !!storedNumSections;
-        }
-
-        if (showSections !== undefined && !showSections && sections.length > 0) {
-            // Get only the last section (Main menu block section).
-            sections.pop();
-        }
-
-        // Add course to all modules.
-        return sections.map((section) => ({
-            ...section,
-            modules: section.modules.map((module) => this.addAdditionalModuleData(module, courseId, section.id)),
+        return firstValueFrom(this.getSectionsObservable(courseId, {
+            excludeModules,
+            excludeContents,
+            includeStealthModules,
+            preSets,
+            siteId,
         }));
+    }
+
+    /**
+     * Get the course sections.
+     *
+     * @param courseId The course ID.
+     * @param options Options.
+     * @return Observable that returns the sections.
+     */
+    getSectionsObservable(
+        courseId: number,
+        options: CoreCourseGetSectionsOptions = {},
+    ): WSObservable<CoreCourseWSSection[]> {
+        options.includeStealthModules = options.includeStealthModules ?? true;
+
+        return asyncObservable(async () => {
+            const site = await CoreSites.getSite(options.siteId);
+
+            const preSets: CoreSiteWSPreSets = {
+                ...options.preSets,
+                cacheKey: this.getSectionsCacheKey(courseId),
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
+            };
+
+            const params: CoreCourseGetContentsParams = {
+                courseid: courseId,
+            };
+            params.options = [
+                {
+                    name: 'excludemodules',
+                    value: !!options.excludeModules,
+                },
+                {
+                    name: 'excludecontents',
+                    value: !!options.excludeContents,
+                },
+            ];
+
+            if (this.canRequestStealthModules(site)) {
+                params.options.push({
+                    name: 'includestealthmodules',
+                    value: !!options.includeStealthModules,
+                });
+            }
+
+            return site.readObservable<CoreCourseGetContentsWSSection[]>('core_course_get_contents', params, preSets).pipe(
+                map(sections => {
+                    const siteHomeId = site.getSiteHomeId();
+                    let showSections = true;
+                    if (courseId == siteHomeId) {
+                        const storedNumSections = site.getStoredConfig('numsections');
+                        showSections = storedNumSections !== undefined && !!storedNumSections;
+                    }
+
+                    if (showSections !== undefined && !showSections && sections.length > 0) {
+                        // Get only the last section (Main menu block section).
+                        sections.pop();
+                    }
+
+                    // Add course to all modules.
+                    return sections.map((section) => ({
+                        ...section,
+                        modules: section.modules.map((module) => this.addAdditionalModuleData(module, courseId, section.id)),
+                    }));
+                }),
+            );
+        });
     }
 
     /**
@@ -1932,4 +1971,14 @@ export type CoreCourseStoreModuleViewedOptions = {
     sectionId?: number;
     timeaccess?: number;
     siteId?: string;
+};
+
+/**
+ * Options for getSections.
+ */
+export type CoreCourseGetSectionsOptions = CoreSitesCommonWSOptions & {
+    excludeModules?: boolean;
+    excludeContents?: boolean;
+    includeStealthModules?: boolean; // Defaults to true.
+    preSets?: CoreSiteWSPreSets;
 };

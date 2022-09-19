@@ -13,12 +13,14 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreSites } from '@services/sites';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
+import { CoreSite, CoreSiteWSPreSets, WSObservable } from '@classes/site';
 import { CoreCourseBlock } from '@features/course/services/course';
 import { CoreStatusWithWarningsWSResponse } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreError } from '@classes/errors/error';
+import { map } from 'rxjs/operators';
+import { asyncObservable, firstValueFrom } from '@/core/utils/rxjs';
 
 const ROOT_CACHE_KEY = 'CoreCoursesDashboard:';
 
@@ -51,40 +53,66 @@ export class CoreCoursesDashboardProvider {
      * @return Promise resolved with the list of blocks.
      * @since 3.6
      */
-    async getDashboardBlocksFromWS(
+    getDashboardBlocksFromWS(
         myPage = CoreCoursesDashboardProvider.MY_PAGE_DEFAULT,
         userId?: number,
         siteId?: string,
     ): Promise<CoreCourseBlock[]> {
-        const site = await CoreSites.getSite(siteId);
+        return firstValueFrom(this.getDashboardBlocksFromWSObservable({
+            myPage,
+            userId,
+            siteId,
+        }));
+    }
 
-        const params: CoreBlockGetDashboardBlocksWSParams = {
-            returncontents: true,
-        };
-        if (CoreSites.getRequiredCurrentSite().isVersionGreaterEqualThan('4.0')) {
-            params.mypage = myPage;
-        } else if (myPage != CoreCoursesDashboardProvider.MY_PAGE_DEFAULT) {
-            throw new CoreError('mypage param is no accessible on core_block_get_dashboard_blocks');
-        }
+    /**
+     * Get dashboard blocks from WS.
+     *
+     * @param options Options.
+     * @return Observable that returns the list of blocks.
+     * @since 3.6
+     */
+    getDashboardBlocksFromWSObservable(options: GetDashboardBlocksOptions = {}): WSObservable<CoreCourseBlock[]> {
+        return asyncObservable(async () => {
+            const site = await CoreSites.getSite(options.siteId);
 
-        const preSets: CoreSiteWSPreSets = {
-            cacheKey: this.getDashboardBlocksCacheKey(myPage, userId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
-        };
-        if (userId) {
-            params.userid = userId;
-        }
-        const result = await site.read<CoreBlockGetDashboardBlocksWSResponse>('core_block_get_dashboard_blocks', params, preSets);
+            const myPage = options.myPage ?? CoreCoursesDashboardProvider.MY_PAGE_DEFAULT;
+            const params: CoreBlockGetDashboardBlocksWSParams = {
+                returncontents: true,
+            };
+            if (CoreSites.getRequiredCurrentSite().isVersionGreaterEqualThan('4.0')) {
+                params.mypage = myPage;
+            } else if (myPage != CoreCoursesDashboardProvider.MY_PAGE_DEFAULT) {
+                throw new CoreError('mypage param is no accessible on core_block_get_dashboard_blocks');
+            }
 
-        if (site.isVersionGreaterEqualThan('4.0')) {
-            // Temporary hack to have course overview on 3.9.5 but not on 4.0 onwards.
-            // To be removed in a near future.
-            // Remove myoverview when is forced. See MDL-72092.
-            result.blocks = result.blocks.filter((block) =>
-                block.instanceid != 0 || block.name != 'myoverview' || block.region != 'forced');
-        }
+            const preSets: CoreSiteWSPreSets = {
+                cacheKey: this.getDashboardBlocksCacheKey(myPage, options.userId),
+                updateFrequency: CoreSite.FREQUENCY_RARELY,
+                ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
+            };
+            if (options.userId) {
+                params.userid = options.userId;
+            }
 
-        return result.blocks || [];
+            const observable = site.readObservable<CoreBlockGetDashboardBlocksWSResponse>(
+                'core_block_get_dashboard_blocks',
+                params,
+                preSets,
+            );
+
+            return observable.pipe(map(result => {
+                if (site.isVersionGreaterEqualThan('4.0')) {
+                    // Temporary hack to have course overview on 3.9.5 but not on 4.0 onwards.
+                    // To be removed in a near future.
+                    // Remove myoverview when is forced. See MDL-72092.
+                    result.blocks = result.blocks.filter((block) =>
+                        block.instanceid != 0 || block.name != 'myoverview' || block.region != 'forced');
+                }
+
+                return result.blocks || [];
+            }));
+        });
     }
 
     /**
@@ -95,39 +123,52 @@ export class CoreCoursesDashboardProvider {
      * @param myPage What my page to return blocks of. Default MY_PAGE_DEFAULT.
      * @return Promise resolved with the list of blocks.
      */
-    async getDashboardBlocks(
+    getDashboardBlocks(
         userId?: number,
         siteId?: string,
         myPage = CoreCoursesDashboardProvider.MY_PAGE_DEFAULT,
     ): Promise<CoreCoursesDashboardBlocks> {
-        const blocks = await this.getDashboardBlocksFromWS(myPage, userId, siteId);
+        return firstValueFrom(this.getDashboardBlocksObservable({
+            myPage,
+            userId,
+            siteId,
+        }));
+    }
 
-        let mainBlocks: CoreCourseBlock[] = [];
-        let sideBlocks: CoreCourseBlock[] = [];
-
-        blocks.forEach((block) => {
-            if (block.region == 'content' || block.region == 'main') {
-                mainBlocks.push(block);
-            } else {
-                sideBlocks.push(block);
-            }
-        });
-
-        if (mainBlocks.length == 0) {
-            mainBlocks = [];
-            sideBlocks = [];
+    /**
+     * Get dashboard blocks.
+     *
+     * @param options Options.
+     * @return observable that returns the list of blocks.
+     */
+    getDashboardBlocksObservable(options: GetDashboardBlocksOptions = {}): WSObservable<CoreCoursesDashboardBlocks> {
+        return this.getDashboardBlocksFromWSObservable(options).pipe(map(blocks => {
+            let mainBlocks: CoreCourseBlock[] = [];
+            let sideBlocks: CoreCourseBlock[] = [];
 
             blocks.forEach((block) => {
-                if (block.region.match('side')) {
-                    sideBlocks.push(block);
-                } else {
+                if (block.region == 'content' || block.region == 'main') {
                     mainBlocks.push(block);
+                } else {
+                    sideBlocks.push(block);
                 }
             });
-        }
 
-        return { mainBlocks, sideBlocks };
+            if (mainBlocks.length == 0) {
+                mainBlocks = [];
+                sideBlocks = [];
 
+                blocks.forEach((block) => {
+                    if (block.region.match('side')) {
+                        sideBlocks.push(block);
+                    } else {
+                        mainBlocks.push(block);
+                    }
+                });
+            }
+
+            return { mainBlocks, sideBlocks };
+        }));
     }
 
     /**
@@ -192,6 +233,14 @@ export const CoreCoursesDashboard = makeSingleton(CoreCoursesDashboardProvider);
 export type CoreCoursesDashboardBlocks = {
     mainBlocks: CoreCourseBlock[];
     sideBlocks: CoreCourseBlock[];
+};
+
+/**
+ * Options for some get dashboard blocks calls.
+ */
+export type GetDashboardBlocksOptions = CoreSitesCommonWSOptions & {
+    userId?: number; // User ID. If not defined, current user.
+    myPage?: string; // Page to get. If not defined, CoreCoursesDashboardProvider.MY_PAGE_DEFAULT.
 };
 
 /**

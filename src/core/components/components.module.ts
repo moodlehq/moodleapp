@@ -63,6 +63,7 @@ import { CoreSwipeSlidesComponent } from './swipe-slides/swipe-slides';
 import { CoreSwipeNavigationTourComponent } from './swipe-navigation-tour/swipe-navigation-tour';
 import { CoreMessageComponent } from './message/message';
 import { CoreGroupSelectorComponent } from './group-selector/group-selector';
+import { CoreRefreshButtonModalComponent } from './refresh-button-modal/refresh-button-modal';
 
 @NgModule({
     declarations: [
@@ -108,6 +109,7 @@ import { CoreGroupSelectorComponent } from './group-selector/group-selector';
         CoreSpacerComponent,
         CoreHorizontalScrollControlsComponent,
         CoreSwipeNavigationTourComponent,
+        CoreRefreshButtonModalComponent,
     ],
     imports: [
         CommonModule,
@@ -160,6 +162,7 @@ import { CoreGroupSelectorComponent } from './group-selector/group-selector';
         CoreSpacerComponent,
         CoreHorizontalScrollControlsComponent,
         CoreSwipeNavigationTourComponent,
+        CoreRefreshButtonModalComponent,
     ],
 })
 export class CoreComponentsModule {}

@@ -1,0 +1,7 @@
+@import "~theme/globals";
+
+:host {
+    ion-chip {
+        @include margin(auto, auto, calc(12px + var(--bottom-tabs-size, 0px)), auto);
+    }
+}

@@ -17,12 +17,20 @@ import { BehaviorSubject, Subject } from 'rxjs';
 
 describe('CoreSubscriptions singleton', () => {
 
-    it('calls callbacks only once', async () => {
-        // Test call success function.
-        let subject = new Subject();
-        let success = jest.fn();
-        let error = jest.fn();
-        CoreSubscriptions.once(subject, success, error);
+    let subject: Subject<unknown>;
+    let success: jest.Mock;
+    let error: jest.Mock;
+    let complete: jest.Mock;
+
+    beforeEach(() => {
+        subject = new Subject();
+        success = jest.fn();
+        error = jest.fn();
+        complete = jest.fn();
+    });
+
+    it('calls success callback only once', async () => {
+        CoreSubscriptions.once(subject, success, error, complete);
 
         subject.next('foo');
         expect(success).toHaveBeenCalledTimes(1);
@@ -32,11 +40,11 @@ describe('CoreSubscriptions singleton', () => {
         subject.error('foo');
         expect(success).toHaveBeenCalledTimes(1);
         expect(error).not.toHaveBeenCalled();
+        expect(complete).not.toHaveBeenCalled();
+    });
 
-        // Test call error function.
-        subject = new Subject(); // Create a new Subject because the previous one already has an error.
-        success = jest.fn();
-        CoreSubscriptions.once(subject, success, error);
+    it('calls error callback only once', async () => {
+        CoreSubscriptions.once(subject, success, error, complete);
 
         subject.error('foo');
         expect(error).toHaveBeenCalledWith('foo');
@@ -45,11 +53,27 @@ describe('CoreSubscriptions singleton', () => {
         subject.error('bar');
         expect(error).toHaveBeenCalledTimes(1);
         expect(success).not.toHaveBeenCalled();
+        expect(complete).not.toHaveBeenCalled();
+    });
 
+    it('calls complete callback only once', async () => {
+        CoreSubscriptions.once(subject, success, error, complete);
+
+        subject.complete();
+        expect(complete).toHaveBeenCalled();
+
+        subject.next('foo');
+        subject.error('bar');
+        subject.complete();
+        expect(complete).toHaveBeenCalledTimes(1);
+        expect(success).not.toHaveBeenCalled();
+        expect(error).not.toHaveBeenCalled();
+    });
+
+    it('calls success callback only once with behaviour subject', async () => {
         // Test with behaviour subject (success callback called immediately).
         const beaviourSubject = new BehaviorSubject('foo');
-        error = jest.fn();
-        CoreSubscriptions.once(beaviourSubject, success, error);
+        CoreSubscriptions.once(beaviourSubject, success, error, complete);
 
         expect(success).toHaveBeenCalledWith('foo');
 
@@ -57,6 +81,7 @@ describe('CoreSubscriptions singleton', () => {
         beaviourSubject.error('foo');
         expect(success).toHaveBeenCalledTimes(1);
         expect(error).not.toHaveBeenCalled();
+        expect(complete).not.toHaveBeenCalled();
     });
 
     it('allows unsubscribing from outside the once function', async () => {

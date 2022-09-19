@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, ViewChild, OnDestroy, DoCheck, KeyValueDiffers, KeyValueDiffer, Type } from '@angular/core';
+import { Component, Input, ViewChild, OnDestroy, Type, OnChanges, SimpleChanges } from '@angular/core';
 import { CoreBlockDelegate } from '../../services/block-delegate';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { Subscription } from 'rxjs';
@@ -27,7 +27,7 @@ import type { ICoreBlockComponent } from '@features/block/classes/base-block-com
     templateUrl: 'core-block.html',
     styleUrls: ['block.scss'],
 })
-export class CoreBlockComponent implements OnInit, OnDestroy, DoCheck {
+export class CoreBlockComponent implements OnChanges, OnDestroy {
 
     @ViewChild(CoreDynamicComponent) dynamicComponent?: CoreDynamicComponent<ICoreBlockComponent>;
 
@@ -40,52 +40,26 @@ export class CoreBlockComponent implements OnInit, OnDestroy, DoCheck {
     data: Record<string, unknown> = {}; // Data to pass to the component.
     class?: string; // CSS class to apply to the block.
     loaded = false;
-
     blockSubscription?: Subscription;
 
-    protected differ: KeyValueDiffer<unknown, unknown>; // To detect changes in the data input.
-
-    constructor(
-        differs: KeyValueDiffers,
-    ) {
-        this.differ = differs.find([]).create();
-    }
-
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
-    ngOnInit(): void {
-        if (!this.block) {
-            this.loaded = true;
-
-            return;
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.block && this.block?.visible) {
+            this.updateBlock();
         }
 
-        if (this.block.visible) {
-            // Get the data to render the block.
-            this.initBlock();
+        if (this.data && changes.extraData) {
+            this.data = Object.assign(this.data, this.extraData || {});
         }
     }
 
     /**
-     * Detect and act upon changes that Angular can’t or won’t detect on its own (objects and arrays).
+     * Get block display data and initialises or updates the block. If the block is not supported at the moment, try again if the
+     * available blocks are updated (because it comes from a site plugin).
      */
-    ngDoCheck(): void {
-        if (this.data) {
-            // Check if there's any change in the extraData object.
-            const changes = this.differ.diff(this.extraData);
-            if (changes) {
-                this.data = Object.assign(this.data, this.extraData || {});
-            }
-        }
-    }
-
-    /**
-     * Get block display data and initialises the block once this is available. If the block is not
-     * supported at the moment, try again if the available blocks are updated (because it comes
-     * from a site plugin).
-     */
-    async initBlock(): Promise<void> {
+    async updateBlock(): Promise<void> {
         try {
             const data = await CoreBlockDelegate.getBlockDisplayData(this.block, this.contextLevel, this.instanceId);
 
@@ -97,7 +71,7 @@ export class CoreBlockComponent implements OnInit, OnDestroy, DoCheck {
                     (): void => {
                         this.blockSubscription?.unsubscribe();
                         delete this.blockSubscription;
-                        this.initBlock();
+                        this.updateBlock();
                     },
                 );
 

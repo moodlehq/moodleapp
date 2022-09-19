@@ -276,6 +276,7 @@ testsConfig['rules']['padded-blocks'] = [
     },
 ];
 testsConfig['rules']['jest/expect-expect'] = 'off';
+testsConfig['rules']['jest/no-done-callback'] = 'off';
 testsConfig['plugins'].push('jest');
 testsConfig['extends'].push('plugin:jest/recommended');
 

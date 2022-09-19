@@ -1,4 +1,4 @@
 <!-- Only render the block if it's supported. -->
-<ion-card *ngIf="loaded && componentClass && block.visible" class="{{class}}">
+<ion-card *ngIf="loaded && componentClass && block && block.visible" class="{{class}}">
     <core-dynamic-component [component]="componentClass" [data]="data"></core-dynamic-component>
 </ion-card>

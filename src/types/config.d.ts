@@ -71,4 +71,6 @@ export interface EnvironmentConfig {
     removeaccountonlogout?: boolean; // True to remove the account when the user clicks logout. Doesn't affect switch account.
     uselegacycompletion?: boolean; // Whether to use legacy completion by default in all course formats.
     toastDurations: Record<ToastDuration, number>;
+    disableCallWSInBackground?: boolean; // If true, disable calling WS in background.
+    callWSInBackgroundExpirationTime?: number; // Ms to consider an entry expired when calling WS in background. Default: 1 week.
 }
