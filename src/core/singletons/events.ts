@@ -117,6 +117,7 @@ export class CoreEvents {
     static readonly DEVICE_REGISTERED_IN_MOODLE = 'device_registered_in_moodle';
     static readonly COURSE_MODULE_VIEWED = 'course_module_viewed';
     static readonly COMPLETE_REQUIRED_PROFILE_DATA_FINISHED = 'complete_required_profile_data_finished';
+    static readonly MAIN_HOME_LOADED = 'main_home_loaded';
 
     protected static logger = CoreLogger.getInstance('CoreEvents');
     protected static observables: { [eventName: string]: Subject<unknown> } = {};

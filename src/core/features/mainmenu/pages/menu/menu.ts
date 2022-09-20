@@ -149,6 +149,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
                 }
             });
         }
+        CoreEvents.trigger(CoreEvents.MAIN_HOME_LOADED);
     }
 
     /**
