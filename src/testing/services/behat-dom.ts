@@ -351,7 +351,7 @@ export class TestingBehatDomUtilsService {
     findElementBasedOnText(
         locator: TestingBehatElementLocator,
         options: TestingBehatFindOptions,
-    ): HTMLElement {
+    ): HTMLElement | undefined {
         return this.findElementsBasedOnText(locator, options)[0];
     }
 

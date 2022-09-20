@@ -312,6 +312,10 @@ export class TestingBehatRuntimeService {
         try {
             const element = TestingBehatDomUtils.findElementBasedOnText(locator, { onlyClickable: false, containerName: '' });
 
+            if (!element) {
+                return 'ERROR: No element matches locator to find.';
+            }
+
             return TestingBehatDomUtils.isElementSelected(element, document.body) ? 'YES' : 'NO';
         } catch (error) {
             return 'ERROR: ' + error.message;
@@ -403,10 +407,7 @@ export class TestingBehatRuntimeService {
     async setField(field: string, value: string): Promise<string> {
         this.log('Action - Set field ' + field + ' to: ' + value);
 
-        const found: HTMLElement | HTMLInputElement = TestingBehatDomUtils.findElementBasedOnText(
-            { text: field, selector: 'input, textarea, [contenteditable="true"], ion-select' },
-            { onlyClickable: false, containerName: '' },
-        );
+        const found = this.findField(field);
 
         if (!found) {
             return 'ERROR: No element matches field to set.';
@@ -415,6 +416,45 @@ export class TestingBehatRuntimeService {
         await TestingBehatDomUtils.setElementValue(found, value);
 
         return 'OK';
+    }
+
+    /**
+     * Sets the text of a field to the specified value.
+     *
+     * This currently matches fields only based on the placeholder attribute.
+     *
+     * @param field Field name
+     * @param value New value
+     * @return OK or ERROR: followed by message
+     */
+    async fieldMatches(field: string, value: string): Promise<string> {
+        this.log('Action - Field ' + field + ' matches value: ' + value);
+
+        const found = this.findField(field);
+
+        if (!found) {
+            return 'ERROR: No element matches field to set.';
+        }
+
+        const foundValue = 'value' in found ? found.value : found.innerText;
+        if (value !== foundValue) {
+            return `ERROR: Expecting value "${value}", found "${foundValue}" instead.`;
+        }
+
+        return 'OK';
+    }
+
+    /**
+     * Find a field.
+     *
+     * @param field Field name.
+     * @return Field element.
+     */
+    protected findField(field: string): HTMLElement | HTMLInputElement | undefined {
+        return TestingBehatDomUtils.findElementBasedOnText(
+            { text: field, selector: 'input, textarea, [contenteditable="true"], ion-select, ion-datetime' },
+            { onlyClickable: false, containerName: '' },
+        );
     }
 
     /**

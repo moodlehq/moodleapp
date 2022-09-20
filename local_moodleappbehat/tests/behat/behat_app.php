@@ -737,6 +737,42 @@ class behat_app extends behat_app_helper {
     }
 
     /**
+     * Checks a field matches a certain value in the app.
+     *
+     * Currently this only works for input fields which must be identified using a partial or
+     * exact match on the placeholder text.
+     *
+     * @Given /^the field "((?:[^"]|\\")+)" matches value "((?:[^"]|\\")*)" in the app$/
+     * @param string $field Text identifying field
+     * @param string $value Value for field
+     * @throws DriverException If the field isn't found
+     * @throws ExpectationException If the field value is different to the expected value
+     */
+    public function the_field_matches_value_in_the_app(string $field, string $value) {
+        $field = addslashes_js($field);
+        $value = addslashes_js($value);
+
+        $this->spin(function() use ($field, $value) {
+            $result = $this->runtime_js("fieldMatches('$field', '$value')");
+
+            if ($result !== 'OK') {
+                if (str_contains($result, 'No element matches')) {
+                    throw new DriverException('Error field matches value - ' . $result);
+                } else {
+                    throw new ExpectationException(
+                        'Error field matches value - ' . $result,
+                        $this->getSession()->getDriver()
+                    );
+                }
+            }
+
+            return true;
+        });
+
+        $this->wait_for_pending_js();
+    }
+
+    /**
      * Checks that the current header stripe in the app contains the expected text.
      *
      * This can be used to see if the app went to the expected page.
@@ -910,6 +946,19 @@ class behat_app extends behat_app_helper {
             default:
                 break;
         }
+    }
+
+    /**
+     * Open a browser tab with a certain URL.
+     *
+     * @Then /^I open a browser tab with url "(?P<pattern>[^"]+)"$/
+     * @param string $url URL
+     */
+    public function i_open_a_browser_tab_with_url(string $url) {
+        $this->execute_script("window.open('$url', '_system');");
+
+        $windowNames = $this->getSession()->getWindowNames();
+        $this->getSession()->switchToWindow($windowNames[1]);
     }
 
 }
