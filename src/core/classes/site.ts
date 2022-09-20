@@ -1967,16 +1967,16 @@ export class CoreSite {
                 // Return the requested setting.
                 for (const x in config.settings) {
                     if (config.settings[x].name == name) {
-                        return config.settings[x].value;
+                        return String(config.settings[x].value);
                     }
                 }
 
                 throw new CoreError('Site config not found: ' + name);
             } else {
                 // Return all settings in the same array.
-                const settings = {};
+                const settings: CoreSiteConfig = {};
                 config.settings.forEach((setting) => {
-                    settings[setting.name] = setting.value;
+                    settings[setting.name] = String(setting.value);
                 });
 
                 return settings;
@@ -2737,7 +2737,7 @@ export enum CoreSiteInfoUserHomepage {
 export type CoreSiteConfigResponse = {
     settings: { // Settings.
         name: string; // The name of the setting.
-        value: string; // The value of the setting.
+        value: string | number; // The value of the setting.
     }[];
     warnings?: CoreWSExternalWarning[];
 };
