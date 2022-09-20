@@ -15,14 +15,13 @@
 import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 
-import { CoreSettingsHandlerToDisplay } from '../../services/settings-delegate';
+import { CoreSettingsHandlerToDisplay, CoreSettingsPageHandlerToDisplay } from '../../services/settings-delegate';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
-import { CoreSettingsHandlersSource } from '@features/settings/classes/settings-handlers-source';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreNetwork } from '@services/network';
@@ -30,6 +29,7 @@ import { Subscription } from 'rxjs';
 import { NgZone } from '@singletons';
 import { CoreConstants } from '@/core/constants';
 import { CoreConfig } from '@services/config';
+import { CoreSettingsHandlersSource } from '@features/settings/classes/settings-handlers-source';
 
 /**
  * Page that displays the list of site settings pages.
@@ -42,7 +42,7 @@ export class CoreSitePreferencesPage implements AfterViewInit, OnDestroy {
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
-    handlers: CoreListItemsManager<CoreSettingsHandlerToDisplay>;
+    handlers: CoreListItemsManager<CoreSettingsPageHandlerToDisplay, CoreSettingsHandlersSource>;
 
     dataSaver = false;
     limitedConnection = false;
@@ -52,6 +52,10 @@ export class CoreSitePreferencesPage implements AfterViewInit, OnDestroy {
     protected sitesObserver: CoreEventObserver;
     protected networkObserver: Subscription;
     protected isDestroyed = false;
+
+    get handlerItems(): CoreSettingsHandlerToDisplay[] {
+        return this.handlers.getSource().handlers;
+    }
 
     constructor() {
         this.siteId = CoreSites.getCurrentSiteId();
