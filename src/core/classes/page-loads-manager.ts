@@ -131,7 +131,7 @@ export class PageLoadsManager {
     protected async notifyUser(): Promise<void> {
         await CoreDomUtils.openModal<boolean>({
             component: CoreRefreshButtonModalComponent,
-            cssClass: 'core-modal-no-background',
+            cssClass: 'core-modal-no-background core-modal-fullscreen',
             closeOnNavigate: true,
         });
 
