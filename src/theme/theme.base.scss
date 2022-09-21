@@ -1752,6 +1752,7 @@ video::-webkit-media-text-track-display {
 
 ion-modal.core-modal-no-background {
     --background: transparent;
+    --box-shadow: none !important;
     pointer-events: none;
 
     ion-backdrop {
