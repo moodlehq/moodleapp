@@ -282,6 +282,15 @@ export class CoreEvents {
         }
     }
 
+    /**
+     * Wait until an event has been emitted.
+     *
+     * @param eventName Event name.
+     */
+    static waitUntil(eventName: string): Promise<void> {
+        return new Promise(resolve => this.once(eventName, () => resolve()));
+    }
+
 }
 
 /**

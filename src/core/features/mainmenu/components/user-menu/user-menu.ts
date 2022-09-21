@@ -18,6 +18,7 @@ import { CoreSite, CoreSiteInfo } from '@classes/site';
 import { CoreFilter } from '@features/filter/services/filter';
 import { CoreLoginSitesComponent } from '@features/login/components/sites/sites';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
+import { CoreUserSupport } from '@features/user/services/support';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import {
     CoreUserProfileHandlerData,
@@ -51,6 +52,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     handlersLoaded = false;
     user?: CoreUserProfile;
     displaySwitchAccount = true;
+    displayContactSupport = false;
     removeAccountOnLogout = false;
 
     protected subscription!: Subscription;
@@ -65,6 +67,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
         this.siteName = currentSite.getSiteName();
         this.siteUrl = currentSite.getURL();
         this.displaySwitchAccount = !currentSite.isFeatureDisabled('NoDelegate_SwitchAccount');
+        this.displayContactSupport = currentSite.canContactSupport();
         this.removeAccountOnLogout = !!CoreConstants.CONFIG.removeaccountonlogout;
 
         this.loadSiteLogo(currentSite);
@@ -171,6 +174,16 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
         await this.close(event);
 
         handler.action(event, this.user, CoreUserDelegateContext.USER_MENU);
+    }
+
+    /**
+     * Contact site support.
+     *
+     * @param event Click event.
+     */
+    async contactSupport(event: Event): Promise<void> {
+        await this.close(event);
+        await CoreUserSupport.contact();
     }
 
     /**

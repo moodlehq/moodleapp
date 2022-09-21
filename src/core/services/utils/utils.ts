@@ -1044,11 +1044,7 @@ export class CoreUtilsProvider {
      * @param options Override default options passed to InAppBrowser.
      * @return The opened window.
      */
-    openInApp(url: string, options?: InAppBrowserOptions): InAppBrowserObject | undefined {
-        if (!url) {
-            return;
-        }
-
+    openInApp(url: string, options?: InAppBrowserOptions): InAppBrowserObject {
         options = options || {};
         options.usewkwebview = 'yes'; // Force WKWebView in iOS.
         options.enableViewPortScale = options.enableViewPortScale ?? 'yes'; // Enable zoom on iOS by default.

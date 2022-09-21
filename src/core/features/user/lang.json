@@ -28,6 +28,7 @@
     "roles": "Roles",
     "sendemail": "Email",
     "student": "Student",
+    "support": "Support",
     "teacher": "Non-editing teacher",
     "userwithid": "User with ID {{id}}",
     "webpage": "Web page"

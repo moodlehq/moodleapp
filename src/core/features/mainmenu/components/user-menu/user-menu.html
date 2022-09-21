@@ -66,6 +66,14 @@
                     <p class="item-heading">{{ 'core.settings.preferences' | translate }}</p>
                 </ion-label>
             </ion-item>
+
+            <ion-item *ngIf="displayContactSupport" button (click)="contactSupport($event)"
+                [attr.aria-label]="'core.user.support' | translate" detail="true" detailIcon="open-outline" class="core-user-menu-support">
+                <ion-icon name="fas-envelope" slot="start" aria-hidden="true"></ion-icon>
+                <ion-label>
+                    <p class="item-heading">{{ 'core.user.support' | translate }}</p>
+                </ion-label>
+            </ion-item>
         </ion-list>
     </core-loading>
 </ion-content>

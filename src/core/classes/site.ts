@@ -60,6 +60,7 @@ import {
 import { Observable, ObservableInput, ObservedValueOf, OperatorFunction, Subject } from 'rxjs';
 import { finalize, map, mergeMap } from 'rxjs/operators';
 import { firstValueFrom } from '../utils/rxjs';
+import { CoreUserSupport } from '@features/user/services/support';
 
 /**
  * QR Code type enumeration.
@@ -263,6 +264,19 @@ export class CoreSite {
     }
 
     /**
+     * Get url to contact site support.
+     *
+     * @returns Site support page url.
+     */
+    getSupportPageUrl(): string | null {
+        if (!this.config || !this.canContactSupport()) {
+            return null;
+        }
+
+        return CoreUserSupport.getSupportPageUrl(this.config, this.siteUrl);
+    }
+
+    /**
      * Get site user's ID.
      *
      * @return User's ID.
@@ -419,6 +433,19 @@ export class CoreSite {
         const info = this.getInfo();
 
         return !!(info && (info.usercanmanageownfiles === undefined || info.usercanmanageownfiles));
+    }
+
+    /**
+     * Check whether this site has a support url available.
+     *
+     * @returns Whether this site has a support url.
+     */
+    canContactSupport(): boolean {
+        if (this.isFeatureDisabled('NoDelegate_CoreUserSupport')) {
+            return false;
+        }
+
+        return !!this.config && CoreUserSupport.canContactSupport(this.config);
     }
 
     /**
@@ -2777,6 +2804,7 @@ export type CoreSitePublicConfigResponse = {
     agedigitalconsentverification?: boolean; // Whether age digital consent verification is enabled.
     supportname?: string; // Site support contact name (only if age verification is enabled).
     supportemail?: string; // Site support contact email (only if age verification is enabled).
+    supportpage?: string; // Site support contact url.
     autolang?: number; // Whether to detect default language from browser setting.
     lang?: string; // Default language for the site.
     langmenu?: number; // Whether the language menu should be displayed.
