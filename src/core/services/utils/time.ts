@@ -255,9 +255,7 @@ export class CoreTimeUtilsProvider {
      * @return Formatted time.
      */
     toDatetimeFormat(timestamp?: number): string {
-        timestamp = timestamp || Date.now();
-
-        return this.userDate(timestamp, 'YYYY-MM-DDTHH:mm:ss.SSS', false) + 'Z';
+        return moment(timestamp || Date.now()).toISOString();
     }
 
     /**
