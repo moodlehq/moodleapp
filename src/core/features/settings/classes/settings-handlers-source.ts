@@ -14,31 +14,41 @@
 
 import { Params } from '@angular/router';
 import { CoreRoutedItemsManagerSource } from '@classes/items-management/routed-items-manager-source';
-import { CoreSettingsDelegate, CoreSettingsHandlerToDisplay } from '../services/settings-delegate';
+import {
+    CoreSettingsDelegate,
+    CoreSettingsHandlerToDisplay,
+    CoreSettingsPageHandlerToDisplay,
+} from '../services/settings-delegate';
 
 /**
  * Provides a collection of site settings.
  */
-export class CoreSettingsHandlersSource extends CoreRoutedItemsManagerSource<CoreSettingsHandlerToDisplay> {
+export class CoreSettingsHandlersSource extends CoreRoutedItemsManagerSource<CoreSettingsPageHandlerToDisplay> {
+
+    handlers: CoreSettingsHandlerToDisplay[] = [];
 
     /**
      * @inheritdoc
      */
-    protected async loadPageItems(): Promise<{ items: CoreSettingsHandlerToDisplay[] }> {
-        return { items: CoreSettingsDelegate.getHandlers() };
+    protected async loadPageItems(): Promise<{ items: CoreSettingsPageHandlerToDisplay[] }> {
+        this.handlers = CoreSettingsDelegate.getHandlers();
+
+        return {
+            items: this.handlers.filter((handler): handler is CoreSettingsPageHandlerToDisplay => 'page' in handler),
+        };
     }
 
     /**
      * @inheritdoc
      */
-    getItemPath(handler: CoreSettingsHandlerToDisplay): string {
+    getItemPath(handler: CoreSettingsPageHandlerToDisplay): string {
         return handler.page;
     }
 
     /**
      * @inheritdoc
      */
-    getItemQueryParams(handler: CoreSettingsHandlerToDisplay): Params {
+    getItemQueryParams(handler: CoreSettingsPageHandlerToDisplay): Params {
         return handler.params || {};
     }
 

@@ -25,19 +25,9 @@ import { makeSingleton } from '@singletons';
 export type CoreSettingsHandler = CoreDelegateDisplayHandler<CoreSettingsHandlerToDisplay>;
 
 /**
- * Data needed to render a setting handler. It's returned by the handler.
+ * Main data returned by the handler.
  */
-export interface CoreSettingsHandlerData {
-    /**
-     * Name of the page to load for the handler.
-     */
-    page: string;
-
-    /**
-     * Params list of the page to load for the handler.
-     */
-    params?: Params;
-
+interface CoreSettingsHandlerBaseData {
     /**
      * Title to display for the handler.
      */
@@ -54,10 +44,44 @@ export interface CoreSettingsHandlerData {
     class?: string;
 }
 
+interface CoreSettingsToggleHandlerData extends CoreSettingsHandlerBaseData {
+    /**
+     * Toggle checked.
+     */
+    toggleChecked?: boolean;
+
+    /**
+     * Method for emit events to the handler.
+     */
+    toggle(checked: boolean): void;
+}
+
+interface CoreSettingsPageHandlerData extends CoreSettingsHandlerBaseData {
+    /**
+     * Name of the page to load for the handler.
+     */
+    page: string;
+
+    /**
+     * Params list of the page to load for the handler.
+     */
+    params?: Params;
+}
+
+/**
+ * Data needed to render a setting handler. It's returned by the handler.
+ */
+export type CoreSettingsHandlerData = CoreSettingsPageHandlerData | CoreSettingsToggleHandlerData;
+
 /**
  * Data returned by the delegate for each handler.
  */
 export type CoreSettingsHandlerToDisplay = CoreDelegateToDisplay & CoreSettingsHandlerData;
+
+/**
+ * Data returned by the delegate for each handler to be displayed in pages.
+ */
+export type CoreSettingsPageHandlerToDisplay = CoreDelegateToDisplay & CoreSettingsPageHandlerData;
 
 /**
  * Service to interact with addons to be shown in app settings. Provides functions to register a plugin
