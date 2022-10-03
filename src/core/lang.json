@@ -18,6 +18,7 @@
     "cannotconnecttrouble": "We're having trouble connecting to your site.",
     "cannotconnectverify": "<strong>Please check the address is correct.</strong>",
     "cannotdownloadfiles": "File downloading is disabled. Please contact your site administrator.",
+    "cannotinstallapk": "For security reasons, it is not allowed to install unknown apps from the Moodle app. Please open the file using a browser.",
     "cannotlogoutpageblocks": "Please save or discard your changes before continuing.",
     "cannotopeninapp": "This file may not work as expected on this device. Would you like to open it anyway?",
     "cannotopeninappdownload": "This file may not work as expected on this device. Would you like to download it anyway?",

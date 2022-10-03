@@ -27,6 +27,7 @@ import { CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreNetworkError } from '@classes/errors/network-error';
+import { CoreMimetypeUtils } from './utils/mimetype';
 
 /**
  * Provider to provide some helper functions regarding files and packages.
@@ -303,18 +304,22 @@ export class CoreFileHelperProvider {
     }
 
     /**
-     * Whether the file has to be opened in browser (external repository).
-     * The file must have a mimetype attribute.
+     * Whether the file has to be opened in browser.
      *
      * @param file The file to check.
      * @return Whether the file should be opened in browser.
      */
     shouldOpenInBrowser(file: CoreWSFile): boolean {
-        if (!file || !('isexternalfile' in file) || !file.isexternalfile || !file.mimetype) {
+        if (!file.mimetype) {
             return false;
         }
 
         const mimetype = file.mimetype;
+        if (!('isexternalfile' in file) || !file.isexternalfile) {
+            return mimetype === 'application/vnd.android.package-archive' ||
+                CoreMimetypeUtils.getFileExtension(file.filename ?? '') === 'apk';
+        }
+
         if (mimetype.indexOf('application/vnd.google-apps.') != -1) {
             // Google Docs file, always open in browser.
             return true;

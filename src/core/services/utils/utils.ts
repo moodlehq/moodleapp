@@ -34,6 +34,7 @@ import { CoreFileEntry } from '@services/file-helper';
 import { CoreConstants } from '@/core/constants';
 import { CoreWindow } from '@singletons/window';
 import { CoreColors } from '@singletons/colors';
+import { CoreError } from '@classes/errors/error';
 
 type TreeNode<T> = T & { children: TreeNode<T>[] };
 
@@ -958,6 +959,8 @@ export class CoreUtilsProvider {
             this.openInApp(path);
 
             return;
+        } else if (extension === 'apk' && CoreApp.isAndroid()) {
+            throw new CoreError(Translate.instant('core.cannotinstallapk'));
         }
 
         // Path needs to be decoded, the file won't be opened if the path has %20 instead of spaces and so.
