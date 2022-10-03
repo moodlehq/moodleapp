@@ -22,6 +22,7 @@ import { CoreUserSupport } from '@features/user/services/support';
 export class CoreSiteError extends CoreError {
 
     errorcode?: string;
+    errorDetails?: string;
     critical?: boolean;
     loggedOut?: boolean;
     contactSupport?: boolean;
@@ -31,6 +32,7 @@ export class CoreSiteError extends CoreError {
         super(options.message);
 
         this.errorcode = options.errorcode;
+        this.errorDetails = options.errorDetails;
         this.critical = options.critical;
         this.loggedOut = options.loggedOut;
         this.contactSupport = options.contactSupport;
@@ -68,6 +70,7 @@ export class CoreSiteError extends CoreError {
 export type CoreSiteErrorOptions = {
     message: string;
     errorcode?: string;
+    errorDetails?: string;
     critical?: boolean; // Whether the error is important enough to abort the operation.
     loggedOut?: boolean; // Whether site has been marked as logged out.
     contactSupport?: boolean;

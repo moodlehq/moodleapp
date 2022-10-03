@@ -386,10 +386,14 @@ export class CoreLoginSitePage implements OnInit {
         let errorMessage = CoreDomUtils.getErrorMessage(error);
         let siteExists = false;
         let supportPageUrl: string | null = null;
+        let errorDetails: string | undefined;
+        let errorCode: string | undefined;
 
         if (error instanceof CoreSiteError) {
             siteExists = !!error.siteConfig;
             supportPageUrl = error.canContactSupport() ? error.getSupportPageUrl() : null;
+            errorDetails = error.errorDetails;
+            errorCode = error.errorcode;
         }
 
         if (errorMessage == Translate.instant('core.cannotconnecttrouble')) {
@@ -413,6 +417,7 @@ export class CoreLoginSitePage implements OnInit {
                     handler: () => CoreUserSupport.contact({
                         supportPageUrl,
                         subject: Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }),
+                        message: `Error: ${errorCode}\n\n${errorDetails}`,
                     }),
                 }
                 : {

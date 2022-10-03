@@ -296,19 +296,17 @@ export class CoreSitesProvider {
 
         // Check that the user can authenticate.
         if (!config.enablewebservices) {
-            throw new CoreSiteError({
-                message: Translate.instant('core.login.webservicesnotenabled'),
-                critical: true,
-                contactSupport: true,
-                siteConfig: config,
-            });
+            throw this.createCannotConnectError(
+                'webservicesnotenabled',
+                Translate.instant('core.login.webservicesnotenabled'),
+                config,
+            );
         } else if (!config.enablemobilewebservice) {
-            throw new CoreSiteError({
-                message: Translate.instant('core.login.mobileservicesnotenabled'),
-                critical: true,
-                contactSupport: true,
-                siteConfig: config,
-            });
+            throw this.createCannotConnectError(
+                'mobileservicesnotenabled',
+                Translate.instant('core.login.mobileservicesnotenabled'),
+                config,
+            );
         } else if (config.maintenanceenabled) {
             let message = Translate.instant('core.sitemaintenance');
             if (config.maintenancemessage) {
@@ -324,6 +322,29 @@ export class CoreSitesProvider {
         siteUrl = temporarySite.getURL();
 
         return { siteUrl, code: config?.typeoflogin || 0, service: CoreConstants.CONFIG.wsservice, config };
+    }
+
+    /**
+     * Create an error to be thrown when it isn't possible to connect to a site.
+     *
+     * @param errorcode Error code.
+     * @param errorDetails Error details.
+     * @param siteConfig Site config.
+     * @return Cannot connect error.
+     */
+    protected createCannotConnectError(
+        errorcode: string,
+        errorDetails: string,
+        siteConfig: CoreSitePublicConfigResponse,
+    ): CoreSiteError {
+        return new CoreSiteError({
+            errorcode,
+            errorDetails,
+            siteConfig,
+            message: Translate.instant('core.cannotconnecttrouble'),
+            critical: true,
+            contactSupport: true,
+        });
     }
 
     /**
