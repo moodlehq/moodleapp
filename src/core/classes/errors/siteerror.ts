@@ -13,6 +13,8 @@
 // limitations under the License.
 
 import { CoreError } from '@classes/errors/error';
+import { CoreSitePublicConfigResponse } from '@classes/site';
+import { CoreUserSupport } from '@features/user/services/support';
 
 /**
  * Error returned when performing operations regarding a site (check if it exists, authenticate user, etc.).
@@ -22,20 +24,52 @@ export class CoreSiteError extends CoreError {
     errorcode?: string;
     critical?: boolean;
     loggedOut?: boolean;
+    contactSupport?: boolean;
+    siteConfig?: CoreSitePublicConfigResponse;
 
-    constructor(protected error: SiteError) {
-        super(error.message);
+    constructor(options: CoreSiteErrorOptions) {
+        super(options.message);
 
-        this.errorcode = error.errorcode;
-        this.critical = error.critical;
-        this.loggedOut = error.loggedOut;
+        this.errorcode = options.errorcode;
+        this.critical = options.critical;
+        this.loggedOut = options.loggedOut;
+        this.contactSupport = options.contactSupport;
+        this.siteConfig = options.siteConfig;
+    }
+
+    /**
+     * Get a url to contact site support.
+     *
+     * @returns Support page url.
+     */
+    getSupportPageUrl(): string {
+        if (!this.siteConfig) {
+            throw new CoreError('Can\'t get support page url');
+        }
+
+        return CoreUserSupport.getSupportPageUrl(this.siteConfig);
+    }
+
+    /**
+     * Check whether the handling of this error allows users to contact support or not.
+     *
+     * @returns Whether to contact support or not.
+     */
+    canContactSupport(): boolean {
+        if (!this.contactSupport || !this.siteConfig) {
+            return false;
+        }
+
+        return CoreUserSupport.canContactSupport(this.siteConfig);
     }
 
 }
 
-export type SiteError = {
+export type CoreSiteErrorOptions = {
     message: string;
     errorcode?: string;
     critical?: boolean; // Whether the error is important enough to abort the operation.
     loggedOut?: boolean; // Whether site has been marked as logged out.
+    contactSupport?: boolean;
+    siteConfig?: CoreSitePublicConfigResponse;
 };

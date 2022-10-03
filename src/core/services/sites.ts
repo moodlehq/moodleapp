@@ -299,11 +299,15 @@ export class CoreSitesProvider {
             throw new CoreSiteError({
                 message: Translate.instant('core.login.webservicesnotenabled'),
                 critical: true,
+                contactSupport: true,
+                siteConfig: config,
             });
         } else if (!config.enablemobilewebservice) {
             throw new CoreSiteError({
                 message: Translate.instant('core.login.mobileservicesnotenabled'),
                 critical: true,
+                contactSupport: true,
+                siteConfig: config,
             });
         } else if (config.maintenanceenabled) {
             let message = Translate.instant('core.sitemaintenance');

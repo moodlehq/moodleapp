@@ -1520,6 +1520,7 @@
   "core.confirmloss": "local_moodlemobileapp",
   "core.confirmopeninbrowser": "local_moodlemobileapp",
   "core.considereddigitalminor": "moodle",
+  "core.contactsupport": "local_moodlemobileapp",
   "core.content": "moodle",
   "core.contenteditingsynced": "local_moodlemobileapp",
   "core.contentlinks.chooseaccount": "local_moodlemobileapp",

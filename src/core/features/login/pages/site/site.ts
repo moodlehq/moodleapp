@@ -40,6 +40,8 @@ import { CoreCustomURLSchemes, CoreCustomURLSchemesHandleError } from '@services
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreForms } from '@singletons/form';
 import { AlertButton } from '@ionic/core';
+import { CoreSiteError } from '@classes/errors/siteerror';
+import { CoreUserSupport } from '@features/user/services/support';
 
 /**
  * Site (url) chooser when adding a new site.
@@ -382,6 +384,13 @@ export class CoreLoginSitePage implements OnInit {
      */
     protected showLoginIssue(url: string | null, error: CoreError): void {
         let errorMessage = CoreDomUtils.getErrorMessage(error);
+        let siteExists = false;
+        let supportPageUrl: string | null = null;
+
+        if (error instanceof CoreSiteError) {
+            siteExists = !!error.siteConfig;
+            supportPageUrl = error.canContactSupport() ? error.getSupportPageUrl() : null;
+        }
 
         if (errorMessage == Translate.instant('core.cannotconnecttrouble')) {
             const found = this.sites.find((site) => site.url == url);
@@ -392,19 +401,25 @@ export class CoreLoginSitePage implements OnInit {
         }
 
         let message = '<p>' + errorMessage + '</p>';
-        if (url) {
+        if (!siteExists && url) {
             const fullUrl = CoreUrlUtils.isAbsoluteURL(url) ? url : 'https://' + url;
             message += '<p padding><a href="' + fullUrl + '" core-link>' + url + '</a></p>';
         }
 
         const buttons: AlertButton[] = [
-            {
-                text: Translate.instant('core.needhelp'),
-                cssClass: 'core-login-need-help',
-                handler: (): void => {
-                    this.showHelp();
+            supportPageUrl
+                ? {
+                    text: Translate.instant('core.contactsupport'),
+                    handler: () => CoreUserSupport.contact({
+                        supportPageUrl,
+                        subject: Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }),
+                    }),
+                }
+                : {
+                    text: Translate.instant('core.needhelp'),
+                    cssClass: 'core-login-need-help',
+                    handler: () => this.showHelp(),
                 },
-            },
             {
                 text: Translate.instant('core.tryagain'),
                 role: 'cancel',
