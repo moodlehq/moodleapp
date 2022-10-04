@@ -175,7 +175,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
 
             if (this.offline) {
                 // Wait a bit to make sure data is stored.
-                setTimeout(this.refreshToc.bind(this), 100);
+                setTimeout(() => this.refreshToc(), 100);
             } else {
                 this.refreshToc();
             }

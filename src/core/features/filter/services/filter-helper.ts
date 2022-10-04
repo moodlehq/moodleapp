@@ -218,6 +218,7 @@ export class CoreFilterHelperProvider {
                 return CoreFilterDelegate.getEnabledFilters(contextLevel, instanceId);
             }
 
+            const courseId = options.courseId;
             let hasFilters = true;
 
             if (contextLevel == 'system' || (contextLevel == 'course' && instanceId == site.getSiteHomeId())) {
@@ -233,20 +234,20 @@ export class CoreFilterHelperProvider {
 
             options.filter = true;
 
-            if (contextLevel == 'module' && options.courseId) {
+            if (contextLevel == 'module' && courseId) {
                 // Get all the modules filters with a single call to decrease the number of WS calls.
-                const getFilters = this.getCourseModulesContexts.bind(this, options.courseId, siteId);
+                const getFilters = () => this.getCourseModulesContexts(courseId, siteId);
 
                 return this.getCacheableFilters(contextLevel, instanceId, getFilters, options, site);
 
             } else if (contextLevel == 'course') {
                 // If enrolled, get all enrolled courses filters with a single call to decrease number of WS calls.
-                const getFilters = this.getCourseContexts.bind(this, instanceId, siteId);
+                const getFilters = () => this.getCourseContexts(instanceId, siteId);
 
                 return this.getCacheableFilters(contextLevel, instanceId, getFilters, options, site);
-            } else if (contextLevel == 'block' && options.courseId && CoreCourse.canGetCourseBlocks(site)) {
+            } else if (contextLevel == 'block' && courseId && CoreCourse.canGetCourseBlocks(site)) {
                 // Get all the course blocks filters with a single call to decrease number of WS calls.
-                const getFilters = this.getBlocksContexts.bind(this, options.courseId, siteId);
+                const getFilters = () => this.getBlocksContexts(courseId, siteId);
 
                 return this.getCacheableFilters(contextLevel, instanceId, getFilters, options, site);
             }

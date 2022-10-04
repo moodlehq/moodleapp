@@ -95,9 +95,9 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
 
         if (listenSiteEvents) {
             // Update handlers on this cases.
-            CoreEvents.on(CoreEvents.LOGIN, this.updateHandlers.bind(this));
-            CoreEvents.on(CoreEvents.SITE_UPDATED, this.updateHandlers.bind(this));
-            CoreEvents.on(CoreEvents.SITE_PLUGINS_LOADED, this.updateHandlers.bind(this));
+            CoreEvents.on(CoreEvents.LOGIN, () => this.updateHandlers());
+            CoreEvents.on(CoreEvents.SITE_UPDATED, () => this.updateHandlers());
+            CoreEvents.on(CoreEvents.SITE_PLUGINS_LOADED, () => this.updateHandlers());
             CoreEvents.on(CoreEvents.SITE_POLICY_AGREED, (data) => {
                 if (data.siteId === CoreSites.getCurrentSiteId()) {
                     this.updateHandlers();

@@ -50,7 +50,7 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
         return this.prefetchPackage(
             module,
             courseId,
-            this.downloadOrPrefetchScorm.bind(this, module, courseId, true, false, onProgress),
+            (siteId) => this.downloadOrPrefetchScorm(module, courseId, true, false, onProgress, siteId),
         );
     }
 
@@ -126,7 +126,7 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
                 scorm.coursemodule,
                 undefined,
                 undefined,
-                this.downloadProgress.bind(this, true, onProgress),
+                (event: ProgressEvent<EventTarget>) => this.downloadProgress(true, onProgress, event),
             );
         } else {
             await CoreFilepool.downloadUrl(
@@ -136,7 +136,7 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
                 this.component,
                 scorm.coursemodule,
                 undefined,
-                this.downloadProgress.bind(this, true, onProgress),
+                (event: ProgressEvent<EventTarget>) => this.downloadProgress(true, onProgress, event),
             );
         }
 
@@ -147,7 +147,11 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
         onProgress && onProgress({ message: 'core.unzipping' });
 
         // Unzip and delete the zip when finished.
-        await CoreFile.unzipFile(zipPath, dirPath, this.downloadProgress.bind(this, false, onProgress));
+        await CoreFile.unzipFile(
+            zipPath,
+            dirPath,
+            (event: ProgressEvent<EventTarget>) => this.downloadProgress(false, onProgress, event),
+        );
 
         await CoreUtils.ignoreErrors(CoreFilepool.removeFileByUrl(siteId, packageUrl));
     }
@@ -371,7 +375,7 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
         return this.prefetchPackage(
             module,
             courseId,
-            this.downloadOrPrefetchScorm.bind(this, module, courseId, single, true, onProgress),
+            (siteId) => this.downloadOrPrefetchScorm(module, courseId, !!single, true, onProgress, siteId),
         );
     }
 

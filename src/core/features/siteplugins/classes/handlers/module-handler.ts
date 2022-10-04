@@ -56,7 +56,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
 
         if (initResult?.jsResult && initResult.jsResult.supportsFeature) {
             // The init result defines a function to check if a feature is supported, use it.
-            this.supportsFeature = initResult.jsResult.supportsFeature.bind(initResult.jsResult);
+            this.supportsFeature = (feature) => initResult.jsResult.supportsFeature(feature);
         }
     }
 

@@ -47,8 +47,8 @@ export class GeolocationMock extends Geolocation {
     watchPosition(options?: GeolocationOptions): Observable<Geoposition> {
         return new Observable<Geoposition>((subscriber: Subscriber<Geoposition>): TeardownLogic => {
             const watchId = navigator.geolocation.watchPosition(
-                subscriber.next.bind(subscriber),
-                subscriber.error.bind(subscriber),
+                position => subscriber.next(<Geoposition> <unknown> position),
+                error => subscriber.error(error),
                 options,
             );
 

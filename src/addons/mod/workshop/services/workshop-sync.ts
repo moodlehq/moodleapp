@@ -73,7 +73,7 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider<AddonModW
      * @return Promise resolved when the sync is done.
      */
     syncAllWorkshops(siteId?: string, force?: boolean): Promise<void> {
-        return this.syncOnSites('all workshops', this.syncAllWorkshopsFunc.bind(this, !!force), siteId);
+        return this.syncOnSites('all workshops', (siteId) => this.syncAllWorkshopsFunc(!!force, siteId), siteId);
     }
 
     /**

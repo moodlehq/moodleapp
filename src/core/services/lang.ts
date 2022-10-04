@@ -293,7 +293,7 @@ export class CoreLangProvider {
      * @return Translated month names.
      */
     getMonthNames(): string[] {
-        return moment.months().map(this.capitalize.bind(this));
+        return moment.months().map(month => this.capitalize(month));
     }
 
     /**
@@ -302,7 +302,7 @@ export class CoreLangProvider {
      * @return Translated month short names.
      */
     getMonthShortNames(): string[] {
-        return moment.monthsShort().map(this.capitalize.bind(this));
+        return moment.monthsShort().map(month => this.capitalize(month));
     }
 
     /**
@@ -311,7 +311,7 @@ export class CoreLangProvider {
      * @return Translated day names.
      */
     getDayNames(): string[] {
-        return moment.weekdays().map(this.capitalize.bind(this));
+        return moment.weekdays().map(weekDay => this.capitalize(weekDay));
     }
 
     /**
@@ -320,7 +320,7 @@ export class CoreLangProvider {
      * @return Translated day short names.
      */
     getDayShortNames(): string[] {
-        return moment.weekdaysShort().map(this.capitalize.bind(this));
+        return moment.weekdaysShort().map(weekDay => this.capitalize(weekDay));
     }
 
     /**

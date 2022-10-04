@@ -64,7 +64,7 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
     constructor(el: ElementRef<HTMLElement>) {
         this.element = el.nativeElement;
 
-        this.element.addEventListener('click', this.elementClicked.bind(this));
+        this.element.addEventListener('click', (event) => this.elementClicked(event));
         this.uniqueId = 'collapsible-item-' + CoreUtils.getUniqueId('CoreCollapsibleItemDirective');
         this.element.id = this.uniqueId;
     }

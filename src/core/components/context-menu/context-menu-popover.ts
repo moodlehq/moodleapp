@@ -73,7 +73,7 @@ export class CoreContextMenuPopoverComponent {
                 this.closeMenu(item);
             }
 
-            item.action.emit(this.closeMenu.bind(this, item));
+            item.action.emit(() => this.closeMenu(item));
         } else if (item.closeOnClick && (item.href || (!!item.onClosed && item.onClosed.observers.length > 0))) {
             this.closeMenu(item);
         }

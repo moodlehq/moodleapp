@@ -39,7 +39,7 @@ export class AddonModChoicePrefetchHandlerService extends CoreCourseActivityPref
      * @inheritdoc
      */
     prefetch(module: CoreCourseAnyModuleData, courseId: number, single?: boolean): Promise<void> {
-        return this.prefetchPackage(module, courseId, this.prefetchChoice.bind(this, module, courseId, !!single));
+        return this.prefetchPackage(module, courseId, (siteId) => this.prefetchChoice(module, courseId, !!single, siteId));
     }
 
     /**

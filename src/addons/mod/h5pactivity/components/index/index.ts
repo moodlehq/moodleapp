@@ -98,7 +98,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         this.siteCanDownload = this.site.canDownloadFiles() && !CoreH5P.isOfflineDisabledInSite();
 
         // Listen for messages from the iframe.
-        this.messageListenerFunction = this.onIframeMessage.bind(this);
+        this.messageListenerFunction = (event) => this.onIframeMessage(event);
         window.addEventListener('message', this.messageListenerFunction);
     }
 

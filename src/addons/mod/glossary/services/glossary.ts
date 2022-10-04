@@ -759,7 +759,7 @@ export class AddonModGlossaryProvider {
         const promises: Promise<void>[] = [];
 
         if (!onlyEntriesList) {
-            promises.push(this.fetchAllEntries(this.getEntriesByLetter.bind(this, glossary.id, 'ALL'), {
+            promises.push(this.fetchAllEntries((options) => this.getEntriesByLetter(glossary.id, 'ALL', options), {
                 cmId: glossary.coursemodule,
                 readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
                 siteId,
@@ -993,7 +993,7 @@ export class AddonModGlossaryProvider {
 
             // If we get here, there's no offline entry with this name, check online.
             // Get entries from the cache.
-            const entries = await this.fetchAllEntries(this.getEntriesByLetter.bind(glossaryId, 'ALL'), {
+            const entries = await this.fetchAllEntries((options) => this.getEntriesByLetter(glossaryId, 'ALL', options), {
                 cmId: options.cmId,
                 readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
                 siteId: options.siteId,

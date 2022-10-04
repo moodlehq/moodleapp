@@ -58,7 +58,7 @@ export class CoreSitePluginsModulePrefetchHandler extends CoreCourseActivityPref
         return this.prefetchPackage(
             module,
             courseId,
-            this.downloadPrefetchPlugin.bind(this, module, courseId, false, dirPath, siteId),
+            (siteId) => this.downloadPrefetchPlugin(module, courseId, false, dirPath, siteId),
             siteId,
         );
     }
@@ -226,7 +226,7 @@ export class CoreSitePluginsModulePrefetchHandler extends CoreCourseActivityPref
         return this.prefetchPackage(
             module,
             courseId,
-            this.downloadPrefetchPlugin.bind(this, module, courseId, true, dirPath),
+            (siteId) => this.downloadPrefetchPlugin(module, courseId, true, dirPath, siteId),
         );
     }
 

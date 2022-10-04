@@ -61,7 +61,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * Initialize.
      */
     initialize(): void {
-        CoreEvents.on(CoreEvents.LOGOUT, this.clearStatusCache.bind(this));
+        CoreEvents.on(CoreEvents.LOGOUT, () => this.clearStatusCache());
 
         CoreEvents.on(CoreEvents.PACKAGE_STATUS_CHANGED, (data) => {
             this.updateStatusCache(data.status, data.component, data.componentId);

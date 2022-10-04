@@ -19,7 +19,7 @@ import {
     CoreCourseOptionsHandler,
     CoreCourseOptionsHandlerData,
 } from '@features/course/services/course-options-delegate';
-import { CoreEnrolledCourseDataWithExtraInfoAndOptions } from '@features/courses/services/courses-helper';
+import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { makeSingleton } from '@singletons';
 import { AddonCourseCompletion } from '../coursecompletion';
 
@@ -77,7 +77,7 @@ export class AddonCourseCompletionCourseOptionHandlerService implements CoreCour
     /**
      * @inheritdoc
      */
-    async prefetch(course: CoreEnrolledCourseDataWithExtraInfoAndOptions): Promise<void> {
+    async prefetch(course: CoreCourseAnyCourseData): Promise<void> {
         try {
             await AddonCourseCompletion.getCompletion(course.id, undefined, {
                 getFromCache: false,

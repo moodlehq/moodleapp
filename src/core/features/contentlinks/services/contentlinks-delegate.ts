@@ -179,7 +179,7 @@ export class CoreContentLinksDelegateService {
         for (const name in this.handlers) {
             const handler = this.handlers[name];
             const checkAll = handler.checkAllUsers;
-            const isEnabledFn = this.isHandlerEnabled.bind(this, handler, relativeUrl, params, courseId);
+            const isEnabledFn = (siteId: string) => this.isHandlerEnabled(handler, relativeUrl, params, courseId, siteId);
 
             if (!handler.handles(relativeUrl)) {
                 // Invalid handler or it doesn't handle the URL. Stop.
@@ -282,7 +282,7 @@ export class CoreContentLinksDelegateService {
         handler: CoreContentLinksHandler,
         url: string,
         params: Record<string, string>,
-        courseId: number,
+        courseId: number | undefined,
         siteId: string,
     ): Promise<boolean> {
 

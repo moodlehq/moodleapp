@@ -74,7 +74,7 @@ export class CoreScreenService {
         }), {} as Record<Breakpoint, boolean>));
 
         this._layoutObservable = this.breakpointsObservable.pipe(
-            map(this.calculateLayout.bind(this)),
+            map(breakpoints => this.calculateLayout(breakpoints)),
             distinctUntilChanged<CoreScreenLayout>(),
         );
     }

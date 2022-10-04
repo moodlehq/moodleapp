@@ -71,7 +71,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
      * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     async syncAllForums(siteId?: string, force?: boolean): Promise<void> {
-        await this.syncOnSites('all forums', this.syncAllForumsFunc.bind(this, !!force), siteId);
+        await this.syncOnSites('all forums', (siteId) => this.syncAllForumsFunc(!!force, siteId), siteId);
     }
 
     /**

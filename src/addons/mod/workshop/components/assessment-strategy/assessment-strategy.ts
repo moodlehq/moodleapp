@@ -135,8 +135,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
                 await this.load();
                 this.obsInvalidated = CoreEvents.on(
                     AddonModWorkshopProvider.ASSESSMENT_INVALIDATED,
-                    this.load.bind(this),
-
+                    () => this.load(),
                     CoreSites.getCurrentSiteId(),
                 );
             } catch (error) {

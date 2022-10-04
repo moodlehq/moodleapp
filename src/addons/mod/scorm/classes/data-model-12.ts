@@ -883,7 +883,7 @@ export class AddonModScormDataModel12 {
                             // Store data.
                             if (this.errorCode == '0') {
                                 if (this.scorm.autocommit && !this.timeout) {
-                                    this.timeout = window.setTimeout(this.LMSCommit.bind(this), 60000, ['']);
+                                    this.timeout = window.setTimeout(() => this.LMSCommit(''), 60000);
                                 }
 
                                 const range = this.dataModel[this.scoId][elementModel].range;

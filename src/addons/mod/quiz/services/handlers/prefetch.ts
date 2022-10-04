@@ -278,7 +278,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
             return;
         }
 
-        return this.prefetchPackage(module, courseId, this.prefetchQuiz.bind(this, module, courseId, !!single, canStart));
+        return this.prefetchPackage(module, courseId, (siteId) => this.prefetchQuiz(module, courseId, !!single, canStart, siteId));
     }
 
     /**

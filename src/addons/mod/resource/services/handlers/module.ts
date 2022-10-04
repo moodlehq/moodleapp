@@ -70,7 +70,10 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
         sectionId?: number,
         forCoursePage?: boolean,
     ): Promise<CoreCourseModuleHandlerData> {
-        const updateStatus = (status: string): void => {
+        const openWithPicker = CoreFileHelper.defaultIsOpenWithPicker();
+
+        const handlerData = await super.getData(module, courseId, sectionId, forCoursePage);
+        handlerData.updateStatus = (status) => {
             if (!handlerData.buttons) {
                 return;
             }
@@ -78,10 +81,6 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
             handlerData.buttons[0].hidden = status !== CoreConstants.DOWNLOADED ||
                 AddonModResourceHelper.isDisplayedInIframe(module);
         };
-        const openWithPicker = CoreFileHelper.defaultIsOpenWithPicker();
-
-        const handlerData = await super.getData(module, courseId, sectionId, forCoursePage);
-        handlerData.updateStatus = updateStatus.bind(this);
         handlerData.buttons = [{
             hidden: true,
             icon: openWithPicker ? 'fas-share-square' : 'fas-file',

@@ -95,7 +95,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         database: AddonModDataData;
         title: string;
         group: number;
-        gotoEntry: (a: number) => void;
+        gotoEntry: (entryId: number) => void;
     };
 
     // Data for found records translation.
@@ -372,7 +372,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
                 database: this.database!,
                 title: this.module.name,
                 group: this.selectedGroup,
-                gotoEntry: this.gotoEntry.bind(this),
+                gotoEntry: (entryId) => this.gotoEntry(entryId),
             };
         } else if (!this.search.searching) {
             // Empty and no searching.

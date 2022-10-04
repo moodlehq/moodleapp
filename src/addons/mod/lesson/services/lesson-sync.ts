@@ -122,7 +122,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
      * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllLessons(siteId?: string, force = false): Promise<void> {
-        return this.syncOnSites('all lessons', this.syncAllLessonsFunc.bind(this, !!force), siteId);
+        return this.syncOnSites('all lessons', (siteId) => this.syncAllLessonsFunc(!!force, siteId), siteId);
     }
 
     /**
@@ -333,7 +333,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
         attempts.sort((a, b) => a.timemodified - b.timemodified);
 
         const promisesData = attempts.map((attempt) => ({
-            function: this.sendAttempt.bind(this, lesson, passwordData.password, attempt, result, siteId),
+            function: () => this.sendAttempt(lesson, passwordData.password ?? '', attempt, result, siteId),
             blocking: true,
         }));
 

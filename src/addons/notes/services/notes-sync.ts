@@ -45,7 +45,7 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider<AddonNotesSyncR
      * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllNotes(siteId?: string, force?: boolean): Promise<void> {
-        return this.syncOnSites('all notes', this.syncAllNotesFunc.bind(this, !!force), siteId);
+        return this.syncOnSites('all notes', (siteId) => this.syncAllNotesFunc(!!force, siteId), siteId);
     }
 
     /**

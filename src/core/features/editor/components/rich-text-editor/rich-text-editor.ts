@@ -171,11 +171,11 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         this.setContent(this.control?.value);
         this.originalContent = this.control?.value;
         this.lastDraft = this.control?.value;
-        this.editorElement.onchange = this.onChange.bind(this);
-        this.editorElement.onkeyup = this.onChange.bind(this);
-        this.editorElement.onpaste = this.onChange.bind(this);
-        this.editorElement.oninput = this.onChange.bind(this);
-        this.editorElement.onkeydown = this.moveCursor.bind(this);
+        this.editorElement.onchange = () => this.onChange();
+        this.editorElement.onkeyup = () => this.onChange();
+        this.editorElement.onpaste = () => this.onChange();
+        this.editorElement.oninput = () => this.onChange();
+        this.editorElement.onkeydown = event => this.moveCursor(event);
 
         // Use paragraph on enter.
         document.execCommand('DefaultParagraphSeparator', false, 'p');
@@ -258,7 +258,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
             this.windowResized();
         }, 50);
 
-        document.addEventListener('selectionchange', this.selectionChangeFunction = this.updateToolbarStyles.bind(this));
+        document.addEventListener('selectionchange', this.selectionChangeFunction = () => this.updateToolbarStyles());
 
         this.keyboardObserver = CoreEvents.on(CoreEvents.KEYBOARD_CHANGE, () => {
             // Opening or closing the keyboard also calls the resize function, but sometimes the resize is called too soon.

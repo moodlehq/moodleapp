@@ -51,7 +51,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
      * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllCourses(siteId?: string, force?: boolean): Promise<void> {
-        return this.syncOnSites('courses', this.syncAllCoursesFunc.bind(this, !!force), siteId);
+        return this.syncOnSites('courses', (siteId) => this.syncAllCoursesFunc(!!force, siteId), siteId);
     }
 
     /**
