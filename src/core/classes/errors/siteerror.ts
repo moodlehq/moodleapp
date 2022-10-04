@@ -29,7 +29,7 @@ export class CoreSiteError extends CoreError {
     siteConfig?: CoreSitePublicConfigResponse;
 
     constructor(options: CoreSiteErrorOptions) {
-        super(options.message);
+        super(getErrorMessage(options));
 
         this.errorcode = options.errorcode;
         this.errorDetails = options.errorDetails;
@@ -67,8 +67,26 @@ export class CoreSiteError extends CoreError {
 
 }
 
+/**
+ * Get message to use in the error.
+ *
+ * @param options Error options.
+ * @returns Error message.
+ */
+function getErrorMessage(options: CoreSiteErrorOptions): string {
+    if (
+        options.contactSupport &&
+        (!options.siteConfig || !CoreUserSupport.canContactSupport(options.siteConfig))
+    ) {
+        return options.fallbackMessage ?? options.message;
+    }
+
+    return options.message;
+}
+
 export type CoreSiteErrorOptions = {
     message: string;
+    fallbackMessage?: string; // Message to use if contacting support was intended but isn't possible.
     errorcode?: string;
     errorDetails?: string;
     critical?: boolean; // Whether the error is important enough to abort the operation.

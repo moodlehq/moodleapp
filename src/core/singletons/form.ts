@@ -20,6 +20,8 @@ import { CoreEventFormAction, CoreEvents } from '@singletons/events';
  */
 export class CoreForms {
 
+    private static formIds: Record<string, number> = {};
+
     /**
      * Get the data from a form. It will only collect elements that have a name.
      *
@@ -91,6 +93,18 @@ export class CoreForms {
             form: formRef.nativeElement || formRef,
             online: !!online,
         }, siteId);
+    }
+
+    /**
+     * Generate a unique id for a form input using the given name.
+     *
+     * @param name Form input name.
+     * @returns Unique id.
+     */
+    static uniqueId(name: string): string {
+        const count = this.formIds[name] ?? 0;
+
+        return `${name}-${this.formIds[name] = count + 1}`;
     }
 
 }

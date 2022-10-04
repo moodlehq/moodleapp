@@ -1,0 +1,21 @@
+html {
+
+    // Spacing
+    @for $i from 0 to 13 {
+        --spacing-#{$i}: #{$i*4}px;
+    }
+
+    // Font sizes
+    --font-size-sm: 12px;
+    --font-size-normal: 14px;
+
+    // Radiuses
+    --small-radius: 4px;
+    --medium-radius: 8px;
+    --big-radius: 16px;
+    --huge-radius: 24px;
+
+    // A11y
+    --a11y-min-target-size: 44px;
+
+}

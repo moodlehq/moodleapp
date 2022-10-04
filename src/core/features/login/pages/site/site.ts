@@ -42,6 +42,7 @@ import { CoreForms } from '@singletons/form';
 import { AlertButton } from '@ionic/core';
 import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreUserSupport } from '@features/user/services/support';
+import { CoreErrorInfoComponent } from '@components/error-info/error-info';
 
 /**
  * Site (url) chooser when adding a new site.
@@ -382,7 +383,7 @@ export class CoreLoginSitePage implements OnInit {
      * @param url The URL the user was trying to connect to.
      * @param error Error to display.
      */
-    protected showLoginIssue(url: string | null, error: CoreError): void {
+    protected async showLoginIssue(url: string | null, error: CoreError): Promise<void> {
         let errorMessage = CoreDomUtils.getErrorMessage(error);
         let siteExists = false;
         let supportPageUrl: string | null = null;
@@ -396,7 +397,12 @@ export class CoreLoginSitePage implements OnInit {
             errorCode = error.errorcode;
         }
 
-        if (errorMessage == Translate.instant('core.cannotconnecttrouble')) {
+        if (
+            !siteExists && (
+                errorMessage === Translate.instant('core.cannotconnecttrouble') ||
+                errorMessage === Translate.instant('core.cannotconnecttroublewithoutsupport')
+            )
+        ) {
             const found = this.sites.find((site) => site.url == url);
 
             if (!found) {
@@ -404,10 +410,14 @@ export class CoreLoginSitePage implements OnInit {
             }
         }
 
-        let message = '<p>' + errorMessage + '</p>';
+        errorMessage = '<p>' + errorMessage + '</p>';
         if (!siteExists && url) {
             const fullUrl = CoreUrlUtils.isAbsoluteURL(url) ? url : 'https://' + url;
-            message += '<p padding><a href="' + fullUrl + '" core-link>' + url + '</a></p>';
+            errorMessage += '<p padding><a href="' + fullUrl + '" core-link>' + url + '</a></p>';
+        }
+
+        if (errorDetails) {
+            errorMessage += '<div class="core-error-info-container"></div>';
         }
 
         const buttons: AlertButton[] = [
@@ -432,11 +442,19 @@ export class CoreLoginSitePage implements OnInit {
         ];
 
         // @TODO: Remove CoreSite.MINIMUM_MOODLE_VERSION, not used on translations since 3.9.0.
-        CoreDomUtils.showAlertWithOptions({
+        const alertElement = await CoreDomUtils.showAlertWithOptions({
             header: Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }),
-            message,
+            message: errorMessage,
             buttons,
         });
+
+        if (errorDetails) {
+            const containerElement = alertElement.querySelector('.core-error-info-container');
+
+            if (containerElement) {
+                containerElement.innerHTML = CoreErrorInfoComponent.render(errorDetails, errorCode);
+            }
+        }
     }
 
     /**

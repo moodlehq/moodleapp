@@ -16,6 +16,7 @@
 @import "./theme.light.scss";
 @import "./theme.dark.scss";
 @import "./theme.custom.scss";
+@import "./theme.design-system.scss";
 @import "./theme.base.scss";
 
 /* Components */
@@ -24,6 +25,7 @@
 @import "./components/format-text.scss";
 @import "./components/rubrics.scss";
 @import "./components/mod-label.scss";
+@import "../core/components/error-info/error-info.scss";
 
 /* Some styles from 3rd party libraries. */
 @import "./bootstrap.scss";

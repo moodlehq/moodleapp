@@ -342,6 +342,7 @@ export class CoreSitesProvider {
             errorDetails,
             siteConfig,
             message: Translate.instant('core.cannotconnecttrouble'),
+            fallbackMessage: Translate.instant('core.cannotconnecttroublewithoutsupport'),
             critical: true,
             contactSupport: true,
         });
