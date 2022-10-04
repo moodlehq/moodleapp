@@ -29,6 +29,7 @@ export class PageLoadWatcher {
     protected ongoingRequests = 0;
     protected components = new Set<AsyncComponent>();
     protected loadedTimeout?: number;
+    protected hasChangesPromises: Promise<boolean>[] = [];
 
     constructor(
         protected loadsManager: PageLoadsManager,
@@ -97,7 +98,7 @@ export class PageLoadWatcher {
      */
     watchRequest<T>(
         observable: WSObservable<T>,
-        hasMeaningfulChanges?: (previousValue: T, newValue: T) => boolean,
+        hasMeaningfulChanges?: (previousValue: T, newValue: T) => Promise<boolean>,
     ): Promise<T> {
         const promisedValue = new CorePromisedValue<T>();
         let subscription: Subscription | null = null;
@@ -124,9 +125,11 @@ export class PageLoadWatcher {
                 }
 
                 // Second value, it means data was updated in background. Compare data.
-                if (hasMeaningfulChanges?.(firstValue, value)) {
-                    this.hasChanges = true;
+                if (!hasMeaningfulChanges) {
+                    return;
                 }
+
+                this.hasChangesPromises.push(CoreUtils.ignoreErrors(hasMeaningfulChanges(firstValue, value), false));
             },
             error: (error) => {
                 promisedValue.reject(error);
@@ -150,8 +153,11 @@ export class PageLoadWatcher {
         // It seems load has finished. Wait to make sure no new component has been rendered and started loading.
         // If a new component or a new request starts the timeout will be cancelled, no need to double check it.
         clearTimeout(this.loadedTimeout);
-        this.loadedTimeout = window.setTimeout(() => {
-            // Loading finished.
+        this.loadedTimeout = window.setTimeout(async () => {
+            // Loading finished. Calculate has changes.
+            const values = await Promise.all(this.hasChangesPromises);
+            this.hasChanges = this.hasChanges || values.includes(true);
+
             this.loadsManager.onPageLoaded(this);
         }, 100);
     }
