@@ -193,6 +193,7 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
     protected async loadTab(tabToSelect: CoreTabsOutletTab): Promise<boolean> {
         return CoreNavigator.navigate(tabToSelect.page, {
             params: tabToSelect.pageParams,
+            animated: false,
         });
     }
 
