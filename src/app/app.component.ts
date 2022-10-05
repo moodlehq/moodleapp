@@ -19,16 +19,14 @@ import { BackButtonEvent, ScrollDetail } from '@ionic/core';
 import { CoreLang } from '@services/lang';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreEvents } from '@singletons/events';
-import { NgZone, SplashScreen, Translate } from '@singletons';
+import { NgZone, SplashScreen } from '@singletons';
 import { CoreNetwork } from '@services/network';
 import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSubscriptions } from '@singletons/subscriptions';
 import { CoreWindow } from '@singletons/window';
-import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreUrlUtils } from '@services/utils/url';
 import { CoreConstants } from '@/core/constants';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -45,8 +43,6 @@ const MOODLEAPP_VERSION_PREFIX = 'moodleapp-';
 export class AppComponent implements OnInit, AfterViewInit {
 
     @ViewChild(IonRouterOutlet) outlet?: IonRouterOutlet;
-
-    protected lastInAppUrl?: string;
 
     /**
      * Component being initialized.
@@ -89,60 +85,6 @@ export class AppComponent implements OnInit, AfterViewInit {
 
             const scrollElement = await content.getScrollElement();
             content.classList.toggle('core-footer-shadow', !CoreDom.scrollIsBottom(scrollElement));
-        });
-
-        // Check URLs loaded in any InAppBrowser.
-        CoreEvents.on(CoreEvents.IAB_LOAD_START, (event) => {
-            // URLs with a custom scheme can be prefixed with "http://" or "https://", we need to remove this.
-            const protocol = CoreUrlUtils.getUrlProtocol(event.url);
-            const url = event.url.replace(/^https?:\/\//, '');
-            const urlScheme = CoreUrlUtils.getUrlProtocol(url);
-            const isExternalApp = urlScheme && urlScheme !== 'file' && urlScheme !== 'cdvfile';
-
-            if (CoreCustomURLSchemes.isCustomURL(url)) {
-                // Close the browser if it's a valid SSO URL.
-                CoreCustomURLSchemes.handleCustomURL(url).catch((error) => {
-                    CoreCustomURLSchemes.treatHandleCustomURLError(error);
-                });
-                CoreUtils.closeInAppBrowser();
-
-            } else if (isExternalApp && url.includes('://token=')) {
-                // It's an SSO token for another app. Close the IAB and show an error.
-                CoreUtils.closeInAppBrowser();
-                CoreDomUtils.showErrorModal(Translate.instant('core.login.contactyouradministratorissue', {
-                    $a: '<br><br>' + Translate.instant('core.errorurlschemeinvalidscheme', {
-                        $a: urlScheme,
-                    }),
-                }));
-
-            } else if (CoreApp.isAndroid()) {
-                // Check if the URL has a custom URL scheme. In Android they need to be opened manually.
-                if (isExternalApp) {
-                    // Open in browser should launch the right app if found and do nothing if not found.
-                    CoreUtils.openInBrowser(url, { showBrowserWarning: false });
-
-                    // At this point the InAppBrowser is showing a "Webpage not available" error message.
-                    // Try to navigate to last loaded URL so this error message isn't found.
-                    if (this.lastInAppUrl) {
-                        CoreUtils.openInApp(this.lastInAppUrl);
-                    } else {
-                        // No last URL loaded, close the InAppBrowser.
-                        CoreUtils.closeInAppBrowser();
-                    }
-                } else {
-                    this.lastInAppUrl = protocol ? `${protocol}://${url}` : url;
-                }
-            }
-        });
-
-        // Check InAppBrowser closed.
-        CoreEvents.on(CoreEvents.IAB_EXIT, () => {
-            this.lastInAppUrl = '';
-
-            if (CoreLoginHelper.isWaitingForBrowser()) {
-                CoreLoginHelper.stopWaitingForBrowser();
-                CoreLoginHelper.checkLogout();
-            }
         });
 
         CorePlatform.resume.subscribe(() => {
