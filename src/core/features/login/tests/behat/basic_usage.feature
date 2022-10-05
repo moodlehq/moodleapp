@@ -139,3 +139,15 @@ Feature: Test basic usage of login in app
 
     When I press "Reconnect" in the app
     Then I should find "Acceptance test site" in the app
+
+  @lms_from4.0
+  Scenario: Forgot password
+    When I enter the app
+    And I press "Forgotten your username or password?" in the app
+    And I set the field "Enter either username or email address" to "student1"
+    And I press "Search" in the app
+    Then I should find "Success" in the app
+
+    When I press "OK" in the app
+    And I press "Forgotten your username or password?" in the app
+    Then I should find "Contact support" in the app

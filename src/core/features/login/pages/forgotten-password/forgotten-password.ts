@@ -22,6 +22,7 @@ import { CoreWSExternalWarning } from '@services/ws';
 import { CoreNavigator } from '@services/navigator';
 import { CoreForms } from '@singletons/form';
 import { CorePlatform } from '@services/platform';
+import { CoreSitePublicConfigResponse } from '@classes/site';
 
 /**
  * Page to recover a forgotten password.
@@ -36,17 +37,16 @@ export class CoreLoginForgottenPasswordPage implements OnInit {
 
     myForm!: FormGroup;
     siteUrl!: string;
+    siteConfig?: CoreSitePublicConfigResponse;
     autoFocus!: boolean;
+    wasPasswordResetRequestedRecently = false;
 
-    constructor(
-        protected formBuilder: FormBuilder,
-    ) {
-    }
+    constructor(protected formBuilder: FormBuilder) {}
 
     /**
      * Initialize the component.
      */
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         const siteUrl = CoreNavigator.getRouteParam<string>('siteUrl');
         if (!siteUrl) {
             CoreDomUtils.showErrorModal('Site URL not supplied.');
@@ -56,11 +56,14 @@ export class CoreLoginForgottenPasswordPage implements OnInit {
         }
 
         this.siteUrl = siteUrl;
+        this.siteConfig = CoreNavigator.getRouteParam<CoreSitePublicConfigResponse>('siteConfig');
         this.autoFocus = CorePlatform.is('tablet');
         this.myForm = this.formBuilder.group({
             field: ['username', Validators.required],
             value: [CoreNavigator.getRouteParam<string>('username') || '', Validators.required],
         });
+
+        this.wasPasswordResetRequestedRecently = await CoreLoginHelper.wasPasswordResetRequestedRecently(siteUrl);
     }
 
     /**
@@ -101,8 +104,9 @@ export class CoreLoginForgottenPasswordPage implements OnInit {
                 // Success.
                 CoreForms.triggerFormSubmittedEvent(this.formElement, true);
 
-                CoreDomUtils.showAlert(Translate.instant('core.success'), response.notice);
-                CoreNavigator.back();
+                await CoreDomUtils.showAlert(Translate.instant('core.success'), response.notice);
+                await CoreNavigator.back();
+                await CoreLoginHelper.passwordResetRequested(this.siteUrl);
             }
         } catch (error) {
             CoreDomUtils.showErrorModal(error);

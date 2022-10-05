@@ -29,6 +29,8 @@
     "errorupdatesite": "An error occurred while updating the site's token.",
     "exceededloginattempts": "Need help logging in? Try recovering your password or contact your site support",
     "exceededloginattemptssupportsubject": "I can't log in",
+    "exceededpasswordresetattempts": "It seems you are having trouble accessing your account. You can contact your administrator or try again later.",
+    "exceededpasswordresetattemptssupportsubject": "I can't reset my password",
     "faqcannotconnectanswer": "Please, contact your site administrator.",
     "faqcannotconnectquestion": "I typed my site address correctly but I still can't connect.",
     "faqcannotfindmysiteanswer": "Have you typed the name correctly? It's also possible that your site is not included in our public sites directory. If you still can't find it, please enter your site address instead.",

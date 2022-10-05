@@ -19,6 +19,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreLoginHasSitesGuard } from './guards/has-sites';
 import { CoreLoginComponentsModule } from './components/components.module';
 import { CoreLoginHelper } from './services/login-helper';
+import { CoreLoginForgottenPasswordPage } from '@features/login/pages/forgotten-password/forgotten-password';
 
 const routes: Routes = [
     {
@@ -42,8 +43,7 @@ const routes: Routes = [
     },
     {
         path: 'forgottenpassword',
-        loadChildren: () => import('./pages/forgotten-password/forgotten-password.module')
-            .then( m => m.CoreLoginForgottenPasswordPageModule),
+        component: CoreLoginForgottenPasswordPage,
     },
     {
         path: 'changepassword',
@@ -69,6 +69,9 @@ const routes: Routes = [
         CoreSharedModule,
         CoreLoginComponentsModule,
         RouterModule.forChild(routes),
+    ],
+    declarations: [
+        CoreLoginForgottenPasswordPage,
     ],
 })
 export class CoreLoginLazyModule {}

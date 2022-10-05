@@ -43,7 +43,7 @@ const appRoutes: Routes = [
         {
             provide: APP_INITIALIZER,
             multi: true,
-            useValue: () => {
+            useValue: async () => {
                 CoreCronDelegate.register(CoreLoginCronHandler.instance);
 
                 CoreEvents.on(CoreEvents.SESSION_EXPIRED, (data) => {
@@ -57,6 +57,8 @@ const appRoutes: Routes = [
                 CoreEvents.on(CoreEvents.SITE_POLICY_NOT_AGREED, (data) => {
                     CoreLoginHelper.sitePolicyNotAgreed(data.siteId);
                 });
+
+                await CoreLoginHelper.initialize();
             },
         },
     ],
