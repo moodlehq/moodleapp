@@ -26,6 +26,7 @@ import { CoreEvents } from '@singletons/events';
 import { CoreError } from '@classes/errors/error';
 import { CoreNavigator, CoreRedirectPayload } from '@services/navigator';
 import { CoreForms } from '@singletons/form';
+import { CoreUserSupport } from '@features/user/services/support';
 
 /**
  * Page to enter the user password to reconnect to a site.
@@ -57,6 +58,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
     showLoading = true;
     reconnectAttempts = 0;
     siteConfig?: CoreSitePublicConfigResponse;
+    canContactSupport?: boolean;
 
     protected viewLeft = false;
     protected eventThrown = false;
@@ -102,6 +104,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             this.userAvatar = site.infos.userpictureurl;
             this.siteUrl = site.infos.siteurl;
             this.siteName = site.getSiteName();
+            this.canContactSupport = site.canContactSupport();
 
             // If login was OAuth we should only reach this page if the OAuth method ID has changed.
             this.isOAuth = site.isOAuth();
@@ -132,6 +135,15 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             },
             this.siteId,
         );
+    }
+
+    /**
+     * Contact site support.
+     */
+    async contactSupport(): Promise<void> {
+        const supportPageUrl = this.siteConfig && CoreUserSupport.getSupportPageUrl(this.siteConfig);
+
+        await CoreUserSupport.contact({ supportPageUrl });
     }
 
     /**

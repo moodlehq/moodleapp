@@ -28,6 +28,7 @@ import { CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@classes
 import { CoreEvents } from '@singletons/events';
 import { CoreNavigator } from '@services/navigator';
 import { CoreForms } from '@singletons/form';
+import { CoreUserSupport } from '@features/user/services/support';
 
 /**
  * Page to enter the user credentials.
@@ -56,6 +57,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     showScanQR = false;
     loginAttempts = 0;
     siteConfig?: CoreSitePublicConfigResponse;
+    canContactSupport?: boolean;
 
     protected eventThrown = false;
     protected viewLeft = false;
@@ -78,6 +80,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             this.logoUrl = !CoreConstants.CONFIG.forceLoginLogo && CoreNavigator.getRouteParam('logoUrl') || undefined;
             this.siteConfig = CoreNavigator.getRouteParam('siteConfig');
             this.urlToOpen = CoreNavigator.getRouteParam('urlToOpen');
+            this.canContactSupport = this.siteConfig && CoreUserSupport.canContactSupport(this.siteConfig);
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
 
@@ -123,6 +126,15 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
                 }
             });
         }
+    }
+
+    /**
+     * Contact site support.
+     */
+    async contactSupport(): Promise<void> {
+        const supportPageUrl = this.siteConfig && CoreUserSupport.getSupportPageUrl(this.siteConfig);
+
+        await CoreUserSupport.contact({ supportPageUrl });
     }
 
     /**
