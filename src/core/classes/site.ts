@@ -125,7 +125,7 @@ export class CoreSite {
     protected lastAutoLogin = 0;
     protected offlineDisabled = false;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    protected ongoingRequests: { [cacheId: string]: WSObservable<any> } = {};
+    protected ongoingRequests: Record<string, Record<OngoingRequestType, WSObservable<any> | undefined>> = {};
     protected requestQueue: RequestQueueItem[] = [];
     protected requestQueueTimeout: number | null = null;
     protected tokenPluginFileWorks?: boolean;
@@ -636,9 +636,10 @@ export class CoreSite {
 
         const cacheId = this.getCacheId(method, data);
 
-        // Check for an ongoing identical request if we're not ignoring cache.
-        if (preSets.getFromCache && this.ongoingRequests[cacheId] !== undefined) {
-            return this.ongoingRequests[cacheId];
+        // Check for an ongoing identical request.
+        const ongoingRequest = this.getOngoingRequest<T>(cacheId, preSets);
+        if (ongoingRequest) {
+            return ongoingRequest;
         }
 
         const observable = this.performRequest<T>(method, data, preSets, wsPreSets).pipe(
@@ -646,16 +647,66 @@ export class CoreSite {
             map((data) => CoreUtils.clone(data)),
         );
 
-        this.ongoingRequests[cacheId] = observable;
+        this.setOngoingRequest(cacheId, preSets, observable);
 
         return observable.pipe(
             finalize(() => {
-                // Clear the ongoing request unless it has changed (e.g. a new request that ignores cache).
-                if (this.ongoingRequests[cacheId] === observable) {
-                    delete this.ongoingRequests[cacheId];
-                }
+                this.clearOngoingRequest(cacheId, preSets, observable);
             }),
         );
+    }
+
+    /**
+     * Get an ongoing request if there's one already.
+     *
+     * @param cacheId Cache ID.
+     * @param preSets Presets.
+     * @return Ongoing request if it exists.
+     */
+    protected getOngoingRequest<T = unknown>(cacheId: string, preSets: CoreSiteWSPreSets): WSObservable<T> | undefined {
+        if (preSets.updateInBackground) {
+            return this.ongoingRequests[cacheId]?.[OngoingRequestType.UPDATE_IN_BACKGROUND];
+        } else if (preSets.getFromCache) { // Only reuse ongoing request when using cache.
+            return this.ongoingRequests[cacheId]?.[OngoingRequestType.STANDARD];
+        }
+    }
+
+    /**
+     * Store an ongoing request in memory.
+     *
+     * @param cacheId Cache ID.
+     * @param preSets Presets.
+     * @param request Request to store.
+     */
+    protected setOngoingRequest<T = unknown>(cacheId: string, preSets: CoreSiteWSPreSets, request: WSObservable<T>): void {
+        this.ongoingRequests[cacheId] = this.ongoingRequests[cacheId] ?? {};
+
+        if (preSets.updateInBackground) {
+            this.ongoingRequests[cacheId][OngoingRequestType.UPDATE_IN_BACKGROUND] = request;
+        } else {
+            this.ongoingRequests[cacheId][OngoingRequestType.STANDARD] = request;
+        }
+    }
+
+    /**
+     * Clear the ongoing request unless it has changed (e.g. a new request that ignores cache).
+     *
+     * @param cacheId Cache ID.
+     * @param preSets Presets.
+     * @param request Current request.
+     */
+    protected clearOngoingRequest<T = unknown>(cacheId: string, preSets: CoreSiteWSPreSets, request: WSObservable<T>): void {
+        this.ongoingRequests[cacheId] = this.ongoingRequests[cacheId] ?? {};
+
+        if (preSets.updateInBackground) {
+            if (this.ongoingRequests[cacheId][OngoingRequestType.UPDATE_IN_BACKGROUND] === request) {
+                delete this.ongoingRequests[cacheId][OngoingRequestType.UPDATE_IN_BACKGROUND];
+            }
+        } else {
+            if (this.ongoingRequests[cacheId][OngoingRequestType.STANDARD] === request) {
+                delete this.ongoingRequests[cacheId][OngoingRequestType.STANDARD];
+            }
+        }
     }
 
     /**
@@ -1640,8 +1691,11 @@ export class CoreSite {
         }
 
         // Check for an ongoing identical request if we're not ignoring cache.
-        if (cachePreSets.getFromCache && this.ongoingRequests[cacheId] !== undefined) {
-            return await firstValueFrom(this.ongoingRequests[cacheId]);
+
+        // Check for an ongoing identical request.
+        const ongoingRequest = this.getOngoingRequest<CoreSitePublicConfigResponse>(cacheId, cachePreSets);
+        if (ongoingRequest) {
+            return firstValueFrom(ongoingRequest);
         }
 
         const subject = new Subject<CoreSitePublicConfigResponse>();
@@ -1649,14 +1703,11 @@ export class CoreSite {
             // Return a clone of the original object, this may prevent errors if in the callback the object is modified.
             map((data) => CoreUtils.clone(data)),
             finalize(() => {
-                // Clear the ongoing request unless it has changed (e.g. a new request that ignores cache).
-                if (this.ongoingRequests[cacheId] === observable) {
-                    delete this.ongoingRequests[cacheId];
-                }
+                this.clearOngoingRequest(cacheId, cachePreSets, observable);
             }),
         );
 
-        this.ongoingRequests[cacheId] = observable;
+        this.setOngoingRequest(cacheId, cachePreSets, observable);
 
         this.getFromCache<CoreSitePublicConfigResponse>(method, {}, cachePreSets, false)
             .then(cachedData => cachedData.response)
@@ -2804,3 +2855,11 @@ type WSCachedError = {
  * Otherwise, it will only return 1 value, either coming from cache or from the server. After this, it will complete.
  */
 export type WSObservable<T> = Observable<T>;
+
+/**
+ * Type of ongoing requests stored in memory to avoid duplicating them.
+ */
+enum OngoingRequestType {
+    STANDARD = 0,
+    UPDATE_IN_BACKGROUND = 1,
+}
