@@ -493,31 +493,24 @@ export class CoreH5PContentValidator {
                 }
 
                 // Find semantics for name=key.
-                let found = false;
-                let validateFunction: undefined | ((...args: unknown[]) => unknown);
-                let field: CoreH5PSemantics | undefined;
+                const field = semantics.fields.find(field => field.name === key);
+                let value: unknown = null;
 
-                for (const field of semantics.fields) {
-                    if (field.name == key) {
-                        if (semantics.optional) {
-                            field.optional = true;
-                        }
-                        validateFunction = this[this.typeMap[field.type || '']].bind(this);
-                        found = true;
-                        break;
+                if (field) {
+                    if (semantics.optional) {
+                        field.optional = true;
+                    }
+
+                    const validateFunction = this[this.typeMap[field.type || '']].bind(this);
+                    if (validateFunction) {
+                        value = await validateFunction(groupObject[key], field);
+
+                        groupObject[key] = value;
                     }
                 }
 
-                if (found && validateFunction) {
-                    const val = await validateFunction(groupObject[key], field);
-
-                    groupObject[key] = val;
-                    if (val === null) {
-                        delete groupObject[key];
-                    }
-                } else {
-                    // Something exists in content that does not have a corresponding semantics field. Remove it.
-                    delete groupObject.key;
+                if (value === null) {
+                    delete groupObject[key];
                 }
             }
 
