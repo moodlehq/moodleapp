@@ -31,7 +31,7 @@ describe('CoreLinkDirective', () => {
 
         const anchor = fixture.nativeElement.querySelector('a');
         expect(anchor).not.toBeNull();
-        expect(anchor.href).toEqual('https://moodle.org/');
+        expect(anchor?.href).toEqual('https://moodle.org/');
     });
 
     it('should capture clicks', async () => {
@@ -46,7 +46,7 @@ describe('CoreLinkDirective', () => {
 
         const anchor = nativeElement.querySelector('a');
 
-        anchor.click();
+        anchor?.click();
 
         // Assert
         expect(CoreContentLinksHelper.handleLink).toHaveBeenCalledTimes(1);

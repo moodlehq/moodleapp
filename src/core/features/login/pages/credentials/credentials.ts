@@ -54,8 +54,9 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     isFixedUrlSet = false;
     showForgottenPassword = true;
     showScanQR = false;
+    loginAttempts = 0;
+    siteConfig?: CoreSitePublicConfigResponse;
 
-    protected siteConfig?: CoreSitePublicConfigResponse;
     protected eventThrown = false;
     protected viewLeft = false;
     protected siteId?: string;
@@ -274,6 +275,8 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             } else if (error.errorcode == 'forcepasswordchangenotice') {
                 // Reset password field.
                 this.credForm.controls.password.reset();
+            } else if (error.errorcode === 'invalidlogin') {
+                this.loginAttempts++;
             }
         } finally {
             modal.dismiss();

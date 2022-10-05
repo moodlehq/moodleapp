@@ -27,7 +27,7 @@ describe('CoreUserAvatarComponent', () => {
 
         const image = nativeElement.querySelector('img');
         expect(image).not.toBeNull();
-        expect(image.src).toEqual(document.location.href + 'assets/img/user-avatar.png');
+        expect(image?.src).toEqual(document.location.href + 'assets/img/user-avatar.png');
     });
 
 });

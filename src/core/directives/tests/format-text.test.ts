@@ -67,7 +67,7 @@ describe('CoreFormatTextDirective', () => {
         // Assert
         const text = fixture.nativeElement.querySelector('core-format-text');
         expect(text).not.toBeNull();
-        expect(text.innerHTML).toEqual(sentence);
+        expect(text?.innerHTML).toEqual(sentence);
     });
 
     it('should format text', async () => {
@@ -83,7 +83,7 @@ describe('CoreFormatTextDirective', () => {
         // Assert
         const text = nativeElement.querySelector('core-format-text');
         expect(text).not.toBeNull();
-        expect(text.textContent).toEqual('Formatted text');
+        expect(text?.textContent).toEqual('Formatted text');
 
         expect(CoreFilter.formatText).toHaveBeenCalledTimes(1);
         expect(CoreFilter.formatText).toHaveBeenCalledWith(
@@ -115,7 +115,7 @@ describe('CoreFormatTextDirective', () => {
         // Assert
         const text = nativeElement.querySelector('core-format-text');
         expect(text).not.toBeNull();
-        expect(text.textContent).toEqual('Formatted text');
+        expect(text?.textContent).toEqual('Formatted text');
 
         expect(CoreFilterHelper.getFiltersAndFormatText).toHaveBeenCalledTimes(1);
         expect(CoreFilterHelper.getFiltersAndFormatText).toHaveBeenCalledWith(
@@ -153,7 +153,7 @@ describe('CoreFormatTextDirective', () => {
         // Assert
         const image = nativeElement.querySelector('img');
         expect(image).not.toBeNull();
-        expect(image.src).toEqual('file://local-path/');
+        expect(image?.src).toEqual('file://local-path/');
 
         expect(CoreSites.getSite).toHaveBeenCalledWith(site.getId());
         expect(CoreFilepool.getSrcByUrl).toHaveBeenCalledTimes(1);
@@ -171,7 +171,7 @@ describe('CoreFormatTextDirective', () => {
         );
         const anchor = nativeElement.querySelector('a');
 
-        anchor.click();
+        anchor?.click();
 
         // Assert
         expect(CoreContentLinksHelper.handleLink).toHaveBeenCalledTimes(1);

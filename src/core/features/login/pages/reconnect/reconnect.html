@@ -36,6 +36,11 @@
                         </ion-label>
                     </ion-item>
                 </ion-card>
+
+                <core-login-exceeded-attempts *ngIf="reconnectAttempts >= 3" [siteConfig]="siteConfig" [siteUrl]="siteUrl"
+                    [supportSubject]="'core.login.exceededloginattemptssupportsubject' | translate">
+                    {{ 'core.login.exceededloginattempts' | translate }}
+                </core-login-exceeded-attempts>
             </div>
             <form *ngIf="!isOAuth" [formGroup]="credForm" (ngSubmit)="login($event)" class="core-login-form" #reconnectForm>
                 <ion-item class="ion-text-wrap core-username item-interactive">

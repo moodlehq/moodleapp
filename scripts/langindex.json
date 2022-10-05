@@ -1932,6 +1932,8 @@
   "core.login.errorexampleurl": "local_moodlemobileapp",
   "core.login.errorqrnoscheme": "local_moodlemobileapp",
   "core.login.errorupdatesite": "local_moodlemobileapp",
+  "core.login.exceededloginattempts": "local_moodlemobileapp",
+  "core.login.exceededloginattemptssupportsubject": "local_moodlemobileapp",
   "core.login.faqcannotconnectanswer": "local_moodlemobileapp",
   "core.login.faqcannotconnectquestion": "local_moodlemobileapp",
   "core.login.faqcannotfindmysiteanswer": "local_moodlemobileapp",

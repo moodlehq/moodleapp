@@ -26,11 +26,11 @@ describe('CoreIconComponent', () => {
         expect(fixture.nativeElement.innerHTML.trim()).not.toHaveLength(0);
 
         const icon = fixture.nativeElement.querySelector('ion-icon');
-        const name = icon.getAttribute('name') || icon.getAttribute('ng-reflect-name') || '';
+        const name = icon?.getAttribute('name') || icon?.getAttribute('ng-reflect-name') || '';
 
         expect(icon).not.toBeNull();
         expect(name).toEqual('fa-thumbs-up');
-        expect(icon.getAttribute('role')).toEqual('presentation');
+        expect(icon?.getAttribute('role')).toEqual('presentation');
     });
 
 });

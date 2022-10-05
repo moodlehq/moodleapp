@@ -27,7 +27,7 @@ import { Directive, ElementRef, OnDestroy, OnInit } from '@angular/core';
 })
 export class CoreUpdateNonReactiveAttributesDirective implements OnInit, OnDestroy {
 
-    protected element: HTMLIonButtonElement;
+    protected element: HTMLIonButtonElement | HTMLElement;
     protected mutationObserver: MutationObserver;
 
     constructor(element: ElementRef<HTMLIonButtonElement>) {
@@ -52,7 +52,11 @@ export class CoreUpdateNonReactiveAttributesDirective implements OnInit, OnDestr
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        await this.element.componentOnReady();
+        if ('componentOnReady' in this.element) {
+            // This may be necessary if this is somehow called but Ionic's directives arent. This happens, for example,
+            // in some tests such as the credentials page.
+            await this.element.componentOnReady();
+        }
 
         this.mutationObserver.observe(this.element, { attributes: true, attributeFilter: ['aria-label'] });
     }
