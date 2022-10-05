@@ -21,6 +21,8 @@ import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreUserSupport } from '@features/user/services/support';
+import { AlertButton } from '@ionic/angular';
 
 /**
  * Page that shows instructions to change the password.
@@ -46,10 +48,26 @@ export class CoreLoginChangePasswordPage implements OnDestroy {
      * Show a help modal.
      */
     showHelp(): void {
-        CoreDomUtils.showAlert(
-            Translate.instant('core.help'),
-            Translate.instant('core.login.changepasswordhelp'),
-        );
+        const site = CoreSites.getRequiredCurrentSite();
+        const buttons: (AlertButton | string)[] = [];
+
+        if (site.canContactSupport()) {
+            buttons.push({
+                text: Translate.instant('core.contactsupport'),
+                handler: () => CoreUserSupport.contact({
+                    supportPageUrl: site.getSupportPageUrl(),
+                    subject: Translate.instant('core.login.changepasswordsupportsubject'),
+                }),
+            });
+        }
+
+        buttons.push(Translate.instant('core.ok'));
+
+        CoreDomUtils.showAlertWithOptions({
+            header: Translate.instant('core.help'),
+            message: Translate.instant('core.login.changepasswordhelp'),
+            buttons,
+        });
     }
 
     /**

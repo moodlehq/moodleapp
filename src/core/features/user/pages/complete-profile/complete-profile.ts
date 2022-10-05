@@ -21,6 +21,8 @@ import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreUtils } from '@services/utils/utils';
+import { AlertButton } from '@ionic/angular';
+import { CoreUserSupport } from '@features/user/services/support';
 
 /**
  * Page that shows instructions to complete the profile.
@@ -45,11 +47,26 @@ export class CoreUserCompleteProfilePage implements OnDestroy {
      * Show a help modal.
      */
     showHelp(): void {
-        // @todo MOBILE-4059: Change this message.
-        CoreDomUtils.showAlert(
-            Translate.instant('core.help'),
-            Translate.instant('core.login.changepasswordhelp'),
-        );
+        const site = CoreSites.getRequiredCurrentSite();
+        const buttons: (AlertButton | string)[] = [];
+
+        if (site.canContactSupport()) {
+            buttons.push({
+                text: Translate.instant('core.contactsupport'),
+                handler: () => CoreUserSupport.contact({
+                    supportPageUrl: site.getSupportPageUrl(),
+                    subject: Translate.instant('core.login.completeprofilesupportsubject'),
+                }),
+            });
+        }
+
+        buttons.push(Translate.instant('core.ok'));
+
+        CoreDomUtils.showAlertWithOptions({
+            header: Translate.instant('core.help'),
+            message: Translate.instant('core.user.completeprofilehelp'),
+            buttons,
+        });
     }
 
     /**
