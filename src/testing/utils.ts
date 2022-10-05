@@ -183,8 +183,7 @@ export function mock<T>(
     return instance as T;
 }
 
-export function mockSingleton<T>(singletonClass: CoreSingletonProxy<T>, instance: T): T;
-export function mockSingleton<T>(singletonClass: CoreSingletonProxy<unknown>, instance?: Record<string, unknown>): T;
+export function mockSingleton<T>(singletonClass: CoreSingletonProxy<T>, instance: T | Partial<T>): T;
 export function mockSingleton<T>(
     singletonClass: CoreSingletonProxy<unknown>,
     methods: string[],

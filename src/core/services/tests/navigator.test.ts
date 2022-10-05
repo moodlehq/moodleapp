@@ -40,7 +40,7 @@ describe('CoreNavigator', () => {
 
         router = mockSingleton(Router, { url: '/' });
 
-        mockSingleton(CoreSites, { getCurrentSiteId: () => 42, isLoggedIn: () => true });
+        mockSingleton(CoreSites, { getCurrentSiteId: () => '42', isLoggedIn: () => true });
         mockSingleton(CoreMainMenu, { isMainMenuTab: path => Promise.resolve(currentMainMenuHandlers.includes(path)) });
     });
 
