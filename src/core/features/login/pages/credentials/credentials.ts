@@ -239,7 +239,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             // Site wasn't checked (it failed) or a previous check determined it was SSO. Let's check again.
             await this.checkSite(siteUrl);
 
-            if (!this.isBrowserSSO) {
+            if (!this.isBrowserSSO && this.siteChecked) {
                 // Site doesn't use browser SSO, throw app's login again.
                 return this.login();
             }
