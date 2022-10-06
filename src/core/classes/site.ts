@@ -61,6 +61,7 @@ import { Observable, ObservableInput, ObservedValueOf, OperatorFunction, Subject
 import { finalize, map, mergeMap } from 'rxjs/operators';
 import { firstValueFrom } from '../utils/rxjs';
 import { CoreUserSupport } from '@features/user/services/support';
+import { CoreSiteError } from '@classes/errors/siteerror';
 
 /**
  * QR Code type enumeration.
@@ -1157,7 +1158,18 @@ export class CoreSite {
             );
 
             if (!data || !data.responses) {
-                throw new CoreError(Translate.instant('core.errorinvalidresponse'));
+                const siteConfig = await CoreUtils.ignoreErrors(
+                    this.getPublicConfig({ readingStrategy: CoreSitesReadingStrategy.ONLY_CACHE }),
+                );
+
+                throw new CoreSiteError({
+                    siteConfig,
+                    contactSupport: true,
+                    message: Translate.instant('core.cannotconnecttrouble'),
+                    fallbackMessage: Translate.instant('core.cannotconnecttroublewithoutsupport'),
+                    errorcode: 'invalidresponse',
+                    errorDetails: Translate.instant('core.errorinvalidresponse', { method: 'tool_mobile_call_external_functions' }),
+                });
             }
 
             requests.forEach((request, i) => {

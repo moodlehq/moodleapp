@@ -25,6 +25,26 @@ describe('Credentials page', () => {
         // Arrange.
         const siteUrl = 'https://campus.example.edu';
 
+        mockSingleton(CoreSites, {
+            getPublicSiteConfigByUrl: async () => ({
+                wwwroot: 'https://campus.example.edu',
+                httpswwwroot: 'https://campus.example.edu',
+                sitename: 'Example Campus',
+                guestlogin: 0,
+                rememberusername: 0,
+                authloginviaemail: 0,
+                registerauth: '',
+                forgottenpasswordurl: '',
+                authinstructions: '',
+                authnoneenabled: 0,
+                enablewebservices: 1,
+                enablemobilewebservice: 1,
+                maintenanceenabled: 0,
+                maintenancemessage: '',
+                typeoflogin: 1,
+            }),
+        });
+
         // Act.
         const fixture = await renderPageComponent(CoreLoginCredentialsPage, {
             routeParams: { siteUrl },

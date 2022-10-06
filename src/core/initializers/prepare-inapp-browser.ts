@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreApp } from '@services/app';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
@@ -45,10 +46,12 @@ export default function(): void {
         if (isExternalApp && url.includes('://token=')) {
             // It's an SSO token for another app. Close the IAB and show an error.
             CoreUtils.closeInAppBrowser();
-            CoreDomUtils.showErrorModal(Translate.instant('core.login.contactyouradministratorissue', {
-                $a: '<br><br>' + Translate.instant('core.errorurlschemeinvalidscheme', {
-                    $a: urlScheme,
-                }),
+            CoreDomUtils.showErrorModal(new CoreSiteError({
+                contactSupport: true,
+                message: Translate.instant('core.cannotconnecttrouble'),
+                fallbackMessage: Translate.instant('core.cannotconnecttroublewithoutsupport'),
+                errorcode: 'invalidurlscheme',
+                errorDetails: Translate.instant('core.errorurlschemeinvalidscheme', { $a: urlScheme }),
             }));
 
             return;

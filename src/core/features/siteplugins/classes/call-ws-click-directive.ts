@@ -15,6 +15,7 @@
 import { Input, OnInit, ElementRef, Directive } from '@angular/core';
 
 import { CoreDomUtils } from '@services/utils/dom';
+import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreSitePluginsPluginContentComponent } from '../components/plugin-content/plugin-content';
@@ -72,7 +73,12 @@ export class CoreSitePluginsCallWSOnClickBaseDirective extends CoreSitePluginsCa
             await super.callWS();
         } catch (error) {
             if (this.showError === undefined || CoreUtils.isTrueOrOne(this.showError)) {
-                CoreDomUtils.showErrorModalDefault(error, 'core.serverconnection', true);
+                CoreDomUtils.showErrorModalDefault(
+                    error,
+                    Translate.instant('core.serverconnection', {
+                        details: CoreTextUtils.getErrorMessageFromError(error) ?? 'Unknown error',
+                    }),
+                );
             }
         } finally {
             modal.dismiss();
