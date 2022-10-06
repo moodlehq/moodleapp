@@ -41,7 +41,7 @@ export class CoreUserSyncProvider extends CoreSyncBaseProvider<string[]> {
      * @return Promise resolved with warnings if sync is successful, rejected if sync fails.
      */
     syncPreferences(siteId?: string): Promise<void> {
-        return this.syncOnSites('all user preferences', this.syncSitePreferences.bind(this), siteId);
+        return this.syncOnSites('all user preferences', (siteId) => this.syncSitePreferences(siteId), siteId);
     }
 
     /**

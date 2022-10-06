@@ -19,8 +19,7 @@ import {
     CoreCourseOptionsHandler,
     CoreCourseOptionsHandlerData,
 } from '@features/course/services/course-options-delegate';
-import { CoreCourses, CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/services/courses';
-import { CoreEnrolledCourseDataWithExtraInfoAndOptions } from '@features/courses/services/courses-helper';
+import { CoreCourseAnyCourseData, CoreCourses, CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/services/courses';
 import { makeSingleton } from '@singletons';
 import { CoreGrades } from '../grades';
 
@@ -34,11 +33,7 @@ export class CoreGradesCourseOptionHandlerService implements CoreCourseOptionsHa
     priority = 400;
 
     /**
-     * Should invalidate the data to determine if the handler is enabled for a certain course.
-     *
-     * @param courseId The course ID.
-     * @param navOptions Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
-     * @return Promise resolved when done.
+     * @inheritdoc
      */
     invalidateEnabledForCourse(courseId: number, navOptions?: CoreCourseUserAdminOrNavOptionIndexed): Promise<void> {
         if (navOptions && navOptions.grades !== undefined) {
@@ -50,21 +45,14 @@ export class CoreGradesCourseOptionHandlerService implements CoreCourseOptionsHa
     }
 
     /**
-     * Check if the handler is enabled on a site level.
-     *
-     * @return Whether or not the handler is enabled on a site level.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         return true;
     }
 
     /**
-     * Whether or not the handler is enabled for a certain course.
-     *
-     * @param courseId The course ID.
-     * @param accessData Access type and data. Default, guest, ...
-     * @param navOptions Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
-     * @return True or promise resolved with true if enabled.
+     * @inheritdoc
      */
     isEnabledForCourse(
         courseId: number,
@@ -94,12 +82,9 @@ export class CoreGradesCourseOptionHandlerService implements CoreCourseOptionsHa
     }
 
     /**
-     * Called when a course is downloaded. It should prefetch all the data to be able to see the addon in offline.
-     *
-     * @param course The course.
-     * @return Promise resolved when done.
+     * @inheritdoc
      */
-    async prefetch(course: CoreEnrolledCourseDataWithExtraInfoAndOptions): Promise<void> {
+    async prefetch(course: CoreCourseAnyCourseData): Promise<void> {
         try {
             await CoreGrades.getCourseGradesTable(course.id, undefined, undefined, true);
         } catch (error) {

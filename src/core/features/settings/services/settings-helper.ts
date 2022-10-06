@@ -84,9 +84,9 @@ export class CoreSettingsHelperProvider {
                 }
             };
 
-            CoreEvents.on(CoreEvents.LOGIN, applySiteScheme.bind(this));
+            CoreEvents.on(CoreEvents.LOGIN, () => applySiteScheme());
 
-            CoreEvents.on(CoreEvents.SITE_UPDATED, applySiteScheme.bind(this));
+            CoreEvents.on(CoreEvents.SITE_UPDATED, () => applySiteScheme());
 
             CoreEvents.on(CoreEvents.LOGOUT, () => {
                 // Reset color scheme settings.

@@ -108,11 +108,13 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
             this.jsData = Object.assign(this.data, CoreSitePlugins.createDataForJS(this.initResult, result));
 
             // Pass some methods as jsData so they can be called from the template too.
-            this.jsData.fetchContent = this.fetchContent.bind(this);
-            this.jsData.openContent = this.openContent.bind(this);
-            this.jsData.refreshContent = this.refreshContent.bind(this);
-            this.jsData.updateContent = this.updateContent.bind(this);
-            this.jsData.updateModuleCourseContent = this.updateModuleCourseContent.bind(this);
+            this.jsData.fetchContent = refresh => this.fetchContent(refresh);
+            this.jsData.openContent = (title, args, component, method, jsData, preSets, ptrEnabled) =>
+                this.openContent(title, args, component, method, jsData, preSets, ptrEnabled);
+            this.jsData.refreshContent = showSpinner => this.refreshContent(showSpinner);
+            this.jsData.updateContent = (args, component, method, jsData, preSets) =>
+                this.updateContent(args, component, method, jsData, preSets);
+            this.jsData.updateModuleCourseContent = (cmId, alreadyFetched) => this.updateModuleCourseContent(cmId, alreadyFetched);
 
             this.onContentLoaded.emit({ refresh: !!refresh, success: true });
         } catch (error) {

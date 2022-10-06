@@ -114,7 +114,7 @@ export class AddonModFeedbackPrefetchHandlerService extends CoreCourseActivityPr
      * @inheritdoc
      */
     prefetch(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
-        return this.prefetchPackage(module, courseId, this.prefetchFeedback.bind(this, module, courseId));
+        return this.prefetchPackage(module, courseId, (siteId) => this.prefetchFeedback(module, courseId, siteId));
     }
 
     /**

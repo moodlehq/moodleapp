@@ -207,7 +207,7 @@ export class AddonModDataPrefetchHandlerService extends CoreCourseActivityPrefet
      * @inheritdoc
      */
     prefetch(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
-        return this.prefetchPackage(module, courseId, this.prefetchDatabase.bind(this, module, courseId));
+        return this.prefetchPackage(module, courseId, (siteId) => this.prefetchDatabase(module, courseId, siteId));
     }
 
     /**

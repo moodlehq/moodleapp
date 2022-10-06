@@ -58,7 +58,7 @@ export class AddonModChatPrefetchHandlerService extends CoreCourseActivityPrefet
      * @inheritdoc
      */
     prefetch(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
-        return this.prefetchPackage(module, courseId, this.prefetchChat.bind(this, module, courseId));
+        return this.prefetchPackage(module, courseId, (siteId) => this.prefetchChat(module, courseId, siteId));
     }
 
     /**

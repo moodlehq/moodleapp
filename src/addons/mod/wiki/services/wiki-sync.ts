@@ -73,7 +73,7 @@ export class AddonModWikiSyncProvider extends CoreSyncBaseProvider<AddonModWikiS
      * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllWikis(siteId?: string, force?: boolean): Promise<void> {
-        return this.syncOnSites('all wikis', this.syncAllWikisFunc.bind(this, !!force), siteId);
+        return this.syncOnSites('all wikis', (siteId) => this.syncAllWikisFunc(!!force, siteId), siteId);
     }
 
     /**

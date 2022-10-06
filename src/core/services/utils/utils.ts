@@ -488,7 +488,7 @@ export class CoreUtilsProvider {
      */
     async filterEnabledSites<P extends unknown[]>(
         siteIds: string[],
-        isEnabledFn: (siteId, ...args: P) => boolean | Promise<boolean>,
+        isEnabledFn: (siteId: string, ...args: P) => boolean | Promise<boolean>,
         checkAll?: boolean,
         ...args: P
     ): Promise<string[]> {

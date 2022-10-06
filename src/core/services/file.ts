@@ -834,9 +834,9 @@ export class CoreFileProvider {
             return this.copyOrMoveExternalFile(from, to, copy);
         }
 
-        const moveCopyFn: MoveCopyFunction = copy ?
-            (isDir ? File.copyDir.bind(File.instance) : File.copyFile.bind(File.instance)) :
-            (isDir ? File.moveDir.bind(File.instance) : File.moveFile.bind(File.instance));
+        const moveCopyFn: MoveCopyFunction = (...args) => copy ?
+            (isDir ? File.copyDir(...args) : File.copyFile(...args)) :
+            (isDir ? File.moveDir(...args) : File.moveFile(...args));
 
         await this.init();
 
@@ -854,14 +854,16 @@ export class CoreFileProvider {
         try {
             const entry = await moveCopyFn(this.basePath, from, this.basePath, to);
 
-            return entry;
+            return <FileEntry | DirectoryEntry> entry;
         } catch (error) {
             // The copy can fail if the path has encoded characters. Try again if that's the case.
             const decodedFrom = decodeURI(from);
             const decodedTo = decodeURI(to);
 
             if (from != decodedFrom || to != decodedTo) {
-                return moveCopyFn(this.basePath, decodedFrom, this.basePath, decodedTo);
+                const entry = await moveCopyFn(this.basePath, decodedFrom, this.basePath, decodedTo);
+
+                return <FileEntry | DirectoryEntry> entry;
             } else {
                 return Promise.reject(error);
             }
@@ -1307,4 +1309,4 @@ export class CoreFileProvider {
 
 export const CoreFile = makeSingleton(CoreFileProvider);
 
-type MoveCopyFunction = (path: string, dirName: string, newPath: string, newDirName: string) => Promise<FileEntry | DirectoryEntry>;
+type MoveCopyFunction = (path: string, name: string, newPath: string, newName: string) => Promise<Entry>;

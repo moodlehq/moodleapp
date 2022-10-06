@@ -65,7 +65,7 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
      * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllFeedbacks(siteId?: string, force?: boolean): Promise<void> {
-        return this.syncOnSites('all feedbacks', this.syncAllFeedbacksFunc.bind(this, !!force), siteId);
+        return this.syncOnSites('all feedbacks', (siteId) => this.syncAllFeedbacksFunc(!!force, siteId), siteId);
     }
 
     /**
@@ -213,7 +213,7 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
         responses.sort((a, b) => a.page - b.page);
 
         const orderedData = responses.map((data) => ({
-            function: this.processPage.bind(this, feedback, data, siteId, timemodified, result),
+            function: () => this.processPage(feedback, data, siteId, timemodified, result),
             blocking: true,
         }));
 

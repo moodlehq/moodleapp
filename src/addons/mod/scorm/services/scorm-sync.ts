@@ -445,7 +445,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
      * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllScorms(siteId?: string, force?: boolean): Promise<void> {
-        return this.syncOnSites('all SCORMs', this.syncAllScormsFunc.bind(this, !!force), siteId);
+        return this.syncOnSites('all SCORMs', (siteId) => this.syncAllScormsFunc(!!force, siteId), siteId);
     }
 
     /**

@@ -95,7 +95,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
     tabAction: CoreTabsRoleTab<T>;
 
     constructor(element: ElementRef) {
-        this.backButtonFunction = this.backButtonClicked.bind(this);
+        this.backButtonFunction = (event) => this.backButtonClicked(event);
 
         this.tabAction = new CoreTabsRoleTab(this);
 

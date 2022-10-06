@@ -116,7 +116,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
 
         this.afterRender = new EventEmitter<void>();
 
-        this.element.addEventListener('click', this.elementClicked.bind(this));
+        this.element.addEventListener('click', (event) => this.elementClicked(event));
 
         this.siteId = this.siteId || CoreSites.getCurrentSiteId();
     }

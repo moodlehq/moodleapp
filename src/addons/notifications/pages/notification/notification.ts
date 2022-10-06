@@ -183,7 +183,7 @@ export class AddonNotificationsNotificationPage implements OnInit, OnDestroy {
             actions.push({
                 message: 'core.view',
                 icon: 'fas-eye',
-                action: this.openInBrowser.bind(this),
+                action: (siteId) => this.openInBrowser(siteId),
             });
         }
 

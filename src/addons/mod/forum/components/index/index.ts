@@ -238,11 +238,11 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         // Listen for discussions added. When a discussion is added, we reload the data.
         this.newDiscObserver = CoreEvents.on(
             AddonModForumProvider.NEW_DISCUSSION_EVENT,
-            this.eventReceived.bind(this, true),
+            (data) => this.eventReceived(true, data),
         );
         this.replyObserver = CoreEvents.on(
             AddonModForumProvider.REPLY_DISCUSSION_EVENT,
-            this.eventReceived.bind(this, false),
+            (data) => this.eventReceived(false, data),
         );
         this.changeDiscObserver = CoreEvents.on(AddonModForumProvider.CHANGE_DISCUSSION_EVENT, data => {
             if (!this.forum) {

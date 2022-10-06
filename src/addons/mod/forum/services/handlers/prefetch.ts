@@ -204,7 +204,7 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
      * @inheritdoc
      */
     prefetch(module: CoreCourseAnyModuleData, courseId: number, single?: boolean): Promise<void> {
-        return this.prefetchPackage(module, courseId, this.prefetchForum.bind(this, module, courseId, single));
+        return this.prefetchPackage(module, courseId, (siteId) => this.prefetchForum(module, courseId, !!single, siteId));
     }
 
     /**

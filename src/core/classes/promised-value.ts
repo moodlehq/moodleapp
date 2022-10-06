@@ -29,8 +29,8 @@ export class CorePromisedValue<T = unknown> extends CorePromise<T> {
         const promisedValue = new CorePromisedValue<T>();
 
         promise
-            .then(promisedValue.resolve.bind(promisedValue))
-            .catch(promisedValue.reject.bind(promisedValue));
+            .then(value => promisedValue.resolve(value))
+            .catch(error => promisedValue.reject(error));
 
         return promisedValue;
     }

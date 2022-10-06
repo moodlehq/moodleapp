@@ -39,7 +39,7 @@ export class CoreSortedDelegate<
     constructor(delegateName: string) {
         super(delegateName, true);
 
-        CoreEvents.on(CoreEvents.LOGOUT, this.clearSortedHandlers.bind(this));
+        CoreEvents.on(CoreEvents.LOGOUT, () => this.clearSortedHandlers());
         CoreEvents.on(CoreEvents.SITE_POLICY_AGREED, (data) => {
             if (data.siteId === CoreSites.getCurrentSiteId()) {
                 // Clear loaded handlers when policy is agreed. The CoreDelegate class will load them again.
@@ -47,7 +47,7 @@ export class CoreSortedDelegate<
             }
         });
         // Clear loaded handlers on login, there could be an invalid list loaded when user reconnects after token expired.
-        CoreEvents.on(CoreEvents.LOGIN, this.clearSortedHandlers.bind(this));
+        CoreEvents.on(CoreEvents.LOGIN, () => this.clearSortedHandlers());
     }
 
     /**

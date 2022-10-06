@@ -405,7 +405,7 @@ export class AddonModDataEditPage implements OnInit {
             form: this.editForm,
             database: this.database,
             errors: this.errors,
-            onFieldInit: this.onFieldInit.bind(this),
+            onFieldInit: (data) => this.onFieldInit(data),
         };
 
         let template = AddonModDataHelper.getTemplate(this.database!, AddonModDataTemplateType.ADD, this.fieldsArray);

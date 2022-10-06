@@ -994,7 +994,7 @@ export class CoreSite {
             this.processRequestQueue();
         } else if (!this.requestQueueTimeout) {
             this.requestQueueTimeout = window.setTimeout(
-                this.processRequestQueue.bind(this),
+                () => this.processRequestQueue(),
                 CoreConstants.CONFIG.wsrequestqueuedelay,
             );
         }

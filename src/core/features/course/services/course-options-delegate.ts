@@ -90,7 +90,7 @@ export interface CoreCourseOptionsHandler extends CoreDelegateHandler {
      * @param course The course.
      * @return Promise resolved when done.
      */
-    prefetch?(course: CoreEnrolledCourseDataWithExtraInfoAndOptions): Promise<void>;
+    prefetch?(course: CoreCourseAnyCourseData): Promise<void>;
 }
 
 /**
@@ -452,7 +452,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
                 handlersToDisplay.push({
                     data: data,
                     priority: handler.priority || 0,
-                    prefetch: handler.prefetch && handler.prefetch.bind(handler),
+                    prefetch: async (course) => await handler.prefetch?.(course),
                     name: handler.name,
                 });
 

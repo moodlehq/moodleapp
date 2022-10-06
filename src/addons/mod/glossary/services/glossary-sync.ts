@@ -53,7 +53,7 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
      * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllGlossaries(siteId?: string, force?: boolean): Promise<void> {
-        return this.syncOnSites('all glossaries', this.syncAllGlossariesFunc.bind(this, !!force), siteId);
+        return this.syncOnSites('all glossaries', (siteId) => this.syncAllGlossariesFunc(!!force, siteId), siteId);
     }
 
     /**

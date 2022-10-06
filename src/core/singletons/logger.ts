@@ -86,15 +86,15 @@ export class CoreLogger {
 
         return new CoreLogger(
             // eslint-disable-next-line no-console
-            CoreLogger.prepareLogFn(console.log.bind(console), className),
+            CoreLogger.prepareLogFn((...data) => console.log(...data), className),
             // eslint-disable-next-line no-console
-            CoreLogger.prepareLogFn(console.info.bind(console), className),
+            CoreLogger.prepareLogFn((...data) => console.info(...data), className),
             // eslint-disable-next-line no-console
-            CoreLogger.prepareLogFn(console.warn.bind(console), className),
+            CoreLogger.prepareLogFn((...data) => console.warn(...data), className),
             // eslint-disable-next-line no-console
-            CoreLogger.prepareLogFn(console.debug.bind(console), className),
+            CoreLogger.prepareLogFn((...data) => console.debug(...data), className),
             // eslint-disable-next-line no-console
-            CoreLogger.prepareLogFn(console.error.bind(console), className),
+            CoreLogger.prepareLogFn((...data) => console.error(...data), className),
         );
     }
 

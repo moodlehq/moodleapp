@@ -180,7 +180,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
      * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllQuizzes(siteId?: string, force?: boolean): Promise<void> {
-        return this.syncOnSites('all quizzes', this.syncAllQuizzesFunc.bind(this, !!force), siteId);
+        return this.syncOnSites('all quizzes', (siteId) => this.syncAllQuizzesFunc(!!force, siteId), siteId);
     }
 
     /**

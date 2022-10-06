@@ -468,7 +468,7 @@ export class CoreSitePluginsProvider {
             plugin.parsedHandlers = CoreTextUtils.parseJSON(
                 plugin.handlers,
                 null,
-                this.logger.error.bind(this.logger, 'Error parsing site plugin handlers'),
+                error => this.logger.error('Error parsing site plugin handlers', error),
             );
         }
 

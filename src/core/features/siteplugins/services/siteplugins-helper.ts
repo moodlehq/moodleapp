@@ -362,7 +362,7 @@ export class CoreSitePluginsHelperProvider {
             plugin.parsedHandlers = CoreTextUtils.parseJSON(
                 plugin.handlers,
                 null,
-                this.logger.error.bind(this.logger, 'Error parsing site plugin handlers'),
+                error => this.logger.error('Error parsing site plugin handlers', error),
             );
         }
 
@@ -370,7 +370,7 @@ export class CoreSitePluginsHelperProvider {
             plugin.parsedLang = CoreTextUtils.parseJSON(
                 plugin.lang,
                 null,
-                this.logger.error.bind(this.logger, 'Error parsing site plugin lang'),
+                error => this.logger.error('Error parsing site plugin lang', error),
             );
         }
 

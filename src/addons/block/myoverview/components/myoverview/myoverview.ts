@@ -280,7 +280,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
                 loadCategoryNames: showCategories,
                 readingStrategy: this.isDirty ? CoreSitesReadingStrategy.PREFER_NETWORK : loadWatcher.getReadingStrategy(),
             }),
-            this.coursesHaveMeaningfulChanges.bind(this),
+            (prevCourses, newCourses) => this.coursesHaveMeaningfulChanges(prevCourses, newCourses),
         );
 
         this.hasCourses = this.allCourses.length > 0;
@@ -532,7 +532,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
                             CoreCourses.getEnrolledCoursesByCustomFieldObservable(customFilterName, customFilterValue, {
                                 readingStrategy: loadWatcher.getReadingStrategy(),
                             }),
-                            this.customFilterCoursesHaveMeaningfulChanges.bind(this),
+                            (prevCourses, newCourses) => this.customFilterCoursesHaveMeaningfulChanges(prevCourses, newCourses),
                         )
                         :
                         await CoreCourses.getEnrolledCoursesByCustomField(customFilterName, customFilterValue);

@@ -111,14 +111,14 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         // Refresh data if this calendar event is synchronized automatically.
         this.syncObserver = CoreEvents.on(
             AddonCalendarSyncProvider.AUTO_SYNCED,
-            this.checkSyncResult.bind(this, false),
+            (data) => this.checkSyncResult(false, data),
             this.currentSiteId,
         );
 
         // Refresh data if calendar events are synchronized manually but not by this page.
         this.manualSyncObserver = CoreEvents.on(
             AddonCalendarSyncProvider.MANUAL_SYNCED,
-            this.checkSyncResult.bind(this, true),
+            (data) => this.checkSyncResult(true, data),
             this.currentSiteId,
         );
 

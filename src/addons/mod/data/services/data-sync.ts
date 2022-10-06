@@ -66,7 +66,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
      * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllDatabases(siteId?: string, force?: boolean): Promise<void> {
-        return this.syncOnSites('all databases', this.syncAllDatabasesFunc.bind(this, !!force), siteId);
+        return this.syncOnSites('all databases', (siteId) => this.syncAllDatabasesFunc(!!force, siteId), siteId);
     }
 
     /**

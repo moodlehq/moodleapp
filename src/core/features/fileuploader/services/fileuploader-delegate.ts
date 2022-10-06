@@ -145,7 +145,7 @@ export class CoreFileUploaderDelegateService extends CoreDelegate<CoreFileUpload
     constructor() {
         super('CoreFileUploaderDelegate', true);
 
-        CoreEvents.on(CoreEvents.LOGOUT, this.clearSiteHandlers.bind(this));
+        CoreEvents.on(CoreEvents.LOGOUT, () => this.clearSiteHandlers());
     }
 
     /**

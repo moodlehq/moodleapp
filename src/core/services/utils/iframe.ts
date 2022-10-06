@@ -398,7 +398,7 @@ export class CoreIframeUtilsProvider {
 
             // Add click listener to the link, this way if the iframe has added a listener to the link it will be executed first.
             link.treated = true;
-            link.addEventListener('click', this.linkClicked.bind(this, link, element));
+            link.addEventListener('click', event => this.linkClicked(link, element, event));
         }, {
             capture: true, // Use capture to fix this listener not called if the element clicked is too deep in the DOM.
         });
@@ -468,7 +468,7 @@ export class CoreIframeUtilsProvider {
      */
     protected async linkClicked(
         link: CoreIframeHTMLAnchorElement | {href: string; target?: string; originalHref?: string},
-        element?: HTMLFrameElement | HTMLObjectElement,
+        element?: CoreFrameElement,
         event?: Event,
     ): Promise<void> {
         if (event && event.defaultPrevented) {
@@ -554,7 +554,7 @@ export class CoreIframeUtilsProvider {
         userScriptWindow.WKUserScript?.addScript({ id: 'CoreIframeUtilsLinksScript', file: linksPath });
 
         // Handle post messages received by iframes.
-        window.addEventListener('message', this.handleIframeMessage.bind(this));
+        window.addEventListener('message', (event) => this.handleIframeMessage(event));
     }
 
     /**

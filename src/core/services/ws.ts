@@ -908,7 +908,7 @@ export class CoreWSProvider {
         const data = CoreTextUtils.parseJSON<any>(
             success.response,
             null,
-            this.logger.error.bind(this.logger, 'Error parsing response from upload', success.response),
+            error => this.logger.error('Error parsing response from upload', success.response, error),
         );
 
         if (data === null) {

@@ -19,8 +19,7 @@ import {
     CoreCourseOptionsHandlerData,
     CoreCourseOptionsMenuHandlerData,
 } from '@features/course/services/course-options-delegate';
-import { CoreCourseAnyCourseDataWithOptions } from '@features/courses/services/courses';
-import { CoreEnrolledCourseDataWithExtraInfoAndOptions } from '@features/courses/services/courses-helper';
+import { CoreCourseAnyCourseData, CoreCourseAnyCourseDataWithOptions } from '@features/courses/services/courses';
 import {
     CoreSitePlugins,
     CoreSitePluginsContent,
@@ -107,7 +106,7 @@ export class CoreSitePluginsCourseOptionHandler extends CoreSitePluginsBaseHandl
     /**
      * @inheritdoc
      */
-    prefetch(course: CoreEnrolledCourseDataWithExtraInfoAndOptions): Promise<void> {
+    prefetch(course: CoreCourseAnyCourseData): Promise<void> {
         const args = {
             courseid: course.id,
         };

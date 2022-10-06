@@ -222,7 +222,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
      * @inheritdoc
      */
     prefetch(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
-        return this.prefetchPackage(module, courseId, this.prefetchAssign.bind(this, module, courseId));
+        return this.prefetchPackage(module, courseId, (siteId) => this.prefetchAssign(module, courseId, siteId));
     }
 
     /**

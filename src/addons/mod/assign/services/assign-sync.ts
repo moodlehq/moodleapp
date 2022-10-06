@@ -108,7 +108,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
      * @return Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllAssignments(siteId?: string, force?: boolean): Promise<void> {
-        return this.syncOnSites('all assignments', this.syncAllAssignmentsFunc.bind(this, !!force), siteId);
+        return this.syncOnSites('all assignments', (siteId) => this.syncAllAssignmentsFunc(!!force, siteId), siteId);
     }
 
     /**
