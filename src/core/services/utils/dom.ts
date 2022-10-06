@@ -54,6 +54,9 @@ import { Subscription } from 'rxjs';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreDom } from '@singletons/dom';
 import { CoreNetwork } from '@services/network';
+import { CoreSiteError } from '@classes/errors/siteerror';
+import { CoreUserSupport } from '@features/user/services/support';
+import { CoreErrorInfoComponent } from '@components/error-info/error-info';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -1356,11 +1359,40 @@ export class CoreDomUtilsProvider {
 
         if (typeof error !== 'string' && 'buttons' in error && typeof error.buttons !== 'undefined') {
             alertOptions.buttons = error.buttons;
+        } else if (error instanceof CoreSiteError) {
+            alertOptions.buttons = [];
+
+            if (error.errorDetails) {
+                alertOptions.message += '<div class="core-error-info-container"></div>';
+            }
+
+            if (error.canContactSupport()) {
+                alertOptions.buttons.push({
+                    text: Translate.instant('core.contactsupport'),
+                    handler: () => CoreUserSupport.contact({
+                        supportPageUrl: error.getSupportPageUrl(),
+                        subject: alertOptions.header,
+                        message: `${error.errorcode}\n\n${error.errorDetails}`,
+                    }),
+                });
+            }
+
+            alertOptions.buttons.push(Translate.instant('core.ok'));
         } else {
             alertOptions.buttons = [Translate.instant('core.ok')];
         }
 
-        return this.showAlertWithOptions(alertOptions, autocloseTime);
+        const alertElement = await this.showAlertWithOptions(alertOptions, autocloseTime);
+
+        if (error instanceof CoreSiteError && error.errorDetails) {
+            const containerElement = alertElement.querySelector('.core-error-info-container');
+
+            if (containerElement) {
+                containerElement.innerHTML = CoreErrorInfoComponent.render(error.errorDetails, error.errorcode);
+            }
+        }
+
+        return alertElement;
     }
 
     /**

@@ -34,7 +34,7 @@ import {
 } from '@classes/site';
 import { SQLiteDB, SQLiteDBRecordValues, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { CoreError } from '@classes/errors/error';
-import { CoreLoginError } from '@classes/errors/loginerror';
+import { CoreLoginError, CoreLoginErrorOptions } from '@classes/errors/loginerror';
 import { makeSingleton, Translate, Http } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import {
@@ -296,17 +296,19 @@ export class CoreSitesProvider {
 
         // Check that the user can authenticate.
         if (!config.enablewebservices) {
-            throw this.createCannotConnectError(
-                'webservicesnotenabled',
-                Translate.instant('core.login.webservicesnotenabled'),
-                config,
-            );
+            throw this.createCannotConnectError({
+                errorcode: 'webservicesnotenabled',
+                errorDetails: Translate.instant('core.login.webservicesnotenabled'),
+                siteConfig: config,
+                critical: true,
+            });
         } else if (!config.enablemobilewebservice) {
-            throw this.createCannotConnectError(
-                'mobileservicesnotenabled',
-                Translate.instant('core.login.mobileservicesnotenabled'),
-                config,
-            );
+            throw this.createCannotConnectError({
+                errorcode: 'mobileservicesnotenabled',
+                errorDetails: Translate.instant('core.login.mobileservicesnotenabled'),
+                siteConfig: config,
+                critical: true,
+            });
         } else if (config.maintenanceenabled) {
             let message = Translate.instant('core.sitemaintenance');
             if (config.maintenancemessage) {
@@ -327,23 +329,14 @@ export class CoreSitesProvider {
     /**
      * Create an error to be thrown when it isn't possible to connect to a site.
      *
-     * @param errorcode Error code.
-     * @param errorDetails Error details.
-     * @param siteConfig Site config.
+     * @param options Error options.
      * @return Cannot connect error.
      */
-    protected createCannotConnectError(
-        errorcode: string,
-        errorDetails: string,
-        siteConfig: CoreSitePublicConfigResponse,
-    ): CoreLoginError {
+    protected createCannotConnectError(options: Partial<CoreLoginErrorOptions> = {}): CoreLoginError {
         return new CoreLoginError({
-            errorcode,
-            errorDetails,
-            siteConfig,
+            ...options,
             message: Translate.instant('core.cannotconnecttrouble'),
             fallbackMessage: Translate.instant('core.cannotconnecttroublewithoutsupport'),
-            critical: true,
             contactSupport: true,
         });
     }
@@ -433,9 +426,12 @@ export class CoreSitesProvider {
         }
 
         if (data.error && data.error == 'Web services must be enabled in Advanced features.') {
-            throw new CoreLoginError({
+            const siteConfig = await CoreUtils.ignoreErrors(this.getPublicSiteConfigByUrl(siteUrl));
+
+            throw this.createCannotConnectError({
                 errorcode: 'enablewsdescription',
-                message: data.error,
+                errorDetails: data.error,
+                siteConfig,
             });
         }
 
@@ -1108,6 +1104,18 @@ export class CoreSitesProvider {
         }
 
         return this.addSiteFromSiteListEntry(data);
+    }
+
+    /**
+     * Gets the public type config for a site with the given url.
+     *
+     * @param siteUrl The site URL.
+     * @return Promise resolved with public config or null.
+     */
+    async getPublicSiteConfigByUrl(siteUrl: string): Promise<CoreSitePublicConfigResponse> {
+        const site = await this.getSiteByUrl(siteUrl);
+
+        return site.getPublicConfig({ readingStrategy: CoreSitesReadingStrategy.ONLY_CACHE });
     }
 
     /**
