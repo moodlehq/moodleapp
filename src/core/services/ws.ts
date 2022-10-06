@@ -39,6 +39,8 @@ import { CoreSite } from '@classes/site';
 import { CoreHttpError } from '@classes/errors/httperror';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
+import { CoreUtils } from '@services/utils/utils';
+import { CoreSites } from '@services/sites';
 
 /**
  * This service allows performing WS calls and download/upload files.
@@ -456,7 +458,7 @@ export class CoreWSProvider {
             });
         }
 
-        return promise.then((response) => {
+        return promise.then(async (response) => {
             let data = response.body;
 
             // Some moodle web services return null.
@@ -467,7 +469,16 @@ export class CoreWSProvider {
 
             // Check if error. Ajax layer should always return an object (if error) or an array (if success).
             if (!data || typeof data != 'object') {
-                throw new CoreAjaxError(Translate.instant('core.serverconnection'));
+                const siteConfig = await CoreUtils.ignoreErrors(CoreSites.getPublicSiteConfigByUrl(preSets.siteUrl));
+
+                throw new CoreAjaxError({
+                    siteConfig,
+                    contactSupport: true,
+                    message: Translate.instant('core.cannotconnecttrouble'),
+                    fallbackMessage: Translate.instant('core.cannotconnecttroublewithoutsupport'),
+                    errorcode: 'invalidresponse',
+                    errorDetails: Translate.instant('core.serverconnection'),
+                });
             } else if (data.error) {
                 throw new CoreAjaxWSError(data);
             }
