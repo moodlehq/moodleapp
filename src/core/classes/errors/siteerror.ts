@@ -17,14 +17,12 @@ import { CoreSitePublicConfigResponse } from '@classes/site';
 import { CoreUserSupport } from '@features/user/services/support';
 
 /**
- * Error returned when performing operations regarding a site (check if it exists, authenticate user, etc.).
+ * Error returned when performing operations regarding a site.
  */
 export class CoreSiteError extends CoreError {
 
     errorcode?: string;
     errorDetails?: string;
-    critical?: boolean;
-    loggedOut?: boolean;
     contactSupport?: boolean;
     siteConfig?: CoreSitePublicConfigResponse;
 
@@ -33,8 +31,6 @@ export class CoreSiteError extends CoreError {
 
         this.errorcode = options.errorcode;
         this.errorDetails = options.errorDetails;
-        this.critical = options.critical;
-        this.loggedOut = options.loggedOut;
         this.contactSupport = options.contactSupport;
         this.siteConfig = options.siteConfig;
     }
@@ -86,11 +82,9 @@ function getErrorMessage(options: CoreSiteErrorOptions): string {
 
 export type CoreSiteErrorOptions = {
     message: string;
-    fallbackMessage?: string; // Message to use if contacting support was intended but isn't possible.
-    errorcode?: string;
-    errorDetails?: string;
-    critical?: boolean; // Whether the error is important enough to abort the operation.
-    loggedOut?: boolean; // Whether site has been marked as logged out.
-    contactSupport?: boolean;
+    fallbackMessage?: string; // Message to use when contacting support is not possible but warranted.
+    errorcode?: string; // Technical error code useful for technical assistance.
+    errorDetails?: string; // Technical error details useful for technical assistance.
+    contactSupport?: boolean; // Whether this error warrants contacting site support or not.
     siteConfig?: CoreSitePublicConfigResponse;
 };

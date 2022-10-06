@@ -34,7 +34,7 @@ import {
 } from '@classes/site';
 import { SQLiteDB, SQLiteDBRecordValues, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { CoreError } from '@classes/errors/error';
-import { CoreSiteError } from '@classes/errors/siteerror';
+import { CoreLoginError } from '@classes/errors/loginerror';
 import { makeSingleton, Translate, Http } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import {
@@ -313,7 +313,7 @@ export class CoreSitesProvider {
                 message += config.maintenancemessage;
             }
 
-            throw new CoreSiteError({
+            throw new CoreLoginError({
                 message,
                 critical: true,
             });
@@ -336,8 +336,8 @@ export class CoreSitesProvider {
         errorcode: string,
         errorDetails: string,
         siteConfig: CoreSitePublicConfigResponse,
-    ): CoreSiteError {
-        return new CoreSiteError({
+    ): CoreLoginError {
+        return new CoreLoginError({
             errorcode,
             errorDetails,
             siteConfig,
@@ -349,16 +349,19 @@ export class CoreSitesProvider {
     }
 
     /**
-     * Treat an error returned by getPublicConfig in checkSiteWithProtocol. Converts the error to a CoreSiteError.
+     * Treat an error returned by getPublicConfig in checkSiteWithProtocol. Converts the error to a CoreLoginError.
      *
      * @param siteUrl Site URL.
      * @param error Error returned.
      * @return Promise resolved with the treated error.
      */
-    protected async treatGetPublicConfigError(siteUrl: string, error: CoreAjaxError | CoreAjaxWSError): Promise<CoreSiteError> {
-        if (!('errorcode' in error)) {
+    protected async treatGetPublicConfigError(
+        siteUrl: string,
+        error: CoreError | CoreAjaxError | CoreAjaxWSError,
+    ): Promise<CoreLoginError> {
+        if (error instanceof CoreAjaxError || !('errorcode' in error)) {
             // The WS didn't return data, probably cannot connect.
-            return new CoreSiteError({
+            return new CoreLoginError({
                 message: error.message || '',
                 critical: false, // Allow fallback to http if siteUrl uses https.
             });
@@ -385,7 +388,7 @@ export class CoreSitesProvider {
             critical = false; // Keep checking fallback URLs.
         }
 
-        return new CoreSiteError({
+        return new CoreLoginError({
             message: error.message,
             errorcode: error.errorcode,
             critical,
@@ -410,27 +413,27 @@ export class CoreSitesProvider {
                 .toPromise();
         } catch (error) {
             // Default error messages are kinda bad, return our own message.
-            throw new CoreSiteError({
+            throw new CoreLoginError({
                 message: Translate.instant('core.cannotconnecttrouble'),
             });
         }
 
         if (data === null) {
             // Cannot connect.
-            throw new CoreSiteError({
+            throw new CoreLoginError({
                 message: Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }),
             });
         }
 
         if (data.errorcode && (data.errorcode == 'enablewsdescription' || data.errorcode == 'requirecorrectaccess')) {
-            throw new CoreSiteError({
+            throw new CoreLoginError({
                 errorcode: data.errorcode,
                 message: data.error ?? '',
             });
         }
 
         if (data.error && data.error == 'Web services must be enabled in Advanced features.') {
-            throw new CoreSiteError({
+            throw new CoreLoginError({
                 errorcode: 'enablewsdescription',
                 message: data.error,
             });
@@ -492,13 +495,13 @@ export class CoreSitesProvider {
                         const redirect = await CoreUtils.checkRedirect(loginUrl);
 
                         if (redirect) {
-                            throw new CoreSiteError({
+                            throw new CoreLoginError({
                                 message: Translate.instant('core.login.sitehasredirect'),
                             });
                         }
                     }
 
-                    throw new CoreSiteError({
+                    throw new CoreLoginError({
                         message: data.error,
                         errorcode: data.errorcode,
                     });
@@ -641,7 +644,7 @@ export class CoreSitesProvider {
             await this.setSiteLoggedOut(siteId);
         }
 
-        throw new CoreSiteError({
+        throw new CoreLoginError({
             message: Translate.instant(errorKey, translateParams),
             errorcode: errorCode,
             loggedOut: true,

@@ -14,7 +14,7 @@
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { findElement, mockSingleton, renderPageComponent, requireElement } from '@/testing/utils';
-import { CoreSiteError } from '@classes/errors/siteerror';
+import { CoreLoginError } from '@classes/errors/loginerror';
 import { CoreLoginComponentsModule } from '@features/login/components/components.module';
 import { CoreLoginCredentialsPage } from '@features/login/pages/credentials/credentials';
 import { CoreSites } from '@services/sites';
@@ -42,7 +42,7 @@ describe('Credentials page', () => {
         // Arrange.
         mockSingleton(CoreSites, {
             getUserToken: () => {
-                throw new CoreSiteError({
+                throw new CoreLoginError({
                     message: '',
                     errorcode: 'invalidlogin',
                 });
