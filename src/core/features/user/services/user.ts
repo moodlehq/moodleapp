@@ -137,11 +137,11 @@ export class CoreUserProvider {
 
         const result = await site.write<CoreUserUpdatePictureWSResponse>('core_user_update_picture', params);
 
-        if (!result.success) {
+        if (!result.success || !result.profileimageurl) {
             return Promise.reject(null);
         }
 
-        return result.profileimageurl!;
+        return result.profileimageurl;
     }
 
     /**
@@ -452,7 +452,7 @@ export class CoreUserProvider {
             name,
         };
         const preSets: CoreSiteWSPreSets = {
-            cacheKey: this.getUserPreferenceCacheKey(params.name!),
+            cacheKey: this.getUserPreferenceCacheKey(name),
             updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
         };
 
@@ -613,7 +613,7 @@ export class CoreUserProvider {
         const treated: Record<string, boolean> = {};
 
         await Promise.all(userIds.map(async (userId) => {
-            if (userId === null) {
+            if (userId === null || !siteId) {
                 return;
             }
 
@@ -630,7 +630,7 @@ export class CoreUserProvider {
                 const profile = await this.getProfile(userId, courseId, false, siteId);
 
                 if (profile.profileimageurl) {
-                    await CoreFilepool.addToQueueByUrl(siteId!, profile.profileimageurl);
+                    await CoreFilepool.addToQueueByUrl(siteId, profile.profileimageurl);
                 }
             } catch (error) {
                 this.logger.warn(`Ignore error when prefetching user ${userId}`, error);
@@ -658,7 +658,7 @@ export class CoreUserProvider {
         const promises = entries.map(async (entry) => {
             const imageUrl = <string> entry[propertyName];
 
-            if (!imageUrl || treated[imageUrl]) {
+            if (!imageUrl || treated[imageUrl] || !siteId) {
                 // It doesn't have an image or it has already been treated.
                 return;
             }
@@ -666,7 +666,7 @@ export class CoreUserProvider {
             treated[imageUrl] = true;
 
             try {
-                await CoreFilepool.addToQueueByUrl(siteId!, imageUrl);
+                await CoreFilepool.addToQueueByUrl(siteId, imageUrl);
             } catch (ex) {
                 this.logger.warn(`Ignore error when prefetching user avatar ${imageUrl}`, entry, ex);
             }
@@ -682,7 +682,7 @@ export class CoreUserProvider {
      * @param search The string to search.
      * @param searchAnywhere Whether to find a match anywhere or only at the beginning.
      * @param page Page to get.
-     * @param limitNumber Number of participants to get.
+     * @param perPage Number of participants to get.
      * @param siteId Site Id. If not defined, use current site.
      * @return Promise resolved when the participants are retrieved.
      * @since 3.8
