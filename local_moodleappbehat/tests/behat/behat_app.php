@@ -33,9 +33,6 @@ use Behat\Mink\Exception\ExpectationException;
  */
 class behat_app extends behat_app_helper {
 
-    /** @var string URL for running Ionic server */
-    protected $ionicurl = '';
-
     /** @var array Config overrides */
     protected $appconfig = [
         'disableUserTours' => true,
@@ -101,7 +98,7 @@ class behat_app extends behat_app_helper {
      * @When I restart the app
      */
     public function i_restart_the_app() {
-        $this->getSession()->visit($this->ionicurl);
+        $this->getSession()->visit($this->get_app_url());
 
         $this->i_wait_the_app_to_restart();
     }

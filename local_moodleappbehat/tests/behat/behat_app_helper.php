@@ -48,9 +48,6 @@ interface behat_app_listener {
  */
 class behat_app_helper extends behat_base {
 
-    /** @var stdClass Object with data about launched Ionic instance (if any) */
-    protected static $ionicrunning = null;
-
     /** @var array */
     protected static $listeners = [];
 
@@ -88,6 +85,21 @@ class behat_app_helper extends behat_base {
     }
 
     /**
+     * Get url of the running Ionic application.
+     *
+     * @return string Ionic app url.
+     */
+    public function get_app_url(): string {
+        global $CFG;
+
+        if (empty($CFG->behat_ionic_wwwroot)) {
+            throw new DriverException('$CFG->behat_ionic_wwwroot must be defined.');
+        }
+
+        return $CFG->behat_ionic_wwwroot;
+    }
+
+    /**
      * Called from behat_hooks when a new scenario starts, if it has the app tag.
      *
      * This updates Moodle configuration and starts Ionic running, if it isn't already.
@@ -100,8 +112,6 @@ class behat_app_helper extends behat_base {
             $this->notify_unload();
             $this->apprunning = false;
         }
-
-        $this->ionicurl = $this->start_or_reuse_ionic();
     }
 
     /**
@@ -118,8 +128,8 @@ class behat_app_helper extends behat_base {
         }
 
         // Check the config settings are defined.
-        if (empty($CFG->behat_ionic_wwwroot) && empty($CFG->behat_ionic_dirroot)) {
-            throw new DriverException('$CFG->behat_ionic_wwwroot or $CFG->behat_ionic_dirroot must be defined.');
+        if (empty($CFG->behat_ionic_wwwroot)) {
+            throw new DriverException('$CFG->behat_ionic_wwwroot must be defined.');
         }
     }
 
@@ -172,108 +182,6 @@ class behat_app_helper extends behat_base {
     }
 
     /**
-     * Starts an Ionic server if necessary, or uses an existing one.
-     *
-     * @return string URL to Ionic server
-     * @throws DriverException If there's a system error starting Ionic
-     */
-    protected function start_or_reuse_ionic() {
-        global $CFG;
-
-        if (empty($CFG->behat_ionic_dirroot) && !empty($CFG->behat_ionic_wwwroot)) {
-            // Use supplied Ionic server which should already be running.
-            $url = $CFG->behat_ionic_wwwroot;
-        } else if (self::$ionicrunning) {
-            // Use existing Ionic instance launched previously.
-            $url = self::$ionicrunning->url;
-        } else {
-            // Open Ionic process in relevant path.
-            $path = realpath($CFG->behat_ionic_dirroot);
-            $stderrfile = $CFG->dataroot . '/behat/ionic-stderr.log';
-            $prefix = '';
-            // Except on Windows, use 'exec' so that we get the pid of the actual Node process
-            // and not the shell it uses to execute. You can't do exec on Windows; there is a
-            // bypass_shell option but it is not the same thing and isn't usable here.
-            if (!self::is_windows()) {
-                $prefix = 'exec ';
-            }
-            $process = proc_open($prefix . 'ionic serve --no-interactive --no-open',
-                    [['pipe', 'r'], ['pipe', 'w'], ['file', $stderrfile, 'w']], $pipes, $path);
-            if ($process === false) {
-                throw new DriverException('Error starting Ionic process');
-            }
-            fclose($pipes[0]);
-
-            // Get pid - we will need this to kill the process.
-            $status = proc_get_status($process);
-            $pid = $status['pid'];
-
-            // Read data from stdout until the server comes online.
-            // Note: On Windows it is impossible to read simultaneously from stderr and stdout
-            // because stream_select and non-blocking I/O don't work on process pipes, so that is
-            // why stderr was redirected to a file instead. Also, this code is simpler.
-            $url = null;
-            $stdoutlog = '';
-            while (true) {
-                $line = fgets($pipes[1], 4096);
-                if ($line === false) {
-                    break;
-                }
-
-                $stdoutlog .= $line;
-
-                if (preg_match('~^\s*Local: (http\S*)~', $line, $matches)) {
-                    $url = $matches[1];
-                    break;
-                }
-            }
-
-            // If it failed, close the pipes and the process.
-            if (!$url) {
-                fclose($pipes[1]);
-                proc_close($process);
-                $logpath = $CFG->dataroot . '/behat/ionic-start.log';
-                $stderrlog = file_get_contents($stderrfile);
-                @unlink($stderrfile);
-                file_put_contents($logpath,
-                        "Ionic startup log from " . date('c') .
-                        "\n\n----STDOUT----\n$stdoutlog\n\n----STDERR----\n$stderrlog");
-                throw new DriverException('Unable to start Ionic. See ' . $logpath);
-            }
-
-            // Remember the URL, so we can reuse it next time, and other details so we can kill
-            // the process.
-            self::$ionicrunning = (object)['url' => $url, 'process' => $process, 'pipes' => $pipes,
-                    'pid' => $pid];
-            $url = self::$ionicrunning->url;
-        }
-        return $url;
-    }
-
-    /**
-     * Closes Ionic (if it was started) at end of test suite.
-     *
-     * @AfterSuite
-     */
-    public static function close_ionic() {
-        if (self::$ionicrunning) {
-            fclose(self::$ionicrunning->pipes[1]);
-
-            if (self::is_windows()) {
-                // Using proc_terminate here does not work. It terminates the process but not any
-                // other processes it might have launched. Instead, we need to use an OS-specific
-                // mechanism to kill the process and children based on its pid.
-                exec('taskkill /F /T /PID ' . self::$ionicrunning->pid);
-            } else {
-                // On Unix this actually works, although only due to the 'exec' command inserted
-                // above.
-                proc_terminate(self::$ionicrunning->process);
-            }
-            self::$ionicrunning = null;
-        }
-    }
-
-    /**
      * Goes to the app page and then sets up some initial JavaScript so we can use it.
      *
      * @param string $url App URL
@@ -294,12 +202,9 @@ class behat_app_helper extends behat_base {
 
             // Reset its size.
             $this->resize_window($this->windowsize, true);
-            if (empty($this->ionicurl)) {
-                $this->ionicurl = $this->start_or_reuse_ionic();
-            }
 
             // Visit the Ionic URL.
-            $this->getSession()->visit($this->ionicurl);
+            $this->getSession()->visit($this->get_app_url());
             $this->notify_load();
 
             $this->apprunning = true;
