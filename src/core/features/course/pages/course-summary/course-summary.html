@@ -12,7 +12,7 @@
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
-<ion-content [fullscreen]="true">
+<ion-content>
     <ion-refresher slot="fixed" [disabled]="!dataLoaded" (ionRefresh)="refreshData($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
