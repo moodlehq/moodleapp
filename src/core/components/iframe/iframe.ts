@@ -57,9 +57,13 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
     protected style?: HTMLStyleElement;
     protected orientationObs?: CoreEventObserver;
     protected navSubscription?: Subscription;
+    protected messageListenerFunction: (event: MessageEvent) => Promise<void>;
 
     constructor(protected elementRef: ElementRef<HTMLElement>) {
         this.loaded = new EventEmitter<HTMLIFrameElement>();
+
+        // Listen for messages from the iframe.
+        window.addEventListener('message', this.messageListenerFunction = (event) => this.onIframeMessage(event));
     }
 
     /**
@@ -177,12 +181,13 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
     ngOnDestroy(): void {
         this.orientationObs?.off();
         this.navSubscription?.unsubscribe();
+        window.removeEventListener('message', this.messageListenerFunction);
     }
 
     /**
      * Toggle fullscreen mode.
      */
-    toggleFullscreen(enable?: boolean): void {
+    toggleFullscreen(enable?: boolean, notifyIframe = true): void {
         if (enable !== undefined) {
             this.fullscreen = enable;
         } else {
@@ -200,6 +205,27 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
         }
 
         document.body.classList.toggle('core-iframe-fullscreen', this.fullscreen);
+
+        if (notifyIframe && this.iframe?.nativeElement) {
+            (<HTMLIFrameElement> this.iframe.nativeElement).contentWindow?.postMessage(
+                this.fullscreen ? 'enterFullScreen' : 'exitFullScreen',
+                '*',
+            );
+        }
+    }
+
+    /**
+     * Treat an iframe message event.
+     *
+     * @param event Event.
+     * @return Promise resolved when done.
+     */
+    protected async onIframeMessage(event: MessageEvent): Promise<void> {
+        if (event.data == 'enterFullScreen' && this.showFullscreenOnToolbar && !this.fullscreen) {
+            this.toggleFullscreen(true, false);
+        } else if (event.data == 'exitFullScreen' && this.fullscreen) {
+            this.toggleFullscreen(false, false);
+        }
     }
 
 }
