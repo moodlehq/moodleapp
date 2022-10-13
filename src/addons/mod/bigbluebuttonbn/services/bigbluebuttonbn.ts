@@ -19,6 +19,7 @@ import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
+import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 
@@ -152,7 +153,7 @@ export class AddonModBBBService {
         id: number,
         groupId: number = 0,
         options: AddonModBBBGetMeetingInfoOptions = {},
-    ): Promise<AddonModBBBMeetingInfoWSResponse> {
+    ): Promise<AddonModBBBMeetingInfo> {
         const site = await CoreSites.getSite(options.siteId);
 
         const params: AddonModBBBMeetingInfoWSParams = {
@@ -172,11 +173,16 @@ export class AddonModBBBService {
             preSets.getFromCache = false;
         }
 
-        return site.read<AddonModBBBMeetingInfoWSResponse>(
+        const meetingInfo = await site.read<AddonModBBBMeetingInfoWSResponse>(
             'mod_bigbluebuttonbn_meeting_info',
             params,
             preSets,
         );
+
+        return {
+            ...meetingInfo,
+            features: meetingInfo.features ? CoreUtils.objectToKeyValueMap(meetingInfo.features, 'name', 'isenabled') : undefined,
+        };
     }
 
     /**
@@ -353,6 +359,17 @@ export type AddonModBBBMeetingInfoWSResponse = {
         name: string; // Presentation name.
     }[];
     joinurl: string; // Join URL.
+    features?: { // Enabled features. @since 4.1.
+        name: string;
+        isenabled: boolean;
+    }[];
+};
+
+/**
+ * Meeting info with some calculated data.
+ */
+export type AddonModBBBMeetingInfo = Omit<AddonModBBBMeetingInfoWSResponse, 'features'> & {
+    features?: Record<string, boolean>;
 };
 
 /**

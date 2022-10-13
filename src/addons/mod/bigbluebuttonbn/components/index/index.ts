@@ -22,7 +22,7 @@ import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
-import { AddonModBBB, AddonModBBBData, AddonModBBBMeetingInfoWSResponse, AddonModBBBService } from '../../services/bigbluebuttonbn';
+import { AddonModBBB, AddonModBBBData, AddonModBBBMeetingInfo, AddonModBBBService } from '../../services/bigbluebuttonbn';
 
 /**
  * Component that displays a Big Blue Button activity.
@@ -39,7 +39,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
     bbb?: AddonModBBBData;
     groupInfo?: CoreGroupInfo;
     groupId = 0;
-    meetingInfo?: AddonModBBBMeetingInfoWSResponse;
+    meetingInfo?: AddonModBBBMeetingInfo;
 
     constructor(
         protected content?: IonContent,
@@ -55,6 +55,10 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
         super.ngOnInit();
 
         await this.loadContent();
+    }
+
+    get showRoom(): boolean {
+        return !!this.meetingInfo && (!this.meetingInfo.features || this.meetingInfo.features.showroom);
     }
 
     /**
