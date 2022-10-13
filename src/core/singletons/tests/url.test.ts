@@ -119,4 +119,13 @@ describe('CoreUrl singleton', () => {
         expect(CoreUrl.toAbsoluteURL('https://school.edu/foo.php', 'image.png')).toBe('https://school.edu/foo.php/image.png');
     });
 
+    it('converts to relative URLs', () => {
+        expect(CoreUrl.toRelativeURL('https://school.edu/foo/bar', 'https://mysite.edu')).toBe('https://mysite.edu');
+        expect(CoreUrl.toRelativeURL('https://school.edu/', 'https://school.edu/image.png')).toBe('image.png');
+        expect(CoreUrl.toRelativeURL('http://school.edu/', 'https://school.edu/image.png')).toBe('image.png');
+        expect(CoreUrl.toRelativeURL('https://school.edu/', 'http://school.edu/image.png')).toBe('image.png');
+        expect(CoreUrl.toRelativeURL('https://school.edu/foo/bar', 'https://school.edu/foo/bar/image.png')).toBe('image.png');
+        expect(CoreUrl.toRelativeURL('https://school.edu', 'school.edu/image.png')).toBe('image.png');
+    });
+
 });

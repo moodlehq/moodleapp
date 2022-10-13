@@ -280,4 +280,21 @@ export class CoreUrl {
         return CoreText.concatenatePaths(treatedParentUrl, url);
     }
 
+    /**
+     * Convert a URL to a relative URL (if it isn't already).
+     *
+     * @param parentUrl The parent URL.
+     * @param url The url to convert.
+     * @return Relative URL.
+     */
+    static toRelativeURL(parentUrl: string, url: string): string {
+        parentUrl = CoreUrl.removeProtocol(parentUrl);
+
+        if (!url.includes(parentUrl)) {
+            return url; // Already relative URL.
+        }
+
+        return CoreText.removeStartingSlash(CoreUrl.removeProtocol(url).replace(parentUrl, ''));
+    }
+
 }

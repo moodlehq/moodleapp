@@ -55,6 +55,20 @@ export class CoreText {
     }
 
     /**
+     * Remove starting slash from a string if needed.
+     *
+     * @param text Text to treat.
+     * @return Treated text.
+     */
+    static removeStartingSlash(text = ''): string {
+        if (text[0] !== '/') {
+            return text;
+        }
+
+        return text.substring(1);
+    }
+
+    /**
      * Concatenate two paths, adding a slash between them if needed.
      *
      * @param leftPath Left path.

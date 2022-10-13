@@ -29,6 +29,13 @@ describe('CoreText singleton', () => {
         expect(CoreText.removeEndingSlash('foo//')).toEqual('foo/');
     });
 
+    it('remove starting slash if needed', () => {
+        expect(CoreText.removeStartingSlash('/')).toEqual('');
+        expect(CoreText.removeStartingSlash('foo')).toEqual('foo');
+        expect(CoreText.removeStartingSlash('/foo')).toEqual('foo');
+        expect(CoreText.removeStartingSlash('//foo')).toEqual('/foo');
+    });
+
     it('concatenates paths', () => {
         expect(CoreText.concatenatePaths('', 'foo/bar')).toEqual('foo/bar');
         expect(CoreText.concatenatePaths('foo/bar', '')).toEqual('foo/bar');
