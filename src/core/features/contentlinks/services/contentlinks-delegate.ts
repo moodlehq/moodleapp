@@ -19,6 +19,7 @@ import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { CoreText } from '@singletons/text';
+import { CoreUrl } from '@singletons/url';
 
 /**
  * Interface that all handlers must implement.
@@ -174,7 +175,7 @@ export class CoreContentLinksDelegateService {
         const linkActions: CoreContentLinksHandlerActions[] = [];
         const promises: Promise<void>[] = [];
         const params = CoreUrlUtils.extractUrlParams(url);
-        const relativeUrl = CoreText.addStartingSlash(url.replace(site.getURL(), ''));
+        const relativeUrl = CoreText.addStartingSlash(CoreUrl.toRelativeURL(site.getURL(), url));
 
         for (const name in this.handlers) {
             const handler = this.handlers[name];
