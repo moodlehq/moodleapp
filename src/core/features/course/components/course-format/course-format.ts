@@ -23,7 +23,6 @@ import {
     QueryList,
     Type,
     ElementRef,
-    ChangeDetectionStrategy,
     ChangeDetectorRef,
 } from '@angular/core';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -66,7 +65,6 @@ import { CoreUserTourDirectiveOptions } from '@directives/user-tour';
     selector: 'core-course-format',
     templateUrl: 'course-format.html',
     styleUrls: ['course-format.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
