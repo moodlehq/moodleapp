@@ -16,7 +16,7 @@
     <core-group-selector [groupInfo]="groupInfo" [(selected)]="groupId" (selectedChange)="groupChanged()"
         [multipleGroupsMessage]="'addon.mod_bigbluebuttonbn.view_groups_selection_warning' | translate"></core-group-selector>
 
-    <ng-container *ngIf="meetingInfo">
+    <ng-container *ngIf="meetingInfo && showRoom">
         <ion-item class="ion-text-wrap" *ngIf="meetingInfo.openingtime">
             <ion-label>
                 <h3>{{ 'addon.mod_bigbluebuttonbn.mod_form_field_openingtime' | translate }}</h3>
@@ -85,7 +85,7 @@
 
     <div collapsible-footer *ngIf="!showLoading" slot="fixed">
         <div class="list-item-limited-width adaptable-buttons-row"
-            *ngIf="meetingInfo && (meetingInfo.canjoin || meetingInfo.statusrunning && meetingInfo.ismoderator)">
+            *ngIf="meetingInfo && showRoom && (meetingInfo.canjoin || (meetingInfo.statusrunning && meetingInfo.ismoderator))">
             <ion-button *ngIf="meetingInfo.statusrunning && meetingInfo.ismoderator" fill="outline" class="ion-margin ion-text-wrap"
                 expand="block" (click)="endMeeting()">
                 {{ 'addon.mod_bigbluebuttonbn.view_conference_action_end' | translate }}
