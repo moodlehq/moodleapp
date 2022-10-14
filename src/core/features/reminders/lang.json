@@ -2,10 +2,13 @@
     "atthetime": "At the time of the event",
     "custom": "Custom...",
     "customreminder": "Custom reminder",
-    "setareminder": "Set a reminder",
-    "daybefore": "{{time}} day before",
-    "daysbefore": "{{time}} days before",
     "delete": "Delete reminder",
+    "reminderset": "Reminder set for {{$a}}",
+    "reminderunset": "Reminder deleted",
+    "setareminder": "Set a reminder",
+    "setareminderfor": "Set a reminder for \"{{title}}\" ({{label}})",
+    "setreminder": "Set reminder",
     "timebefore": "{{value}} {{units}} before",
-    "units": "units"
+    "units": "Units",
+    "value": "Value"
 }

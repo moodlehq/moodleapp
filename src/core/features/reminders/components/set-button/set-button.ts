@@ -16,6 +16,8 @@ import { CoreReminderData, CoreReminders, CoreRemindersService } from '@features
 import { Component, Input, OnInit } from '@angular/core';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreRemindersSetReminderMenuComponent } from '../set-reminder-menu/set-reminder-menu';
+import { Translate } from '@singletons';
+import { CoreTimeUtils } from '@services/utils/time';
 
 /**
  * Component that displays a button to set a reminder.
@@ -104,6 +106,8 @@ export class CoreRemindersSetButtonComponent implements OnInit {
             });
             this.timebefore = undefined;
 
+            CoreDomUtils.showToast('core.reminders.reminderunset', true);
+
             return;
         }
 
@@ -121,6 +125,10 @@ export class CoreRemindersSetButtonComponent implements OnInit {
 
         // Save before.
         await CoreReminders.addReminder(reminder);
+
+        const time = this.time - timebefore;
+        const text = Translate.instant('core.reminders.reminderset', { $a: CoreTimeUtils.userDate(time * 1000) });
+        CoreDomUtils.showToast(text);
     }
 
 }
