@@ -16,7 +16,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CoreScreen } from '@services/screen';
 import { conditionalRoutes } from '@/app/app-routing.module';
-import { AddonMessagesDiscussionRoute } from '@addons/messages/messages-lazy.module';
+import { DISCUSSION_ROUTES } from '@addons/messages/messages-lazy.module';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSearchComponentsModule } from '@features/search/components/components.module';
@@ -28,16 +28,14 @@ const mobileRoutes: Routes = [
         path: '',
         component: AddonMessagesSearchPage,
     },
-    AddonMessagesDiscussionRoute,
+    ...DISCUSSION_ROUTES,
 ];
 
 const tabletRoutes: Routes = [
     {
         path: '',
         component: AddonMessagesSearchPage,
-        children: [
-            AddonMessagesDiscussionRoute,
-        ],
+        children: DISCUSSION_ROUTES,
     },
 ];
 

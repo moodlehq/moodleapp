@@ -24,7 +24,6 @@ import {
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreApp } from '@services/app';
 import { CoreNavigator } from '@services/navigator';
-import { Params } from '@angular/router';
 import { CoreScreen } from '@services/screen';
 
 /**
@@ -107,9 +106,9 @@ export class AddonMessagesSearchPage implements OnDestroy {
         this.displayResults = false;
 
         // Empty details.
-        const splitViewLoaded = CoreNavigator.isCurrentPathInTablet('**/messages/search/discussion');
-        if (splitViewLoaded) {
-            CoreNavigator.navigate('../');
+        const path = CoreNavigator.getRelativePathToParent('/messages/search');
+        if (path) {
+            CoreNavigator.navigate(path);
         }
     }
 
@@ -250,16 +249,18 @@ export class AddonMessagesSearchPage implements OnDestroy {
         if (!onInit || CoreScreen.isTablet) {
             this.selectedResult = result;
 
-            const params: Params = {};
+            let conversationId: number | undefined;
+            let userId: number | undefined;
             if ('conversationid' in result) {
-                params.conversationId = result.conversationid;
+                conversationId = result.conversationid;
             } else {
-                params.userId = result.id;
+                userId = result.id;
             }
 
-            const splitViewLoaded = CoreNavigator.isCurrentPathInTablet('**/messages/search/discussion');
-            const path = (splitViewLoaded ? '../' : '') + 'discussion';
-            CoreNavigator.navigate(path, { params });
+            const path = CoreNavigator.getRelativePathToParent('/messages/search') + 'discussion/' +
+                (conversationId ? conversationId : `user/${userId}`);
+
+            CoreNavigator.navigate(path);
         }
     }
 

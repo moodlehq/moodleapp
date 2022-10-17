@@ -519,18 +519,12 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         this.selectedUserId = userId;
 
         const params: Params = {};
-        if (conversationId) {
-            params.conversationId = conversationId;
-        }
-        if (userId) {
-            params.userId = userId;
-        }
         if (messageId) {
             params.message = messageId;
         }
 
-        const splitViewLoaded = CoreNavigator.isCurrentPathInTablet('**/messages/group-conversations/discussion');
-        const path = (splitViewLoaded ? '../' : '') + 'discussion';
+        const path = CoreNavigator.getRelativePathToParent('/messages/group-conversations') + 'discussion/' +
+            (conversationId ? conversationId : `user/${userId}`);
 
         await CoreNavigator.navigate(path, { params });
     }
@@ -539,7 +533,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * Navigate to message settings.
      */
     gotoSettings(): void {
-        CoreNavigator.navigateToSitePath('../message-settings');
+        CoreNavigator.navigateToSitePath('message-settings');
     }
 
     /**
