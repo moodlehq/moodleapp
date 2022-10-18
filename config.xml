@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="40101" id="com.moodle.moodlemobile" ios-CFBundleVersion="4.0.1.0" version="4.0.1" versionCode="40101" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Moodle</name>
-    <description>Moodle official app</description>
-    <author email="mobile@moodle.com" href="http://moodle.com">Moodle Mobile team</author>
+<widget android-versionCode="40101" id="fun.IELTSScience.app" ios-CFBundleVersion="4.0.1.0" version="4.0.1" versionCode="40101" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>IELTS Science</name>
+    <description>IELTS Science official app</description>
+    <author email="admin@ieltsscience.fun" href="https://ieltsscience.fun">IELTS Science Mobile team</author>
     <content src="index.html" />
     <access origin="*" />
     <access launch-external="yes" origin="tel:*" />
