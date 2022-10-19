@@ -44,12 +44,16 @@ export class CoreHorizontalScrollControlsComponent {
     /**
      * Scroll the target in the given direction.
      *
+     * @param ev Click event
      * @param direction Scroll direction.
      */
-    scroll(direction: 'forward' | 'backward'): void {
+    scroll(ev: Event, direction: 'forward' | 'backward'): void {
         if (!this.target) {
             return;
         }
+
+        ev.stopPropagation();
+        ev.preventDefault();
 
         const leftDelta = direction === 'forward' ? this.target.clientWidth : -this.target.clientWidth;
         const newScrollLeft = Math.max(
