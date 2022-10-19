@@ -29,6 +29,8 @@ import { CoreEvents } from '@singletons/events';
 import { CoreNavigator } from '@services/navigator';
 import { CoreForms } from '@singletons/form';
 import { CoreUserSupport } from '@features/user/services/support';
+import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
+import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
 
 /**
  * Page to enter the user credentials.
@@ -56,9 +58,10 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     showForgottenPassword = true;
     showScanQR = false;
     loginAttempts = 0;
-    siteConfig?: CoreSitePublicConfigResponse;
+    supportConfig?: CoreUserSupportConfig;
     canContactSupport?: boolean;
 
+    protected siteConfig?: CoreSitePublicConfigResponse;
     protected eventThrown = false;
     protected viewLeft = false;
     protected siteId?: string;
@@ -75,12 +78,12 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     async ngOnInit(): Promise<void> {
         try {
             this.siteUrl = CoreNavigator.getRequiredRouteParam<string>('siteUrl');
-
             this.siteName = CoreNavigator.getRouteParam('siteName');
             this.logoUrl = !CoreConstants.CONFIG.forceLoginLogo && CoreNavigator.getRouteParam('logoUrl') || undefined;
-            this.siteConfig = CoreNavigator.getRouteParam('siteConfig');
+            this.siteConfig = CoreNavigator.getRouteParam<CoreSitePublicConfigResponse>('siteConfig');
             this.urlToOpen = CoreNavigator.getRouteParam('urlToOpen');
-            this.canContactSupport = this.siteConfig && CoreUserSupport.canContactSupport(this.siteConfig);
+            this.supportConfig = this.siteConfig && new CoreUserGuestSupportConfig(this.siteConfig);
+            this.canContactSupport = this.supportConfig?.canContactSupport();
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
 
@@ -132,9 +135,11 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
      * Contact site support.
      */
     async contactSupport(): Promise<void> {
-        const supportPageUrl = this.siteConfig && CoreUserSupport.getSupportPageUrl(this.siteConfig);
+        if (!this.supportConfig) {
+            throw new Error('can\'t contact support');
+        }
 
-        await CoreUserSupport.contact({ supportPageUrl });
+        await CoreUserSupport.contact({ supportConfig: this.supportConfig });
     }
 
     /**

@@ -60,8 +60,8 @@ import {
 import { Observable, ObservableInput, ObservedValueOf, OperatorFunction, Subject } from 'rxjs';
 import { finalize, map, mergeMap } from 'rxjs/operators';
 import { firstValueFrom } from '../utils/rxjs';
-import { CoreUserSupport } from '@features/user/services/support';
 import { CoreSiteError } from '@classes/errors/siteerror';
+import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
 
 /**
  * QR Code type enumeration.
@@ -265,19 +265,6 @@ export class CoreSite {
     }
 
     /**
-     * Get url to contact site support.
-     *
-     * @returns Site support page url.
-     */
-    getSupportPageUrl(): string | null {
-        if (!this.config || !this.canContactSupport()) {
-            return null;
-        }
-
-        return CoreUserSupport.getSupportPageUrl(this.config, this.siteUrl);
-    }
-
-    /**
      * Get site user's ID.
      *
      * @return User's ID.
@@ -434,19 +421,6 @@ export class CoreSite {
         const info = this.getInfo();
 
         return !!(info && (info.usercanmanageownfiles === undefined || info.usercanmanageownfiles));
-    }
-
-    /**
-     * Check whether this site has a support url available.
-     *
-     * @returns Whether this site has a support url.
-     */
-    canContactSupport(): boolean {
-        if (this.isFeatureDisabled('NoDelegate_CoreUserSupport')) {
-            return false;
-        }
-
-        return !!this.config && CoreUserSupport.canContactSupport(this.config);
     }
 
     /**
@@ -1158,13 +1132,8 @@ export class CoreSite {
             );
 
             if (!data || !data.responses) {
-                const siteConfig = await CoreUtils.ignoreErrors(
-                    this.getPublicConfig({ readingStrategy: CoreSitesReadingStrategy.ONLY_CACHE }),
-                );
-
                 throw new CoreSiteError({
-                    siteConfig,
-                    contactSupport: true,
+                    supportConfig: new CoreUserAuthenticatedSupportConfig(this),
                     message: Translate.instant('core.cannotconnecttrouble'),
                     fallbackMessage: Translate.instant('core.cannotconnecttroublewithoutsupport'),
                     errorcode: 'invalidresponse',

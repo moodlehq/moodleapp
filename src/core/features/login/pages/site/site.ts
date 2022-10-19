@@ -43,6 +43,8 @@ import { AlertButton } from '@ionic/core';
 import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreUserSupport } from '@features/user/services/support';
 import { CoreErrorInfoComponent } from '@components/error-info/error-info';
+import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
+import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
 
 /**
  * Site (url) chooser when adding a new site.
@@ -386,15 +388,15 @@ export class CoreLoginSitePage implements OnInit {
     protected async showLoginIssue(url: string | null, error: CoreError): Promise<void> {
         let errorMessage = CoreDomUtils.getErrorMessage(error);
         let siteExists = false;
-        let supportPageUrl: string | null = null;
+        let supportConfig: CoreUserSupportConfig | undefined = undefined;
         let errorDetails: string | undefined;
         let errorCode: string | undefined;
 
         if (error instanceof CoreSiteError) {
-            siteExists = !!error.siteConfig;
-            supportPageUrl = error.canContactSupport() ? error.getSupportPageUrl() : null;
+            supportConfig = error.supportConfig;
             errorDetails = error.errorDetails;
             errorCode = error.errorcode;
+            siteExists = supportConfig instanceof CoreUserGuestSupportConfig;
         }
 
         if (
@@ -420,12 +422,13 @@ export class CoreLoginSitePage implements OnInit {
             errorMessage += '<div class="core-error-info-container"></div>';
         }
 
+        const alertSupportConfig = supportConfig;
         const buttons: AlertButton[] = [
-            supportPageUrl
+            alertSupportConfig
                 ? {
                     text: Translate.instant('core.contactsupport'),
                     handler: () => CoreUserSupport.contact({
-                        supportPageUrl,
+                        supportConfig: alertSupportConfig,
                         subject: Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }),
                         message: `Error: ${errorCode}\n\n${errorDetails}`,
                     }),

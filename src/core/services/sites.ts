@@ -61,6 +61,7 @@ import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/da
 import { asyncInstance, AsyncInstance } from '../utils/async-instance';
 import { CoreConfig } from './config';
 import { CoreNetwork } from '@services/network';
+import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 export const CORE_SITE_CURRENT_SITE_ID_CONFIG = 'current_site_id';
@@ -297,16 +298,16 @@ export class CoreSitesProvider {
         // Check that the user can authenticate.
         if (!config.enablewebservices) {
             throw this.createCannotConnectLoginError({
+                supportConfig: new CoreUserGuestSupportConfig(config),
                 errorcode: 'webservicesnotenabled',
                 errorDetails: Translate.instant('core.login.webservicesnotenabled'),
-                siteConfig: config,
                 critical: true,
             });
         } else if (!config.enablemobilewebservice) {
             throw this.createCannotConnectLoginError({
+                supportConfig: new CoreUserGuestSupportConfig(config),
                 errorcode: 'mobileservicesnotenabled',
                 errorDetails: Translate.instant('core.login.mobileservicesnotenabled'),
-                siteConfig: config,
                 critical: true,
             });
         } else if (config.maintenanceenabled) {
@@ -332,24 +333,12 @@ export class CoreSitesProvider {
      * @param options Error options.
      * @return Cannot connect error.
      */
-    protected createCannotConnectLoginError(options?: Partial<CoreLoginErrorOptions>): CoreLoginError;
-    protected createCannotConnectLoginError(siteUrl: string, options?: Partial<CoreLoginErrorOptions>): Promise<CoreLoginError>;
-    protected createCannotConnectLoginError(
-        siteUrlOrOptions: string | Partial<CoreLoginErrorOptions> = {},
-        options: Partial<CoreLoginErrorOptions> = {},
-    ): CoreLoginError | Promise<CoreLoginError> {
-        const createError = (options: Partial<CoreLoginErrorOptions>) =>  new CoreLoginError({
+    protected createCannotConnectLoginError(options?: Partial<CoreLoginErrorOptions>): CoreLoginError {
+        return new CoreLoginError({
             ...options,
             message: Translate.instant('core.cannotconnecttrouble'),
             fallbackMessage: Translate.instant('core.cannotconnecttroublewithoutsupport'),
-            contactSupport: true,
         });
-
-        return typeof siteUrlOrOptions === 'object'
-            ? createError(siteUrlOrOptions)
-            : CoreUtils
-                .ignoreErrors(this.getPublicSiteConfigByUrl(siteUrlOrOptions))
-                .then(siteConfig => createError({ ...options, siteConfig }));
     }
 
     /**
@@ -376,8 +365,7 @@ export class CoreSitesProvider {
             critical: true,
             message: error.message,
             errorcode: error.errorcode,
-            contactSupport: error.contactSupport,
-            siteConfig: error.siteConfig,
+            supportConfig: error.supportConfig,
             errorDetails: error.errorDetails,
         };
 
@@ -425,7 +413,8 @@ export class CoreSitesProvider {
             data = await Http.post(siteUrl + '/login/token.php', { appsitecheck: 1 }).pipe(timeout(CoreWS.getRequestTimeout()))
                 .toPromise();
         } catch (error) {
-            throw await this.createCannotConnectLoginError(siteUrl, {
+            throw this.createCannotConnectLoginError({
+                supportConfig: await CoreUserGuestSupportConfig.forSite(siteUrl),
                 errorcode: 'sitecheckfailed',
                 errorDetails: CoreDomUtils.getErrorMessage(error) ?? undefined,
             });
@@ -433,14 +422,16 @@ export class CoreSitesProvider {
 
         if (data === null) {
             // Cannot connect.
-            throw await this.createCannotConnectLoginError(siteUrl, {
+            throw this.createCannotConnectLoginError({
+                supportConfig: await CoreUserGuestSupportConfig.forSite(siteUrl),
                 errorcode: 'appsitecheckfailed',
                 errorDetails: 'A request to /login/token.php with appsitecheck=1 returned an empty response',
             });
         }
 
         if (data.errorcode && (data.errorcode == 'enablewsdescription' || data.errorcode == 'requirecorrectaccess')) {
-            throw await this.createCannotConnectLoginError(siteUrl, {
+            throw this.createCannotConnectLoginError({
+                supportConfig: await CoreUserGuestSupportConfig.forSite(siteUrl),
                 critical: data.errorcode == 'enablewsdescription',
                 errorcode: data.errorcode,
                 errorDetails: data.error,
@@ -448,7 +439,8 @@ export class CoreSitesProvider {
         }
 
         if (data.error && data.error == 'Web services must be enabled in Advanced features.') {
-            throw await this.createCannotConnectLoginError(siteUrl, {
+            throw this.createCannotConnectLoginError({
+                supportConfig: await CoreUserGuestSupportConfig.forSite(siteUrl),
                 critical: true,
                 errorcode: 'enablewsdescription',
                 errorDetails: data.error,
@@ -511,14 +503,16 @@ export class CoreSitesProvider {
                         const redirect = await CoreUtils.checkRedirect(loginUrl);
 
                         if (redirect) {
-                            throw await this.createCannotConnectLoginError(siteUrl, {
+                            throw this.createCannotConnectLoginError({
+                                supportConfig: await CoreUserGuestSupportConfig.forSite(siteUrl),
                                 errorcode: 'sitehasredirect',
                                 errorDetails: Translate.instant('core.login.sitehasredirect'),
                             });
                         }
                     }
 
-                    throw await this.createCannotConnectLoginError(siteUrl, {
+                    throw this.createCannotConnectLoginError({
+                        supportConfig: await CoreUserGuestSupportConfig.forSite(siteUrl),
                         errorcode: data.errorcode,
                         errorDetails: data.error,
                     });

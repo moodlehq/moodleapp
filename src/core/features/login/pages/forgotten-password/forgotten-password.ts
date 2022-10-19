@@ -23,6 +23,8 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreForms } from '@singletons/form';
 import { CorePlatform } from '@services/platform';
 import { CoreSitePublicConfigResponse } from '@classes/site';
+import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
+import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
 
 /**
  * Page to recover a forgotten password.
@@ -37,8 +39,8 @@ export class CoreLoginForgottenPasswordPage implements OnInit {
 
     myForm!: FormGroup;
     siteUrl!: string;
-    siteConfig?: CoreSitePublicConfigResponse;
     autoFocus!: boolean;
+    supportConfig?: CoreUserSupportConfig;
     wasPasswordResetRequestedRecently = false;
 
     constructor(protected formBuilder: FormBuilder) {}
@@ -55,14 +57,16 @@ export class CoreLoginForgottenPasswordPage implements OnInit {
             return;
         }
 
+        const siteConfig = CoreNavigator.getRouteParam<CoreSitePublicConfigResponse>('siteConfig');
+
         this.siteUrl = siteUrl;
-        this.siteConfig = CoreNavigator.getRouteParam<CoreSitePublicConfigResponse>('siteConfig');
         this.autoFocus = CorePlatform.is('tablet');
         this.myForm = this.formBuilder.group({
             field: ['username', Validators.required],
             value: [CoreNavigator.getRouteParam<string>('username') || '', Validators.required],
         });
 
+        this.supportConfig = siteConfig && new CoreUserGuestSupportConfig(siteConfig);
         this.wasPasswordResetRequestedRecently = await CoreLoginHelper.wasPasswordResetRequestedRecently(siteUrl);
     }
 

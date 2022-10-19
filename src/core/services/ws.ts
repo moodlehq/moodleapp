@@ -39,9 +39,8 @@ import { CoreSite } from '@classes/site';
 import { CoreHttpError } from '@classes/errors/httperror';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
-import { CoreUtils } from '@services/utils/utils';
-import { CoreSites } from '@services/sites';
 import { CoreSiteError, CoreSiteErrorOptions } from '@classes/errors/siteerror';
+import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
 
 /**
  * This service allows performing WS calls and download/upload files.
@@ -470,11 +469,8 @@ export class CoreWSProvider {
 
             // Check if error. Ajax layer should always return an object (if error) or an array (if success).
             if (!data || typeof data != 'object') {
-                const siteConfig = await CoreUtils.ignoreErrors(CoreSites.getPublicSiteConfigByUrl(preSets.siteUrl));
-
                 throw new CoreAjaxError({
-                    siteConfig,
-                    contactSupport: true,
+                    supportConfig: await CoreUserGuestSupportConfig.forSite(preSets.siteUrl),
                     message: Translate.instant('core.cannotconnecttrouble'),
                     fallbackMessage: Translate.instant('core.cannotconnecttroublewithoutsupport'),
                     errorcode: 'invalidresponse',
@@ -496,8 +492,7 @@ export class CoreWSProvider {
             return data.data;
         }, async (data: HttpErrorResponse) => {
             const options: CoreSiteErrorOptions = {
-                contactSupport: true,
-                siteConfig: await CoreUtils.ignoreErrors(CoreSites.getPublicSiteConfigByUrl(preSets.siteUrl)),
+                supportConfig: await CoreUserGuestSupportConfig.forSite(preSets.siteUrl),
                 message: Translate.instant('core.cannotconnecttrouble'),
                 fallbackMessage: Translate.instant('core.cannotconnecttroublewithoutsupport'),
             };
@@ -1132,14 +1127,11 @@ export class CoreWSProvider {
         siteUrl: string,
         options?: Partial<CoreSiteErrorOptions>,
     ): Promise<CoreSiteError> {
-        const siteConfig = await CoreUtils.ignoreErrors(CoreSites.getPublicSiteConfigByUrl(siteUrl));
-
         return new CoreSiteError({
             ...options,
-            siteConfig,
+            supportConfig: await CoreUserGuestSupportConfig.forSite(siteUrl),
             message: Translate.instant('core.cannotconnecttrouble'),
             fallbackMessage: Translate.instant('core.cannotconnecttroublewithoutsupport'),
-            contactSupport: true,
         });
     }
 

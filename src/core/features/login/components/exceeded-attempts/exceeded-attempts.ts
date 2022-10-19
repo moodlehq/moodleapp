@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, Input, OnInit } from '@angular/core';
-import { CoreSiteConfig } from '@classes/site';
+import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
 import { CoreUserSupport } from '@features/user/services/support';
 
 @Component({
@@ -23,8 +23,7 @@ import { CoreUserSupport } from '@features/user/services/support';
 })
 export class CoreLoginExceededAttemptsComponent implements OnInit {
 
-    @Input() siteUrl!: string;
-    @Input() siteConfig!: CoreSiteConfig;
+    @Input() supportConfig!: CoreUserSupportConfig;
     @Input() supportSubject?: string;
 
     canContactSupport = false;
@@ -33,19 +32,15 @@ export class CoreLoginExceededAttemptsComponent implements OnInit {
      * @inheritdoc
      */
     ngOnInit(): void {
-        this.canContactSupport = CoreUserSupport.canContactSupport(this.siteConfig);
+        this.canContactSupport = this.supportConfig.canContactSupport();
     }
 
     /**
      * Contact site support.
      */
     async contactSupport(): Promise<void> {
-        if (!this.siteConfig) {
-            throw new Error('Can\'t contact support without config');
-        }
-
         await CoreUserSupport.contact({
-            supportPageUrl: CoreUserSupport.getSupportPageUrl(this.siteConfig, this.siteUrl),
+            supportConfig: this.supportConfig,
             subject: this.supportSubject,
         });
     }

@@ -1366,11 +1366,12 @@ export class CoreDomUtilsProvider {
                 alertOptions.message += '<div class="core-error-info-container"></div>';
             }
 
-            if (error.canContactSupport()) {
+            const supportConfig = error.supportConfig;
+            if (supportConfig?.canContactSupport()) {
                 alertOptions.buttons.push({
                     text: Translate.instant('core.contactsupport'),
                     handler: () => CoreUserSupport.contact({
-                        supportPageUrl: error.getSupportPageUrl(),
+                        supportConfig,
                         subject: alertOptions.header,
                         message: `${error.errorcode}\n\n${error.errorDetails}`,
                     }),

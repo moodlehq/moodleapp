@@ -23,6 +23,7 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreUserSupport } from '@features/user/services/support';
 import { AlertButton } from '@ionic/angular';
+import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
 
 /**
  * Page that shows instructions to change the password.
@@ -48,14 +49,14 @@ export class CoreLoginChangePasswordPage implements OnDestroy {
      * Show a help modal.
      */
     showHelp(): void {
-        const site = CoreSites.getRequiredCurrentSite();
+        const supportConfig = CoreUserAuthenticatedSupportConfig.forCurrentSite();
         const buttons: (AlertButton | string)[] = [];
 
-        if (site.canContactSupport()) {
+        if (supportConfig.canContactSupport()) {
             buttons.push({
                 text: Translate.instant('core.contactsupport'),
                 handler: () => CoreUserSupport.contact({
-                    supportPageUrl: site.getSupportPageUrl(),
+                    supportConfig,
                     subject: Translate.instant('core.login.changepasswordsupportsubject'),
                 }),
             });

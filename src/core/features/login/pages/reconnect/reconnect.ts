@@ -27,6 +27,8 @@ import { CoreError } from '@classes/errors/error';
 import { CoreNavigator, CoreRedirectPayload } from '@services/navigator';
 import { CoreForms } from '@singletons/form';
 import { CoreUserSupport } from '@features/user/services/support';
+import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
+import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
 
 /**
  * Page to enter the user password to reconnect to a site.
@@ -57,9 +59,10 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
     showScanQR = false;
     showLoading = true;
     reconnectAttempts = 0;
-    siteConfig?: CoreSitePublicConfigResponse;
+    supportConfig?: CoreUserSupportConfig;
     canContactSupport?: boolean;
 
+    protected siteConfig?: CoreSitePublicConfigResponse;
     protected viewLeft = false;
     protected eventThrown = false;
     protected redirectData?: CoreRedirectPayload;
@@ -104,7 +107,8 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             this.userAvatar = site.infos.userpictureurl;
             this.siteUrl = site.infos.siteurl;
             this.siteName = site.getSiteName();
-            this.canContactSupport = site.canContactSupport();
+            this.supportConfig = new CoreUserAuthenticatedSupportConfig(site);
+            this.canContactSupport = this.supportConfig.canContactSupport();
 
             // If login was OAuth we should only reach this page if the OAuth method ID has changed.
             this.isOAuth = site.isOAuth();
@@ -141,9 +145,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
      * Contact site support.
      */
     async contactSupport(): Promise<void> {
-        const supportPageUrl = this.siteConfig && CoreUserSupport.getSupportPageUrl(this.siteConfig);
-
-        await CoreUserSupport.contact({ supportPageUrl });
+        await CoreUserSupport.contact({ supportConfig: this.supportConfig });
     }
 
     /**

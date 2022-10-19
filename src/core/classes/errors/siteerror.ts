@@ -13,8 +13,7 @@
 // limitations under the License.
 
 import { CoreError } from '@classes/errors/error';
-import { CoreSitePublicConfigResponse } from '@classes/site';
-import { CoreUserSupport } from '@features/user/services/support';
+import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
 
 /**
  * Error returned when performing operations regarding a site.
@@ -23,42 +22,14 @@ export class CoreSiteError extends CoreError {
 
     errorcode?: string;
     errorDetails?: string;
-    contactSupport?: boolean;
-    siteConfig?: CoreSitePublicConfigResponse;
+    supportConfig?: CoreUserSupportConfig;
 
     constructor(options: CoreSiteErrorOptions) {
         super(getErrorMessage(options));
 
         this.errorcode = options.errorcode;
         this.errorDetails = options.errorDetails;
-        this.contactSupport = options.contactSupport;
-        this.siteConfig = options.siteConfig;
-    }
-
-    /**
-     * Get a url to contact site support.
-     *
-     * @returns Support page url.
-     */
-    getSupportPageUrl(): string {
-        if (!this.siteConfig) {
-            throw new CoreError('Can\'t get support page url');
-        }
-
-        return CoreUserSupport.getSupportPageUrl(this.siteConfig);
-    }
-
-    /**
-     * Check whether the handling of this error allows users to contact support or not.
-     *
-     * @returns Whether to contact support or not.
-     */
-    canContactSupport(): boolean {
-        if (!this.contactSupport || !this.siteConfig) {
-            return false;
-        }
-
-        return CoreUserSupport.canContactSupport(this.siteConfig);
+        this.supportConfig = options.supportConfig;
     }
 
 }
@@ -70,10 +41,7 @@ export class CoreSiteError extends CoreError {
  * @returns Error message.
  */
 function getErrorMessage(options: CoreSiteErrorOptions): string {
-    if (
-        options.contactSupport &&
-        (!options.siteConfig || !CoreUserSupport.canContactSupport(options.siteConfig))
-    ) {
+    if ('supportConfig' in options && !options.supportConfig?.canContactSupport()) {
         return options.fallbackMessage ?? options.message;
     }
 
@@ -85,6 +53,8 @@ export type CoreSiteErrorOptions = {
     fallbackMessage?: string; // Message to use when contacting support is not possible but warranted.
     errorcode?: string; // Technical error code useful for technical assistance.
     errorDetails?: string; // Technical error details useful for technical assistance.
-    contactSupport?: boolean; // Whether this error warrants contacting site support or not.
-    siteConfig?: CoreSitePublicConfigResponse;
+
+    // Configuration to use to contact site support. If this attribute is present, it means
+    // that the error warrants contacting support.
+    supportConfig?: CoreUserSupportConfig;
 };
