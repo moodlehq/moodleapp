@@ -441,6 +441,7 @@ export class CoreSitesProvider {
 
         if (data.errorcode && (data.errorcode == 'enablewsdescription' || data.errorcode == 'requirecorrectaccess')) {
             throw await this.createCannotConnectLoginError(siteUrl, {
+                critical: data.errorcode == 'enablewsdescription',
                 errorcode: data.errorcode,
                 errorDetails: data.error,
             });
@@ -448,6 +449,7 @@ export class CoreSitesProvider {
 
         if (data.error && data.error == 'Web services must be enabled in Advanced features.') {
             throw await this.createCannotConnectLoginError(siteUrl, {
+                critical: true,
                 errorcode: 'enablewsdescription',
                 errorDetails: data.error,
             });
