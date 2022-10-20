@@ -27,6 +27,7 @@ import { AddonModScormGradeLinkHandler } from './services/handlers/grade-link';
 import { AddonModScormIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModScormListLinkHandler } from './services/handlers/list-link';
 import { AddonModScormModuleHandler, AddonModScormModuleHandlerService } from './services/handlers/module';
+import { AddonModScormPlayerLinkHandler } from './services/handlers/player-link';
 import { AddonModScormPluginFileHandler } from './services/handlers/pluginfile';
 import { AddonModScormPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModScormSyncCronHandler } from './services/handlers/sync-cron';
@@ -70,6 +71,7 @@ const routes: Routes = [
                 CoreContentLinksDelegate.registerHandler(AddonModScormGradeLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModScormIndexLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModScormListLinkHandler.instance);
+                CoreContentLinksDelegate.registerHandler(AddonModScormPlayerLinkHandler.instance);
                 CorePluginFileDelegate.registerHandler(AddonModScormPluginFileHandler.instance);
             },
         },
