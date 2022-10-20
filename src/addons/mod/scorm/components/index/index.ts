@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreConstants } from '@/core/constants';
-import { Component, OnInit, Optional } from '@angular/core';
+import { Component, Input, OnInit, Optional } from '@angular/core';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
@@ -52,6 +52,8 @@ import {
     styleUrls: ['index.scss'],
 })
 export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {
+
+    @Input() autoPlayData?: AddonModScormAutoPlayData; // Data to use to play the SCORM automatically.
 
     component = AddonModScormProvider.COMPONENT;
     moduleName = 'scorm';
@@ -189,11 +191,16 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
 
         // Check whether to launch the SCORM immediately.
         if (this.skip === undefined) {
-            this.skip = !this.hasOffline && !this.errorMessage &&
-                    (!this.scorm.lastattemptlock || this.attemptsLeft > 0) &&
-                    this.accessInfo.canskipview && !this.accessInfo.canviewreport &&
-                    this.scorm.skipview! >= AddonModScormProvider.SKIPVIEW_FIRST &&
-                    (this.scorm.skipview == AddonModScormProvider.SKIPVIEW_ALWAYS || this.lastAttempt == 0);
+            this.skip = !this.hasOffline && !this.errorMessage && (!this.scorm.lastattemptlock || this.attemptsLeft > 0) &&
+                (
+                    !!this.autoPlayData
+                    ||
+                    (
+                        this.accessInfo.canskipview && !this.accessInfo.canviewreport &&
+                        (this.scorm.skipview ?? 0) >= AddonModScormProvider.SKIPVIEW_FIRST &&
+                        (this.scorm.skipview == AddonModScormProvider.SKIPVIEW_ALWAYS || this.lastAttempt == 0)
+                    )
+                );
         }
     }
 
@@ -533,7 +540,9 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
      * @param scoId SCO ID.
      */
     protected openScorm(scoId?: number, preview: boolean = false): void {
-        // Display the full page when returning to the page.
+        const autoPlayData = this.autoPlayData;
+
+        this.autoPlayData = undefined;
         this.skip = false;
         this.hasPlayed = true;
 
@@ -555,11 +564,11 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
             `${AddonModScormModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/player`,
             {
                 params: {
-                    mode: preview ? AddonModScormProvider.MODEBROWSE : AddonModScormProvider.MODENORMAL,
+                    mode: autoPlayData?.mode ?? (preview ? AddonModScormProvider.MODEBROWSE : AddonModScormProvider.MODENORMAL),
                     moduleUrl: this.module.url,
-                    newAttempt: !!this.startNewAttempt,
-                    organizationId: this.currentOrganization.identifier,
-                    scoId: scoId,
+                    newAttempt: autoPlayData?.newAttempt ?? this.startNewAttempt,
+                    organizationId: autoPlayData?.organizationId ?? this.currentOrganization.identifier,
+                    scoId: autoPlayData?.scoId ?? scoId,
                 },
             },
         );
@@ -620,4 +629,14 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
  */
 export type AttemptGrade = AddonModScormAttemptGrade & {
     gradeFormatted?: string;
+};
+
+/**
+ * Data to use to auto-play the SCORM.
+ */
+export type AddonModScormAutoPlayData = {
+    mode?: string;
+    newAttempt?: boolean;
+    organizationId?: string;
+    scoId?: number;
 };

@@ -19,6 +19,6 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
 
-    <addon-mod-scorm-index [module]="module" [courseId]="courseId" (dataRetrieved)="updateData($event)">
+    <addon-mod-scorm-index [module]="module" [courseId]="courseId" [autoPlayData]="autoPlayData" (dataRetrieved)="updateData($event)">
     </addon-mod-scorm-index>
 </ion-content>
