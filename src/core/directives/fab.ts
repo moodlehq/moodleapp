@@ -76,6 +76,8 @@ export class CoreFabDirective implements OnInit, OnDestroy {
      * @inheritdoc
      */
     ngOnDestroy(): void {
+        this.element.remove();
+
         if (this.content) {
             this.content.style.setProperty('--padding-bottom', this.initialPaddingBottom + 'px');
         }
