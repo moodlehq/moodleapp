@@ -3,3 +3,5 @@ this.CoreSitesProvider.getSite().then(site => {
 
     document.getElementById('username').innerText = `, ${username}`;
 });
+
+this.ngAfterViewInit = () => this.CoreDomUtilsProvider.showToast('Lifecycle hook called');

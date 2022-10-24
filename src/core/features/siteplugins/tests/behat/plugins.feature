@@ -13,3 +13,9 @@ Feature: Plugins work properly.
 
     When I press "Moodle App Behat (auto-generated)" in the app
     Then I should find "studentusername" in the app
+
+  Scenario: Use lifecycle hooks
+    Given I entered the app as "studentusername"
+    When I press the more menu button in the app
+    And I press "Moodle App Behat (auto-generated)" in the app
+    Then I should find "Lifecycle hook called" in the app
