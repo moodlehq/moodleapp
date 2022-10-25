@@ -291,10 +291,8 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
 
         this.selectedUserId = userId;
 
-        const splitViewLoaded = CoreNavigator.isCurrentPathInTablet('**/messages/contacts/discussion');
-        const path = (splitViewLoaded ? '../' : '') + 'discussion';
-
-        CoreNavigator.navigate(path, { params : { userId } });
+        const path = CoreNavigator.getRelativePathToParent('/messages/contacts') + `discussion/user/${userId}`;
+        CoreNavigator.navigate(path);
     }
 
     /**

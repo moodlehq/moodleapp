@@ -14,7 +14,7 @@
 
 import { NavController as NavControllerService } from '@ionic/angular';
 
-import { mockSingleton } from '@/testing/utils';
+import { mock, mockSingleton } from '@/testing/utils';
 
 import { CoreNavigatorService } from '@services/navigator';
 import { NavController, Router } from '@singletons';
@@ -154,6 +154,22 @@ describe('CoreNavigator', () => {
 
         expect(success).toBe(true);
         expect(navControllerMock.navigateRoot).toHaveBeenCalledWith(['/main/initialpage'], {});
+    });
+
+    it('calculates relative paths to parent paths', () => {
+        navigator = mock(navigator, {
+            getCurrentPath: () => '/foo/bar/baz/xyz',
+        });
+
+        expect(navigator.getRelativePathToParent('/foo/bar/baz/xyz')).toEqual('');
+        expect(navigator.getRelativePathToParent('/foo/bar/baz')).toEqual('../');
+        expect(navigator.getRelativePathToParent('/foo/bar')).toEqual('../../');
+        expect(navigator.getRelativePathToParent('/bar')).toEqual('../../');
+        expect(navigator.getRelativePathToParent('/foo')).toEqual('../../../');
+        expect(navigator.getRelativePathToParent('/foo/')).toEqual('../../../');
+        expect(navigator.getRelativePathToParent('foo')).toEqual('../../../');
+        expect(navigator.getRelativePathToParent('/invalid')).toEqual('');
+        expect(navigator.getRelativePathToParent('/fo')).toEqual('');
     });
 
     it.todo('navigates to a different site');

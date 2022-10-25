@@ -700,6 +700,29 @@ export class CoreNavigatorService {
         return promise;
     }
 
+    /**
+     * Get the relative path to a parent path.
+     * E.g. if parent path is '/foo' and current path is '/foo/bar/baz' it will return '../../'.
+     *
+     * @param parentPath Parent path.
+     * @return Relative path to the parent, empty if same path or parent path not found.
+     * @todo If messaging is refactored to use list managers, this function might not be needed anymore.
+     */
+    getRelativePathToParent(parentPath: string): string {
+        // Add an ending slash to avoid collisions with other routes (e.g. /foo and /foobar).
+        parentPath = CoreTextUtils.addEndingSlash(parentPath);
+
+        const path = this.getCurrentPath();
+        const parentRouteIndex = path.indexOf(parentPath);
+        if (parentRouteIndex === -1) {
+            return '';
+        }
+
+        const depth = (path.substring(parentRouteIndex + parentPath.length - 1).match(/\//g) ?? []).length;
+
+        return '../'.repeat(depth);
+    }
+
 }
 
 export const CoreNavigator = makeSingleton(CoreNavigatorService);

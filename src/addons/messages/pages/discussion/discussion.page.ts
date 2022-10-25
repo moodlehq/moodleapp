@@ -154,28 +154,14 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
      * Setup code for the page.
      */
     async ngOnInit(): Promise<void> {
+        this.conversationId = CoreNavigator.getRouteNumberParam('conversationId');
+        this.userId = CoreNavigator.getRouteNumberParam('userId');
+        this.showInfo = !CoreNavigator.getRouteBooleanParam('hideInfo');
+        this.showKeyboard = !!CoreNavigator.getRouteBooleanParam('showKeyboard');
 
-        this.route.queryParams.subscribe(async (params) => {
-            const oldConversationId = this.conversationId;
-            const oldUserId = this.userId;
-            let forceScrollToBottom = false;
-            this.conversationId = CoreNavigator.getRouteNumberParam('conversationId', { params }) || undefined;
-            this.userId = CoreNavigator.getRouteNumberParam('userId', { params }) || undefined;
-            this.showInfo = !params.hideInfo;
+        await this.fetchData();
 
-            if (oldConversationId != this.conversationId || oldUserId != this.userId) {
-                // Showing reload again can break animations.
-                this.loaded = false;
-                this.initialized = false;
-                forceScrollToBottom = true;
-            }
-
-            this.showKeyboard = CoreNavigator.getRouteBooleanParam('showKeyboard', { params }) || false;
-
-            await this.fetchData();
-
-            this.scrollToBottom(forceScrollToBottom);
-        });
+        this.scrollToBottom(true);
     }
 
     /**
@@ -1265,7 +1251,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
             });
 
             if (userId !== undefined) {
-                const splitViewLoaded = CoreNavigator.isCurrentPathInTablet('**/messages/**/discussion');
+                const splitViewLoaded = CoreNavigator.isCurrentPathInTablet('**/messages/**/discussion/**');
 
                 // Open user conversation.
                 if (splitViewLoaded) {
@@ -1277,7 +1263,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                     );
                 } else {
                     // Open the discussion in a new view.
-                    CoreNavigator.navigateToSitePath('/messages/discussion', { params: { userId } });
+                    CoreNavigator.navigateToSitePath(`/messages/discussion/user/${userId}`);
                 }
             }
         } else {

@@ -257,16 +257,13 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
     async gotoDiscussion(discussionUserId: number, messageId?: number): Promise<void> {
         this.discussionUserId = discussionUserId;
 
-        const params: Params = {
-            userId: discussionUserId,
-        };
+        const params: Params = {};
 
         if (messageId) {
             params.message = messageId;
         }
 
-        const splitViewLoaded = CoreNavigator.isCurrentPathInTablet('**/messages/index/discussion');
-        const path = (splitViewLoaded ? '../' : '') + 'discussion';
+        const path = CoreNavigator.getRelativePathToParent('/messages/index') + `discussion/user/${discussionUserId}`;
 
         await CoreNavigator.navigate(path, { params });
     }
