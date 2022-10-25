@@ -57,7 +57,7 @@ export class CoreSiteHomeIndexLinkHandlerService extends CoreContentLinksHandler
         const courseId = parseInt(params.id, 10);
 
         if (!courseId) {
-            return url.includes('index.php');
+            return url.includes('index.php') || url.includes('?redirect=0');
         }
 
         const site = await CoreSites.getSite(siteId);
