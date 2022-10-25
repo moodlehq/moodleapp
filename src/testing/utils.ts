@@ -19,13 +19,16 @@ import { Observable, Subject } from 'rxjs';
 import { sep } from 'path';
 
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { CoreSingletonProxy, Translate } from '@singletons';
+import { ApplicationInit, CoreSingletonProxy, Translate } from '@singletons';
 import { CoreTextUtilsProvider } from '@services/utils/text';
 
 import { TranslatePipeStub } from './stubs/pipes/translate';
 import { CoreExternalContentDirectiveStub } from './stubs/directives/core-external-content';
 import { CoreNetwork } from '@services/network';
 import { CorePlatform } from '@services/platform';
+import { CoreDB } from '@services/db';
+import { CoreNavigator } from '@services/navigator';
+import { CoreDomUtils } from '@services/utils/dom';
 
 abstract class WrapperComponent<U> {
 
@@ -38,13 +41,21 @@ type ServiceInjectionToken = AbstractType<unknown> | Type<unknown> | string;
 let testBedInitialized = false;
 const textUtils = new CoreTextUtilsProvider();
 const DEFAULT_SERVICE_SINGLETON_MOCKS: [CoreSingletonProxy, Record<string, unknown>][] = [
+    [Translate, mock({ instant: key => key })],
+    [CoreDB, mock({ getDB: () => mock() })],
+    [CoreNetwork, mock({ onChange: () => new Observable() })],
+    [CoreDomUtils, mock({ showModalLoading: () => Promise.resolve(mock({}, ['dismiss'])) })],
+    [CoreNavigator, mock({ navigateToSitePath: () => Promise.resolve(true) })],
+    [ApplicationInit, mock({
+        donePromise: Promise.resolve(),
+        runInitializers: () => Promise.resolve(),
+    })],
     [CorePlatform, mock({
         is: () => false,
         isMobile: () => false,
         ready: () => Promise.resolve(),
         resume: new Subject<void>(),
     })],
-    [CoreNetwork, { onChange: () => new Observable() }],
 ];
 
 async function renderAngularComponent<T>(component: Type<T>, config: RenderConfig): Promise<ComponentFixture<T>> {

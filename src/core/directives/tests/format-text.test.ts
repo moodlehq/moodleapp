@@ -26,7 +26,6 @@ import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 
 import { mock, mockSingleton, RenderConfig, renderTemplate, renderWrapperComponent } from '@/testing/utils';
-import { CoreDB } from '@services/db';
 
 describe('CoreFormatTextDirective', () => {
 
@@ -122,12 +121,7 @@ describe('CoreFormatTextDirective', () => {
 
     it('should use external-content directive on images', async () => {
         // Arrange
-        mockSingleton(CoreDB, {
-            getDB: () => undefined,
-        });
-
-        let site = new CoreSite('42', 'https://mysite.com', 'token');
-        site = mock(site, {
+        const site = mock(new CoreSite('42', 'https://mysite.com', 'token'), {
             canDownloadFiles: () => true,
         });
 
