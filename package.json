@@ -74,8 +74,10 @@
     "@ionic-native/web-intent": "^5.36.0",
     "@ionic-native/zip": "^5.36.0",
     "@ionic/angular": "^5.9.2",
+    "@moodlehq/cordova-plugin-file-opener": "^3.0.5-moodle.1",
     "@moodlehq/cordova-plugin-file-transfer": "1.7.1-moodle.5",
     "@moodlehq/cordova-plugin-inappbrowser": "5.0.0-moodle.3",
+    "@moodlehq/cordova-plugin-intent": "^2.2.0-moodle.1",
     "@moodlehq/cordova-plugin-ionic-webview": "5.0.0-moodle.1",
     "@moodlehq/cordova-plugin-local-notification": "0.9.0-moodle.3",
     "@moodlehq/cordova-plugin-qrscanner": "3.0.1-moodle.4",
@@ -87,7 +89,6 @@
     "@types/cordova": "0.0.34",
     "@types/dom-mediacapture-record": "^1.0.7",
     "chart.js": "^2.9.4",
-    "com-darryncampbell-cordova-plugin-intent": "^2.2.0",
     "cordova": "^11.0.0",
     "cordova-android": "^10.1.1",
     "cordova-clipboard": "^1.3.0",
@@ -100,7 +101,6 @@
     "cordova-plugin-customurlscheme": "^5.0.2",
     "cordova-plugin-device": "^2.1.0",
     "cordova-plugin-file": "6.0.2",
-    "cordova-plugin-file-opener2": "^3.0.5",
     "cordova-plugin-geolocation": "^4.1.0",
     "cordova-plugin-ionic-keyboard": "^2.2.0",
     "cordova-plugin-media": "5.0.4",
@@ -207,7 +207,7 @@
         "ANDROID_PATHPREFIX": "/"
       },
       "cordova-plugin-device": {},
-      "cordova-plugin-file-opener2": {
+      "@moodlehq/cordova-plugin-file-opener": {
         "ANDROID_SUPPORT_V4_VERSION": "27.+"
       },
       "cordova-plugin-geolocation": {
@@ -236,7 +236,7 @@
         "FCM_VERSION": "18.+",
         "IOS_FIREBASE_MESSAGING_VERSION": "~> 6.32.2"
       },
-      "com-darryncampbell-cordova-plugin-intent": {},
+      "@moodlehq/cordova-plugin-intent": {},
       "nl.kingsquare.cordova.background-audio": {},
       "cordova.plugins.diagnostic": {
         "ANDROID_SUPPORT_VERSION": "28.+",
