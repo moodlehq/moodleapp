@@ -36,6 +36,9 @@ import { CoreWindow } from '@singletons/window';
 import { CoreColors } from '@singletons/colors';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
+import { CoreErrorWithOptions } from '@classes/errors/errorwithtitle';
+import { CoreFilepool } from '@services/filepool';
+import { CoreSites } from '@services/sites';
 
 export type TreeNode<T> = T & { children: TreeNode<T>[] };
 
@@ -970,6 +973,23 @@ export class CoreUtilsProvider {
             this.openInApp(path);
 
             return;
+        } else if (extension === 'apk' && CoreApp.isAndroid()) {
+            const url = await CoreUtils.ignoreErrors(
+                CoreFilepool.getFileUrlByPath(CoreSites.getCurrentSiteId(), CoreFile.removeBasePath(path)),
+            );
+
+            // @todo MOBILE-4167: Handle urls with expired tokens.
+
+            throw new CoreErrorWithOptions(
+                Translate.instant('core.cannotinstallapk'),
+                undefined,
+                url
+                    ? [{
+                        text: Translate.instant('core.openinbrowser'),
+                        handler: () => this.openInBrowser(url),
+                    }]
+                    : undefined,
+            );
         }
 
         // Path needs to be decoded, the file won't be opened if the path has %20 instead of spaces and so.
