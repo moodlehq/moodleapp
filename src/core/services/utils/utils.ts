@@ -267,6 +267,24 @@ export class CoreUtilsProvider {
     }
 
     /**
+     * Get inapp browser instance (if any).
+     *
+     * @return IAB instance, undefined if not open.
+     */
+    getInAppBrowserInstance(): InAppBrowserObject | undefined  {
+        return this.iabInstance;
+    }
+
+    /**
+     * Check if inapp browser is open.
+     *
+     * @return Whether it's open.
+     */
+    isInAppBrowserOpen(): boolean {
+        return !!this.iabInstance;
+    }
+
+    /**
      * Clone a variable. It should be an object, array or primitive type.
      *
      * @param source The variable to clone.
@@ -1024,15 +1042,14 @@ export class CoreUtilsProvider {
 
         this.setInAppBrowserToolbarColors(options);
 
+        this.iabInstance?.close(); // Close window if there is one already open, only allow one.
+
         this.iabInstance = InAppBrowser.create(url, '_blank', options);
 
         if (CorePlatform.isMobile()) {
-            let loadStopSubscription: Subscription | undefined;
             const loadStartUrls: string[] = [];
 
-            // Trigger global events when a url is loaded or the window is closed. This is to make it work like in Ionic 1.
             const loadStartSubscription = this.iabInstance.on('loadstart').subscribe((event) => {
-                // Execute the callback in the Angular zone, so change detection doesn't stop working.
                 NgZone.run(() => {
                     // Store the last loaded URLs (max 10).
                     loadStartUrls.push(event.url);
@@ -1044,25 +1061,26 @@ export class CoreUtilsProvider {
                 });
             });
 
-            if (CoreApp.isAndroid()) {
-                // Load stop is needed with InAppBrowser v3. Custom URL schemes no longer trigger load start, simulate it.
-                loadStopSubscription = this.iabInstance.on('loadstop').subscribe((event) => {
-                    // Execute the callback in the Angular zone, so change detection doesn't stop working.
-                    NgZone.run(() => {
-                        if (loadStartUrls.indexOf(event.url) == -1) {
-                            // The URL was stopped but not started, probably a custom URL scheme.
-                            CoreEvents.trigger(CoreEvents.IAB_LOAD_START, event);
-                        }
-                    });
+            const loadStopSubscription = this.iabInstance.on('loadstop').subscribe((event) => {
+                NgZone.run(() => {
+                    CoreEvents.trigger(CoreEvents.IAB_LOAD_STOP, event);
                 });
-            }
+            });
+
+            const messageSubscription = this.iabInstance.on('message').subscribe((event) => {
+                NgZone.run(() => {
+                    CoreEvents.trigger(CoreEvents.IAB_MESSAGE, event.data);
+                });
+            });
 
             const exitSubscription = this.iabInstance.on('exit').subscribe((event) => {
-                // Execute the callback in the Angular zone, so change detection doesn't stop working.
                 NgZone.run(() => {
                     loadStartSubscription.unsubscribe();
-                    loadStopSubscription && loadStopSubscription.unsubscribe();
+                    loadStopSubscription.unsubscribe();
+                    messageSubscription.unsubscribe();
                     exitSubscription.unsubscribe();
+
+                    this.iabInstance = undefined;
                     CoreEvents.trigger(CoreEvents.IAB_EXIT, event);
                 });
             });

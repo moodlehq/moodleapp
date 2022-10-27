@@ -148,7 +148,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         CorePlatform.resume.subscribe(() => {
             // Wait a second before setting it to false since in iOS there could be some frozen WS calls.
             setTimeout(() => {
-                if (CoreLoginHelper.isWaitingForBrowser()) {
+                if (CoreLoginHelper.isWaitingForBrowser() && !CoreUtils.isInAppBrowserOpen()) {
                     CoreLoginHelper.stopWaitingForBrowser();
                     CoreLoginHelper.checkLogout();
                 }
