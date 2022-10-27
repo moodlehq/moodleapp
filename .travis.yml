@@ -1,6 +1,8 @@
 os: linux
 dist: trusty
 node_js: 14
+jdk:
+  - oraclejdk11
 
 git:
   depth: 3
@@ -51,7 +53,10 @@ jobs:
       - npm --version
       - nvm --version
       - npm ci
+      - export JAVA_HOME_COPY=$JAVA_HOME
+      - export JAVA_HOME=/usr/lib/jvm/java-8-oracle
       - yes | sdkmanager "build-tools;30.0.3"
+      - export JAVA_HOME=$JAVA_HOME_COPY
     addons:
       apt:
         packages:

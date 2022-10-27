@@ -84,7 +84,8 @@ import { CoreContentLinksModuleIndexHandler } from '@features/contentlinks/class
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreContentLinksModuleListHandler } from '@features/contentlinks/classes/module-list-handler';
 import { CoreObject } from '@singletons/object';
-import { CoreUrl } from '@singletons/url';
+import { CoreUrlUtils } from '@services/utils/url';
+import { CoreText } from '@singletons/text';
 
 const HANDLER_DISABLED = 'core_site_plugins_helper_handler_disabled';
 
@@ -164,8 +165,11 @@ export class CoreSitePluginsHelperProvider {
     ): Promise<string> {
         const site = await CoreSites.getSite(siteId);
 
-        // Make sure it's an absolute URL.
-        let url = handlerSchema.styles?.url ? CoreUrl.toAbsoluteURL(site.getURL(), handlerSchema.styles.url) : undefined;
+        // Make sure it's an absolute URL. Do not use toAbsoluteURL because it can change the behaviour and break plugin styles.
+        let url = handlerSchema.styles?.url;
+        if (url && !CoreUrlUtils.isAbsoluteURL(url)) {
+            url = CoreText.concatenatePaths(site.getURL(), url);
+        }
 
         if (url && handlerSchema.styles?.version) {
             // Add the version to the URL to prevent getting a cached file.

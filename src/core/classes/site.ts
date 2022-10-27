@@ -104,7 +104,7 @@ export class CoreSite {
         '3.9': 2020061500,
         '3.10': 2020110900,
         '3.11': 2021051700,
-        '4.0': 2021100300, // @todo [4.0] replace with right value when released. Using a tmp value to be able to test new things.
+        '4.0': 2022041900,
     };
 
     // Possible cache update frequencies.

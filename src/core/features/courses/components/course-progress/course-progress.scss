@@ -113,6 +113,7 @@
     }
 }
 
+// Common styles.
 :host-context(.core-horizontal-scroll) {
     @include horizontal_scroll_item(80%, 250px, 300px);
 

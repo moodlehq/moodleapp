@@ -97,6 +97,10 @@ ion-chip {
     margin-left: 0;
     margin-right: 0;
     max-width: 100%;
+
+    &.core-course-category {
+        @include margin-horizontal(0px, 8px);
+    }
 }
 
 

@@ -27,8 +27,7 @@
         </div>
     </ng-container>
 
-    <ion-item class="ion-text-wrap" button detail="false" (click)="openCourse()" [attr.aria-label]="course.displayname || course.fullname"
-        [class.item-disabled]="course.visible == 0">
+    <ion-item class="ion-text-wrap" button detail="false" (click)="openCourse()" [attr.aria-label]="course.displayname || course.fullname">
 
         <ng-container *ngIf="layout == 'list' || layout == 'listwithenrol'">
             <ion-icon *ngIf="!course.courseImage" name="fas-graduation-cap" slot="start" class="course-icon core-course-thumb"
@@ -72,6 +71,13 @@
                     <ion-label>
                         <core-format-text [text]="course.categoryname" contextLevel="coursecat" [contextInstanceId]="course.categoryid">
                         </core-format-text>
+                    </ion-label>
+                </ion-chip>
+
+                <ion-chip color="info" *ngIf="course.visible == 0"
+                    class="core-course-additional-info ion-text-wrap core-course-hidden-message">
+                    <ion-label>
+                        {{ 'core.course.hiddenfromstudents' | translate }}
                     </ion-label>
                 </ion-chip>
             </div>

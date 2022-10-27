@@ -128,7 +128,7 @@
                                     <core-download-refresh *ngIf="downloadEnabled && module.handlerData?.showDownloadButton &&
                                         module.downloadStatus != statusDownloaded" [status]="module.downloadStatus" [enabled]="true"
                                         [canTrustDownload]="true" [loading]="module.spinner || module.handlerData.spinner"
-                                        (action)="prefetchModule(module, section)">
+                                        (action)="prefetchModule(module, $event)">
                                     </core-download-refresh>
                                     <ion-button fill="clear" (click)="deleteForModule(module, section)"
                                         *ngIf="!module.calculatingSize && module.totalSize > 0" color="danger">
