@@ -241,13 +241,13 @@
     "publisher": "Ionic Team",
     "licenseFile": "LICENSE"
   },
-  "@moodlehq/cordova-plugin-local-notification@0.9.0-moodle.3": {
+  "@moodlehq/cordova-plugin-local-notification@0.9.0-moodle.7": {
     "licenses": "Apache*",
     "repository": "https://github.com/moodlemobile/cordova-plugin-local-notification",
     "publisher": "Sebastián Katzer",
     "licenseFile": "LICENSE"
   },
-  "@moodlehq/cordova-plugin-qrscanner@3.0.1-moodle.2": {
+  "@moodlehq/cordova-plugin-qrscanner@3.0.1-moodle.4": {
     "licenses": "MIT",
     "repository": "https://github.com/moodlemobile/cordova-plugin-qrscanner",
     "publisher": "Jason Dreyzehner",
@@ -258,7 +258,7 @@
     "repository": "https://github.com/moodlemobile/cordova-plugin-zip",
     "licenseFile": "LICENSE"
   },
-  "@moodlehq/phonegap-plugin-push@2.0.0-moodle.4": {
+  "@moodlehq/phonegap-plugin-push@4.0.0-moodle.2": {
     "licenses": "MIT",
     "repository": "https://github.com/moodlemobile/phonegap-plugin-push",
     "publisher": "Erisu",
@@ -2669,7 +2669,7 @@
     "url": "https://github.com/ichernev",
     "licenseFile": "LICENSE"
   },
-  "moodlemobile@4.0.0": {
+  "moodlemobile@4.0.2": {
     "licenses": "Apache-2.0",
     "repository": "https://github.com/moodlehq/moodleapp",
     "publisher": "Moodle Pty Ltd.",
