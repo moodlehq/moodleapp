@@ -53,6 +53,8 @@ export interface CoreEventsData {
     [CoreEvents.SECTION_STATUS_CHANGED]: CoreEventSectionStatusChangedData;
     [CoreEvents.ACTIVITY_DATA_SENT]: CoreEventActivityDataSentData;
     [CoreEvents.IAB_LOAD_START]: InAppBrowserEvent;
+    [CoreEvents.IAB_LOAD_STOP]: InAppBrowserEvent;
+    [CoreEvents.IAB_MESSAGE]: Record<string, unknown>;
     [CoreEvents.LOGIN_SITE_CHECKED]: CoreEventLoginSiteCheckedData;
     [CoreEvents.LOGIN_SITE_UNCHECKED]: CoreEventLoginSiteUncheckedData;
     [CoreEvents.SEND_ON_ENTER_CHANGED]: CoreEventSendOnEnterChangedData;
@@ -99,7 +101,9 @@ export class CoreEvents {
     static readonly LOGIN_SITE_CHECKED = 'login_site_checked';
     static readonly LOGIN_SITE_UNCHECKED = 'login_site_unchecked';
     static readonly IAB_LOAD_START = 'inappbrowser_load_start';
+    static readonly IAB_LOAD_STOP = 'inappbrowser_load_stop';
     static readonly IAB_EXIT = 'inappbrowser_exit';
+    static readonly IAB_MESSAGE = 'inappbrowser_message';
     static readonly APP_LAUNCHED_URL = 'app_launched_url'; // App opened with a certain URL (custom URL scheme).
     static readonly FILE_SHARED = 'file_shared';
     static readonly KEYBOARD_CHANGE = 'keyboard_change';
