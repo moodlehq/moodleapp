@@ -62,8 +62,8 @@
             </div>
 
             <ng-container *ngIf="showScanQR">
-                <div class="ion-text-center ion-padding">{{ 'core.login.or' | translate }}</div>
-                <ion-button expand="block" fill="outline" class="ion-margin" (click)="showInstructionsAndScanQR()">
+                <div class="ion-text-center ion-padding core-login-site-qrcode-separator">{{ 'core.login.or' | translate }}</div>
+                <ion-button expand="block" fill="outline" class="ion-margin core-login-site-qrcode" (click)="showInstructionsAndScanQR()">
                     <ion-icon slot="start" name="fas-qrcode" aria-hidden="true"></ion-icon>
                     {{ 'core.scanqr' | translate }}
                 </ion-button>

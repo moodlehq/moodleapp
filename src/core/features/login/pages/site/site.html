@@ -101,8 +101,9 @@
         </ng-container>
 
         <ng-container *ngIf="showScanQR && !hasSites && !enteredSiteUrl">
-            <div class="ion-text-center ion-padding ion-margin-top">{{ 'core.login.or' | translate }}</div>
-            <ion-button expand="block" fill="outline" class="ion-margin" (click)="showInstructionsAndScanQR()" aria-haspopup="dialog">
+            <div class="ion-text-center ion-padding ion-margin-top core-login-site-qrcode-separator">{{ 'core.login.or' | translate }}</div>
+            <ion-button expand="block" fill="outline" class="ion-margin core-login-site-qrcode" (click)="showInstructionsAndScanQR()"
+                aria-haspopup="dialog">
                 <ion-icon slot="start" name="fas-qrcode" aria-hidden="true"></ion-icon>
                 {{ 'core.scanqr' | translate }}
             </ion-button>
