@@ -101,6 +101,13 @@
             --loading-spinner: #{$core-login-loading-color};
         }
     }
+
+    @if ($core-login-hide-qrcode) {
+        .core-login-site-qrcode,
+        .core-login-site-qrcode-separator {
+            display: none;
+        }
+    }
 }
 
 :host-context(html.dark) {
