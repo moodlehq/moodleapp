@@ -18,7 +18,7 @@ import { CoreCustomURLSchemes, CoreCustomURLSchemesProvider } from '@services/ur
 import { CoreLoginHelperProvider } from '@features/login/services/login-helper';
 import { CoreConfig } from '@services/config';
 import { EnvironmentConfig } from '@/types/config';
-import { makeSingleton, NgZone } from '@singletons';
+import { LocalNotifications, makeSingleton, NgZone } from '@singletons';
 import { CoreNetwork, CoreNetworkService } from '@services/network';
 import { CorePushNotifications, CorePushNotificationsProvider } from '@features/pushnotifications/services/pushnotifications';
 import { CoreCronDelegate, CoreCronDelegateService } from '@services/cron';
@@ -489,6 +489,49 @@ export class TestingBehatRuntimeService {
                 String(now.getMilliseconds()).padStart(2, '0');
 
         console.log('BEHAT: ' + nowFormatted, ...args); // eslint-disable-line no-console
+    }
+
+    /**
+     * Check a notification is present.
+     *
+     * @param title Title of the notification
+     * @return YES or NO: depending on the result.
+     */
+    async notificationIsPresentWithText(title: string): Promise<string> {
+        const notifications = await LocalNotifications.getAllTriggered();
+
+        const notification = notifications.find((notification) => notification.title?.includes(title));
+
+        if (!notification) {
+            return 'NO';
+        }
+
+        if (!notification.id) {
+            // Cannot check but has been triggered.
+            return 'YES';
+        }
+
+        return (await LocalNotifications.isPresent(notification.id)) ? 'YES' : 'NO';
+    }
+
+    /**
+     * Close notification.
+     *
+     * @param title Title of the notification
+     * @return OK or ERROR
+     */
+    async closeNotification(title: string): Promise<string> {
+        const notifications = await LocalNotifications.getAllTriggered();
+
+        const notification = notifications.find((notification) => notification.title?.includes(title));
+
+        if (!notification || !notification.id) {
+            return `ERROR: Notification with title ${title} cannot be closed`;
+        }
+
+        await LocalNotifications.clear(notification.id);
+
+        return 'OK';
     }
 
 }
