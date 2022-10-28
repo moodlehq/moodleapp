@@ -49,10 +49,12 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
     identityProviders?: CoreSiteIdentityProvider[];
     showForgottenPassword = true;
     showSiteAvatar = false;
+    isBrowserSSO = false;
     isOAuth = false;
     isLoggedOut: boolean;
     siteId!: string;
     showScanQR = false;
+    showLoading = true;
 
     protected siteConfig?: CoreSitePublicConfigResponse;
     protected viewLeft = false;
@@ -107,6 +109,8 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             this.showSiteAvatar = !!this.userAvatar && !CoreLoginHelper.getFixedSites();
 
             this.checkSiteConfig(site);
+
+            this.showLoading = false;
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
 
@@ -151,6 +155,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             CoreEvents.trigger(CoreEvents.LOGIN_SITE_CHECKED, { config: this.siteConfig });
         }
 
+        this.isBrowserSSO = !this.isOAuth && CoreLoginHelper.isSSOLoginNeeded(this.siteConfig.typeoflogin);
         this.showScanQR = CoreLoginHelper.displayQRInSiteScreen() ||
             CoreLoginHelper.displayQRInCredentialsScreen(this.siteConfig.tool_mobile_qrcodetype);
 
@@ -249,6 +254,23 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
      */
     forgottenPassword(): void {
         CoreLoginHelper.forgottenPasswordClicked(this.siteUrl, this.username, this.siteConfig);
+    }
+
+    /**
+     * Open browser for SSO login.
+     */
+    openBrowserSSO(): void {
+        if (!this.siteConfig) {
+            return;
+        }
+
+        CoreLoginHelper.confirmAndOpenBrowserForSSOLogin(
+            this.siteUrl,
+            this.siteConfig.typeoflogin,
+            undefined,
+            this.siteConfig.launchurl,
+            this.redirectData,
+        );
     }
 
     /**
