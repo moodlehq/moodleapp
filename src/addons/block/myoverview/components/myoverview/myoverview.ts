@@ -711,10 +711,10 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * @param newCourses New courses.
      * @return Whether it has meaningful changes.
      */
-    protected coursesHaveMeaningfulChanges(
+    protected async coursesHaveMeaningfulChanges(
         previousCourses: CoreEnrolledCourseDataWithExtraInfoAndOptions[],
         newCourses: CoreEnrolledCourseDataWithExtraInfoAndOptions[],
-    ): boolean {
+    ): Promise<boolean> {
         if (previousCourses.length !== newCourses.length) {
             return true;
         }
@@ -746,10 +746,10 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * @param newCourses New courses.
      * @return Whether it has meaningful changes.
      */
-    protected customFilterCoursesHaveMeaningfulChanges(
+    protected async customFilterCoursesHaveMeaningfulChanges(
         previousCourses: CoreCourseSummaryData[],
         newCourses: CoreCourseSummaryData[],
-    ): boolean {
+    ): Promise<boolean> {
         if (previousCourses.length !== newCourses.length) {
             return true;
         }
