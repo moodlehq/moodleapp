@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CanLoad, CanActivate, UrlTree } from '@angular/router';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
+import { CoreApp } from '@services/app';
 
 import { CoreSites } from '@services/sites';
 import { Router } from '@singletons';
@@ -45,9 +46,22 @@ export class CoreMainMenuAuthGuard implements CanLoad, CanActivate {
         }
 
         if (CoreLoginHelper.isSiteLoggedOut()) {
-            await CoreSites.logout();
+            // Send the user to reconnect page.
+            const newRoute = Router.parseUrl('/login/reconnect');
+            const siteId = CoreSites.getCurrentSiteId();
 
-            return Router.parseUrl('/login');
+            // Pass redirect data (if any and belongs to same site).
+            let redirect = CoreApp.consumeMemoryRedirect();
+            if (!redirect?.timemodified || Date.now() - redirect.timemodified > 20000 || redirect.siteId !== siteId) {
+                redirect = null;
+            }
+
+            newRoute.queryParams = {
+                siteId,
+                ...redirect,
+            };
+
+            return newRoute;
         }
 
         return true;
