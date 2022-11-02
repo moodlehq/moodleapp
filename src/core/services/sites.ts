@@ -1819,6 +1819,17 @@ export class CoreSitesProvider {
     }
 
     /**
+     * Check whether a site is using a default image or not.
+     *
+     * @param site Site info.
+     * @returns Whether the site is using a default image.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    hasDefaultImage(site: CoreLoginSiteInfo): boolean {
+        return false;
+    }
+
+    /**
      * Migrate the legacy current_site table.
      */
     protected async migrateCurrentSiteLegacyTable(): Promise<void> {
