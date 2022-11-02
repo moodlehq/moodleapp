@@ -38,6 +38,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
 
     @Input() appearOnBottom = false;
 
+    protected id = '0';
     protected element: HTMLElement;
     protected initialHeight = 48;
     protected finalHeight = 0;
@@ -63,6 +64,8 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
+        this.id = String(CoreUtils.getUniqueId('CoreCollapsibleFooterDirective'));
+
         // Only if not present or explicitly falsy it will be false.
         this.appearOnBottom = !CoreUtils.isFalseOrZero(this.appearOnBottom);
         this.slotPromise = CoreDom.slotOnContent(this.element);
@@ -72,6 +75,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
         await this.waitFormatTextsRendered();
 
         this.content = this.element.closest('ion-content');
+        this.content?.setAttribute('data-collapsible-footer-id', this.id);
 
         await this.calculateHeight();
 
@@ -242,14 +246,21 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
      * @inheritdoc
      */
     async ngOnDestroy(): Promise<void> {
-        this.content?.style.setProperty('--padding-bottom', this.initialPaddingBottom);
+        if (this.content) {
+            // Only reset the variables and classes if the collapsible footer hasn't changed (avoid race conditions).
+            if (this.content.getAttribute('data-collapsible-footer-id') === this.id) {
+                this.content.style.setProperty('--padding-bottom', this.initialPaddingBottom);
+                this.content.classList.remove('has-collapsible-footer');
+            }
 
-        if (this.content && this.contentScrollListener) {
-            this.content.removeEventListener('ionScroll', this.contentScrollListener);
+            if (this.contentScrollListener) {
+                this.content.removeEventListener('ionScroll', this.contentScrollListener);
+            }
+            if (this.endContentScrollListener) {
+                this.content.removeEventListener('ionScrollEnd', this.endContentScrollListener);
+            }
         }
-        if (this.content && this.endContentScrollListener) {
-            this.content.removeEventListener('ionScrollEnd', this.endContentScrollListener);
-        }
+
         if (this.page && this.pageDidEnterListener) {
             this.page.removeEventListener('ionViewDidEnter', this.pageDidEnterListener);
         }
