@@ -12,8 +12,12 @@
     "view_message_conference_room_ready": "This room is ready. You can join the session now.",
     "view_message_moderator": "moderator",
     "view_message_moderators": "moderators",
+    "view_message_norecordings": "There are no recordings available.",
     "view_message_session_started_at": "This session started at",
     "view_message_viewer": "viewer",
     "view_message_viewers": "viewers",
-    "view_nojoin": "You do not have a role that is allowed to join this session."
+    "view_nojoin": "You do not have a role that is allowed to join this session.",
+    "view_recording_format_presentation": "Presentation",
+    "view_recording_list_action_play": "Play",
+    "view_section_title_recordings": "Recordings"
 }
