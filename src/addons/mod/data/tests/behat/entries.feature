@@ -21,16 +21,10 @@ Feature: Users can manage entries in database activities
     And the following "activities" exist:
     | activity | name      | intro        | course | idnumber |
     | data     | Web links | Useful links | C1     | data1    |
-    And I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    # TODO Create and use a generator for database fields.
-    And I add a "Short text" field to "Web links" database and I fill the form with:
-      | Field name | URL |
-      | Field description | URL link |
-    And I add a "Short text" field to "Web links" database and I fill the form with:
-      | Field name | Description |
-      | Field description | Link description |
-    And I log out
+    And the following "mod_data > fields" exist:
+    | database | type | name        | description      |
+    | data1    | text | URL         | URL link         |
+    | data1    | text | Description | Link description |
 
   Scenario: Create entry
     Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app
