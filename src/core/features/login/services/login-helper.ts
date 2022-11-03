@@ -1577,3 +1577,13 @@ export type CoreLoginMethod = {
     icon: string; // Icon of the provider.
     action: () => unknown; // Action to execute on button click.
 };
+
+export type CoreLoginSiteFinderSettings = {
+    displayalias: boolean;
+    displaycity: boolean;
+    displaycountry: boolean;
+    displayimage: boolean;
+    displaysitename: boolean;
+    displayurl: boolean;
+    defaultimageurl?: string;
+};

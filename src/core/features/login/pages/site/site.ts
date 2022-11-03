@@ -21,7 +21,12 @@ import { CoreConfig } from '@services/config';
 import { CoreSites, CoreSiteCheckResponse, CoreLoginSiteInfo, CoreSitesDemoSiteData } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreLoginHelper, CoreLoginHelperProvider, CoreLoginSiteSelectorListMethod } from '@features/login/services/login-helper';
+import {
+    CoreLoginHelper,
+    CoreLoginHelperProvider,
+    CoreLoginSiteFinderSettings,
+    CoreLoginSiteSelectorListMethod,
+} from '@features/login/services/login-helper';
 import { CoreSite } from '@classes/site';
 import { CoreError } from '@classes/errors/error';
 import { CoreConstants } from '@/core/constants';
@@ -60,7 +65,7 @@ export class CoreLoginSitePage implements OnInit {
     searchFunction: (search: string) => void;
     showScanQR: boolean;
     enteredSiteUrl?: CoreLoginSiteInfoExtended;
-    siteFinderSettings: SiteFinderSettings;
+    siteFinderSettings: CoreLoginSiteFinderSettings;
 
     constructor(
         protected formBuilder: FormBuilder,
@@ -69,7 +74,7 @@ export class CoreLoginSitePage implements OnInit {
         let url = '';
         this.siteSelector = CoreConstants.CONFIG.multisitesdisplay;
 
-        const siteFinderSettings: Partial<SiteFinderSettings> = CoreConstants.CONFIG.sitefindersettings || {};
+        const siteFinderSettings: Partial<CoreLoginSiteFinderSettings> = CoreConstants.CONFIG.sitefindersettings || {};
         this.siteFinderSettings = {
             displaysitename: true,
             displayimage: true,
@@ -176,6 +181,10 @@ export class CoreLoginSitePage implements OnInit {
 
             // Separate location with hiphen if both country and city are present.
             site.location = city && country ? city + ' - ' + country : city + country;
+
+            if (CoreSites.hasDefaultImage(site) && this.siteFinderSettings.defaultimageurl) {
+                site.imageurl = this.siteFinderSettings.defaultimageurl;
+            }
 
             return site;
         });
@@ -577,13 +586,4 @@ type CoreLoginSiteInfoExtended = CoreLoginSiteInfo & {
     noProtocolUrl: string; // Url wihtout protocol.
     location: string; // City + country.
     title: string; // Name + alias.
-};
-
-type SiteFinderSettings = {
-    displayalias: boolean;
-    displaycity: boolean;
-    displaycountry: boolean;
-    displayimage: boolean;
-    displaysitename: boolean;
-    displayurl: boolean;
 };
