@@ -24,4 +24,6 @@ else
     php -f moodle_to_json.php "$forceLang"
 fi
 
+cp langindex.json ../../moodle-local_moodlemobileapp
+
 print_ok 'All done!'

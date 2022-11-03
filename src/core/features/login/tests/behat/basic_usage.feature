@@ -95,18 +95,18 @@ Feature: Test basic usage of login in app
     Given I force a password change for user "student1"
     When I enter the app
     And I log in as "student1"
-    Then I should find "Change your password" in the app
+    Then I should find "Change password" in the app
     And I should find "You must change your password to proceed." in the app
 
-    When I press "Change password" in the app
+    When I press "Change password" "ion-button" in the app
     Then the app should have opened a browser tab with url "webserver"
 
     When I close the browser tab opened by the app
     Then I should find "If you didn't change your password correctly, you'll be asked to do it again." in the app
-    But I should not find "Change your password" in the app
+    But I should not find "Change password" in the app
 
     When I press "Reconnect" in the app
-    Then I should find "Change your password" in the app
+    Then I should find "Change password" in the app
     But I should not find "Reconnect" in the app
 
     When I press "Switch account" in the app
@@ -114,10 +114,10 @@ Feature: Test basic usage of login in app
     And I should find "david student" in the app
 
     When I press "david student" in the app
-    Then I should find "Change your password" in the app
+    Then I should find "Change password" in the app
     But I should not find "Reconnect" in the app
 
-    When I press "Change password" in the app
+    When I press "Change password" "ion-button" in the app
     Then the app should have opened a browser tab with url "webserver"
 
     When I switch to the browser tab opened by the app
@@ -135,7 +135,7 @@ Feature: Test basic usage of login in app
 
     When I close the browser tab opened by the app
     Then I should find "If you didn't change your password correctly, you'll be asked to do it again." in the app
-    But I should not find "Change your password" in the app
+    But I should not find "Change password" in the app
 
     When I press "Reconnect" in the app
     Then I should find "Acceptance test site" in the app

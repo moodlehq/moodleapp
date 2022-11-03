@@ -20,7 +20,7 @@
     "cannoteditduetostatementsubmission": "You can't add or edit a submission in the app because the submission statement could not be retrieved from the site.",
     "cannotgradefromapp": "Certain grading methods are not yet supported by the app and cannot be modified.",
     "cannotsubmitduetostatementsubmission": "You can't make a submission in the app because the submission statement could not be retrieved from the site.",
-    "confirmstart": "Your submission will have a time limit of {{$a}}. When you start, the timer will begin to count down and cannot be paused. You must finish your submission before it expires. Are you sure you wish to start now?",
+    "confirmstart": "You have {{$a}} to complete this assignment. When you begin, the timer will start to count down and can't be paused.",
     "confirmsubmission": "Are you sure you want to submit your work for grading? You will not be able to make any more changes.",
     "currentattempt": "This is attempt {{$a}}.",
     "currentattemptof": "This is attempt {{$a.attemptnumber}} ( {{$a.maxattempts}} attempts allowed ).",
