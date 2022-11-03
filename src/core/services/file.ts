@@ -217,8 +217,7 @@ export class CoreFileProvider {
     ): Promise<FileEntry | DirectoryEntry> {
         await this.init();
 
-        // Remove basePath if it's in the path.
-        path = this.removeStartingSlash(path.replace(this.basePath, ''));
+        path = this.removeBasePath(path);
         base = base || this.basePath;
 
         if (path.indexOf('/') == -1) {
@@ -280,8 +279,7 @@ export class CoreFileProvider {
     async removeDir(path: string): Promise<void> {
         await this.init();
 
-        // Remove basePath if it's in the path.
-        path = this.removeStartingSlash(path.replace(this.basePath, ''));
+        path = this.removeBasePath(path);
         this.logger.debug('Remove directory: ' + path);
 
         await File.removeRecursively(this.basePath, path);
@@ -296,8 +294,7 @@ export class CoreFileProvider {
     async removeFile(path: string): Promise<void> {
         await this.init();
 
-        // Remove basePath if it's in the path.
-        path = this.removeStartingSlash(path.replace(this.basePath, ''));
+        path = this.removeBasePath(path);
         this.logger.debug('Remove file: ' + path);
 
         try {
@@ -333,8 +330,7 @@ export class CoreFileProvider {
     async getDirectoryContents(path: string): Promise<(FileEntry | DirectoryEntry)[]> {
         await this.init();
 
-        // Remove basePath if it's in the path.
-        path = this.removeStartingSlash(path.replace(this.basePath, ''));
+        path = this.removeBasePath(path);
         this.logger.debug('Get contents of dir: ' + path);
 
         const result = await File.listDir(this.basePath, path);
@@ -402,8 +398,7 @@ export class CoreFileProvider {
      * @return Promise to be resolved when the size is calculated.
      */
     getDirectorySize(path: string): Promise<number> {
-        // Remove basePath if it's in the path.
-        path = this.removeStartingSlash(path.replace(this.basePath, ''));
+        path = this.removeBasePath(path);
 
         this.logger.debug('Get size of dir: ' + path);
 
@@ -417,8 +412,7 @@ export class CoreFileProvider {
      * @return Promise to be resolved when the size is calculated.
      */
     getFileSize(path: string): Promise<number> {
-        // Remove basePath if it's in the path.
-        path = this.removeStartingSlash(path.replace(this.basePath, ''));
+        path = this.removeBasePath(path);
 
         this.logger.debug('Get size of file: ' + path);
 
@@ -491,8 +485,7 @@ export class CoreFileProvider {
         if (!folder) {
             folder = this.basePath;
 
-            // Remove basePath if it's in the path.
-            path = this.removeStartingSlash(path.replace(this.basePath, ''));
+            path = this.removeBasePath(path);
         }
 
         this.logger.debug(`Read file ${path} with format ${format} in folder ${folder}`);
@@ -593,8 +586,7 @@ export class CoreFileProvider {
     async writeFile(path: string, data: string | Blob, append?: boolean): Promise<FileEntry> {
         await this.init();
 
-        // Remove basePath if it's in the path.
-        path = this.removeStartingSlash(path.replace(this.basePath, ''));
+        path = this.removeBasePath(path);
         this.logger.debug('Write file: ' + path);
 
         // Create file (and parent folders) to prevent errors.
@@ -840,9 +832,8 @@ export class CoreFileProvider {
 
         await this.init();
 
-        // Paths cannot start with "/". Remove basePath if present.
-        from = this.removeStartingSlash(from.replace(this.basePath, ''));
-        to = this.removeStartingSlash(to.replace(this.basePath, ''));
+        from = this.removeBasePath(from);
+        to = this.removeBasePath(to);
 
         const toFileAndDir = this.getFileAndDirectoryFromPath(to);
 
@@ -925,17 +916,13 @@ export class CoreFileProvider {
     }
 
     /**
-     * Remove the base path from a path. If basePath isn't found, return false.
+     * Remove the base path from a path.
      *
      * @param path Path to treat.
-     * @return Path without basePath if basePath was found, undefined otherwise.
+     * @return Path without basePath.
      */
     removeBasePath(path: string): string {
-        if (path.indexOf(this.basePath) > -1) {
-            return path.replace(this.basePath, '');
-        }
-
-        return path;
+        return CoreText.removeStartingSlash(path.replace(this.basePath, ''));
     }
 
     /**
@@ -1036,13 +1023,10 @@ export class CoreFileProvider {
      *
      * @param path Path.
      * @return Path without a slash in the first position.
+     * @deprecated since 4.1. Use CoreText.removeStartingSlash instead.
      */
     removeStartingSlash(path: string): string {
-        if (path[0] == '/') {
-            return path.substring(1);
-        }
-
-        return path;
+        return CoreText.removeStartingSlash(path);
     }
 
     /**

@@ -1411,6 +1411,19 @@ export class CoreFilepoolProvider {
     }
 
     /**
+     * Get the url of a file form its path.
+     *
+     * @param siteId The site ID.
+     * @param path File path.
+     * @returns File url.
+     */
+    async getFileUrlByPath(siteId: string, path: string): Promise<string> {
+        const record = await this.filesTables[siteId].getOne({ path });
+
+        return record.url;
+    }
+
+    /**
      * Get site Filepool Folder Path
      *
      * @param siteId The site ID.
