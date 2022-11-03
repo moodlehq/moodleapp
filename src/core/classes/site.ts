@@ -810,9 +810,7 @@ export class CoreSite {
     ): Promise<T> {
         if (preSets.forceOffline) {
             // Don't call the WS, just fail.
-            throw new CoreError(
-                Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }),
-            );
+            throw new CoreError(Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }));
         }
 
         try {
@@ -1134,8 +1132,7 @@ export class CoreSite {
             if (!data || !data.responses) {
                 throw new CoreSiteError({
                     supportConfig: new CoreUserAuthenticatedSupportConfig(this),
-                    message: Translate.instant('core.cannotconnecttrouble'),
-                    fallbackMessage: Translate.instant('core.cannotconnecttroublewithoutsupport'),
+                    message: Translate.instant('core.siteunavailablehelp', { site: this.siteUrl }),
                     errorcode: 'invalidresponse',
                     errorDetails: Translate.instant('core.errorinvalidresponse', { method: 'tool_mobile_call_external_functions' }),
                 });
@@ -1726,9 +1723,7 @@ export class CoreSite {
             .catch(async () => {
                 if (cachePreSets.forceOffline) {
                     // Don't call the WS, just fail.
-                    throw new CoreError(
-                        Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }),
-                    );
+                    throw new CoreError(Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }));
                 }
 
                 // Call the WS.

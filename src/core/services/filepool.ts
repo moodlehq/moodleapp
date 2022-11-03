@@ -55,6 +55,7 @@ import { lazyMap, LazyMap } from '../utils/lazy-map';
 import { asyncInstance, AsyncInstance } from '../utils/async-instance';
 import { CoreText } from '@singletons/text';
 import { CorePromisedValue } from '@classes/promised-value';
+import { CoreSite } from '@classes/site';
 
 /*
  * Factory for handling downloading files and retrieve downloaded files.
@@ -509,7 +510,7 @@ export class CoreFilepoolProvider {
         } else {
             if (!CoreNetwork.isOnline()) {
                 // Cannot check size in offline, stop.
-                throw new CoreError(Translate.instant('core.cannotconnect'));
+                throw new CoreError(Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }));
             }
 
             size = await CoreWS.getRemoteFileSize(fileUrl);

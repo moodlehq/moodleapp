@@ -392,8 +392,15 @@ export function wait(time: number): Promise<void> {
  */
 export function mockTranslate(translations: Record<string, string> = {}): void {
     mockSingleton(Translate as CoreSingletonProxy<TranslateService>, {
-        instant: (key) => Array.isArray(key)
-            ? key.map(k => translations[k] ?? k)
-            : translations[key] ?? key,
+        instant: (key, replacements) => {
+            const applyReplacements = (text: string): string => Object.entries(replacements ?? {}).reduce(
+                (text, [name, value]) => text.replace(`{{${name}}}`, value),
+                text,
+            );
+
+            return Array.isArray(key)
+                ? key.map(k => applyReplacements(translations[k] ?? k))
+                : applyReplacements(translations[key] ?? key);
+        },
     });
 }

@@ -41,6 +41,7 @@ import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
 import { CoreSiteError, CoreSiteErrorOptions } from '@classes/errors/siteerror';
 import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
+import { CoreSites } from '@services/sites';
 
 /**
  * This service allows performing WS calls and download/upload files.
@@ -469,10 +470,13 @@ export class CoreWSProvider {
 
             // Check if error. Ajax layer should always return an object (if error) or an array (if success).
             if (!data || typeof data != 'object') {
+                const message = CoreSites.isLoggedIn()
+                    ? Translate.instant('core.siteunavailablehelp', { site: CoreSites.getCurrentSite()?.siteUrl })
+                    : Translate.instant('core.sitenotfoundhelp');
+
                 throw new CoreAjaxError({
+                    message,
                     supportConfig: await CoreUserGuestSupportConfig.forSite(preSets.siteUrl),
-                    message: Translate.instant('core.cannotconnecttrouble'),
-                    fallbackMessage: Translate.instant('core.cannotconnecttroublewithoutsupport'),
                     errorcode: 'invalidresponse',
                     errorDetails: Translate.instant('core.serverconnection', {
                         details: Translate.instant('core.errorinvalidresponse', { method }),
@@ -491,10 +495,13 @@ export class CoreWSProvider {
 
             return data.data;
         }, async (data: HttpErrorResponse) => {
+            const message = CoreSites.isLoggedIn()
+                ? Translate.instant('core.siteunavailablehelp', { site: CoreSites.getCurrentSite()?.siteUrl })
+                : Translate.instant('core.sitenotfoundhelp');
+
             const options: CoreSiteErrorOptions = {
+                message,
                 supportConfig: await CoreUserGuestSupportConfig.forSite(preSets.siteUrl),
-                message: Translate.instant('core.cannotconnecttrouble'),
-                fallbackMessage: Translate.instant('core.cannotconnecttroublewithoutsupport'),
             };
 
             switch (data.status) {
@@ -988,7 +995,9 @@ export class CoreWSProvider {
      */
     protected createHttpError(error: CoreTextErrorObject, status: number): CoreHttpError {
         const message = CoreTextUtils.buildSeveralParagraphsMessage([
-            Translate.instant('core.cannotconnecttrouble'),
+            CoreSites.isLoggedIn()
+                ? Translate.instant('core.siteunavailablehelp', { site: CoreSites.getCurrentSite()?.siteUrl })
+                : Translate.instant('core.sitenotfoundhelp'),
             CoreTextUtils.getHTMLBodyContent(CoreTextUtils.getErrorMessageFromError(error) || ''),
         ]);
 
@@ -1130,8 +1139,9 @@ export class CoreWSProvider {
         return new CoreSiteError({
             ...options,
             supportConfig: await CoreUserGuestSupportConfig.forSite(siteUrl),
-            message: Translate.instant('core.cannotconnecttrouble'),
-            fallbackMessage: Translate.instant('core.cannotconnecttroublewithoutsupport'),
+            message: CoreSites.isLoggedIn()
+                ? Translate.instant('core.siteunavailablehelp', { site: CoreSites.getCurrentSite()?.siteUrl })
+                : Translate.instant('core.sitenotfoundhelp'),
         });
     }
 

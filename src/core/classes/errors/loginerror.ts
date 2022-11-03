@@ -19,12 +19,14 @@ import { CoreSiteError, CoreSiteErrorOptions } from '@classes/errors/siteerror';
  */
 export class CoreLoginError extends CoreSiteError {
 
+    title?: string;
     critical?: boolean;
     loggedOut?: boolean;
 
     constructor(options: CoreLoginErrorOptions) {
         super(options);
 
+        this.title = options.title;
         this.critical = options.critical;
         this.loggedOut = options.loggedOut;
     }
@@ -32,6 +34,7 @@ export class CoreLoginError extends CoreSiteError {
 }
 
 export type CoreLoginErrorOptions = CoreSiteErrorOptions & {
+    title?: string; // Error title.
     critical?: boolean; // Whether the error is important enough to abort the operation.
     loggedOut?: boolean; // Whether site has been marked as logged out.
 };

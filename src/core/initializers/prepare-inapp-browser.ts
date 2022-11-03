@@ -53,10 +53,7 @@ export default function(): void {
                 supportConfig: CoreSites.getCurrentSite()
                     ? CoreUserAuthenticatedSupportConfig.forCurrentSite()
                     : new CoreUserNullSupportConfig(),
-                message: Translate.instant('core.cannotconnecttrouble'),
-                fallbackMessage: Translate.instant('core.cannotconnecttroublewithoutsupport'),
-                errorcode: 'invalidurlscheme',
-                errorDetails: Translate.instant('core.errorurlschemeinvalidscheme', { $a: urlScheme }),
+                message: Translate.instant('core.errorurlschemeinvalidscheme', { $a: urlScheme }),
             }));
 
             return;

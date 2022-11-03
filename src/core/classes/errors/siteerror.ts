@@ -25,7 +25,7 @@ export class CoreSiteError extends CoreError {
     supportConfig?: CoreUserSupportConfig;
 
     constructor(options: CoreSiteErrorOptions) {
-        super(getErrorMessage(options));
+        super(options.message);
 
         this.errorcode = options.errorcode;
         this.errorDetails = options.errorDetails;
@@ -34,23 +34,8 @@ export class CoreSiteError extends CoreError {
 
 }
 
-/**
- * Get message to use in the error.
- *
- * @param options Error options.
- * @returns Error message.
- */
-function getErrorMessage(options: CoreSiteErrorOptions): string {
-    if ('supportConfig' in options && !options.supportConfig?.canContactSupport()) {
-        return options.fallbackMessage ?? options.message;
-    }
-
-    return options.message;
-}
-
 export type CoreSiteErrorOptions = {
     message: string;
-    fallbackMessage?: string; // Message to use when contacting support is not possible but warranted.
     errorcode?: string; // Technical error code useful for technical assistance.
     errorDetails?: string; // Technical error details useful for technical assistance.
 
