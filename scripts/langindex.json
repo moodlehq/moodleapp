@@ -1933,8 +1933,6 @@
   "core.login.exceededloginattemptssupportsubject": "local_moodlemobileapp",
   "core.login.exceededpasswordresetattempts": "local_moodlemobileapp",
   "core.login.exceededpasswordresetattemptssupportsubject": "local_moodlemobileapp",
-  "core.login.faqcannotconnectanswer": "local_moodlemobileapp",
-  "core.login.faqcannotconnectquestion": "local_moodlemobileapp",
   "core.login.faqcannotfindmysiteanswer": "local_moodlemobileapp",
   "core.login.faqcannotfindmysitequestion": "local_moodlemobileapp",
   "core.login.faqsetupsiteanswer": "local_moodlemobileapp",
