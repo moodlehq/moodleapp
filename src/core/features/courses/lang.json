@@ -22,7 +22,7 @@
     "favourite": "Starred course",
     "filtermycourses": "Filter my courses",
     "frontpage": "Site home",
-    "hidecourse": "Archive",
+    "hidecourse": "Remove from view",
     "ignore": "Ignore",
     "mycourses": "My courses",
     "mymoodle": "Dashboard",
@@ -41,7 +41,7 @@
     "searchcourses": "Search courses",
     "searchcoursesadvice": "You can use the search courses button to find courses to access as a  guest or enrol yourself in courses that allow it.",
     "selfenrolment": "Self enrolment",
-    "show": "Unarchive",
+    "show": "Restore to view",
     "showonlyenrolled": "Show only my courses",
     "therearecourses": "There are {{$a}} courses",
     "totalcoursesearchresults": "Total courses: {{$a}}"

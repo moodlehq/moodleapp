@@ -28,7 +28,7 @@ Feature: Users can manage entries in database activities
 
   Scenario: Create entry
     Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app
-    Then I should find "No entries in database" in the app
+    Then I should find "No entries yet" in the app
     When I press "Add entries" in the app
     And I set the following fields to these values in the app:
       | URL | https://moodle.org/ |
@@ -142,7 +142,7 @@ Feature: Users can manage entries in database activities
     Then I should find "Are you sure you want to delete this entry?" in the app
     And I press "Delete" in the app
     And I should not find "Moodle Cloud" in the app
-    And I should find "No entries in database" in the app
+    And I should find "No entries yet" in the app
 
   Scenario: Delete entry (teacher) & Update entry (teacher)
     Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app

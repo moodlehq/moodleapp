@@ -533,5 +533,9 @@ function generate_local_module_file($appindex, $translations) {
 
     $filecontents = substr_replace($filecontents, $lmsstring, $start, $end - $start);
 
+    if (substr($filecontents, -2) != "\n\n") {
+        $filecontents .= "\n";
+    }
+
     file_put_contents($filepath, $filecontents);
 }

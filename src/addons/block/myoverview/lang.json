@@ -1,11 +1,11 @@
 {
     "all": "All",
-    "allincludinghidden": "All (including archived)",
+    "allincludinghidden": "All (including removed from view)",
     "browseallcourses": "Browse all courses",
     "card": "Card",
     "favourites": "Starred",
     "future": "Future",
-    "hiddencourses": "Archived",
+    "hiddencourses": "Removed from view",
     "inprogress": "In progress",
     "lastaccessed": "Last accessed",
     "list": "List",

@@ -29,7 +29,7 @@ Feature: Users can store entries in database activities when offline and sync wh
   Scenario: Create entry (offline)
     Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app
     And I switch network connection to offline
-    And I should find "No entries in database" in the app
+    And I should find "No entries yet" in the app
     When I press "Add entries" in the app
     And I set the following fields to these values in the app:
       | URL | https://moodle.org/ |
@@ -47,7 +47,7 @@ Feature: Users can store entries in database activities when offline and sync wh
 
   Scenario: Update entry (offline) & Delete entry (offline)
     Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app
-    And I should find "No entries in database" in the app
+    And I should find "No entries yet" in the app
     And I press "Add entries" in the app
     And I set the following fields to these values in the app:
       | URL | https://moodle.org/ |
@@ -97,7 +97,7 @@ Feature: Users can store entries in database activities when offline and sync wh
 
   Scenario: Students can undo deleting entries to a database in the app while offline
     Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app
-    And I should find "No entries in database" in the app
+    And I should find "No entries yet" in the app
     And I press "Add entries" in the app
     And I set the following fields to these values in the app:
       | URL | https://moodle.org/ |
