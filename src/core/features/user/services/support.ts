@@ -19,9 +19,11 @@ import { InAppBrowserObject } from '@ionic-native/in-app-browser';
 import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreSubscriptions } from '@singletons/subscriptions';
+import { AlertButton } from '@ionic/angular';
+import { CoreDomUtils } from '@services/utils/dom';
 
 /**
  * Handle site support.
@@ -45,6 +47,35 @@ export class CoreUserSupportService {
         }
 
         await CoreEvents.waitUntil(CoreEvents.IAB_EXIT);
+    }
+
+    /**
+     * Show a help modal that suggests contacting support if available.
+     *
+     * @param message Help message.
+     * @param supportSubject Support subject.
+     */
+    showHelp(message: string, supportSubject: string): void {
+        const supportConfig = CoreUserAuthenticatedSupportConfig.forCurrentSite();
+        const buttons: (AlertButton | string)[] = [];
+
+        if (supportConfig.canContactSupport()) {
+            buttons.push({
+                text: Translate.instant('core.contactsupport'),
+                handler: () => CoreUserSupport.contact({
+                    supportConfig,
+                    subject: supportSubject,
+                }),
+            });
+        }
+
+        buttons.push(Translate.instant('core.close'));
+
+        CoreDomUtils.showAlertWithOptions({
+            header: Translate.instant('core.help'),
+            message,
+            buttons,
+        });
     }
 
     /**

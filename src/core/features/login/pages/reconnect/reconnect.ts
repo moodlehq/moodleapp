@@ -29,6 +29,7 @@ import { CoreForms } from '@singletons/form';
 import { CoreUserSupport } from '@features/user/services/support';
 import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
 import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
+import { Translate } from '@singletons';
 
 /**
  * Page to enter the user password to reconnect to a site.
@@ -60,7 +61,6 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
     showLoading = true;
     reconnectAttempts = 0;
     supportConfig?: CoreUserSupportConfig;
-    canContactSupport?: boolean;
 
     protected siteConfig?: CoreSitePublicConfigResponse;
     protected viewLeft = false;
@@ -108,7 +108,6 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             this.siteUrl = site.infos.siteurl;
             this.siteName = site.getSiteName();
             this.supportConfig = new CoreUserAuthenticatedSupportConfig(site);
-            this.canContactSupport = this.supportConfig.canContactSupport();
 
             // If login was OAuth we should only reach this page if the OAuth method ID has changed.
             this.isOAuth = site.isOAuth();
@@ -142,10 +141,13 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Contact site support.
+     * Show help modal.
      */
-    async contactSupport(): Promise<void> {
-        await CoreUserSupport.contact({ supportConfig: this.supportConfig });
+    showHelp(): void {
+        CoreUserSupport.showHelp(
+            Translate.instant('core.login.reconnecthelp'),
+            Translate.instant('core.login.reconnectsupportsubject'),
+        );
     }
 
     /**

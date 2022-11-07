@@ -59,7 +59,6 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     showScanQR = false;
     loginAttempts = 0;
     supportConfig?: CoreUserSupportConfig;
-    canContactSupport?: boolean;
 
     protected siteConfig?: CoreSitePublicConfigResponse;
     protected eventThrown = false;
@@ -83,7 +82,6 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             this.siteConfig = CoreNavigator.getRouteParam<CoreSitePublicConfigResponse>('siteConfig');
             this.urlToOpen = CoreNavigator.getRouteParam('urlToOpen');
             this.supportConfig = this.siteConfig && new CoreUserGuestSupportConfig(this.siteConfig);
-            this.canContactSupport = this.supportConfig?.canContactSupport();
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
 
@@ -132,14 +130,13 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Contact site support.
+     * Show help modal.
      */
-    async contactSupport(): Promise<void> {
-        if (!this.supportConfig) {
-            throw new Error('can\'t contact support');
-        }
-
-        await CoreUserSupport.contact({ supportConfig: this.supportConfig });
+    showHelp(): void {
+        CoreUserSupport.showHelp(
+            Translate.instant('core.login.credentialshelp'),
+            Translate.instant('core.login.credentialssupportsubject'),
+        );
     }
 
     /**

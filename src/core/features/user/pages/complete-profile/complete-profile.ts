@@ -15,15 +15,12 @@
 import { Component, OnDestroy } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreUtils } from '@services/utils/utils';
-import { AlertButton } from '@ionic/angular';
 import { CoreUserSupport } from '@features/user/services/support';
-import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
 
 /**
  * Page that shows instructions to complete the profile.
@@ -45,29 +42,13 @@ export class CoreUserCompleteProfilePage implements OnDestroy {
     }
 
     /**
-     * Show a help modal.
+     * Show help modal.
      */
     showHelp(): void {
-        const supportConfig = CoreUserAuthenticatedSupportConfig.forCurrentSite();
-        const buttons: (AlertButton | string)[] = [];
-
-        if (supportConfig.canContactSupport()) {
-            buttons.push({
-                text: Translate.instant('core.contactsupport'),
-                handler: () => CoreUserSupport.contact({
-                    supportConfig,
-                    subject: Translate.instant('core.login.completeprofilesupportsubject'),
-                }),
-            });
-        }
-
-        buttons.push(Translate.instant('core.ok'));
-
-        CoreDomUtils.showAlertWithOptions({
-            header: Translate.instant('core.help'),
-            message: Translate.instant('core.user.completeprofilehelp'),
-            buttons,
-        });
+        CoreUserSupport.showHelp(
+            Translate.instant('core.user.completeprofilehelp'),
+            Translate.instant('core.user.completeprofilesupportsubject'),
+        );
     }
 
     /**
