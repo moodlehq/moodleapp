@@ -61,6 +61,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
     showLoading = true;
     reconnectAttempts = 0;
     supportConfig?: CoreUserSupportConfig;
+    canContactSupport?: boolean;
 
     protected siteConfig?: CoreSitePublicConfigResponse;
     protected viewLeft = false;
@@ -108,6 +109,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             this.siteUrl = site.infos.siteurl;
             this.siteName = site.getSiteName();
             this.supportConfig = new CoreUserAuthenticatedSupportConfig(site);
+            this.canContactSupport = this.supportConfig.canContactSupport();
 
             // If login was OAuth we should only reach this page if the OAuth method ID has changed.
             this.isOAuth = site.isOAuth();

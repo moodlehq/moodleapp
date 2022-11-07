@@ -59,6 +59,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     showScanQR = false;
     loginAttempts = 0;
     supportConfig?: CoreUserSupportConfig;
+    canContactSupport?: boolean;
 
     protected siteConfig?: CoreSitePublicConfigResponse;
     protected eventThrown = false;
@@ -82,6 +83,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             this.siteConfig = CoreNavigator.getRouteParam<CoreSitePublicConfigResponse>('siteConfig');
             this.urlToOpen = CoreNavigator.getRouteParam('urlToOpen');
             this.supportConfig = this.siteConfig && new CoreUserGuestSupportConfig(this.siteConfig);
+            this.canContactSupport = this.supportConfig?.canContactSupport();
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
 

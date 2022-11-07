@@ -41,6 +41,7 @@ export class CoreLoginForgottenPasswordPage implements OnInit {
     siteUrl!: string;
     autoFocus!: boolean;
     supportConfig?: CoreUserSupportConfig;
+    canContactSupport?: boolean;
     wasPasswordResetRequestedRecently = false;
 
     constructor(protected formBuilder: FormBuilder) {}
@@ -67,6 +68,7 @@ export class CoreLoginForgottenPasswordPage implements OnInit {
         });
 
         this.supportConfig = siteConfig && new CoreUserGuestSupportConfig(siteConfig);
+        this.canContactSupport = this.supportConfig?.canContactSupport();
         this.wasPasswordResetRequestedRecently = await CoreLoginHelper.wasPasswordResetRequestedRecently(siteUrl);
     }
 
