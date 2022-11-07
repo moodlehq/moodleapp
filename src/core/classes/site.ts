@@ -2750,9 +2750,20 @@ export type CoreSiteConfigResponse = {
 };
 
 /**
+ * Possible values for 'supportavailability' config.
+ */
+export const enum CoreSiteConfigSupportAvailability {
+    Disabled = 0,
+    Authenticated = 1,
+    Anyone = 2,
+}
+
+/**
  * Site config indexed by name.
  */
-export type CoreSiteConfig = {[name: string]: string};
+export type CoreSiteConfig = Record<string, string> & {
+    supportavailability?: string; // String representation of CoreSiteConfigSupportAvailability.
+};
 
 /**
  * Result of WS tool_mobile_get_public_config.
@@ -2784,6 +2795,7 @@ export type CoreSitePublicConfigResponse = {
     agedigitalconsentverification?: boolean; // Whether age digital consent verification is enabled.
     supportname?: string; // Site support contact name (only if age verification is enabled).
     supportemail?: string; // Site support contact email (only if age verification is enabled).
+    supportavailability?: CoreSiteConfigSupportAvailability;
     supportpage?: string; // Site support contact url.
     autolang?: number; // Whether to detect default language from browser setting.
     lang?: string; // Default language for the site.

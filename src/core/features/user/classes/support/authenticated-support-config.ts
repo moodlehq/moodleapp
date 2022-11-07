@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSite } from '@classes/site';
+import { CoreSite, CoreSiteConfigSupportAvailability } from '@classes/site';
 import { CoreSites } from '@services/sites';
 import { CoreUserSupportConfig } from './support-config';
 
@@ -42,8 +42,28 @@ export class CoreUserAuthenticatedSupportConfig extends CoreUserSupportConfig {
      * @inheritdoc
      */
     canContactSupport(): boolean {
-        return this.site.isVersionGreaterEqualThan('4.0')
-            && !this.site.isFeatureDisabled('NoDelegate_CoreUserSupport');
+        if (this.site.isFeatureDisabled('NoDelegate_CoreUserSupport')) {
+            return false;
+        }
+
+        if (this.site.isVersionGreaterEqualThan('4.1')) {
+            if (!this.site.config || !('supportavailability' in this.site.config)) {
+                return false;
+            }
+
+            const supportAvailability = Number(this.site.config.supportavailability);
+
+            return supportAvailability === CoreSiteConfigSupportAvailability.Authenticated
+                || supportAvailability === CoreSiteConfigSupportAvailability.Anyone;
+        }
+
+        if (this.site.isVersionGreaterEqualThan('4.0')) {
+            // This feature was always available in 4.0.
+            return true;
+        }
+
+        // This feature wasn't available before 4.0.
+        return false;
     }
 
     /**

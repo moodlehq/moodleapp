@@ -5,6 +5,7 @@ Feature: Site support
     Given the following "users" exist:
       | username | firstname | lastname |
       | student1 | Student   | Student  |
+    And I am logged in as "student1"
 
   Scenario: Uses default support page
     Given I entered the app as "student1"

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSitePublicConfigResponse } from '@classes/site';
+import { CoreSiteConfigSupportAvailability, CoreSitePublicConfigResponse } from '@classes/site';
 import { CoreUserNullSupportConfig } from '@features/user/classes/support/null-support-config';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
@@ -51,6 +51,12 @@ export class CoreUserGuestSupportConfig extends CoreUserSupportConfig {
      * @inheritdoc
      */
     canContactSupport(): boolean {
+        // This config was introduced in 4.1, if it's missing we can assume the site is 4.0 or lower.
+        if ('supportavailability' in this.config) {
+            return this.config.supportavailability === CoreSiteConfigSupportAvailability.Anyone;
+        }
+
+        // This config is only available to guests since 4.0, if it's missing we can assume guests can't contact support.
         return 'supportpage' in this.config;
     }
 
