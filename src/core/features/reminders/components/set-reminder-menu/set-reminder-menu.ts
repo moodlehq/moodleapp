@@ -34,6 +34,7 @@ import { CoreRemindersSetReminderCustomComponent } from '../set-reminder-custom/
 export class CoreRemindersSetReminderMenuComponent implements OnInit {
 
     @Input() initialValue?: number;
+    @Input() eventTime?: number;
     @Input() noReminderLabel = '';
 
     currentValue = '0m';
@@ -48,24 +49,28 @@ export class CoreRemindersSetReminderMenuComponent implements OnInit {
             value: 0,
             unit: CoreRemindersUnits.MINUTE,
             label: '',
+            enabled: true,
         },
         {
             radioValue: '1h',
             value: 1,
             unit: CoreRemindersUnits.HOUR,
             label: '',
+            enabled: true,
         },
         {
             radioValue: '12h',
             value: 12,
             unit: CoreRemindersUnits.HOUR,
             label: '',
+            enabled: true,
         },
         {
             radioValue: '1d',
             value: 1,
             unit: CoreRemindersUnits.DAY,
             label: '',
+            enabled: true,
         },
     ];
 
@@ -75,6 +80,7 @@ export class CoreRemindersSetReminderMenuComponent implements OnInit {
     async ngOnInit(): Promise<void> {
         this.presetOptions.forEach((option) => {
             option.label = CoreReminders.getUnitValueLabel(option.value, option.unit);
+            option.enabled = this.isValidTime(option.unit, option.value);
         });
 
         const initialValue = CoreRemindersService.convertSecondsToValueAndUnit(this.initialValue);
@@ -106,7 +112,10 @@ export class CoreRemindersSetReminderMenuComponent implements OnInit {
      */
     setReminder(value?: string): void {
         const option = this.presetOptions.find(option => option.radioValue === value);
+
         if (!option) {
+            PopoverController.dismiss();
+
             return;
         }
 
@@ -118,6 +127,23 @@ export class CoreRemindersSetReminderMenuComponent implements OnInit {
      */
     disableReminder(): void {
         PopoverController.dismiss({ timeBefore: undefined });
+    }
+
+    /**
+     * Check the time is on the future.
+     *
+     * @param unit Time unit.
+     * @param value Time value.
+     * @return Wether is a valid time or not.
+     */
+    protected isValidTime(unit: number, value: number): boolean {
+        if (!this.eventTime) {
+            return true;
+        }
+
+        const timebefore = unit * value;
+
+        return (this.eventTime - timebefore) * 1000 > Date.now();
     }
 
     /**

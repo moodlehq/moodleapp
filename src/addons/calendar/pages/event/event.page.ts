@@ -28,7 +28,6 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreDomUtils, ToastDuration } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreSites } from '@services/sites';
-import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreGroups } from '@services/groups';
@@ -389,6 +388,9 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
 
         const reminderTime = await CoreDomUtils.openPopover<{timeBefore: number}>({
             component: CoreRemindersSetReminderMenuComponent,
+            componentProps: {
+                eventTime: this.event.timestart,
+            },
             // TODO: Add event to open the popover in place.
         });
 

@@ -8,27 +8,31 @@
 <ion-content>
     <ion-content>
         <!-- Preset options. -->
-        <ion-item button class="ion-text-wrap" (click)="setReminder(option.radioValue)" detail="false" *ngFor="let option of presetOptions">
-            <ion-label>
-                <p class="item-heading">{{ option.label }}</p>
-            </ion-label>
-            <ion-icon name="fas-check" *ngIf="currentValue === option.radioValue" slot="end"></ion-icon>
-        </ion-item>
+        <ng-container *ngFor="let option of presetOptions">
+            <ion-item button class="ion-text-wrap" (click)="setReminder(option.radioValue)" detail="false" *ngIf="option.enabled"
+                [attr.aria-selected]="currentValue === option.radioValue">
+                <ion-label>
+                    <p class="item-heading">{{ option.label }}</p>
+                </ion-label>
+                <ion-icon name="fas-check" *ngIf="currentValue === option.radioValue" slot="end" aria-hidden="true"></ion-icon>
+            </ion-item>
+        </ng-container>
 
         <!-- Custom value. -->
-        <ion-item button class="ion-text-wrap" (click)="setCustom($event)" detail="false">
+        <ion-item button class="ion-text-wrap" (click)="setCustom($event)" detail="false" [attr.aria-selected]="currentValue === 'custom'">
             <ion-label>
                 <p class="item-heading">{{ 'core.reminders.custom' | translate }}</p>
                 <p>{{ customLabel }}</p>
             </ion-label>
-            <ion-icon name="fas-check" *ngIf="currentValue === 'custom'" slot="end"></ion-icon>
+            <ion-icon name="fas-check" *ngIf="currentValue === 'custom'" slot="end" aria-hidden="true"></ion-icon>
         </ion-item>
 
-        <ion-item *ngIf="noReminderLabel" button class="ion-text-wrap text-danger border-top" (click)="disableReminder()" detail="false">
+        <ion-item *ngIf="noReminderLabel" button class="ion-text-wrap text-danger border-top" (click)="disableReminder()" detail="false"
+            [attr.aria-selected]="currentValue === 'disabled'">
             <ion-label>
                 <p class="item-heading">{{ noReminderLabel | translate }}</p>
             </ion-label>
-            <ion-icon name="fas-check" *ngIf="currentValue === 'disabled'" slot="end"></ion-icon>
+            <ion-icon name="fas-check" *ngIf="currentValue === 'disabled'" slot="end" aria-hidden="true"></ion-icon>
         </ion-item>
 
     </ion-content>

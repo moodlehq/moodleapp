@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreReminderData, CoreReminders, CoreRemindersService } from '@features/reminders/services/reminders';
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreRemindersSetReminderMenuComponent } from '../set-reminder-menu/set-reminder-menu';
 
@@ -24,7 +24,7 @@ import { CoreRemindersSetReminderMenuComponent } from '../set-reminder-menu/set-
     selector: 'core-reminders-set-button',
     templateUrl: 'set-button.html',
 })
-export class CoreRemindersSetButtonComponent {
+export class CoreRemindersSetButtonComponent implements OnInit {
 
     @Input() component?: string;
     @Input() instanceId?: number;
@@ -34,6 +34,15 @@ export class CoreRemindersSetButtonComponent {
     @Input() time = -1;
     @Input() title = '';
     @Input() url = '';
+
+    labelClean = '';
+
+    /**
+     * @inheritdoc
+     */
+    ngOnInit(): void {
+        this.labelClean = this.label.replace(':', '');
+    }
 
     /**
      * Set reminder.
@@ -60,6 +69,7 @@ export class CoreRemindersSetButtonComponent {
             component: CoreRemindersSetReminderMenuComponent,
             componentProps: {
                 initialValue: this.timebefore,
+                eventTime: this.time,
                 noReminderLabel: 'core.reminders.delete',
             },
             event: ev,
@@ -85,7 +95,7 @@ export class CoreRemindersSetButtonComponent {
             return;
         }
 
-        if (timebefore === CoreRemindersService.DISABLED) {
+        if (timebefore === undefined || timebefore === CoreRemindersService.DISABLED) {
             // Remove the reminder.
             await CoreReminders.removeReminders({
                 instanceId: this.instanceId,

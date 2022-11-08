@@ -9,14 +9,15 @@
     <ion-item class="ion-text-wrap">
         <div class="flex-row">
             <!-- Input to enter the value. -->
-            <ion-input type="number" name="customvalue" [(ngModel)]="customValue" placeholder="10">
+            <ion-input id="reminderValue" type="number" name="customvalue" [(ngModel)]="customValue" placeholder="10"
+                [attr.aria-label]="'core.reminders.value' | translate">
             </ion-input>
 
             <!-- Units. -->
-            <label class="accesshide" for="reminderUnits">{{ 'core.reminders.units' | translate }}</label>
-            <ion-select id="reminderUnits" name="customunits" [(ngModel)]="customUnits" interface="action-sheet" slot="end"
-                [interfaceOptions]="{header: 'core.reminders.units' | translate}">
-                <ion-select-option *ngFor="let option of customUnitsOptions" [value]="option.value">
+            <span class="accesshide" id="reminderUnits_label">{{ 'core.reminders.units' | translate }}</span>
+            <ion-select aria-labelledby="reminderUnits_label" name="customunits" [(ngModel)]="customUnits" interface="action-sheet"
+                slot="end" [interfaceOptions]="{header: 'core.reminders.units' | translate}">
+                <ion-select-option *ngFor=" let option of customUnitsOptions" [value]="option.value">
                     {{ option.label | translate }}
                 </ion-select-option>
             </ion-select>
@@ -29,7 +30,7 @@
             </ion-col>
             <ion-col>
                 <ion-button expand="block" (click)="set()">
-                    {{ 'core.done' | translate }}
+                    {{ 'core.reminders.setreminder' | translate }}
                 </ion-button>
             </ion-col>
         </ion-row>
