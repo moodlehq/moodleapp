@@ -30,6 +30,7 @@ jobs:
       MOODLE_BRANCH: ${{ github.event.inputs.moodle_branch || 'master' }}
       MOODLE_REPOSITORY: ${{ github.event.inputs.moodle_repository || 'https://github.com/moodle/moodle' }}
       BEHAT_TAGS: ${{ github.event.inputs.behat_tags || '~@performance' }}
+
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v3
@@ -50,6 +51,7 @@ jobs:
         export MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle
         cp $GITHUB_WORKSPACE/moodle-docker/config.docker-template.php $GITHUB_WORKSPACE/moodle/config.php
         sed -i "61i\$CFG->behat_ionic_wwwroot = 'http://moodleapp';" $GITHUB_WORKSPACE/moodle/config.php
+        echo "define('TEST_MOD_BIGBLUEBUTTONBN_MOCK_SERVER', 'http://bbbmockserver/hash' . sha1(\$CFG->behat_wwwroot));" >> $GITHUB_WORKSPACE/moodle/config.php
         $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose pull
         $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose up -d
         $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-wait-for-db
@@ -58,6 +60,7 @@ jobs:
         docker build --build-arg build_command="npm run build:test" -t moodlehq/moodleapp:behat .
         docker run -d --rm --name moodleapp moodlehq/moodleapp:behat
         docker network connect moodle-docker_default moodleapp --alias moodleapp
+        docker run --detach --name bbbmockserver --network moodle-docker_default moodlehq/bigbluebutton_mock:latest
     - name: Init Behat
       run: |
         export MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle
