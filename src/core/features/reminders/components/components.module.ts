@@ -14,20 +14,26 @@
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { NgModule } from '@angular/core';
+import { CoreRemindersDateComponent } from './date/date';
+import { CoreRemindersSetButtonComponent } from './set-button/set-button';
 import { CoreRemindersSetReminderCustomComponent } from './set-reminder-custom/set-reminder-custom';
 import { CoreRemindersSetReminderMenuComponent } from './set-reminder-menu/set-reminder-menu';
 
 @NgModule({
     declarations: [
-        CoreRemindersSetReminderMenuComponent,
+        CoreRemindersDateComponent,
+        CoreRemindersSetButtonComponent,
         CoreRemindersSetReminderCustomComponent,
+        CoreRemindersSetReminderMenuComponent,
     ],
     imports: [
         CoreSharedModule,
     ],
     exports: [
-        CoreRemindersSetReminderMenuComponent,
+        CoreRemindersDateComponent,
+        CoreRemindersSetButtonComponent,
         CoreRemindersSetReminderCustomComponent,
+        CoreRemindersSetReminderMenuComponent,
     ],
 })
 export class CoreRemindersComponentsModule {}

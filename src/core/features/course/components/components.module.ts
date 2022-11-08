@@ -29,6 +29,7 @@ import { CoreCourseModuleManualCompletionComponent } from './module-manual-compl
 import { CoreCourseModuleNavigationComponent } from './module-navigation/module-navigation';
 import { CoreCourseModuleSummaryComponent } from './module-summary/module-summary';
 import { CoreCourseCourseIndexTourComponent } from './course-index-tour/course-index-tour';
+import { CoreRemindersComponentsModule } from '@features/reminders/components/components.module';
 
 @NgModule({
     declarations: [
@@ -48,6 +49,7 @@ import { CoreCourseCourseIndexTourComponent } from './course-index-tour/course-i
     ],
     imports: [
         CoreBlockComponentsModule,
+        CoreRemindersComponentsModule,
         CoreSharedModule,
     ],
     exports: [

@@ -57,16 +57,14 @@
                             </core-progress-bar>
                         </div>
                         <div *ngIf="course.startdate || course.enddate" class="core-course-dates">
-                            <p *ngIf="course.startdate">
-                                <ion-icon name="fas-calendar" aria-hidden="true"></ion-icon>
-                                <strong>{{ 'core.course.startdate' | translate }}</strong><br>
-                                {{ course.startdate * 1000 | coreFormatDate:'strftimedaydatetime' }}
-                            </p>
-                            <p *ngIf="course.enddate">
-                                <ion-icon name="fas-calendar" aria-hidden="true"></ion-icon>
-                                <strong>{{ 'core.course.enddate' | translate }}</strong><br>
-                                {{ course.enddate * 1000 | coreFormatDate:'strftimedaydatetime' }}
-                            </p>
+                            <core-reminders-date *ngIf="course.startdate" component="course" [instanceId]="course.id" type="coursestart"
+                                [label]="'core.course.startdate' | translate" [time]="course.startdate" [title]="course.fullname"
+                                [url]="courseUrl">
+                            </core-reminders-date>
+                            <core-reminders-date *ngIf="course.enddate" component="course" [instanceId]="course.id" type="courseend"
+                                [label]="'core.course.enddate' | translate" [time]="course.enddate" [title]="course.fullname"
+                                [url]="courseUrl">
+                            </core-reminders-date>
                         </div>
                     </ion-label>
                 </ion-item>

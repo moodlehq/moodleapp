@@ -1,0 +1,4 @@
+<ion-button fill="clear" size="small" (click)="setReminder($event)">
+    <ion-icon name="fas-bell" slot="icon-only" *ngIf="timebefore !== undefined"></ion-icon>
+    <ion-icon name="far-bell-slash" slot="icon-only" *ngIf="timebefore === undefined"></ion-icon>
+</ion-button>

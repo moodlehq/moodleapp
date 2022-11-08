@@ -1,0 +1,21 @@
+@import "~theme/globals";
+
+:host {
+    display: flex;
+    flex-direction: row;
+}
+
+div {
+    flex-grow: 1;
+    font-size: 14px;
+    margin: 0;
+    align-self: center;
+
+    ion-icon {
+        @include margin-horizontal(0px, 4px);
+    }
+}
+
+core-reminders-date + :host  {
+    margin-top: 12px;
+}
