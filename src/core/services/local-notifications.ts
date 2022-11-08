@@ -123,7 +123,7 @@ export class CoreLocalNotificationsProvider {
     async initializeDatabase(): Promise<void> {
         try {
             await CoreApp.createTablesFromSchema(APP_SCHEMA);
-        } catch (e) {
+        } catch {
             // Ignore errors.
         }
 

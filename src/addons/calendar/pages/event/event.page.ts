@@ -42,6 +42,7 @@ import { AddonCalendarReminderTimeModalComponent } from '@addons/calendar/compon
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { AddonCalendarEventsSource } from '@addons/calendar/classes/events-source';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
+import { CoreReminders } from '@features/reminders/services/reminders';
 
 /**
  * Page that displays a single calendar event.
@@ -152,8 +153,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
             return;
         }
 
-        const reminders = await AddonCalendar.getEventReminders(this.eventId, this.currentSiteId);
-        this.reminders = await AddonCalendarHelper.formatReminders(reminders, this.event.timestart, this.currentSiteId);
+        this.reminders = await AddonCalendarHelper.getEventReminders(this.eventId, this.event.timestart, this.currentSiteId);
     }
 
     /**
@@ -402,12 +402,12 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Cancel the selected notification.
+     * Delete the selected reminder.
      *
      * @param id Reminder ID.
      * @param e Click event.
      */
-    async cancelNotification(id: number, e: Event): Promise<void> {
+    async deleteReminder(id: number, e: Event): Promise<void> {
         e.preventDefault();
         e.stopPropagation();
 
@@ -417,7 +417,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
             const modal = await CoreDomUtils.showModalLoading('core.deleting', true);
 
             try {
-                await AddonCalendar.deleteEventReminder(id);
+                await CoreReminders.removeReminder(id);
                 await this.loadReminders();
             } catch (error) {
                 CoreDomUtils.showErrorModalDefault(error, 'Error deleting reminder');

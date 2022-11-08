@@ -23,7 +23,6 @@ import {
     AddonCalendarEventType,
     AddonCalendarGetEventsEvent,
     AddonCalendarProvider,
-    AddonCalendarReminderUnits,
     AddonCalendarWeek,
     AddonCalendarWeekDay,
 } from './calendar';
@@ -36,8 +35,8 @@ import { makeSingleton } from '@singletons';
 import { AddonCalendarSyncInvalidateEvent } from './calendar-sync';
 import { AddonCalendarOfflineEventDBRecord } from './database/calendar-offline';
 import { CoreCategoryData } from '@features/courses/services/courses';
-import { AddonCalendarReminderDBRecord } from './database/calendar';
 import { CoreTimeUtils } from '@services/utils/time';
+import { CoreReminders, CoreRemindersService } from '@features/reminders/services/reminders';
 
 /**
  * Context levels enumeration.
@@ -123,7 +122,7 @@ export class AddonCalendarHelperProvider {
      * Classify events into their respective months and days. If an event duration covers more than one day,
      * it will be included in all the days it lasts.
      *
-     * @param events Events to classify.
+     * @param offlineEvents Events to classify.
      * @return Object with the classified events.
      */
     classifyIntoMonths(
@@ -219,7 +218,7 @@ export class AddonCalendarHelperProvider {
     /**
      * Convenience function to format some event data to be rendered.
      *
-     * @param e Event to format.
+     * @param event Event to format.
      */
     formatOfflineEventData(event: AddonCalendarOfflineEventDBRecord): AddonCalendarEventToDisplay {
 
@@ -295,48 +294,75 @@ export class AddonCalendarHelperProvider {
      * @param timestart Event timestart.
      * @param siteId Site ID.
      * @return Formatted reminders.
+     * @deprecated since 4.1 Use AddonCalendarHelper.getEventReminders.
      */
     async formatReminders(
-        reminders: AddonCalendarReminderDBRecord[],
+        reminders: { eventid: number }[],
         timestart: number,
         siteId?: string,
     ): Promise<AddonCalendarEventReminder[]> {
-        const defaultTime = await AddonCalendar.getDefaultNotificationTime(siteId);
-
-        const formattedReminders = <AddonCalendarEventReminder[]> reminders;
-        const eventTimestart = timestart;
-        let defaultTimeValue: number | undefined;
-        let defaultTimeUnit: AddonCalendarReminderUnits | undefined;
-
-        if (defaultTime > 0) {
-            const data = AddonCalendarProvider.convertSecondsToValueAndUnit(defaultTime);
-            defaultTimeValue = data.value;
-            defaultTimeUnit = data.unit;
+        if (!reminders.length) {
+            return [];
         }
 
-        return formattedReminders.map((reminder) => {
-            if (reminder.time === null) {
+        return AddonCalendarHelper.getEventReminders(reminders[0].eventid, timestart, siteId);
+    }
+
+    /**
+     * Format reminders, adding calculated data.
+     *
+     * @param eventId Event Id.
+     * @param eventTimestart Event timestart.
+     * @param siteId Site ID.
+     * @return Formatted reminders.
+     */
+    async getEventReminders(
+        eventId: number,
+        eventTimestart: number,
+        siteId?: string,
+    ): Promise<AddonCalendarEventReminder[]> {
+        const reminders = await CoreReminders.getReminders(
+            {
+                instanceId: eventId,
+                component: AddonCalendarProvider.COMPONENT,
+            },
+            siteId,
+        );
+
+        if (!reminders.length) {
+            return [];
+        }
+
+        const defaultTime = await AddonCalendar.getDefaultNotificationTime(siteId);
+        let defaultLabel: string | undefined;
+
+        if (defaultTime > AddonCalendarProvider.DEFAULT_NOTIFICATION_DISABLED) {
+            const data = AddonCalendarProvider.convertSecondsToValueAndUnit(defaultTime);
+            defaultLabel = AddonCalendar.getUnitValueLabel(data.value, data.unit, true);
+        }
+
+        return reminders.map((reminder) => {
+            const formatted: AddonCalendarEventReminder = {
+                id: reminder.id,
+            };
+
+            if (reminder.timebefore === CoreRemindersService.DEFAULT_REMINDER_TIMEBEFORE) {
                 // Default time. Check if default notifications are disabled.
-                if (defaultTimeValue !== undefined && defaultTimeUnit) {
-                    reminder.value = defaultTimeValue;
-                    reminder.unit = defaultTimeUnit;
-                    reminder.timestamp = eventTimestart - reminder.value * reminder.unit;
+                if (defaultLabel !== undefined) {
+                    formatted.label = defaultLabel;
+                    formatted.timestamp = eventTimestart - defaultTime;
                 }
             } else {
-                const data = AddonCalendarProvider.convertSecondsToValueAndUnit(reminder.time);
-                reminder.value = data.value;
-                reminder.unit = data.unit;
-                reminder.timestamp = eventTimestart - reminder.time;
+                const data = AddonCalendarProvider.convertSecondsToValueAndUnit(reminder.timebefore);
+                formatted.label = AddonCalendar.getUnitValueLabel(data.value, data.unit, false);
+                formatted.timestamp = eventTimestart - reminder.timebefore;
             }
 
-            if (reminder.value && reminder.unit) {
-                reminder.label = AddonCalendar.getUnitValueLabel(reminder.value, reminder.unit, reminder.time === null);
-                if (reminder.timestamp) {
-                    reminder.sublabel = CoreTimeUtils.userDate(reminder.timestamp * 1000, 'core.strftimedatetime');
-                }
+            if (formatted.timestamp) {
+                formatted.sublabel = CoreTimeUtils.userDate(formatted.timestamp * 1000, 'core.strftimedatetime');
             }
 
-            return reminder;
+            return formatted;
         });
     }
 
@@ -381,7 +407,7 @@ export class AddonCalendarHelperProvider {
     /**
      * Get the day "id".
      *
-     * @param day Day moment.
+     * @param moment Day moment.
      * @return The "id".
      */
     getDayId(moment: moment.Moment): string {
@@ -553,18 +579,18 @@ export class AddonCalendarHelperProvider {
         courseId: number,
         categoryId?: number,
     ): boolean {
-        if (event.eventtype == 'user' || event.eventtype == 'site') {
+        if (event.eventtype === 'user' || event.eventtype === 'site') {
             // User or site event, display it.
             return true;
         }
 
-        if (event.eventtype == 'category' && categories) {
+        if (event.eventtype === 'category' && categories) {
             if (!event.categoryid || !Object.keys(categories).length || !categoryId) {
                 // We can't tell if the course belongs to the category, display them all.
                 return true;
             }
 
-            if (event.categoryid == categoryId) {
+            if (event.categoryid === categoryId) {
                 // The event is in the same category as the course, display it.
                 return true;
             }
@@ -577,7 +603,7 @@ export class AddonCalendarHelperProvider {
                     break;
                 }
 
-                if (event.categoryid == category.parent) {
+                if (event.categoryid === category.parent) {
                     return true;
                 }
                 category = categories[category.parent];
@@ -796,9 +822,8 @@ export type AddonCalendarEventTypeOption = {
 /**
  * Formatted event reminder.
  */
-export type AddonCalendarEventReminder = AddonCalendarReminderDBRecord & {
-    value?: number; // Amount of time.
-    unit?: AddonCalendarReminderUnits; // Units.
+export type AddonCalendarEventReminder = {
+    id: number;
     timestamp?: number; // Timestamp (in seconds).
     label?: string; // Label to represent the reminder.
     sublabel?: string; // Sub label.

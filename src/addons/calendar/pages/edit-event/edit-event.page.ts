@@ -31,9 +31,10 @@ import {
     AddonCalendarEventType,
     AddonCalendar,
     AddonCalendarSubmitCreateUpdateFormDataWSParams,
+    AddonCalendarReminderUnits,
 } from '../../services/calendar';
 import { AddonCalendarOffline } from '../../services/calendar-offline';
-import { AddonCalendarEventReminder, AddonCalendarEventTypeOption, AddonCalendarHelper } from '../../services/calendar-helper';
+import { AddonCalendarEventTypeOption, AddonCalendarHelper } from '../../services/calendar-helper';
 import { AddonCalendarSync, AddonCalendarSyncProvider } from '../../services/calendar-sync';
 import { CoreSite } from '@classes/site';
 import { Translate } from '@singletons';
@@ -156,7 +157,6 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Fetch the data needed to render the form.
      *
-     * @param refresh Whether it's refreshing data.
      * @return Promise resolved when done.
      */
     protected async fetchData(): Promise<void> {
@@ -273,15 +273,14 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
             return;
         }
 
-        const courseFillterFullname = (course: CoreCourseSearchedData | CoreEnrolledCourseData): Promise<void> =>
-            CoreFilterHelper.getFiltersAndFormatText(course.fullname, 'course', course.id)
-                .then((result) => {
-                    course.fullname = result.text;
-
-                    return;
-                }).catch(() => {
-                    // Ignore errors.
-                });
+        const courseFillFullname = async (course: CoreCourseSearchedData | CoreEnrolledCourseData): Promise<void> => {
+            try {
+                const result = await CoreFilterHelper.getFiltersAndFormatText(course.fullname, 'course', course.id);
+                course.fullname = result.text;
+            } catch {
+                // Ignore errors.
+            }
+        };
 
         if (this.showAll) {
             // Remove site home from the list of courses.
@@ -296,9 +295,9 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
         // Format the name of the courses.
         if ('contacts' in courses[0]) {
-            await Promise.all((courses as CoreCourseSearchedData[]).map(courseFillterFullname));
+            await Promise.all((courses as CoreCourseSearchedData[]).map(courseFillFullname));
         } else {
-            await Promise.all((courses as CoreEnrolledCourseData[]).map(courseFillterFullname));
+            await Promise.all((courses as CoreEnrolledCourseData[]).map(courseFillFullname));
         }
 
         // Sort courses by name.
@@ -461,17 +460,17 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
         const timeDurationMinutes = parseInt(formData.timedurationminutes || '', 10);
         let error: string | undefined;
 
-        if (formData.eventtype == AddonCalendarEventType.COURSE && !formData.courseid) {
+        if (formData.eventtype === AddonCalendarEventType.COURSE && !formData.courseid) {
             error = 'core.selectacourse';
-        } else if (formData.eventtype == AddonCalendarEventType.GROUP && !formData.groupcourseid) {
+        } else if (formData.eventtype === AddonCalendarEventType.GROUP && !formData.groupcourseid) {
             error = 'core.selectacourse';
-        } else if (formData.eventtype == AddonCalendarEventType.GROUP && !formData.groupid) {
+        } else if (formData.eventtype === AddonCalendarEventType.GROUP && !formData.groupid) {
             error = 'core.selectagroup';
-        } else if (formData.eventtype == AddonCalendarEventType.CATEGORY && !formData.categoryid) {
+        } else if (formData.eventtype === AddonCalendarEventType.CATEGORY && !formData.categoryid) {
             error = 'core.selectacategory';
-        } else if (formData.duration == 1 && timeStartDate > timeUntilDate) {
+        } else if (formData.duration === 1 && timeStartDate > timeUntilDate) {
             error = 'addon.calendar.invalidtimedurationuntil';
-        } else if (formData.duration == 2 && (isNaN(timeDurationMinutes) || timeDurationMinutes < 1)) {
+        } else if (formData.duration === 2 && (isNaN(timeDurationMinutes) || timeDurationMinutes < 1)) {
             error = 'addon.calendar.invalidtimedurationminutes';
         }
 
@@ -534,8 +533,11 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
             if (result.sent) {
                 // Event created or edited, invalidate right days & months.
-                const numberOfRepetitions = formData.repeat ? formData.repeats :
-                    (data.repeateditall && this.otherEventsCount ? this.otherEventsCount + 1 : 1);
+                const numberOfRepetitions = formData.repeat
+                    ? formData.repeats
+                    : (data.repeateditall && this.otherEventsCount
+                        ? this.otherEventsCount + 1
+                        : 1);
 
                 try {
                     await AddonCalendarHelper.refreshAfterChangeEvent(result.event, numberOfRepetitions);
@@ -651,7 +653,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
         // Check if default reminders are enabled.
         const defaultTime = await AddonCalendar.getDefaultNotificationTime(this.currentSite.getId());
-        if (defaultTime === 0) {
+        if (defaultTime === AddonCalendarProvider.DEFAULT_NOTIFICATION_DISABLED) {
             return;
         }
 
@@ -659,7 +661,6 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
         // Add default reminder.
         this.reminders.push({
-            time: null,
             value: data.value,
             unit: data.unit,
             label: AddonCalendar.getUnitValueLabel(data.value, data.unit, true),
@@ -697,7 +698,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
      */
     removeReminder(reminder: AddonCalendarEventCandidateReminder): void {
         const index = this.reminders.indexOf(reminder);
-        if (index != -1) {
+        if (index !== -1) {
             this.reminders.splice(index, 1);
         }
     }
@@ -712,4 +713,9 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
 
 }
 
-type AddonCalendarEventCandidateReminder = Omit<AddonCalendarEventReminder, 'id'|'eventid'>;
+type AddonCalendarEventCandidateReminder =  {
+    time?: number; // Undefined for default reminder.
+    value: number; // Amount of time.
+    unit: AddonCalendarReminderUnits; // Units.
+    label: string; // Label to represent the reminder.
+};
