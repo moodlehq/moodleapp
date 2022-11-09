@@ -39,14 +39,10 @@ Feature: Test basic usage of login in app
     But I should not find "Log in" in the app
 
   Scenario: Add a non existing account
-    When I enter the app
-    And I log in as "student1"
-    When I log out in the app
-    And I press "Add" in the app
-    And I set the field "Your site" to "Wrong Site Address" in the app
-    And I press enter in the app
-    Then I should find "Cannot connect" in the app
-    And I should find "Wrong Site Address" in the app
+    When I launch the app
+    And I set the field "Your site" to "wrongsiteaddress" in the app
+    And I press "Connect to your site" in the app
+    Then I should find "Site not found" in the app
 
   Scenario: Add a non existing account from accounts switcher
     When I enter the app
@@ -55,10 +51,9 @@ Feature: Test basic usage of login in app
     And I press "Switch account" in the app
     And I press "Add" in the app
     And I wait the app to restart
-    And I set the field "Your site" to "Wrong Site Address" in the app
-    And I press enter in the app
-    Then I should find "Cannot connect" in the app
-    And I should find "Wrong Site Address" in the app
+    And I set the field "Your site" to "wrongsiteaddress" in the app
+    And I press "Connect to your site" in the app
+    Then I should find "Site not found" in the app
 
   Scenario: Log out from the app
     Given I entered the app as "student1"
@@ -139,3 +134,17 @@ Feature: Test basic usage of login in app
 
     When I press "Reconnect" in the app
     Then I should find "Acceptance test site" in the app
+
+  @lms_from4.1
+  Scenario: Forgot password
+    Given the following config values are set as admin:
+      | supportavailability | 2 |
+    When I enter the app
+    And I press "Forgotten your username or password?" in the app
+    And I set the field "Enter either username or email address" to "student1"
+    And I press "Search" in the app
+    Then I should find "Success" in the app
+
+    When I press "OK" in the app
+    And I press "Forgotten your username or password?" in the app
+    Then I should find "Contact support" in the app

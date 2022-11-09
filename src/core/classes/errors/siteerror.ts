@@ -13,29 +13,33 @@
 // limitations under the License.
 
 import { CoreError } from '@classes/errors/error';
+import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
 
 /**
- * Error returned when performing operations regarding a site (check if it exists, authenticate user, etc.).
+ * Error returned when performing operations regarding a site.
  */
 export class CoreSiteError extends CoreError {
 
     errorcode?: string;
-    critical?: boolean;
-    loggedOut?: boolean;
+    errorDetails?: string;
+    supportConfig?: CoreUserSupportConfig;
 
-    constructor(protected error: SiteError) {
-        super(error.message);
+    constructor(options: CoreSiteErrorOptions) {
+        super(options.message);
 
-        this.errorcode = error.errorcode;
-        this.critical = error.critical;
-        this.loggedOut = error.loggedOut;
+        this.errorcode = options.errorcode;
+        this.errorDetails = options.errorDetails;
+        this.supportConfig = options.supportConfig;
     }
 
 }
 
-export type SiteError = {
+export type CoreSiteErrorOptions = {
     message: string;
-    errorcode?: string;
-    critical?: boolean; // Whether the error is important enough to abort the operation.
-    loggedOut?: boolean; // Whether site has been marked as logged out.
+    errorcode?: string; // Technical error code useful for technical assistance.
+    errorDetails?: string; // Technical error details useful for technical assistance.
+
+    // Configuration to use to contact site support. If this attribute is present, it means
+    // that the error warrants contacting support.
+    supportConfig?: CoreUserSupportConfig;
 };

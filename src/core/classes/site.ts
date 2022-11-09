@@ -60,6 +60,8 @@ import {
 import { Observable, ObservableInput, ObservedValueOf, OperatorFunction, Subject } from 'rxjs';
 import { finalize, map, mergeMap } from 'rxjs/operators';
 import { firstValueFrom } from '../utils/rxjs';
+import { CoreSiteError } from '@classes/errors/siteerror';
+import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
 
 /**
  * QR Code type enumeration.
@@ -808,9 +810,7 @@ export class CoreSite {
     ): Promise<T> {
         if (preSets.forceOffline) {
             // Don't call the WS, just fail.
-            throw new CoreError(
-                Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }),
-            );
+            throw new CoreError(Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }));
         }
 
         try {
@@ -1130,7 +1130,12 @@ export class CoreSite {
             );
 
             if (!data || !data.responses) {
-                throw new CoreError(Translate.instant('core.errorinvalidresponse'));
+                throw new CoreSiteError({
+                    supportConfig: new CoreUserAuthenticatedSupportConfig(this),
+                    message: Translate.instant('core.siteunavailablehelp', { site: this.siteUrl }),
+                    errorcode: 'invalidresponse',
+                    errorDetails: Translate.instant('core.errorinvalidresponse', { method: 'tool_mobile_call_external_functions' }),
+                });
             }
 
             requests.forEach((request, i) => {
@@ -1670,6 +1675,10 @@ export class CoreSite {
      */
     async getPublicConfig(options: { readingStrategy?: CoreSitesReadingStrategy } = {}): Promise<CoreSitePublicConfigResponse> {
         if (!this.db) {
+            if (options.readingStrategy === CoreSitesReadingStrategy.ONLY_CACHE) {
+                throw new CoreError('Cache not available to read public config');
+            }
+
             return this.requestPublicConfig();
         }
 
@@ -1714,9 +1723,7 @@ export class CoreSite {
             .catch(async () => {
                 if (cachePreSets.forceOffline) {
                     // Don't call the WS, just fail.
-                    throw new CoreError(
-                        Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }),
-                    );
+                    throw new CoreError(Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }));
                 }
 
                 // Call the WS.
@@ -2743,9 +2750,20 @@ export type CoreSiteConfigResponse = {
 };
 
 /**
+ * Possible values for 'supportavailability' config.
+ */
+export const enum CoreSiteConfigSupportAvailability {
+    Disabled = 0,
+    Authenticated = 1,
+    Anyone = 2,
+}
+
+/**
  * Site config indexed by name.
  */
-export type CoreSiteConfig = {[name: string]: string};
+export type CoreSiteConfig = Record<string, string> & {
+    supportavailability?: string; // String representation of CoreSiteConfigSupportAvailability.
+};
 
 /**
  * Result of WS tool_mobile_get_public_config.
@@ -2777,6 +2795,8 @@ export type CoreSitePublicConfigResponse = {
     agedigitalconsentverification?: boolean; // Whether age digital consent verification is enabled.
     supportname?: string; // Site support contact name (only if age verification is enabled).
     supportemail?: string; // Site support contact email (only if age verification is enabled).
+    supportavailability?: CoreSiteConfigSupportAvailability;
+    supportpage?: string; // Site support contact url.
     autolang?: number; // Whether to detect default language from browser setting.
     lang?: string; // Default language for the site.
     langmenu?: number; // Whether the language menu should be displayed.

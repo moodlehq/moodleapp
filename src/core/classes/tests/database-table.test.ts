@@ -63,7 +63,7 @@ function prepareStubs(config: Partial<CoreDatabaseConfiguration> = {}): [User[],
     });
     const table = new CoreDatabaseTableProxy<User>(config, database, 'users');
 
-    mockSingleton(CoreConfig, { isReady: () => Promise.resolve() });
+    mockSingleton(CoreConfig, { ready: () => Promise.resolve() });
 
     return [records, database, table];
 }

@@ -27,7 +27,6 @@ import {
     CoreLoginSiteFinderSettings,
     CoreLoginSiteSelectorListMethod,
 } from '@features/login/services/login-helper';
-import { CoreSite } from '@classes/site';
 import { CoreError } from '@classes/errors/error';
 import { CoreConstants } from '@/core/constants';
 import { Translate } from '@singletons';
@@ -40,6 +39,13 @@ import { CoreCustomURLSchemes, CoreCustomURLSchemesHandleError } from '@services
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreForms } from '@singletons/form';
 import { AlertButton } from '@ionic/core';
+import { CoreSiteError } from '@classes/errors/siteerror';
+import { CoreUserSupport } from '@features/user/services/support';
+import { CoreErrorInfoComponent } from '@components/error-info/error-info';
+import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
+import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
+import { CoreLoginError } from '@classes/errors/loginerror';
+import { CoreSite } from '@classes/site';
 
 /**
  * Site (url) chooser when adding a new site.
@@ -380,43 +386,73 @@ export class CoreLoginSitePage implements OnInit {
      * @param url The URL the user was trying to connect to.
      * @param error Error to display.
      */
-    protected showLoginIssue(url: string | null, error: CoreError): void {
+    protected async showLoginIssue(url: string | null, error: CoreError): Promise<void> {
         let errorMessage = CoreDomUtils.getErrorMessage(error);
+        let siteExists = false;
+        let supportConfig: CoreUserSupportConfig | undefined = undefined;
+        let errorTitle: string | undefined;
+        let errorDetails: string | undefined;
+        let errorCode: string | undefined;
 
-        if (errorMessage == Translate.instant('core.cannotconnecttrouble')) {
-            const found = this.sites.find((site) => site.url == url);
-
-            if (!found) {
-                errorMessage += ' ' + Translate.instant('core.cannotconnectverify');
-            }
+        if (error instanceof CoreSiteError) {
+            supportConfig = error.supportConfig;
+            errorDetails = error.errorDetails;
+            errorCode = error.errorcode;
+            siteExists = supportConfig instanceof CoreUserGuestSupportConfig;
         }
 
-        let message = '<p>' + errorMessage + '</p>';
-        if (url) {
-            const fullUrl = CoreUrlUtils.isAbsoluteURL(url) ? url : 'https://' + url;
-            message += '<p padding><a href="' + fullUrl + '" core-link>' + url + '</a></p>';
+        if (error instanceof CoreLoginError) {
+            errorTitle = error.title;
         }
 
-        const buttons: AlertButton[] = [
-            {
-                text: Translate.instant('core.needhelp'),
-                cssClass: 'core-login-need-help',
-                handler: (): void => {
-                    this.showHelp();
-                },
-            },
+        if (errorDetails) {
+            errorMessage = `<p>${errorMessage}</p><div class="core-error-info-container"></div>`;
+        }
+
+        const alertSupportConfig = supportConfig;
+        const buttons = [
             {
                 text: Translate.instant('core.tryagain'),
                 role: 'cancel',
             },
-        ];
+            alertSupportConfig?.canContactSupport()
+                ? {
+                    text: Translate.instant('core.contactsupport'),
+                    handler: () => CoreUserSupport.contact({
+                        supportConfig: alertSupportConfig,
+                        subject: Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }),
+                        message: `Error: ${errorCode}\n\n${errorDetails}`,
+                    }),
+                }
+                : (
+                    !siteExists
+                        ? {
+                            text: Translate.instant('core.needhelp'),
+                            cssClass: 'core-login-need-help',
+                            handler: () => this.showHelp(),
+                        }
+                        : null
+                ),
+        ].filter(button => !!button);
 
         // @TODO: Remove CoreSite.MINIMUM_MOODLE_VERSION, not used on translations since 3.9.0.
-        CoreDomUtils.showAlertWithOptions({
-            header: Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }),
-            message,
-            buttons,
+        const alertElement = await CoreDomUtils.showAlertWithOptions({
+            header: errorTitle ?? (
+                siteExists
+                    ? Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION })
+                    : Translate.instant('core.sitenotfound')
+            ),
+            message: errorMessage ?? Translate.instant('core.sitenotfoundhelp'),
+            buttons: buttons as AlertButton[],
         });
+
+        if (errorDetails) {
+            const containerElement = alertElement.querySelector('.core-error-info-container');
+
+            if (containerElement) {
+                containerElement.innerHTML = CoreErrorInfoComponent.render(errorDetails, errorCode);
+            }
+        }
     }
 
     /**

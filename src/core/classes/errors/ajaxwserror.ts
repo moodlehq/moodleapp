@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreError } from '@classes/errors/error';
+import { CoreSiteError } from '@classes/errors/siteerror';
 
 /**
  * Error returned by WS.
  */
-export class CoreAjaxWSError extends CoreError {
+export class CoreAjaxWSError extends CoreSiteError {
 
     exception?: string; // Name of the Moodle exception.
-    errorcode?: string;
     warningcode?: string;
     link?: string; // Link to the site.
     moreinfourl?: string; // Link to a page with more info.
@@ -30,10 +29,12 @@ export class CoreAjaxWSError extends CoreError {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(error: any, available?: number) {
-        super(error.message || error.error);
+        super({
+            message: error.message || error.error,
+            errorcode: error.errorcode,
+        });
 
         this.exception = error.exception;
-        this.errorcode = error.errorcode;
         this.warningcode = error.warningcode;
         this.link = error.link;
         this.moreinfourl = error.moreinfourl;

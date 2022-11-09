@@ -33,7 +33,7 @@ describe('CoreIframeComponent', () => {
 
         const iframe = nativeElement.querySelector('iframe');
         expect(iframe).not.toBeNull();
-        expect(iframe.src).toEqual('https://moodle.org/');
+        expect(iframe?.src).toEqual('https://moodle.org/');
     });
 
 });

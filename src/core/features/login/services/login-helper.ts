@@ -39,6 +39,8 @@ import { CorePushNotifications } from '@features/pushnotifications/services/push
 import { CoreText } from '@singletons/text';
 import { CorePromisedValue } from '@classes/promised-value';
 
+const PASSWORD_RESETS_CONFIG_KEY = 'password-resets';
+
 /**
  * Helper provider that provides some common features regarding authentication.
  */
@@ -61,6 +63,13 @@ export class CoreLoginHelperProvider {
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreLoginHelper');
+    }
+
+    /**
+     * Initialize service.
+     */
+    async initialize(): Promise<void> {
+        this.cleanUpPasswordResets();
     }
 
     /**
@@ -183,6 +192,7 @@ export class CoreLoginHelperProvider {
                 await CoreNavigator.navigate('/login/forgottenpassword', {
                     params: {
                         siteUrl,
+                        siteConfig,
                         username,
                     },
                 });
@@ -1455,6 +1465,65 @@ export class CoreLoginHelperProvider {
      */
     async getLoginMethods(): Promise<CoreLoginMethod[]> {
         return [];
+    }
+
+    /**
+     * Record that a password reset has been requested for a given site.
+     *
+     * @param siteUrl Site url.
+     */
+    async passwordResetRequested(siteUrl: string): Promise<void> {
+        const passwordResets = await this.getPasswordResets();
+
+        passwordResets[siteUrl] = Date.now();
+
+        await CoreConfig.set(PASSWORD_RESETS_CONFIG_KEY, JSON.stringify(passwordResets));
+    }
+
+    /**
+     * Find out if a password reset has been requested recently for a given site.
+     *
+     * @param siteUrl Site url.
+     * @return Whether a password reset has been requested recently.
+     */
+    async wasPasswordResetRequestedRecently(siteUrl: string): Promise<boolean> {
+        const passwordResets = await this.getPasswordResets();
+
+        return siteUrl in passwordResets
+            && passwordResets[siteUrl] > Date.now() - CoreConstants.MILLISECONDS_HOUR;
+    }
+
+    /**
+     * Clean up expired password reset records from the database.
+     */
+    async cleanUpPasswordResets(): Promise<void> {
+        const passwordResets = await this.getPasswordResets();
+        const siteUrls = Object.keys(passwordResets);
+
+        for (const siteUrl of siteUrls) {
+            if (passwordResets[siteUrl] > Date.now() - CoreConstants.MILLISECONDS_HOUR) {
+                continue;
+            }
+
+            delete passwordResets[siteUrl];
+        }
+
+        if (Object.values(passwordResets).length === 0) {
+            await CoreConfig.delete(PASSWORD_RESETS_CONFIG_KEY);
+        } else {
+            await CoreConfig.set(PASSWORD_RESETS_CONFIG_KEY, JSON.stringify(passwordResets));
+        }
+    }
+
+    /**
+     * Get a record indexing the last time a password reset was requested for a site.
+     *
+     * @returns Password resets.
+     */
+    protected async getPasswordResets(): Promise<Record<string, number>> {
+        const passwordResetsJson = await CoreConfig.get(PASSWORD_RESETS_CONFIG_KEY, '{}');
+
+        return CoreTextUtils.parseJSON<Record<string, number>>(passwordResetsJson, {});
     }
 
 }

@@ -34,7 +34,7 @@ import {
 } from '@classes/site';
 import { SQLiteDB, SQLiteDBRecordValues, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { CoreError } from '@classes/errors/error';
-import { CoreSiteError } from '@classes/errors/siteerror';
+import { CoreLoginError, CoreLoginErrorOptions } from '@classes/errors/loginerror';
 import { makeSingleton, Translate, Http } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import {
@@ -61,6 +61,7 @@ import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/da
 import { asyncInstance, AsyncInstance } from '../utils/async-instance';
 import { CoreConfig } from './config';
 import { CoreNetwork } from '@services/network';
+import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 export const CORE_SITE_CURRENT_SITE_ID_CONFIG = 'current_site_id';
@@ -245,7 +246,7 @@ export class CoreSitesProvider {
                 } else if (CoreTextUtils.getErrorMessageFromError(secondError)) {
                     throw secondError;
                 } else {
-                    throw new CoreError(Translate.instant('core.cannotconnecttrouble'));
+                    throw new CoreError(Translate.instant('core.sitenotfoundhelp'));
                 }
             }
         }
@@ -296,13 +297,17 @@ export class CoreSitesProvider {
 
         // Check that the user can authenticate.
         if (!config.enablewebservices) {
-            throw new CoreSiteError({
-                message: Translate.instant('core.login.webservicesnotenabled'),
+            throw this.createCannotConnectLoginError(config.httpswwwroot || config.wwwroot, {
+                supportConfig: new CoreUserGuestSupportConfig(config),
+                errorcode: 'webservicesnotenabled',
+                errorDetails: Translate.instant('core.login.webservicesnotenabled'),
                 critical: true,
             });
         } else if (!config.enablemobilewebservice) {
-            throw new CoreSiteError({
-                message: Translate.instant('core.login.mobileservicesnotenabled'),
+            throw this.createCannotConnectLoginError(config.httpswwwroot || config.wwwroot, {
+                supportConfig: new CoreUserGuestSupportConfig(config),
+                errorcode: 'mobileservicesnotenabled',
+                errorDetails: Translate.instant('core.login.mobileservicesnotenabled'),
                 critical: true,
             });
         } else if (config.maintenanceenabled) {
@@ -311,7 +316,7 @@ export class CoreSitesProvider {
                 message += config.maintenancemessage;
             }
 
-            throw new CoreSiteError({
+            throw new CoreLoginError({
                 message,
                 critical: true,
             });
@@ -323,47 +328,73 @@ export class CoreSitesProvider {
     }
 
     /**
-     * Treat an error returned by getPublicConfig in checkSiteWithProtocol. Converts the error to a CoreSiteError.
+     * Create an error to be thrown when it isn't possible to login to a site.
+     *
+     * @param options Error options.
+     * @return Cannot connect error.
+     */
+    protected createCannotConnectLoginError(siteUrl: string | null, options?: Partial<CoreLoginErrorOptions>): CoreLoginError {
+        return new CoreLoginError({
+            ...options,
+            message: !this.isLoggedIn() && siteUrl === null
+                ? Translate.instant('core.sitenotfoundhelp')
+                : Translate.instant('core.siteunavailablehelp', { site: siteUrl ?? this.currentSite?.siteUrl }),
+        });
+    }
+
+    /**
+     * Treat an error returned by getPublicConfig in checkSiteWithProtocol. Converts the error to a CoreLoginError.
      *
      * @param siteUrl Site URL.
      * @param error Error returned.
      * @return Promise resolved with the treated error.
      */
-    protected async treatGetPublicConfigError(siteUrl: string, error: CoreAjaxError | CoreAjaxWSError): Promise<CoreSiteError> {
-        if (!('errorcode' in error)) {
+    protected async treatGetPublicConfigError(
+        siteUrl: string,
+        error: CoreError | CoreAjaxError | CoreAjaxWSError,
+    ): Promise<CoreLoginError> {
+        if (error instanceof CoreAjaxError || !('errorcode' in error)) {
             // The WS didn't return data, probably cannot connect.
-            return new CoreSiteError({
-                message: error.message || '',
+            return new CoreLoginError({
+                title: Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }),
+                message: Translate.instant('core.siteunavailablehelp', { site: siteUrl }),
+                errorcode: 'publicconfigfailed',
+                errorDetails: error.message || '',
                 critical: false, // Allow fallback to http if siteUrl uses https.
             });
         }
 
         // Service supported but an error happened. Return error.
-        let critical = true;
+        const options: CoreLoginErrorOptions = {
+            critical: true,
+            title: Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }),
+            message: Translate.instant('core.siteunavailablehelp', { site: siteUrl }),
+            errorcode: error.errorcode,
+            supportConfig: error.supportConfig,
+            errorDetails: error.errorDetails ?? error.message,
+        };
 
         if (error.errorcode === 'codingerror') {
             // This could be caused by a redirect. Check if it's the case.
             const redirect = await CoreUtils.checkRedirect(siteUrl);
 
+            options.message = Translate.instant('core.siteunavailablehelp', { site: siteUrl });
+
             if (redirect) {
-                error.message = Translate.instant('core.login.sitehasredirect');
-                critical = false; // Keep checking fallback URLs.
-            } else {
-                // We can't be sure if there is a redirect or not. Display cannot connect error.
-                error.message = Translate.instant('core.cannotconnecttrouble');
+                options.errorcode = 'sitehasredirect';
+                options.errorDetails = Translate.instant('core.login.sitehasredirect');
+                options.critical = false; // Keep checking fallback URLs.
             }
         } else if (error.errorcode === 'invalidrecord') {
             // WebService not found, site not supported.
-            error.message = Translate.instant('core.login.invalidmoodleversion', { $a: CoreSite.MINIMUM_MOODLE_VERSION });
+            options.message = Translate.instant('core.siteunavailablehelp', { site: siteUrl });
+            options.errorcode = 'invalidmoodleversion';
+            options.errorDetails = Translate.instant('core.login.invalidmoodleversion', { $a: CoreSite.MINIMUM_MOODLE_VERSION });
         } else if (error.errorcode === 'redirecterrordetected') {
-            critical = false; // Keep checking fallback URLs.
+            options.critical = false; // Keep checking fallback URLs.
         }
 
-        return new CoreSiteError({
-            message: error.message,
-            errorcode: error.errorcode,
-            critical,
-        });
+        return new CoreLoginError(options);
     }
 
     /**
@@ -383,30 +414,37 @@ export class CoreSitesProvider {
             data = await Http.post(siteUrl + '/login/token.php', { appsitecheck: 1 }).pipe(timeout(CoreWS.getRequestTimeout()))
                 .toPromise();
         } catch (error) {
-            // Default error messages are kinda bad, return our own message.
-            throw new CoreSiteError({
-                message: Translate.instant('core.cannotconnecttrouble'),
+            throw this.createCannotConnectLoginError(null, {
+                supportConfig: await CoreUserGuestSupportConfig.forSite(siteUrl),
+                errorcode: 'sitecheckfailed',
+                errorDetails: CoreDomUtils.getErrorMessage(error) ?? undefined,
             });
         }
 
         if (data === null) {
             // Cannot connect.
-            throw new CoreSiteError({
-                message: Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }),
+            throw this.createCannotConnectLoginError(null, {
+                supportConfig: await CoreUserGuestSupportConfig.forSite(siteUrl),
+                errorcode: 'appsitecheckfailed',
+                errorDetails: 'A request to /login/token.php with appsitecheck=1 returned an empty response',
             });
         }
 
         if (data.errorcode && (data.errorcode == 'enablewsdescription' || data.errorcode == 'requirecorrectaccess')) {
-            throw new CoreSiteError({
+            throw this.createCannotConnectLoginError(siteUrl, {
+                supportConfig: await CoreUserGuestSupportConfig.forSite(siteUrl),
+                critical: data.errorcode == 'enablewsdescription',
                 errorcode: data.errorcode,
-                message: data.error ?? '',
+                errorDetails: data.error,
             });
         }
 
         if (data.error && data.error == 'Web services must be enabled in Advanced features.') {
-            throw new CoreSiteError({
+            throw this.createCannotConnectLoginError(siteUrl, {
+                supportConfig: await CoreUserGuestSupportConfig.forSite(siteUrl),
+                critical: true,
                 errorcode: 'enablewsdescription',
-                message: data.error,
+                errorDetails: data.error,
             });
         }
 
@@ -446,11 +484,19 @@ export class CoreSitesProvider {
         try {
             data = await Http.post(loginUrl, params).pipe(timeout(CoreWS.getRequestTimeout())).toPromise();
         } catch (error) {
-            throw new CoreError(Translate.instant('core.cannotconnecttrouble'));
+            throw new CoreError(
+                this.isLoggedIn()
+                    ? Translate.instant('core.siteunavailablehelp', { site: this.currentSite?.siteUrl })
+                    : Translate.instant('core.sitenotfoundhelp'),
+            );
         }
 
         if (data === undefined) {
-            throw new CoreError(Translate.instant('core.cannotconnecttrouble'));
+            throw new CoreError(
+                this.isLoggedIn()
+                    ? Translate.instant('core.siteunavailablehelp', { site: this.currentSite?.siteUrl })
+                    : Translate.instant('core.sitenotfoundhelp'),
+            );
         } else {
             if (data.token !== undefined) {
                 return { token: data.token, siteUrl, privateToken: data.privatetoken };
@@ -466,15 +512,18 @@ export class CoreSitesProvider {
                         const redirect = await CoreUtils.checkRedirect(loginUrl);
 
                         if (redirect) {
-                            throw new CoreSiteError({
-                                message: Translate.instant('core.login.sitehasredirect'),
+                            throw this.createCannotConnectLoginError(siteUrl, {
+                                supportConfig: await CoreUserGuestSupportConfig.forSite(siteUrl),
+                                errorcode: 'sitehasredirect',
+                                errorDetails: Translate.instant('core.login.sitehasredirect'),
                             });
                         }
                     }
 
-                    throw new CoreSiteError({
-                        message: data.error,
+                    throw this.createCannotConnectLoginError(siteUrl, {
+                        supportConfig: await CoreUserGuestSupportConfig.forSite(siteUrl),
                         errorcode: data.errorcode,
+                        errorDetails: data.error,
                     });
                 }
 
@@ -615,7 +664,7 @@ export class CoreSitesProvider {
             await this.setSiteLoggedOut(siteId);
         }
 
-        throw new CoreSiteError({
+        throw new CoreLoginError({
             message: Translate.instant(errorKey, translateParams),
             errorcode: errorCode,
             loggedOut: true,
@@ -1079,6 +1128,18 @@ export class CoreSitesProvider {
         }
 
         return this.addSiteFromSiteListEntry(data);
+    }
+
+    /**
+     * Gets the public type config for a site with the given url.
+     *
+     * @param siteUrl The site URL.
+     * @return Promise resolved with public config or null.
+     */
+    async getPublicSiteConfigByUrl(siteUrl: string): Promise<CoreSitePublicConfigResponse> {
+        const site = await this.getSiteByUrl(siteUrl);
+
+        return site.getPublicConfig({ readingStrategy: CoreSitesReadingStrategy.ONLY_CACHE });
     }
 
     /**

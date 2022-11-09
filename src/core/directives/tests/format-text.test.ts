@@ -33,7 +33,15 @@ describe('CoreFormatTextDirective', () => {
 
     beforeEach(() => {
         mockSingleton(CoreSites, { getSite: () => Promise.reject() });
-        mockSingleton(CoreConfig, { get: (_, defaultValue) => defaultValue });
+        mockSingleton(CoreConfig, {
+            get(name, defaultValue) {
+                if (defaultValue === undefined) {
+                    throw Error(`Default value not provided for '${name}'`);
+                }
+
+                return Promise.resolve(defaultValue);
+            },
+        });
         mockSingleton(CoreFilter, { formatText: text => Promise.resolve(text) });
         mockSingleton(CoreFilterHelper, { getFiltersAndFormatText: text => Promise.resolve({ text, filters: [] }) });
 
@@ -59,12 +67,12 @@ describe('CoreFormatTextDirective', () => {
         // Assert
         const text = fixture.nativeElement.querySelector('core-format-text');
         expect(text).not.toBeNull();
-        expect(text.innerHTML).toEqual(sentence);
+        expect(text?.innerHTML).toEqual(sentence);
     });
 
     it('should format text', async () => {
         // Arrange
-        mockSingleton(CoreFilter, { formatText: () => 'Formatted text' });
+        mockSingleton(CoreFilter, { formatText: () => Promise.resolve('Formatted text') });
 
         // Act
         const { nativeElement } = await renderTemplate(
@@ -75,7 +83,7 @@ describe('CoreFormatTextDirective', () => {
         // Assert
         const text = nativeElement.querySelector('core-format-text');
         expect(text).not.toBeNull();
-        expect(text.textContent).toEqual('Formatted text');
+        expect(text?.textContent).toEqual('Formatted text');
 
         expect(CoreFilter.formatText).toHaveBeenCalledTimes(1);
         expect(CoreFilter.formatText).toHaveBeenCalledWith(
@@ -107,7 +115,7 @@ describe('CoreFormatTextDirective', () => {
         // Assert
         const text = nativeElement.querySelector('core-format-text');
         expect(text).not.toBeNull();
-        expect(text.textContent).toEqual('Formatted text');
+        expect(text?.textContent).toEqual('Formatted text');
 
         expect(CoreFilterHelper.getFiltersAndFormatText).toHaveBeenCalledTimes(1);
         expect(CoreFilterHelper.getFiltersAndFormatText).toHaveBeenCalledWith(
@@ -131,7 +139,7 @@ describe('CoreFormatTextDirective', () => {
         mockSingleton(CoreFilepool, { getSrcByUrl: () => Promise.resolve('file://local-path') });
         mockSingleton(CoreSites, {
             getSite: () => Promise.resolve(site),
-            getCurrentSite: () => Promise.resolve(site),
+            getCurrentSite: () => site,
         });
 
         // Act
@@ -145,7 +153,7 @@ describe('CoreFormatTextDirective', () => {
         // Assert
         const image = nativeElement.querySelector('img');
         expect(image).not.toBeNull();
-        expect(image.src).toEqual('file://local-path/');
+        expect(image?.src).toEqual('file://local-path/');
 
         expect(CoreSites.getSite).toHaveBeenCalledWith(site.getId());
         expect(CoreFilepool.getSrcByUrl).toHaveBeenCalledTimes(1);
@@ -163,7 +171,7 @@ describe('CoreFormatTextDirective', () => {
         );
         const anchor = nativeElement.querySelector('a');
 
-        anchor.click();
+        anchor?.click();
 
         // Assert
         expect(CoreContentLinksHelper.handleLink).toHaveBeenCalledTimes(1);

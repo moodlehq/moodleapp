@@ -31,7 +31,7 @@ export class AddonModH5PActivityIndexPage extends CoreCourseModuleMainActivityPa
     implements CanLeave, OnDestroy {
 
     canLeaveSafely = false;
-    remainingTimeout?: ReturnType<typeof setTimeout>;
+    remainingTimeout?: number;
 
     @ViewChild(AddonModH5PActivityIndexComponent) activityComponent?: AddonModH5PActivityIndexComponent;
 
@@ -68,7 +68,7 @@ export class AddonModH5PActivityIndexPage extends CoreCourseModuleMainActivityPa
             clearTimeout(this.remainingTimeout);
         }
         // When user finish an activity, he have 10 seconds to leave safely (without show alert).
-        this.remainingTimeout = setTimeout(() => {
+        this.remainingTimeout = window.setTimeout(() => {
             this.canLeaveSafely = false;
         }, 10000);
     }

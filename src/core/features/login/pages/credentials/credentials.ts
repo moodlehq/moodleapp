@@ -28,6 +28,9 @@ import { CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@classes
 import { CoreEvents } from '@singletons/events';
 import { CoreNavigator } from '@services/navigator';
 import { CoreForms } from '@singletons/form';
+import { CoreUserSupport } from '@features/user/services/support';
+import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
+import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
 
 /**
  * Page to enter the user credentials.
@@ -54,6 +57,9 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     isFixedUrlSet = false;
     showForgottenPassword = true;
     showScanQR = false;
+    loginAttempts = 0;
+    supportConfig?: CoreUserSupportConfig;
+    canContactSupport?: boolean;
 
     protected siteConfig?: CoreSitePublicConfigResponse;
     protected eventThrown = false;
@@ -72,11 +78,12 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     async ngOnInit(): Promise<void> {
         try {
             this.siteUrl = CoreNavigator.getRequiredRouteParam<string>('siteUrl');
-
             this.siteName = CoreNavigator.getRouteParam('siteName');
             this.logoUrl = !CoreConstants.CONFIG.forceLoginLogo && CoreNavigator.getRouteParam('logoUrl') || undefined;
-            this.siteConfig = CoreNavigator.getRouteParam('siteConfig');
+            this.siteConfig = CoreNavigator.getRouteParam<CoreSitePublicConfigResponse>('siteConfig');
             this.urlToOpen = CoreNavigator.getRouteParam('urlToOpen');
+            this.supportConfig = this.siteConfig && new CoreUserGuestSupportConfig(this.siteConfig);
+            this.canContactSupport = this.supportConfig?.canContactSupport();
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
 
@@ -122,6 +129,16 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
                 }
             });
         }
+    }
+
+    /**
+     * Show help modal.
+     */
+    showHelp(): void {
+        CoreUserSupport.showHelp(
+            Translate.instant('core.login.credentialshelp'),
+            Translate.instant('core.login.credentialssupportsubject'),
+        );
     }
 
     /**
@@ -226,7 +243,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             // Site wasn't checked (it failed) or a previous check determined it was SSO. Let's check again.
             await this.checkSite(siteUrl);
 
-            if (!this.isBrowserSSO) {
+            if (!this.isBrowserSSO && this.siteChecked) {
                 // Site doesn't use browser SSO, throw app's login again.
                 return this.login();
             }
@@ -274,6 +291,8 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             } else if (error.errorcode == 'forcepasswordchangenotice') {
                 // Reset password field.
                 this.credForm.controls.password.reset();
+            } else if (error.errorcode === 'invalidlogin') {
+                this.loginAttempts++;
             }
         } finally {
             modal.dismiss();

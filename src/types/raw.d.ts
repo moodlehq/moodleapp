@@ -12,27 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+declare module '!raw-loader!*' {
+    const contents: string;
 
-import { CoreSharedModule } from '@/core/shared.module';
-import { CoreLoginForgottenPasswordPage } from './forgotten-password';
-
-const routes: Routes = [
-    {
-        path: '',
-        component: CoreLoginForgottenPasswordPage,
-    },
-];
-
-@NgModule({
-    imports: [
-        RouterModule.forChild(routes),
-        CoreSharedModule,
-    ],
-    declarations: [
-        CoreLoginForgottenPasswordPage,
-    ],
-    exports: [RouterModule],
-})
-export class CoreLoginForgottenPasswordPageModule {}
+    export = contents;
+}

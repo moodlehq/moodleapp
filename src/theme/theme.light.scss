@@ -48,18 +48,12 @@ html {
     }
 
     // Accessibility vars.
-    --a11y-min-target-size: 44px;
     --a11y-focus-color: var(--primary);
     --a11y-focus-width: 2px;
     --zoom-level: 100%;
 
-    --small-radius: 4px;
-    --medium-radius: 8px;
-    --big-radius: 16px;
-    --huge-radius: 24px;
-
     --text-color:       #{$text-color};
-    --text-size:        14px;
+    --text-size: var(--font-size-normal);
     --background-color: #{$background-color};
     --stroke:            var(--gray-300);
 

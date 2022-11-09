@@ -7,6 +7,12 @@
         <ion-title>
             <h1>{{ 'core.login.reconnect' | translate }}</h1>
         </ion-title>
+
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="showHelp()" [attr.aria-label]="'core.help' | translate">
+                <ion-icon slot="icon-only" name="far-question-circle" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-buttons>
     </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding" (keydown)="keyDown($event)" (keyup)="keyUp($event)">
@@ -36,6 +42,16 @@
                         </ion-label>
                     </ion-item>
                 </ion-card>
+
+                <core-login-exceeded-attempts *ngIf="supportConfig && reconnectAttempts >= 3" [supportConfig]="supportConfig"
+                    [supportSubject]="'core.login.exceededloginattemptssupportsubject' | translate">
+                    <span *ngIf="canContactSupport">
+                        {{ 'core.login.exceededloginattempts' | translate }}
+                    </span>
+                    <span *ngIf="!canContactSupport">
+                        {{ 'core.login.exceededloginattemptsfallback' | translate }}
+                    </span>
+                </core-login-exceeded-attempts>
             </div>
             <form *ngIf="!isOAuth" [formGroup]="credForm" (ngSubmit)="login($event)" class="core-login-form" #reconnectForm>
                 <ion-item class="ion-text-wrap core-username item-interactive">

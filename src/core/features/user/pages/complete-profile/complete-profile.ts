@@ -15,12 +15,12 @@
 import { Component, OnDestroy } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreUserSupport } from '@features/user/services/support';
 
 /**
  * Page that shows instructions to complete the profile.
@@ -42,13 +42,12 @@ export class CoreUserCompleteProfilePage implements OnDestroy {
     }
 
     /**
-     * Show a help modal.
+     * Show help modal.
      */
     showHelp(): void {
-        // @todo MOBILE-4059: Change this message.
-        CoreDomUtils.showAlert(
-            Translate.instant('core.help'),
-            Translate.instant('core.login.changepasswordhelp'),
+        CoreUserSupport.showHelp(
+            Translate.instant('core.user.completeprofilehelp'),
+            Translate.instant('core.user.completeprofilesupportsubject'),
         );
     }
 

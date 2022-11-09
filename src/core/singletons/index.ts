@@ -217,7 +217,10 @@ export const Router = makeSingleton(RouterService);
 export const DomSanitizer = makeSingleton(DomSanitizerService);
 
 // Convert external libraries injectables.
-export const Translate = makeSingleton(TranslateService);
+export const Translate: Omit<CoreSingletonProxy<TranslateService>, 'instant'> & {
+    instant(keys: string[]): string[];
+    instant(key: string, interpolateParams?: Record<string, unknown>): string;
+} = makeSingleton(TranslateService);
 
 // Async singletons.
 export const AngularFrameworkDelegate = asyncInstance(async () => {

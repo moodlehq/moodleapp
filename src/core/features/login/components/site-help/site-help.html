@@ -14,32 +14,22 @@
     <ion-list>
         <ion-item class="ion-text-wrap">
             <ion-label>
-                <h2><strong>{{ 'core.login.faqcannotfindmysitequestion' | translate }}</strong></h2>
-            </ion-label>
-        </ion-item>
-        <ion-item class="ion-text-wrap">
-            <ion-label>
-                <p>{{ 'core.login.faqcannotfindmysiteanswer' | translate }}</p>
-            </ion-label>
-        </ion-item>
-        <ion-item class="ion-text-wrap">
-            <ion-label>
                 <h2><strong>{{ 'core.login.faqwhatisurlquestion' | translate }}</strong></h2>
             </ion-label>
         </ion-item>
-        <ion-item class="ion-text-wrap core-login-faqwhatisurlanswer">
+        <ion-item class="ion-text-wrap">
             <ion-label>
                 <p [innerHTML]="'core.login.faqwhatisurlanswer' | translate: {$image: urlImageHtml}"></p>
             </ion-label>
         </ion-item>
         <ion-item class="ion-text-wrap">
             <ion-label>
-                <h2><strong>{{ 'core.login.faqcannotconnectquestion' | translate }}</strong></h2>
+                <h2><strong>{{ 'core.login.faqcannotfindmysitequestion' | translate }}</strong></h2>
             </ion-label>
         </ion-item>
         <ion-item class="ion-text-wrap">
             <ion-label>
-                <p>{{ 'core.login.faqcannotconnectanswer' | translate }} {{ 'core.whoissiteadmin' | translate }}</p>
+                <p>{{ 'core.login.faqcannotfindmysiteanswer' | translate }}</p>
             </ion-label>
         </ion-item>
         <ion-item class="ion-text-wrap">
@@ -62,7 +52,7 @@
         </ion-item>
         <ion-item class="ion-text-wrap">
             <ion-label>
-                <p>{{ 'core.login.faqtestappanswer' | translate }}</p>
+                <p [innerHTML]="'core.login.faqtestappanswer' | translate"></p>
             </ion-label>
         </ion-item>
         <ion-item class="ion-text-wrap" *ngIf="canScanQR">

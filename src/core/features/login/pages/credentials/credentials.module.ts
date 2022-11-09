@@ -16,6 +16,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreLoginComponentsModule } from '@features/login/components/components.module';
 import { CoreLoginCredentialsPage } from './credentials';
 
 const routes: Routes = [
@@ -29,6 +30,7 @@ const routes: Routes = [
     imports: [
         RouterModule.forChild(routes),
         CoreSharedModule,
+        CoreLoginComponentsModule,
     ],
     declarations: [
         CoreLoginCredentialsPage,

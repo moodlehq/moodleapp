@@ -15,12 +15,12 @@
 import { Component, OnDestroy } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreUserSupport } from '@features/user/services/support';
 
 /**
  * Page that shows instructions to change the password.
@@ -43,12 +43,12 @@ export class CoreLoginChangePasswordPage implements OnDestroy {
     }
 
     /**
-     * Show a help modal.
+     * Show help modal.
      */
     showHelp(): void {
-        CoreDomUtils.showAlert(
-            Translate.instant('core.help'),
+        CoreUserSupport.showHelp(
             Translate.instant('core.login.changepasswordhelp'),
+            Translate.instant('core.login.changepasswordsupportsubject'),
         );
     }
 

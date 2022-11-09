@@ -193,10 +193,13 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
 
                 // Completion deleted, add a warning if the completion status doesn't match.
                 if (onlineComp.state != entry.completed) {
-                    result.warnings.push(Translate.instant('core.course.warningofflinemanualcompletiondeleted', {
-                        name: courseName || courseId,
-                        error: Translate.instant('core.course.warningmanualcompletionmodified'),
-                    }));
+                    result.warnings.push({
+                        warningcode: 'apperror',
+                        message: Translate.instant('core.course.warningofflinemanualcompletiondeleted', {
+                            name: courseName || courseId,
+                            error: Translate.instant('core.course.warningmanualcompletionmodified'),
+                        }),
+                    });
                 }
 
                 return;
@@ -220,10 +223,13 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
                 await CoreCourseOffline.deleteManualCompletion(entry.cmid, siteId);
 
                 // Completion deleted, add a warning.
-                result.warnings.push(Translate.instant('core.course.warningofflinemanualcompletiondeleted', {
-                    name: courseName || courseId,
-                    error: CoreTextUtils.getErrorMessageFromError(error),
-                }));
+                result.warnings.push({
+                    warningcode: 'apperror',
+                    message: Translate.instant('core.course.warningofflinemanualcompletiondeleted', {
+                        name: courseName || courseId,
+                        error: CoreTextUtils.getErrorMessageFromError(error),
+                    }),
+                });
             }
         }));
 

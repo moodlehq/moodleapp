@@ -128,7 +128,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
             this.componentName = CoreNavigator.getRequiredRouteParam<string>('componentName');
             this.itemId = CoreNavigator.getRequiredRouteNumberParam('itemId');
             this.area = CoreNavigator.getRouteParam('area') || '';
-            this.title = CoreNavigator.getRouteNumberParam('title') ||
+            this.title = CoreNavigator.getRouteParam('title') ||
                 Translate.instant('core.comments.comments');
             this.courseId = CoreNavigator.getRouteNumberParam('courseId');
         } catch (error) {

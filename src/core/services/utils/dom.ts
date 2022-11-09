@@ -54,6 +54,10 @@ import { Subscription } from 'rxjs';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreDom } from '@singletons/dom';
 import { CoreNetwork } from '@services/network';
+import { CoreSiteError } from '@classes/errors/siteerror';
+import { CoreUserSupport } from '@features/user/services/support';
+import { CoreErrorInfoComponent } from '@components/error-info/error-info';
+import { CoreSite } from '@classes/site';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -571,6 +575,20 @@ export class CoreDomUtilsProvider {
         return message == Translate.instant('core.networkerrormsg') ||
             message == Translate.instant('core.fileuploader.errormustbeonlinetoupload') ||
             error instanceof CoreNetworkError;
+    }
+
+    /**
+     * Given a message, check if it's a site unavailable error.
+     *
+     * @param message Message text.
+     * @returns Whether the message is a site unavailable error.
+     */
+    protected isSiteUnavailableError(message: string): boolean {
+        let siteUnavailableMessage = Translate.instant('core.siteunavailablehelp', { site: 'SITEURLPLACEHOLDER' });
+        siteUnavailableMessage = CoreTextUtils.escapeForRegex(siteUnavailableMessage);
+        siteUnavailableMessage = siteUnavailableMessage.replace('SITEURLPLACEHOLDER', '.*');
+
+        return new RegExp(siteUnavailableMessage).test(message);
     }
 
     /**
@@ -1342,25 +1360,60 @@ export class CoreDomUtilsProvider {
             return null;
         }
 
-        const alertOptions: AlertOptions = {
-            message: message,
-        };
+        const alertOptions: AlertOptions = { message };
 
         if (this.isNetworkError(message, error)) {
             alertOptions.cssClass = 'core-alert-network-error';
-        } else if (typeof error !== 'string' && 'title' in error) {
+        }
+
+        if (typeof error !== 'string' && 'title' in error && error.title) {
             alertOptions.header = error.title || undefined;
+        } else if (message === Translate.instant('core.sitenotfoundhelp')) {
+            alertOptions.header = Translate.instant('core.sitenotfound');
+        } else if (this.isSiteUnavailableError(message)) {
+            alertOptions.header = CoreSites.isLoggedIn()
+                ? Translate.instant('core.connectionlost')
+                : Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION });
         } else {
             alertOptions.header = Translate.instant('core.error');
         }
 
         if (typeof error !== 'string' && 'buttons' in error && typeof error.buttons !== 'undefined') {
             alertOptions.buttons = error.buttons;
+        } else if (error instanceof CoreSiteError) {
+            if (error.errorDetails) {
+                alertOptions.message = `<p>${alertOptions.message}</p><div class="core-error-info-container"></div>`;
+            }
+
+            const supportConfig = error.supportConfig;
+
+            alertOptions.buttons = [Translate.instant('core.ok')];
+
+            if (supportConfig?.canContactSupport()) {
+                alertOptions.buttons.push({
+                    text: Translate.instant('core.contactsupport'),
+                    handler: () => CoreUserSupport.contact({
+                        supportConfig,
+                        subject: alertOptions.header,
+                        message: `${error.errorcode}\n\n${error.errorDetails}`,
+                    }),
+                });
+            }
         } else {
             alertOptions.buttons = [Translate.instant('core.ok')];
         }
 
-        return this.showAlertWithOptions(alertOptions, autocloseTime);
+        const alertElement = await this.showAlertWithOptions(alertOptions, autocloseTime);
+
+        if (error instanceof CoreSiteError && error.errorDetails) {
+            const containerElement = alertElement.querySelector('.core-error-info-container');
+
+            if (containerElement) {
+                containerElement.innerHTML = CoreErrorInfoComponent.render(error.errorDetails, error.errorcode);
+            }
+        }
+
+        return alertElement;
     }
 
     /**
@@ -1553,14 +1606,18 @@ export class CoreDomUtilsProvider {
                 // Default buttons.
                 options.buttons = [
                     {
-                        text: buttons && 'cancelText' in buttons ? buttons.cancelText : Translate.instant('core.cancel'),
+                        text: buttons && 'cancelText' in buttons
+                            ? buttons.cancelText as string
+                            : Translate.instant('core.cancel'),
                         role: 'cancel',
                         handler: () => {
                             reject();
                         },
                     },
                     {
-                        text: buttons && 'okText' in buttons ? buttons.okText : Translate.instant('core.ok'),
+                        text: buttons && 'okText' in buttons
+                            ? buttons.okText as string
+                            : Translate.instant('core.ok'),
                         handler: resolvePromise,
                     },
                 ];
