@@ -56,13 +56,15 @@ Feature: Test basic usage of courses in app
   Scenario: Hidden course is only accessible for teachers
     Given I entered the app as "teacher1"
     And I press "My courses" in the app
+    Then I should find "Hidden from students" within "Hidden course" "ion-item" in the app
+
     When I press "Hidden course" in the app
     Then the header should be "Hidden course" in the app
 
     Given I entered the app as "student1"
     And I press "My courses" in the app
-    And I should not find "Hidden course" in the app
-
+    Then I should not find "Hidden course" in the app
+    And I should not find "Hidden from students" in the app
 
   @lms_from4.0
   Scenario: See my courses

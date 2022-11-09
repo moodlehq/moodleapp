@@ -25,15 +25,29 @@ import { TestingBehatElementLocator, TestingBehatFindOptions } from './behat-run
 export class TestingBehatDomUtilsService {
 
     /**
+     * Check if an element is clickable.
+     *
+     * @param element Element.
+     * @return Whether the element is clickable or not.
+     */
+    isElementClickable(element: HTMLElement): boolean {
+        return element.getAttribute('aria-disabled') !== 'true' && !element.hasAttribute('disabled');
+    }
+
+    /**
      * Check if an element is visible.
      *
      * @param element Element.
-     * @param container Container.
+     * @param container Container. If set, the function will also check parent elements visibility.
      * @return Whether the element is visible or not.
      */
-    isElementVisible(element: HTMLElement, container: HTMLElement): boolean {
+    isElementVisible(element: HTMLElement, container?: HTMLElement): boolean {
         if (element.getAttribute('aria-hidden') === 'true' || getComputedStyle(element).display === 'none') {
             return false;
+        }
+
+        if (!container) {
+            return true;
         }
 
         const parentElement = this.getParentElement(element);
@@ -92,7 +106,10 @@ export class TestingBehatDomUtilsService {
             `img[alt*="${escapedText}"], [placeholder*="${escapedText}"]`;
 
         const elements = Array.from(container.querySelectorAll<HTMLElement>(attributesSelector))
-            .filter((element => this.isElementVisible(element, container)))
+            .filter(
+                element => this.isElementVisible(element, container) &&
+                    (!options.onlyClickable || this.isElementClickable(element)),
+            )
             .map((element) => {
                 const exact = this.checkElementLabel(element, text);
 
@@ -116,11 +133,11 @@ export class TestingBehatDomUtilsService {
                         return NodeFilter.FILTER_ACCEPT;
                     }
 
-                    if (options.onlyClickable && (node.getAttribute('aria-disabled') === 'true' || node.hasAttribute('disabled'))) {
+                    if (options.onlyClickable && !this.isElementClickable(node)) {
                         return NodeFilter.FILTER_REJECT;
                     }
 
-                    if (node.getAttribute('aria-hidden') === 'true' || getComputedStyle(node).display === 'none') {
+                    if (!this.isElementVisible(node)) {
                         return NodeFilter.FILTER_REJECT;
                     }
 
