@@ -16,3 +16,32 @@
  * Helper type to flatten complex types.
  */
 export type Pretty<T> = T extends infer U ? {[K in keyof U]: U[K]} : never;
+
+/**
+ * Helper type to omit union.
+ * You can use it if need to omit an element from types union.
+ * If you omit a value in an union with `Omit<TypeUnion, 'value'>` you will obtain
+ * the values which are present in both types.
+ * For example, you have 3 types:
+ *
+ * ```
+ *  type TypeA = { propA: boolean; propB: string; propToOmit: boolean }
+ *  type TypeB = { propA: boolean; propToOmit: boolean }
+ *  type TypeUnion = TypeA | TypeB
+ * ```
+ *
+ * @example
+ * ```
+ *  type Result = Omit<TypeUnion, 'propToOmit'>;
+ *  //      ^? type Result = { propA: boolean };
+ * ```
+ *
+ * @example
+ * ```
+ *  type Result = OmitUnion<TypeUnion, 'propToOmit'>;
+ *  //      ^? type Result = { propA: boolean, propB: string } | { propA: boolean }
+ * ```
+ *
+ * @see https://www.typescriptlang.org/docs/handbook/2/conditional-types.html#distributive-conditional-types
+ */
+export type OmitUnion<T, A extends keyof T> = T extends '' ? never : Omit<T, A>;
