@@ -86,7 +86,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
     descriptionControl: FormControl;
 
     // Reminders.
-    notificationsEnabled = false;
+    remindersEnabled = false;
     reminders: AddonCalendarEventCandidateReminder[] = [];
 
     protected courseId!: number;
@@ -101,7 +101,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
         protected fb: FormBuilder,
     ) {
         this.currentSite = CoreSites.getRequiredCurrentSite();
-        this.notificationsEnabled = CoreLocalNotifications.isAvailable();
+        this.remindersEnabled = CoreReminders.isEnabled();
         this.errors = {
             required: Translate.instant('core.required'),
         };
@@ -647,13 +647,13 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
      */
     protected async initReminders(): Promise<void> {
         // Don't init reminders when editing an event. Right now, only allow adding reminders for new events.
-        if (!this.notificationsEnabled || this.eventId) {
+        if (!this.remindersEnabled || this.eventId) {
             return;
         }
 
         // Check if default reminders are enabled.
-        const defaultTime = await AddonCalendar.getDefaultNotificationTime(this.currentSite.getId());
-        if (defaultTime === AddonCalendarProvider.DEFAULT_NOTIFICATION_DISABLED) {
+        const defaultTime = await CoreReminders.getDefaultNotificationTime(this.currentSite.getId());
+        if (defaultTime === CoreRemindersService.DISABLED) {
             return;
         }
 

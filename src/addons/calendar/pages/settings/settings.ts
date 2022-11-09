@@ -13,18 +13,10 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import {
-    AddonCalendar,
-    AddonCalendarProvider,
-} from '../../services/calendar';
-import { CoreEvents } from '@singletons/events';
-import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import {
     CoreReminders,
     CoreRemindersService,
-    CoreRemindersUnits,
-    CoreReminderValueAndUnit,
 } from '@features/reminders/services/reminders';
 import { CoreRemindersSetReminderMenuComponent } from '@features/reminders/components/set-reminder-menu/set-reminder-menu';
 
@@ -39,10 +31,7 @@ export class AddonCalendarSettingsPage implements OnInit {
 
     defaultTimeLabel = '';
 
-    protected defaultTime: CoreReminderValueAndUnit = {
-        value: 0,
-        unit: CoreRemindersUnits.MINUTE,
-    };
+    protected defaultTime?: number;
 
     /**
      * @inheritdoc
@@ -76,24 +65,18 @@ export class AddonCalendarSettingsPage implements OnInit {
             return;
         }
 
-        await AddonCalendar.setDefaultNotificationTime(reminderTime.timeBefore);
+        await CoreReminders.setDefaultNotificationTime(reminderTime.timeBefore ?? CoreRemindersService.DISABLED);
         this.updateDefaultTimeLabel();
-
-        CoreEvents.trigger(
-            AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_CHANGED,
-            { time: reminderTime.timeBefore },
-            CoreSites.getCurrentSiteId(),
-        );
     }
 
     /**
      * Update default time label.
      */
     async updateDefaultTimeLabel(): Promise<void> {
-        const defaultTime = await AddonCalendar.getDefaultNotificationTime();
+        this.defaultTime = await CoreReminders.getDefaultNotificationTime();
 
-        this.defaultTime = CoreRemindersService.convertSecondsToValueAndUnit(defaultTime);
-        this.defaultTimeLabel = CoreReminders.getUnitValueLabel(this.defaultTime.value, this.defaultTime.unit);
+        const defaultTime = CoreRemindersService.convertSecondsToValueAndUnit(this.defaultTime);
+        this.defaultTimeLabel = CoreReminders.getUnitValueLabel(defaultTime.value, defaultTime.unit);
     }
 
 }

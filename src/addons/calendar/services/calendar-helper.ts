@@ -333,10 +333,10 @@ export class AddonCalendarHelperProvider {
             return [];
         }
 
-        const defaultTime = await AddonCalendar.getDefaultNotificationTime(siteId);
+        const defaultTime = await CoreReminders.getDefaultNotificationTime(siteId);
         let defaultLabel: string | undefined;
 
-        if (defaultTime > AddonCalendarProvider.DEFAULT_NOTIFICATION_DISABLED) {
+        if (defaultTime > CoreRemindersService.DISABLED) {
             const data = CoreRemindersService.convertSecondsToValueAndUnit(defaultTime);
             defaultLabel = CoreReminders.getUnitValueLabel(data.value, data.unit, true);
         }

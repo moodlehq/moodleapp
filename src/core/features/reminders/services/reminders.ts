@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AddonCalendar, AddonCalendarProvider } from '@addons/calendar/services/calendar';
 import { Injectable } from '@angular/core';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreSites } from '@services/sites';
@@ -22,6 +21,8 @@ import { CoreReminderDBRecord, REMINDERS_TABLE } from './database/reminders';
 import { ILocalNotification } from '@ionic-native/local-notifications';
 import { CorePlatform } from '@services/platform';
 import { CoreConstants } from '@/core/constants';
+import { CoreConfig } from '@services/config';
+import { CoreEvents } from '@singletons/events';
 
 /**
  * Units to set a reminder.
@@ -55,6 +56,35 @@ const REMINDER_UNITS_LABELS = {
 export class CoreRemindersService {
 
     static readonly DEFAULT_REMINDER_TIMEBEFORE = -1;
+    static readonly DISABLED = -1;
+
+    static readonly DEFAULT_NOTIFICATION_TIME_SETTING = 'CoreRemindersDefaultNotification';
+    static readonly DEFAULT_NOTIFICATION_TIME_CHANGED = 'CoreRemindersDefaultNotificationChangedEvent';
+
+    /**
+     * Initialize the service.
+     *
+     * @return Promise resolved when done.
+     */
+    async initialize(): Promise<void> {
+        if (!CoreLocalNotifications.isAvailable()) {
+            return;
+        }
+
+        this.scheduleAllNotifications();
+
+        CoreEvents.on(CoreRemindersService.DEFAULT_NOTIFICATION_TIME_CHANGED, async (data) => {
+            const site = await CoreSites.getSite(data.siteId);
+            const siteId = site.getId();
+
+            // Get all the events that have a default reminder.
+            const reminders = await this.getRemindersWithDefaultTime(siteId);
+
+            // Reschedule all the default reminders.
+            reminders.forEach((reminder) =>
+                this.scheduleNotification(reminder, siteId));
+        });
+    }
 
     /**
      * Returns if Reminders are enabled.
@@ -131,7 +161,7 @@ export class CoreRemindersService {
      * @param siteId ID of the site the reminder belongs to. If not defined, use current site.
      * @return Promise resolved when the reminder data is retrieved.
      */
-    async getAllReminders( siteId?: string): Promise<CoreReminderDBRecord[]> {
+    async getAllReminders(siteId?: string): Promise<CoreReminderDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
 
         return site.getDb().getRecords(REMINDERS_TABLE, undefined, 'time ASC');
@@ -153,16 +183,15 @@ export class CoreRemindersService {
     /**
      * Get all reminders of a component with default time.
      *
-     * @param component Component.
      * @param siteId ID of the site the reminder belongs to. If not defined, use current site.
      * @return Promise resolved when the reminder data is retrieved.
      */
-    async getRemindersWithDefaultTime(component: string, siteId?: string): Promise<CoreReminderDBRecord[]> {
+    protected async getRemindersWithDefaultTime(siteId?: string): Promise<CoreReminderDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
 
         return site.getDb().getRecords<CoreReminderDBRecord>(
             REMINDERS_TABLE,
-            { component, timebefore: CoreRemindersService.DEFAULT_REMINDER_TIMEBEFORE },
+            { timebefore: CoreRemindersService.DEFAULT_REMINDER_TIMEBEFORE },
             'time ASC',
         );
     }
@@ -241,10 +270,10 @@ export class CoreRemindersService {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         const timebefore = reminder.timebefore === CoreRemindersService.DEFAULT_REMINDER_TIMEBEFORE
-            ? await AddonCalendar.getDefaultNotificationTime(siteId)
+            ? await this.getDefaultNotificationTime(siteId)
             : reminder.timebefore;
 
-        if (timebefore === AddonCalendarProvider.DEFAULT_NOTIFICATION_DISABLED) {
+        if (timebefore === CoreRemindersService.DISABLED) {
             // Notification disabled. Cancel.
             return this.cancelReminder(reminder.id, reminder.component, siteId);
         }
@@ -309,8 +338,7 @@ export class CoreRemindersService {
      * @return Translated label.
      */
     getUnitValueLabel(value: number, unit: CoreRemindersUnits, addDefaultLabel = false): string {
-        if (value === AddonCalendarProvider.DEFAULT_NOTIFICATION_DISABLED) {
-            // TODO: It will need a migration of date to set 0 to -1 when needed.
+        if (value === CoreRemindersService.DISABLED) {
             return Translate.instant('core.settings.disabled');
         }
 
@@ -343,7 +371,7 @@ export class CoreRemindersService {
     static convertSecondsToValueAndUnit(seconds?: number): CoreReminderValueAndUnit {
         if (seconds === undefined || seconds < 0) {
             return {
-                value: AddonCalendarProvider.DEFAULT_NOTIFICATION_DISABLED,
+                value: CoreRemindersService.DISABLED,
                 unit: CoreRemindersUnits.MINUTE,
             };
         } else if (seconds === 0) {
@@ -372,6 +400,37 @@ export class CoreRemindersService {
                 unit: CoreRemindersUnits.MINUTE,
             };
         }
+    }
+
+    /**
+     * Get the configured default notification time.
+     *
+     * @param siteId ID of the site. If not defined, use current site.
+     * @return Promise resolved with the default time (in seconds).
+     */
+    async getDefaultNotificationTime(siteId?: string): Promise<number> {
+        siteId = siteId || CoreSites.getCurrentSiteId();
+
+        const key = CoreRemindersService.DEFAULT_NOTIFICATION_TIME_SETTING + '#' + siteId;
+
+        return CoreConfig.get(key, CoreConstants.CONFIG.calendarreminderdefaultvalue || 3600);
+    }
+
+    /**
+     * Set the default notification time.
+     *
+     * @param time New default time.
+     * @param siteId ID of the site. If not defined, use current site.
+     * @return Promise resolved when stored.
+     */
+    async setDefaultNotificationTime(time: number, siteId?: string): Promise<void> {
+        siteId = siteId || CoreSites.getCurrentSiteId();
+
+        const key = CoreRemindersService.DEFAULT_NOTIFICATION_TIME_SETTING + '#' + siteId;
+
+        await CoreConfig.set(key, time);
+
+        CoreEvents.trigger(CoreRemindersService.DEFAULT_NOTIFICATION_TIME_CHANGED, { time }, siteId);
     }
 
 }

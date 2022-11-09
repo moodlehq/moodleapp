@@ -113,7 +113,7 @@
             </ng-container>
 
             <!-- Reminders. Right now, only allow adding them here for new events. -->
-            <ng-container *ngIf="notificationsEnabled && !eventId">
+            <ng-container *ngIf="remindersEnabled && !eventId">
                 <ion-item-divider class="addon-calendar-reminders-title">
                     <ion-label>
                         <p class="item-heading">{{ 'addon.calendar.reminders' | translate }}</p>

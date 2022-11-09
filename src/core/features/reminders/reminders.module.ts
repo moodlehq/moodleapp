@@ -36,7 +36,7 @@ export const CORE_REMINDERS_SERVICES: Type<unknown>[] = [
             provide: APP_INITIALIZER,
             multi: true,
             useValue: async () => {
-                CoreReminders.scheduleAllNotifications();
+                await CoreReminders.initialize();
             },
         },
     ],

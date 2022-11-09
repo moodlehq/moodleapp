@@ -38,7 +38,6 @@ import { SafeUrl } from '@angular/platform-browser';
 import { CoreNavigator } from '@services/navigator';
 import { AddonCalendarFilter } from './calendar-helper';
 import { AddonCalendarSyncEvents, AddonCalendarSyncProvider } from './calendar-sync';
-import { CoreEvents } from '@singletons/events';
 import { CoreText } from '@singletons/text';
 import { CorePlatform } from '@services/platform';
 import {
@@ -103,8 +102,7 @@ export class AddonCalendarProvider {
 
     static readonly DAYS_INTERVAL = 30;
     static readonly COMPONENT = 'AddonCalendarEvents';
-    static readonly DEFAULT_NOTIFICATION_TIME_CHANGED = 'AddonCalendarDefaultNotificationTimeChangedEvent';
-    static readonly DEFAULT_NOTIFICATION_TIME_SETTING = 'mmaCalendarDefaultNotifTime';
+
     static readonly STARTING_WEEK_DAY = 'addon_calendar_starting_week_day';
     static readonly NEW_EVENT_EVENT = 'addon_calendar_new_event';
     static readonly NEW_EVENT_DISCARDED_EVENT = 'addon_calendar_new_event_discarded';
@@ -115,8 +113,6 @@ export class AddonCalendarProvider {
 
     static readonly CALENDAR_TF_24 = '%H:%M'; // Calendar time in 24 hours format.
     static readonly CALENDAR_TF_12 = '%I:%M %p'; // Calendar time in 12 hours format.
-
-    static readonly DEFAULT_NOTIFICATION_DISABLED = -1;
 
     protected weekDays: AddonCalendarWeekDaysTranslationKeys[] = [
         {
@@ -293,7 +289,6 @@ export class AddonCalendarProvider {
      * @return Promise resolved when done.
      */
     async initialize(): Promise<void> {
-
         CoreLocalNotifications.registerClick<CoreRemindersPushNotificationData>(
             AddonCalendarProvider.COMPONENT,
             async (notification) => {
@@ -302,22 +297,6 @@ export class AddonCalendarProvider {
                 this.notificationClicked(notification);
             },
         );
-
-        if (!CoreLocalNotifications.isAvailable()) {
-            return;
-        }
-
-        CoreEvents.on(AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_CHANGED, async (data) => {
-            const site = await CoreSites.getSite(data.siteId);
-            const siteId = site.getId();
-
-            // Get all the events that have a default reminder.
-            const reminders = await CoreReminders.getRemindersWithDefaultTime(AddonCalendarProvider.COMPONENT, siteId);
-
-            // Reschedule all the default reminders.
-            reminders.forEach((reminder) =>
-                CoreReminders.scheduleNotification(reminder, siteId));
-        });
     }
 
     /**
@@ -602,13 +581,10 @@ export class AddonCalendarProvider {
      *
      * @param siteId ID of the site. If not defined, use current site.
      * @return Promise resolved with the default time (in seconds).
+     * @deprecated since 4.1 Use CoreReminders.getDefaultNotificationTime instead.
      */
     async getDefaultNotificationTime(siteId?: string): Promise<number> {
-        siteId = siteId || CoreSites.getCurrentSiteId();
-
-        const key = AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_SETTING + '#' + siteId;
-
-        return CoreConfig.get(key, CoreConstants.CONFIG.calendarreminderdefaultvalue || 3600);
+        return CoreReminders.getDefaultNotificationTime(siteId);
     }
 
     /**
@@ -1492,13 +1468,10 @@ export class AddonCalendarProvider {
      * @param time New default time.
      * @param siteId ID of the site. If not defined, use current site.
      * @return Promise resolved when stored.
+     * @deprecated since 4.1 Use CoreReminders.setDefaultNotificationTime.
      */
     async setDefaultNotificationTime(time: number, siteId?: string): Promise<void> {
-        siteId = siteId || CoreSites.getCurrentSiteId();
-
-        const key = AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_SETTING + '#' + siteId;
-
-        await CoreConfig.set(key, time);
+        await CoreReminders.setDefaultNotificationTime(time, siteId);
     }
 
     /**

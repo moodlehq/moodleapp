@@ -41,7 +41,7 @@ import { CoreConstants } from '@/core/constants';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { AddonCalendarEventsSource } from '@addons/calendar/classes/events-source';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
-import { CoreReminders } from '@features/reminders/services/reminders';
+import { CoreReminders, CoreRemindersService } from '@features/reminders/services/reminders';
 import { CoreRemindersSetReminderMenuComponent } from '@features/reminders/components/set-reminder-menu/set-reminder-menu';
 
 /**
@@ -72,7 +72,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
     courseName = '';
     groupName?: string;
     courseUrl = '';
-    notificationsEnabled = false;
+    remindersEnabled = false;
     moduleUrl = '';
     categoryPath = '';
     currentTime = -1;
@@ -85,7 +85,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
     constructor(
         protected route: ActivatedRoute,
     ) {
-        this.notificationsEnabled = CoreLocalNotifications.isAvailable();
+        this.remindersEnabled = CoreReminders.isEnabled();
         this.siteHomeId = CoreSites.getCurrentSiteHomeId();
         this.currentSiteId = CoreSites.getCurrentSiteId();
 
@@ -132,7 +132,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         });
 
         // Reload reminders if default notification time changes.
-        this.defaultTimeChangedObserver = CoreEvents.on(AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_CHANGED, () => {
+        this.defaultTimeChangedObserver = CoreEvents.on(CoreRemindersService.DEFAULT_NOTIFICATION_TIME_CHANGED, () => {
             this.loadReminders();
         }, this.currentSiteId);
 
@@ -149,7 +149,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async loadReminders(): Promise<void> {
-        if (!this.notificationsEnabled || !this.event) {
+        if (!this.remindersEnabled || !this.event) {
             return;
         }
 

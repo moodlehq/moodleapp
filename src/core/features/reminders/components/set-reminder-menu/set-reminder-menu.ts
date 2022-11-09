@@ -12,9 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AddonCalendarProvider } from '@addons/calendar/services/calendar';
 import { Component, Input, OnInit } from '@angular/core';
-import { CoreReminders, CoreRemindersUnits, CoreReminderValueAndUnit } from '@features/reminders/services/reminders';
+import {
+    CoreReminders,
+    CoreRemindersService,
+    CoreRemindersUnits,
+    CoreReminderValueAndUnit,
+} from '@features/reminders/services/reminders';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { PopoverController } from '@singletons';
@@ -29,7 +33,7 @@ import { CoreRemindersSetReminderCustomComponent } from '../set-reminder-custom/
 })
 export class CoreRemindersSetReminderMenuComponent implements OnInit {
 
-    @Input() initialValue?: CoreReminderValueAndUnit;
+    @Input() initialValue?: number;
     @Input() noReminderLabel = '';
 
     currentValue = '0m';
@@ -73,26 +77,25 @@ export class CoreRemindersSetReminderMenuComponent implements OnInit {
             option.label = CoreReminders.getUnitValueLabel(option.value, option.unit);
         });
 
-        if (!this.initialValue) {
+        const initialValue = CoreRemindersService.convertSecondsToValueAndUnit(this.initialValue);
+        if (initialValue.value === CoreRemindersService.DISABLED) {
+            this.currentValue = 'disabled';
+
             return;
         }
 
-        if (this.initialValue.value === AddonCalendarProvider.DEFAULT_NOTIFICATION_DISABLED) {
-            this.currentValue = 'disabled';
-        } else {
-            // Search if it's one of the preset options.
-            const option = this.presetOptions.find(option =>
-                option.value === this.initialValue?.value && option.unit === this.initialValue.unit);
+        // Search if it's one of the preset options.
+        const option = this.presetOptions.find(option =>
+            option.value === initialValue?.value && option.unit === initialValue.unit);
 
-            if (option) {
-                this.currentValue = option.radioValue;
-            } else {
-                // It's a custom value.
-                this.currentValue = 'custom';
-                this.customValue = this.initialValue.value;
-                this.customUnits = this.initialValue.unit;
-                this.customLabel = CoreReminders.getUnitValueLabel(this.customValue, this.customUnits);
-            }
+        if (option) {
+            this.currentValue = option.radioValue;
+        } else {
+            // It's a custom value.
+            this.currentValue = 'custom';
+            this.customValue = initialValue.value;
+            this.customUnits = initialValue.unit;
+            this.customLabel = CoreReminders.getUnitValueLabel(this.customValue, this.customUnits);
         }
     }
 
@@ -101,20 +104,20 @@ export class CoreRemindersSetReminderMenuComponent implements OnInit {
      *
      * @param value Value to set.
      */
-    setReminder(value: string): void {
-        // Return it as an object because 0 means undefined if not.
-        if (value === 'disabled') {
-            PopoverController.dismiss({ timeBefore: AddonCalendarProvider.DEFAULT_NOTIFICATION_DISABLED });
-
-            return;
-        }
-
+    setReminder(value?: string): void {
         const option = this.presetOptions.find(option => option.radioValue === value);
         if (!option) {
             return;
         }
 
         PopoverController.dismiss({ timeBefore: option.unit * option.value });
+    }
+
+    /**
+     * Disable the reminder.
+     */
+    disableReminder(): void {
+        PopoverController.dismiss({ timeBefore: undefined });
     }
 
     /**

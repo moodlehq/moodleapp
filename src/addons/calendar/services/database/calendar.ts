@@ -13,10 +13,11 @@
 // limitations under the License.
 
 import { SQLiteDB } from '@classes/sqlitedb';
+import { CoreRemindersService, CoreReminders } from '@features/reminders/services/reminders';
 import { CoreConfig } from '@services/config';
 import { CoreSiteSchema } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
-import { AddonCalendar, AddonCalendarEventType, AddonCalendarProvider } from '../calendar';
+import { AddonCalendarEventType } from '../calendar';
 
 /**
  * Database variables for AddonCalendarProvider service.
@@ -180,18 +181,37 @@ export const CALENDAR_SITE_SCHEMA: CoreSiteSchema = {
         },
     ],
     async migrate(db: SQLiteDB, oldVersion: number, siteId: string): Promise<void> {
-        if (oldVersion < 4) {
-            // Migrate default notification time if it was changed.
-            // Don't use getDefaultNotificationTime to be able to detect if the value was changed or not.
-            const key = AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_SETTING + '#' + siteId;
-            const defaultTime = await CoreUtils.ignoreErrors(CoreConfig.get(key, null));
-
-            if (defaultTime) {
-                // Convert from minutes to seconds.
-                AddonCalendar.setDefaultNotificationTime(defaultTime * 60, siteId);
-            }
+        if (oldVersion < 5) {
+            await migrateDefaultTime(siteId, oldVersion < 4);
         }
     },
+};
+
+/**
+ * Migrate default notification time if it was changed.
+ * Don't use getDefaultNotificationTime to be able to detect if the value was changed or not.
+ *
+ * @param siteId Site ID to migrate.
+ * @param convertToSeconds If true, time will be converted to seconds.
+ */
+const migrateDefaultTime = async (siteId: string, convertToSeconds = false): Promise<void> => {
+
+    const key = 'mmaCalendarDefaultNotifTime#' + siteId;
+    try {
+        let defaultTime = await CoreConfig.get<number>(key);
+        await CoreUtils.ignoreErrors(CoreConfig.delete(key));
+
+        if (defaultTime <= 0) {
+            defaultTime = CoreRemindersService.DISABLED;
+        } else if (convertToSeconds) {
+            // Convert from minutes to seconds.
+            defaultTime = defaultTime * 60;
+        }
+
+        CoreReminders.setDefaultNotificationTime(defaultTime, siteId);
+    } catch {
+        // Ignore errors, already migrated.
+    }
 };
 
 export type AddonCalendarEventDBRecord = {
