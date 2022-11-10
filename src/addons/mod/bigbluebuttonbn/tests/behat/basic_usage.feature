@@ -97,3 +97,77 @@ Feature: Test basic usage of BBB activity in app
     When I close all opened windows
     And I press "Join session" in the app
     Then the app should have opened a browser tab with url "blindsidenetworks.com"
+
+  @lms_from4.1
+  Scenario: Display right info based on instance type
+    Given the following "activities" exist:
+      | activity        | name              | course | idnumber | type |
+      | bigbluebuttonbn | Room & recordings | C1     | bbb1     | 0    |
+      | bigbluebuttonbn | Room only         | C1     | bbb2     | 1    |
+      | bigbluebuttonbn | Recordings only   | C1     | bbb3     | 2    |
+    And I entered the bigbluebuttonbn activity "Room & recordings" on course "Course 1" as "student1" in the app
+    Then I should find "This room is ready. You can join the session now." in the app
+    And I should be able to press "Join session" in the app
+    And I should find "Recordings" in the app
+    And I should find "There are no recordings available." in the app
+
+    When I press the back button in the app
+    And I press "Room only" in the app
+    Then I should find "This room is ready. You can join the session now." in the app
+    And I should be able to press "Join session" in the app
+    But I should not find "Recordings" in the app
+
+    When I press the back button in the app
+    And I press "Recordings only" in the app
+    Then I should find "Recordings" in the app
+    But I should not find "This room is ready. You can join the session now." in the app
+    And I should not be able to press "Join session" in the app
+
+  # Test recordings requires a BBB mock server. If you're using docker, you can run the BBB mock server with this command:
+  #
+  # docker run --name bbbmockserver -p 8001:80 moodlehq/bigbluebutton_mock:latest
+  #
+  # You also need to edit the config.php of your Moodle site to add this line:
+  #
+  # define('TEST_MOD_BIGBLUEBUTTONBN_MOCK_SERVER', 'http://bbbmockserver:8001/hash' . sha1($CFG->behat_wwwroot));
+  Scenario: View recordings
+    Given a BigBlueButton mock server is configured
+    And the following "activities" exist:
+      | activity        | name | course | idnumber | type | recordings_imported |
+      | bigbluebuttonbn | BBB  | C1     | bbb1     | 0    | 0                   |
+    And the following "mod_bigbluebuttonbn > meeting" exists:
+      | activity | BBB |
+    And the following "mod_bigbluebuttonbn > recordings" exist:
+      | bigbluebuttonbn | name        | description   | status |
+      | BBB             | Recording 1 | Description 1 | 3      |
+      | BBB             | Recording 2 | Description 2 | 3      |
+    And I entered the bigbluebuttonbn activity "BBB" on course "Course 1" as "student1" in the app
+    Then I should find "Presentation" in the app
+    And I should find "Recording 1" in the app
+    And I should find "Recording 2" in the app
+    But I should not find "Description 1" in the app
+    And I should not find "Description 2" in the app
+
+    When I press "Recording 1" in the app
+    Then I should find "Description 1" in the app
+    And I should find "Presentation" within "Playback" "ion-item" in the app
+    And I should find "Recording 1" within "Name" "ion-item" in the app
+    And I should find "Date" in the app
+    And I should find "3600" within "Duration" "ion-item" in the app
+    But I should not find "Description 2" in the app
+
+    When I press "Recording 1" in the app
+    Then I should not find "Description 1" in the app
+
+    When I press "Recording 2" in the app
+    Then I should find "Description 2" in the app
+    And I should find "Presentation" within "Playback" "ion-item" in the app
+    And I should find "Recording 2" within "Name" "ion-item" in the app
+    But I should not find "Description 1" in the app
+
+    # Test play button, but the mock server doesn't support viewing recordings.
+    When I press "Play" near "Recording 1" in the app
+    And I press "OK" in the app
+    And I switch to the browser tab opened by the app
+    And I log in as "student1"
+    Then I should see "The recording URL is invalid"

@@ -81,3 +81,29 @@ Feature: Test usage of BBB activity with groups in app
     And I press "Group 2" in the app
     Then I should find "This room is ready. You can join the session now." in the app
     And I should be able to press "Join session" in the app
+
+  Scenario: View recordings
+    Given a BigBlueButton mock server is configured
+    And the following "activities" exist:
+      | activity        | name     | course | idnumber | wait | groupmode | type | recordings_imported |
+      | bigbluebuttonbn | Test BBB | C1     | bbb1     | 0    | 2         | 0    | 0                   |
+    And the following "mod_bigbluebuttonbn > meeting" exists:
+      | activity | Test BBB |
+    And the following "mod_bigbluebuttonbn > meetings" exist:
+      | activity | group |
+      | Test BBB | G1    |
+      | Test BBB | G2    |
+    And the following "mod_bigbluebuttonbn > recordings" exist:
+      | bigbluebuttonbn | name        | description   | status | group |
+      | Test BBB        | Recording 1 | Description 1 | 3      | G1    |
+      | Test BBB        | Recording 2 | Description 2 | 3      | G2    |
+    And I entered the bigbluebuttonbn activity "Test BBB" on course "Course 1" as "student1" in the app
+    When I press "Visible groups" in the app
+    And I press "Group 1" in the app
+    Then I should find "Recording 1" in the app
+    But I should not find "Recording 2" in the app
+
+    When I press "Visible groups" in the app
+    And I press "Group 2" in the app
+    Then I should find "Recording 2" in the app
+    But I should not find "Recording 1" in the app

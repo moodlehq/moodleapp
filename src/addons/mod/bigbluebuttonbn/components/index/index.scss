@@ -1,3 +1,26 @@
-ion-item > p[slot="end"] {
-    font-size: var(--text-size);
+:host {
+    --recording-details-background: var(--gray-100);
+    --recording-details-border: var(--gray-500);
+
+    ion-item > p[slot="end"] {
+        font-size: var(--text-size);
+    }
+
+    core-empty-box ::ng-deep p {
+        font-size: 100%;
+    }
+
+    .addon-mod_bbb-recording-details {
+        border-top: 2px solid var(--recording-details-border);
+        border-bottom: 2px solid var(--recording-details-border);
+
+        ion-item {
+            --background: var(--recording-details-background);
+        }
+    }
+}
+
+:host-context(html.dark) {
+    --recording-details-background: var(--gray-800);
+    --recording-details-border: var(--gray-500);
 }

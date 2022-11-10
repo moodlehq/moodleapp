@@ -83,6 +83,46 @@
         </ion-card>
     </ng-container>
 
+    <ng-container *ngIf="showRecordings && recordings">
+        <ion-item class="ion-text-wrap">
+            <ion-label>
+                <h2>{{ 'addon.mod_bigbluebuttonbn.view_section_title_recordings' | translate }}</h2>
+            </ion-label>
+        </ion-item>
+        <ng-container *ngFor="let recording of recordings">
+            <ion-item *ngIf="recording.url" button class="addon-mod_bbb-recording-title" [attr.aria-expanded]="recording.expanded"
+                (click)="toggle(recording)" [attr.aria-label]="(recording.expanded ? 'core.collapse' : 'core.expand') | translate">
+                <ion-icon name="fas-chevron-right" flip-rtl slot="start" aria-hidden="true" class="expandable-status-icon"
+                    [class.expandable-status-icon-expanded]="recording.expanded">
+                </ion-icon>
+                <ion-label>
+                    <p>{{ recording.type }}</p>
+                    <p>{{ recording.name }}</p>
+                </ion-label>
+                <ion-button slot="end" fill="clear" (click)="playRecording($event, recording)"
+                    [attr.aria-label]="'addon.mod_bigbluebuttonbn.view_recording_list_action_play' | translate">
+                    <ion-icon name="fas-play-circle" slot="icon-only" aria-hidden="true"></ion-icon>
+                </ion-button>
+            </ion-item>
+            <div [hidden]="!recording.expanded" class="addon-mod_bbb-recording-details">
+                <ion-item *ngFor="let data of recording.details" class="ion-text-wrap">
+                    <ion-label>
+                        <h2>{{ data.label }}</h2>
+                        <p *ngIf="data.allowHTML">
+                            <core-format-text [text]="data.value" [component]="component" [componentId]="module.id" contextLevel="module"
+                                [contextInstanceId]="module.id" [courseId]="module.course"></core-format-text>
+                        </p>
+                        <p *ngIf="!data.allowHTML">{{ data.value }}</p>
+                    </ion-label>
+                </ion-item>
+            </div>
+        </ng-container>
+
+        <core-empty-box *ngIf="recordings && !recordings.length" icon="far-file-video"
+            [message]="'addon.mod_bigbluebuttonbn.view_message_norecordings' | translate">
+        </core-empty-box>
+    </ng-container>
+
     <div collapsible-footer *ngIf="!showLoading" slot="fixed">
         <div class="list-item-limited-width adaptable-buttons-row"
             *ngIf="meetingInfo && showRoom && (meetingInfo.canjoin || (meetingInfo.statusrunning && meetingInfo.ismoderator))">
