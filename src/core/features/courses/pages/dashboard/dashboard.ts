@@ -118,6 +118,8 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
                 visible: true,
             },
         ];
+
+        this.hasMainBlocks = CoreBlockDelegate.isBlockSupported('myoverview') || CoreBlockDelegate.isBlockSupported('timeline');
     }
 
     /**
