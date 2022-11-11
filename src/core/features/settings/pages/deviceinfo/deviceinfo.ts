@@ -94,7 +94,7 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
             lastCommit: CoreConstants.BUILD.lastCommitHash || '',
             networkStatus: CoreNetwork.isOnline() ? 'online' : 'offline',
             wifiConnection: CoreNetwork.isWifi() ? 'yes' : 'no',
-            localNotifAvailable: CoreLocalNotifications.isAvailable() ? 'yes' : 'no',
+            localNotifAvailable: CoreLocalNotifications.isPluginAvailable() ? 'yes' : 'no',
             pushId: CorePushNotifications.getPushId(),
             deviceType: '',
         };

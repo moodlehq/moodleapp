@@ -17,6 +17,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseSummaryPage } from './course-summary';
+import { CoreRemindersComponentsModule } from '@features/reminders/components/components.module';
 
 const routes: Routes = [
     {
@@ -27,6 +28,7 @@ const routes: Routes = [
 @NgModule({
     imports: [
         CoreSharedModule,
+        CoreRemindersComponentsModule,
     ],
     declarations: [
         CoreCourseSummaryPage,
@@ -39,6 +41,7 @@ export class CoreCoursePreviewPageComponentModule { }
         RouterModule.forChild(routes),
         CoreSharedModule,
         CoreCoursePreviewPageComponentModule,
+        CoreRemindersComponentsModule,
     ],
     exports: [RouterModule],
 })

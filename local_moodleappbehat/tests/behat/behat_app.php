@@ -958,4 +958,46 @@ class behat_app extends behat_app_helper {
         $this->getSession()->switchToWindow($windowNames[1]);
     }
 
+
+    /**
+     * Check if a notification has been triggered and is present.
+     *
+     * @Then /^a notification with title (".+") is( not)? present in the app$/
+     * @param string $title Notification title
+     * @param bool $not Whether assert that the notification was not found
+     */
+    public function notification_present_in_the_app(string $title, bool $not = false) {
+        $result = $this->runtime_js("notificationIsPresentWithText($title)");
+
+        if ($not && $result === 'YES') {
+            throw new ExpectationException("Notification is present", $this->getSession()->getDriver());
+        }
+
+        if (!$not && $result === 'NO') {
+            throw new ExpectationException("Notification is not present", $this->getSession()->getDriver());
+        }
+
+        if ($result !== 'YES' && $result !== 'NO') {
+            throw new DriverException('Error checking notification - ' . $result);
+        }
+
+        return true;
+    }
+
+    /**
+     * Close a notification present in the app
+     *
+     * @Then /^I close a notification with title (".+") in the app$/
+     * @param string $title Notification title
+     */
+    public function close_notification_app(string $title) {
+        $result = $this->runtime_js("closeNotification($title)");
+
+        if ($result !== 'OK') {
+            throw new DriverException('Error closing notification - ' . $result);
+        }
+
+        return true;
+    }
+
 }

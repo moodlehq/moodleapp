@@ -1,0 +1,6 @@
+<ion-button fill="clear" size="small" (click)="setReminder($event)"
+    [attr.aria-label]="'core.reminders.setareminderfor' | translate : { title: title, label: labelClean }"
+    [attr.aria-checked]="timebefore !== undefined">
+    <ion-icon name="fas-bell" slot="icon-only" *ngIf="timebefore !== undefined" aria-hidden="true"></ion-icon>
+    <ion-icon name="far-bell-slash" slot="icon-only" *ngIf="timebefore === undefined" aria-hidden="true"></ion-icon>
+</ion-button>

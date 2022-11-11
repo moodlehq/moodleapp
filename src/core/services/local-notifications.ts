@@ -123,7 +123,7 @@ export class CoreLocalNotificationsProvider {
     async initializeDatabase(): Promise<void> {
         try {
             await CoreApp.createTablesFromSchema(APP_SCHEMA);
-        } catch (e) {
+        } catch {
             // Ignore errors.
         }
 
@@ -319,14 +319,26 @@ export class CoreLocalNotificationsProvider {
     }
 
     /**
-     * Returns whether local notifications plugin is installed.
+     * Returns whether local notifications are available.
      *
-     * @return Whether local notifications plugin is installed.
+     * @return Whether local notifications are available.
+     * @deprecated since 4.1. It will always return true.
      */
     isAvailable(): boolean {
+        return true;
+    }
+
+    /**
+     * Returns whether local notifications plugin is available.
+     *
+     * @return Whether local notifications plugin is available.
+     */
+    isPluginAvailable(): boolean {
         const win = <any> window; // eslint-disable-line @typescript-eslint/no-explicit-any
 
-        return !!win.cordova?.plugins?.notification?.local;
+        const enabled = !!win.cordova?.plugins?.notification?.local;
+
+        return enabled && CorePlatform.is('cordova');
     }
 
     /**

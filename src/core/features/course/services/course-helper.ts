@@ -27,7 +27,6 @@ import {
     CoreCourseModuleCompletionTracking,
     CoreCourseModuleCompletionStatus,
     CoreCourseGetContentsWSModule,
-    CoreCourseGetContentsWSModuleDate,
 } from './course';
 import { CoreConstants } from '@/core/constants';
 import { CoreLogger } from '@singletons/logger';
@@ -1189,7 +1188,7 @@ export class CoreCourseHelperProvider {
      * This should be used in 3.6 sites or higher, where the course contents already include the completion.
      *
      * @param courseId The course to get the completion.
-     * @param mmodule The module.
+     * @param module The module.
      * @param siteId Site ID. If not defined, current site.
      * @return Promise resolved when done.
      */
@@ -2086,20 +2085,12 @@ export type CoreCourseSectionWithStatus = CoreCourseSection & {
 /**
  * Module with calculated data.
  */
-export type CoreCourseModuleData = Omit<CoreCourseGetContentsWSModule, 'completiondata'|'dates'> & {
+export type CoreCourseModuleData = Omit<CoreCourseGetContentsWSModule, 'completiondata'> & {
     course: number; // The course id.
     isStealth?: boolean;
     handlerData?: CoreCourseModuleHandlerData;
     completiondata?: CoreCourseModuleCompletionData;
     section: number;
-    dates?: CoreCourseModuleDate[];
-};
-
-/**
- * Module date with calculated data.
- */
-export type CoreCourseModuleDate = CoreCourseGetContentsWSModuleDate & {
-    readableTime: string;
 };
 
 /**

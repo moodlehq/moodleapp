@@ -31,7 +31,6 @@ import { AddonCalendarCalendarComponent } from '../../components/calendar/calend
 import { AddonCalendarUpcomingEventsComponent } from '../../components/upcoming-events/upcoming-events';
 import { AddonCalendarFilterComponent } from '../../components/filter/filter';
 import { CoreNavigator } from '@services/navigator';
-import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreConstants } from '@/core/constants';
 import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
 
@@ -64,7 +63,6 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
     month?: number;
     canCreate = false;
     courses: Partial<CoreEnrolledCourseData>[] = [];
-    notificationsEnabled = false;
     loaded = false;
     hasOffline = false;
     isOnline = false;
@@ -165,8 +163,6 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
      * View loaded.
      */
     ngOnInit(): void {
-        this.notificationsEnabled = CoreLocalNotifications.isAvailable();
-
         this.loadUpcoming = !!CoreNavigator.getRouteBooleanParam('upcoming');
         this.showCalendar = !this.loadUpcoming;
 

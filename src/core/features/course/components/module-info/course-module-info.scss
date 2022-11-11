@@ -48,12 +48,6 @@
             padding-top: 8px;
         }
 
-        .core-module-dates ion-icon {
-            margin-left: 4px;
-            margin-right: 4px;
-        }
-
-        .core-module-dates,
         .core-module-availabilityinfo {
             font-size: 90%;
             ion-icon {
@@ -94,8 +88,6 @@
             white-space: normal !important;
         }
     }
-
-
 }
 
 :host-context(.core-iframe-fullscreen) {

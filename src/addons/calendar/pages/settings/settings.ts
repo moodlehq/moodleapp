@@ -13,16 +13,12 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import {
-    AddonCalendar,
-    AddonCalendarProvider,
-    AddonCalendarReminderUnits,
-    AddonCalendarValueAndUnit,
-} from '../../services/calendar';
-import { CoreEvents } from '@singletons/events';
-import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { AddonCalendarReminderTimeModalComponent } from '@addons/calendar/components/reminder-time-modal/reminder-time-modal';
+import {
+    CoreReminders,
+    CoreRemindersService,
+} from '@features/reminders/services/reminders';
+import { CoreRemindersSetReminderMenuComponent } from '@features/reminders/components/set-reminder-menu/set-reminder-menu';
 
 /**
  * Page that displays the calendar settings.
@@ -35,19 +31,13 @@ export class AddonCalendarSettingsPage implements OnInit {
 
     defaultTimeLabel = '';
 
-    protected defaultTime: AddonCalendarValueAndUnit = {
-        value: 0,
-        unit: AddonCalendarReminderUnits.MINUTE,
-    };
+    protected defaultTime?: number;
 
     /**
-     * View loaded.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        const defaultTime = await AddonCalendar.getDefaultNotificationTime();
-
-        this.defaultTime = AddonCalendarProvider.convertSecondsToValueAndUnit(defaultTime);
-        this.defaultTimeLabel = AddonCalendar.getUnitValueLabel(this.defaultTime.value, this.defaultTime.unit);
+        this.updateDefaultTimeLabel();
     }
 
     /**
@@ -61,12 +51,13 @@ export class AddonCalendarSettingsPage implements OnInit {
         e.stopImmediatePropagation();
         e.preventDefault();
 
-        const reminderTime = await CoreDomUtils.openModal<number>({
-            component: AddonCalendarReminderTimeModalComponent,
+        const reminderTime = await CoreDomUtils.openPopover<{timeBefore: number}>({
+            component: CoreRemindersSetReminderMenuComponent,
             componentProps: {
                 initialValue: this.defaultTime,
-                allowDisable: true,
+                noReminderLabel: 'core.settings.disabled',
             },
+            event: e,
         });
 
         if (reminderTime === undefined) {
@@ -74,25 +65,18 @@ export class AddonCalendarSettingsPage implements OnInit {
             return;
         }
 
-        this.defaultTime = AddonCalendarProvider.convertSecondsToValueAndUnit(reminderTime);
-        this.defaultTimeLabel = AddonCalendar.getUnitValueLabel(this.defaultTime.value, this.defaultTime.unit);
-
-        this.updateDefaultTime(reminderTime);
+        await CoreReminders.setDefaultNotificationTime(reminderTime.timeBefore ?? CoreRemindersService.DISABLED);
+        this.updateDefaultTimeLabel();
     }
 
     /**
-     * Update default time.
-     *
-     * @param newTime New time.
+     * Update default time label.
      */
-    updateDefaultTime(newTime: number): void {
-        AddonCalendar.setDefaultNotificationTime(newTime);
+    async updateDefaultTimeLabel(): Promise<void> {
+        this.defaultTime = await CoreReminders.getDefaultNotificationTime();
 
-        CoreEvents.trigger(
-            AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_CHANGED,
-            { time: newTime },
-            CoreSites.getCurrentSiteId(),
-        );
+        const defaultTime = CoreRemindersService.convertSecondsToValueAndUnit(this.defaultTime);
+        this.defaultTimeLabel = CoreReminders.getUnitValueLabel(defaultTime.value, defaultTime.unit);
     }
 
 }

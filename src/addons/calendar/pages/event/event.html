@@ -127,7 +127,7 @@
             </ion-item>
         </ion-list>
 
-        <ion-card *ngIf="notificationsEnabled && event">
+        <ion-card *ngIf="remindersEnabled && event">
             <ion-item>
                 <ion-label>
                     <h2>{{ 'addon.calendar.reminders' | translate }}</h2>
@@ -139,7 +139,7 @@
                         <p class="item-heading">{{ reminder.label }}</p>
                         <p *ngIf="reminder.sublabel">{{ reminder.sublabel }}</p>
                     </ion-label>
-                    <ion-button fill="clear" (click)="cancelNotification(reminder.id, $event)" [attr.aria-label]="'core.delete' | translate"
+                    <ion-button fill="clear" (click)="deleteReminder(reminder.id, $event)" [attr.aria-label]="'core.delete' | translate"
                         slot="end">
                         <ion-icon name="fas-trash" color="danger" slot="icon-only" aria-hidden="true"></ion-icon>
                     </ion-button>

@@ -28,7 +28,6 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreDomUtils, ToastDuration } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreSites } from '@services/sites';
-import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreGroups } from '@services/groups';
@@ -38,10 +37,11 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreUtils } from '@services/utils/utils';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { CoreConstants } from '@/core/constants';
-import { AddonCalendarReminderTimeModalComponent } from '@addons/calendar/components/reminder-time-modal/reminder-time-modal';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { AddonCalendarEventsSource } from '@addons/calendar/classes/events-source';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
+import { CoreReminders, CoreRemindersService } from '@features/reminders/services/reminders';
+import { CoreRemindersSetReminderMenuComponent } from '@features/reminders/components/set-reminder-menu/set-reminder-menu';
 
 /**
  * Page that displays a single calendar event.
@@ -71,7 +71,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
     courseName = '';
     groupName?: string;
     courseUrl = '';
-    notificationsEnabled = false;
+    remindersEnabled = false;
     moduleUrl = '';
     categoryPath = '';
     currentTime = -1;
@@ -84,7 +84,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
     constructor(
         protected route: ActivatedRoute,
     ) {
-        this.notificationsEnabled = CoreLocalNotifications.isAvailable();
+        this.remindersEnabled = CoreReminders.isEnabled();
         this.siteHomeId = CoreSites.getCurrentSiteHomeId();
         this.currentSiteId = CoreSites.getCurrentSiteId();
 
@@ -131,7 +131,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         });
 
         // Reload reminders if default notification time changes.
-        this.defaultTimeChangedObserver = CoreEvents.on(AddonCalendarProvider.DEFAULT_NOTIFICATION_TIME_CHANGED, () => {
+        this.defaultTimeChangedObserver = CoreEvents.on(CoreRemindersService.DEFAULT_NOTIFICATION_TIME_CHANGED, () => {
             this.loadReminders();
         }, this.currentSiteId);
 
@@ -148,16 +148,15 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
      * @return Promise resolved when done.
      */
     protected async loadReminders(): Promise<void> {
-        if (!this.notificationsEnabled || !this.event) {
+        if (!this.remindersEnabled || !this.event) {
             return;
         }
 
-        const reminders = await AddonCalendar.getEventReminders(this.eventId, this.currentSiteId);
-        this.reminders = await AddonCalendarHelper.formatReminders(reminders, this.event.timestart, this.currentSiteId);
+        this.reminders = await AddonCalendarHelper.getEventReminders(this.eventId, this.event.timestart, this.currentSiteId);
     }
 
     /**
-     * View loaded.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         try {
@@ -387,8 +386,12 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
             return;
         }
 
-        const reminderTime = await CoreDomUtils.openModal<number>({
-            component: AddonCalendarReminderTimeModalComponent,
+        const reminderTime = await CoreDomUtils.openPopover<{timeBefore: number}>({
+            component: CoreRemindersSetReminderMenuComponent,
+            componentProps: {
+                eventTime: this.event.timestart,
+            },
+            // TODO: Add event to open the popover in place.
         });
 
         if (reminderTime === undefined) {
@@ -396,18 +399,18 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
             return;
         }
 
-        await AddonCalendar.addEventReminder(this.event, reminderTime, this.currentSiteId);
+        await AddonCalendar.addEventReminder(this.event, reminderTime.timeBefore, this.currentSiteId);
 
         await this.loadReminders();
     }
 
     /**
-     * Cancel the selected notification.
+     * Delete the selected reminder.
      *
      * @param id Reminder ID.
      * @param e Click event.
      */
-    async cancelNotification(id: number, e: Event): Promise<void> {
+    async deleteReminder(id: number, e: Event): Promise<void> {
         e.preventDefault();
         e.stopPropagation();
 
@@ -417,7 +420,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
             const modal = await CoreDomUtils.showModalLoading('core.deleting', true);
 
             try {
-                await AddonCalendar.deleteEventReminder(id);
+                await CoreReminders.removeReminder(id);
                 await this.loadReminders();
             } catch (error) {
                 CoreDomUtils.showErrorModalDefault(error, 'Error deleting reminder');
@@ -636,7 +639,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Page destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.editEventObserver.off();

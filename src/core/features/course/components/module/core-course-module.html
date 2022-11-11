@@ -81,10 +81,9 @@
                     *ngIf="(showActivityDates && module.dates && module.dates.length) || module.availabilityinfo">
                     <!-- Activity dates. -->
                     <div *ngIf="showActivityDates && module.dates && module.dates.length" class="core-module-dates">
-                        <p *ngFor="let date of module.dates">
-                            <ion-icon name="fas-calendar" aria-hidden="true"></ion-icon><strong>{{ date.label }}</strong>
-                            {{ date.readableTime }}
-                        </p>
+                        <core-reminders-date *ngFor="let date of module.dates" [type]="date.id" [label]="date.label" [time]="date.timestamp"
+                            [relativeTo]="date.relativeto">
+                        </core-reminders-date>
                     </div>
 
                     <!-- Availability info -->

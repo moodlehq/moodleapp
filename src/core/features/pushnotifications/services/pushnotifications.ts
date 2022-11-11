@@ -473,11 +473,6 @@ export class CorePushNotificationsProvider {
             return this.notificationClicked(data);
         }
 
-        // If the app is in foreground when the notification is received, it's not shown. Let's show it ourselves.
-        if (!CoreLocalNotifications.isAvailable()) {
-            return this.notifyReceived(notification, data);
-        }
-
         const localNotif: ILocalNotification = {
             id: Number(data.notId) || 1,
             data: data,

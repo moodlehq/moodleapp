@@ -1,0 +1,38 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-title>
+            <h2>{{ 'core.reminders.customreminder' | translate }}</h2>
+        </ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-item class="ion-text-wrap">
+        <div class="flex-row">
+            <!-- Input to enter the value. -->
+            <ion-input id="reminderValue" type="number" name="customvalue" [(ngModel)]="customValue" placeholder="10"
+                [attr.aria-label]="'core.reminders.value' | translate">
+            </ion-input>
+
+            <!-- Units. -->
+            <span class="accesshide" id="reminderUnits_label">{{ 'core.reminders.units' | translate }}</span>
+            <ion-select aria-labelledby="reminderUnits_label" name="customunits" [(ngModel)]="customUnits" interface="action-sheet"
+                slot="end" [interfaceOptions]="{header: 'core.reminders.units' | translate}">
+                <ion-select-option *ngFor=" let option of customUnitsOptions" [value]="option.value">
+                    {{ option.label | translate }}
+                </ion-select-option>
+            </ion-select>
+        </div>
+    </ion-item>
+    <ion-grid>
+        <ion-row>
+            <ion-col>
+                <ion-button expand="block" fill="outline" (click)="cancel()">{{ 'core.cancel' | translate }}</ion-button>
+            </ion-col>
+            <ion-col>
+                <ion-button expand="block" (click)="set()">
+                    {{ 'core.reminders.setreminder' | translate }}
+                </ion-button>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+</ion-content>

@@ -138,6 +138,9 @@ export class CoreAppProvider {
         if (schema.tables) {
             await this.getDB().createTablesFromSchema(schema.tables);
         }
+        if (schema.install && oldVersion === 0) {
+            await schema.install(this.getDB());
+        }
         if (schema.migrate && oldVersion > 0) {
             await schema.migrate(this.getDB(), oldVersion);
         }
@@ -662,7 +665,7 @@ export class CoreAppProvider {
             const entry = await this.schemaVersionsTable.getOneByPrimaryKey({ name: schema.name });
 
             return entry.version;
-        } catch (error) {
+        } catch {
             // No installed version yet.
             return 0;
         }
@@ -727,11 +730,21 @@ export type CoreAppSchema = {
     /**
      * Migrates the schema to the latest version.
      *
-     * Called when installing and upgrading the schema, after creating the defined tables.
+     * Called when upgrading the schema, after creating the defined tables.
      *
      * @param db The affected DB.
      * @param oldVersion Old version of the schema or 0 if not installed.
      * @return Promise resolved when done.
      */
     migrate?(db: SQLiteDB, oldVersion: number): Promise<void>;
+
+    /**
+     * Make changes to install the schema.
+     *
+     * Called when installing the schema, after creating the defined tables.
+     *
+     * @param db Site database.
+     * @return Promise resolved when done.
+     */
+    install?(db: SQLiteDB): Promise<void> | void;
 };
