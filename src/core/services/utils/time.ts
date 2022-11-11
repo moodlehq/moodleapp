@@ -261,23 +261,14 @@ export class CoreTimeUtilsProvider {
     /**
      * Convert a text into user timezone timestamp.
      *
-     * @todo The `applyOffset` argument is only used as a workaround, it should be removed once
-     * MOBILE-3784 is resolved.
-     *
      * @param date To convert to timestamp.
      * @param applyOffset Whether to apply offset to date or not.
      * @return Converted timestamp.
+     * @deprecated since 4.1. Use moment(date).unix() instead.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     convertToTimestamp(date: string, applyOffset?: boolean): number {
-        const timestamp = moment(date).unix();
-
-        if (applyOffset !== undefined) {
-            return applyOffset ? timestamp - moment().utcOffset() * 60 : timestamp;
-        }
-
-        return typeof date == 'string' && date.slice(-1) == 'Z'
-            ? timestamp - moment().utcOffset() * 60
-            : timestamp;
+        return moment(date).unix();
     }
 
     /**

@@ -45,6 +45,7 @@ import { CanLeave } from '@guards/can-leave';
 import { CoreForms } from '@singletons/form';
 import { CoreReminders, CoreRemindersService, CoreRemindersUnits } from '@features/reminders/services/reminders';
 import { CoreRemindersSetReminderMenuComponent } from '@features/reminders/components/set-reminder-menu/set-reminder-menu';
+import moment from 'moment-timezone';
 
 /**
  * Page that displays a form to create/edit an event.
@@ -454,8 +455,8 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
     async submit(): Promise<void> {
         // Validate data.
         const formData = this.form.value;
-        const timeStartDate = CoreTimeUtils.convertToTimestamp(formData.timestart, true);
-        const timeUntilDate = CoreTimeUtils.convertToTimestamp(formData.timedurationuntil, true);
+        const timeStartDate = moment(formData.timestart).unix();
+        const timeUntilDate = moment(formData.timedurationuntil).unix();
         const timeDurationMinutes = parseInt(formData.timedurationminutes || '', 10);
         let error: string | undefined;
 

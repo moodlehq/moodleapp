@@ -18,9 +18,9 @@ import { AuthEmailSignupProfileField } from '@features/login/services/login-help
 import { CoreUserProfileField } from '@features/user/services/user';
 import { CoreUserProfileFieldHandler, CoreUserProfileFieldHandlerData } from '@features/user/services/user-profile-field-delegate';
 import { CoreFormFields } from '@singletons/form';
-import { CoreTimeUtils } from '@services/utils/time';
 import { makeSingleton } from '@singletons';
 import { AddonUserProfileFieldDatetimeComponent } from '../../component/datetime';
+import moment from 'moment-timezone';
 
 /**
  * Datetime user profile field handlers.
@@ -61,7 +61,7 @@ export class AddonUserProfileFieldDatetimeHandlerService implements CoreUserProf
             return {
                 type: 'datetime',
                 name: 'profile_field_' + field.shortname,
-                value: CoreTimeUtils.convertToTimestamp(<string> formValues[name]),
+                value: moment(<string> formValues[name]).unix(),
             };
         }
     }
