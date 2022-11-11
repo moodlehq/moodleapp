@@ -122,7 +122,7 @@ const migrateFromCalendarRemindersV1 = async (db: SQLiteDB): Promise<void> => {
             reminderTime = event.timestart - Math.floor(reminderTime / 60) * 60;
         }
 
-        if (typeof uniqueReminder[record.eventid] === undefined) {
+        if (uniqueReminder[record.eventid] === undefined) {
             uniqueReminder[record.eventid] = [];
         } else {
             if (uniqueReminder[record.eventid].includes(reminderTime)) {
@@ -167,7 +167,7 @@ const migrateFromCalendarRemindersV2 = async (db: SQLiteDB): Promise<void> => {
 
         const reminderTime = record.time || CoreRemindersService.DEFAULT_REMINDER_TIMEBEFORE;
 
-        if (typeof uniqueReminder[record.eventid] === undefined) {
+        if (uniqueReminder[record.eventid] === undefined) {
             uniqueReminder[record.eventid] = [];
         } else {
             if (uniqueReminder[record.eventid].includes(reminderTime)) {
