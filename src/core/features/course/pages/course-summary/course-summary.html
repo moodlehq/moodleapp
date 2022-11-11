@@ -71,9 +71,9 @@
 
                 <ion-item class="ion-text-wrap" *ngIf="course.summary" detail="false">
                     <ion-label>
-                        <p class="item-heading">
+                        <h2 class="item-heading">
                             {{'core.course.coursesummary' | translate}}
-                        </p>
+                        </h2>
                         <core-format-text [text]="course.summary" collapsible-item contextLevel="course" [contextInstanceId]="course.id">
                         </core-format-text>
                     </ion-label>
@@ -86,9 +86,9 @@
                             class="expandable-status-icon" [class.expandable-status-icon-expanded]="contactsExpanded">
                         </ion-icon>
                         <ion-label>
-                            <p class="item-heading">
+                            <h2 class="item-heading">
                                 {{ 'core.teachers' | translate }}
-                            </p>
+                            </h2>
                         </ion-label>
                     </ion-item>
                     <ng-container *ngIf="contactsExpanded || course.contacts.length < 5">
