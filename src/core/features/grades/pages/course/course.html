@@ -27,13 +27,18 @@
                 </thead>
                 <tbody>
                     <ng-container *ngFor="let row of rows">
+                        <tr *ngIf="!useLegacyLayout && row.itemtype === 'leader'">
+                            <td [attr.rowspan]="row.rowspan" class="core-grades-table-leader"></td>
+                        </tr>
                         <tr [attr.role]="row.expandable && showSummary ? 'button row' : 'row'"
                             [attr.tabindex]="row.expandable && showSummary && 0" [attr.aria-expanded]="row.expanded"
                             [attr.aria-label]="rowAriaLabel(row)" [attr.aria-controls]="row.detailsid"
                             (ariaButtonClick)="row.expandable && showSummary && toggleRow(row)" [class]="row.rowclass"
-                            [class.core-grades-grade-clickable]="row.expandable && showSummary" [id]="'grade-'+row.id">
+                            [class.core-grades-grade-clickable]="row.expandable && showSummary" [id]="'grade-'+row.id"
+                            *ngIf="useLegacyLayout || row.itemtype !== 'leader'">
                             <ng-container *ngIf="row.itemtype">
-                                <td *ngIf="row.itemtype == 'category'" class="core-grades-table-category" [attr.rowspan]="row.rowspan">
+                                <td *ngIf="!useLegacyLayout && row.itemtype == 'category'" class="core-grades-table-category"
+                                    [attr.rowspan]="row.rowspan">
                                 </td>
                                 <th class="core-grades-table-gradeitem ion-text-start" [attr.colspan]="row.colspan">
                                     <ion-icon *ngIf="row.expandable && showSummary" aria-hidden="true" slot="start" name="fas-chevron-right"
@@ -48,23 +53,25 @@
                                     </core-mod-icon>
                                     <span [innerHTML]="row.gradeitem"></span>
                                 </th>
-                                <ng-container *ngFor="let column of columns">
-                                    <td *ngIf="column.name !== 'gradeitem' && column.name !== 'feedback' && column.name !== 'grade' &&
+                                <ng-container *ngIf="row.itemtype !== 'category'">
+                                    <ng-container *ngFor="let column of columns">
+                                        <td *ngIf="column.name !== 'gradeitem' && column.name !== 'feedback' && column.name !== 'grade' &&
                                         row[column.name] != undefined" [class]="'ion-text-start core-grades-table-' + column.name"
-                                        [class.ion-hide-md-down]="column.hiddenPhone" [innerHTML]="row[column.name]">
-                                    </td>
-                                    <td *ngIf="column.name === 'feedback' && row.feedback !== undefined"
-                                        class="ion-text-start core-grades-table-feedback" [class.ion-hide-md-down]="column.hiddenPhone">
-                                        <core-format-text collapsible-item [text]="row.feedback" contextLevel="course"
-                                            [contextInstanceId]="courseId">
-                                        </core-format-text>
-                                    </td>
-                                    <td *ngIf="column.name === 'grade'" [class.ion-hide-md-down]="column.hiddenPhone"
-                                        class="ion-text-start core-grades-table-grade {{row.gradeClass}}">
-                                        <ion-icon *ngIf="row.gradeIcon" [name]="row.gradeIcon" [attr.aria-label]="row.gradeIconAlt">
-                                        </ion-icon>
-                                        <span [innerHTML]="row[column.name]"></span>
-                                    </td>
+                                            [class.ion-hide-md-down]="column.hiddenPhone" [innerHTML]="row[column.name]">
+                                        </td>
+                                        <td *ngIf="column.name === 'feedback' && row.feedback !== undefined"
+                                            class="ion-text-start core-grades-table-feedback" [class.ion-hide-md-down]="column.hiddenPhone">
+                                            <core-format-text collapsible-item [text]="row.feedback" contextLevel="course"
+                                                [contextInstanceId]="courseId">
+                                            </core-format-text>
+                                        </td>
+                                        <td *ngIf="column.name === 'grade'" [class.ion-hide-md-down]="column.hiddenPhone"
+                                            class="ion-text-start core-grades-table-grade {{row.gradeClass}}">
+                                            <ion-icon *ngIf="row.gradeIcon" [name]="row.gradeIcon" [attr.aria-label]="row.gradeIconAlt">
+                                            </ion-icon>
+                                            <span [innerHTML]="row[column.name]"></span>
+                                        </td>
+                                    </ng-container>
                                 </ng-container>
                             </ng-container>
                         </tr>
