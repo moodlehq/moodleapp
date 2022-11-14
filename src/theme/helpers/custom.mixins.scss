@@ -11,63 +11,62 @@
 // --------------------------------------------------------------------------------------------
 @function get-color-shade-percent($color, $percent: 48%) {
     @return mix(#000, $color, $percent);
-  }
+}
 
-  // Mixes a color with white to create its tint.
-  // Default to bootstrap level -10.
-  // --------------------------------------------------------------------------------------------
-  @function get-color-tint-percent($color, $percent: 80%) {
+// Mixes a color with white to create its tint.
+// Default to bootstrap level -10.
+// --------------------------------------------------------------------------------------------
+@function get-color-tint-percent($color, $percent: 80%) {
     @return mix(#fff, $color, $percent);
-  }
+}
 
-  // Ionic Colors
-  // --------------------------------------------------
-  // Generates the color classes and variables based on the
-  // colors map
+// Ionic Colors
+// --------------------------------------------------
+// Generates the color classes and variables based on the
+// colors map
 
-  @mixin generate-color($color-name, $colors, $theme) {
-      $color-themes: map-get($colors, $color-name);
-      $base: map-get($color-themes, $theme);
+@mixin generate-color($color-name, $colors, $theme) {
+    $color-themes: map-get($colors, $color-name);
+    $base: map-get($color-themes, $theme);
 
-      @if $theme == 'dark' {
-          $base: mix(map-get($color-themes, 'light'), white, 80%) !default;
-      }
+    @if $theme == 'dark' {
+        $base: mix(map-get($color-themes, 'light'), white, 80%) !default;
+    }
 
-      @include generate-color-variants($color-name, $base);
-  }
+    @include generate-color-variants($color-name, $base);
+}
 
-  @mixin generate-color-variants($color-name, $base) {
-      $contrast: get_contrast_color($base);
-      $shade: get-color-shade-percent($base);
-      $tint: get-color-tint-percent($base);
+@mixin generate-color-variants($color-name, $base) {
+    $contrast: get_contrast_color($base);
+    $shade: get-color-shade-percent($base);
+    $tint: get-color-tint-percent($base);
 
-      --#{$color-name}: #{$base};
-      --#{$color-name}-shade: #{$shade};
-      --#{$color-name}-tint: #{$tint};
-      --#{$color-name}-contrast: #{$contrast};
+    --#{$color-name}: #{$base};
+    --#{$color-name}-shade: #{$shade};
+    --#{$color-name}-tint: #{$tint};
+    --#{$color-name}-contrast: #{$contrast};
 
-      // Internal ionic use only.
-      --ion-color-#{$color-name}: var(--#{$color-name});
-      --ion-color-#{$color-name}-base: var(--ion-color-#{$color-name});
-      --ion-color-#{$color-name}-rgb: #{color-to-rgb-list($base)};
-      --ion-color-#{$color-name}-contrast: #{$contrast};
-      --ion-color-#{$color-name}-contrast-rgb: #{color-to-rgb-list($contrast)};
-      --ion-color-#{$color-name}-shade: #{$shade};
-      --ion-color-#{$color-name}-tint: #{$tint};
+    // Internal ionic use only.
+    --ion-color-#{$color-name}: var(--#{$color-name});
+    --ion-color-#{$color-name}-base: var(--ion-color-#{$color-name});
+    --ion-color-#{$color-name}-rgb: #{color-to-rgb-list($base)};
+    --ion-color-#{$color-name}-contrast: #{$contrast};
+    --ion-color-#{$color-name}-contrast-rgb: #{color-to-rgb-list($contrast)};
+    --ion-color-#{$color-name}-shade: #{$shade};
+    --ion-color-#{$color-name}-tint: #{$tint};
 
-      .ion-color-#{$color-name} {
-          --ion-color: var(--ion-color-#{$color-name});
-          --ion-color-base: var(--ion-color-#{$color-name}-base);
-          --ion-color-rgb: var(--ion-color-#{$color-name}-rgb);
-          --ion-color-contrast: var(--ion-color-#{$color-name}-contrast);
-          --ion-color-contrast-rgb: var(--ion-color-#{$color-name}-contrast-rgb);
-          --ion-color-shade: var(--ion-color-#{$color-name}-shade);
-          --ion-color-tint: var(--ion-color-#{$color-name}-tint);
-      }
-  }
+    .ion-color-#{$color-name} {
+        --ion-color: var(--ion-color-#{$color-name});
+        --ion-color-base: var(--ion-color-#{$color-name}-base);
+        --ion-color-rgb: var(--ion-color-#{$color-name}-rgb);
+        --ion-color-contrast: var(--ion-color-#{$color-name}-contrast);
+        --ion-color-contrast-rgb: var(--ion-color-#{$color-name}-contrast-rgb);
+        --ion-color-shade: var(--ion-color-#{$color-name}-shade);
+        --ion-color-tint: var(--ion-color-#{$color-name}-tint);
+    }
+}
 
-
- @mixin core-focus() {
+@mixin core-focus() {
     outline: none;
     position: relative;
     &::after {
@@ -78,9 +77,9 @@
         z-index: 1;
         @include core-focus-style();
     }
- }
+}
 
- @mixin core-focus-style() {
+@mixin core-focus-style() {
     box-shadow: inset 0 0 var(--a11y-focus-width) 1px var(--a11y-focus-color);
     // Thicker option:
     // border: var(--a11y-focus-width) solid var(--a11y-focus-color);
@@ -94,6 +93,18 @@
 
     -webkit-transition: $transitions;
     transition: $transitions;
+}
+
+@mixin sr-only() {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
 /**
@@ -262,7 +273,7 @@
     @return if($yiq >= 128, $dark, $light);
 }
 
-// WCAG contrast algorythm
+// WCAG contrast algorithm
 @function check-contrast($foreground, $background) {
     $foregroundLumiance: luminance($foreground);
     $backgroundLuminance: luminance($background);

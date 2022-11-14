@@ -436,6 +436,10 @@ div.core-iframe-network-error {
     background: url("/assets/fonts/font-awesome/solid/wifi.svg") no-repeat 50% 50%;
     margin: 25px auto;
 
+    h2 {
+        @include sr-only();
+    }
+
     &::after {
         content: " ";
         position: absolute;
