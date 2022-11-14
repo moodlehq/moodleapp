@@ -38,6 +38,7 @@ import { COLLAPSIBLE_HEADER_UPDATED } from '@directives/collapsible-header';
 
 const ANIMATION_DURATION = 200;
 const USER_TOURS_BACK_BUTTON_PRIORITY = 100;
+const BACKDROP_DISMISS_SAFETY_TRESHOLD = 1000;
 
 /**
  * User Tour wrapper component.
@@ -78,11 +79,15 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
     protected resizeListener?: CoreEventObserver;
     protected scrollListener?: EventListener;
     protected content?: HTMLIonContentElement | null;
+    protected lastActivatedTime = 0;
 
     constructor({ nativeElement: element }: ElementRef<HTMLElement>) {
         this.element = element;
 
         CoreComponentsRegistry.register(element, this);
+
+        this.element.addEventListener('click', (event) =>
+            this.dismissOnBackOrBackdrop(event.target as HTMLElement));
     }
 
     /**
@@ -238,6 +243,7 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
         }
 
         this.active = true;
+        this.lastActivatedTime = Date.now();
 
         if (!this.backButtonListener) {
             document.addEventListener(
@@ -245,7 +251,7 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
                 this.backButtonListener = ({ detail }) => detail.register(
                     USER_TOURS_BACK_BUTTON_PRIORITY,
                     () => {
-                        // Silence back button.
+                        this.dismissOnBackOrBackdrop();
                     },
                 ),
             );
@@ -293,6 +299,25 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
         if (this.content && this.scrollListener) {
             this.content.removeEventListener('ionScrollEnd', this.scrollListener);
         }
+    }
+
+    /**
+     * Dismiss the tour because backdrop or back button was clicked.
+     *
+     * @param target Element clicked (if any).
+     */
+    protected dismissOnBackOrBackdrop(target?: HTMLElement): void {
+        if (!this.active || Date.now() - this.lastActivatedTime < BACKDROP_DISMISS_SAFETY_TRESHOLD) {
+            // Not active or was recently activated, ignore.
+            return;
+        }
+
+        if (target && target.closest('.user-tour-wrapper')) {
+            // Click on tour wrapper, don't dismiss.
+            return;
+        }
+
+        this.dismiss(true);
     }
 
 }
