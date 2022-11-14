@@ -29,10 +29,10 @@
                         [class.item-current]="selectedId === section.id" [class.item-dimmed]="!section.visible"
                         [class.item-hightlighted]="section.highlighted" detail="false" sticky="true">
                         <ion-icon *ngIf="section.hasVisibleModules" name="fas-chevron-right" flip-rtl slot="start"
-                            class="expandable-status-icon" (click)="toggleExpand($event, section)"
+                            class="expandable-status-icon" (ariaButtonClick)="toggleExpand($event, section)"
                             [attr.aria-label]="(section.expanded ? 'core.collapse' : 'core.expand') | translate"
                             [attr.aria-expanded]="section.expanded" [attr.aria-controls]="'core-course-index-section-' + section.id"
-                            [class.expandable-status-icon-expanded]="section.expanded">
+                            [class.expandable-status-icon-expanded]="section.expanded" tabindex="0">
                         </ion-icon>
                         <ion-icon *ngIf="!section.hasVisibleModules" name="" slot="start" aria-hidden="true" class="expandable-status-icon">
                         </ion-icon>

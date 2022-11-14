@@ -29,13 +29,13 @@
                         <ng-container *ngIf="calculatingSize">{{ 'core.calculating' | translate }}</ng-container>
                     </ion-badge>
                 </ion-item>
-                <ion-button *ngIf="downloadCourseEnabled" (click)="prefetchCourse()" expand="block" fill="outline" class="ion-no-margin"
-                    [disabled]="prefetchCourseData.loading">
+                <ion-button *ngIf="downloadCourseEnabled" (click)="prefetchCourse($event)" expand="block" fill="outline"
+                    class="ion-no-margin" [disabled]="prefetchCourseData.loading">
                     <ion-icon *ngIf="!prefetchCourseData.loading" [name]="prefetchCourseData.icon" slot="start"></ion-icon>
                     <ion-spinner *ngIf="prefetchCourseData.loading" slot="start"></ion-spinner>
                     {{ prefetchCourseData.statusTranslatable | translate }}
                 </ion-button>
-                <ion-button [disabled]="calculatingSize || totalSize <= 0" (click)="deleteForCourse()" expand="block" color="danger"
+                <ion-button [disabled]="calculatingSize || totalSize <= 0" (click)="deleteForCourse($event)" expand="block" color="danger"
                     class="ion-no-margin ion-margin-top">
                     <ion-icon name="fas-trash" slot="start" [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate:
                         { name: title }">
@@ -90,8 +90,8 @@
                                     {{section.count}} / {{section.total}}
                                 </ion-badge>
                             </div>
-                            <ion-button (click)="deleteForSection(section)" *ngIf="!section.calculatingSize && section.totalSize > 0"
-                                color="danger" fill="clear">
+                            <ion-button (click)="deleteForSection($event, section)"
+                                *ngIf="!section.calculatingSize && section.totalSize > 0" color="danger" fill="clear">
                                 <ion-icon name="fas-trash" slot="icon-only"
                                     [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate: { name: section.name }">
                                 </ion-icon>
@@ -128,9 +128,9 @@
                                     <core-download-refresh *ngIf="downloadEnabled && module.handlerData?.showDownloadButton &&
                                         module.downloadStatus != statusDownloaded" [status]="module.downloadStatus" [enabled]="true"
                                         [canTrustDownload]="true" [loading]="module.spinner || module.handlerData.spinner"
-                                        (action)="prefetchModule(module, $event)">
+                                        (action)="prefetchModule(module)">
                                     </core-download-refresh>
-                                    <ion-button fill="clear" (click)="deleteForModule(module, section)"
+                                    <ion-button fill="clear" (click)="deleteForModule($event, module, section)"
                                         *ngIf="!module.calculatingSize && module.totalSize > 0" color="danger">
                                         <ion-icon name="fas-trash" slot="icon-only"
                                             [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate: { name: module.name }">

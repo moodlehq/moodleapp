@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AbstractType, Component, CUSTOM_ELEMENTS_SCHEMA, Type, ViewChild } from '@angular/core';
+import { AbstractType, Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Type, ViewChild } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Observable, Subject } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { sep } from 'path';
 
 import { CORE_SITE_SCHEMAS } from '@services/sites';
@@ -33,7 +33,7 @@ import { TranslateService, TranslateStore } from '@ngx-translate/core';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DefaultUrlSerializer, UrlSerializer } from '@angular/router';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils, CoreUtilsProvider } from '@services/utils/utils';
 
 abstract class WrapperComponent<U> {
 
@@ -45,8 +45,14 @@ type ServiceInjectionToken = AbstractType<unknown> | Type<unknown> | string;
 
 let testBedInitialized = false;
 const textUtils = new CoreTextUtilsProvider();
-const DEFAULT_SERVICE_SINGLETON_MOCKS: [CoreSingletonProxy, Record<string, unknown>][] = [
-    [Translate, mock({ instant: key => key })],
+const DEFAULT_SERVICE_SINGLETON_MOCKS: [CoreSingletonProxy, unknown][] = [
+    [Translate, mock({
+        instant: key => key,
+        get: key => of(key),
+        onTranslationChange: new EventEmitter(),
+        onLangChange: new EventEmitter(),
+        onDefaultLangChange: new EventEmitter(),
+    })],
     [CoreDB, mock({ getDB: () => mock() })],
     [CoreNavigator, mock({ navigateToSitePath: () => Promise.resolve(true) })],
     [ApplicationInit, mock({
@@ -66,7 +72,7 @@ const DEFAULT_SERVICE_SINGLETON_MOCKS: [CoreSingletonProxy, Record<string, unkno
     [CoreDomUtils, mock({
         showModalLoading: () => Promise.resolve(mock<CoreIonLoadingElement>({ dismiss: jest.fn() })),
     })],
-    [CoreUtils, mock({
+    [CoreUtils, mock(new CoreUtilsProvider(), {
         nextTick: () => Promise.resolve(),
     })],
 ];
@@ -273,8 +279,17 @@ export function mockSingleton<T>(
     const methods = Array.isArray(methodsOrProperties) ? methodsOrProperties : [];
     const instance = getServiceInstance(singleton.injectionToken) as T;
     const mockInstance = mock(instance, methods);
+    const mockInstancePrototype = Object.getPrototypeOf(mockInstance);
 
-    Object.assign(mockInstance as Record<string, unknown>, properties);
+    for (const [name, value] of Object.entries(properties)) {
+        const descriptor = Object.getOwnPropertyDescriptor(mockInstancePrototype, name);
+
+        if (descriptor && !descriptor.writable) {
+            continue;
+        }
+
+        mockInstance[name] = value;
+    }
 
     singleton.setInstance(mockInstance);
 

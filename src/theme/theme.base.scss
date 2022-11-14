@@ -1568,6 +1568,11 @@ ion-modal:focus-visible {
     box-shadow: none;
 }
 
+input {
+    --placeholder-color: var(--ion-placeholder-color);
+    --placeholder-opacity: .85;
+}
+
 ion-input .native-input {
     &:focus, &:focus-visible {
         box-shadow: none;

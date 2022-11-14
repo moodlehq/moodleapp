@@ -89,11 +89,11 @@
         </ion-col>
         <ion-col size="auto" *ngIf="isLayoutSwitcherAvailable">
             <ion-button *ngIf="layout == 'card'" fill="outline" (click)="toggleLayout('list')"
-                [attr.aria-label]="'addon.block_myoverview.list' | translate">
+                [attr.aria-label]="'addon.block_myoverview.aria:list' | translate">
                 <ion-icon slot="icon-only" name="fas-list" aria-hidden="true"></ion-icon>
             </ion-button>
             <ion-button *ngIf="layout == 'list'" fill="outline" (click)="toggleLayout('card')"
-                [attr.aria-label]="'addon.block_myoverview.card' | translate">
+                [attr.aria-label]="'addon.block_myoverview.aria:card' | translate">
                 <ion-icon slot="icon-only" name="fas-th" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-col>

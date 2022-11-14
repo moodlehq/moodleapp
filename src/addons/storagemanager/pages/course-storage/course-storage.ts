@@ -352,8 +352,13 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
      * The user has requested a delete for the whole course data.
      *
      * (This works by deleting data for each module on the course that has data.)
+     *
+     * @param event Event object.
      */
-    async deleteForCourse(): Promise<void> {
+    async deleteForCourse(event: Event): Promise<void> {
+        event.stopPropagation();
+        event.preventDefault();
+
         try {
             await CoreDomUtils.showDeleteConfirm(
                 'addon.storagemanager.confirmdeletedatafrom',
@@ -384,9 +389,13 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
      *
      * (This works by deleting data for each module in the section that has data.)
      *
+     * @param event Event object.
      * @param section Section object with information about section and modules
      */
-    async deleteForSection(section: AddonStorageManagerCourseSection): Promise<void> {
+    async deleteForSection(event: Event, section: AddonStorageManagerCourseSection): Promise<void> {
+        event.stopPropagation();
+        event.preventDefault();
+
         try {
             await CoreDomUtils.showDeleteConfirm(
                 'addon.storagemanager.confirmdeletedatafrom',
@@ -413,10 +422,18 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
     /**
      * The user has requested a delete for a module's data
      *
+     * @param event Event object.
      * @param module Module details
      * @param section Section the module belongs to.
      */
-    async deleteForModule(module: AddonStorageManagerModule, section: AddonStorageManagerCourseSection): Promise<void> {
+    async deleteForModule(
+        event: Event,
+        module: AddonStorageManagerModule,
+        section: AddonStorageManagerCourseSection,
+    ): Promise<void> {
+        event.stopPropagation();
+        event.preventDefault();
+
         if (module.totalSize === 0) {
             return;
         }
@@ -635,8 +652,13 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
     /**
      * Prefetch the whole course.
+     *
+     * @param event Event object.
      */
-    async prefetchCourse(): Promise<void> {
+    async prefetchCourse(event: Event): Promise<void> {
+        event.stopPropagation();
+        event.preventDefault();
+
         const courses = await CoreCourses.getUserCourses(true);
         let course = courses.find((course) => course.id == this.courseId);
         if (!course) {
