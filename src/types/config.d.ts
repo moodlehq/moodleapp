@@ -73,4 +73,5 @@ export interface EnvironmentConfig {
     toastDurations: Record<ToastDuration, number>;
     disableCallWSInBackground?: boolean; // If true, disable calling WS in background.
     callWSInBackgroundExpirationTime?: number; // Ms to consider an entry expired when calling WS in background. Default: 1 week.
+    disableTokenFile: boolean; // Disable the use of tokenpluginfile.php for downloading files (so it fallbacks to pluginfile.php)
 }

@@ -118,7 +118,7 @@ export class CoreUrlUtilsProvider {
     canUseTokenPluginFile(url: string, siteUrl: string, accessKey?: string): boolean {
         // Do not use tokenpluginfile if site doesn't use slash params, the URL doesn't work.
         // Also, only use it for "core" pluginfile endpoints. Some plugins can implement their own endpoint (like customcert).
-        return !!accessKey && !url.match(/[&?]file=/) && (
+        return !CoreConstants.CONFIG.disableTokenFile && !!accessKey && !url.match(/[&?]file=/) && (
             url.indexOf(CoreText.concatenatePaths(siteUrl, 'pluginfile.php')) === 0 ||
             url.indexOf(CoreText.concatenatePaths(siteUrl, 'webservice/pluginfile.php')) === 0);
     }

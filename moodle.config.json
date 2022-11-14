@@ -109,5 +109,6 @@
         "short": 2000,
         "long": 3500,
         "sticky": 0
-    }
+    },
+    "disableTokenFile": false
 }
