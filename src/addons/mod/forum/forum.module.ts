@@ -43,6 +43,7 @@ import { AddonModForumOfflineProvider } from './services/forum-offline';
 import { AddonModForumHelperProvider } from './services/forum-helper';
 import { AddonModForumSyncProvider } from './services/forum-sync';
 import { COURSE_CONTENTS_PATH } from '@features/course/course.module';
+import { CoreCourseHelper } from '@features/course/services/course-helper';
 
 export const ADDON_MOD_FORUM_SERVICES: Type<unknown>[] = [
     AddonModForumProvider,
@@ -121,6 +122,8 @@ const courseContentsRoutes: Routes = conditionalRoutes(
                 CoreContentLinksDelegate.registerHandler(AddonModForumPostLinkHandler.instance);
                 CoreTagAreaDelegate.registerHandler(AddonModForumTagAreaHandler.instance);
                 CorePushNotificationsDelegate.registerClickHandler(AddonModForumPushClickHandler.instance);
+
+                CoreCourseHelper.registerModuleReminderClick(AddonModForumProvider.COMPONENT);
             },
         },
     ],
