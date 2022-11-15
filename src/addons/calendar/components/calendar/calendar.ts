@@ -526,6 +526,7 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
         const weeks = result.weeks as AddonCalendarWeek[];
         const currentDay = moment().date();
         const currentTime = CoreTimeUtils.timestamp();
+        const dayMoment = moment(month.moment);
 
         const preloadedMonth: PreloadedMonth = {
             ...month,
@@ -538,7 +539,7 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
         await Promise.all(weeks.map(async (week) => {
             await Promise.all(week.days.map(async (day) => {
                 day.periodName = CoreTimeUtils.userDate(
-                    month.moment.unix() * 1000,
+                    dayMoment.date(day.mday).unix() * 1000,
                     'core.strftimedaydate',
                 );
                 day.eventsFormated = day.eventsFormated || [];
