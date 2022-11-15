@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, SecurityContext } from '@angular/core';
 import { Params } from '@angular/router';
 import { Md5 } from 'ts-md5/dist/md5';
 
@@ -29,7 +29,7 @@ import { CoreConstants } from '@/core/constants';
 import { CoreSite, CoreSiteIdentityProvider, CoreSitePublicConfigResponse, CoreSiteQRCodeType } from '@classes/site';
 import { CoreError } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
-import { makeSingleton, Translate } from '@singletons';
+import { DomSanitizer, makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreUrl } from '@singletons/url';
 import { CoreNavigator, CoreRedirectPayload } from '@services/navigator';
@@ -38,6 +38,7 @@ import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { CoreText } from '@singletons/text';
 import { CorePromisedValue } from '@classes/promised-value';
+import { SafeHtml } from '@angular/platform-browser';
 
 const PASSWORD_RESETS_CONFIG_KEY = 'password-resets';
 
@@ -1513,6 +1514,40 @@ export class CoreLoginHelperProvider {
         } else {
             await CoreConfig.set(PASSWORD_RESETS_CONFIG_KEY, JSON.stringify(passwordResets));
         }
+    }
+
+    /**
+     * Build the HTML message to show once login attempts have been exceeded.
+     *
+     * @param canContactSupport Whether contacting support is enabled in the site.
+     * @param canRecoverPassword Whether recovering the password is enabled in the site.
+     * @return HTML message.
+     */
+    buildExceededAttemptsHTML(canContactSupport: boolean, canRecoverPassword: boolean): SafeHtml | string | null {
+        const safeHTML = (html: string) => DomSanitizer.sanitize(SecurityContext.HTML, html) ?? '';
+        const recoverPasswordHTML = (messageKey: string) => {
+            const placeholder = '%%RECOVER_PASSWORD%%';
+            const message = safeHTML(Translate.instant(messageKey, { recoverPassword: placeholder }));
+            const recoverPassword = safeHTML(Translate.instant('core.login.exceededloginattemptsrecoverpassword'));
+
+            return DomSanitizer.bypassSecurityTrustHtml(
+                message.replace(placeholder, `<a href="#" role="button" style="color:inherit">${recoverPassword}</a>`),
+            );
+        };
+
+        if (canContactSupport && canRecoverPassword) {
+            return recoverPasswordHTML('core.login.exceededloginattempts');
+        }
+
+        if (canContactSupport) {
+            return Translate.instant('core.login.exceededloginattemptswithoutpassword');
+        }
+
+        if (canRecoverPassword) {
+            return recoverPasswordHTML('core.login.exceededloginattemptswithoutsupport');
+        }
+
+        return null;
     }
 
     /**

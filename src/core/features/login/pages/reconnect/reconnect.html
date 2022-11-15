@@ -43,14 +43,9 @@
                     </ion-item>
                 </ion-card>
 
-                <core-login-exceeded-attempts *ngIf="supportConfig && reconnectAttempts >= 3" [supportConfig]="supportConfig"
-                    [supportSubject]="'core.login.exceededloginattemptssupportsubject' | translate">
-                    <span *ngIf="canContactSupport">
-                        {{ 'core.login.exceededloginattempts' | translate }}
-                    </span>
-                    <span *ngIf="!canContactSupport">
-                        {{ 'core.login.exceededloginattemptsfallback' | translate }}
-                    </span>
+                <core-login-exceeded-attempts *ngIf="exceededAttemptsHTML && supportConfig && reconnectAttempts >= 3"
+                    [supportConfig]="supportConfig" [supportSubject]="'core.login.exceededloginattemptssupportsubject' | translate">
+                    <div [innerHTML]="exceededAttemptsHTML" (click)="exceededAttemptsClicked($event)"></div>
                 </core-login-exceeded-attempts>
             </div>
             <form *ngIf="!isOAuth" [formGroup]="credForm" (ngSubmit)="login($event)" class="core-login-form" #reconnectForm>

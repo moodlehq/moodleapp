@@ -31,6 +31,7 @@ import { CoreForms } from '@singletons/form';
 import { CoreUserSupport } from '@features/user/services/support';
 import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
 import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
+import { SafeHtml } from '@angular/platform-browser';
 
 /**
  * Page to enter the user credentials.
@@ -59,7 +60,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     showScanQR = false;
     loginAttempts = 0;
     supportConfig?: CoreUserSupportConfig;
-    canContactSupport?: boolean;
+    exceededAttemptsHTML?: SafeHtml | string | null;
 
     protected siteConfig?: CoreSitePublicConfigResponse;
     protected eventThrown = false;
@@ -83,7 +84,6 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             this.siteConfig = CoreNavigator.getRouteParam<CoreSitePublicConfigResponse>('siteConfig');
             this.urlToOpen = CoreNavigator.getRouteParam('urlToOpen');
             this.supportConfig = this.siteConfig && new CoreUserGuestSupportConfig(this.siteConfig);
-            this.canContactSupport = this.supportConfig?.canContactSupport();
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
 
@@ -208,6 +208,10 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             this.canSignup = this.siteConfig.registerauth == 'email' &&
                     !CoreLoginHelper.isEmailSignupDisabled(this.siteConfig, disabledFeatures);
             this.showForgottenPassword = !CoreLoginHelper.isForgottenPasswordDisabled(this.siteConfig, disabledFeatures);
+            this.exceededAttemptsHTML = CoreLoginHelper.buildExceededAttemptsHTML(
+                !!this.supportConfig?.canContactSupport(),
+                this.showForgottenPassword,
+            );
 
             if (!this.eventThrown && !this.viewLeft) {
                 this.eventThrown = true;
@@ -299,6 +303,21 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 
             CoreForms.triggerFormSubmittedEvent(this.formElement, true);
         }
+    }
+
+    /**
+     * Exceeded attempts message clicked.
+     *
+     * @param event Click event.
+     */
+    exceededAttemptsClicked(event: Event): void {
+        event.preventDefault();
+
+        if (!(event.target instanceof HTMLAnchorElement)) {
+            return;
+        }
+
+        this.forgottenPassword();
     }
 
     /**
