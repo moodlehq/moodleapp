@@ -25,6 +25,7 @@ import {
     CoreGradesTable,
     CoreGradesTableColumn,
     CoreGradesTableItemNameColumn,
+    CoreGradesTableLeaderColumn,
     CoreGradesTableRow,
 } from '@features/grades/services/grades';
 import { CoreTextUtils } from '@services/utils/text';
@@ -71,7 +72,8 @@ export class CoreGradesHelperProvider {
             let content = String(column.content);
 
             if (name == 'itemname') {
-                await this.setRowIcon(row, content);
+                this.setRowIconAndType(row, content);
+
                 row.link = this.getModuleLink(content);
                 row.rowclass += column.class.indexOf('hidden') >= 0 ? ' hidden' : '';
                 row.rowclass += column.class.indexOf('dimmed_text') >= 0 ? ' dimmed_text' : '';
@@ -96,10 +98,23 @@ export class CoreGradesHelperProvider {
      * Formats a row from the grades table to be rendered in one table.
      *
      * @param tableRow JSON object representing row of grades table data.
+     * @param useLegacyLayout Whether to use the layout before 4.1.
      * @return Formatted row object.
      */
-    protected formatGradeRowForTable(tableRow: CoreGradesTableRow): CoreGradesFormattedTableRow {
+    protected formatGradeRowForTable(tableRow: CoreGradesTableRow, useLegacyLayout: boolean): CoreGradesFormattedTableRow {
         const row: CoreGradesFormattedTableRow = {};
+
+        if (!useLegacyLayout && 'leader' in tableRow) {
+            const row = {
+                itemtype: 'leader',
+                rowspan: tableRow.leader?.rowspan,
+            };
+
+            this.setRowEvenOddClass(row, (tableRow.leader as CoreGradesTableLeaderColumn).class);
+
+            return row;
+        }
+
         for (let name in tableRow) {
             const column: CoreGradesTableColumn = tableRow[name];
 
@@ -116,13 +131,13 @@ export class CoreGradesHelperProvider {
                 row.colspan = itemNameColumn.colspan;
                 row.rowspan = tableRow.leader?.rowspan || 1;
 
-                this.setRowIcon(row, content);
-                row.rowclass = itemNameColumn.class.indexOf('leveleven') < 0 ? 'odd' : 'even';
+                this.setRowIconAndType(row, content);
+                this.setRowEvenOddClass(row, itemNameColumn.class);
                 row.rowclass += itemNameColumn.class.indexOf('hidden') >= 0 ? ' hidden' : '';
                 row.rowclass += itemNameColumn.class.indexOf('dimmed_text') >= 0 ? ' dimmed_text' : '';
 
                 content = content.replace(/<\/span>/gi, '\n');
-                content = CoreTextUtils.cleanTags(content);
+                content = CoreTextUtils.cleanTags(content, true);
                 name = 'gradeitem';
             } else if (name === 'grade') {
                 // Add the pass/fail class if present.
@@ -202,7 +217,7 @@ export class CoreGradesHelperProvider {
             feedback: false,
             contributiontocoursetotal: false,
         };
-        formatted.rows = table.tabledata.map(row => this.formatGradeRowForTable(row));
+        formatted.rows = this.formatGradesTableRows(table.tabledata);
 
         // Get a row with some info.
         let normalRow = formatted.rows.find(
@@ -232,6 +247,33 @@ export class CoreGradesHelperProvider {
         }
 
         return formatted;
+    }
+
+    /**
+     * Format table rows.
+     *
+     * @param rows Unformatted rows.
+     * @returns Formatted rows.
+     */
+    protected formatGradesTableRows(rows: CoreGradesTableRow[]): CoreGradesFormattedTableRow[] {
+        const useLegacyLayout = !CoreSites.getRequiredCurrentSite().isVersionGreaterEqualThan('4.1');
+        const formattedRows = rows.map(row => this.formatGradeRowForTable(row, useLegacyLayout));
+
+        if (!useLegacyLayout) {
+            for (let index = 0; index < formattedRows.length - 1; index++) {
+                const row = formattedRows[index];
+                const previousRow = formattedRows[index - 1] ?? null;
+
+                if (row.itemtype !== 'leader') {
+                    continue;
+                }
+
+                row.colspan = previousRow.colspan;
+                previousRow.rowclass = `${previousRow.rowclass ?? ''} ion-no-border`.trim();
+            }
+        }
+
+        return formattedRows;
     }
 
     /**
@@ -474,7 +516,7 @@ export class CoreGradesHelperProvider {
         // Find href containing "/mod/xxx/xxx.php".
         const regex = /href="([^"]*\/mod\/[^"|^/]*\/[^"|^.]*\.php[^"]*)/;
 
-        return table.tabledata.filter((row) => {
+        return this.formatGradesTableRows(table.tabledata.filter((row) => {
             if (row.itemname && row.itemname.content) {
                 const matches = row.itemname.content.match(regex);
 
@@ -486,7 +528,7 @@ export class CoreGradesHelperProvider {
             }
 
             return false;
-        }).map((row) => this.formatGradeRowForTable(row));
+        }));
     }
 
     /**
@@ -583,13 +625,24 @@ export class CoreGradesHelperProvider {
     }
 
     /**
+     * Set 'odd' or 'even' classes into a row.
+     *
+     * @param row Row.
+     * @param classes Existing row classes.
+     */
+    protected setRowEvenOddClass(row: CoreGradesFormattedTableRow, classes: string): void {
+        const level = parseInt(classes.match(/(?:^|\s)level(\d+)(?:$|\s)/)?.[1] ?? '0');
+
+        row.rowclass = `${row.rowclass ?? ''} ${level % 2 === 0 ? 'even' : 'odd'}`.trim();
+    }
+
+    /**
      * Parses the image and sets it to the row.
      *
-     * @param row Formatted grade row object.
-     * @param text HTML where the image will be rendered.
-     * @return Row object with the image.
+     * @param row Row.
+     * @param text Row content.
      */
-    protected setRowIcon<T extends CoreGradesFormattedRowCommonData>(row: T, text: string): T {
+    protected setRowIconAndType(row: CoreGradesFormattedRowCommonData, text: string): void {
         text = text.replace('%2F', '/').replace('%2f', '/');
         if (text.indexOf('/agg_mean') > -1) {
             row.itemtype = 'agg_mean';
@@ -603,7 +656,7 @@ export class CoreGradesHelperProvider {
             row.itemtype = 'outcome';
             row.icon = 'fas-tasks';
             row.iconAlt = Translate.instant('core.grades.outcome');
-        } else if (text.indexOf('i/folder') > -1 || text.indexOf('fa-folder') > -1) {
+        } else if (text.indexOf('i/folder') > -1 || text.indexOf('fa-folder') > -1 || text.indexOf('category-content') > -1) {
             row.itemtype = 'category';
             row.icon = 'fas-folder';
             row.iconAlt = Translate.instant('core.grades.category');
@@ -643,8 +696,6 @@ export class CoreGradesHelperProvider {
                 row.iconAlt = Translate.instant('core.unknown');
             }
         }
-
-        return row;
     }
 
     /**

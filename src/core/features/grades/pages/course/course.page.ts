@@ -54,6 +54,7 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     rows?: CoreGradesFormattedTableRow[];
     totalColumnsSpan?: number;
     withinSplitView?: boolean;
+    useLegacyLayout?: boolean; // Whether to use the layout before 4.1.
 
     protected fetchSuccess = false;
 
@@ -68,6 +69,7 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
 
             this.expandLabel = Translate.instant('core.expand');
             this.collapseLabel = Translate.instant('core.collapse');
+            this.useLegacyLayout = !CoreSites.getRequiredCurrentSite().isVersionGreaterEqualThan('4.1');
 
             if (route.snapshot.data.swipeEnabled ?? true) {
                 const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(CoreGradesCoursesSource, []);
@@ -133,11 +135,22 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
 
         row.expanded = expand ?? !row.expanded;
 
-        let colspan: number = this.columns.length + (row.colspan ?? 0) - 1;
+        let colspan: number = this.columns.length + (row.colspan ?? 0);
+
+        if (this.useLegacyLayout) {
+            colspan--;
+        }
+
         for (let i = this.rows.indexOf(row) - 1; i >= 0; i--) {
             const previousRow = this.rows[i];
 
-            if (previousRow.expandable || !previousRow.colspan || !previousRow.rowspan || previousRow.colspan !== colspan) {
+            if (
+                !previousRow.rowspan ||
+                !previousRow.colspan ||
+                previousRow.colspan !== colspan ||
+                (!this.useLegacyLayout && previousRow.itemtype !== 'leader') ||
+                (this.useLegacyLayout && previousRow.expandable)
+            ) {
                 continue;
             }
 
