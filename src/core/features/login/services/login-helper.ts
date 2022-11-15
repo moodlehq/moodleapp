@@ -39,6 +39,7 @@ import { CorePushNotifications } from '@features/pushnotifications/services/push
 import { CoreText } from '@singletons/text';
 import { CorePromisedValue } from '@classes/promised-value';
 import { SafeHtml } from '@angular/platform-browser';
+import { CoreLoginError } from '@classes/errors/loginerror';
 
 const PASSWORD_RESETS_CONFIG_KEY = 'password-resets';
 
@@ -1027,6 +1028,13 @@ export class CoreLoginHelperProvider {
     }
 
     /**
+     * Show a modal warning that the credentials introduced were not correct.
+     */
+    protected showInvalidLoginModal(error: CoreLoginError): void {
+        CoreDomUtils.showErrorModal(error.errorDetails ?? error.message);
+    }
+
+    /**
      * Show a modal warning the user that he should use the Workplace app.
      *
      * @param message The warning message.
@@ -1167,16 +1175,25 @@ export class CoreLoginHelperProvider {
      * @param password User password.
      */
     treatUserTokenError(siteUrl: string, error: CoreWSError, username?: string, password?: string): void {
-        if (error.errorcode == 'forcepasswordchangenotice') {
-            this.openChangePassword(siteUrl, CoreTextUtils.getErrorMessageFromError(error)!);
-        } else if (error.errorcode == 'usernotconfirmed') {
-            this.showNotConfirmedModal(siteUrl, undefined, username, password);
-        } else if (error.errorcode == 'connecttomoodleapp') {
-            this.showMoodleAppNoticeModal(CoreTextUtils.getErrorMessageFromError(error)!);
-        } else if (error.errorcode == 'connecttoworkplaceapp') {
-            this.showWorkplaceNoticeModal(CoreTextUtils.getErrorMessageFromError(error)!);
-        } else {
-            CoreDomUtils.showErrorModal(error);
+        switch (error.errorcode) {
+            case 'forcepasswordchangenotice':
+                this.openChangePassword(siteUrl, CoreTextUtils.getErrorMessageFromError(error)!);
+                break;
+            case 'usernotconfirmed':
+                this.showNotConfirmedModal(siteUrl, undefined, username, password);
+                break;
+            case 'connecttomoodleapp':
+                this.showMoodleAppNoticeModal(CoreTextUtils.getErrorMessageFromError(error)!);
+                break;
+            case 'connecttoworkplaceapp':
+                this.showWorkplaceNoticeModal(CoreTextUtils.getErrorMessageFromError(error)!);
+                break;
+            case 'invalidlogin':
+                this.showInvalidLoginModal(error);
+                break;
+            default:
+                CoreDomUtils.showErrorModal(error);
+                break;
         }
     }
 
