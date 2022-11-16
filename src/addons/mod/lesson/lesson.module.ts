@@ -15,6 +15,7 @@
 import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
+import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
@@ -74,6 +75,8 @@ const routes: Routes = [
                 CoreContentLinksDelegate.registerHandler(AddonModLessonListLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModLessonReportLinkHandler.instance);
                 CorePushNotificationsDelegate.registerClickHandler(AddonModLessonPushClickHandler.instance);
+
+                CoreCourseHelper.registerModuleReminderClick(AddonModLessonProvider.COMPONENT);
             },
         },
     ],

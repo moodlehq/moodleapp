@@ -119,6 +119,11 @@ export class LocalNotificationsMock extends LocalNotifications {
 
             notification.addEventListener('click', () => {
                 this.observables.click.next(nextNotification);
+
+                notification.close();
+                if (nextNotification.id) {
+                    delete(this.presentNotifications[nextNotification.id]);
+                }
             });
 
             if (nextNotification.id) {

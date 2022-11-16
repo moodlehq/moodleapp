@@ -18,6 +18,7 @@ import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { COURSE_CONTENTS_PATH } from '@features/course/course.module';
 import { CoreCourseContentsRoutingModule } from '@features/course/pages/contents/contents-routing.module';
+import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
@@ -119,6 +120,8 @@ const courseContentsRoutes: Routes = conditionalRoutes(
                 CoreContentLinksDelegate.registerHandler(AddonModGlossaryEditLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModGlossaryEntryLinkHandler.instance);
                 CoreTagAreaDelegate.registerHandler(AddonModGlossaryTagAreaHandler.instance);
+
+                CoreCourseHelper.registerModuleReminderClick(AddonModGlossaryProvider.COMPONENT);
             },
         },
     ],

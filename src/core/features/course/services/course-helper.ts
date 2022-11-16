@@ -30,7 +30,7 @@ import {
 } from './course';
 import { CoreConstants } from '@/core/constants';
 import { CoreLogger } from '@singletons/logger';
-import { makeSingleton, Translate } from '@singletons';
+import { ApplicationInit, makeSingleton, Translate } from '@singletons';
 import { CoreFilepool } from '@services/filepool';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils, CoreUtilsOpenFileOptions } from '@services/utils/utils';
@@ -72,6 +72,8 @@ import { CoreSiteHomeHomeHandlerService } from '@features/sitehome/services/hand
 import { CoreStatusWithWarningsWSResponse } from '@services/ws';
 import { CoreCourseWithImageAndColor } from '@features/courses/services/courses-helper';
 import { CoreCourseSummaryPage } from '../pages/course-summary/course-summary';
+import { CoreRemindersPushNotificationData } from '@features/reminders/services/reminders';
+import { CoreLocalNotifications } from '@services/local-notifications';
 
 /**
  * Prefetch info of a module.
@@ -1606,7 +1608,7 @@ export class CoreCourseHelperProvider {
      * @param module The module to open.
      * @param courseId The course ID of the module.
      * @param options Other options.
-     * @param True if module can be opened, false otherwise.
+     * @return True if module can be opened, false otherwise.
      */
     async openModule(module: CoreCourseModuleData, courseId: number, options: CoreCourseOpenModuleOptions = {}): Promise<boolean> {
         if (!module.handlerData) {
@@ -2057,6 +2059,27 @@ export class CoreCourseHelperProvider {
                 course: course,
             },
         });
+    }
+
+    /**
+     * Register click for reminder local notification.
+     *
+     * @param component Component to register.
+     */
+    registerModuleReminderClick(component: string): void {
+        CoreLocalNotifications.registerClick<CoreRemindersPushNotificationData>(
+            component,
+            async (notification) => {
+                await ApplicationInit.donePromise;
+
+                CoreCourseHelper.navigateToModule(
+                    notification.instanceId,
+                    {
+                        siteId: notification.siteId,
+                    },
+                );
+            },
+        );
     }
 
 }

@@ -97,15 +97,15 @@ export class CoreRemindersSetButtonComponent implements OnInit {
             return;
         }
 
-        if (timebefore === undefined || timebefore === CoreRemindersService.DISABLED) {
-            // Remove the reminder.
-            await CoreReminders.removeReminders({
-                instanceId: this.instanceId,
-                component: this.component,
-                type: this.type,
-            });
-            this.timebefore = undefined;
+        // Remove previous the reminders.
+        await CoreReminders.removeReminders({
+            instanceId: this.instanceId,
+            component: this.component,
+            type: this.type,
+        });
 
+        if (timebefore === undefined || timebefore === CoreRemindersService.DISABLED) {
+            this.timebefore = undefined;
             CoreDomUtils.showToast('core.reminders.reminderunset', true);
 
             return;
