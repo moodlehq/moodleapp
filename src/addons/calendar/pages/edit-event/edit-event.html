@@ -31,7 +31,7 @@
                     <p class="item-heading" [core-mark-required]="true">{{ 'core.date' | translate }}</p>
                 </ion-label>
                 <ion-datetime formControlName="timestart" [placeholder]="'core.date' | translate" [displayFormat]="dateFormat"
-                    [max]="maxDate" [min]="minDate" display-timezone="utc">
+                    [max]="maxDate" [min]="minDate" [displayTimezone]="displayTimezone">
                 </ion-datetime>
                 <core-input-errors [control]="form.controls.timestart" [errorMessages]="errors"></core-input-errors>
             </ion-item>
@@ -156,7 +156,8 @@
                     <ion-item *ngIf="form.controls.duration.value === 1">
                         <ion-label position="stacked"></ion-label>
                         <ion-datetime formControlName="timedurationuntil" [max]="maxDate" [min]="minDate"
-                            [placeholder]="'addon.calendar.durationuntil' | translate" [displayFormat]="dateFormat" display-timezone="utc">
+                            [placeholder]="'addon.calendar.durationuntil' | translate" [displayFormat]="dateFormat"
+                            [displayTimezone]="displayTimezone">
                         </ion-datetime>
                     </ion-item>
                     <ion-item>

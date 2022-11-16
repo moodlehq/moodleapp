@@ -257,27 +257,9 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
      * Go to current month.
      */
     async goToCurrentMonth(): Promise<void> {
-        const manager = this.manager;
-        const slides = this.slides;
-        if (!manager || !slides) {
-            return;
-        }
+        const currentMoment = moment();
 
-        const currentMonth = {
-            moment: moment(),
-        };
-        this.loaded = false;
-
-        try {
-            // Make sure the day is loaded.
-            await manager.getSource().loadItem(currentMonth);
-
-            slides.slideToItem(currentMonth);
-        } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
-        } finally {
-            this.loaded = true;
-        }
+        await this.viewMonth(currentMoment.month() + 1, currentMoment.year());
     }
 
     /**
@@ -317,6 +299,39 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
                 return false;
             }));
         });
+    }
+
+    /**
+     * View a certain month and year.
+     *
+     * @param month Month.
+     * @param year Year.
+     */
+    async viewMonth(month: number, year: number): Promise<void> {
+        const manager = this.manager;
+        const slides = this.slides;
+        if (!manager || !slides) {
+            return;
+        }
+
+        this.loaded = false;
+        const item = {
+            moment: moment({
+                year,
+                month: month - 1,
+            }),
+        };
+
+        try {
+            // Make sure the day is loaded.
+            await manager.getSource().loadItem(item);
+
+            slides.slideToItem(item);
+        } catch (error) {
+            CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
+        } finally {
+            this.loaded = true;
+        }
     }
 
     /**
@@ -511,6 +526,7 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
         const weeks = result.weeks as AddonCalendarWeek[];
         const currentDay = moment().date();
         const currentTime = CoreTimeUtils.timestamp();
+        const dayMoment = moment(month.moment);
 
         const preloadedMonth: PreloadedMonth = {
             ...month,
@@ -523,7 +539,7 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
         await Promise.all(weeks.map(async (week) => {
             await Promise.all(week.days.map(async (day) => {
                 day.periodName = CoreTimeUtils.userDate(
-                    month.moment.unix() * 1000,
+                    dayMoment.date(day.mday).unix() * 1000,
                     'core.strftimedaydate',
                 );
                 day.eventsFormated = day.eventsFormated || [];

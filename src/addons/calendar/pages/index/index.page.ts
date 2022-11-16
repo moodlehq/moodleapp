@@ -173,6 +173,10 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
             this.filter.filtered = !!this.filter.courseId;
 
             this.fetchData(true, false);
+
+            if (this.year !== undefined && this.month !== undefined && this.calendarComponent) {
+                this.calendarComponent.viewMonth(this.month, this.year);
+            }
         });
 
         const deepLinkManager = new CoreMainMenuDeepLinkManager();

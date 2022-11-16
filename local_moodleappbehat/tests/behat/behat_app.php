@@ -1012,4 +1012,22 @@ class behat_app extends behat_app_helper {
         return true;
     }
 
+    /**
+     * View a specific month in the calendar in the app.
+     *
+     * @When /^I open the calendar for "(?P<month>\d+)" "(?P<year>\d+)" in the app$/
+     * @param int $month the month selected as a number
+     * @param int $year the four digit year
+     */
+    public function i_open_the_calendar_for($month, $year) {
+        $options = json_encode([
+            'params' => [
+                'month' => $month,
+                'year' => $year,
+            ],
+        ]);
+
+        $this->zone_js("navigator.navigateToSitePath('/calendar/index', $options)");
+    }
+
 }
