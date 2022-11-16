@@ -345,19 +345,24 @@ export class AddonCalendarProvider {
         siteId?: string,
     ): Promise<string> {
 
+        const getTimeHtml = (time: string, a11yLangKey: string): string =>
+            `<span aria-label="${Translate.instant(a11yLangKey, { $a: CoreTextUtils.cleanTags(time) })}">${time}</span>`;
+        const getStartTimeHtml = (time: string): string => getTimeHtml(time, 'core.startingtime');
+        const getEndTimeHtml = (time: string): string => getTimeHtml(time, 'core.endingtime');
+
         const start = event.timestart * 1000;
         const end = (event.timestart + event.timeduration) * 1000;
         let time: string;
 
-        if (!event.timeduration) {
+        if (event.timeduration) {
 
             if (moment(start).isSame(end, 'day')) {
                 // Event starts and ends the same day.
                 if (event.timeduration == CoreConstants.SECONDS_DAY) {
                     time = Translate.instant('addon.calendar.allday');
                 } else {
-                    time = CoreTimeUtils.userDate(start, format) + ' <strong>&raquo;</strong> ' +
-                            CoreTimeUtils.userDate(end, format);
+                    time = getStartTimeHtml(CoreTimeUtils.userDate(start, format)) + ' <strong>&raquo;</strong> ' +
+                            getEndTimeHtml(CoreTimeUtils.userDate(end, format));
                 }
 
             } else {
@@ -388,11 +393,12 @@ export class AddonCalendarProvider {
 
                 await Promise.all(promises);
 
-                return dayStart + timeStart + ' <strong>&raquo;</strong> ' + dayEnd + timeEnd;
+                return getStartTimeHtml(dayStart + timeStart) + ' <strong>&raquo;</strong> ' +
+                    getEndTimeHtml(dayEnd + timeEnd);
             }
         } else {
             // There is no time duration.
-            time = CoreTimeUtils.userDate(start, format);
+            time = getStartTimeHtml(CoreTimeUtils.userDate(start, format));
         }
 
         if (showTime) {
@@ -2173,6 +2179,7 @@ export type AddonCalendarSubmitCreateUpdateFormDataWSParams = Omit<AddonCalendar
     description?: {
         text: string;
         format: number;
+        itemid: number; // File area ID.
     };
     visible?: number;
     instance?: number;
