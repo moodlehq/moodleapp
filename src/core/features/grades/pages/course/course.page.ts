@@ -54,8 +54,8 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     rows?: CoreGradesFormattedTableRow[];
     totalColumnsSpan?: number;
     withinSplitView?: boolean;
-    useLegacyLayout?: boolean; // Whether to use the layout before 4.1.
 
+    protected useLegacyLayout?: boolean; // Whether to use the layout before 4.1.
     protected fetchSuccess = false;
 
     constructor(

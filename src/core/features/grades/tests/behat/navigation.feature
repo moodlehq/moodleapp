@@ -1,5 +1,5 @@
 @app @javascript
-Feature: Test grades navigation
+Feature: Grades navigation
 
   Background:
     Given the following "users" exist:
