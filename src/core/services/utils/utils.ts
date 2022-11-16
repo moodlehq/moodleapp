@@ -999,13 +999,19 @@ export class CoreUtilsProvider {
             // @todo MOBILE-4167: Handle urls with expired tokens.
 
             throw new CoreErrorWithOptions(
+                Translate.instant('core.cannotinstallapkinfo'),
                 Translate.instant('core.cannotinstallapk'),
-                undefined,
                 url
-                    ? [{
-                        text: Translate.instant('core.openinbrowser'),
-                        handler: () => this.openInBrowser(url),
-                    }]
+                    ? [
+                        {
+                            text: Translate.instant('core.openinbrowser'),
+                            handler: () => this.openInBrowser(url),
+                        },
+                        {
+                            text: Translate.instant('core.cancel'),
+                            role: 'cancel',
+                        },
+                    ]
                     : undefined,
             );
         }
