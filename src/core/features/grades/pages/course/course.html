@@ -27,7 +27,7 @@
                 </thead>
                 <tbody>
                     <ng-container *ngFor="let row of rows">
-                        <tr *ngIf="!useLegacyLayout && row.itemtype === 'leader'">
+                        <tr *ngIf="row.itemtype === 'leader'">
                             <td [attr.rowspan]="row.rowspan" class="core-grades-table-leader"></td>
                         </tr>
                         <tr [attr.role]="row.expandable && showSummary ? 'button row' : 'row'"
@@ -35,10 +35,9 @@
                             [attr.aria-label]="rowAriaLabel(row)" [attr.aria-controls]="row.detailsid"
                             (ariaButtonClick)="row.expandable && showSummary && toggleRow(row)" [class]="row.rowclass"
                             [class.core-grades-grade-clickable]="row.expandable && showSummary" [id]="'grade-'+row.id"
-                            *ngIf="useLegacyLayout || row.itemtype !== 'leader'">
+                            *ngIf="row.itemtype !== 'leader'">
                             <ng-container *ngIf="row.itemtype">
-                                <td *ngIf="!useLegacyLayout && row.itemtype == 'category'" class="core-grades-table-category"
-                                    [attr.rowspan]="row.rowspan">
+                                <td *ngIf="row.itemtype == 'category'" class="core-grades-table-category" [attr.rowspan]="row.rowspan">
                                 </td>
                                 <th class="core-grades-table-gradeitem ion-text-start" [attr.colspan]="row.colspan">
                                     <ion-icon *ngIf="row.expandable && showSummary" aria-hidden="true" slot="start" name="fas-chevron-right"
