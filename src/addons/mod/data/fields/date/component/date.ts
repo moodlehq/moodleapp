@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Component } from '@angular/core';
+import { CoreAppProvider } from '@services/app';
 import { CoreTimeUtils } from '@services/utils/time';
 import { Translate } from '@singletons';
 import moment, { Moment } from 'moment-timezone';
@@ -31,6 +32,7 @@ export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginBaseC
     displayDate?: number;
     maxDate?: string;
     minDate?: string;
+    displayTimezone?: string;
 
     /**
      * @inheritdoc
@@ -52,6 +54,7 @@ export class AddonModDataFieldDateComponent extends AddonModDataFieldPluginBaseC
         ));
         this.maxDate = CoreTimeUtils.getDatetimeDefaultMax();
         this.minDate = CoreTimeUtils.getDatetimeDefaultMin();
+        this.displayTimezone = CoreAppProvider.getForcedTimezone();
 
         if (this.searchMode) {
             this.addControl('f_' + this.field.id + '_z');

@@ -253,6 +253,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
                 description: {
                     text: event.description || '',
                     format: 1,
+                    itemid: 0, // Files not supported yet.
                 },
             },
         ); // Clone the object because it will be modified in the submit function.

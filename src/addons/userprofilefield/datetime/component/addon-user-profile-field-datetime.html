@@ -12,7 +12,7 @@
         <span [core-mark-required]="required">{{ field.name }}</span>
     </ion-label>
     <ion-datetime [formControlName]="modelName" [placeholder]="'core.choosedots' | translate" [displayFormat]="format" [max]="max"
-        [min]="min" [monthNames]="monthNames">
+        [min]="min" [monthNames]="monthNames" [displayTimezone]="displayTimezone">
     </ion-datetime>
     <core-input-errors [control]="form.controls[modelName]"></core-input-errors>
 </ion-item>

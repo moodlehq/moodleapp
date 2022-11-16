@@ -28,8 +28,8 @@ function initializeAutomatedTests(window: AutomatedTestsWindow) {
 
     window.behat = TestingBehatRuntime.instance;
 
-    // Force timezone for automated tests. Use the same timezone forced for LMS in tests.
-    moment.tz.setDefault('Australia/Perth');
+    // Force timezone for automated tests.
+    moment.tz.setDefault(CoreAppProvider.getForcedTimezone());
 }
 
 @NgModule({

@@ -71,6 +71,18 @@ export class CoreAppProvider {
     }
 
     /**
+     * Returns the forced timezone to use. Timezone is forced for automated tests.
+     *
+     * @return Timezone. Undefined to use the user's timezone.
+     */
+    static getForcedTimezone(): string | undefined {
+        if (CoreAppProvider.isAutomated()) {
+            // Use the same timezone forced for LMS in tests.
+            return 'Australia/Perth';
+        }
+    }
+
+    /**
      * Initialize database.
      */
     async initializeDatabase(): Promise<void> {

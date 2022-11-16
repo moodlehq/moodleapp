@@ -192,9 +192,25 @@ export class TestingBehatBlockingService {
      */
     protected async checkUIBlocked(): Promise<void> {
         await CoreUtils.nextTick();
-        const blocked = document.querySelector<HTMLElement>('div.core-loading-container, ion-loading, .click-block-active');
 
-        if (blocked?.offsetParent) {
+        const blockingElements = Array.from(
+            document.querySelectorAll<HTMLElement>('div.core-loading-container, ion-loading, .click-block-active'),
+        );
+
+        const isBlocked = blockingElements.some(element => {
+            if (!element.offsetParent) {
+                return false;
+            }
+
+            const slide = element.closest('ion-slide');
+            if (slide && !slide.classList.contains('swiper-slide-active')) {
+                return false;
+            }
+
+            return true;
+        });
+
+        if (isBlocked) {
             if (!this.waitingBlocked) {
                 this.block('blocked');
                 this.waitingBlocked = true;

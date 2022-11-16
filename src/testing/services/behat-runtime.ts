@@ -27,6 +27,7 @@ import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CoreDom } from '@singletons/dom';
 import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesProvider } from '@services/sites';
+import { CoreNavigator, CoreNavigatorService } from '@services/navigator';
 
 /**
  * Behat runtime servive with public API.
@@ -54,6 +55,10 @@ export class TestingBehatRuntimeService {
 
     get sites(): CoreSitesProvider {
         return CoreSites.instance;
+    }
+
+    get navigator(): CoreNavigatorService {
+        return CoreNavigator.instance;
     }
 
     /**
@@ -436,7 +441,7 @@ export class TestingBehatRuntimeService {
             return 'ERROR: No element matches field to set.';
         }
 
-        const foundValue = 'value' in found ? found.value : found.innerText;
+        const foundValue = this.getFieldValue(found);
         if (value !== foundValue) {
             return `ERROR: Expecting value "${value}", found "${foundValue}" instead.`;
         }
@@ -455,6 +460,24 @@ export class TestingBehatRuntimeService {
             { text: field, selector: 'input, textarea, [contenteditable="true"], ion-select, ion-datetime' },
             { onlyClickable: false, containerName: '' },
         );
+    }
+
+    /**
+     * Get the value of a certain field.
+     *
+     * @param element Field to get the value.
+     * @return Value.
+     */
+    protected getFieldValue(element: HTMLElement | HTMLInputElement): string {
+        if (element.tagName === 'ION-DATETIME') {
+            // ion-datetime's value is a timestamp in ISO format. Use the text displayed to the user instead.
+            const dateTimeTextElement = element.shadowRoot?.querySelector<HTMLElement>('.datetime-text');
+            if (dateTimeTextElement) {
+                return dateTimeTextElement.innerText;
+            }
+        }
+
+        return 'value' in element ? element.value : element.innerText;
     }
 
     /**
