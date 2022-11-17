@@ -78,6 +78,7 @@ Feature: Test signup in app
     Then I should find "Barcelona, Spain" in the app
     And I should find "u1@u1.com" in the app
 
+  @lms_from3.10
   Scenario: Check password policy in signup
     Given the following config values are set as admin:
       | passwordpolicy | 1 |
