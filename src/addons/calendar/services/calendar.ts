@@ -1540,7 +1540,7 @@ export class AddonCalendarProvider {
         }
 
         if (addDefaultReminder) {
-            this.addDefaultEventReminder(eventRecord, site.getId());
+            await this.addDefaultEventReminder(eventRecord, site.getId());
         }
 
         await site.getDb().insertRecord(EVENTS_TABLE, eventRecord);
