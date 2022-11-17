@@ -1475,6 +1475,7 @@
   "core.cannotconnect": "local_moodlemobileapp",
   "core.cannotdownloadfiles": "local_moodlemobileapp",
   "core.cannotinstallapk": "local_moodlemobileapp",
+  "core.cannotinstallapkinfo": "local_moodlemobileapp",
   "core.cannotlogoutpageblocks": "local_moodlemobileapp",
   "core.cannotopeninapp": "local_moodlemobileapp",
   "core.cannotopeninappdownload": "local_moodlemobileapp",
