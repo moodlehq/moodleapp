@@ -71,8 +71,6 @@ Feature: Test basic usage of one course in app
       | activity      | name                  | intro             | course | idnumber       | groupmode | section |
       | workshop      | Test workshop name    | Test workshop     | C1     | workshop       | 0         | 3       |
 
-  # Skip in master until MDL-75353 is fixed
-  @lms_upto4.0
   Scenario: View course contents
     When I entered the course "Course 1" as "student1" in the app
     Then the header should be "Course 1" in the app
@@ -148,8 +146,6 @@ Feature: Test basic usage of one course in app
     And I press "Test workshop name" in the app
     Then the header should be "Test workshop name" in the app
 
-  # Skip in master until MDL-75353 is fixed
-  @lms_upto4.0
   Scenario: View section contents
     When I entered the course "Course 1" as "student1" in the app
     Then the header should be "Course 1" in the app
