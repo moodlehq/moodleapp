@@ -1,4 +1,4 @@
-@app @javascript @core_reminders
+@app @javascript @core_reminders @lms_from4.0
 Feature: Set a new reminder on activity
 
   Background:
@@ -89,7 +89,7 @@ Feature: Set a new reminder on activity
     When I wait "50" seconds
     Then a notification with title "Due: Assignment 01" is not present in the app
 
-Scenario: Check toast is correct
+  Scenario: Check toast is correct
     Given I entered the assign activity "Assignment 02" on course "Course 1" as "student1" in the app
 
     When I press "Set a reminder for \"Assignment 02\" (Due)" in the app

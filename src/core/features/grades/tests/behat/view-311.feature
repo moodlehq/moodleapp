@@ -1,4 +1,4 @@
-@app @javascript @lms_from4.0
+@app @javascript @lms_upto3.11
 Feature: View grades
 
   Background:
@@ -64,9 +64,7 @@ Feature: View grades
     And I should find "70" within "Item 1.1" "tr" in the app
     And I should find "20" within "Item 1.2" "tr" in the app
     And I should find "80" within "Assignment 1" "tr" in the app
-    And I should find "Pass" within "Assignment 1" "tr" in the app
     And I should find "35" within "Assignment 2" "tr" in the app
-    And I should find "Fail" within "Assignment 2" "tr" in the app
     And I should find "Good" within "Outcome" "tr" in the app
     And I should find "205" within "Category 1 total" "tr" in the app
     And I should find "Category 2" in the app
