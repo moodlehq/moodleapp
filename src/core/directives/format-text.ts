@@ -449,7 +449,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
      * @param site Site instance.
      * @return Promise resolved when done.
      */
-    protected async treatHTMLElements(div: HTMLElement, site?: CoreSite): Promise<void> {
+    protected treatHTMLElements(div: HTMLElement, site?: CoreSite): void {
         const images = Array.from(div.querySelectorAll('img'));
         const anchors = Array.from(div.querySelectorAll('a'));
         const audios = Array.from(div.querySelectorAll('audio'));
@@ -560,7 +560,8 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
             promises.push(CoreUtils.ignoreErrors(CoreUtils.timeoutPromise(promise, 5000)));
         }
 
-        await Promise.all(promises);
+        // Run asynchronous operations in the background to avoid blocking rendering.
+        Promise.all(promises).catch(error => CoreUtils.logUnhandledError('Error treating format-text elements', error));
     }
 
     /**
