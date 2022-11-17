@@ -31,10 +31,10 @@
             </ion-card>
 
             <core-swipe-slides [manager]="manager" [options]="slidesOpts">
-                <ng-template let-chapter="item">
+                <ng-template let-chapter="item" let-active="active">
                     <div class="ion-padding">
                         <core-format-text [component]="component" [componentId]="cmId" [text]="chapter.content" contextLevel="module"
-                            [contextInstanceId]="cmId" [courseId]="courseId"></core-format-text>
+                            [contextInstanceId]="cmId" [courseId]="courseId" [disabled]="!active"></core-format-text>
                         <div class="ion-margin-top" *ngIf="chapter.tags?.length > 0">
                             <strong>{{ 'core.tag.tags' | translate }}: </strong>
                             <core-tag-list [tags]="chapter.tags"></core-tag-list>

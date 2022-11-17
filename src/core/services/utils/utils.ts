@@ -140,6 +140,16 @@ export class CoreUtilsProvider {
     }
 
     /**
+     * Log an unhandled error.
+     *
+     * @param message Message to contextualize the error.
+     * @param error Error to log.
+     */
+    logUnhandledError(message: string, error: unknown): void {
+        this.logger.error(message, error);
+    }
+
+    /**
      * Converts an array of objects to an indexed array, using a property of each entry as the key.
      * Every entry will contain an array of the found objects of the property identifier.
      * E.g. [{id: 10, name: 'A'}, {id: 10, name: 'B'}] => {10: [ {id: 10, name: 'A'}, {id: 10, name: 'B'} ] }

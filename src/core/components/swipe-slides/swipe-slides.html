@@ -1,5 +1,6 @@
 <ion-slides *ngIf="loaded" (ionSlideWillChange)="slideWillChange()" (ionSlideDidChange)="slideDidChange()" [options]="options">
-    <ion-slide *ngFor="let item of items">
-        <ng-container *ngIf="template" [ngTemplateOutlet]="template" [ngTemplateOutletContext]="{item: item}"></ng-container>
+    <ion-slide *ngFor="let item of items; index as index">
+        <ng-container *ngIf="template" [ngTemplateOutlet]="template" [ngTemplateOutletContext]="{item: item, active: isActive(index)}">
+        </ng-container>
     </ion-slide>
 </ion-slides>
