@@ -54,6 +54,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
     protected viewportPromise?: CoreCancellablePromise<void>;
     protected loadingHeight = false;
     protected pageDidEnterListener?: EventListener;
+    protected keyUpListener?: EventListener;
     protected page?: HTMLElement;
 
     constructor(el: ElementRef, protected ionContent: IonContent) {
@@ -83,7 +84,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
             this.calculateHeight();
         });
 
-        this.listenScrollEvents();
+        this.listenEvents();
     }
 
     /**
@@ -120,9 +121,9 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
     }
 
     /**
-     * Setup scroll event listener.
+     * Setup event listeners.
      */
-    protected async listenScrollEvents(): Promise<void> {
+    protected async listenEvents(): Promise<void> {
         if (!this.content || this.content?.classList.contains('has-collapsible-footer')) {
             return;
         }
@@ -185,6 +186,17 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
                 this.calculateHeight();
             },
         );
+
+        // Handle scroll when navigating using tab key and the selected element is behind the footer.
+        this.content.addEventListener('keyup', this.keyUpListener = (ev: KeyboardEvent) => {
+            if (ev.key !== 'Tab' || !document.activeElement) {
+                return;
+            }
+
+            if (document.activeElement.getBoundingClientRect().bottom > this.element.getBoundingClientRect().top) {
+                document.activeElement.scrollIntoView({ block: 'center' });
+            }
+        });
     }
 
     /**
@@ -258,6 +270,9 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
             }
             if (this.endContentScrollListener) {
                 this.content.removeEventListener('ionScrollEnd', this.endContentScrollListener);
+            }
+            if (this.keyUpListener) {
+                this.content.removeEventListener('keyup', this.keyUpListener);
             }
         }
 

@@ -91,7 +91,8 @@
         </ion-item>
         <ng-container *ngFor="let recording of recordings">
             <ion-item *ngIf="recording.url" button class="addon-mod_bbb-recording-title" [attr.aria-expanded]="recording.expanded"
-                (click)="toggle(recording)" [attr.aria-label]="(recording.expanded ? 'core.collapse' : 'core.expand') | translate">
+                (click)="toggle(recording)" [attr.aria-label]="(recording.expanded ? 'core.collapse' : 'core.expand') | translate"
+                detail="false">
                 <ion-icon name="fas-chevron-right" flip-rtl slot="start" aria-hidden="true" class="expandable-status-icon"
                     [class.expandable-status-icon-expanded]="recording.expanded">
                 </ion-icon>
