@@ -16,6 +16,8 @@ export class CoreAriaRoleTab<T = unknown> {
 
     componentInstance: T;
 
+    protected selectTabCandidate?: string;
+
     constructor(componentInstance: T) {
         this.componentInstance = componentInstance;
     }
@@ -23,9 +25,10 @@ export class CoreAriaRoleTab<T = unknown> {
     /**
      * A11y key functionality that prevents keyDown events.
      *
+     * @param tabFindIndex Tab findable index.
      * @param e Event.
      */
-    keyDown(e: KeyboardEvent): void {
+    keyDown(tabFindIndex: string, e: KeyboardEvent): void {
         if (e.key == ' ' ||
             e.key == 'Enter' ||
             e.key == 'Home' ||
@@ -35,6 +38,11 @@ export class CoreAriaRoleTab<T = unknown> {
         ) {
             e.preventDefault();
             e.stopPropagation();
+            e.stopImmediatePropagation();
+        }
+
+        if (e.key == ' ' || e.key == 'Enter') {
+            this.selectTabCandidate = tabFindIndex;
         }
     }
 
@@ -48,19 +56,24 @@ export class CoreAriaRoleTab<T = unknown> {
      * End: When a tab has focus, moves focus to the last tab.
      * https://www.w3.org/TR/wai-aria-practices-1.1/examples/tabs/tabs-2/tabs.html
      *
-     * @param tabFindIndex Tab finable index.
+     * @param tabFindIndex Tab findable index.
      * @param e Event.
      * @return Promise resolved when done.
      */
     keyUp(tabFindIndex: string, e: KeyboardEvent): void {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+
         if (e.key == ' ' || e.key == 'Enter') {
-            this.selectTab(tabFindIndex, e);
+            if (this.selectTabCandidate === tabFindIndex) {
+                this.selectTab(tabFindIndex, e);
+            }
+
+            this.selectTabCandidate = undefined;
 
             return;
         }
-
-        e.preventDefault();
-        e.stopPropagation();
 
         const tabs = this.getSelectableTabs();
 
