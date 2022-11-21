@@ -64,6 +64,10 @@
       font-weight: normal;
     }
 
+    tbody tr.core-bold th {
+      font-weight: inherit;
+    }
+
     tbody #gradeitem {
         @include padding(null, null, null, 4px);
     }
