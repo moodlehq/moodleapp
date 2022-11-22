@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { CoreSiteConfigSupportAvailability, CoreSitePublicConfigResponse } from '@classes/site';
+import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreUserNullSupportConfig } from '@features/user/classes/support/null-support-config';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
@@ -51,6 +52,10 @@ export class CoreUserGuestSupportConfig extends CoreUserSupportConfig {
      * @inheritdoc
      */
     canContactSupport(): boolean {
+        if (CoreLoginHelper.isFeatureDisabled('NoDelegate_CoreUserSupport', this.config)) {
+            return false;
+        }
+
         // This config was introduced in 4.1, if it's missing we can assume the site is 4.0 or lower.
         if ('supportavailability' in this.config) {
             return this.config.supportavailability === CoreSiteConfigSupportAvailability.Anyone;
