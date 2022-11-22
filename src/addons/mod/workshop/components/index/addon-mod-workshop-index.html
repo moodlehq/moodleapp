@@ -9,7 +9,8 @@
 <core-loading [hideUntil]="!showLoading">
 
     <!-- Activity info. -->
-    <core-course-module-info [module]="module" [hasDataToSync]="hasOffline" (completionChanged)="onCompletionChange()">
+    <core-course-module-info [module]="module" [component]="component" [componentId]="componentId" [courseId]="courseId"
+        [hasDataToSync]="hasOffline" (completionChanged)="onCompletionChange()">
     </core-course-module-info>
 
     <ion-card *ngIf="phases">
