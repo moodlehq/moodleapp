@@ -200,7 +200,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
             // Done this way because of the shadow DOM.
             this.style.textContent = this.fullscreen
                 ? '@media screen and (orientation: landscape) {\
-                    .toolbar-container { flex-direction: column-reverse !important; height: 100%; } }'
+                    .core-iframe-fullscreen .toolbar-container { flex-direction: column-reverse !important; height: 100%; } }'
                 : '';
         }
 
