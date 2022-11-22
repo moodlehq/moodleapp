@@ -84,7 +84,6 @@ export class CoreSitesProvider {
     protected sessionRestored = false;
     protected currentSite?: CoreSite;
     protected sites: { [s: string]: CoreSite } = {};
-    protected sitesMigrated: { [s: string]: boolean } = {};
     protected siteSchemasMigration: { [siteId: string]: Promise<void> } = {};
     protected siteSchemas: { [name: string]: CoreRegisteredSiteSchema } = {};
     protected pluginsSiteSchemas: { [name: string]: CoreRegisteredSiteSchema } = {};
@@ -1720,12 +1719,6 @@ export class CoreSitesProvider {
         if (this.siteSchemasMigration[siteId] !== undefined) {
             return this.siteSchemasMigration[siteId];
         }
-
-        if (this.sitesMigrated[siteId] !== undefined) {
-            throw new CoreError('Site already migrated.');
-        }
-
-        this.sitesMigrated[siteId] = true;
 
         this.logger.debug(`Migrating all schemas of ${siteId}`);
 
