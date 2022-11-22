@@ -102,7 +102,7 @@
     "endonesteptour": "Got it",
     "error": "Error",
     "errorchangecompletion": "An error occurred while changing the completion status. Please try again.",
-    "errorcode": "Error code",
+    "errorcode": "Error code: {{errorCode}}",
     "errordeletefile": "Error deleting the file. Please try again.",
     "errordetailshide": "Hide error details",
     "errordetailsshow": "Show error details",
