@@ -90,6 +90,10 @@ export class CoreUserSupportService {
             return;
         }
 
+        if (subject) {
+            subject = Translate.instant('core.user.supportsubject', { subject });
+        }
+
         const unsubscribe = CoreSubscriptions.once(browser.on('loadstop'), () => {
             browser.executeScript({
                 code: `
