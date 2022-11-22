@@ -68,6 +68,13 @@ export class CoreUserGuestSupportConfig extends CoreUserSupportConfig {
     /**
      * @inheritdoc
      */
+    getSupportPageLang(): string | null {
+        return this.config.lang ?? null;
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected buildSupportPageUrl(): string {
         return this.config.supportpage?.trim()
             || `${this.config.httpswwwroot || this.config.wwwroot}/user/contactsitesupport.php`;

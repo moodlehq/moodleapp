@@ -120,6 +120,33 @@ export class CoreLangProvider {
     }
 
     /**
+     * Get message for the given language.
+     *
+     * @param key Message key.
+     * @param lang Language.
+     * @returns Message if found, null otherwise.
+     */
+    async getMessage(key: string, lang: string): Promise<string | null>  {
+        const messages = await this.getMessages(lang);
+
+        return messages[key] ?? null;
+    }
+
+    /**
+     * Get messages for the given language.
+     *
+     * @param lang Language.
+     * @returns Messages.
+     */
+    getMessages(lang: string): Promise<Record<string, string>> {
+        return new Promise(resolve => CoreSubscriptions.once(
+            Translate.getTranslation(lang),
+            messages => resolve(messages),
+            () => resolve({}),
+        ));
+    }
+
+    /**
      * Get the parent language defined on the language strings.
      *
      * @param currentLanguage Current language.

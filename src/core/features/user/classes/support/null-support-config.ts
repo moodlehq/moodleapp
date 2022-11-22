@@ -32,6 +32,13 @@ export class CoreUserNullSupportConfig extends CoreUserSupportConfig {
     /**
      * @inheritdoc
      */
+    getSupportPageLang(): string | null {
+        return null;
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected buildSupportPageUrl(): string {
         throw new Error('Can\'t build a support page url from a null config');
     }
