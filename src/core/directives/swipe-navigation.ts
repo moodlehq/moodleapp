@@ -18,7 +18,6 @@ import { CoreSwipeNavigationTourComponent } from '@components/swipe-navigation-t
 import { CoreUserTours } from '@features/usertours/services/user-tours';
 import { Gesture, GestureDetail } from '@ionic/angular';
 import { CorePlatform } from '@services/platform';
-import { CoreScreen } from '@services/screen';
 import { GestureController } from '@singletons';
 
 const ACTIVATION_THRESHOLD = 150;
@@ -47,7 +46,7 @@ export class CoreSwipeNavigationDirective implements AfterViewInit, OnDestroy {
     }
 
     get enabled(): boolean {
-        return CoreScreen.isMobile && !!this.manager;
+        return !!this.manager;
     }
 
     /**
