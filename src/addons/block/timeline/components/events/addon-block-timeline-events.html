@@ -27,7 +27,7 @@
                                 </core-mod-icon>
                             </ion-col>
                             <ion-col class="addon-block-timeline-activity-name ion-no-padding">
-                                <p class="item-heading addon-block-timeline-activity-name-with-status">
+                                <p class="item-heading">
                                     <span>
                                         <core-format-text [text]="event.activityname || event.name" contextLevel="module"
                                             [contextInstanceId]="event.id" [courseId]="event.course?.id">
@@ -36,14 +36,15 @@
                                     <ion-badge *ngIf="event.overdue" color="danger">{{ 'addon.block_timeline.overdue' | translate }}
                                     </ion-badge>
                                 </p>
-                                <p *ngIf="(showInlineCourse && event.course) || event.activitystr"
-                                    class="addon-block-timeline-activity-course-activity">
-                                    <span *ngIf="showInlineCourse && event.course">
+                                <p *ngIf="showInlineCourse && event.course">
+                                    <span>
                                         <core-format-text [text]="event.course.fullnamedisplay" contextLevel="course"
                                             [contextInstanceId]="event.course.id">
                                         </core-format-text>
                                     </span>
-                                    <span *ngIf="event.activitystr">
+                                </p>
+                                <p *ngIf="event.activitystr">
+                                    <span>
                                         <core-format-text *ngIf="event.activitystr" [text]="event.activitystr" contextLevel="module"
                                             [contextInstanceId]="event.id">
                                         </core-format-text>
