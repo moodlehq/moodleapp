@@ -38,34 +38,6 @@ h4.core-bold {
     justify-content: flex-end;
 }
 
-.addon-block-timeline-activity-name-with-status {
-    display: flex;
-    flex-wrap: wrap;
-    span {
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-}
-
-.addon-block-timeline-activity-course-activity {
-    display: flex;
-    flex-wrap: wrap;
-    span {
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    span::after {
-        content: "·";
-        display: inline;
-        padding-left: .3rem;
-        padding-right: .3rem;
-    }
-
-    span:last-child::after {
-        display: none;
-    }
-}
-
 .addon-block-timeline-activity-main,
 .addon-block-timeline-activity-name {
     flex-grow: 1;
@@ -78,4 +50,16 @@ h4.core-bold {
 .addon-block-timeline-activity-name {
     flex-grow: 1;
     overflow: hidden;
+
+    & > p {
+        display: flex;
+        flex-wrap: wrap;
+
+        & > span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+    }
+
 }
