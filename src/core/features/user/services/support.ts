@@ -24,6 +24,7 @@ import { CoreEvents } from '@singletons/events';
 import { CoreSubscriptions } from '@singletons/subscriptions';
 import { AlertButton } from '@ionic/angular';
 import { CoreDomUtils } from '@services/utils/dom';
+import { CoreLang } from '@services/lang';
 
 /**
  * Handle site support.
@@ -44,6 +45,7 @@ export class CoreUserSupportService {
 
         if (supportPageUrl.endsWith('/user/contactsitesupport.php')) {
             this.populateSupportForm(browser, options.subject, options.message);
+            this.listenSupportFormSubmission(browser, supportConfig.getSupportPageLang());
         }
 
         await CoreEvents.waitUntil(CoreEvents.IAB_EXIT);
@@ -90,6 +92,10 @@ export class CoreUserSupportService {
             return;
         }
 
+        if (subject) {
+            subject = Translate.instant('core.user.supportsubject', { subject });
+        }
+
         const unsubscribe = CoreSubscriptions.once(browser.on('loadstop'), () => {
             browser.executeScript({
                 code: `
@@ -100,6 +106,37 @@ export class CoreUserSupportService {
         });
 
         CoreEvents.once(CoreEvents.IAB_EXIT, () => unsubscribe());
+    }
+
+    /**
+     * Set up listeners to close the browser when the contact form has been submitted.
+     *
+     * @param browser In App browser.
+     * @param lang Language used in the support page.
+     */
+    protected async listenSupportFormSubmission(browser: InAppBrowserObject, lang: string | null): Promise<void> {
+        const appSuccessMessage = Translate.instant('core.user.supportmessagesent');
+        const lmsSuccessMessage = lang && await CoreLang.getMessage('core.user.supportmessagesent', lang);
+        const subscription = browser.on('loadstop').subscribe(async () => {
+            const result = await browser.executeScript({
+                code: `
+                    [...document.querySelectorAll('.alert-success')].some(
+                        div =>
+                            div.textContent?.includes(${JSON.stringify(lmsSuccessMessage)}) ||
+                            div.textContent?.includes(${JSON.stringify(appSuccessMessage)})
+                    )
+                `,
+            });
+
+            if (!Array.isArray(result) || result[0] !== true) {
+                return;
+            }
+
+            browser.close();
+            CoreDomUtils.showAlert(undefined, appSuccessMessage);
+        });
+
+        CoreEvents.once(CoreEvents.IAB_EXIT, () => subscription.unsubscribe());
     }
 
 }

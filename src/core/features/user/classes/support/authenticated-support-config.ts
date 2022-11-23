@@ -69,6 +69,13 @@ export class CoreUserAuthenticatedSupportConfig extends CoreUserSupportConfig {
     /**
      * @inheritdoc
      */
+    getSupportPageLang(): string | null {
+        return this.site.infos?.lang ?? null;
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected buildSupportPageUrl(): string {
         return this.site.config?.supportpage?.trim()
             || `${this.site.config?.httpswwwroot ?? this.site.config?.wwwroot ?? this.site.siteUrl}/user/contactsitesupport.php`;

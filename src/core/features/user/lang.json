@@ -31,6 +31,8 @@
     "sendemail": "Email",
     "student": "Student",
     "support": "Contact site support",
+    "supportmessagesent": "Your message has been sent.",
+    "supportsubject": "[App] {{subject}}",
     "teacher": "Non-editing teacher",
     "userwithid": "User with ID {{id}}",
     "webpage": "Web page"

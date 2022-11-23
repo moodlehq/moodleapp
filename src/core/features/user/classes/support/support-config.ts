@@ -25,6 +25,13 @@ export abstract class CoreUserSupportConfig {
     public abstract canContactSupport(): boolean;
 
     /**
+     * Get language used in the support page, if any.
+     *
+     * @return Support page language.
+     */
+    public abstract getSupportPageLang(): string | null;
+
+    /**
      * Get url to use for contacting support.
      *
      * @returns Support page url.

@@ -12,24 +12,22 @@
         margin-bottom: 0;
     }
 
-    .core-error-info--content {
+    .core-error-info--code {
         padding: var(--spacing-2) var(--spacing-2) 0 var(--spacing-2);
+        font-size: var(--font-size-normal);
+    }
 
-        .core-error-info--code {
-            font-size: var(--font-size-normal);
-        }
-
-        .core-error-info--details {
-            color: var(--gray-500);
-        }
-
+    .core-error-info--details p {
+        padding: var(--spacing-2) var(--spacing-2) 0 var(--spacing-2);
+        color: var(--gray-500);
     }
 
     .core-error-info--checkbox {
         display: none;
 
-        & + .core-error-info--content {
-            max-height: calc(var(--font-size-sm) + 2 * var(--spacing-2));
+        & + .core-error-info--details,
+        & + .core-error-info--code + .core-error-info--details {
+            max-height: 0;
             overflow: hidden;
             transition: max-height 600ms ease-in-out;
 
@@ -58,8 +56,9 @@
 
         }
 
-        &:checked + .core-error-info--content {
-            max-height: 150px;
+        &:checked + .core-error-info--details,
+        &:checked + .core-error-info--code + .core-error-info--details {
+            max-height: 110px;
 
             & + .core-error-info--toggle .core-error-info--hide-content {
                 display: flex;
@@ -69,18 +68,6 @@
                 display: none;
             }
 
-        }
-
-    }
-
-    &.has-error-code .core-error-info--checkbox {
-
-        & + .core-error-info--content {
-            max-height: calc(var(--font-size-normal) + 2 * var(--spacing-2));
-        }
-
-        &:checked + .core-error-info--content {
-            max-height: 170px;
         }
 
     }

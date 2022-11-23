@@ -2396,6 +2396,8 @@
   "core.user.sendemail": "local_moodlemobileapp",
   "core.user.student": "moodle/defaultcoursestudent",
   "core.user.support": "local_moodlemobileapp",
+  "core.user.supportmessagesent": "user",
+  "core.user.supportsubject": "local_moodlemobileapp",
   "core.user.teacher": "moodle/noneditingteacher",
   "core.user.useraccount": "moodle",
   "core.user.userwithid": "local_moodlemobileapp",

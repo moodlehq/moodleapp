@@ -40,16 +40,16 @@ export class CoreErrorInfoComponent implements OnInit, OnChanges {
      */
     static render(errorDetails: string, errorCode?: string): string {
         const toggleId = CoreForms.uniqueId('error-info-toggle');
-        const errorCodeLabel = Translate.instant('core.errorcode');
+        const errorCodeLabel = Translate.instant('core.errorcode', { errorCode });
         const hideDetailsLabel = Translate.instant('core.errordetailshide');
         const showDetailsLabel = Translate.instant('core.errordetailsshow');
 
         return `
-            <div class="core-error-info ${errorCode ? 'has-error-code' : ''}">
+            <div class="core-error-info">
                 <input id="${toggleId}" type="checkbox" class="core-error-info--checkbox" />
-                <div class="core-error-info--content">
-                    ${errorCode ? `<p class="core-error-info--code"><strong>${errorCodeLabel}: ${errorCode}</strong></p>` : ''}
-                    <p class="core-error-info--details">${errorDetails}</p>
+                ${errorCode ? `<div class="core-error-info--code"><strong>${errorCodeLabel}</strong></div>` : ''}
+                <div class="core-error-info--details">
+                    <p>${errorDetails}</p>
                 </div>
                 <label for="${toggleId}" class="core-error-info--toggle" aria-hidden="true">
                     <span class="core-error-info--hide-content">
