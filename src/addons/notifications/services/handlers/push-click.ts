@@ -141,5 +141,5 @@ export type AddonNotificationsNotificationData = CorePushNotificationsNotificati
     contexturl?: string; // URL related to the notification.
     savedmessageid?: number; // Notification ID (optional).
     id?: number; // Notification ID (optional).
-    date?: string; // Notification date (timestamp). E.g. "1669204700".
+    date?: string | number; // Notification date (timestamp). E.g. "1669204700".
 };
