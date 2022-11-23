@@ -36,7 +36,7 @@
                         <core-format-text [text]="subject" contextLevel="system" [contextInstanceId]="0" [wsNotFiltered]="true">
                         </core-format-text>
                     </p>
-                    <p>{{ timecreated | coreTimeAgo }}<ng-container *ngIf="userIdFrom > 0"> · {{
+                    <p *ngIf="timecreated > 0">{{ timecreated | coreTimeAgo }}<ng-container *ngIf="userIdFrom > 0"> · {{
                             userFromFullName }}</ng-container>
                     </p>
                 </ion-label>
