@@ -73,11 +73,8 @@ export class CoreSwipeNavigationDirective implements AfterViewInit, OnDestroy {
                 this.onRelease(ev);
             },
         });
-        this.swipeGesture.enable();
 
-        // Show user tour.
         const source = this.manager?.getSource();
-
         if (!source) {
             return;
         }
@@ -85,11 +82,13 @@ export class CoreSwipeNavigationDirective implements AfterViewInit, OnDestroy {
         await source.waitForLoaded();
 
         const items = source.getItems() ?? [];
-
         if (!this.enabled || items.length < 2) {
             return;
         }
 
+        this.swipeGesture.enable();
+
+        // Show user tour.
         await CoreUserTours.showIfPending({
             id: 'swipe-navigation',
             component: CoreSwipeNavigationTourComponent,
