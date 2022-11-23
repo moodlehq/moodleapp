@@ -16,6 +16,7 @@ core-format-text {
     user-select: text;
     word-break: break-word;
     word-wrap: break-word;
+    cursor: auto;
 
     @include core-transition(background-color color, 200ms);
     &.core-loading {
