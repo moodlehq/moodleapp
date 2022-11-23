@@ -402,4 +402,6 @@ html {
     } @else {
         --core-mainpage-sitename-display: inline;
     }
+
+    --rte-editor-background: var(--core-input-background);
 }
