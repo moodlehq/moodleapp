@@ -63,6 +63,7 @@ body:not(.core-iframe-fullscreen) .collapsible-header-page {
             }
 
             .collapsible-header-original-title {
+                pointer-events: none;
                 opacity: 0;
             }
 
