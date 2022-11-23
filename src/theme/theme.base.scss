@@ -327,6 +327,9 @@ ion-button.button-outline {
     --background: var(--core-input-background);
     --color: var(--core-input-text);
     --ion-color-primary: var(--core-input-text);
+    &.ios {
+        --color-activated: var(--contrast-background);
+    }
 }
 
 ion-button.button-solid {
