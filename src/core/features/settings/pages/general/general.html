@@ -15,7 +15,7 @@
             <ion-label>
                 <h2>{{ 'core.settings.language' | translate }}</h2>
             </ion-label>
-            <ion-select [(ngModel)]="selectedLanguage" (ionChange)="languageChanged()" interface="action-sheet"
+            <ion-select [(ngModel)]="selectedLanguage" (ionChange)="languageChanged($event)" interface="action-sheet"
                 [interfaceOptions]="{header: 'core.settings.language' | translate}">
                 <ion-select-option *ngFor="let entry of languages" [value]="entry.code">{{ entry.name }}</ion-select-option>
             </ion-select>
@@ -24,9 +24,9 @@
             <ion-label>
                 <h2>{{ 'core.settings.fontsize' | translate }}</h2>
             </ion-label>
-            <ion-segment [(ngModel)]="selectedZoomLevel" (ionChange)="zoomLevelChanged()" color="primary">
-                <ion-segment-button *ngFor="let zoomLevel of zoomLevels" [value]="zoomLevel.value"
-                    [ngStyle]="{'font-size.px': zoomLevel.style}">
+            <ion-segment [(ngModel)]="selectedZoomLevel" color="primary">
+                <ion-segment-button *ngFor=" let zoomLevel of zoomLevels" [value]="zoomLevel.value"
+                    [ngStyle]="{'font-size.px': zoomLevel.style}" (click)="zoomLevelChanged($event, zoomLevel.value)">
                     <ion-label>
                         {{ 'core.settings.fontsizecharacter' | translate }}
                         <!-- Empty element styled with the largest font size, so all buttons share a common baseline. -->
@@ -40,7 +40,7 @@
                 <h2>{{ 'core.settings.colorscheme' | translate }}</h2>
                 <p *ngIf="colorSchemeDisabled" class="text-danger">{{ 'core.settings.forcedsetting' | translate }}</p>
             </ion-label>
-            <ion-select [(ngModel)]="selectedScheme" (ionChange)="colorSchemeChanged()" interface="action-sheet"
+            <ion-select [(ngModel)]="selectedScheme" (ionChange)="colorSchemeChanged($event)" interface="action-sheet"
                 [disabled]="colorSchemeDisabled" [interfaceOptions]="{header: 'core.settings.colorscheme' | translate}">
                 <ion-select-option *ngFor="let scheme of colorSchemes" [value]="scheme">
                     {{ 'core.settings.colorscheme-' + scheme | translate }}</ion-select-option>
@@ -56,13 +56,13 @@
                 <h2>{{ 'core.settings.enablerichtexteditor' | translate }}</h2>
                 <p>{{ 'core.settings.enablerichtexteditordescription' | translate }}</p>
             </ion-label>
-            <ion-toggle [(ngModel)]="richTextEditor" (ionChange)="richTextEditorChanged()"></ion-toggle>
+            <ion-toggle [(ngModel)]="richTextEditor" (ionChange)="richTextEditorChanged($event)"></ion-toggle>
         </ion-item>
         <ion-item class="ion-text-wrap" *ngIf="displayIframeHelp">
             <ion-label>
                 <h2>{{ 'core.settings.ioscookies' | translate }}</h2>
                 <p>{{ 'core.settings.ioscookiesdescription' | translate }}</p>
-                <ion-button expand="block" (click)="openNativeSettings()">
+                <ion-button expand="block" (click)="openNativeSettings($event)">
                     {{ 'core.opensettings' | translate }}
                 </ion-button>
             </ion-label>
@@ -72,14 +72,14 @@
                 <h2>{{ 'core.settings.debugdisplay' | translate }}</h2>
                 <p>{{ 'core.settings.debugdisplaydescription' | translate }}</p>
             </ion-label>
-            <ion-toggle [(ngModel)]="debugDisplay" (ionChange)="debugDisplayChanged()"></ion-toggle>
+            <ion-toggle [(ngModel)]="debugDisplay" (ionChange)="debugDisplayChanged($event)"></ion-toggle>
         </ion-item>
         <ion-item class="ion-text-wrap" *ngIf="analyticsSupported">
             <ion-label>
                 <h2>{{ 'core.settings.enablefirebaseanalytics' | translate }}</h2>
                 <p>{{ 'core.settings.enablefirebaseanalyticsdescription' | translate }}</p>
             </ion-label>
-            <ion-toggle [(ngModel)]="analyticsEnabled" (ionChange)="analyticsEnabledChanged()"></ion-toggle>
+            <ion-toggle [(ngModel)]="analyticsEnabled" (ionChange)="analyticsEnabledChanged($event)"></ion-toggle>
         </ion-item>
     </ion-list>
 </ion-content>
