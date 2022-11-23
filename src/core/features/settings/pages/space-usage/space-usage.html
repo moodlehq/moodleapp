@@ -17,31 +17,70 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
-        <ion-list>
-            <ion-item *ngFor="let site of sites" [class.item-current]="site.id == currentSiteId">
-                <ion-label class="ion-text-wrap">
-                    <p class="item-heading">
-                        <core-format-text [text]="site.siteName" clean="true" [siteId]="site.id"></core-format-text>
-                    </p>
-                    <p class="ion-text-wrap">{{ site.fullName }}</p>
-                    <p>{{ site.siteUrlWithoutProtocol }}</p>
-                    <ion-badge color="light" *ngIf="site.spaceUsage !== undefined">{{ site.spaceUsage | coreBytesToSize }}</ion-badge>
-                </ion-label>
-                <ion-button fill="clear" color="danger" slot="end" (click)="deleteSiteStorage(site)"
-                    [hidden]="site.spaceUsage! + site.cacheEntries! <= 0">
-                    <ion-icon name="fas-trash" slot="icon-only"
-                        [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate: { name: site.siteName }">
-                    </ion-icon>
-                </ion-button>
-            </ion-item>
+        <ion-list class="core-sitelist limited-width">
+            <ion-card *ngIf="accountsList.currentSite">
+                <ion-item-divider sticky="true" class="core-sitelist-sitename">
+                    <ion-label>
+                        <p class="item-heading">
+                            <core-format-text [text]="accountsList.currentSite.siteName" clean="true"
+                                [siteId]="accountsList.currentSite.id"></core-format-text>
+                        </p>
+                        <p><a [href]="accountsList.currentSite.siteUrl" core-link autoLogin="yes">{{
+                                accountsList.currentSite.siteUrlWithoutProtocol }}</a>
+                        </p>
+                    </ion-label>
+                </ion-item-divider>
+
+                <ion-item class="item-current">
+                    <ng-container *ngTemplateOutlet="siteUsage; context: {site: accountsList.currentSite}"></ng-container>
+                </ion-item>
+
+                <ion-item *ngFor="let site of accountsList.sameSite">
+                    <ng-container *ngTemplateOutlet="siteUsage; context: {site: site}"></ng-container>
+                </ion-item>
+            </ion-card>
+
+            <ion-card *ngFor="let sites of accountsList.otherSites">
+                <ion-item-divider sticky="true" *ngIf="sites[0]" class="core-sitelist-sitename">
+                    <ion-label>
+                        <p class="item-heading">
+                            <core-format-text [text]="sites[0].siteName" clean="true" [siteId]="sites[0].id"></core-format-text>
+                        </p>
+                        <p><a [href]="sites[0].siteUrl" core-link autoLogin="no">{{ sites[0].siteUrlWithoutProtocol }}</a></p>
+                    </ion-label>
+                </ion-item-divider>
+
+                <ion-item *ngFor="let site of sites">
+                    <ng-container *ngTemplateOutlet="siteUsage; context: {site: site}"></ng-container>
+                </ion-item>
+            </ion-card>
+
             <ion-item-divider>
                 <ion-label>
                     <h2>{{ 'core.settings.total' | translate }}</h2>
                 </ion-label>
                 <p slot="end" class="ion-margin-end">
-                    {{ totals.spaceUsage | coreBytesToSize }}
+                    {{ totalSpaceUsage | coreBytesToSize }}
                 </p>
             </ion-item-divider>
         </ion-list>
     </core-loading>
 </ion-content>
+
+<!-- Template to render a site space usage. -->
+<ng-template #siteUsage let-site="site">
+    <ion-avatar slot="start">
+        <img [src]="site.avatar" core-external-content [siteId]="site.id" alt="{{ 'core.pictureof' | translate:{$a: site.fullName} }}"
+            onError="this.src='assets/img/user-avatar.png'">
+    </ion-avatar>
+    <ion-label class="ion-text-wrap">
+        <p class="item-heading">{{site.fullName}}</p>
+        <ion-badge color="light" *ngIf="site.spaceUsage !== undefined">{{ site.spaceUsage | coreBytesToSize }}</ion-badge>
+    </ion-label>
+    <ion-button fill="clear" color="danger" slot="end" (click)="deleteSiteStorage(site)"
+        [hidden]="site.spaceUsage <= 0 && !site.hasCacheEntries">
+        <ion-icon name="fas-trash" slot="icon-only"
+            [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate: { name: site.siteName }">
+        </ion-icon>
+    </ion-button>
+</ng-template>

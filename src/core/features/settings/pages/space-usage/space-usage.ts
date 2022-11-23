@@ -16,9 +16,10 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
+import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 
-import { CoreSettingsHelper, CoreSiteSpaceUsage } from '../../services/settings-helper';
+import { CoreSettingsHelper } from '../../services/settings-helper';
 
 /**
  * Page that displays the space usage settings.
@@ -30,37 +31,52 @@ import { CoreSettingsHelper, CoreSiteSpaceUsage } from '../../services/settings-
 export class CoreSettingsSpaceUsagePage implements OnInit, OnDestroy {
 
     loaded = false;
-    sites: CoreSiteBasicInfoWithUsage[] = [];
-    currentSiteId = '';
-    totals: CoreSiteSpaceUsage = {
-        cacheEntries: 0,
-        spaceUsage: 0,
+    totalSpaceUsage = 0;
+
+    accountsList: CoreAccountsListWithUsage = {
+        sameSite: [],
+        otherSites: [],
     };
 
     protected sitesObserver: CoreEventObserver;
 
     constructor() {
-        this.currentSiteId = CoreSites.getCurrentSiteId();
-
         this.sitesObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, async (data) => {
-            const site = await CoreSites.getSite(data.siteId);
+            const siteId = data.siteId;
 
-            const siteEntry = this.sites.find((siteEntry) => siteEntry.id == site.id);
-            if (siteEntry) {
-                const siteInfo = site.getInfo();
+            let siteEntry = siteId === this.accountsList.currentSite?.id
+                ? this.accountsList.currentSite
+                : undefined;
 
-                siteEntry.siteName = site.getSiteName();
+            if (!siteEntry) {
+                siteEntry = this.accountsList.sameSite.find((siteEntry) => siteEntry.id === siteId);
+            }
 
-                if (siteInfo) {
-                    siteEntry.siteUrl = siteInfo.siteurl;
-                    siteEntry.fullName = siteInfo.fullname;
-                }
+            if (!siteEntry) {
+                this.accountsList.otherSites.some((sites) => {
+                    siteEntry = sites.find((siteEntry) => siteEntry.id === siteId);
+
+                    return siteEntry;
+                });
+            }
+
+            if (!siteEntry) {
+                return;
+            }
+
+            const site = await CoreSites.getSite(siteId);
+            const siteInfo = site.getInfo();
+            siteEntry.siteName = site.getSiteName();
+
+            if (siteInfo) {
+                siteEntry.siteUrl = siteInfo.siteurl;
+                siteEntry.fullName = siteInfo.fullname;
             }
         });
     }
 
     /**
-     * View loaded.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.loadSiteData().finally(() => {
@@ -76,31 +92,65 @@ export class CoreSettingsSpaceUsagePage implements OnInit, OnDestroy {
     protected async loadSiteData(): Promise<void> {
         // Calculate total usage.
         let totalSize = 0;
-        let totalEntries = 0;
 
-        this.sites = await CoreSites.getSortedSites();
+        const sites = await CoreUtils.ignoreErrors(CoreSites.getSortedSites(), [] as CoreSiteBasicInfo[]);
+        const sitesWithUsage = await Promise.all(sites.map((site) => this.getSiteWithUsage(site)));
 
-        const settingsHelper = CoreSettingsHelper.instance;
+        let siteUrl = '';
+
+        const currentSiteId = CoreSites.getCurrentSiteId();
+
+        if (currentSiteId) {
+            const index = sitesWithUsage.findIndex((site) => site.id === currentSiteId);
+
+            const siteWithUsage = sitesWithUsage.splice(index, 1)[0];
+            this.accountsList.currentSite = siteWithUsage;
+            totalSize += siteWithUsage.spaceUsage || 0;
+
+            siteUrl = this.accountsList.currentSite.siteUrlWithoutProtocol;
+        }
+
+        const otherSites: Record<string, CoreSiteBasicInfoWithUsage[]> = {};
 
         // Get space usage.
-        await Promise.all(this.sites.map(async (site) => {
-            const siteInfo = await settingsHelper.getSiteSpaceUsage(site.id);
+        sitesWithUsage.forEach((siteWithUsage) => {
+            totalSize += siteWithUsage.spaceUsage || 0;
 
-            site.cacheEntries = siteInfo.cacheEntries;
-            site.spaceUsage = siteInfo.spaceUsage;
+            if (siteWithUsage.siteUrlWithoutProtocol === siteUrl) {
+                this.accountsList.sameSite.push(siteWithUsage);
+            } else {
+                if (otherSites[siteWithUsage.siteUrlWithoutProtocol] === undefined) {
+                    otherSites[siteWithUsage.siteUrlWithoutProtocol] = [];
+                }
 
-            totalSize += site.spaceUsage || 0;
-            totalEntries += site.cacheEntries || 0;
-        }));
+                otherSites[siteWithUsage.siteUrlWithoutProtocol].push(siteWithUsage);
+            }
+        });
 
-        this.totals.spaceUsage = totalSize;
-        this.totals.cacheEntries = totalEntries;
+        this.accountsList.otherSites = CoreUtils.objectToArray(otherSites);
+
+        this.totalSpaceUsage = totalSize;
+    }
+
+    /**
+     * Get site with space usage.
+     *
+     * @param site Site to check.
+     * @return Site with usage.
+     */
+    protected async getSiteWithUsage(site: CoreSiteBasicInfo): Promise<CoreSiteBasicInfoWithUsage> {
+        const siteInfo = await CoreSettingsHelper.getSiteSpaceUsage(site.id);
+
+        return Object.assign(site, {
+            hasCacheEntries: siteInfo.cacheEntries > 0,
+            spaceUsage: siteInfo.spaceUsage,
+        });
     }
 
     /**
      * Refresh the data.
      *
-     * @param event Refresher event.
+     * @param refresher Refresher event.
      */
     refreshData(refresher?: IonRefresher): void {
         this.loadSiteData().finally(() => {
@@ -117,21 +167,20 @@ export class CoreSettingsSpaceUsagePage implements OnInit, OnDestroy {
         try {
             const newInfo = await CoreSettingsHelper.deleteSiteStorage(siteData.siteName || '', siteData.id);
 
-            this.totals.spaceUsage -= siteData.spaceUsage! - newInfo.spaceUsage;
-            this.totals.spaceUsage -= siteData.cacheEntries! - newInfo.cacheEntries;
+            this.totalSpaceUsage -= siteData.spaceUsage - newInfo.spaceUsage;
 
             siteData.spaceUsage = newInfo.spaceUsage;
-            siteData.cacheEntries = newInfo.cacheEntries;
+            siteData.hasCacheEntries = newInfo.cacheEntries > 0;
         } catch {
             // Ignore cancelled confirmation modal.
         }
     }
 
     /**
-     * Page destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.sitesObserver?.off();
+        this.sitesObserver.off();
     }
 
 }
@@ -139,7 +188,16 @@ export class CoreSettingsSpaceUsagePage implements OnInit, OnDestroy {
 /**
  * Basic site info with space usage and cache entries that can be erased.
  */
-export interface CoreSiteBasicInfoWithUsage extends CoreSiteBasicInfo {
-    cacheEntries?: number; // Number of cached entries that can be cleared.
-    spaceUsage?: number; // Space used in this site.
+interface CoreSiteBasicInfoWithUsage extends CoreSiteBasicInfo {
+    hasCacheEntries: boolean; // If has cached entries that can be cleared.
+    spaceUsage: number; // Space used in this site.
 }
+
+/**
+ * Accounts list for selecting sites interfaces.
+ */
+type CoreAccountsListWithUsage = {
+    currentSite?: CoreSiteBasicInfoWithUsage; // If logged in, current site info.
+    sameSite: CoreSiteBasicInfoWithUsage[]; // If logged in, accounts info on the same site.
+    otherSites: CoreSiteBasicInfoWithUsage[][]; // Other accounts in other sites.
+};
