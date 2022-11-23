@@ -1,3 +1,7 @@
 .addon-notifications-table-content ion-row {
     min-height: 35px;
 }
+
+ion-item-divider, ion-card-header {
+    border-top: 1px solid var(--stroke);
+}
