@@ -118,7 +118,7 @@
     "hammerjs": "^2.0.8",
     "jszip": "^3.7.1",
     "mathjax": "2.7.9",
-    "moment": "^2.29.2",
+    "moment": "^2.29.4",
     "moment-timezone": "^0.5.34",
     "nl.kingsquare.cordova.background-audio": "^1.0.1",
     "rxjs": "~6.5.5",
