@@ -91,6 +91,7 @@ export class AddonNotificationsNotificationPage implements OnInit, OnDestroy {
             this.userIdFrom = notification.userfromid ? Number(notification.userfromid) : -1;
             this.profileImageUrlFrom = notification.senderImage;
             this.userFromFullName = notification.userfromfullname;
+            this.timecreated = Number(notification.date ?? 0);
         }
 
         await this.loadActions(notification);
