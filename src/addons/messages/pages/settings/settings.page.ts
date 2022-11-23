@@ -70,9 +70,7 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Runs when the page has loaded. This event only happens once per page being created.
-     * If a page leaves but is cached, then this event will not fire again on a subsequent viewing.
-     * Setup code for the page.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.fetchPreferences();
@@ -261,6 +259,9 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
         });
     }
 
+    /**
+     * Send on Enter toggle has changed.
+     */
     sendOnEnterChanged(): void {
         // Save the value.
         CoreConfig.set(CoreConstants.SETTINGS_SEND_ON_ENTER, this.sendOnEnter ? 1 : 0);
@@ -274,7 +275,7 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Page destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         // If there is a pending action to update preferences, execute it right now.
