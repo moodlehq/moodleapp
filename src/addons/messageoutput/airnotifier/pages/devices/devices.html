@@ -9,24 +9,36 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <ion-refresher slot="fixed" [disabled]="!devicesLoaded" (ionRefresh)="refreshDevices($event.target)">
+    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="refreshDevices($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
-    <core-loading [hideUntil]="devicesLoaded">
-        <ion-list>
-            <ion-item class="ion-text-wrap" *ngFor="let device of devices" [class.item-current]="device.current">
-                <ion-label [class.core-bold]="device.current">
-                    <p class="item-heading">
-                        {{ device.name }} {{ device.model }}
-                        <span *ngIf="device.current">({{ 'core.currentdevice' | translate }})</span>
-                    </p>
-                    <p>{{ device.platform }} {{ device.version }}</p>
+    <core-loading [hideUntil]="loaded">
+        <ng-container *ngFor="let platform of platformDevices">
+            <ion-item-divider class="ion-text-wrap">
+                <ion-label>
+                    <h2>{{ platform.platform }}</h2>
                 </ion-label>
-                <core-button-with-spinner [loading]="device.updating" slot="end">
-                    <ion-toggle [(ngModel)]="device.enable" (ngModelChange)="enableDevice(device, device.enable)">
-                    </ion-toggle>
-                </core-button-with-spinner>
-            </ion-item>
-        </ion-list>
+            </ion-item-divider>
+            <ion-card>
+                <ion-list>
+                    <ion-item class="ion-text-wrap" *ngFor="let device of platform.devices" [class.item-current]="device.current">
+                        <ion-label>
+                            <p class="item-heading">
+                                <strong>{{ device.name }} {{ device.model }}</strong> ({{platform.platform}} {{ device.version }})
+                            </p>
+                            <p *ngIf="device.current"><strong>{{ 'core.currentdevice' | translate }}</strong></p>
+                            <p>
+                                {{ 'core.lastmodified' | translate }}: {{ device.timemodified * 1000 |
+                                coreFormatDate:'strftimedatetimeshort' }}
+                            </p>
+                        </ion-label>
+                        <core-button-with-spinner [loading]="device.updating" slot="end">
+                            <ion-toggle [(ngModel)]="device.enable" (ngModelChange)="enableDevice(device, device.enable)">
+                            </ion-toggle>
+                        </core-button-with-spinner>
+                    </ion-item>
+                </ion-list>
+            </ion-card>
+        </ng-container>
     </core-loading>
 </ion-content>

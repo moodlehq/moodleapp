@@ -29,13 +29,13 @@ import { CoreUtils } from '@services/utils/utils';
 })
 export class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestroy {
 
-    devices?: AddonMessageOutputAirnotifierDeviceFormatted[] = [];
-    devicesLoaded = false;
+    platformDevices: AddonMessageOutputAirnotifierPlatformDevices[] = [];
+    loaded = false;
 
     protected updateTimeout?: number;
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.fetchDevices();
@@ -49,12 +49,11 @@ export class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestr
     protected async fetchDevices(): Promise<void> {
         try {
             const devices = await AddonMessageOutputAirnotifier.getUserDevices();
-
-            this.devices = this.formatDevices(devices);
+            this.formatDevices(devices);
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
         } finally {
-            this.devicesLoaded = true;
+            this.loaded = true;
         }
     }
 
@@ -62,24 +61,37 @@ export class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestr
      * Add some calculated data for devices.
      *
      * @param devices Devices to format.
-     * @return Formatted devices.
      */
-    protected formatDevices(devices: AddonMessageOutputAirnotifierDevice[]): AddonMessageOutputAirnotifierDeviceFormatted[] {
-        const formattedDevices: AddonMessageOutputAirnotifierDeviceFormatted[] = devices;
+    protected formatDevices(devices: AddonMessageOutputAirnotifierDevice[]): void {
+        this.platformDevices = [];
+
+        const formattedDevices: Record<string, AddonMessageOutputAirnotifierPlatformDevices> = {};
         const pushId = CorePushNotifications.getPushId();
 
         // Convert enabled to boolean and search current device.
-        formattedDevices.forEach((device) => {
+        devices.forEach((device: AddonMessageOutputAirnotifierDeviceFormatted) => {
+            if (formattedDevices[device.platform] === undefined) {
+                formattedDevices[device.platform] = {
+                    platform: device.platform,
+                    devices: [],
+                };
+            }
+
             device.enable = !!device.enable;
-            device.current = !!(pushId && pushId == device.pushid);
+            device.current = pushId === device.pushid;
+
+            formattedDevices[device.platform].devices.push(device);
+
         });
 
-        return formattedDevices.sort((a, b) => {
-            const compareA = a.name.toLowerCase();
-            const compareB = b.name.toLowerCase();
+        for (const platform in formattedDevices) {
+            const devices = formattedDevices[platform];
+            devices.devices.sort((a, b) => b.timemodified - a.timemodified);
 
-            return compareA.localeCompare(compareB);
-        });
+            devices.platform = devices.platform.replace('-fcm', '');
+
+            this.platformDevices.push(devices);
+        }
     }
 
     /**
@@ -145,7 +157,7 @@ export class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestr
     }
 
     /**
-     * Page destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         // If there is a pending action to update devices, execute it right now.
@@ -156,6 +168,11 @@ export class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestr
     }
 
 }
+
+type AddonMessageOutputAirnotifierPlatformDevices = {
+    platform: string;
+    devices: AddonMessageOutputAirnotifierDeviceFormatted[];
+};
 
 /**
  * User device with some calculated data.
