@@ -702,6 +702,10 @@ body.core-iframe-fullscreen ion-router-outlet {
     ion-backdrop {
         visibility: visible;
     }
+
+    .modal-shadow {
+        display: none;
+    }
 }
 
 .core-modal-transparent-no-filter {
