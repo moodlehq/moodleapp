@@ -95,11 +95,3 @@
     }
     min-height: 100%;
 }
-
-
-:host-context(.ios) {
-    &.core-loading-loaded {
-        --contents-display: flex;
-        flex-direction: column;
-    }
-}
