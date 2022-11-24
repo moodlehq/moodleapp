@@ -327,8 +327,8 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
 
                     await this.showLoadingAndFetch(true, false);
 
-                    if (this.currentPage) {
-                        CoreUtils.ignoreErrors(AddonModWiki.logPageView(this.currentPage, this.wiki!.id, this.wiki!.name));
+                    if (this.currentPage && this.wiki) {
+                        CoreUtils.ignoreErrors(AddonModWiki.logPageView(this.currentPage, this.wiki.id, this.wiki.name));
                     }
                 }, CoreSites.getCurrentSiteId());
             }
@@ -373,7 +373,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
 
         // If no page specified, search page title in the offline pages.
         if (!this.currentPage) {
-            const searchTitle = this.pageTitle ? this.pageTitle : this.wiki!.firstpagetitle;
+            const searchTitle = this.pageTitle ? this.pageTitle : this.wiki?.firstpagetitle ?? '';
             const pageExists = dbPages.some((page) => page.title == searchTitle);
 
             if (pageExists) {
@@ -482,7 +482,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             `${AddonModWikiModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/edit`,
             {
                 params: {
-                    pageTitle: this.wiki!.firstpagetitle,
+                    pageTitle: this.wiki?.firstpagetitle ?? '',
                     wikiId: this.currentSubwiki?.wikiid,
                     userId: this.currentSubwiki?.userid,
                     groupId: this.currentSubwiki?.groupid,
@@ -640,9 +640,11 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      * @param groupId Group ID of the subwiki.
      */
     goToSubwiki(subwikiId: number, userId: number, groupId: number): void {
-        if (subwikiId != this.currentSubwiki!.id || userId != this.currentSubwiki!.userid ||
-                groupId != this.currentSubwiki!.groupid) {
-
+        if (
+            subwikiId !== this.currentSubwiki?.id ||
+            userId !== this.currentSubwiki?.userid ||
+            groupId !== this.currentSubwiki?.groupid
+        ) {
             this.openPageOrSubwiki({
                 subwikiId: subwikiId,
                 userId: userId,
@@ -710,13 +712,17 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      * @param result Data returned on the sync function.
      * @return If suceed or not.
      */
-    protected hasSyncSucceed(result: AddonModWikiSyncWikiResult): boolean {
-        if (result.updated) {
+    protected hasSyncSucceed(result: AddonModWikiSyncWikiResult | undefined): boolean {
+        if (!result) {
+            return false;
+        }
+
+        if (result.updated && this.wiki) {
             // Trigger event.
             this.ignoreManualSyncEvent = true;
             CoreEvents.trigger(AddonModWikiSyncProvider.MANUAL_SYNCED, {
                 ...result,
-                wikiId: this.wiki!.id,
+                wikiId: this.wiki.id,
             });
         }
 
@@ -841,8 +847,12 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      *
      * @return Promise resolved when done.
      */
-    protected sync(): Promise<AddonModWikiSyncWikiResult> {
-        return AddonModWikiSync.syncWiki(this.wiki!.id, this.courseId, this.wiki!.coursemodule);
+    protected async sync(): Promise<AddonModWikiSyncWikiResult | undefined> {
+        if (!this.wiki) {
+            return;
+        }
+
+        return AddonModWikiSync.syncWiki(this.wiki.id, this.courseId, this.wiki.coursemodule);
     }
 
     /**
@@ -1063,14 +1073,16 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             this.subwikiData.subwikis.push({ label: '', subwikis: subwikiList });
         }
 
-        AddonModWiki.setSubwikiList(
-            this.wiki!.id,
-            this.subwikiData.subwikis,
-            this.subwikiData.count,
-            this.subwikiData.subwikiSelected,
-            this.subwikiData.userSelected,
-            this.subwikiData.groupSelected,
-        );
+        if (this.wiki) {
+            AddonModWiki.setSubwikiList(
+                this.wiki.id,
+                this.subwikiData.subwikis,
+                this.subwikiData.count,
+                this.subwikiData.subwikiSelected,
+                this.subwikiData.userSelected,
+                this.subwikiData.groupSelected,
+            );
+        }
     }
 
 }
