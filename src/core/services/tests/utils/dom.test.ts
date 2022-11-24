@@ -18,6 +18,7 @@ import { AlertController, Translate } from '@singletons';
 import { mock, mockSingleton, mockTranslate } from '@/testing/utils';
 import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreSites } from '@services/sites';
+import { OverlayEventDetail } from '@ionic/core';
 
 describe('CoreDomUtilsProvider', () => {
 
@@ -54,6 +55,32 @@ describe('CoreDomUtilsProvider', () => {
             header: Translate.instant('core.connectionlost'),
             buttons: [Translate.instant('core.ok')],
         });
+    });
+
+    it('ignores alert inputs on cancel', async () => {
+        // Arrange.
+        const mockAlert = mock<HTMLIonAlertElement>({
+            present: () => Promise.resolve(),
+            onWillDismiss: () => Promise.resolve({
+                data: {
+                    values: {
+                        'textarea-prompt': 'Not empty!',
+                    },
+                },
+                role: 'cancel',
+            } as OverlayEventDetail<any>), // eslint-disable-line @typescript-eslint/no-explicit-any
+        });
+
+        mockSingleton(AlertController, mock({ create: () => Promise.resolve(mockAlert) }));
+
+        // Act.
+        const result = await domUtils.showTextareaPrompt('Age', 'How old are you?', [
+            { text: 'Cancel', role: 'cancel' },
+            { text: 'Save' },
+        ]);
+
+        // Assert.
+        expect(result).toBeUndefined();
     });
 
 });

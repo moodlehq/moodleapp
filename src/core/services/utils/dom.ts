@@ -1659,6 +1659,10 @@ export class CoreDomUtilsProvider {
 
         const result = await alert.onWillDismiss();
 
+        if (result.role === 'cancel') {
+            return;
+        }
+
         return result.data?.values?.['textarea-prompt'];
     }
 
