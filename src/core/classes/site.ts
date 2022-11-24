@@ -958,18 +958,12 @@ export class CoreSite {
         // Call the WS.
         const initialToken = this.token ?? '';
 
-        // Call the WS.
-        if (method !== 'core_webservice_get_site_info') {
-            // Send the language to use. Do it after checking cache to prevent losing offline data when changing language.
-            // Don't send it to core_webservice_get_site_info, that WS is used to check if Moodle version is supported.
-            data = {
-                ...data,
-                moodlewssettinglang: preSets.lang ?? await CoreLang.getCurrentLanguage(),
-            };
-            // Moodle uses underscore instead of dash.
-            data.moodlewssettinglang = data.moodlewssettinglang.replace('-', '_');
-
-        }
+        // Send the language to use. Do it after checking cache to prevent losing offline data when changing language.
+        // Moodle uses underscore instead of dash.
+        data = {
+            ...data,
+            moodlewssettinglang: (preSets.lang ?? await CoreLang.getCurrentLanguage()).replace('-', '_'),
+        };
 
         try {
             return await this.callOrEnqueueRequest<T>(method, data, preSets, wsPreSets);
@@ -986,6 +980,14 @@ export class CoreSite {
 
                     return await this.callOrEnqueueRequest<T>(method, data, preSets, wsPreSets);
                 }
+            }
+
+            if (error?.errorcode === 'invalidparameter' && method === 'core_webservice_get_site_info') {
+                // Retry without passing the lang, this parameter isn't supported in 3.4 or older sites
+                // and we need this WS call to be able to determine if the site is supported or not.
+                delete data.moodlewssettinglang;
+
+                return await this.callOrEnqueueRequest<T>(method, data, preSets, wsPreSets);
             }
 
             throw error;
