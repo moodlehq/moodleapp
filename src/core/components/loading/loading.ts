@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, OnChanges, SimpleChange, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChange, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 
 import { CoreEventLoadingChangedData, CoreEvents } from '@singletons/events';
 import { CoreUtils } from '@services/utils/utils';
@@ -21,6 +21,7 @@ import { Translate } from '@singletons';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
 import { CorePromisedValue } from '@classes/promised-value';
 import { AsyncComponent } from '@classes/async-component';
+import { CoreApp } from '@services/app';
 
 /**
  * Component to show a loading spinner and message while data is being loaded.
@@ -48,7 +49,7 @@ import { AsyncComponent } from '@classes/async-component';
     styleUrls: ['loading.scss'],
     animations: [CoreAnimations.SHOW_HIDE],
 })
-export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, AsyncComponent {
+export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, AsyncComponent, OnDestroy {
 
     @Input() hideUntil: unknown = false; // Determine when should the contents be shown.
     @Input() message?: string; // Message to show while loading.
@@ -60,6 +61,7 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
     protected element: HTMLElement; // Current element.
     protected lastScrollPosition = Promise.resolve<number | undefined>(undefined);
     protected onReadyPromise = new CorePromisedValue<void>();
+    protected mutationObserver: MutationObserver;
 
     constructor(element: ElementRef) {
         this.element = element.nativeElement;
@@ -68,6 +70,27 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
         // Calculate the unique ID.
         this.uniqueId = 'core-loading-content-' + CoreUtils.getUniqueId('CoreLoadingComponent');
         this.element.setAttribute('id', this.uniqueId);
+
+        // Throttle 20ms to let mutations resolve.
+        const throttleMutation = CoreUtils.throttle(async () => {
+            await CoreUtils.nextTick();
+            if (!this.loaded) {
+                return;
+            }
+
+            this.element.style.display = 'inline';
+            await CoreUtils.nextTick();
+            this.element.style.removeProperty('display');
+        }, 20);
+
+        // This will solve the iOS sorting problem on new elements appearing on a display contents element.
+        this.mutationObserver = new MutationObserver(async (mutationRecords) => {
+            const count = mutationRecords.reduce((previous, mutation) => previous + mutation.addedNodes.length, 0);
+
+            if (count > 0) {
+                throttleMutation();
+            }
+        });
     }
 
     /**
@@ -98,12 +121,19 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
     }
 
     /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.mutationObserver.disconnect();
+    }
+
+    /**
      * Change loaded state.
      *
      * @param loaded True to load, false otherwise.
      * @return Promise resolved when done.
      */
-    changeState(loaded: boolean): void {
+    async changeState(loaded: boolean): Promise<void> {
         this.element.classList.toggle('core-loading-loaded', loaded);
         this.element.setAttribute('aria-busy', loaded ?  'false' : 'true');
 
@@ -116,8 +146,12 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
         if (loaded) {
             this.onReadyPromise.resolve();
             this.restoreScrollPosition();
+            if (CoreApp.isIOS()) {
+                this.mutationObserver.observe(this.element, { childList: true });
+            }
         } else {
             this.lastScrollPosition = this.getScrollPosition();
+            this.mutationObserver.disconnect();
         }
 
         // Event has been deprecated since app 4.0.
