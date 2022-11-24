@@ -320,6 +320,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
                 section = this.sections.find((section) => section.modules.some((mod) => mod.id === module.id));
                 if (section) {
                     section.calculatingSize = true;
+                    this.changeDetectorRef.markForCheck();
                 }
             }
 
@@ -648,6 +649,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
         this.prefetchCourseData.icon = statusData.icon;
         this.prefetchCourseData.statusTranslatable = statusData.statusTranslatable;
         this.prefetchCourseData.loading = statusData.loading;
+        this.changeDetectorRef.markForCheck();
     }
 
     /**
