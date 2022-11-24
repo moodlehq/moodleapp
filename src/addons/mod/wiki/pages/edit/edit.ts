@@ -87,7 +87,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
         this.userId = CoreNavigator.getRouteNumberParam('userId');
 
         let pageTitle = CoreNavigator.getRouteParam<string>('pageTitle');
-        pageTitle = pageTitle ? pageTitle.replace(/\+/g, ' ') : '';
+        pageTitle = pageTitle ? CoreTextUtils.cleanTags(pageTitle.replace(/\+/g, ' '), true) : '';
 
         this.canEditTitle = !pageTitle;
         this.title = pageTitle ?
