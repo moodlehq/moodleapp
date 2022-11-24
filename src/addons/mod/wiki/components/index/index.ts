@@ -638,14 +638,8 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      * @param subwikiId Subwiki ID.
      * @param userId User ID of the subwiki.
      * @param groupId Group ID of the subwiki.
-     * @param canEdit Whether the subwiki can be edited.
      */
-    goToSubwiki(subwikiId: number, userId: number, groupId: number, canEdit: boolean): void {
-        // Check if the subwiki is disabled.
-        if (subwikiId <= 0 && !canEdit) {
-            return;
-        }
-
+    goToSubwiki(subwikiId: number, userId: number, groupId: number): void {
         if (subwikiId != this.currentSubwiki!.id || userId != this.currentSubwiki!.userid ||
                 groupId != this.currentSubwiki!.groupid) {
 
@@ -828,7 +822,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      * @param event Event.
      */
     async showSubwikiPicker(event: MouseEvent): Promise<void> {
-        const popoverData = await CoreDomUtils.openPopover<AddonModWikiSubwiki>({
+        const subwiki = await CoreDomUtils.openPopover<AddonModWikiSubwiki>({
             component: AddonModWikiSubwikiPickerComponent,
             componentProps: {
                 subwikis: this.subwikiData.subwikis,
@@ -837,8 +831,8 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             event,
         });
 
-        if (popoverData) {
-            this.goToSubwiki(popoverData.id, popoverData.userid, popoverData.groupid, popoverData.canedit);
+        if (subwiki) {
+            this.goToSubwiki(subwiki.id, subwiki.userid, subwiki.groupid);
         }
     }
 

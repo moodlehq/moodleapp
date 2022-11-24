@@ -49,12 +49,9 @@ export class AddonModWikiSubwikiPickerComponent {
      * @param subwiki The subwiki to open.
      */
     openSubwiki(subwiki: AddonModWikiSubwiki): void {
-        // Check if the subwiki is disabled.
-        if (subwiki.id > 0 || subwiki.canedit) {
-            // Check if it isn't current subwiki.
-            if (subwiki != this.currentSubwiki) {
-                PopoverController.dismiss(subwiki);
-            }
+        // Check if it isn't current subwiki.
+        if (subwiki !== this.currentSubwiki) {
+            PopoverController.dismiss(subwiki);
         }
     }
 
