@@ -83,7 +83,6 @@ export class AddonBlogEntriesPage implements OnInit {
         if (userId) {
             this.filter.userid = userId;
         }
-        this.showMyEntriesToggle = !userId;
 
         if (courseId) {
             this.filter.courseid = courseId;
@@ -104,6 +103,8 @@ export class AddonBlogEntriesPage implements OnInit {
         if (tagId) {
             this.filter.tagid = tagId;
         }
+
+        this.showMyEntriesToggle = !userId && !this.filter.entryid;
 
         // Calculate the context level.
         if (userId && !courseId && !cmId) {
