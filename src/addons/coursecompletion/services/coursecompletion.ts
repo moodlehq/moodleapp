@@ -224,7 +224,7 @@ export class AddonCourseCompletionProvider {
 
         // Check if user wants to view his own completion.
         try {
-            if (!userId || userId == currentUserId) {
+            if (!userId || userId === currentUserId) {
                 // Viewing own completion. Get the course to check if it has completion criteria.
                 const course = await CoreCourses.getUserCourse(courseId, true);
 

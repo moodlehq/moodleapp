@@ -17,6 +17,7 @@ import {
     AddonCourseCompletionCourseCompletionStatus,
 } from '@addons/coursecompletion/services/coursecompletion';
 import { Component, OnInit } from '@angular/core';
+import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
@@ -39,6 +40,7 @@ export class AddonCourseCompletionReportPage implements OnInit {
     showSelfComplete = false;
     tracked = true; // Whether completion is tracked.
     statusText?: string;
+    user?: CoreUserProfile;
 
     /**
      * @inheritdoc
@@ -67,6 +69,8 @@ export class AddonCourseCompletionReportPage implements OnInit {
      */
     protected async fetchCompletion(): Promise<void> {
         try {
+            this.user = await CoreUser.getProfile(this.userId, this.courseId, true);
+
             this.completion = await AddonCourseCompletion.getCompletion(this.courseId, this.userId);
 
             this.statusText = AddonCourseCompletion.getCompletedStatusText(this.completion);
