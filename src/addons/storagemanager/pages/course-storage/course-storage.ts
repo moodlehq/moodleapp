@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreConstants } from '@/core/constants';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
 import { CoreCourse, CoreCourseProvider } from '@features/course/services/course';
 import {
     CoreCourseHelper,
@@ -41,7 +41,6 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
     selector: 'page-addon-storagemanager-course-storage',
     templateUrl: 'course-storage.html',
     styleUrls: ['course-storage.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
@@ -72,7 +71,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
     protected isDestroyed = false;
     protected isGuest = false;
 
-    constructor(protected elementRef: ElementRef, protected changeDetectorRef: ChangeDetectorRef) {
+    constructor(protected elementRef: ElementRef) {
         // Refresh the enabled flags if site is updated.
         this.siteUpdatedObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();
@@ -80,7 +79,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
             this.initCoursePrefetch();
             this.initModulePrefetch();
-            this.changeDetectorRef.markForCheck();
+
         }, CoreSites.getCurrentSiteId());
     }
 
@@ -136,7 +135,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
             this.initCoursePrefetch(),
             this.initModulePrefetch(),
         ]);
-        this.changeDetectorRef.markForCheck();
+
     }
 
     /**
@@ -314,13 +313,12 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
             }
 
             module.calculatingSize = true;
-            this.changeDetectorRef.markForCheck();
 
             if (!section) {
                 section = this.sections.find((section) => section.modules.some((mod) => mod.id === module.id));
                 if (section) {
                     section.calculatingSize = true;
-                    this.changeDetectorRef.markForCheck();
+
                 }
             }
 
@@ -338,7 +336,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
                 // Ignore errors, it shouldn't happen.
             } finally {
                 module.calculatingSize = false;
-                this.changeDetectorRef.markForCheck();
+
             }
         }));
 
@@ -346,7 +344,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
         if (section) {
             section.calculatingSize = false;
         }
-        this.changeDetectorRef.markForCheck();
+
     }
 
     /**
@@ -492,7 +490,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
             await this.updateModulesSizes(modules, section);
             CoreCourseHelper.calculateSectionsStatus(this.sections, this.courseId, false, false);
-            this.changeDetectorRef.markForCheck();
+
         }
     }
 
@@ -527,7 +525,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
      */
     async prefecthSection(section: AddonStorageManagerCourseSection): Promise<void> {
         section.isCalculating = true;
-        this.changeDetectorRef.markForCheck();
+
         try {
             await CoreCourseHelper.confirmDownloadSizeSection(this.courseId, section, this.sections);
 
@@ -540,19 +538,18 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
                 }
             } finally {
                 await this.updateModulesSizes(section.modules, section);
-                this.changeDetectorRef.markForCheck();
+
             }
         } catch (error) {
             // User cancelled or there was an error calculating the size.
             if (!this.isDestroyed && error) {
                 CoreDomUtils.showErrorModal(error);
-                this.changeDetectorRef.markForCheck();
 
                 return;
             }
         } finally {
             section.isCalculating = false;
-            this.changeDetectorRef.markForCheck();
+
         }
     }
 
@@ -576,7 +573,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
         try {
             // Get download size to ask for confirm if it's high.
-            this.changeDetectorRef.markForCheck();
+
             const size = await module.prefetchHandler.getDownloadSize(module, module.course, true);
 
             await CoreCourseHelper.prefetchModule(module.prefetchHandler, module, size, module.course, refresh);
@@ -590,7 +587,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
             module.spinner = false;
 
             await this.updateModulesSizes([module]);
-            this.changeDetectorRef.markForCheck();
+
         }
     }
 
@@ -609,7 +606,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
         module.downloadStatus = status;
 
         module.handlerData?.updateStatus?.(status);
-        this.changeDetectorRef.markForCheck();
+
     }
 
     /**
@@ -649,7 +646,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
         this.prefetchCourseData.icon = statusData.icon;
         this.prefetchCourseData.statusTranslatable = statusData.statusTranslatable;
         this.prefetchCourseData.loading = statusData.loading;
-        this.changeDetectorRef.markForCheck();
+
     }
 
     /**
@@ -671,7 +668,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
         }
 
         try {
-            this.changeDetectorRef.markForCheck();
+
             await CoreCourseHelper.confirmAndPrefetchCourse(
                 this.prefetchCourseData,
                 course,
@@ -680,7 +677,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
                     isGuest: this.isGuest,
                 },
             );
-            this.changeDetectorRef.markForCheck();
+
         } catch (error) {
             if (this.isDestroyed) {
                 return;
