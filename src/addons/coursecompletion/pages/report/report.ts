@@ -31,9 +31,9 @@ import { CoreDomUtils } from '@services/utils/dom';
 })
 export class AddonCourseCompletionReportPage implements OnInit {
 
-    protected courseId!: number;
     protected userId!: number;
 
+    courseId!: number;
     completionLoaded = false;
     completion?: AddonCourseCompletionCourseCompletionStatus;
     showSelfComplete = false;

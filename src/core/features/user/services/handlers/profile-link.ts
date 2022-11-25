@@ -17,6 +17,7 @@ import { Injectable } from '@angular/core';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 
 /**
@@ -27,7 +28,7 @@ export class CoreUserProfileLinkHandlerService extends CoreContentLinksHandlerBa
 
     name = 'CoreUserProfileLinkHandler';
     // Match user/view.php and user/profile.php but NOT grade/report/user/.
-    pattern = /((\/user\/view\.php)|(\/user\/profile\.php)).*([?&]id=\d+)/;
+    pattern = /(\/user\/view\.php)|(\/user\/profile\.php)/;
 
     /**
      * @inheritdoc
@@ -37,11 +38,18 @@ export class CoreUserProfileLinkHandlerService extends CoreContentLinksHandlerBa
         url: string,
         params: Record<string, string>,
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
+
         return [{
-            action: (siteId): void => {
+            action: async (siteId): Promise<void> => {
+                let userId = params.id ? parseInt(params.id, 10) : 0;
+                if (!userId) {
+                    const site = await CoreSites.getSite(siteId);
+                    userId = site.getUserId();
+                }
+
                 const pageParams = {
                     courseId: params.course,
-                    userId: parseInt(params.id, 10),
+                    userId,
                 };
 
                 CoreNavigator.navigateToSitePath('/user', { params: pageParams, siteId });
@@ -53,7 +61,7 @@ export class CoreUserProfileLinkHandlerService extends CoreContentLinksHandlerBa
      * @inheritdoc
      */
     async isEnabled(siteId: string, url: string): Promise<boolean> {
-        return url.indexOf('/grade/report/') == -1;
+        return url.indexOf('/grade/report/') === -1;
     }
 
 }
