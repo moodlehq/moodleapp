@@ -1674,12 +1674,18 @@ ion-grid.core-no-grid > ion-row {
 }
 
 @include media-breakpoint-up(md) {
-    .adaptable-buttons-row {
+    .adaptable-buttons-row,
+    .adaptable-buttons-row-reverse {
         display: flex;
         flex-direction: row;
         ion-button {
             flex: 1;
         }
+    }
+
+    // Buttons will be in reverse order when horizontal.
+    .adaptable-buttons-row-reverse {
+        flex-direction: row-reverse;
     }
 }
 

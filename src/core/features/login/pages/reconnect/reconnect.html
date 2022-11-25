@@ -63,13 +63,13 @@
                         </ion-input>
                     </core-show-password>
                 </ion-item>
-                <div class="adaptable-buttons-row">
-                    <ion-button expand="block" fill="outline" (click)="cancel($event)" class="ion-margin ion-text-wrap">
-                        {{ 'core.login.cancel' | translate }}
-                    </ion-button>
+                <div class="adaptable-buttons-row-reverse">
                     <ion-button *ngIf="!isBrowserSSO" type="submit" expand="block" [disabled]="!credForm.valid"
                         class="ion-margin core-login-login-button ion-text-wrap">
                         {{ 'core.login.loginbutton' | translate }}
+                    </ion-button>
+                    <ion-button expand="block" fill="outline" (click)="cancel($event)" class="ion-margin ion-text-wrap">
+                        {{ 'core.login.cancel' | translate }}
                     </ion-button>
                 </div>
 
