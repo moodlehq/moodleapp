@@ -46,6 +46,7 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
     protected resizeListener: CoreEventObserver;
     protected updateSlidesPromise?: Promise<void>;
     protected activeSlideIndexes: number[] = [];
+    protected mutationObserver: MutationObserver;
 
     constructor(
         elementRef: ElementRef<HTMLElement>,
@@ -53,9 +54,17 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
     ) {
         this.hostElement = elementRef.nativeElement;
 
-        this.resizeListener = CoreDom.onWindowResize(() => {
-            this.updateSlidesComponent();
+        this.resizeListener = CoreDom.onWindowResize(async () => {
+            await this.updateSlidesComponent();
         });
+
+        this.mutationObserver = new MutationObserver(() => {
+            setTimeout(async () => {
+                await this.updateSlidesComponent();
+            }, 100);
+        });
+
+        this.mutationObserver.observe(this.hostElement, { subtree: true, childList: true });
     }
 
     /**
@@ -312,6 +321,7 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
     ngOnDestroy(): void {
         this.unsubscribe && this.unsubscribe();
         this.resizeListener.off();
+        this.mutationObserver.disconnect();
     }
 
 }
