@@ -138,6 +138,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
         CoreUserSupport.showHelp(
             Translate.instant('core.login.credentialshelp'),
             Translate.instant('core.login.credentialssupportsubject'),
+            this.supportConfig,
         );
     }
 
