@@ -25,8 +25,8 @@ import { CoreUtils } from './utils/utils';
 import { CoreApp } from './app';
 import { CoreZoomLevel } from '@features/settings/services/settings-helper';
 import { CorePromisedValue } from '@classes/promised-value';
-
-const VERSION_APPLIED = 'version_applied';
+import { CoreFile } from './file';
+import { CorePlatform } from './platform';
 
 /**
  * Factory to handle app updates. This factory shouldn't be used outside of core.
@@ -35,6 +35,9 @@ const VERSION_APPLIED = 'version_applied';
  */
 @Injectable({ providedIn: 'root' })
 export class CoreUpdateManagerProvider {
+
+    protected static readonly VERSION_APPLIED = 'version_applied';
+    protected static readonly PREVIOUS_APP_FOLDER = 'previous_app_folder';
 
     protected logger: CoreLogger;
     protected doneDeferred: CorePromisedValue<void>;
@@ -63,13 +66,22 @@ export class CoreUpdateManagerProvider {
         const promises: Promise<unknown>[] = [];
         const versionCode = CoreConstants.CONFIG.versioncode;
 
-        const versionApplied = await CoreConfig.get<number>(VERSION_APPLIED, 0);
+        const [versionApplied, previousAppFolder, currentAppFolder] = await Promise.all([
+            CoreConfig.get<number>(CoreUpdateManagerProvider.VERSION_APPLIED, 0),
+            CoreConfig.get<string>(CoreUpdateManagerProvider.PREVIOUS_APP_FOLDER, ''),
+            CorePlatform.isMobile() ? CoreUtils.ignoreErrors(CoreFile.getBasePath(), '') : '',
+        ]);
 
         if (versionCode > versionApplied) {
             promises.push(this.checkCurrentSiteAllowed());
         }
 
-        if (versionCode >= 3950 && versionApplied < 3950 && versionApplied > 0) {
+        if (
+            (versionCode >= 3950 && versionApplied < 3950 && versionApplied > 0) ||
+            (currentAppFolder && currentAppFolder !== previousAppFolder)
+        ) {
+            // Delete content indexes if the app folder has changed.
+            // This happens in iOS every time the app is updated, even if the version hasn't changed.
             promises.push(CoreH5P.h5pPlayer.deleteAllContentIndexes());
         }
 
@@ -80,7 +92,10 @@ export class CoreUpdateManagerProvider {
         try {
             await Promise.all(promises);
 
-            await CoreConfig.set(VERSION_APPLIED, versionCode);
+            await Promise.all([
+                CoreConfig.set(CoreUpdateManagerProvider.VERSION_APPLIED, versionCode),
+                currentAppFolder ? CoreConfig.set(CoreUpdateManagerProvider.PREVIOUS_APP_FOLDER, currentAppFolder) : undefined,
+            ]);
         } catch (error) {
             this.logger.error(`Error applying update from ${versionApplied} to ${versionCode}`, error);
         } finally {
