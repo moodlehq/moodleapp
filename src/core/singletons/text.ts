@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CorePath } from './path';
+
 /**
  * Singleton with helper functions for text manipulation.
  */
@@ -74,24 +76,10 @@ export class CoreText {
      * @param leftPath Left path.
      * @param rightPath Right path.
      * @return Concatenated path.
+     * @deprecated since 4.1.0. Please use CorePath.concatenatePaths instead.
      */
     static concatenatePaths(leftPath: string, rightPath: string): string {
-        if (!leftPath) {
-            return rightPath;
-        } else if (!rightPath) {
-            return leftPath;
-        }
-
-        const lastCharLeft = leftPath.slice(-1);
-        const firstCharRight = rightPath.charAt(0);
-
-        if (lastCharLeft === '/' && firstCharRight === '/') {
-            return leftPath + rightPath.substring(1);
-        } else if (lastCharLeft !== '/' && firstCharRight !== '/') {
-            return leftPath + '/' + rightPath;
-        } else {
-            return leftPath + rightPath;
-        }
+        return CorePath.concatenatePaths(leftPath, rightPath);
     }
 
 }

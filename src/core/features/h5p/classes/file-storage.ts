@@ -18,6 +18,7 @@ import { CoreSites } from '@services/sites';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
+import { CorePath } from '@singletons/path';
 import {
     CoreH5PCore,
     CoreH5PDependencyAsset,
@@ -64,7 +65,7 @@ export class CoreH5PFileStorage {
             const path = CoreText.concatenatePaths(cachedAssetsPath, fileName);
 
             // Store concatenated content.
-            const content = await this.concatenateFiles(assets, type);
+            const content = await this.concatenateFiles(assets, type, cachedAssetsPath);
 
             await CoreFile.writeFile(path, content);
 
@@ -82,11 +83,11 @@ export class CoreH5PFileStorage {
      * Adds all files of a type into one file.
      *
      * @param assets A list of files.
-     * @param type The type of files in assets. Either 'scripts' or 'styles'
+     * @param type The type of files in assets. Either 'scripts' or 'styles'.
+     * @param newFolder The new folder where the concatenated content will be stored.
      * @return Promise resolved with all of the files content in one string.
      */
-    protected async concatenateFiles(assets: CoreH5PDependencyAsset[], type: string): Promise<string> {
-        const basePath = CoreFile.convertFileSrc(CoreFile.getBasePathInstant());
+    protected async concatenateFiles(assets: CoreH5PDependencyAsset[], type: string, newFolder: string): Promise<string> {
         let content = '';
 
         for (const i in assets) {
@@ -104,46 +105,22 @@ export class CoreH5PFileStorage {
             // Rewrite relative URLs used inside stylesheets.
             const matches = fileContent.match(/url\(['"]?([^"')]+)['"]?\)/ig);
             const assetPath = asset.path.replace(/(^\/|\/$)/g, ''); // Path without start/end slashes.
-            const treated = {};
+            const treated: Record<string, string> = {};
 
             if (matches && matches.length) {
                 matches.forEach((match) => {
-                    let url = match.replace(/(url\(['"]?|['"]?\)$)/ig, '');
+                    const url = match.replace(/(url\(['"]?|['"]?\)$)/ig, '');
 
                     if (treated[url] || url.match(/^(data:|([a-z0-9]+:)?\/)/i)) {
                         return; // Not relative or already treated, skip.
                     }
 
-                    const pathSplit = assetPath.split('/');
                     treated[url] = url;
-
-                    /* Find "../" in the URL. If it exists, we have to remove "../" and switch the last folder in the
-                        filepath for the first folder in the url. */
-                    if (url.match(/^\.\.\//)) {
-                        // Split and remove empty values.
-                        const urlSplit = url.split('/').filter((i) => i);
-
-                        // Remove the file name from the asset path.
-                        pathSplit.pop();
-
-                        // Remove the first element from the file URL: ../ .
-                        urlSplit.shift();
-
-                        // Put the url's first folder into the asset path.
-                        pathSplit[pathSplit.length - 1] = urlSplit[0];
-                        urlSplit.shift();
-
-                        // Create the new URL and replace it in the file contents.
-                        url = pathSplit.join('/') + '/' + urlSplit.join('/');
-
-                    } else {
-                        pathSplit[pathSplit.length - 1] = url; // Put the whole path to the end of the asset path.
-                        url = pathSplit.join('/');
-                    }
+                    const assetPathFolder = CoreFile.getFileAndDirectoryFromPath(assetPath).directory;
 
                     fileContent = fileContent.replace(
                         new RegExp(CoreTextUtils.escapeForRegex(match), 'g'),
-                        'url("' + CoreText.concatenatePaths(basePath, url) + '")',
+                        'url("' + CorePath.changeRelativePath(assetPathFolder, url, newFolder) + '")',
                     );
                 });
             }
