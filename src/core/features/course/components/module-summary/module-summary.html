@@ -80,7 +80,7 @@
                                 {{ 'core.grades.grade' | translate}}
                             </p>
                             <p *ngIf="grade.grade && grade.grade != '-'" [innerHTML]="grade.grade"></p>
-                            <ion-badge *ngIf="!grade.grade || grade.grade == '-'" color="light">Not graded</ion-badge>
+                            <ion-badge *ngIf="!grade.grade || grade.grade == '-'" color="light">{{ 'addon.mod_assign.notgraded' | translate}}</ion-badge>
                         </ion-label>
                         <ion-icon *ngIf="grade.icon" name="{{grade.icon}}" slot="end" [attr.aria-label]="grade.iconAlt">
                         </ion-icon>
