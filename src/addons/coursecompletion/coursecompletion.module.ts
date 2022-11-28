@@ -14,11 +14,13 @@
 
 import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { Routes } from '@angular/router';
+import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseIndexRoutingModule } from '@features/course/pages/index/index-routing.module';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreUserDelegate } from '@features/user/services/user-delegate';
 import { AddonCourseCompletionProvider } from './services/coursecompletion';
+import { AddonCourseCompletionStatusLinkHandler } from './services/handlers/completionstatus-link';
 import { AddonCourseCompletionCourseOptionHandler } from './services/handlers/course-option';
 import { AddonCourseCompletionUserHandler } from './services/handlers/user';
 
@@ -45,6 +47,7 @@ const routes: Routes = [
             useValue: () => {
                 CoreUserDelegate.registerHandler(AddonCourseCompletionUserHandler.instance);
                 CoreCourseOptionsDelegate.registerHandler(AddonCourseCompletionCourseOptionHandler.instance);
+                CoreContentLinksDelegate.registerHandler(AddonCourseCompletionStatusLinkHandler.instance);
             },
         },
     ],

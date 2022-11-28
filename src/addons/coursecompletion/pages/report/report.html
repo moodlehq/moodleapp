@@ -13,6 +13,13 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="completionLoaded">
+        <ion-item class="ion-text-wrap" *ngIf="user">
+            <core-user-avatar [user]="user" [courseId]="courseId" slot="start" [linkProfile]="false"></core-user-avatar>
+            <ion-label>
+                <h2>{{user!.fullname}}</h2>
+            </ion-label>
+        </ion-item>
+
         <ion-card *ngIf="completion && tracked">
             <ion-item class="ion-text-wrap">
                 <ion-label>

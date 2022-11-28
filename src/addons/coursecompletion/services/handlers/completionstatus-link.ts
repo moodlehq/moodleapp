@@ -19,16 +19,16 @@ import { CoreContentLinksAction } from '@features/contentlinks/services/contentl
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
+import { AddonCourseCompletion } from '../coursecompletion';
 
 /**
- * Handler to treat links to user profiles.
+ * Handler to treat links to user course completion status.
  */
 @Injectable({ providedIn: 'root' })
-export class CoreUserProfileLinkHandlerService extends CoreContentLinksHandlerBase {
+export class AddonCourseCompletionStatusLinkHandlerService extends CoreContentLinksHandlerBase {
 
-    name = 'CoreUserProfileLinkHandler';
-    // Match user/view.php and user/profile.php but NOT grade/report/user/.
-    pattern = /(\/user\/view\.php)|(\/user\/profile\.php)/;
+    name = 'AddonCourseCompletionStatusLinkHandler';
+    pattern = /\/blocks\/completionstatus\/details\.php.*([?&](course|user)=\d+)/;
 
     /**
      * @inheritdoc
@@ -41,18 +41,22 @@ export class CoreUserProfileLinkHandlerService extends CoreContentLinksHandlerBa
 
         return [{
             action: async (siteId): Promise<void> => {
-                let userId = params.id ? parseInt(params.id, 10) : 0;
+                let userId = params.user ? parseInt(params.user, 10) : undefined;
+                const courseId = parseInt(params.course, 10);
                 if (!userId) {
                     const site = await CoreSites.getSite(siteId);
                     userId = site.getUserId();
                 }
 
                 const pageParams = {
-                    courseId: params.course,
+                    courseId,
                     userId,
                 };
 
-                CoreNavigator.navigateToSitePath('/user', { params: pageParams, siteId });
+                CoreNavigator.navigateToSitePath(
+                    '/coursecompletion',
+                    { params: pageParams, siteId },
+                );
             },
         }];
     }
@@ -60,10 +64,17 @@ export class CoreUserProfileLinkHandlerService extends CoreContentLinksHandlerBa
     /**
      * @inheritdoc
      */
-    async isEnabled(siteId: string, url: string): Promise<boolean> {
-        return url.indexOf('/grade/report/') === -1;
+    async isEnabled(siteId: string, url: string, params: Record<string, string>): Promise<boolean> {
+        let userId = params.user ? parseInt(params.user, 10) : undefined;
+        const courseId = parseInt(params.course, 10);
+        if (!userId) {
+            const site = await CoreSites.getSite(siteId);
+            userId = site.getUserId();
+        }
+
+        return AddonCourseCompletion.isPluginViewEnabledForUser(courseId, userId, siteId);
     }
 
 }
 
-export const CoreUserProfileLinkHandler = makeSingleton(CoreUserProfileLinkHandlerService);
+export const AddonCourseCompletionStatusLinkHandler = makeSingleton(AddonCourseCompletionStatusLinkHandlerService);
