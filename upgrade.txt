@@ -1,6 +1,10 @@
 This files describes API changes in the Moodle Mobile app,
 information provided here is intended especially for developers.
 
+=== 4.2.0 ===
+
+- CoreIconComponent has been removed after deprecation period: Use CoreFaIconDirective instead.
+
 === 4.1.0 ===
 
 - Zoom levels changed from "normal / low / high" to " none / medium / high".
