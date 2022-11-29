@@ -21,7 +21,7 @@ import { CoreContentLinksHelper } from '@features/contentlinks/services/contentl
 import { CoreLoginHelper, CoreLoginSSOData } from '@features/login/services/login-helper';
 import { ApplicationInit, makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
-import { CoreText } from '@singletons/text';
+import { CorePath } from '@singletons/path';
 import { CoreConstants } from '../constants';
 import { CoreApp } from './app';
 import { CoreNavigator, CoreRedirectPayload } from './navigator';
@@ -164,7 +164,7 @@ export class CoreCustomURLSchemesProvider {
 
             if (data.redirect && !data.redirect.match(/^https?:\/\//)) {
                 // Redirect is a relative URL. Append the site URL.
-                data.redirect = CoreText.concatenatePaths(data.siteUrl, data.redirect);
+                data.redirect = CorePath.concatenatePaths(data.siteUrl, data.redirect);
             }
 
             let siteIds = [siteId];

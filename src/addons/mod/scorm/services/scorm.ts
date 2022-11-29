@@ -28,7 +28,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreWS, CoreWSExternalFile, CoreWSExternalWarning, CoreWSFile, CoreWSPreSets } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
-import { CoreText } from '@singletons/text';
+import { CorePath } from '@singletons/path';
 import { AddonModScormOffline } from './scorm-offline';
 import { AddonModScormAutoSyncEventData, AddonModScormSyncProvider } from './scorm-sync';
 
@@ -970,7 +970,7 @@ export class AddonModScormProvider {
 
         const dirPath = await CoreFilepool.getPackageDirUrlByUrl(siteId, scorm.moduleurl ?? '');
 
-        return CoreText.concatenatePaths(dirPath, launchUrl);
+        return CorePath.concatenatePaths(dirPath, launchUrl);
     }
 
     /**

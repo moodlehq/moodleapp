@@ -25,7 +25,7 @@ import { ModalController, Media, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { CoreCaptureError } from '@classes/errors/captureerror';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
-import { CoreText } from '@singletons/text';
+import { CorePath } from '@singletons/path';
 import { CorePlatform } from '@services/platform';
 
 /**
@@ -151,7 +151,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
         this.fileEntry = await CoreFile.createFile(this.filePath);
 
         // Now create the media instance.
-        let absolutePath = CoreText.concatenatePaths(CoreFile.getBasePathInstant(), this.filePath);
+        let absolutePath = CorePath.concatenatePaths(CoreFile.getBasePathInstant(), this.filePath);
 
         if (CorePlatform.is('ios')) {
             // In iOS we need to remove the file:// part.
@@ -557,7 +557,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
     protected getFilePath(): string {
         const fileName = this.type + '_' + CoreTimeUtils.readableTimestamp() + '.' + this.extension;
 
-        return CoreText.concatenatePaths(CoreFileProvider.TMPFOLDER, 'media/' + fileName);
+        return CorePath.concatenatePaths(CoreFileProvider.TMPFOLDER, 'media/' + fileName);
     }
 
     /**

@@ -33,7 +33,7 @@ import {
 import { CoreNavigator } from '@services/navigator';
 import { CoreForms } from '@singletons/form';
 import { CoreRecaptchaComponent } from '@components/recaptcha/recaptcha';
-import { CoreText } from '@singletons/text';
+import { CorePath } from '@singletons/path';
 import { CoreDom } from '@singletons/dom';
 
 /**
@@ -161,7 +161,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
         try {
             // Get site config.
             this.siteConfig = await CoreSites.getSitePublicConfig(this.siteUrl);
-            this.signupUrl = CoreText.concatenatePaths(this.siteConfig.httpswwwroot, 'login/signup.php');
+            this.signupUrl = CorePath.concatenatePaths(this.siteConfig.httpswwwroot, 'login/signup.php');
 
             if (this.treatSiteConfig()) {
                 // Check content verification.
@@ -373,7 +373,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
      */
     showContactOnSite(): void {
         CoreUtils.openInBrowser(
-            CoreText.concatenatePaths(this.siteUrl, '/login/verify_age_location.php'),
+            CorePath.concatenatePaths(this.siteUrl, '/login/verify_age_location.php'),
             { showBrowserWarning: false },
         );
     }

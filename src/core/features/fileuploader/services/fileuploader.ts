@@ -32,7 +32,7 @@ import { CoreEmulatorCaptureMediaComponent } from '@features/emulator/components
 import { CoreError } from '@classes/errors/error';
 import { CoreSite } from '@classes/site';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
-import { CoreText } from '@singletons/text';
+import { CorePath } from '@singletons/path';
 
 /**
  * File upload options.
@@ -579,7 +579,7 @@ export class CoreFileUploaderProvider {
             } else {
                 // Local file, copy it.
                 // Use copy instead of move to prevent having a unstable state if some copies succeed and others don't.
-                const destFile = CoreText.concatenatePaths(folderPath, file.name);
+                const destFile = CorePath.concatenatePaths(folderPath, file.name);
                 result.offline++;
 
                 await CoreFile.copyFile(file.toURL(), destFile);

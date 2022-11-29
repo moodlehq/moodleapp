@@ -21,7 +21,7 @@ import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
-import { CoreText } from '@singletons/text';
+import { CorePath } from '@singletons/path';
 import {
     CoreQuestionAnswerDBRecord,
     CoreQuestionDBRecord,
@@ -332,7 +332,7 @@ export class CoreQuestionProvider {
         const siteFolderPath = CoreFile.getSiteFolder(siteId);
         const questionFolderPath = 'offlinequestion/' + type + '/' + component + '/' + componentId;
 
-        return CoreText.concatenatePaths(siteFolderPath, questionFolderPath);
+        return CorePath.concatenatePaths(siteFolderPath, questionFolderPath);
     }
 
     /**

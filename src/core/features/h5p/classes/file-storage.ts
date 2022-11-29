@@ -29,7 +29,6 @@ import {
 } from './core';
 import { CONTENTS_LIBRARIES_TABLE_NAME, CONTENT_TABLE_NAME, CoreH5PLibraryCachedAssetsDBRecord } from '../services/database/h5p';
 import { CoreH5PLibraryBeingSaved } from './storage';
-import { CoreText } from '@singletons/text';
 
 /**
  * Equivalent to Moodle's implementation of H5PFileStorage.
@@ -62,7 +61,7 @@ export class CoreH5PFileStorage {
 
             // Create new file for cached assets.
             const fileName = key + '.' + (type == 'scripts' ? 'js' : 'css');
-            const path = CoreText.concatenatePaths(cachedAssetsPath, fileName);
+            const path = CorePath.concatenatePaths(cachedAssetsPath, fileName);
 
             // Store concatenated content.
             const content = await this.concatenateFiles(assets, type, cachedAssetsPath);
@@ -72,7 +71,7 @@ export class CoreH5PFileStorage {
             // Now update the files data.
             files[type] = [
                 {
-                    path: CoreText.concatenatePaths(CoreH5PFileStorage.CACHED_ASSETS_FOLDER_NAME, fileName),
+                    path: CorePath.concatenatePaths(CoreH5PFileStorage.CACHED_ASSETS_FOLDER_NAME, fileName),
                     version: '',
                 },
             ];
@@ -148,7 +147,7 @@ export class CoreH5PFileStorage {
             const cachedAssetsFolder = this.getCachedAssetsFolderPath(entry.foldername, site.getId());
 
             ['js', 'css'].forEach((type) => {
-                const path = CoreText.concatenatePaths(cachedAssetsFolder, entry.hash + '.' + type);
+                const path = CorePath.concatenatePaths(cachedAssetsFolder, entry.hash + '.' + type);
 
                 promises.push(CoreFile.removeFile(path));
             });
@@ -260,7 +259,7 @@ export class CoreH5PFileStorage {
     protected async getCachedAsset(key: string, extension: string): Promise<CoreH5PDependencyAsset[] | undefined> {
 
         try {
-            const path = CoreText.concatenatePaths(CoreH5PFileStorage.CACHED_ASSETS_FOLDER_NAME, key + extension);
+            const path = CorePath.concatenatePaths(CoreH5PFileStorage.CACHED_ASSETS_FOLDER_NAME, key + extension);
 
             const size = await CoreFile.getFileSize(path);
 
@@ -285,7 +284,7 @@ export class CoreH5PFileStorage {
      * @return Path.
      */
     getCachedAssetsFolderPath(folderName: string, siteId: string): string {
-        return CoreText.concatenatePaths(
+        return CorePath.concatenatePaths(
             this.getContentFolderPath(folderName, siteId),
             CoreH5PFileStorage.CACHED_ASSETS_FOLDER_NAME,
         );
@@ -314,7 +313,7 @@ export class CoreH5PFileStorage {
      * @return Folder path.
      */
     getContentFolderPath(folderName: string, siteId: string): string {
-        return CoreText.concatenatePaths(
+        return CorePath.concatenatePaths(
             this.getExternalH5PFolderPath(siteId),
             'packages/' + folderName + '/content',
         );
@@ -345,7 +344,7 @@ export class CoreH5PFileStorage {
      * @return Folder path.
      */
     getContentIndexPath(folderName: string, siteId: string): string {
-        return CoreText.concatenatePaths(this.getContentFolderPath(folderName, siteId), 'index.html');
+        return CorePath.concatenatePaths(this.getContentFolderPath(folderName, siteId), 'index.html');
     }
 
     /**
@@ -354,7 +353,7 @@ export class CoreH5PFileStorage {
      * @return Folder path.
      */
     getCoreH5PPath(): string {
-        return CoreText.concatenatePaths(CoreFile.getWWWPath(), '/assets/lib/h5p/');
+        return CorePath.concatenatePaths(CoreFile.getWWWPath(), '/assets/lib/h5p/');
     }
 
     /**
@@ -374,7 +373,7 @@ export class CoreH5PFileStorage {
      * @return Folder path.
      */
     getExternalH5PFolderPath(siteId: string): string {
-        return CoreText.concatenatePaths(CoreFile.getSiteFolder(siteId), 'h5p');
+        return CorePath.concatenatePaths(CoreFile.getSiteFolder(siteId), 'h5p');
     }
 
     /**
@@ -384,7 +383,7 @@ export class CoreH5PFileStorage {
      * @return Folder path.
      */
     getLibrariesFolderPath(siteId: string): string {
-        return CoreText.concatenatePaths(this.getExternalH5PFolderPath(siteId), 'libraries');
+        return CorePath.concatenatePaths(this.getExternalH5PFolderPath(siteId), 'libraries');
     }
 
     /**
@@ -404,7 +403,7 @@ export class CoreH5PFileStorage {
             folderName = CoreH5PCore.libraryToString(libraryData, true);
         }
 
-        return CoreText.concatenatePaths(this.getLibrariesFolderPath(siteId), folderName);
+        return CorePath.concatenatePaths(this.getLibrariesFolderPath(siteId), folderName);
     }
 
     /**

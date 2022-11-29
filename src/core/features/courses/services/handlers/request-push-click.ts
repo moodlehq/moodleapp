@@ -22,7 +22,7 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
-import { CoreText } from '@singletons/text';
+import { CorePath } from '@singletons/path';
 import { CoreCourses } from '../courses';
 
 /**
@@ -58,7 +58,7 @@ export class CoreCoursesRequestPushClickHandlerService implements CorePushNotifi
         if (notification.name == 'courserequested') {
             // Feature not supported in the app, open in browser.
             const site = await CoreSites.getSite(notification.site);
-            const url = CoreText.concatenatePaths(site.getURL(), 'course/pending.php');
+            const url = CorePath.concatenatePaths(site.getURL(), 'course/pending.php');
 
             await site.openInBrowserWithAutoLogin(url);
 

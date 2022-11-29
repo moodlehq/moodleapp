@@ -38,7 +38,7 @@ import { SafeUrl } from '@angular/platform-browser';
 import { CoreNavigator } from '@services/navigator';
 import { AddonCalendarFilter } from './calendar-helper';
 import { AddonCalendarSyncEvents, AddonCalendarSyncProvider } from './calendar-sync';
-import { CoreText } from '@singletons/text';
+import { CorePath } from '@singletons/path';
 import { CorePlatform } from '@services/platform';
 import {
     CoreReminderData,
@@ -1168,7 +1168,7 @@ export class AddonCalendarProvider {
      */
     async getViewUrl(view: string, time?: number, courseId?: string, siteId?: string): Promise<string> {
         const site = await CoreSites.getSite(siteId);
-        let url = CoreText.concatenatePaths(site.getURL(), 'calendar/view.php?view=' + view);
+        let url = CorePath.concatenatePaths(site.getURL(), 'calendar/view.php?view=' + view);
 
         if (time) {
             url += '&time=' + time;

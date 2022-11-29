@@ -20,7 +20,7 @@ import { CoreConstants } from '@/core/constants';
 import { makeSingleton } from '@singletons';
 import { CoreUrl } from '@singletons/url';
 import { CoreSites } from '@services/sites';
-import { CoreText } from '@singletons/text';
+import { CorePath } from '@singletons/path';
 import { CorePlatform } from '@services/platform';
 
 /*
@@ -119,8 +119,8 @@ export class CoreUrlUtilsProvider {
         // Do not use tokenpluginfile if site doesn't use slash params, the URL doesn't work.
         // Also, only use it for "core" pluginfile endpoints. Some plugins can implement their own endpoint (like customcert).
         return !CoreConstants.CONFIG.disableTokenFile && !!accessKey && !url.match(/[&?]file=/) && (
-            url.indexOf(CoreText.concatenatePaths(siteUrl, 'pluginfile.php')) === 0 ||
-            url.indexOf(CoreText.concatenatePaths(siteUrl, 'webservice/pluginfile.php')) === 0);
+            url.indexOf(CorePath.concatenatePaths(siteUrl, 'pluginfile.php')) === 0 ||
+            url.indexOf(CorePath.concatenatePaths(siteUrl, 'webservice/pluginfile.php')) === 0);
     }
 
     /**
@@ -202,7 +202,7 @@ export class CoreUrlUtilsProvider {
             url = url.replace(/(\/webservice)?\/pluginfile\.php/, '/tokenpluginfile.php/' + accessKey);
         } else {
             // Use pluginfile.php. Some webservices returns directly the correct download url, others not.
-            if (url.indexOf(CoreText.concatenatePaths(siteUrl, 'pluginfile.php')) === 0) {
+            if (url.indexOf(CorePath.concatenatePaths(siteUrl, 'pluginfile.php')) === 0) {
                 url = url.replace('/pluginfile', '/webservice/pluginfile');
             }
 

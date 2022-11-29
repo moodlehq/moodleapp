@@ -20,7 +20,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { makeSingleton } from '@singletons';
 import { CoreFormFields } from '@singletons/form';
-import { CoreText } from '@singletons/text';
+import { CorePath } from '@singletons/path';
 import {
     AddonModWorkshopAssessmentDBRecord,
     AddonModWorkshopEvaluateAssessmentDBRecord,
@@ -630,7 +630,7 @@ export class AddonModWorkshopOfflineProvider {
         const siteFolderPath = CoreFile.getSiteFolder(site.getId());
         const workshopFolderPath = 'offlineworkshop/' + workshopId + '/';
 
-        return CoreText.concatenatePaths(siteFolderPath, workshopFolderPath);
+        return CorePath.concatenatePaths(siteFolderPath, workshopFolderPath);
     }
 
     /**
@@ -643,7 +643,7 @@ export class AddonModWorkshopOfflineProvider {
     async getSubmissionFolder(workshopId: number, siteId?: string): Promise<string> {
         const folderPath = await this.getWorkshopFolder(workshopId, siteId);
 
-        return CoreText.concatenatePaths(folderPath, 'submission');
+        return CorePath.concatenatePaths(folderPath, 'submission');
     }
 
     /**
@@ -659,7 +659,7 @@ export class AddonModWorkshopOfflineProvider {
 
         folderPath += 'assessment/';
 
-        return CoreText.concatenatePaths(folderPath, String(assessmentId));
+        return CorePath.concatenatePaths(folderPath, String(assessmentId));
     }
 
 }

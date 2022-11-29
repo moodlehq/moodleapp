@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CorePath } from './path';
 import { CoreText } from './text';
 
 /**
@@ -277,7 +278,7 @@ export class CoreUrl {
             path: url.startsWith('/') ? undefined : parsedParentUrl?.path,
         });
 
-        return CoreText.concatenatePaths(treatedParentUrl, url);
+        return CorePath.concatenatePaths(treatedParentUrl, url);
     }
 
     /**
