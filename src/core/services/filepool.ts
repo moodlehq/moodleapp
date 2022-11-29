@@ -53,7 +53,7 @@ import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
 import { lazyMap, LazyMap } from '../utils/lazy-map';
 import { asyncInstance, AsyncInstance } from '../utils/async-instance';
-import { CoreText } from '@singletons/text';
+import { CorePath } from '@singletons/path';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreSite } from '@classes/site';
 
@@ -815,7 +815,7 @@ export class CoreFilepoolProvider {
                 if (file.filepath && file.filepath !== '/') {
                     path = file.filepath.substring(1) + path;
                 }
-                path = CoreText.concatenatePaths(dirPath, path);
+                path = CorePath.concatenatePaths(dirPath, path);
             }
 
             if (prefetch) {
@@ -909,7 +909,7 @@ export class CoreFilepoolProvider {
                     if (file.filepath && file.filepath !== '/') {
                         path = file.filepath.substring(1) + path;
                     }
-                    path = CoreText.concatenatePaths(dirPath, path);
+                    path = CorePath.concatenatePaths(dirPath, path);
                 }
 
                 if (prefetch) {

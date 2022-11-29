@@ -28,7 +28,7 @@ import { CoreH5PValidator } from '../classes/validator';
 
 import { makeSingleton } from '@singletons';
 import { CoreError } from '@classes/errors/error';
-import { CoreText } from '@singletons/text';
+import { CorePath } from '@singletons/path';
 
 /**
  * Service to provide H5P functionalities.
@@ -207,7 +207,7 @@ export class CoreH5PProvider {
      * @return Treated url.
      */
     treatH5PUrl(url: string, siteUrl: string): string {
-        if (url.indexOf(CoreText.concatenatePaths(siteUrl, '/webservice/pluginfile.php')) === 0) {
+        if (url.indexOf(CorePath.concatenatePaths(siteUrl, '/webservice/pluginfile.php')) === 0) {
             url = url.replace('/webservice/pluginfile', '/pluginfile');
         }
 

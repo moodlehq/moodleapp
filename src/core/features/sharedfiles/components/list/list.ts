@@ -21,7 +21,7 @@ import { CoreSharedFiles } from '@features/sharedfiles/services/sharedfiles';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreText } from '@singletons/text';
+import { CorePath } from '@singletons/path';
 
 /**
  * Component to display the list of shared files, either as a modal or inside a page.
@@ -113,7 +113,7 @@ export class CoreSharedFilesListComponent implements OnInit, OnDestroy {
      * @param folder The folder to open.
      */
     openFolder(folder: DirectoryEntry): void {
-        const path = CoreText.concatenatePaths(this.path || '', folder.name);
+        const path = CorePath.concatenatePaths(this.path || '', folder.name);
 
         if (this.isModal) {
             this.path = path;

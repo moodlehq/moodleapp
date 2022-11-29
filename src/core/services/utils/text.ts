@@ -27,6 +27,7 @@ import { CoreDomUtils } from './dom';
 import { CoreText } from '@singletons/text';
 import { CoreUrl } from '@singletons/url';
 import { AlertButton } from '@ionic/angular';
+import { CorePath } from '@singletons/path';
 
 /**
  * Different type of errors the app can treat.
@@ -300,10 +301,10 @@ export class CoreTextUtilsProvider {
      * @param leftPath Left path.
      * @param rightPath Right path.
      * @return Concatenated path.
-     * @deprecated since 4.0. Use CoreText instead.
+     * @deprecated since 4.0. Use CorePath instead.
      */
     concatenatePaths(leftPath: string, rightPath: string): string {
-        return CoreText.concatenatePaths(leftPath, rightPath);
+        return CorePath.concatenatePaths(leftPath, rightPath);
     }
 
     /**
@@ -787,7 +788,7 @@ export class CoreTextUtilsProvider {
             return { text };
         }
 
-        const draftfileUrl = CoreText.concatenatePaths(siteUrl, 'draftfile.php');
+        const draftfileUrl = CorePath.concatenatePaths(siteUrl, 'draftfile.php');
         const matches = text.match(new RegExp(this.escapeForRegex(draftfileUrl) + '[^\'" ]+', 'ig'));
 
         if (!matches || !matches.length) {
@@ -858,7 +859,7 @@ export class CoreTextUtilsProvider {
             return treatedText;
         }
 
-        const draftfileUrl = CoreText.concatenatePaths(siteUrl, 'draftfile.php');
+        const draftfileUrl = CorePath.concatenatePaths(siteUrl, 'draftfile.php');
         const draftfileUrlRegexPrefix = this.escapeForRegex(draftfileUrl) + '/[^/]+/[^/]+/[^/]+/[^/]+/';
 
         files.forEach((file) => {

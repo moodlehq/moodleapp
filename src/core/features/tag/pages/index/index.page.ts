@@ -43,7 +43,7 @@ export class CoreTagIndexPage implements OnInit {
     areas: CoreTagAreaDisplay[] = [];
 
     /**
-     * View loaded.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         this.tagId = CoreNavigator.getRouteNumberParam('tagId') || this.tagId;
@@ -143,7 +143,14 @@ export class CoreTagIndexPage implements OnInit {
      * @param area Area.
      */
     openArea(area: CoreTagAreaDisplay): void {
-        this.selectedAreaId = area.id;
+        if (area.id === this.selectedAreaId) {
+            // Already opened.
+            return;
+        }
+
+        if (CoreScreen.isTablet) {
+            this.selectedAreaId = area.id;
+        }
 
         const params = {
             tagId: this.tagId,

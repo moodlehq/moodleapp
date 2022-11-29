@@ -14,8 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { File, Entry, DirectoryEntry, FileEntry, IWriteOptions, RemoveResult } from '@ionic-native/file/ngx';
-
-import { CoreText } from '@singletons/text';
+import { CorePath } from '@singletons/path';
 
 /**
  * Implement the File Error because the ionic-native plugin doesn't implement it.
@@ -58,7 +57,7 @@ export class FileMock extends File {
      * @return Returns a Promise that resolves to true if the directory exists or rejects with an error.
      */
     async checkDir(path: string, dir: string): Promise<boolean> {
-        const fullPath = CoreText.concatenatePaths(path, dir);
+        const fullPath = CorePath.concatenatePaths(path, dir);
 
         await this.resolveDirectoryUrl(fullPath);
 
@@ -73,7 +72,7 @@ export class FileMock extends File {
      * @return Returns a Promise that resolves with a boolean or rejects with an error.
      */
     async checkFile(path: string, file: string): Promise<boolean> {
-        const entry = await this.resolveLocalFilesystemUrl(CoreText.concatenatePaths(path, file));
+        const entry = await this.resolveLocalFilesystemUrl(CorePath.concatenatePaths(path, file));
 
         if (entry.isFile) {
             return true;
@@ -144,7 +143,7 @@ export class FileMock extends File {
     async copyFileOrDir(sourcePath: string, sourceName: string, destPath: string, destName: string): Promise<Entry> {
         const destFixed = this.fixPathAndName(destPath, destName);
 
-        const source = await this.resolveLocalFilesystemUrl(CoreText.concatenatePaths(sourcePath, sourceName));
+        const source = await this.resolveLocalFilesystemUrl(CorePath.concatenatePaths(sourcePath, sourceName));
 
         const destParentDir = await this.resolveDirectoryUrl(destFixed.path);
 
@@ -424,7 +423,7 @@ export class FileMock extends File {
     async moveFileOrDir(sourcePath: string, sourceName: string, destPath: string, destName: string): Promise<Entry> {
         const destFixed = this.fixPathAndName(destPath, destName);
 
-        const source = await this.resolveLocalFilesystemUrl(CoreText.concatenatePaths(sourcePath, sourceName));
+        const source = await this.resolveLocalFilesystemUrl(CorePath.concatenatePaths(sourcePath, sourceName));
 
         const destParentDir = await this.resolveDirectoryUrl(destFixed.path);
 
@@ -440,7 +439,7 @@ export class FileMock extends File {
      */
     protected fixPathAndName(path: string, name: string): {path: string; name: string} {
 
-        const fullPath = CoreText.concatenatePaths(path, name);
+        const fullPath = CorePath.concatenatePaths(path, name);
 
         return {
             path: fullPath.substring(0, fullPath.lastIndexOf('/')),

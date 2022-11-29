@@ -36,7 +36,7 @@ import { CoreNavigator, CoreRedirectPayload } from '@services/navigator';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
-import { CoreText } from '@singletons/text';
+import { CorePath } from '@singletons/path';
 import { CorePromisedValue } from '@classes/promised-value';
 import { SafeHtml } from '@angular/platform-browser';
 import { CoreLoginError } from '@classes/errors/loginerror';
@@ -399,8 +399,8 @@ export class CoreLoginHelperProvider {
         }
 
         const validProviders: CoreSiteIdentityProvider[] = [];
-        const httpUrl = CoreText.concatenatePaths(siteConfig.wwwroot, 'auth/oauth2/');
-        const httpsUrl = CoreText.concatenatePaths(siteConfig.httpswwwroot, 'auth/oauth2/');
+        const httpUrl = CorePath.concatenatePaths(siteConfig.wwwroot, 'auth/oauth2/');
+        const httpsUrl = CorePath.concatenatePaths(siteConfig.httpswwwroot, 'auth/oauth2/');
 
         if (siteConfig.identityproviders && siteConfig.identityproviders.length) {
             siteConfig.identityproviders.forEach((provider) => {

@@ -26,7 +26,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreUtilsOpenFileOptions } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreText } from '@singletons/text';
+import { CorePath } from '@singletons/path';
 import { AddonModResource, AddonModResourceProvider } from './resource';
 
 /**
@@ -77,7 +77,7 @@ export class AddonModResourceHelperProvider {
             const dirPath = await CoreFilepool.getPackageDirUrlByUrl(CoreSites.getCurrentSiteId(), module.url!);
 
             // This URL is going to be injected in an iframe, we need trustAsResourceUrl to make it work in a browser.
-            return CoreText.concatenatePaths(dirPath, mainFilePath);
+            return CorePath.concatenatePaths(dirPath, mainFilePath);
         } catch (e) {
             // Error getting directory, there was an error downloading or we're in browser. Return online URL.
             if (CoreNetwork.isOnline() && mainFile.fileurl) {

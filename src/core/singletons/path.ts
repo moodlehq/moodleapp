@@ -70,7 +70,7 @@ export class CorePath {
      * @return Relative path.
      */
     static changeRelativePath(currentFolder: string, path: string, newFolder: string): string {
-        return CoreText.concatenatePaths(CorePath.calculateRelativePath(newFolder, currentFolder), path);
+        return CorePath.concatenatePaths(CorePath.calculateRelativePath(newFolder, currentFolder), path);
     }
 
     /**

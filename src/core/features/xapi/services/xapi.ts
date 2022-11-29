@@ -20,7 +20,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreSite } from '@classes/site';
 import { CoreXAPIOffline, CoreXAPIOfflineSaveStatementsOptions } from './offline';
 import { makeSingleton } from '@singletons';
-import { CoreText } from '@singletons/text';
+import { CorePath } from '@singletons/path';
 
 /**
  * Service to provide XAPI functionalities.
@@ -65,7 +65,7 @@ export class CoreXAPIProvider {
     async getUrl(contextId: number, type: string, siteId?: string): Promise<string> {
         const site = await CoreSites.getSite(siteId);
 
-        return CoreText.concatenatePaths(site.getURL(), `xapi/${type}/${contextId}`);
+        return CorePath.concatenatePaths(site.getURL(), `xapi/${type}/${contextId}`);
     }
 
     /**

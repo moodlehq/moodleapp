@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { Zip } from '@ionic-native/zip/ngx';
 import * as JSZip from 'jszip';
-import { CoreText } from '@singletons/text';
+import { CorePath } from '@singletons/path';
 import { File } from '@singletons';
 
 /**
@@ -41,7 +41,7 @@ export class ZipMock extends Zip {
             await File.createDir(destination, folder, true);
 
             // Folder created, add it to the destination path.
-            destination = CoreText.concatenatePaths(destination, folder);
+            destination = CorePath.concatenatePaths(destination, folder);
         }
     }
 
@@ -101,7 +101,7 @@ export class ZipMock extends Zip {
                     const fileData = await file.async('blob');
 
                     // File read and parent folder created, now write the file.
-                    const parentFolder = CoreText.concatenatePaths(destination, fileDir);
+                    const parentFolder = CorePath.concatenatePaths(destination, fileDir);
 
                     await File.writeFile(parentFolder, fileName, fileData, { replace: true });
                 } else {

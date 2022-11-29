@@ -85,7 +85,7 @@ import { CoreContentLinksDelegate } from '@features/contentlinks/services/conten
 import { CoreContentLinksModuleListHandler } from '@features/contentlinks/classes/module-list-handler';
 import { CoreObject } from '@singletons/object';
 import { CoreUrlUtils } from '@services/utils/url';
-import { CoreText } from '@singletons/text';
+import { CorePath } from '@singletons/path';
 
 const HANDLER_DISABLED = 'core_site_plugins_helper_handler_disabled';
 
@@ -168,7 +168,7 @@ export class CoreSitePluginsHelperProvider {
         // Make sure it's an absolute URL. Do not use toAbsoluteURL because it can change the behaviour and break plugin styles.
         let url = handlerSchema.styles?.url;
         if (url && !CoreUrlUtils.isAbsoluteURL(url)) {
-            url = CoreText.concatenatePaths(site.getURL(), url);
+            url = CorePath.concatenatePaths(site.getURL(), url);
         }
 
         if (url && handlerSchema.styles?.version) {

@@ -21,7 +21,7 @@ import { CoreH5P } from '../services/h5p';
 import { CoreH5PCore, CoreH5PDisplayOptions, CoreH5PContentData, CoreH5PDependenciesFiles } from './core';
 import { CoreH5PCoreSettings, CoreH5PHelper } from './helper';
 import { CoreH5PStorage } from './storage';
-import { CoreText } from '@singletons/text';
+import { CorePath } from '@singletons/path';
 
 /**
  * Equivalent to Moodle's H5P player class.
@@ -51,7 +51,7 @@ export class CoreH5PPlayer {
             params.component = component;
         }
 
-        return CoreUrlUtils.addParamsToUrl(CoreText.concatenatePaths(siteUrl, '/h5p/embed.php'), params);
+        return CoreUrlUtils.addParamsToUrl(CorePath.concatenatePaths(siteUrl, '/h5p/embed.php'), params);
     }
 
     /**
@@ -78,7 +78,7 @@ export class CoreH5PPlayer {
         const contentId = this.getContentId(id);
         const basePath = CoreFile.getBasePathInstant();
         const contentUrl = CoreFile.convertFileSrc(
-            CoreText.concatenatePaths(
+            CorePath.concatenatePaths(
                 basePath,
                 this.h5pCore.h5pFS.getContentFolderPath(content.folderName, site.getId()),
             ),
@@ -122,7 +122,7 @@ export class CoreH5PPlayer {
                 JSON.stringify(result.settings).replace(/\//g, '\\/') + '</script>';
 
         // Add our own script to handle the params.
-        html += '<script type="text/javascript" src="' + CoreText.concatenatePaths(
+        html += '<script type="text/javascript" src="' + CorePath.concatenatePaths(
             this.h5pCore.h5pFS.getCoreH5PPath(),
             'moodle/js/params.js',
         ) + '"></script>';
@@ -132,7 +132,7 @@ export class CoreH5PPlayer {
         // Include the required JS at the beginning of the body, like Moodle web does.
         // Load the embed.js to allow communication with the parent window.
         html += '<script type="text/javascript" src="' +
-                CoreText.concatenatePaths(this.h5pCore.h5pFS.getCoreH5PPath(), 'moodle/js/embed.js') + '"></script>';
+                CorePath.concatenatePaths(this.h5pCore.h5pFS.getCoreH5PPath(), 'moodle/js/embed.js') + '"></script>';
 
         result.jsRequires.forEach((jsUrl) => {
             html += '<script type="text/javascript" src="' + jsUrl + '"></script>';
@@ -364,7 +364,7 @@ export class CoreH5PPlayer {
      * @return The embed URL.
      */
     protected getEmbedUrl(siteUrl: string, h5pUrl: string): string {
-        return CoreText.concatenatePaths(siteUrl, '/h5p/embed.php') + '?url=' + h5pUrl;
+        return CorePath.concatenatePaths(siteUrl, '/h5p/embed.php') + '?url=' + h5pUrl;
     }
 
     /**
@@ -382,7 +382,7 @@ export class CoreH5PPlayer {
      * @return URL.
      */
     getResizerScriptUrl(): string {
-        return CoreText.concatenatePaths(this.h5pCore.h5pFS.getCoreH5PPath(), 'js/h5p-resizer.js');
+        return CorePath.concatenatePaths(this.h5pCore.h5pFS.getCoreH5PPath(), 'js/h5p-resizer.js');
     }
 
     /**

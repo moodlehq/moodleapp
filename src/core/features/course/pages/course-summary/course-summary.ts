@@ -37,7 +37,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreCoursesHelper, CoreCourseWithImageAndColor } from '@features/courses/services/courses-helper';
 import { Subscription } from 'rxjs';
 import { CoreColors } from '@singletons/colors';
-import { CoreText } from '@singletons/text';
+import { CorePath } from '@singletons/path';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
 
@@ -122,8 +122,8 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
         }
 
         const currentSiteUrl = CoreSites.getRequiredCurrentSite().getURL();
-        this.enrolUrl = CoreText.concatenatePaths(currentSiteUrl, 'enrol/index.php?id=' + this.courseId);
-        this.courseUrl = CoreText.concatenatePaths(currentSiteUrl, 'course/view.php?id=' + this.courseId);
+        this.enrolUrl = CorePath.concatenatePaths(currentSiteUrl, 'enrol/index.php?id=' + this.courseId);
+        this.courseUrl = CorePath.concatenatePaths(currentSiteUrl, 'course/view.php?id=' + this.courseId);
 
         await this.getCourse();
     }

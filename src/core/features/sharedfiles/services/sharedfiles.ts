@@ -26,7 +26,7 @@ import { CoreSites } from '@services/sites';
 import { CoreEvents } from '@singletons/events';
 import { makeSingleton } from '@singletons';
 import { APP_SCHEMA, CoreSharedFilesDBRecord, SHARED_FILES_TABLE_NAME } from './database/sharedfiles';
-import { CoreText } from '@singletons/text';
+import { CorePath } from '@singletons/path';
 
 /**
  * Service to share files with the app.
@@ -157,7 +157,7 @@ export class CoreSharedFilesProvider {
     async getSiteSharedFiles(siteId?: string, path?: string, mimetypes?: string[]): Promise<(FileEntry | DirectoryEntry)[]> {
         let pathToGet = this.getSiteSharedFilesDirPath(siteId);
         if (path) {
-            pathToGet = CoreText.concatenatePaths(pathToGet, path);
+            pathToGet = CorePath.concatenatePaths(pathToGet, path);
         }
 
         try {
@@ -240,7 +240,7 @@ export class CoreSharedFilesProvider {
         newName = newName || entry.name;
 
         const sharedFilesFolder = this.getSiteSharedFilesDirPath(siteId);
-        const newPath = CoreText.concatenatePaths(sharedFilesFolder, newName);
+        const newPath = CorePath.concatenatePaths(sharedFilesFolder, newName);
 
         // Create dir if it doesn't exist already.
         await CoreFile.createDir(sharedFilesFolder);
