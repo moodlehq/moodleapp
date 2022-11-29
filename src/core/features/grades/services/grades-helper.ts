@@ -36,6 +36,7 @@ import { CoreNavigator } from '@services/navigator';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { CoreAppProvider } from '@services/app';
 
 export const GRADES_PAGE_NAME = 'grades';
 
@@ -136,8 +137,15 @@ export class CoreGradesHelperProvider {
                 row.rowclass += itemNameColumn.class.indexOf('hidden') >= 0 ? ' hidden' : '';
                 row.rowclass += itemNameColumn.class.indexOf('dimmed_text') >= 0 ? ' dimmed_text' : '';
 
-                content = content.replace(/<\/span>/gi, '\n');
-                content = CoreTextUtils.cleanTags(content, true);
+                if (useLegacyLayout) {
+                    content = content.replace(/<\/span>/gi, '\n');
+                    content = CoreTextUtils.cleanTags(content);
+                } else {
+                    // The activity type won't be included in the webservice response if behat is running.
+                    content = CoreAppProvider.isAutomated() ? content : content.replace(/<span[^>]+>.+?<\/span>/gi, '');
+                    content = CoreTextUtils.cleanTags(content, true);
+                }
+
                 name = 'gradeitem';
             } else if (name === 'grade') {
                 // Add the pass/fail class if present.
