@@ -25,6 +25,7 @@ import { CoreSubscriptions } from '@singletons/subscriptions';
 import { AlertButton } from '@ionic/angular';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreLang } from '@services/lang';
+import { CoreUserNullSupportConfig } from '@features/user/classes/support/null-support-config';
 
 /**
  * Handle site support.
@@ -57,9 +58,14 @@ export class CoreUserSupportService {
      * @param message Help message.
      * @param supportSubject Support subject.
      */
-    showHelp(message: string, supportSubject: string): void {
-        const supportConfig = CoreUserAuthenticatedSupportConfig.forCurrentSite();
+    showHelp(message: string, supportSubject: string, supportConfig?: CoreUserSupportConfig): void {
         const buttons: (AlertButton | string)[] = [];
+
+        if (!supportConfig) {
+            const site = CoreSites.getCurrentSite();
+
+            supportConfig = site ? new CoreUserAuthenticatedSupportConfig(site) : new CoreUserNullSupportConfig();
+        }
 
         if (supportConfig.canContactSupport()) {
             buttons.push({

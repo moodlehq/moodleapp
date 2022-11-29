@@ -149,6 +149,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
         CoreUserSupport.showHelp(
             Translate.instant('core.login.reconnecthelp'),
             Translate.instant('core.login.reconnectsupportsubject'),
+            this.supportConfig,
         );
     }
 
