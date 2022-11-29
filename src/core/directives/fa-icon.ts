@@ -30,6 +30,11 @@ import { CoreConstants } from '@/core/constants';
 })
 export class CoreFaIconDirective implements AfterViewInit, OnChanges {
 
+    /**
+     * Object used to store whether icons exist or not during development.
+     */
+    private static readonly DEV_ICONS_STATUS: Record<string, Promise<boolean>> = {};
+
     @Input() name = '';
 
     protected element: HTMLElement;
@@ -89,14 +94,7 @@ export class CoreFaIconDirective implements AfterViewInit, OnChanges {
         const src = `assets/fonts/${font}/${library}/${iconName}.svg`;
         this.element.setAttribute('src', src);
         this.element.classList.add('faicon');
-
-        if (CoreConstants.BUILD.isDevelopment || CoreConstants.BUILD.isTesting) {
-            try {
-                await Http.get(src, { responseType: 'text' }).toPromise();
-            } catch (error) {
-                this.logger.error(`Icon ${this.name} not found`);
-            }
-        }
+        this.validateIcon(this.name, src);
     }
 
     /**
@@ -121,6 +119,34 @@ export class CoreFaIconDirective implements AfterViewInit, OnChanges {
         }
 
         this.setIcon();
+    }
+
+    /**
+     * Validate that an icon exists, or show warning otherwise (only in development and testing environments).
+     *
+     * @param name Icon name.
+     * @param src Icon source url.
+     */
+    private validateIcon(name: string, src: string): void {
+        if (!CoreConstants.BUILD.isDevelopment && !CoreConstants.BUILD.isTesting) {
+            return;
+        }
+
+        if (!(src in CoreFaIconDirective.DEV_ICONS_STATUS)) {
+            CoreFaIconDirective.DEV_ICONS_STATUS[src] = Http.get(src, { responseType: 'text' })
+                .toPromise()
+                .then(() => true)
+                .catch(() => false);
+        }
+
+        // eslint-disable-next-line promise/catch-or-return
+        CoreFaIconDirective.DEV_ICONS_STATUS[src].then(exists => {
+            if (exists) {
+                return;
+            }
+
+            return this.logger.error(`Icon ${name} not found`);
+        });
     }
 
 }

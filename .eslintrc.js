@@ -103,12 +103,22 @@ const appConfig = {
             'error',
             {
                 selector: 'property',
-                modifiers: ['readonly'],
+                format: ['camelCase'],
+            },
+            {
+                selector: 'property',
+                modifiers: ['public', 'readonly'],
                 format: ['UPPER_CASE'],
             },
             {
                 selector: 'property',
-                format: ['camelCase'],
+                modifiers: ['protected', 'readonly'],
+                format: ['UPPER_CASE'],
+            },
+            {
+                selector: 'property',
+                modifiers: ['private', 'readonly'],
+                format: ['UPPER_CASE'],
             },
             {
                 selector: 'property',
