@@ -1783,6 +1783,7 @@
   "core.grades.manualitem": "grades",
   "core.grades.nogradesreturned": "grades",
   "core.grades.nooutcome": "grades",
+  "core.grades.notgraded": "assign",
   "core.grades.outcome": "grades",
   "core.grades.pass": "grades",
   "core.grades.percentage": "grades",
