@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreError } from '@classes/errors/error';
 
 import { CoreQuestionBehaviourDelegate, CoreQuestionQuestionWithAnswers } from '@features/question/services/behaviour-delegate';
 import { CoreQuestionAnswerDBRecord } from '@features/question/services/database/question';

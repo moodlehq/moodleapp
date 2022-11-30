@@ -24,7 +24,7 @@ describe('CoreError', () => {
         // Arrange
         const message = Faker.lorem.sentence();
 
-        let error: CoreError | null = null;
+        let error: CoreError;
 
         // Act
         try {
@@ -37,10 +37,10 @@ describe('CoreError', () => {
         expect(error).not.toBeNull();
         expect(error).toBeInstanceOf(Error);
         expect(error).toBeInstanceOf(CoreError);
-        expect(error!.name).toEqual('CoreError');
-        expect(error!.message).toEqual(message);
-        expect(error!.stack).not.toBeNull();
-        expect(error!.stack).toContain(agnosticPath('src/core/classes/tests/error.test.ts'));
+        expect(error.name).toEqual('CoreError');
+        expect(error.message).toEqual(message);
+        expect(error.stack).not.toBeNull();
+        expect(error.stack).toContain(agnosticPath('src/core/classes/tests/error.test.ts'));
     });
 
     it('can be subclassed', () => {
@@ -55,7 +55,7 @@ describe('CoreError', () => {
 
         const message = Faker.lorem.sentence();
 
-        let error: CustomCoreError | null = null;
+        let error: CustomCoreError;
 
         // Act
         try {
@@ -69,10 +69,10 @@ describe('CoreError', () => {
         expect(error).toBeInstanceOf(Error);
         expect(error).toBeInstanceOf(CoreError);
         expect(error).toBeInstanceOf(CustomCoreError);
-        expect(error!.name).toEqual('CustomCoreError');
-        expect(error!.message).toEqual(`Custom message: ${message}`);
-        expect(error!.stack).not.toBeNull();
-        expect(error!.stack).toContain(agnosticPath('src/core/classes/tests/error.test.ts'));
+        expect(error.name).toEqual('CustomCoreError');
+        expect(error.message).toEqual(`Custom message: ${message}`);
+        expect(error.stack).not.toBeNull();
+        expect(error.stack).toContain(agnosticPath('src/core/classes/tests/error.test.ts'));
     });
 
 });

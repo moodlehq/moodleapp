@@ -806,8 +806,8 @@ export class CoreFileUploaderHelperProvider {
             }
         }
 
-        if (maxSize != -1 && size > maxSize) {
-            throw this.createMaxBytesError(maxSize, file!.name);
+        if (maxSize != -1 && size > maxSize && file) {
+            throw this.createMaxBytesError(maxSize, file.name);
         }
 
         if (size > 0) {
@@ -849,12 +849,12 @@ export class CoreFileUploaderHelperProvider {
         stringKey: string,
         progress: ProgressEvent | CoreFileProgressEvent,
     ): void {
-        if (!progress || !progress.lengthComputable) {
+        if (!progress || !progress.lengthComputable || progress.loaded === undefined || !progress.total) {
             return;
         }
 
         // Calculate the progress percentage.
-        const perc = Math.min((progress.loaded! / progress.total!) * 100, 100);
+        const perc = Math.min((progress.loaded / progress.total) * 100, 100);
 
         if (isNaN(perc) || perc < 0) {
             return;

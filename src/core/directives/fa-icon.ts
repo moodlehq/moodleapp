@@ -54,7 +54,7 @@ export class CoreFaIconDirective implements AfterViewInit, OnChanges {
         let iconName = this.name;
         let font = 'ionicons';
         const parts = iconName.split('-', 2);
-        if (parts.length == 2) {
+        if (parts.length === 2) {
             switch (parts[0]) {
                 case 'far':
                     library = 'regular';
@@ -82,7 +82,7 @@ export class CoreFaIconDirective implements AfterViewInit, OnChanges {
             }
         }
 
-        if (font == 'ionicons') {
+        if (font === 'ionicons') {
             this.element.removeAttribute('src');
             this.logger.warn(`Ionic icon ${this.name} detected`);
 
@@ -103,7 +103,7 @@ export class CoreFaIconDirective implements AfterViewInit, OnChanges {
     ngAfterViewInit(): void {
         if (!this.element.getAttribute('aria-label') &&
             !this.element.getAttribute('aria-labelledby') &&
-            this.element.getAttribute('aria-hidden') != 'true') {
+            this.element.getAttribute('aria-hidden') !== 'true') {
             this.logger.warn('Aria label not set on icon ' + this.name, this.element);
 
             this.element.setAttribute('aria-hidden', 'true');
@@ -111,7 +111,7 @@ export class CoreFaIconDirective implements AfterViewInit, OnChanges {
     }
 
     /**
-     * Detect changes on input properties.
+     * @inheritdoc
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if (!changes.name || !this.name) {

@@ -46,7 +46,7 @@ import { CoreUtils } from '@services/utils/utils';
 })
 export class CoreAttachmentsComponent implements OnInit {
 
-    @Input() files?: CoreFileEntry[]; // List of attachments. New attachments will be added to this array.
+    @Input() files: CoreFileEntry[] = []; // List of attachments. New attachments will be added to this array.
     @Input() maxSize?: number; // Max size. -1 means unlimited, 0 means course/user max size, not defined means unknown.
     @Input() maxSubmissions?: number; // Max number of attachments. -1 means unlimited, not defined means unknown limit.
     @Input() component?: string; // Component the downloaded files will be linked to.
@@ -177,7 +177,7 @@ export class CoreAttachmentsComponent implements OnInit {
      * @param data The data received.
      */
     renamed(index: number, data: { file: FileEntry }): void {
-        this.files![index] = data.file;
+        this.files[index] = data.file;
     }
 
 }

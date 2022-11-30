@@ -807,7 +807,10 @@ export class CoreTextUtilsProvider {
         // Index the pluginfile URLs by file name.
         const pluginfileMap: {[name: string]: string} = {};
         files.forEach((file) => {
-            pluginfileMap[file.filename!] = CoreFileHelper.getFileUrl(file);
+            if (!file.filename) {
+                return;
+            }
+            pluginfileMap[file.filename] = CoreFileHelper.getFileUrl(file);
         });
 
         // Replace each draftfile with the corresponding pluginfile URL.
@@ -872,9 +875,13 @@ export class CoreTextUtilsProvider {
         const draftfileUrlRegexPrefix = this.escapeForRegex(draftfileUrl) + '/[^/]+/[^/]+/[^/]+/[^/]+/';
 
         files.forEach((file) => {
+            if (!file.filename) {
+                return;
+            }
+
             // Search the draftfile URL in the original text.
             const matches = originalText.match(
-                new RegExp(draftfileUrlRegexPrefix + this.escapeForRegex(file.filename!) + '[^\'" ]*', 'i'),
+                new RegExp(draftfileUrlRegexPrefix + this.escapeForRegex(file.filename) + '[^\'" ]*', 'i'),
             );
 
             if (!matches || !matches[0]) {

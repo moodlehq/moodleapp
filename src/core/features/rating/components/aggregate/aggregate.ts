@@ -60,13 +60,13 @@ export class CoreRatingAggregateComponent implements OnChanges, OnDestroy {
     }
 
     /**
-     * Detect changes on input properties.
+     * @inheritdoc
      */
     ngOnChanges(): void {
         this.aggregateObserver?.off();
         delete this.aggregateObserver;
 
-        this.item = (this.ratingInfo.ratings || []).find((rating) => rating.itemid == this.itemId);
+        this.item = (this.ratingInfo.ratings || []).find((rating) => rating.itemid === this.itemId);
         if (!this.item) {
             return;
         }
@@ -99,11 +99,11 @@ export class CoreRatingAggregateComponent implements OnChanges, OnDestroy {
         this.aggregateObserver =
             CoreEvents.on(CoreRatingProvider.AGGREGATE_CHANGED_EVENT, (data) => {
                 if (this.item &&
-                    data.contextLevel == this.contextLevel &&
-                    data.instanceId == this.instanceId &&
-                    data.component == this.ratingInfo.component &&
-                    data.ratingArea == this.ratingInfo.ratingarea &&
-                    data.itemId == this.itemId) {
+                    data.contextLevel === this.contextLevel &&
+                    data.instanceId === this.instanceId &&
+                    data.component === this.ratingInfo.component &&
+                    data.ratingArea === this.ratingInfo.ratingarea &&
+                    data.itemId === this.itemId) {
                     this.item.aggregatestr = data.aggregate;
                     this.item.count = data.count;
                 }
@@ -114,7 +114,7 @@ export class CoreRatingAggregateComponent implements OnChanges, OnDestroy {
      * Open the individual ratings page.
      */
     async openRatings(): Promise<void> {
-        if (!this.ratingInfo.canviewall || !this.item!.count || this.disabled) {
+        if (!this.ratingInfo.canviewall || !this.item?.count || this.disabled) {
             return;
         }
 

@@ -59,7 +59,10 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
     moduleName = 'scorm';
 
     scorm?: AddonModScormScorm; // The SCORM object.
-    currentOrganization: Partial<AddonModScormOrganization> = {}; // Selected organization.
+    currentOrganization: Partial<AddonModScormOrganization> & { identifier: string} = {
+        identifier: '',
+    }; // Selected organization.
+
     startNewAttempt = false;
     errorMessage?: string; // Error message.
     syncTime?: string; // Last sync time.
@@ -70,7 +73,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
     percentage?: string; // Download/unzip percentage.
     showPercentage = false; // Whether to show the percentage.
     progressMessage?: string; // Message about download/unzip.
-    organizations?: AddonModScormOrganization[]; // List of organizations.
+    organizations: AddonModScormOrganization[] = []; // List of organizations.
     loadingToc = false; // Whether the TOC is being loaded.
     toc?: AddonModScormTOCScoWithIcon[]; // Table of contents (structure).
     accessInfo?: AddonModScormGetScormAccessInformationWSResponse; // Access information.
@@ -128,7 +131,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
 
         try {
             await AddonModScormPrefetchHandler.download(this.module, this.courseId, undefined, (data) => {
-                if (!data) {
+                if (!data || !this.scorm) {
                     return;
                 }
 
@@ -137,8 +140,8 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
 
                 if (data.downloading) {
                     // Downloading package.
-                    if (this.scorm!.packagesize && data.progress) {
-                        const percentageNumber = Number(data.progress.loaded / this.scorm!.packagesize) * 100;
+                    if (this.scorm.packagesize && data.progress) {
+                        const percentageNumber = Number(data.progress.loaded / this.scorm.packagesize) * 100;
                         this.percentage = percentageNumber.toFixed(1);
                         this.showPercentage = percentageNumber >= 0 && percentageNumber <= 100;
                     }
@@ -198,7 +201,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
                     (
                         this.accessInfo.canskipview && !this.accessInfo.canviewreport &&
                         (this.scorm.skipview ?? 0) >= AddonModScormProvider.SKIPVIEW_FIRST &&
-                        (this.scorm.skipview == AddonModScormProvider.SKIPVIEW_ALWAYS || this.lastAttempt == 0)
+                        (this.scorm.skipview === AddonModScormProvider.SKIPVIEW_ALWAYS || this.lastAttempt === 0)
                     )
                 );
         }
@@ -221,7 +224,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
         this.lastAttempt = attempt.num;
         this.lastIsOffline = attempt.offline;
 
-        if (this.lastAttempt != this.attempts.lastAttempt.num) {
+        if (this.lastAttempt !== this.attempts.lastAttempt.num) {
             this.attemptToContinue = this.lastAttempt;
         } else {
             this.attemptToContinue = undefined;
@@ -237,7 +240,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
         this.gradeMethodReadable = AddonModScorm.getScormGradeMethod(scorm);
         this.attemptsLeft = AddonModScorm.countAttemptsLeft(scorm, this.attempts.lastAttempt.num);
 
-        if (scorm.forcenewattempt == AddonModScormProvider.SCORM_FORCEATTEMPT_ALWAYS ||
+        if (scorm.forcenewattempt === AddonModScormProvider.SCORM_FORCEATTEMPT_ALWAYS ||
                 (scorm.forcenewattempt && !this.incomplete)) {
             this.startNewAttempt = true;
         }
@@ -272,13 +275,9 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
     protected async fetchStructure(scorm: AddonModScormScorm): Promise<void> {
         this.organizations = await AddonModScorm.getOrganizations(scorm.id, { cmId: this.module.id });
 
-        if (!this.currentOrganization.identifier) {
+        if (this.currentOrganization.identifier === '' && this.organizations[0]?.identifier) {
             // Load first organization (if any).
-            if (this.organizations.length) {
-                this.currentOrganization.identifier = this.organizations[0].identifier;
-            } else {
-                this.currentOrganization.identifier = '';
-            }
+            this.currentOrganization.identifier = this.organizations[0].identifier;
         }
 
         return this.loadOrganizationToc(scorm, this.currentOrganization.identifier);
@@ -297,7 +296,11 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
         offline: boolean,
         attempts: Record<number, AddonModScormAttemptGrade>,
     ): Promise<void> {
-        const grade = await AddonModScorm.getAttemptGrade(this.scorm!, attempt, offline);
+        if (!this.scorm) {
+            return;
+        }
+
+        const grade = await AddonModScorm.getAttemptGrade(this.scorm, attempt, offline);
 
         attempts[attempt] = {
             num: attempt,
@@ -438,8 +441,12 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
      * Load a organization's TOC.
      */
     async loadOrganization(): Promise<void> {
+        if (!this.scorm) {
+            return;
+        }
+
         try {
-            await this.loadOrganizationToc(this.scorm!, this.currentOrganization.identifier!);
+            await this.loadOrganizationToc(this.scorm, this.currentOrganization.identifier);
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError, true);
         }
@@ -453,7 +460,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
      * @returns Promise resolved when done.
      */
     protected async loadOrganizationToc(scorm: AddonModScormScorm, organizationId: string): Promise<void> {
-        if (!scorm.displaycoursestructure) {
+        if (!scorm.displaycoursestructure || this.lastAttempt === undefined) {
             // TOC is not displayed, no need to load it.
             return;
         }
@@ -461,18 +468,17 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
         this.loadingToc = true;
 
         try {
-            this.toc = await AddonModScormHelper.getToc(scorm.id, this.lastAttempt!, this.incomplete, {
+            this.toc = await AddonModScormHelper.getToc(scorm.id, this.lastAttempt, this.incomplete, {
                 organization: organizationId,
                 offline: this.lastIsOffline,
                 cmId: this.module.id,
             });
 
             // Search organization title.
-            this.organizations!.forEach((org) => {
-                if (org.identifier == organizationId) {
-                    this.currentOrganization.title = org.title;
-                }
-            });
+            const organization = this.organizations.find((org) => org.identifier === organizationId);
+            if (organization) {
+                this.currentOrganization.title = organization.title;
+            }
         } finally {
             this.loadingToc = false;
         }
@@ -486,20 +492,18 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
      * @param scoId SCO that needs to be loaded when the SCORM is opened. If not defined, load first SCO.
      */
     async open(event?: Event, preview: boolean = false, scoId?: number): Promise<void> {
-        if (event) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
+        event?.preventDefault();
+        event?.stopPropagation();
 
-        if (this.downloading) {
+        if (this.downloading || !this.scorm) {
             // Scope is being downloaded, abort.
             return;
         }
 
-        const isOutdated = this.currentStatus == CoreConstants.OUTDATED;
-        const scorm = this.scorm!;
+        const isOutdated = this.currentStatus === CoreConstants.OUTDATED;
+        const scorm = this.scorm;
 
-        if (!isOutdated && this.currentStatus != CoreConstants.NOT_DOWNLOADED) {
+        if (!isOutdated && this.currentStatus !== CoreConstants.NOT_DOWNLOADED) {
             // Already downloaded, open it.
             this.openScorm(scoId, preview);
 
@@ -552,7 +556,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
         this.dataSentObserver?.off();
 
         this.dataSentObserver = CoreEvents.on(AddonModScormProvider.DATA_SENT_EVENT, (data) => {
-            if (data.scormId === this.scorm!.id) {
+            if (data.scormId === this.scorm?.id) {
                 this.dataSent = true;
 
                 if (this.module.completiondata && CoreCourse.isIncompleteAutomaticCompletion(this.module.completiondata)) {
@@ -581,14 +585,14 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
      */
     protected async showStatus(status: string): Promise<void> {
 
-        if (status == CoreConstants.OUTDATED && this.scorm) {
+        if (status === CoreConstants.OUTDATED && this.scorm) {
             // Only show the outdated message if the file should be downloaded.
             const download = await AddonModScorm.shouldDownloadMainFile(this.scorm, true);
 
             this.statusMessage = download ? 'addon.mod_scorm.scormstatusoutdated' : '';
-        } else if (status == CoreConstants.NOT_DOWNLOADED) {
+        } else if (status === CoreConstants.NOT_DOWNLOADED) {
             this.statusMessage = 'addon.mod_scorm.scormstatusnotdownloaded';
-        } else if (status == CoreConstants.DOWNLOADING) {
+        } else if (status === CoreConstants.DOWNLOADING) {
             if (!this.downloading) {
                 // It's being downloaded right now but the view isn't tracking it. "Restore" the download.
                 this.downloadScormPackage();
@@ -604,15 +608,19 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
      * @param retries Number of retries done.
      * @returns Promise resolved when done.
      */
-    protected async sync(retries = 0): Promise<AddonModScormSyncResult> {
-        if (CoreSync.isBlocked(AddonModScormProvider.COMPONENT, this.scorm!.id) && retries < 5) {
+    protected async sync(retries = 0): Promise<AddonModScormSyncResult | undefined> {
+        if (!this.scorm) {
+            return;
+        }
+
+        if (CoreSync.isBlocked(AddonModScormProvider.COMPONENT, this.scorm.id) && retries < 5) {
             // Sync is currently blocked, this can happen when SCORM player is left. Retry in a bit.
             await CoreUtils.wait(400);
 
             return this.sync(retries + 1);
         }
 
-        const result = await AddonModScormSync.syncScorm(this.scorm!);
+        const result = await AddonModScormSync.syncScorm(this.scorm);
 
         if (!result.updated && this.dataSent) {
             // The user sent data to server, but not in the sync process. Check if we need to fetch data.

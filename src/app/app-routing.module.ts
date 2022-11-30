@@ -145,7 +145,7 @@ export function conditionalRoutes(routes: Routes, condition: () => boolean): Rou
 
         return {
             ...newRoute,
-            matcher: buildConditionalUrlMatcher(matcher || path!, condition),
+            matcher: buildConditionalUrlMatcher(matcher || path || '', condition),
         };
     });
 }

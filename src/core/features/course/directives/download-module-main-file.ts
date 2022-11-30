@@ -58,16 +58,19 @@ export class CoreCourseDownloadModuleMainFileDirective implements OnInit {
             ev.stopPropagation();
 
             const modal = await CoreDomUtils.showModalLoading();
-            const courseId = typeof this.courseId == 'string' ? parseInt(this.courseId, 10) : this.courseId;
+            const courseId = this.courseId ? Number(this.courseId) : undefined;
 
             try {
                 if (!this.module) {
-                    // Try to get the module from cache.
-                    this.moduleId = typeof this.moduleId == 'string' ? parseInt(this.moduleId, 10) : this.moduleId;
-                    this.module = await CoreCourse.getModule(this.moduleId!, courseId);
+                    const moduleId = Number(this.moduleId);
+                    if (!moduleId) {
+                        return;
+                    }
+
+                    this.module = await CoreCourse.getModule(moduleId, courseId);
                 }
 
-                const componentId = this.componentId || module.id;
+                const componentId = this.componentId ? Number(this.componentId) : this.module.id;
 
                 await CoreCourseHelper.downloadModuleAndOpenFile(
                     this.module,

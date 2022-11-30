@@ -62,7 +62,7 @@ export class AddonModForumHelperProvider {
         message: string,
         attachments?: CoreFileEntry[],
         options?: AddonModForumDiscussionOptions,
-        groupIds?: number[],
+        groupIds: number[] = [],
         timeCreated?: number,
         siteId?: string,
     ): Promise<number[] | null> {
@@ -76,7 +76,7 @@ export class AddonModForumHelperProvider {
         // Convenience function to store a message to be synchronized later.
         const storeOffline = async (): Promise<void> => {
             // Multiple groups, the discussion is being posted to all groups.
-            const groupId = groupIds!.length > 1 ? AddonModForumProvider.ALL_GROUPS : groupIds![0];
+            const groupId = groupIds.length > 1 ? AddonModForumProvider.ALL_GROUPS : groupIds[0];
 
             if (offlineAttachments && options) {
                 options.attachmentsid = offlineAttachments;
@@ -182,7 +182,7 @@ export class AddonModForumHelperProvider {
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved with the object converted to Online.
      */
-    convertOfflineReplyToOnline(offlineReply: AddonModForumOfflineReply, siteId?: string): Promise<AddonModForumPost> {
+    async convertOfflineReplyToOnline(offlineReply: AddonModForumOfflineReply, siteId?: string): Promise<AddonModForumPost> {
         const reply: AddonModForumPost = {
             id: -offlineReply.timecreated,
             discussionid: offlineReply.discussionid,
@@ -236,11 +236,11 @@ export class AddonModForumHelperProvider {
             ),
         );
 
-        return Promise.all(promises).then(() => {
-            reply.attachment = reply.attachments!.length > 0 ? 1 : 0;
+        await Promise.all(promises);
 
-            return reply;
-        });
+        reply.attachment = reply.attachments?.length ? 1 : 0;
+
+        return reply;
     }
 
     /**

@@ -111,8 +111,8 @@ export class CoreLocalNotificationsProvider {
         });
 
         CoreEvents.on(CoreEvents.SITE_DELETED, (site) => {
-            if (site) {
-                this.cancelSiteNotifications(site.id!);
+            if (site?.id) {
+                this.cancelSiteNotifications(site.id);
             }
         });
     }
@@ -364,15 +364,16 @@ export class CoreLocalNotificationsProvider {
             }
 
             return stored.at === triggered;
-        } catch (err) {
+        } catch {
+            const notificationId = notification.id || 0;
             if (useQueue) {
-                const queueId = 'isTriggered-' + notification.id;
+                const queueId = 'isTriggered-' + notificationId;
 
-                return this.queueRunner.run(queueId, () => LocalNotifications.isTriggered(notification.id!), {
+                return this.queueRunner.run(queueId, () => LocalNotifications.isTriggered(notificationId), {
                     allowRepeated: true,
                 });
             } else {
-                return LocalNotifications.isTriggered(notification.id || 0);
+                return LocalNotifications.isTriggered(notificationId);
             }
         }
     }

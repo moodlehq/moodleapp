@@ -143,7 +143,7 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
             this.displayDescription = false;
 
             this.warning = downloadResult.failed
-                ? this.getErrorDownloadingSomeFilesMessage(downloadResult.error!)
+                ? this.getErrorDownloadingSomeFilesMessage(downloadResult.error ?? '')
                 : '';
 
             return;
