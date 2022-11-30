@@ -83,9 +83,9 @@ export class AddonQtypeTrueFalseHandlerService implements CoreQuestionHandler {
         question: AddonModQuizMultichoiceQuestion,
         answers: CoreQuestionsAnswers,
     ): void | Promise<void> {
-        if (question && answers[question.optionsName!] !== undefined && !answers[question.optionsName!]) {
+        if (question && question.optionsName && answers[question.optionsName] !== undefined && !answers[question.optionsName]) {
             // The user hasn't answered. Delete the answer to prevent marking one of the answers automatically.
-            delete answers[question.optionsName!];
+            delete answers[question.optionsName];
         }
     }
 

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Input, Output, EventEmitter, Component, Optional, Inject, ElementRef } from '@angular/core';
+import { Input, Output, EventEmitter, Component, Optional, Inject, ElementRef, OnInit } from '@angular/core';
 import { CoreFileHelper } from '@services/file-helper';
 
 import { CoreSites } from '@services/sites';
@@ -20,6 +20,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreWSFile } from '@services/ws';
+import { CoreIonicColorNames } from '@singletons/colors';
 import { CoreLogger } from '@singletons/logger';
 import { CoreQuestionBehaviourButton, CoreQuestionHelper, CoreQuestionQuestion } from '../services/question-helper';
 
@@ -29,9 +30,9 @@ import { CoreQuestionBehaviourButton, CoreQuestionHelper, CoreQuestionQuestion }
 @Component({
     template: '',
 })
-export class CoreQuestionBaseComponent {
+export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonModQuizQuestion> implements OnInit {
 
-    @Input() question?: AddonModQuizQuestion; // The question to render.
+    @Input() question?: T; // The question to render.
     @Input() component?: string; // The component the question belongs to.
     @Input() componentId?: number; // ID of the component the question belongs to.
     @Input() attemptId?: number; // Attempt ID.
@@ -50,6 +51,51 @@ export class CoreQuestionBaseComponent {
     constructor(@Optional() @Inject('') logName: string, elementRef: ElementRef) {
         this.logger = CoreLogger.getInstance(logName);
         this.hostElement = elementRef.nativeElement;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnInit(): void {
+        if (!this.question) {
+            this.logger.warn('Aborting because of no question received.');
+
+            return CoreQuestionHelper.showComponentError(this.onAbort);
+        }
+
+        this.init();
+    }
+
+    /**
+     * Initialize the question component, override it if needed.
+     */
+    init(): void {
+        this.initComponent();
+    }
+
+    /**
+     * Initialize the component and the question text.
+     *
+     * @returns Element containing the question HTML, void if the data is not valid.
+     */
+    initComponent(): void | HTMLElement {
+        if (!this.question) {
+            return;
+        }
+
+        this.hostElement.classList.add('core-question-container');
+
+        const questionElement = CoreDomUtils.convertToElement(this.question.html);
+
+        // Extract question text.
+        this.question.text = CoreDomUtils.getContentsOfElement(questionElement, '.qtext');
+        if (this.question.text === undefined) {
+            this.logger.warn('Aborting because of an error parsing question.', this.question.slot);
+
+            return CoreQuestionHelper.showComponentError(this.onAbort);
+        }
+
+        return questionElement;
     }
 
     /**
@@ -205,33 +251,6 @@ export class CoreQuestionBaseComponent {
         }
 
         return true;
-    }
-
-    /**
-     * Initialize the component and the question text.
-     *
-     * @returns Element containing the question HTML, void if the data is not valid.
-     */
-    initComponent(): void | HTMLElement {
-        if (!this.question) {
-            this.logger.warn('Aborting because of no question received.');
-
-            return CoreQuestionHelper.showComponentError(this.onAbort);
-        }
-
-        this.hostElement.classList.add('core-question-container');
-
-        const element = CoreDomUtils.convertToElement(this.question.html);
-
-        // Extract question text.
-        this.question.text = CoreDomUtils.getContentsOfElement(element, '.qtext');
-        if (this.question.text === undefined) {
-            this.logger.warn('Aborting because of an error parsing question.', this.question.slot);
-
-            return CoreQuestionHelper.showComponentError(this.onAbort);
-        }
-
-        return element;
     }
 
     /**
@@ -409,15 +428,13 @@ export class CoreQuestionBaseComponent {
      */
     initOriginalTextComponent(contentSelector: string): void | HTMLElement {
         if (!this.question) {
-            this.logger.warn('Aborting because of no question received.');
-
-            return CoreQuestionHelper.showComponentError(this.onAbort);
+            return;
         }
 
         const element = CoreDomUtils.convertToElement(this.question.html);
 
         // Get question content.
-        const content = <HTMLElement> element.querySelector(contentSelector);
+        const content = element.querySelector<HTMLElement>(contentSelector);
         if (!content) {
             this.logger.warn('Aborting because of an error parsing question.', this.question.slot);
 
@@ -473,15 +490,15 @@ export class CoreQuestionBaseComponent {
         if (input.classList.contains('incorrect')) {
             question.input.correctClass = 'core-question-incorrect';
             question.input.correctIcon = 'fas-times';
-            question.input.correctIconColor = 'danger';
+            question.input.correctIconColor = CoreIonicColorNames.DANGER;
         } else if (input.classList.contains('correct')) {
             question.input.correctClass = 'core-question-correct';
             question.input.correctIcon = 'fas-check';
-            question.input.correctIconColor = 'success';
+            question.input.correctIconColor = CoreIonicColorNames.SUCCESS;
         } else if (input.classList.contains('partiallycorrect')) {
             question.input.correctClass = 'core-question-partiallycorrect';
             question.input.correctIcon = 'fas-check-square';
-            question.input.correctIconColor = 'warning';
+            question.input.correctIconColor = CoreIonicColorNames.WARNING;
         } else {
             question.input.correctClass = '';
             question.input.correctIcon = '';

@@ -117,7 +117,7 @@ export class AddonQtypeMultichoiceHandlerService implements CoreQuestionHandler 
 
         // To know if it's single or multi answer we need to search for answers with "choice" in the name.
         for (const name in newAnswers) {
-            if (name.indexOf('choice') != -1) {
+            if (name.indexOf('choice') !== -1) {
                 isSingle = false;
                 if (!CoreUtils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, name)) {
                     isMultiSame = false;
@@ -128,9 +128,9 @@ export class AddonQtypeMultichoiceHandlerService implements CoreQuestionHandler 
 
         if (isSingle) {
             return this.isSameResponseSingle(prevAnswers, newAnswers);
-        } else {
-            return isMultiSame;
         }
+
+        return isMultiSame;
     }
 
     /**
@@ -151,10 +151,11 @@ export class AddonQtypeMultichoiceHandlerService implements CoreQuestionHandler 
         question: AddonModQuizMultichoiceQuestion,
         answers: CoreQuestionsAnswers,
     ): void {
-        if (question && !question.multi && answers[question.optionsName!] !== undefined && !answers[question.optionsName!]) {
+        if (question && !question.multi &&
+            question.optionsName && answers[question.optionsName] !== undefined && !answers[question.optionsName]) {
             /* It's a single choice and the user hasn't answered. Delete the answer because
                sending an empty string (default value) will mark the first option as selected. */
-            delete answers[question.optionsName!];
+            delete answers[question.optionsName];
         }
     }
 
