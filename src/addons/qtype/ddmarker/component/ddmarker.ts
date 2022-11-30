@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnDestroy, ElementRef, ViewChild } from '@angular/core';
 
 import { AddonModQuizQuestionBasicData, CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
@@ -29,11 +29,11 @@ import { AddonQtypeDdMarkerQuestion } from '../classes/ddmarker';
     templateUrl: 'addon-qtype-ddmarker.html',
     styleUrls: ['ddmarker.scss'],
 })
-export class AddonQtypeDdMarkerComponent extends CoreQuestionBaseComponent implements OnInit, OnDestroy {
+export class AddonQtypeDdMarkerComponent
+    extends CoreQuestionBaseComponent<AddonQtypeDdMarkerQuestionData>
+    implements OnDestroy {
 
     @ViewChild('questiontext') questionTextEl?: ElementRef;
-
-    ddQuestion?: AddonQtypeDdMarkerQuestionData;
 
     protected questionInstance?: AddonQtypeDdMarkerQuestion;
     protected dropZones: unknown[] = []; // The drop zones received in the init object of the question.
@@ -49,65 +49,64 @@ export class AddonQtypeDdMarkerComponent extends CoreQuestionBaseComponent imple
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
+    init(): void {
         if (!this.question) {
-            this.logger.warn('Aborting because of no question received.');
-
-            return CoreQuestionHelper.showComponentError(this.onAbort);
+            return;
         }
 
-        this.ddQuestion = this.question;
-        const element = CoreDomUtils.convertToElement(this.question.html);
+        const questionElement = this.initComponent();
+        if (!questionElement) {
+            return;
+        }
 
         // Get D&D area, form and question text.
-        const ddArea = element.querySelector('.ddarea');
-        const ddForm = element.querySelector('.ddform');
+        const ddArea = questionElement.querySelector('.ddarea');
+        const ddForm = questionElement.querySelector('.ddform');
 
-        this.ddQuestion.text = CoreDomUtils.getContentsOfElement(element, '.qtext');
-        if (!ddArea || !ddForm || this.ddQuestion.text === undefined) {
-            this.logger.warn('Aborting because of an error parsing question.', this.ddQuestion.slot);
+        if (!ddArea || !ddForm) {
+            this.logger.warn('Aborting because of an error parsing question.', this.question.slot);
 
             return CoreQuestionHelper.showComponentError(this.onAbort);
         }
 
         // Build the D&D area HTML.
-        this.ddQuestion.ddArea = ddArea.outerHTML;
+        this.question.ddArea = ddArea.outerHTML;
 
-        const wrongParts = element.querySelector('.wrongparts');
+        const wrongParts = questionElement.querySelector('.wrongparts');
         if (wrongParts) {
-            this.ddQuestion.ddArea += wrongParts.outerHTML;
+            this.question.ddArea += wrongParts.outerHTML;
         }
-        this.ddQuestion.ddArea += ddForm.outerHTML;
-        this.ddQuestion.readOnly = false;
+        this.question.ddArea += ddForm.outerHTML;
+        this.question.readOnly = false;
 
-        if (this.ddQuestion.initObjects) {
+        if (this.question.initObjects) {
             // Moodle version = 3.5.
-            if (this.ddQuestion.initObjects.dropzones !== undefined) {
-                this.dropZones = <unknown[]> this.ddQuestion.initObjects.dropzones;
+            if (this.question.initObjects.dropzones !== undefined) {
+                this.dropZones = <unknown[]> this.question.initObjects.dropzones;
             }
-            if (this.ddQuestion.initObjects.readonly !== undefined) {
-                this.ddQuestion.readOnly = !!this.ddQuestion.initObjects.readonly;
+            if (this.question.initObjects.readonly !== undefined) {
+                this.question.readOnly = !!this.question.initObjects.readonly;
             }
-        } else if (this.ddQuestion.amdArgs) {
+        } else if (this.question.amdArgs) {
             // Moodle version >= 3.6.
             let nextIndex = 1;
             // Moodle version >= 3.9, imgSrc is not specified, do not advance index.
-            if (this.ddQuestion.amdArgs[nextIndex] !== undefined && typeof this.ddQuestion.amdArgs[nextIndex] != 'boolean') {
-                this.imgSrc = <string> this.ddQuestion.amdArgs[nextIndex];
+            if (this.question.amdArgs[nextIndex] !== undefined && typeof this.question.amdArgs[nextIndex] !== 'boolean') {
+                this.imgSrc = <string> this.question.amdArgs[nextIndex];
                 nextIndex++;
             }
 
-            if (this.ddQuestion.amdArgs[nextIndex] !== undefined) {
-                this.ddQuestion.readOnly = !!this.ddQuestion.amdArgs[nextIndex];
+            if (this.question.amdArgs[nextIndex] !== undefined) {
+                this.question.readOnly = !!this.question.amdArgs[nextIndex];
             }
             nextIndex++;
 
-            if (this.ddQuestion.amdArgs[nextIndex] !== undefined) {
-                this.dropZones = <unknown[]> this.ddQuestion.amdArgs[nextIndex];
+            if (this.question.amdArgs[nextIndex] !== undefined) {
+                this.dropZones = <unknown[]> this.question.amdArgs[nextIndex];
             }
         }
 
-        this.ddQuestion.loaded = false;
+        this.question.loaded = false;
     }
 
     /**
@@ -134,9 +133,10 @@ export class AddonQtypeDdMarkerComponent extends CoreQuestionBaseComponent imple
      * The question has been rendered.
      */
     protected async questionRendered(): Promise<void> {
-        if (this.destroyed) {
+        if (this.destroyed || !this.question) {
             return;
         }
+
         // Download background image (3.6+ sites).
         let imgSrc = this.imgSrc;
         const site = CoreSites.getCurrentSite();
@@ -160,8 +160,8 @@ export class AddonQtypeDdMarkerComponent extends CoreQuestionBaseComponent imple
         // Create the instance.
         this.questionInstance = new AddonQtypeDdMarkerQuestion(
             this.hostElement,
-            this.ddQuestion!,
-            !!this.ddQuestion!.readOnly,
+            this.question,
+            !!this.question.readOnly,
             this.dropZones,
             imgSrc,
         );
