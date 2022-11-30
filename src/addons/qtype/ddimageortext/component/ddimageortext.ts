@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ElementRef } from '@angular/core';
+import { Component, OnDestroy, ElementRef } from '@angular/core';
 
 import { AddonModQuizQuestionBasicData, CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
-import { CoreDomUtils } from '@services/utils/dom';
 import { AddonQtypeDdImageOrTextQuestion } from '../classes/ddimageortext';
 
 /**
@@ -27,9 +26,9 @@ import { AddonQtypeDdImageOrTextQuestion } from '../classes/ddimageortext';
     templateUrl: 'addon-qtype-ddimageortext.html',
     styleUrls: ['ddimageortext.scss'],
 })
-export class AddonQtypeDdImageOrTextComponent extends CoreQuestionBaseComponent implements OnInit, OnDestroy {
-
-    ddQuestion?: AddonModQuizDdImageOrTextQuestionData;
+export class AddonQtypeDdImageOrTextComponent
+    extends CoreQuestionBaseComponent<AddonModQuizDdImageOrTextQuestionData>
+    implements OnDestroy {
 
     protected questionInstance?: AddonQtypeDdImageOrTextQuestion;
     protected drops?: unknown[]; // The drop zones received in the init object of the question.
@@ -44,50 +43,47 @@ export class AddonQtypeDdImageOrTextComponent extends CoreQuestionBaseComponent 
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
+    init(): void {
         if (!this.question) {
-            this.logger.warn('Aborting because of no question received.');
-
-            return CoreQuestionHelper.showComponentError(this.onAbort);
+            return;
         }
 
-        this.ddQuestion = this.question;
-
-        const element = CoreDomUtils.convertToElement(this.ddQuestion.html);
+        const questionElement = this.initComponent();
+        if (!questionElement) {
+            return;
+        }
 
         // Get D&D area and question text.
-        const ddArea = element.querySelector('.ddarea');
-
-        this.ddQuestion.text = CoreDomUtils.getContentsOfElement(element, '.qtext');
-        if (!ddArea || this.ddQuestion.text === undefined) {
-            this.logger.warn('Aborting because of an error parsing question.', this.ddQuestion.slot);
+        const ddArea = questionElement.querySelector('.ddarea');
+        if (!ddArea) {
+            this.logger.warn('Aborting because of an error parsing question.', this.question.slot);
 
             return CoreQuestionHelper.showComponentError(this.onAbort);
         }
 
         // Set the D&D area HTML.
-        this.ddQuestion.ddArea = ddArea.outerHTML;
-        this.ddQuestion.readOnly = false;
+        this.question.ddArea = ddArea.outerHTML;
+        this.question.readOnly = false;
 
-        if (this.ddQuestion.initObjects) {
+        if (this.question.initObjects) {
             // Moodle version = 3.5.
-            if (this.ddQuestion.initObjects.drops !== undefined) {
-                this.drops = <unknown[]> this.ddQuestion.initObjects.drops;
+            if (this.question.initObjects.drops !== undefined) {
+                this.drops = <unknown[]> this.question.initObjects.drops;
             }
-            if (this.ddQuestion.initObjects.readonly !== undefined) {
-                this.ddQuestion.readOnly = !!this.ddQuestion.initObjects.readonly;
+            if (this.question.initObjects.readonly !== undefined) {
+                this.question.readOnly = !!this.question.initObjects.readonly;
             }
-        } else if (this.ddQuestion.amdArgs) {
+        } else if (this.question.amdArgs) {
             // Moodle version >= 3.6.
-            if (this.ddQuestion.amdArgs[1] !== undefined) {
-                this.ddQuestion.readOnly = !!this.ddQuestion.amdArgs[1];
+            if (this.question.amdArgs[1] !== undefined) {
+                this.question.readOnly = !!this.question.amdArgs[1];
             }
-            if (this.ddQuestion.amdArgs[2] !== undefined) {
-                this.drops = <unknown[]> this.ddQuestion.amdArgs[2];
+            if (this.question.amdArgs[2] !== undefined) {
+                this.drops = <unknown[]> this.question.amdArgs[2];
             }
         }
 
-        this.ddQuestion.loaded = false;
+        this.question.loaded = false;
     }
 
     /**
@@ -114,12 +110,12 @@ export class AddonQtypeDdImageOrTextComponent extends CoreQuestionBaseComponent 
      * The question has been rendered.
      */
     protected questionRendered(): void {
-        if (!this.destroyed && this.ddQuestion) {
+        if (!this.destroyed && this.question) {
             // Create the instance.
             this.questionInstance = new AddonQtypeDdImageOrTextQuestion(
                 this.hostElement,
-                this.ddQuestion,
-                !!this.ddQuestion.readOnly,
+                this.question,
+                !!this.question.readOnly,
                 this.drops,
             );
         }

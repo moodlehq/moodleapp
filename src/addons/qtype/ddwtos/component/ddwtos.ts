@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnDestroy, ElementRef, ViewChild } from '@angular/core';
 
 import { AddonModQuizQuestionBasicData, CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
@@ -27,11 +27,9 @@ import { AddonQtypeDdwtosQuestion } from '../classes/ddwtos';
     templateUrl: 'addon-qtype-ddwtos.html',
     styleUrls: ['ddwtos.scss'],
 })
-export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent implements OnInit, OnDestroy {
+export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent<AddonModQuizDdwtosQuestionData> implements OnDestroy {
 
     @ViewChild('questiontext') questionTextEl?: ElementRef;
-
-    ddQuestion?: AddonModQuizDdwtosQuestionData;
 
     protected questionInstance?: AddonQtypeDdwtosQuestion;
     protected inputIds: string[] = []; // Ids of the inputs of the question (where the answers will be stored).
@@ -46,52 +44,50 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent impleme
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
+    init(): void {
         if (!this.question) {
-            this.logger.warn('Aborting because of no question received.');
-
-            return CoreQuestionHelper.showComponentError(this.onAbort);
+            return;
         }
 
-        this.ddQuestion = this.question;
-        const element = CoreDomUtils.convertToElement(this.ddQuestion.html);
+        const questionElement = this.initComponent();
+        if (!questionElement) {
+            return;
+        }
 
         // Replace Moodle's correct/incorrect and feedback classes with our own.
-        CoreQuestionHelper.replaceCorrectnessClasses(element);
-        CoreQuestionHelper.replaceFeedbackClasses(element);
+        CoreQuestionHelper.replaceCorrectnessClasses(questionElement);
+        CoreQuestionHelper.replaceFeedbackClasses(questionElement);
 
         // Treat the correct/incorrect icons.
-        CoreQuestionHelper.treatCorrectnessIcons(element);
+        CoreQuestionHelper.treatCorrectnessIcons(questionElement);
 
-        const answerContainer = element.querySelector('.answercontainer');
+        const answerContainer = questionElement.querySelector('.answercontainer');
         if (!answerContainer) {
-            this.logger.warn('Aborting because of an error parsing question.', this.ddQuestion.slot);
+            this.logger.warn('Aborting because of an error parsing question.', this.question.slot);
 
             return CoreQuestionHelper.showComponentError(this.onAbort);
         }
 
-        this.ddQuestion.readOnly = answerContainer.classList.contains('readonly');
-        this.ddQuestion.answers = answerContainer.outerHTML;
-
-        this.ddQuestion.text = CoreDomUtils.getContentsOfElement(element, '.qtext');
-        if (this.ddQuestion.text === undefined) {
-            this.logger.warn('Aborting because of an error parsing question.', this.ddQuestion.slot);
-
-            return CoreQuestionHelper.showComponentError(this.onAbort);
-        }
+        this.question.readOnly = answerContainer.classList.contains('readonly');
+        this.question.answers = answerContainer.outerHTML;
 
         // Get the inputs where the answers will be stored and add them to the question text.
-        const inputEls = <HTMLElement[]> Array.from(element.querySelectorAll('input[type="hidden"]:not([name*=sequencecheck])'));
+        const inputEls = Array.from(
+            questionElement.querySelectorAll<HTMLInputElement>('input[type="hidden"]:not([name*=sequencecheck])'),
+        );
 
+        let questionText = this.question.text;
         inputEls.forEach((inputEl) => {
-            this.ddQuestion!.text += inputEl.outerHTML;
+            questionText += inputEl.outerHTML;
             const id = inputEl.getAttribute('id');
             if (id) {
                 this.inputIds.push(id);
             }
         });
 
-        this.ddQuestion.loaded = false;
+        this.question.text = questionText;
+
+        this.question.loaded = false;
     }
 
     /**
@@ -118,7 +114,7 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent impleme
      * The question has been rendered.
      */
     protected async questionRendered(): Promise<void> {
-        if (this.destroyed) {
+        if (this.destroyed || !this.question) {
             return;
         }
 
@@ -129,8 +125,8 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent impleme
         // Create the instance.
         this.questionInstance = new AddonQtypeDdwtosQuestion(
             this.hostElement,
-            this.ddQuestion!,
-            !!this.ddQuestion!.readOnly,
+            this.question,
+            !!this.question.readOnly,
             this.inputIds,
         );
 
@@ -143,7 +139,7 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent impleme
             this.courseId,
         );
 
-        this.ddQuestion!.loaded = true;
+        this.question.loaded = true;
 
     }
 

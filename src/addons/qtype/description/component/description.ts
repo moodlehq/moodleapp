@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ElementRef } from '@angular/core';
-
+import { Component, ElementRef } from '@angular/core';
 import { CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
 
 /**
@@ -23,7 +22,7 @@ import { CoreQuestionBaseComponent } from '@features/question/classes/base-quest
     selector: 'addon-qtype-description',
     templateUrl: 'addon-qtype-description.html',
 })
-export class AddonQtypeDescriptionComponent extends CoreQuestionBaseComponent implements OnInit {
+export class AddonQtypeDescriptionComponent extends CoreQuestionBaseComponent {
 
     seenInput?: { name: string; value: string };
 
@@ -34,20 +33,22 @@ export class AddonQtypeDescriptionComponent extends CoreQuestionBaseComponent im
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
+    init(): void {
         const questionEl = this.initComponent();
         if (!questionEl) {
             return;
         }
 
         // Get the "seen" hidden input.
-        const input = <HTMLInputElement> questionEl.querySelector('input[type="hidden"][name*=seen]');
-        if (input) {
-            this.seenInput = {
-                name: input.name,
-                value: input.value,
-            };
+        const input = questionEl.querySelector<HTMLInputElement>('input[type="hidden"][name*=seen]');
+        if (!input) {
+            return;
         }
+
+        this.seenInput = {
+            name: input.name,
+            value: input.value,
+        };
     }
 
 }
