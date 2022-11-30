@@ -34,13 +34,16 @@
                     <ion-label>
                         <ng-container *ngIf="!searchQuery">
                             <p class="item-heading">{{ participant.fullname }}</p>
-                            <p *ngIf="participant.lastcourseaccess">
-                                <strong>{{ 'core.lastaccess' | translate }}: </strong>
-                                {{ participant.lastcourseaccess | coreTimeAgo }}
+                            <p *ngIf="participant.lastcourseaccess !== undefined">
+                                <strong>{{ 'core.user.lastcourseaccess' | translate }}: </strong>
+                                <ng-container *ngIf="participant.lastcourseaccess">{{ participant.lastcourseaccess | coreTimeAgo }}
+                                </ng-container>
+                                <ng-container *ngIf="!participant.lastcourseaccess">{{ 'core.never' | translate }}</ng-container>
                             </p>
-                            <p *ngIf="!participant.lastcourseaccess && participant.lastaccess">
+                            <p *ngIf="participant.lastcourseaccess === undefined && participant.lastaccess !== undefined">
                                 <strong>{{ 'core.lastaccess' | translate }}: </strong>
-                                {{ participant.lastaccess | coreTimeAgo }}
+                                <ng-container *ngIf="participant.lastaccess">{{ participant.lastaccess | coreTimeAgo }}</ng-container>
+                                <ng-container *ngIf="!participant.lastaccess">{{ 'core.never' | translate }}</ng-container>
                             </p>
                         </ng-container>
 

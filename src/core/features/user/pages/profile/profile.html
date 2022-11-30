@@ -26,6 +26,11 @@
                         <strong>{{ 'core.user.roles' | translate}}</strong>{{'core.labelsep' | translate}}
                         {{ rolesFormatted }}
                     </p>
+                    <p *ngIf="user.lastaccess !== undefined">
+                        <strong>{{ 'core.lastaccess' | translate }}: </strong>
+                        <span *ngIf="user.lastaccess">{{ user.lastaccess | coreTimeAgo }}</span>
+                        <ng-container *ngIf="!user.lastaccess">{{ 'core.never' | translate }}</ng-container>
+                    </p>
                 </ion-label>
             </ion-item>
 

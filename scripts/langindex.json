@@ -2387,6 +2387,7 @@
   "core.user.errorloaduser": "local_moodlemobileapp",
   "core.user.firstname": "moodle",
   "core.user.interests": "moodle",
+  "core.user.lastcourseaccess": "moodle",
   "core.user.lastname": "moodle",
   "core.user.manager": "role",
   "core.user.newpicture": "moodle",

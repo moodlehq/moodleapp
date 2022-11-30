@@ -1003,7 +1003,7 @@ export type CoreUserParticipant = CoreUserBasicData & {
     interests?: string; // User interests (separated by commas).
     firstaccess?: number; // First access to the site (0 if never).
     lastaccess?: number; // Last access to the site (0 if never).
-    lastcourseaccess?: number | null; // Last access to the course (0 if never).
+    lastcourseaccess?: number | null; // @since 3.7. Last access to the course (0 if never).
     description?: string; // User profile description.
     descriptionformat?: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     city?: string; // Home city of the user.
