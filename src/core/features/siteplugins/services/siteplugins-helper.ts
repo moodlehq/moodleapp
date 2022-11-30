@@ -185,7 +185,7 @@ export class CoreSitePluginsHelperProvider {
         );
 
         files?.forEach((file) => {
-            if (file.url != url) {
+            if (file.url !== url) {
                 // It's not the current file, delete it.
                 CoreUtils.ignoreErrors(CoreFilepool.removeFileByUrl(site.getId(), file.url));
             }
@@ -489,32 +489,32 @@ export class CoreSitePluginsHelperProvider {
                 return;
             }
 
-            if (cssCode) {
+            if (cssCode && handlerSchema.styles?.url) {
                 // Load the styles.
-                this.loadStyles(plugin, handlerName, handlerSchema.styles!.url!, cssCode, handlerSchema.styles!.version, siteId);
+                this.loadStyles(plugin, handlerName, handlerSchema.styles.url, cssCode, handlerSchema.styles.version, siteId);
             }
 
             let uniqueName: string | undefined;
 
             switch (handlerSchema.delegate) {
                 case 'CoreMainMenuDelegate':
-                    uniqueName = await this.registerMainMenuHandler(plugin, handlerName, handlerSchema, initResult);
+                    uniqueName = this.registerMainMenuHandler(plugin, handlerName, handlerSchema, initResult);
                     break;
 
                 case 'CoreCourseModuleDelegate':
-                    uniqueName = await this.registerModuleHandler(plugin, handlerName, handlerSchema, initResult);
+                    uniqueName = this.registerModuleHandler(plugin, handlerName, handlerSchema, initResult);
                     break;
 
                 case 'CoreUserDelegate':
-                    uniqueName = await this.registerUserProfileHandler(plugin, handlerName, handlerSchema, initResult);
+                    uniqueName = this.registerUserProfileHandler(plugin, handlerName, handlerSchema, initResult);
                     break;
 
                 case 'CoreCourseOptionsDelegate':
-                    uniqueName = await this.registerCourseOptionHandler(plugin, handlerName, handlerSchema, initResult);
+                    uniqueName = this.registerCourseOptionHandler(plugin, handlerName, handlerSchema, initResult);
                     break;
 
                 case 'CoreCourseFormatDelegate':
-                    uniqueName = await this.registerCourseFormatHandler(plugin, handlerName, handlerSchema);
+                    uniqueName = this.registerCourseFormatHandler(plugin, handlerName, handlerSchema);
                     break;
 
                 case 'CoreUserProfileFieldDelegate':
@@ -522,7 +522,7 @@ export class CoreSitePluginsHelperProvider {
                     break;
 
                 case 'CoreSettingsDelegate':
-                    uniqueName = await this.registerSettingsHandler(plugin, handlerName, handlerSchema, initResult);
+                    uniqueName = this.registerSettingsHandler(plugin, handlerName, handlerSchema, initResult);
                     break;
 
                 case 'CoreQuestionDelegate':
@@ -534,11 +534,11 @@ export class CoreSitePluginsHelperProvider {
                     break;
 
                 case 'CoreBlockDelegate':
-                    uniqueName = await this.registerBlockHandler(plugin, handlerName, handlerSchema, initResult);
+                    uniqueName = this.registerBlockHandler(plugin, handlerName, handlerSchema, initResult);
                     break;
 
                 case 'AddonMessageOutputDelegate':
-                    uniqueName = await this.registerMessageOutputHandler(plugin, handlerName, handlerSchema, initResult);
+                    uniqueName = this.registerMessageOutputHandler(plugin, handlerName, handlerSchema, initResult);
                     break;
 
                 case 'AddonModQuizAccessRuleDelegate':
@@ -558,7 +558,7 @@ export class CoreSitePluginsHelperProvider {
                     break;
 
                 case 'CoreMainMenuHomeDelegate':
-                    uniqueName = await this.registerMainMenuHomeHandler(plugin, handlerName, handlerSchema, initResult);
+                    uniqueName = this.registerMainMenuHomeHandler(plugin, handlerName, handlerSchema, initResult);
                     break;
 
                 default:

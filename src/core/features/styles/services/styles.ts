@@ -101,7 +101,7 @@ export class CoreStylesService {
         this.styleHandlers.push(styleHandler);
 
         // Sort them by priority, greatest go last because style loaded last it's more important.
-        this.styleHandlers = this.styleHandlers.sort((a, b) => a.priority! >= b.priority! ? 1 : -1);
+        this.styleHandlers = this.styleHandlers.sort((a, b) => a.priority >= b.priority ? 1 : -1);
     }
 
     /**
@@ -221,7 +221,7 @@ export class CoreStylesService {
         const hash = <string>Md5.hashAsciiStr(contents);
 
         // Update the styles only if they have changed.
-        if (this.stylesEls[siteId!][handler.name] === hash) {
+        if (this.stylesEls[siteId][handler.name] === hash) {
             return;
         }
 
@@ -353,21 +353,21 @@ export class CoreStylesService {
      * @returns Promise resolved when styles are loaded.
      */
     protected async load(siteId?: string, disabled = false): Promise<void> {
-        siteId = siteId || CoreSites.getCurrentSiteId();
+        const siteIdentifier = siteId || CoreSites.getCurrentSiteId();
 
-        if (!siteId || !this.stylesEls[siteId]) {
+        if (!siteIdentifier || !this.stylesEls[siteIdentifier]) {
             throw new CoreError('Cannot load styles, site not found: ${siteId}');
         }
 
-        this.logger.debug('Load site', siteId, disabled);
+        this.logger.debug('Load site', siteIdentifier, disabled);
 
         // Enable or disable the styles.
-        for (const sourceName in this.stylesEls[siteId]) {
-            this.disableStyleElementByName(siteId, sourceName, disabled);
+        for (const sourceName in this.stylesEls[siteIdentifier]) {
+            this.disableStyleElementByName(siteIdentifier, sourceName, disabled);
         }
 
         await CoreUtils.allPromises(this.styleHandlers.map(async (handler) => {
-            await this.setStyle(siteId!, handler, !!disabled);
+            await this.setStyle(siteIdentifier, handler, disabled);
         }));
 
         if (!disabled) {

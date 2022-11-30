@@ -77,15 +77,14 @@ export class AddonModChoiceProvider {
         choiceId: number,
         name: string,
         courseId: number,
-        responses?: number[],
+        responses: number[] = [],
         siteId?: string,
     ): Promise<boolean> {
         siteId = siteId || CoreSites.getCurrentSiteId();
-        responses = responses || [];
 
         // Convenience function to store a message to be synchronized later.
         const storeOffline = async (): Promise<boolean> => {
-            await AddonModChoiceOffline.saveResponse(choiceId, name, courseId, responses!, true, siteId);
+            await AddonModChoiceOffline.saveResponse(choiceId, name, courseId, responses, true, siteId);
 
             return false;
         };

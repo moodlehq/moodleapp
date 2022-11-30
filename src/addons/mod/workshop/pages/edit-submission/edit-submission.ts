@@ -385,11 +385,14 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
                     );
                     newSubmissionId = false;
                 } else {
+                    if (!submissionId) {
+                        throw new CoreError('Submission cannot be updated without a submissionId');
+                    }
                     // Try to send it to server.
                     // Don't allow offline if there are attachments since they were uploaded fine.
                     newSubmissionId = await AddonModWorkshop.updateSubmission(
                         this.workshopId,
-                        submissionId!,
+                        submissionId,
                         this.courseId,
                         inputData.title,
                         inputData.content,

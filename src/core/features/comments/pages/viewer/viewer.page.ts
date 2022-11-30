@@ -119,7 +119,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
     }
 
     /**
-     * View loaded.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         try {
@@ -445,9 +445,13 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
      * @returns Promise resolved with modified comment when done.
      */
     protected async loadCommentProfile(comment: CoreCommentsDataToDisplay): Promise<CoreCommentsDataToDisplay> {
-        // Get the user profile image.
+        if (!comment.userid) {
+            return comment;
+        }
+
         try {
-            const user = await CoreUser.getProfile(comment.userid!, undefined, true);
+            // Get the user profile image.
+            const user = await CoreUser.getProfile(comment.userid, undefined, true);
             comment.profileimageurl = user.profileimageurl;
             comment.fullname = user.fullname;
         } catch {
@@ -599,7 +603,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Page destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.syncObserver?.off();

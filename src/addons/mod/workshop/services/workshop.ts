@@ -610,13 +610,16 @@ export class AddonModWorkshopProvider {
         grades: AddonModWorkshopGradesData[],
         options: AddonModWorkshopGetGradesReportOptions = {},
     ): Promise<AddonModWorkshopGradesData[]> {
+        options.page = options.page ?? 0;
+        options.perPage = options.perPage ?? AddonModWorkshopProvider.PER_PAGE;
+
         const report = await this.getGradesReport(workshopId, options);
 
         Array.prototype.push.apply(grades, report.grades);
-        const canLoadMore = ((options.page! + 1) * options.perPage!) < report.totalcount;
+        const canLoadMore = ((options.page + 1) * options.perPage) < report.totalcount;
 
         if (canLoadMore) {
-            options.page!++;
+            options.page++;
 
             return this.fetchGradeReportsRecursive(workshopId, grades, options);
         }
@@ -778,7 +781,11 @@ export class AddonModWorkshopProvider {
         // Other errors ocurring.
         CoreWS.throwOnFailedStatus(response, 'Add submission failed');
 
-        return response.submissionid!;
+        if (!response.submissionid) {
+            throw new CoreError('Add submission failed, no submission id was returned');
+        }
+
+        return response.submissionid;
     }
 
     /**

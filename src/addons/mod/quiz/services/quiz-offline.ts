@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreError } from '@classes/errors/error';
 
 import { CoreQuestionBehaviourDelegate, CoreQuestionQuestionWithAnswers } from '@features/question/services/behaviour-delegate';
 import { CoreQuestionAnswerDBRecord } from '@features/question/services/database/question';
@@ -196,13 +197,17 @@ export class AddonModQuizOfflineProvider {
             entry.timemodified = now;
             entry.finished = finish ? 1 : 0;
         } else {
+            if (!attempt.userid || !attempt.attempt) {
+                throw new CoreError('Incorrect attempt to save');
+            }
+
             entry = {
                 quizid: quiz.id,
-                userid: attempt.userid!,
+                userid: attempt.userid,
                 id: attempt.id,
                 courseid: quiz.course,
                 timecreated: now,
-                attempt: attempt.attempt!,
+                attempt: attempt.attempt,
                 currentpage: attempt.currentpage,
                 timemodified: now,
                 finished: finish ? 1 : 0,

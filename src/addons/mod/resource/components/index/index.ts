@@ -142,8 +142,8 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
             // Never show description on iframe.
             this.displayDescription = false;
 
-            this.warning = downloadResult.failed
-                ? this.getErrorDownloadingSomeFilesMessage(downloadResult.error!)
+            this.warning = downloadResult.failed && downloadResult.error
+                ? this.getErrorDownloadingSomeFilesMessage(downloadResult.error)
                 : '';
 
             return;

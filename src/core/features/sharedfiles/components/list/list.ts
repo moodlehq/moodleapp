@@ -43,7 +43,7 @@ export class CoreSharedFilesListComponent implements OnInit, OnDestroy {
     @Output() onFilePicked = new EventEmitter<FileEntry>();
 
     filesLoaded = false;
-    files?: (FileEntry | DirectoryEntry)[];
+    files: (FileEntry | DirectoryEntry)[] = [];
 
     protected shareObserver?: CoreEventObserver;
 
@@ -57,7 +57,7 @@ export class CoreSharedFilesListComponent implements OnInit, OnDestroy {
 
         // Listen for new files shared with the app.
         this.shareObserver = CoreEvents.on(CoreEvents.FILE_SHARED, (data) => {
-            if (data.siteId == this.siteId) {
+            if (data.siteId === this.siteId) {
                 // File was stored in current site, refresh the list.
                 this.filesLoaded = false;
                 this.loadFiles().finally(() => {
@@ -94,7 +94,7 @@ export class CoreSharedFilesListComponent implements OnInit, OnDestroy {
      * @param index Position of the file.
      */
     fileDeleted(index: number): void {
-        this.files!.splice(index, 1);
+        this.files.splice(index, 1);
     }
 
     /**
@@ -104,7 +104,7 @@ export class CoreSharedFilesListComponent implements OnInit, OnDestroy {
      * @param data Data containing the new FileEntry.
      */
     fileRenamed(index: number, data: { file: FileEntry }): void {
-        this.files![index] = data.file;
+        this.files[index] = data.file;
     }
 
     /**
@@ -161,7 +161,7 @@ export class CoreSharedFilesListComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Component destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.shareObserver?.off();

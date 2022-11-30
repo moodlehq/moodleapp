@@ -74,9 +74,11 @@ export class FileTransferObjectMock extends FileTransferObject {
      * object which has an error code of FileTransferError.ABORT_ERR.
      */
     abort(): void {
-        if (this.xhr) {
+        if (this.xhr && this.reject) {
             this.xhr.abort();
-            this.reject!(new FileTransferErrorMock(FileTransferErrorMock.ABORT_ERR, this.source!, this.target!, 0, '', ''));
+            this.reject(
+                new FileTransferErrorMock(FileTransferErrorMock.ABORT_ERR, this.source || '', this.target || '', 0, '', ''),
+            );
         }
     }
 

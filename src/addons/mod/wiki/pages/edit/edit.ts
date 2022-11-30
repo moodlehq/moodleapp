@@ -45,8 +45,8 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
     cmId?: number; // Course module ID.
     courseId?: number; // Course the wiki belongs to.
     title?: string; // Title to display.
-    pageForm?: FormGroup; // The form group.
-    contentControl?: FormControl; // The FormControl for the page content.
+    pageForm: FormGroup; // The form group.
+    contentControl: FormControl; // The FormControl for the page content.
     canEditTitle = false; // Whether title can be edited.
     loaded = false; // Whether the data has been loaded.
     component = AddonModWikiProvider.COMPONENT; // Component to link the files to.
@@ -71,7 +71,10 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
 
     constructor(
         protected formBuilder: FormBuilder,
-    ) { }
+    ) {
+        this.contentControl = this.formBuilder.control('');
+        this.pageForm = this.formBuilder.group({});
+    }
 
     /**
      * @inheritdoc
@@ -96,10 +99,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
         this.blockId = AddonModWikiSync.getSubwikiBlockId(this.subwikiId, this.wikiId, this.userId, this.groupId);
 
         // Create the form group and its controls.
-        this.contentControl = this.formBuilder.control('');
-        this.pageForm = this.formBuilder.group({
-            title: pageTitle,
-        });
+        this.pageForm.addControl('title', this.formBuilder.control(pageTitle));
         this.pageForm.addControl('text', this.contentControl);
 
         // Block the wiki so it cannot be synced.
@@ -121,7 +121,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
             if (success && !this.isDestroyed) {
                 // Block the subwiki now that we have blockId for sure.
                 const newBlockId = AddonModWikiSync.getSubwikiBlockId(this.subwikiId, this.wikiId, this.userId, this.groupId);
-                if (newBlockId != this.blockId) {
+                if (newBlockId !== this.blockId) {
                     CoreSync.unblockOperation(this.component, this.blockId);
                     this.blockId = newBlockId;
                     CoreSync.blockOperation(this.component, this.blockId);
@@ -143,7 +143,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
 
         try {
             // Wait for sync to be over (if any).
-            const syncResult = await AddonModWikiSync.waitForSync(this.blockId!);
+            const syncResult = this.blockId ? await AddonModWikiSync.waitForSync(this.blockId) : undefined;
 
             if (this.pageId) {
                 // Editing a page that already exists.
@@ -154,7 +154,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
                 // Get page contents to obtain title and editing permission
                 const pageContents = await AddonModWiki.getPageContents(this.pageId, { cmId: this.cmId });
 
-                this.pageForm!.controls.title.setValue(pageContents.title); // Set the title in the form group.
+                this.pageForm.controls.title.setValue(pageContents.title); // Set the title in the form group.
                 this.wikiId = pageContents.wikiid;
                 this.subwikiId = pageContents.subwikiid;
                 this.title = Translate.instant('addon.mod_wiki.editingpage', { $a: pageContents.title });
@@ -177,7 +177,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
                 // Get the original page contents, treating file URLs if needed.
                 const content = CoreTextUtils.replacePluginfileUrls(editContents.content || '', this.subwikiFiles);
 
-                this.contentControl!.setValue(content);
+                this.contentControl.setValue(content);
                 this.originalContent = content;
                 this.version = editContents.version;
 
@@ -188,7 +188,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
                     }, AddonModWikiProvider.RENEW_LOCK_TIME);
                 }
             } else {
-                const pageTitle = this.pageForm!.controls.title.value;
+                const pageTitle = this.pageForm.controls.title.value;
                 this.editing = false;
                 canEdit = !!this.blockId; // If no blockId, the user cannot edit the page.
 
@@ -222,7 +222,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
 
                     if (page) {
                         // Load offline content.
-                        this.contentControl!.setValue(page.cachedcontent);
+                        this.contentControl.setValue(page.cachedcontent);
                         this.originalContent = page.cachedcontent;
                         this.editOffline = true;
                     } else {
@@ -286,13 +286,17 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
      * @param title Page title.
      */
     protected goToPage(title: string): void {
+        if (!this.wikiId) {
+            return;
+        }
+
         // Not the firstpage.
         AddonModWiki.setEditedPageData({
             cmId: this.cmId,
             courseId: this.courseId,
             pageId: this.pageId,
             pageTitle: title,
-            wikiId: this.wikiId!,
+            wikiId: this.wikiId,
             subwikiId: this.subwikiId,
             userId: this.userId,
             groupId: this.groupId,
@@ -307,7 +311,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
      * @returns Whether data has changed.
      */
     protected hasDataChanged(): boolean {
-        const values = this.pageForm!.value;
+        const values = this.pageForm.value;
 
         return !(this.originalContent == values.text || (!this.editing && !values.text && !values.title));
     }
@@ -348,7 +352,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
      * @returns Promise resolved when done.
      */
     async save(): Promise<void> {
-        const values = this.pageForm!.value;
+        const values = this.pageForm.value;
         const title = values.title;
         let text = values.text;
 
@@ -358,14 +362,14 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
         text = CoreTextUtils.formatHtmlLines(text);
 
         try {
-            if (this.editing) {
+            if (this.editing && this.pageId) {
                 // Edit existing page.
-                await AddonModWiki.editPage(this.pageId!, text, this.section);
+                await AddonModWiki.editPage(this.pageId, text, this.section);
 
                 CoreForms.triggerFormSubmittedEvent(this.formElement, true, CoreSites.getCurrentSiteId());
 
                 // Invalidate page since it changed.
-                await AddonModWiki.invalidatePage(this.pageId!);
+                await AddonModWiki.invalidatePage(this.pageId);
 
                 return this.goToPage(title);
             }
@@ -451,7 +455,11 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
      * Renew lock and control versions.
      */
     protected async renewLock(): Promise<void> {
-        const response = await AddonModWiki.getPageForEditing(this.pageId!, this.section, true);
+        if (!this.pageId) {
+            return;
+        }
+
+        const response = await AddonModWiki.getPageForEditing(this.pageId, this.section, true);
 
         if (response.version && this.version != response.version) {
             this.wrongVersionLock = true;
