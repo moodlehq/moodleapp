@@ -71,11 +71,11 @@ export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
                     generateLabels: (chart: Chart): ChartLegendLabelItem[] => {
                         const data = chart.data;
                         if (data.labels?.length) {
-                            const datasets = data.datasets![0];
+                            const datasets = data.datasets?.[0];
 
-                            return data.labels.map((label, i) => ({
-                                text: label + ': ' + datasets.data![i],
-                                fillStyle: datasets.backgroundColor![i],
+                            return data.labels.map<ChartLegendLabelItem>((label, i) => ({
+                                text: label + ': ' + datasets?.data?.[i],
+                                fillStyle: datasets?.backgroundColor?.[i],
                             }));
                         }
 
@@ -87,14 +87,18 @@ export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
             legend = Object.assign({}, this.legend);
         }
 
-        if (this.type == 'bar' && this.data.length >= 5) {
+        if (this.type === 'bar' && this.data.length >= 5) {
             this.type = 'horizontalBar';
         }
 
         // Format labels if needed.
         await this.formatLabels();
 
-        const context = this.canvas!.nativeElement.getContext('2d')!;
+        const context = this.canvas?.nativeElement.getContext('2d');
+        if (!context) {
+            return;
+        }
+
         this.chart = new Chart(context, {
             type: this.type,
             data: {
@@ -123,7 +127,11 @@ export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
             await this.formatLabels();
         }
 
-        this.chart.data.datasets![0] = {
+        if (!this.chart.data.datasets) {
+            this.chart.data.datasets = [];
+        }
+
+        this.chart.data.datasets[0] = {
             data: this.data,
             backgroundColor: this.getRandomColors(this.data.length),
         };

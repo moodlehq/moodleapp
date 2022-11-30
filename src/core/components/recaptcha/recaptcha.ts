@@ -28,10 +28,10 @@ import { CorePath } from '@singletons/path';
 })
 export class CoreRecaptchaComponent implements OnInit {
 
-    @Input() model?: Record<string, string>; // The model where to store the recaptcha response.
+    @Input() model: Record<string, string> = {}; // The model where to store the recaptcha response.
     @Input() publicKey?: string; // The site public key.
     @Input() modelValueName = 'recaptcharesponse'; // Name of the model property where to store the response.
-    @Input() siteUrl?: string; // The site URL. If not defined, current site.
+    @Input() siteUrl = ''; // The site URL. If not defined, current site.
 
     expired = false;
 
@@ -45,7 +45,7 @@ export class CoreRecaptchaComponent implements OnInit {
      * @inheritdoc
      */
     ngOnInit(): void {
-        this.siteUrl = this.siteUrl || CoreSites.getCurrentSite()?.getURL();
+        this.siteUrl = this.siteUrl || CoreSites.getRequiredCurrentSite().getURL();
     }
 
     /**
@@ -62,7 +62,7 @@ export class CoreRecaptchaComponent implements OnInit {
         // Open the recaptcha challenge in an InAppBrowser.
         // The app used to use an iframe for this, but the app can no longer access the iframe to create the required callbacks.
         // The app cannot render the recaptcha directly because it has problems with the local protocols and domains.
-        const src = CorePath.concatenatePaths(this.siteUrl!, 'webservice/recaptcha.php?lang=' + this.lang);
+        const src = CorePath.concatenatePaths(this.siteUrl, 'webservice/recaptcha.php?lang=' + this.lang);
 
         const inAppBrowserWindow = CoreUtils.openInApp(src);
         if (!inAppBrowserWindow) {
@@ -90,7 +90,7 @@ export class CoreRecaptchaComponent implements OnInit {
                 this.expireRecaptchaAnswer();
             } else if (event.data.action == 'callback') {
                 this.expired = false;
-                this.model![this.modelValueName] = event.data.value;
+                this.model[this.modelValueName] = event.data.value;
 
                 // Close the InAppBrowser now.
                 inAppBrowserWindow.close();
@@ -105,7 +105,7 @@ export class CoreRecaptchaComponent implements OnInit {
      */
     expireRecaptchaAnswer(): void {
         this.expired = true;
-        this.model![this.modelValueName] = '';
+        this.model[this.modelValueName] = '';
     }
 
 }

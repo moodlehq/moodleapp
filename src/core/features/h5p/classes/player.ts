@@ -166,16 +166,16 @@ export class CoreH5PPlayer {
      * @returns Promise resolved when done.
      */
     async deleteAllContentIndexesForSite(siteId?: string): Promise<void> {
-        siteId = siteId || CoreSites.getCurrentSiteId();
+        const siteIdentifier = siteId || CoreSites.getCurrentSiteId();
 
-        if (!siteId) {
+        if (!siteIdentifier) {
             return;
         }
 
-        const records = await this.h5pCore.h5pFramework.getAllContentData(siteId);
+        const records = await this.h5pCore.h5pFramework.getAllContentData(siteIdentifier);
 
         await Promise.all(records.map(async (record) => {
-            await CoreUtils.ignoreErrors(this.h5pCore.h5pFS.deleteContentIndex(record.foldername, siteId!));
+            await CoreUtils.ignoreErrors(this.h5pCore.h5pFS.deleteContentIndex(record.foldername, siteIdentifier));
         }));
     }
 

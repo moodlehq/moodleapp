@@ -91,7 +91,12 @@ export class CoreQueueRunner {
             return;
         }
 
-        const item = this.orderedQueue.shift()!;
+        const item = this.orderedQueue.shift();
+        if (!item) {
+            // No item found.
+            return;
+        }
+
         this.numberRunning++;
 
         try {

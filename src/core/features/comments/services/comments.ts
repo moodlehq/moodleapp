@@ -152,7 +152,7 @@ export class CoreCommentsProvider {
             this.invalidateCommentsData(contextLevel, instanceId, component, itemId, area, siteId),
         );
 
-        return commentsResponse![0];
+        return commentsResponse[0];
     }
 
     /**
@@ -166,9 +166,9 @@ export class CoreCommentsProvider {
     async addCommentsOnline(
         comments: CoreCommentsCommentBasicData[],
         siteId?: string,
-    ): Promise<CoreCommentsAddCommentsWSResponse | undefined> {
+    ): Promise<CoreCommentsAddCommentsWSResponse> {
         if (!comments || !comments.length) {
-            return;
+            return [];
         }
 
         const site = await CoreSites.getSite(siteId);
@@ -231,8 +231,12 @@ export class CoreCommentsProvider {
 
         // Convenience function to store the action to be synchronized later.
         const storeOffline = async (): Promise<boolean> => {
+            if (!comment.id) {
+                return false;
+            }
+
             await CoreCommentsOffline.deleteComment(
-                comment.id!,
+                comment.id,
                 comment.contextlevel,
                 comment.instanceid,
                 comment.component,

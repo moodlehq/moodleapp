@@ -87,24 +87,24 @@ export class CoreLoginHelperProvider {
 
         const result = await site.write<AgreeSitePolicyResult>('core_user_agree_site_policy', {});
 
-        if (!result.status) {
-            // Error.
-            if (result.warnings && result.warnings.length) {
-                // Check if there is a warning 'alreadyagreed'.
-                for (const i in result.warnings) {
-                    const warning = result.warnings[i];
-                    if (warning.warningcode == 'alreadyagreed') {
-                        // Policy already agreed, treat it as a success.
-                        return;
-                    }
-                }
-
-                // Another warning, reject.
-                throw new CoreWSError(result.warnings[0]);
-            } else {
-                throw new CoreError('Cannot agree site policy');
-            }
+        if (result.status) {
+            return;
         }
+
+        if (!result.warnings?.length) {
+            throw new CoreError('Cannot agree site policy');
+        }
+
+        // Check if there is a warning 'alreadyagreed'.
+        const found = result.warnings.some((warning) => warning.warningcode === 'alreadyagreed');
+        if (found) {
+            // Policy already agreed, treat it as a success.
+            return;
+        }
+
+        // Another warning, reject.
+        throw new CoreWSError(result.warnings[0]);
+
     }
 
     /**
@@ -1111,7 +1111,11 @@ export class CoreLoginHelperProvider {
                 );
 
                 if (!result.status) {
-                    throw new CoreWSError(result.warnings![0]);
+                    if (result.warnings?.length) {
+                        throw new CoreWSError(result.warnings[0]);
+                    }
+
+                    throw new CoreError('Error sending confirmation email');
                 }
 
                 const message = Translate.instant('core.login.emailconfirmsentsuccess');
@@ -1178,16 +1182,16 @@ export class CoreLoginHelperProvider {
     treatUserTokenError(siteUrl: string, error: CoreWSError, username?: string, password?: string): void {
         switch (error.errorcode) {
             case 'forcepasswordchangenotice':
-                this.openChangePassword(siteUrl, CoreTextUtils.getErrorMessageFromError(error)!);
+                this.openChangePassword(siteUrl, CoreTextUtils.getErrorMessageFromError(error) ?? '');
                 break;
             case 'usernotconfirmed':
                 this.showNotConfirmedModal(siteUrl, undefined, username, password);
                 break;
             case 'connecttomoodleapp':
-                this.showMoodleAppNoticeModal(CoreTextUtils.getErrorMessageFromError(error)!);
+                this.showMoodleAppNoticeModal(CoreTextUtils.getErrorMessageFromError(error) ?? '');
                 break;
             case 'connecttoworkplaceapp':
-                this.showWorkplaceNoticeModal(CoreTextUtils.getErrorMessageFromError(error)!);
+                this.showWorkplaceNoticeModal(CoreTextUtils.getErrorMessageFromError(error) ?? '');
                 break;
             case 'invalidlogin':
                 this.showInvalidLoginModal(error);

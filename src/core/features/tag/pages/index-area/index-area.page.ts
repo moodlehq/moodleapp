@@ -53,7 +53,7 @@ export class CoreTagIndexAreaPage implements OnInit {
     ) { }
 
     /**
-     * View loaded.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         this.route.queryParams.subscribe(async () => {
@@ -80,7 +80,9 @@ export class CoreTagIndexAreaPage implements OnInit {
                     await this.fetchData(true);
                 }
 
-                this.areaComponent = await CoreTagAreaDelegate.getComponent(this.componentName!, this.itemType!);
+                if (this.componentName && this.itemType) {
+                    this.areaComponent = await CoreTagAreaDelegate.getComponent(this.componentName, this.itemType);
+                }
             } finally {
                 this.loaded = true;
             }

@@ -99,7 +99,7 @@ export class AddonModQuizProvider {
      * @returns Grade to display.
      */
     formatGrade(grade?: number | null, decimals?: number): string {
-        if (grade === undefined || grade == -1 || grade === null || isNaN(grade)) {
+        if (grade === undefined || grade === -1 || grade === null || isNaN(grade)) {
             return Translate.instant('addon.mod_quiz.notyetgraded');
         }
 
@@ -290,7 +290,7 @@ export class AddonModQuizProvider {
                 return dueDate * 1000;
 
             case AddonModQuizProvider.ATTEMPT_OVERDUE:
-                return (dueDate + quiz.graceperiod!) * 1000;
+                return (dueDate + (quiz.graceperiod || 0)) * 1000;
 
             default:
                 this.logger.warn('Unexpected state when getting due date: ' + attempt.state);
@@ -352,14 +352,17 @@ export class AddonModQuizProvider {
             }
 
             case AddonModQuizProvider.ATTEMPT_FINISHED:
-                return [
-                    Translate.instant('addon.mod_quiz.statefinished'),
-                    Translate.instant(
-                        'addon.mod_quiz.statefinisheddetails',
-                        { $a: CoreTimeUtils.userDate(attempt.timefinish! * 1000) },
-                    ),
-                ];
+                if (attempt.timefinish) {
+                    return [
+                        Translate.instant('addon.mod_quiz.statefinished'),
+                        Translate.instant(
+                            'addon.mod_quiz.statefinisheddetails',
+                            { $a: CoreTimeUtils.userDate(attempt.timefinish * 1000) },
+                        ),
+                    ];
+                }
 
+                return [];
             case AddonModQuizProvider.ATTEMPT_ABANDONED:
                 return [Translate.instant('addon.mod_quiz.stateabandoned')];
 
@@ -624,8 +627,8 @@ export class AddonModQuizProvider {
             quiz.questiondecimalpoints = -1;
         }
 
-        if (quiz.questiondecimalpoints == -1) {
-            return quiz.decimalpoints!;
+        if (quiz.questiondecimalpoints === -1) {
+            return quiz.decimalpoints ?? 2;
         }
 
         return quiz.questiondecimalpoints;
@@ -1780,7 +1783,8 @@ export class AddonModQuizProvider {
      * @returns Whether quiz is graded.
      */
     quizHasGrades(quiz: AddonModQuizQuizWSData): boolean {
-        return quiz.grade! >= 0.000005 && quiz.sumgrades! >= 0.000005;
+        return !!quiz.grade && quiz.grade >= 0.000005 &&
+            !!quiz.sumgrades && quiz.sumgrades >= 0.000005;
     }
 
     /**
@@ -1800,10 +1804,10 @@ export class AddonModQuizProvider {
     ): string | undefined {
         let grade: number | undefined;
 
-        const rawGradeNum = typeof rawGrade == 'string' ? parseFloat(rawGrade) : rawGrade;
+        const rawGradeNum = typeof rawGrade === 'string' ? parseFloat(rawGrade) : rawGrade;
         if (rawGradeNum !== undefined && rawGradeNum !== null && !isNaN(rawGradeNum)) {
-            if (quiz.sumgrades! >= 0.000005) {
-                grade = rawGradeNum * quiz.grade! / quiz.sumgrades!;
+            if (quiz.grade && quiz.sumgrades && quiz.sumgrades >= 0.000005) {
+                grade = rawGradeNum * quiz.grade / quiz.sumgrades;
             } else {
                 grade = 0;
             }
@@ -1815,8 +1819,10 @@ export class AddonModQuizProvider {
 
         if (format === 'question') {
             return this.formatGrade(grade, this.getGradeDecimals(quiz));
-        } else if (format) {
-            return this.formatGrade(grade, quiz.decimalpoints!);
+        }
+
+        if (format) {
+            return this.formatGrade(grade, quiz.decimalpoints);
         }
 
         return String(grade);

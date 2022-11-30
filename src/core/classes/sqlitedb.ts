@@ -323,7 +323,7 @@ export class SQLiteDB {
     async close(): Promise<void> {
         await this.ready();
 
-        await this.db!.close();
+        await this.db?.close();
     }
 
     /**
@@ -501,7 +501,7 @@ export class SQLiteDB {
     async execute(sql: string, params?: SQLiteDBRecordValue[]): Promise<any> {
         await this.ready();
 
-        return this.db!.executeSql(sql, params);
+        return this.db?.executeSql(sql, params);
     }
 
     /**
@@ -516,7 +516,7 @@ export class SQLiteDB {
     async executeBatch(sqlStatements: (string | string[] | any)[]): Promise<void> {
         await this.ready();
 
-        await this.db!.sqlBatch(sqlStatements);
+        await this.db?.sqlBatch(sqlStatements);
     }
 
     /**
@@ -544,7 +544,7 @@ export class SQLiteDB {
      * @returns List of params.
      */
     protected formatDataToSQLParams(data: SQLiteDBRecordValues): SQLiteDBRecordValue[] {
-        return Object.keys(data).map((key) => data[key]!);
+        return Object.values(data).map((value) => value as SQLiteDBRecordValue);
     }
 
     /**
@@ -958,7 +958,7 @@ export class SQLiteDB {
     async open(): Promise<void> {
         await this.ready();
 
-        await this.db!.open();
+        await this.db?.open();
     }
 
     /**
