@@ -142,7 +142,7 @@ export class CoreGradesHelperProvider {
                     content = CoreTextUtils.cleanTags(content);
                 } else {
                     // The activity type won't be included in the webservice response if behat is running.
-                    content = CoreAppProvider.isAutomated() ? content : content.replace(/<span[^>]+>.+?<\/span>/gi, '');
+                    content = CoreAppProvider.isAutomated() ? content : content.replace(/<span[^>]+>.+?<\/span>/i, '');
                     content = CoreTextUtils.cleanTags(content, true);
                 }
 
