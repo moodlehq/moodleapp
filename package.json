@@ -33,7 +33,7 @@
     "test:ci": "NODE_ENV=testing gulp && jest -ci --runInBand --verbose",
     "test:watch": "NODE_ENV=testing gulp watch & jest --watch",
     "test:coverage": "NODE_ENV=testing gulp && jest --coverage",
-    "lint": "NODE_OPTIONS=--max-old-space-size=4096 ng lint",
+    "lint": "NODE_OPTIONS=--max-old-space-size=8192 ng lint",
     "ionic:serve:before": "gulp",
     "ionic:serve": "cross-env-shell ./scripts/serve.sh",
     "ionic:build:before": "gulp",
