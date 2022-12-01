@@ -38,7 +38,7 @@ export class AddonModFolderProvider {
      * @param courseId Course ID.
      * @param cmId Course module ID.
      * @param options Other options.
-     * @return Promise resolved when the book is retrieved.
+     * @returns Promise resolved when the book is retrieved.
      */
     getFolder(courseId: number, cmId: number, options?: CoreSitesCommonWSOptions): Promise<AddonModFolderFolder> {
         return this.getFolderByKey(courseId, 'coursemodule', cmId, options);
@@ -51,7 +51,7 @@ export class AddonModFolderProvider {
      * @param key Name of the property to check.
      * @param value Value to search.
      * @param options Other options.
-     * @return Promise resolved when the book is retrieved.
+     * @returns Promise resolved when the book is retrieved.
      */
     protected async getFolderByKey(
         courseId: number,
@@ -87,7 +87,7 @@ export class AddonModFolderProvider {
      * Get cache key for folder data WS calls.
      *
      * @param courseId Course ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getFolderCacheKey(courseId: number): string {
         return ROOT_CACHE_KEY + 'folder:' + courseId;
@@ -114,7 +114,7 @@ export class AddonModFolderProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateFolderData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -128,7 +128,7 @@ export class AddonModFolderProvider {
      * @param id Module ID.
      * @param name Name of the folder.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the WS call is successful.
+     * @returns Promise resolved when the WS call is successful.
      */
     async logView(id: number, name?: string, siteId?: string): Promise<void> {
         const params: AddonModFolderViewFolderWSParams = {

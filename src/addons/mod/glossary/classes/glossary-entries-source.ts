@@ -58,7 +58,7 @@ export class AddonModGlossaryEntriesSource extends CoreRoutedItemsManagerSource<
      * Type guard to infer NewEntryForm objects.
      *
      * @param entry Item to check.
-     * @return Whether the item is a new entry form.
+     * @returns Whether the item is a new entry form.
      */
     isNewEntryForm(entry: AddonModGlossaryEntryItem): entry is AddonModGlossaryNewEntryForm {
         return 'newEntry' in entry;
@@ -68,7 +68,7 @@ export class AddonModGlossaryEntriesSource extends CoreRoutedItemsManagerSource<
      * Type guard to infer entry objects.
      *
      * @param entry Item to check.
-     * @return Whether the item is an offline entry.
+     * @returns Whether the item is an offline entry.
      */
     isOnlineEntry(entry: AddonModGlossaryEntryItem): entry is AddonModGlossaryEntry {
         return 'id' in entry;
@@ -78,7 +78,7 @@ export class AddonModGlossaryEntriesSource extends CoreRoutedItemsManagerSource<
      * Type guard to infer entry objects.
      *
      * @param entry Item to check.
-     * @return Whether the item is an offline entry.
+     * @returns Whether the item is an offline entry.
      */
     isOfflineEntry(entry: AddonModGlossaryEntryItem): entry is AddonModGlossaryOfflineEntry {
         return !this.isNewEntryForm(entry) && !this.isOnlineEntry(entry);

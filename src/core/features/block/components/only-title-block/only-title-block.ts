@@ -31,7 +31,7 @@ export class CoreBlockOnlyTitleComponent extends CoreBlockBaseComponent implemen
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         await super.ngOnInit();

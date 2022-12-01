@@ -48,6 +48,8 @@ export class FileTransferMock extends FileTransfer {
 
     /**
      * Creates a new FileTransferObjectMock object.
+     *
+     * @returns a new file transfer mock.
      */
     create(): FileTransferObjectMock {
         return new FileTransferObjectMock();
@@ -85,7 +87,7 @@ export class FileTransferObjectMock extends FileTransferObject {
      * @param target Filesystem url representing the file on the device.
      * @param trustAllHosts If set to true, it accepts all security certificates.
      * @param options Optional parameters, currently only supports headers.
-     * @return Returns a Promise that resolves to a FileEntry object.
+     * @returns Returns a Promise that resolves to a FileEntry object.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     download(source: string, target: string, trustAllHosts?: boolean, options?: { [s: string]: any }): Promise<unknown> {
@@ -166,7 +168,7 @@ export class FileTransferObjectMock extends FileTransferObject {
      * This code is extracted from Cordova FileTransfer plugin.
      *
      * @param urlString The URL to get the credentials from.
-     * @return The header with the credentials, null if no credentials.
+     * @returns The header with the credentials, null if no credentials.
      */
     protected getBasicAuthHeader(urlString: string): {name: string; value: string} | null {
         let header: {name: string; value: string} | null = null;
@@ -189,7 +191,7 @@ export class FileTransferObjectMock extends FileTransferObject {
      * Given an instance of XMLHttpRequest, get the response headers as an object.
      *
      * @param xhr XMLHttpRequest instance.
-     * @return Object with the headers.
+     * @returns Object with the headers.
      */
     protected getHeadersAsObject(xhr: XMLHttpRequest): Record<string, string> {
         const headersString = xhr.getAllResponseHeaders();
@@ -214,7 +216,7 @@ export class FileTransferObjectMock extends FileTransferObject {
      * This code is extracted from Cordova FileTransfer plugin.
      *
      * @param urlString The URL to get the credentials from.
-     * @return Retrieved credentials.
+     * @returns Retrieved credentials.
      */
     protected getUrlCredentials(urlString: string): string | null {
         const credentialsPattern = /^https?:\/\/(?:(?:(([^:@/]*)(?::([^@/]*))?)?@)?([^:/?#]*)(?::(\d*))?).*$/;
@@ -236,7 +238,7 @@ export class FileTransferObjectMock extends FileTransferObject {
      * Parse a response, converting it into text and the into an object if needed.
      *
      * @param response The response to parse.
-     * @return Promise resolved with the parsed response.
+     * @returns Promise resolved with the parsed response.
      */
     protected async parseResponse(response: Blob | ArrayBuffer | string | null): Promise<unknown> {
         if (!response) {
@@ -264,7 +266,7 @@ export class FileTransferObjectMock extends FileTransferObject {
      * Convert a Blob to text.
      *
      * @param blob Blob to convert.
-     * @return Promise resolved with blob contents.
+     * @returns Promise resolved with blob contents.
      */
     protected blobToText(blob: Blob): Promise<string> {
         return new Promise<string>((resolve) => {
@@ -282,7 +284,7 @@ export class FileTransferObjectMock extends FileTransferObject {
      * @param fileUrl Filesystem URL representing the file on the device or a data URI.
      * @param url URL of the server to receive the file, as encoded by encodeURI().
      * @param options Optional parameters.
-     * @return Promise that resolves to a FileUploadResult and rejects with FileTransferError.
+     * @returns Promise that resolves to a FileUploadResult and rejects with FileTransferError.
      */
     upload(fileUrl: string, url: string, options?: FileUploadOptions): Promise<FileUploadResult> {
         return new Promise((resolve, reject): void => {

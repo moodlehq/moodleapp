@@ -41,7 +41,7 @@ export class CoreSitePluginsUserProfileFieldComponent extends CoreSitePluginsCom
     @Input() courseId?: number; // Course ID the field belongs to (if any). It can be used to improve performance with filters.
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         // Pass the input data to the component.

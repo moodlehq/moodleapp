@@ -161,7 +161,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     /**
      * Fetch the access info and store it in the right variables.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async checkHasOffline(): Promise<void> {
         if (!this.h5pActivity) {
@@ -174,7 +174,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     /**
      * Fetch the access info and store it in the right variables.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchAccessInfo(): Promise<void> {
         if (!this.h5pActivity) {
@@ -190,7 +190,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     /**
      * Fetch the deployed file data if needed and store it in the right variables.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchDeployedFileData(): Promise<void> {
         if (!this.siteCanDownload || !this.h5pActivity) {
@@ -220,7 +220,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     /**
      * Calculate the state of the deployed file.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async calculateFileState(): Promise<void> {
         if (!this.fileUrl || !this.deployedFile) {
@@ -272,7 +272,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
      * Download the file and play it.
      *
      * @param event Click event.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async downloadAndPlay(event?: MouseEvent): Promise<void> {
         event?.preventDefault();
@@ -311,7 +311,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     /**
      * Download the file automatically.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async downloadAutomatically(): Promise<void> {
         try {
@@ -328,7 +328,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     /**
      * Download athe H5P deployed file or restores an ongoing download.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async downloadDeployedFile(): Promise<void> {
         if (!this.fileUrl || !this.deployedFile) {
@@ -430,7 +430,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
      * Treat an iframe message event.
      *
      * @param event Event.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async onIframeMessage(event: MessageEvent): Promise<void> {
         const data = event.data;
@@ -479,7 +479,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
      * Check if an event is an XAPI post statement of the current activity.
      *
      * @param data Event data.
-     * @return Whether it's an XAPI post statement of the current activity.
+     * @returns Whether it's an XAPI post statement of the current activity.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     protected isCurrentXAPIPost(data: any): data is AddonModH5PActivityXAPIData {

@@ -51,7 +51,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
      *
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async deleteRetakeFinishedInSync(lessonId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -65,7 +65,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
      *
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the retake entry (undefined if no retake).
+     * @returns Promise resolved with the retake entry (undefined if no retake).
      */
     async getRetakeFinishedInSync(
         lessonId: number,
@@ -82,7 +82,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
      * @param lessonId Lesson ID.
      * @param retake Retake number.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean: whether it has data to sync.
+     * @returns Promise resolved with boolean: whether it has data to sync.
      */
     async hasDataToSync(lessonId: number, retake: number, siteId?: string): Promise<boolean> {
 
@@ -101,7 +101,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
      * @param retake The retake number.
      * @param pageId The page ID to start reviewing from.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async setRetakeFinishedInSync(lessonId: number, retake: number, pageId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -119,7 +119,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
      *
      * @param siteId Site ID to sync. If not defined, sync all sites.
      * @param force Wether to force sync not depending on last execution.
-     * @return Promise resolved if sync is successful, rejected if sync fails.
+     * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllLessons(siteId?: string, force = false): Promise<void> {
         return this.syncOnSites('all lessons', (siteId) => this.syncAllLessonsFunc(!!force, siteId), siteId);
@@ -130,7 +130,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
      *
      * @param force Wether to force sync not depending on last execution.
      * @param siteId Site ID to sync.
-     * @param Promise resolved if sync is successful, rejected if sync fails.
+     * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     protected async syncAllLessonsFunc(force: boolean, siteId: string): Promise<void> {
         // Get all the lessons that have something to be synchronized.
@@ -156,9 +156,9 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
      * Sync a lesson only if a certain time has passed since the last time.
      *
      * @param lessonId Lesson ID.
-     * @param askPreflight Whether we should ask for password if needed.
+     * @param askPassword Whether we should ask for password if needed.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the lesson is synced or if it doesn't need to be synced.
+     * @returns Promise resolved when the lesson is synced or if it doesn't need to be synced.
      */
     async syncLessonIfNeeded(
         lessonId: number,
@@ -179,7 +179,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
      * @param askPassword True if we should ask for password if needed, false otherwise.
      * @param ignoreBlock True to ignore the sync block setting.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved in success.
+     * @returns Promise resolved in success.
      */
     async syncLesson(
         lessonId: number,
@@ -216,7 +216,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
      * @param askPassword True if we should ask for password if needed, false otherwise.
      * @param ignoreBlock True to ignore the sync block setting.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved in success.
+     * @returns Promise resolved in success.
      */
     protected async performSyncLesson(
         lessonId: number,
@@ -264,6 +264,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
      * @param result Sync result where to store the result.
      * @param askPassword True if we should ask for password if needed, false otherwise.
      * @param siteId Site ID. If not defined, current site.
+     * @returns Password result if any.
      */
     protected async syncAttempts(
         lessonId: number,
@@ -350,7 +351,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
      * @param attempt Attempt to send.
      * @param result Result where to store the data.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async sendAttempt(
         lesson: AddonModLessonLessonWSData,

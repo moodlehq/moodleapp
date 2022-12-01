@@ -91,7 +91,7 @@ export class CoreTagIndexAreaPage implements OnInit {
      * Fetch next page of the tag index area.
      *
      * @param refresh Whether to refresh the data or fetch a new page.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     async fetchData(refresh: boolean = false): Promise<void> {
         this.loadMoreError = false;
@@ -136,7 +136,7 @@ export class CoreTagIndexAreaPage implements OnInit {
      * Load more items.
      *
      * @param infiniteComplete Infinite scroll complete function.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     async loadMore(infiniteComplete?: () => void): Promise<void> {
         try {

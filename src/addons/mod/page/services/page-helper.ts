@@ -35,7 +35,7 @@ export class AddonModPageHelperProvider {
      *
      * @param contents The module contents.
      * @param moduleId The module ID.
-     * @return The HTML of the page.
+     * @returns The HTML of the page.
      */
     async getPageHtml(contents: CoreCourseModuleContentFile[], moduleId: number): Promise<string> {
         let indexUrl: string | undefined;
@@ -90,7 +90,7 @@ export class AddonModPageHelperProvider {
      * Returns whether the file is the main page of the module.
      *
      * @param file An object returned from WS containing file info.
-     * @return Whether the file is the main page or not.
+     * @returns Whether the file is the main page or not.
      */
     protected isMainPage(file: CoreCourseModuleContentFile): boolean {
         const filename = file.filename || '';

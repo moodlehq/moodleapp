@@ -33,7 +33,7 @@ export class CoreSubscriptions {
      * @param onSuccess Callback to run when the subscription is updated.
      * @param onError Callback to run when the an error happens.
      * @param onComplete Callback to run when the observable completes.
-     * @return A function to unsubscribe.
+     * @returns A function to unsubscribe.
      */
     static once<T>(
         subscribable: Subscribable<T>,

@@ -37,7 +37,7 @@ export class AddonModResourceProvider {
      * Get cache key for resource data WS calls.
      *
      * @param courseId Course ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getResourceCacheKey(courseId: number): string {
         return ROOT_CACHE_KEY + 'resource:' + courseId;
@@ -50,7 +50,7 @@ export class AddonModResourceProvider {
      * @param key Name of the property to check.
      * @param value Value to search.
      * @param options Other options.
-     * @return Promise resolved when the resource is retrieved.
+     * @returns Promise resolved when the resource is retrieved.
      */
     protected async getResourceDataByKey(
         courseId: number,
@@ -91,7 +91,7 @@ export class AddonModResourceProvider {
      * @param courseId Course ID.
      * @param cmId Course module ID.
      * @param options Other options.
-     * @return Promise resolved when the resource is retrieved.
+     * @returns Promise resolved when the resource is retrieved.
      */
     getResourceData(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModResourceResource> {
         return this.getResourceDataByKey(courseId, 'coursemodule', cmId, options);
@@ -103,7 +103,7 @@ export class AddonModResourceProvider {
      * @param moduleId The module ID.
      * @param courseId Course ID of the module.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -120,9 +120,9 @@ export class AddonModResourceProvider {
     /**
      * Invalidates resource data.
      *
-     * @param courseid Course ID.
+     * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateResourceData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -134,7 +134,7 @@ export class AddonModResourceProvider {
      * Return whether or not the plugin is enabled.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
+     * @returns Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
     async isPluginEnabled(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
@@ -148,7 +148,7 @@ export class AddonModResourceProvider {
      * @param id Module ID.
      * @param name Name of the resource.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the WS call is successful.
+     * @returns Promise resolved when the WS call is successful.
      */
     async logView(id: number, name?: string, siteId?: string): Promise<void> {
         const params: AddonModResourceViewResourceWSParams = {

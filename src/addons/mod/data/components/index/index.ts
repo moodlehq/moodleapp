@@ -158,7 +158,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Perform the invalidate content function.
      *
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async invalidateContent(): Promise<void> {
         const promises: Promise<void>[] = [];
@@ -185,7 +185,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      * Compares sync event data with current data to check if refresh content is needed.
      *
      * @param syncEventData Data receiven on sync observer.
-     * @return True if refresh is needed, false otherwise.
+     * @returns True if refresh is needed, false otherwise.
      */
     protected isRefreshSyncNeeded(syncEventData: AddonModDataAutoSyncData): boolean {
         if (this.database && syncEventData.dataId == this.database.id && syncEventData.entryId === undefined) {
@@ -277,7 +277,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Fetch current database entries.
      *
-     * @return Resolved then done.
+     * @returns Resolved then done.
      */
     protected async fetchEntriesData(): Promise<void> {
 
@@ -407,7 +407,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      * Performs the search and closes the modal.
      *
      * @param page Page number.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     async searchEntries(page: number): Promise<void> {
         this.showLoading = true;
@@ -441,7 +441,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      * Set group to see the database.
      *
      * @param groupId Group ID.
-     * @return Resolved when new group is selected or rejected if not.
+     * @returns Resolved when new group is selected or rejected if not.
      */
     async setGroup(groupId: number): Promise<void> {
         this.selectedGroup = groupId;
@@ -511,7 +511,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Performs the sync of the activity.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected sync(): Promise<AddonModDataSyncResult> {
         return AddonModDataPrefetchHandler.sync(this.module, this.courseId);
@@ -521,7 +521,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      * Checks if sync has succeed from result sync data.
      *
      * @param result Data returned on the sync function.
-     * @return If suceed or not.
+     * @returns If suceed or not.
      */
     protected hasSyncSucceed(result: AddonModDataSyncResult): boolean {
         return result.updated;

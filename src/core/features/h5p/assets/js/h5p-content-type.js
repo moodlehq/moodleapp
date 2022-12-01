@@ -22,7 +22,7 @@ H5P.ContentType = function (isRootLibrary) {
    * Is library standalone or not? Not beeing standalone, means it is
    * included in another library
    *
-   * @return {Boolean}
+   * @returns {Boolean}
    */
   ContentType.prototype.isRoot = function () {
     return isRootLibrary;
@@ -31,7 +31,7 @@ H5P.ContentType = function (isRootLibrary) {
   /**
    * Returns the file path of a file in the current library
    * @param  {string} filePath The path to the file relative to the library folder
-   * @return {string} The full path to the file
+   * @returns {string} The full path to the file
    */
   ContentType.prototype.getLibraryFilePath = function (filePath) {
     return H5P.getLibraryPath(this.libraryInfo.versionedNameNoSpaces) + '/' + filePath;

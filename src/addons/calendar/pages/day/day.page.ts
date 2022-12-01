@@ -232,8 +232,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
      * Fetch all the data required for the view.
      *
      * @param sync Whether it should try to synchronize offline events.
-     * @param showErrors Whether to show sync errors to the user.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async fetchData(sync?: boolean): Promise<void> {
         this.syncIcon = CoreConstants.ICON_LOADING;
@@ -272,7 +271,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
      *
      * @param refresher Refresher.
      * @param done Function to call when done.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async doRefresh(refresher?: IonRefresher, done?: () => void): Promise<void> {
         if (!this.loaded) {
@@ -290,7 +289,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
      *
      * @param sync Whether it should try to synchronize offline events.
      * @param afterChange Whether the refresh is done after an event has changed or has been synced.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async refreshData(sync?: boolean, afterChange?: boolean): Promise<void> {
         this.syncIcon = CoreConstants.ICON_LOADING;
@@ -307,7 +306,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
      * Try to synchronize offline events.
      *
      * @param showErrors Whether to show sync errors to the user.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async sync(showErrors?: boolean): Promise<void> {
         try {
@@ -335,6 +334,8 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
 
     /**
      * Check whether selected day is current day.
+     *
+     * @returns If selected day is current.
      */
     selectedDayIsCurrent(): boolean {
         return !!this.manager?.getSelectedItem()?.isCurrentDay;
@@ -393,7 +394,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     /**
      * Check whether selected day has offline data.
      *
-     * @return Whether selected day has offline data.
+     * @returns Whether selected day has offline data.
      */
     selectedDayHasOffline(): boolean {
         const selectedDay = this.manager?.getSelectedItem();
@@ -510,7 +511,7 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
      * Fetch data.
      *
      * @param courseId Current selected course id (if any).
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async fetchData(courseId?: number): Promise<void> {
         await Promise.all([
@@ -548,7 +549,7 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
      * Load courses.
      *
      * @param courseId Current selected course id (if any).
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async loadCourses(courseId?: number): Promise<void> {
         const data = await CoreCoursesHelper.getCoursesForPopover(courseId);
@@ -560,7 +561,7 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
      * Load whether user can create events.
      *
      * @param courseId Current selected course id (if any).
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async loadCanCreate(courseId?: number): Promise<void> {
         this.canCreate = await AddonCalendarHelper.canEditEvents(courseId);
@@ -569,7 +570,7 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
     /**
      * Load categories to be able to filter events.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async loadCategories(): Promise<void> {
         if (this.categories) {
@@ -590,7 +591,7 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
     /**
      * Load events created or edited in offline.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async loadOfflineEvents(): Promise<void> {
         // Get offline events.
@@ -606,7 +607,7 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
     /**
      * Load events deleted in offline.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async loadOfflineDeletedEvents(): Promise<void> {
         const deletedEventsIds = await AddonCalendarOffline.getAllDeletedEventsIds();
@@ -617,7 +618,7 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
     /**
      * Load time format.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async loadTimeFormat(): Promise<void> {
         this.timeFormat = await AddonCalendar.getCalendarTimeFormat();
@@ -704,7 +705,7 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
      *
      * @param event Event object.
      * @param currentTime Current time.
-     * @return True if it's in the past.
+     * @returns True if it's in the past.
      */
     isEventPast(event: AddonCalendarEventToDisplay, currentTime: number): boolean {
         return (event.timestart + event.timeduration) < currentTime;
@@ -714,7 +715,7 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
      * Merge online events with the offline events of that period.
      *
      * @param day Day with the events.
-     * @return Merged events.
+     * @returns Merged events.
      */
     mergeEvents(day: PreloadedDay): AddonCalendarEventToDisplay[] {
         day.hasOffline = false;
@@ -762,7 +763,7 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
      *
      * @param selectedDay The current selected day.
      * @param invalidateDayEvents Whether to invalidate selected day events.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async invalidateContent(selectedDay: PreloadedDay | null, invalidateDayEvents?: boolean): Promise<void> {
         const promises: Promise<void>[] = [];

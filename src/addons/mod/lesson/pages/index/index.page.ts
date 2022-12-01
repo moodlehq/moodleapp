@@ -32,7 +32,7 @@ export class AddonModLessonIndexPage extends CoreCourseModuleMainActivityPage<Ad
     action?: string; // The "action" to display first.
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         super.ngOnInit();

@@ -53,7 +53,7 @@ export class CoreMainMenuProvider {
     /**
      * Get the current main menu handlers.
      *
-     * @return Promise resolved with the current main menu handlers.
+     * @returns Promise resolved with the current main menu handlers.
      */
     async getCurrentMainMenuHandlers(): Promise<CoreMainMenuHandlerToDisplay[]> {
         const handlers = await CoreMainMenuDelegate.getHandlersWhenLoaded();
@@ -65,7 +65,7 @@ export class CoreMainMenuProvider {
      * Get a list of custom menu items.
      *
      * @param siteId Site to get custom items from.
-     * @return List of custom menu items.
+     * @returns List of custom menu items.
      */
     async getCustomMenuItems(siteId?: string): Promise<CoreMainMenuCustomItem[]> {
         const customItems = await Promise.all([
@@ -80,7 +80,7 @@ export class CoreMainMenuProvider {
      * Get a list of custom menu items for a certain site.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return List of custom menu items.
+     * @returns List of custom menu items.
      */
     protected async getCustomMenuItemsFromSite(siteId?: string): Promise<CoreMainMenuCustomItem[]> {
         const site = await CoreSites.getSite(siteId);
@@ -114,7 +114,7 @@ export class CoreMainMenuProvider {
             const id = url + '#' + type;
             if (!icon) {
                 // Icon not defined, use default one.
-                icon = type == 'embedded' ? 'fa-expand' : 'fa-link'; // @todo: Find a better icon for embedded.
+                icon = type == 'embedded' ? 'fa-expand' : 'fa-link'; // @todo Find a better icon for embedded.
             }
 
             if (!map[id]) {
@@ -179,7 +179,7 @@ export class CoreMainMenuProvider {
     /**
      * Get a list of custom menu items from config.
      *
-     * @return List of custom menu items.
+     * @returns List of custom menu items.
      */
     protected async getCustomItemsFromConfig(): Promise<CoreMainMenuCustomItem[]> {
         const items = CoreConstants.CONFIG.customMainMenuItems;
@@ -218,7 +218,7 @@ export class CoreMainMenuProvider {
     /**
      * Get the number of items to be shown on the main menu bar.
      *
-     * @return Number of items depending on the device width.
+     * @returns Number of items depending on the device width.
      */
     getNumItems(): number {
         if (!this.isResponsiveMainMenuItemsDisabledInCurrentSite() && window && window.innerWidth) {
@@ -244,7 +244,7 @@ export class CoreMainMenuProvider {
     /**
      * Get tabs placement depending on the device size.
      *
-     * @return Tabs placement including side value.
+     * @returns Tabs placement including side value.
      */
     getTabPlacement(): 'bottom' | 'side' {
         return CoreScreen.isTablet ? 'side' : 'bottom';
@@ -254,7 +254,7 @@ export class CoreMainMenuProvider {
      * Check if a certain page is the root of a main menu tab.
      *
      * @param pageName Name of the page.
-     * @return Promise resolved with boolean: whether it's the root of a main menu tab.
+     * @returns Promise resolved with boolean: whether it's the root of a main menu tab.
      */
     async isMainMenuTab(pageName: string): Promise<boolean> {
         if (pageName == CoreMainMenuProvider.MORE_PAGE_NAME) {
@@ -268,7 +268,7 @@ export class CoreMainMenuProvider {
      * Check if a certain page is the root of a main menu handler currently displayed.
      *
      * @param pageName Name of the page.
-     * @return Promise resolved with boolean: whether it's the root of a main menu handler.
+     * @returns Promise resolved with boolean: whether it's the root of a main menu handler.
      */
     async isCurrentMainMenuHandler(pageName: string): Promise<boolean> {
         const handlers = await this.getCurrentMainMenuHandlers();
@@ -285,7 +285,7 @@ export class CoreMainMenuProvider {
     /**
      * Check if responsive main menu items is disabled in the current site.
      *
-     * @return Whether it's disabled.
+     * @returns Whether it's disabled.
      */
     protected isResponsiveMainMenuItemsDisabledInCurrentSite(): boolean {
         const site = CoreSites.getCurrentSite();

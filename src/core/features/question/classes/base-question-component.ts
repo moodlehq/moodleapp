@@ -55,7 +55,7 @@ export class CoreQuestionBaseComponent {
     /**
      * Initialize a question component of type calculated or calculated simple.
      *
-     * @return Element containing the question HTML, void if the data is not valid.
+     * @returns Element containing the question HTML, void if the data is not valid.
      */
     initCalculatedComponent(): void | HTMLElement {
         // Treat the input text first.
@@ -81,7 +81,7 @@ export class CoreQuestionBaseComponent {
      * Treat a calculated question units in case they use radio buttons.
      *
      * @param questionEl Question HTML element.
-     * @return True if question has units using radio buttons.
+     * @returns True if question has units using radio buttons.
      */
     protected treatCalculatedRadioUnits(questionEl: HTMLElement): boolean {
         // Check if the question has radio buttons for units.
@@ -141,7 +141,7 @@ export class CoreQuestionBaseComponent {
      * Treat a calculated question units in case they use a select.
      *
      * @param questionEl Question HTML element.
-     * @return True if question has units using a select.
+     * @returns True if question has units using a select.
      */
     protected treatCalculatedSelectUnits(questionEl: HTMLElement): boolean {
         // Check if the question has a select for units.
@@ -210,7 +210,7 @@ export class CoreQuestionBaseComponent {
     /**
      * Initialize the component and the question text.
      *
-     * @return Element containing the question HTML, void if the data is not valid.
+     * @returns Element containing the question HTML, void if the data is not valid.
      */
     initComponent(): void | HTMLElement {
         if (!this.question) {
@@ -238,7 +238,7 @@ export class CoreQuestionBaseComponent {
      * Initialize a question component of type essay.
      *
      * @param review Whether we're in review mode.
-     * @return Element containing the question HTML, void if the data is not valid.
+     * @returns Element containing the question HTML, void if the data is not valid.
      */
     initEssayComponent(review?: boolean): void | HTMLElement {
         const questionEl = this.initComponent();
@@ -397,7 +397,7 @@ export class CoreQuestionBaseComponent {
      * Initialize a question component that uses the original question text with some basic treatment.
      *
      * @param contentSelector The selector to find the question content (text).
-     * @return Element containing the question HTML, void if the data is not valid.
+     * @returns Element containing the question HTML, void if the data is not valid.
      */
     initOriginalTextComponent(contentSelector: string): void | HTMLElement {
         if (!this.question) {
@@ -436,7 +436,7 @@ export class CoreQuestionBaseComponent {
     /**
      * Initialize a question component that has an input of type "text".
      *
-     * @return Element containing the question HTML, void if the data is not valid.
+     * @returns Element containing the question HTML, void if the data is not valid.
      */
     initInputTextComponent(): void | HTMLElement {
         const questionEl = this.initComponent();
@@ -496,7 +496,7 @@ export class CoreQuestionBaseComponent {
     /**
      * Initialize a question component with a "match" behaviour.
      *
-     * @return Element containing the question HTML, void if the data is not valid.
+     * @returns Element containing the question HTML, void if the data is not valid.
      */
     initMatchComponent(): void | HTMLElement {
         const questionEl = this.initComponent();
@@ -588,7 +588,7 @@ export class CoreQuestionBaseComponent {
     /**
      * Initialize a question component with a multiple choice (checkbox) or single choice (radio).
      *
-     * @return Element containing the question HTML, void if the data is not valid.
+     * @returns Element containing the question HTML, void if the data is not valid.
      */
     initMultichoiceComponent(): void | HTMLElement {
         const questionEl = this.initComponent();

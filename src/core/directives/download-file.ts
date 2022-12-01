@@ -37,7 +37,7 @@ export class CoreDownloadFileDirective implements OnInit {
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.element.addEventListener('click', async (ev: Event) => {

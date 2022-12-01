@@ -29,29 +29,21 @@ export class AddonModForumTagAreaHandlerService implements CoreTagAreaHandler {
     type = 'mod_forum/forum_posts';
 
     /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @return Whether or not the handler is enabled on a site level.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         return true;
     }
 
     /**
-     * Parses the rendered content of a tag index and returns the items.
-     *
-     * @param content Rendered content.
-     * @return Area items (or promise resolved with the items).
+     * @inheritdoc
      */
     parseContent(content: string): CoreTagFeedElement[] {
         return CoreTagHelper.parseFeedContent(content);
     }
 
     /**
-     * Get the component to use to display items.
-     *
-     * @param injector Injector.
-     * @return The component (or promise resolved with component) to use, undefined if not found.
+     * @inheritdoc
      */
     getComponent(): Type<unknown> | Promise<Type<unknown>> {
         return CoreTagFeedComponent;

@@ -71,7 +71,7 @@ export class CoreSitePluginsModulePrefetchHandler extends CoreCourseActivityPref
      * @param prefetch True to prefetch, false to download right away.
      * @param dirPath Path of the directory where to store all the content files.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async downloadPrefetchPlugin(
         module: CoreCourseAnyModuleData,
@@ -114,7 +114,7 @@ export class CoreSitePluginsModulePrefetchHandler extends CoreCourseActivityPref
      * @param courseId Course ID.
      * @param prefetch True to prefetch, false to download right away.
      * @param dirPath Path of the directory where to store all the content files.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async downloadOrPrefetchFiles(
         siteId: string,

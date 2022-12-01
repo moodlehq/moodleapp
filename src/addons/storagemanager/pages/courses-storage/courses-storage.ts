@@ -104,7 +104,7 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
     /**
      * Delete all courses that have been downloaded.
      *
-     * @param event: Event Object.
+     * @param event Event Object.
      */
     async deleteCompletelyDownloadedCourses(event: Event): Promise<void> {
         event.preventDefault();
@@ -137,7 +137,7 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
     /**
      * Delete course.
      *
-     * @param event: Event Object.
+     * @param event Event Object.
      * @param course Course to delete.
      */
     async deleteCourse(event: Event, course: DownloadedCourse): Promise<void> {
@@ -209,7 +209,7 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
      * Get downloaded course data.
      *
      * @param course Course.
-     * @return Course info.
+     * @returns Course info.
      */
     private async getDownloadedCourse(course: CoreEnrolledCourseData): Promise<DownloadedCourse> {
         const totalSize = await this.calculateDownloadedCourseSize(course.id);
@@ -227,7 +227,7 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
      * Calculate the size of a downloaded course.
      *
      * @param courseId Downloaded course id.
-     * @return Promise to be resolved with the course size.
+     * @returns Promise to be resolved with the course size.
      */
     private async calculateDownloadedCourseSize(courseId: number): Promise<number> {
         const sections = await CoreCourse.getSections(courseId);
@@ -254,7 +254,7 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
     /**
      * Deletes files of a site and the tables that can be cleared.
      *
-     * @param event: Event Object.
+     * @param event Event Object.
      */
     async deleteSiteStorage(event: Event): Promise<void> {
         event.preventDefault();

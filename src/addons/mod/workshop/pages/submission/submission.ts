@@ -128,7 +128,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         try {
@@ -164,7 +164,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
     /**
      * Check if we can leave the page or not.
      *
-     * @return Resolved if we can leave it, rejected if not.
+     * @returns Resolved if we can leave it, rejected if not.
      */
     async canLeave(): Promise<boolean> {
         const assessmentHasChanged = this.assessmentStrategy?.hasDataChanged();
@@ -210,7 +210,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
     /**
      * Fetch the submission data.
      *
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async fetchSubmissionData(): Promise<void> {
         try {
@@ -366,7 +366,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
      * Parse assessment to be shown.
      *
      * @param assessment Original assessment.
-     * @return Parsed assessment.
+     * @returns Parsed assessment.
      */
     protected parseAssessment(
         assessment: AddonModWorkshopSubmissionAssessmentWithFormData,
@@ -392,7 +392,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
     /**
      * Check if data has changed.
      *
-     * @return True if changed, false otherwise.
+     * @returns True if changed, false otherwise.
      */
     protected hasEvaluationChanged(): boolean {
         if (!this.loaded || !this.access.canoverridegrades) {
@@ -419,7 +419,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
     /**
      * Convenience function to refresh all the data.
      *
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async refreshAllData(): Promise<void> {
         const promises: Promise<void>[] = [];
@@ -495,7 +495,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
     /**
      * Sends the evaluation to be saved on the server.
      *
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async sendEvaluation(): Promise<void> {
         const modal = await CoreDomUtils.showModalLoading('core.sending', true);
@@ -575,7 +575,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
     /**
      * Undo the submission delete action.
      *
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     async undoDeleteSubmission(): Promise<void> {
         await AddonModWorkshopOffline.deleteSubmissionAction(
@@ -613,7 +613,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
     }
 
     /**
-     * Component being destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.isDestroyed = true;

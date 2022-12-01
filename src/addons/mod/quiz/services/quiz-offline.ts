@@ -41,7 +41,7 @@ export class AddonModQuizOfflineProvider {
      * Classify the answers in questions.
      *
      * @param answers List of answers.
-     * @return Object with the questions, the keys are the slot. Each question contains its answers.
+     * @returns Object with the questions, the keys are the slot. Each question contains its answers.
      */
     classifyAnswersInQuestions(answers: CoreQuestionsAnswers): AddonModQuizQuestionsWithAnswers {
         const questionsWithAnswers: AddonModQuizQuestionsWithAnswers = {};
@@ -67,7 +67,7 @@ export class AddonModQuizOfflineProvider {
      * Given a list of questions with answers classified in it, returns a list of answers (including prefix in the name).
      *
      * @param questions Questions.
-     * @return Answers.
+     * @returns Answers.
      */
     extractAnswersFromQuestions(questions: AddonModQuizQuestionsWithAnswers): CoreQuestionsAnswers {
         const answers: CoreQuestionsAnswers = {};
@@ -87,7 +87,7 @@ export class AddonModQuizOfflineProvider {
      * Get all the offline attempts in a certain site.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the offline attempts.
+     * @returns Promise resolved with the offline attempts.
      */
     async getAllAttempts(siteId?: string): Promise<AddonModQuizAttemptDBRecord[]> {
         const db = await CoreSites.getSiteDb(siteId);
@@ -100,7 +100,7 @@ export class AddonModQuizOfflineProvider {
      *
      * @param attemptId Attempt ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the answers.
+     * @returns Promise resolved with the answers.
      */
     getAttemptAnswers(attemptId: number, siteId?: string): Promise<CoreQuestionAnswerDBRecord[]> {
         return CoreQuestion.getAttemptAnswers(AddonModQuizProvider.COMPONENT, attemptId, siteId);
@@ -111,7 +111,7 @@ export class AddonModQuizOfflineProvider {
      *
      * @param attemptId Attempt ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the attempt.
+     * @returns Promise resolved with the attempt.
      */
     async getAttemptById(attemptId: number, siteId?: string): Promise<AddonModQuizAttemptDBRecord> {
         const db = await CoreSites.getSiteDb(siteId);
@@ -122,10 +122,10 @@ export class AddonModQuizOfflineProvider {
     /**
      * Retrieve an attempt from site DB.
      *
-     * @param attemptId Attempt ID.
+     * @param quizId Quiz ID.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined, user current site's user.
-     * @return Promise resolved with the attempts.
+     * @returns Promise resolved with the attempts.
      */
     async getQuizAttempts(quizId: number, siteId?: string, userId?: number): Promise<AddonModQuizAttemptDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
@@ -139,7 +139,7 @@ export class AddonModQuizOfflineProvider {
      * @param attemptId Attempt ID.
      * @param questions List of questions.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async loadQuestionsLocalStates(
         attemptId: number,
@@ -174,7 +174,7 @@ export class AddonModQuizOfflineProvider {
      * @param data Data to save.
      * @param finish Whether to finish the quiz.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved in success, rejected otherwise.
+     * @returns Promise resolved in success, rejected otherwise.
      */
     async processAttempt(
         quiz: AddonModQuizQuizWSData,
@@ -221,7 +221,7 @@ export class AddonModQuizOfflineProvider {
      *
      * @param attemptId Attempt ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async removeAttemptAndAnswers(attemptId: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -241,7 +241,7 @@ export class AddonModQuizOfflineProvider {
      * @param attemptId Attempt ID.
      * @param slot Question slot.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when finished.
+     * @returns Promise resolved when finished.
      */
     async removeQuestionAndAnswers(attemptId: number, slot: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -261,7 +261,7 @@ export class AddonModQuizOfflineProvider {
      * @param answers Answers to save.
      * @param timeMod Time modified to set in the answers. If not defined, current time.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async saveAnswers(
         quiz: AddonModQuizQuizWSData,
@@ -351,7 +351,7 @@ export class AddonModQuizOfflineProvider {
      * @param attemptId Attempt ID.
      * @param page Page to set.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved in success, rejected otherwise.
+     * @returns Promise resolved in success, rejected otherwise.
      */
     async setAttemptCurrentPage(attemptId: number, page: number, siteId?: string): Promise<void> {
         const db = await CoreSites.getSiteDb(siteId);

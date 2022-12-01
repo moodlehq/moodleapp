@@ -118,7 +118,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
     /**
      * Init listeners.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async initListeners(): Promise<void> {
         if (this.completionObserver) {
@@ -162,7 +162,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
      *
      * @param refresh If it's refreshing content.
      * @param sync If it should try to sync.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadData(refresh?: boolean, sync?: boolean): Promise<void> {
         // First of all, get the course because the data might have changed.
@@ -201,7 +201,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
      * Load course sections.
      *
      * @param refresh If it's refreshing content.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadSections(refresh?: boolean): Promise<void> {
         // Get all the sections.
@@ -256,7 +256,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
     /**
      * Load course format options if needed.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadCourseFormatOptions(): Promise<void> {
 
@@ -285,7 +285,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
      * Refresh the data.
      *
      * @param refresher Refresher.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async doRefresh(refresher?: IonRefresher): Promise<void> {
         await CoreUtils.ignoreErrors(this.invalidateData());
@@ -307,7 +307,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
      * The completion of any of the modules has changed.
      *
      * @param completionData Completion data.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async onCompletionChange(completionData: CoreCourseModuleCompletionData): Promise<void> {
         const shouldReload = completionData.valueused === undefined || completionData.valueused;
@@ -329,7 +329,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
     /**
      * Invalidate the data.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async invalidateData(): Promise<void> {
         const promises: Promise<void>[] = [];
@@ -350,7 +350,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
      *
      * @param sync If it should try to sync.
      * @param invalidateData Whether to invalidate data. Set it to false if data has already been invalidated.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async showLoadingAndRefresh(sync = false, invalidateData = true): Promise<void> {
         this.updatingData = true;

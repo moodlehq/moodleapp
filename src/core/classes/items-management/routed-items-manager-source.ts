@@ -35,7 +35,7 @@ export abstract class CoreRoutedItemsManagerSource<Item = unknown> extends CoreI
     /**
      * Check whether there are more pages to be loaded.
      *
-     * @return Whether there are more pages to be loaded.
+     * @returns Whether there are more pages to be loaded.
      */
     isCompleted(): boolean {
         return !this.hasMoreItems;
@@ -103,14 +103,14 @@ export abstract class CoreRoutedItemsManagerSource<Item = unknown> extends CoreI
      * Load page items.
      *
      * @param page Page number (starting at 0).
-     * @return Page items data.
+     * @returns Page items data.
      */
     protected abstract loadPageItems(page: number): Promise<{ items: Item[]; hasMoreItems?: boolean }>;
 
     /**
      * Get the length of each page in the collection.
      *
-     * @return Page length; null for collections that don't support pagination.
+     * @returns Page length; null for collections that don't support pagination.
      */
     protected getPageLength(): number | null {
         return null;
@@ -132,7 +132,7 @@ export abstract class CoreRoutedItemsManagerSource<Item = unknown> extends CoreI
      * Get the query parameters to use when navigating to an item page.
      *
      * @param item Item.
-     * @return Query parameters to use when navigating to the item page.
+     * @returns Query parameters to use when navigating to the item page.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     getItemQueryParams(item: Item): Params {
@@ -143,7 +143,7 @@ export abstract class CoreRoutedItemsManagerSource<Item = unknown> extends CoreI
      * Get the path to use when navigating to an item page.
      *
      * @param item Item.
-     * @return Path to use when navigating to the item page.
+     * @returns Path to use when navigating to the item page.
      */
     abstract getItemPath(item: Item): string;
 

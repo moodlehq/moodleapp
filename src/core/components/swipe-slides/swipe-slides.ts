@@ -88,7 +88,7 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
      * Check whether the slide with the given index is active.
      *
      * @param index Slide index.
-     * @return Whether the slide is active.
+     * @returns Whether the slide is active.
      */
     isActive(index: number): boolean {
         return this.activeSlideIndexes.includes(index);
@@ -257,7 +257,7 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
     /**
      * Treat scroll on change.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async applyScrollOnChange(): Promise<void> {
         if (this.options.scrollOnChange !== 'top') {
@@ -276,7 +276,7 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
     /**
      * Get current item and index based on current slide.
      *
-     * @return Promise resolved with current item data. Null if not found.
+     * @returns Promise resolved with current item data. Null if not found.
      */
     protected async getCurrentSlideItemData(): Promise<CoreSwipeCurrentItemData<Item> | null> {
         if (!this.slides || !this.manager) {

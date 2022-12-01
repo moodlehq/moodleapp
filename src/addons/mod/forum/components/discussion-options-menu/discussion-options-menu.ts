@@ -35,7 +35,7 @@ export class AddonModForumDiscussionOptionsMenuComponent implements OnInit {
     canPin = false;
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         if (!AddonModForum.isSetPinStateAvailableForSite()) {

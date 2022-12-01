@@ -37,7 +37,7 @@ export interface CoreFilterHandler extends CoreDelegateHandler {
      * @param filter The filter.
      * @param options Options passed to the filters.
      * @param siteId Site ID. If not defined, current site.
-     * @return Filtered text (or promise resolved with the filtered text).
+     * @returns Filtered text (or promise resolved with the filtered text).
      */
     filter(text: string, filter: CoreFilterFilter, options: CoreFilterFormatTextOptions, siteId?: string): string | Promise<string>;
 
@@ -52,7 +52,7 @@ export interface CoreFilterHandler extends CoreDelegateHandler {
      * @param component Component.
      * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return If async, promise resolved when done.
+     * @returns If async, promise resolved when done.
      */
     handleHtml?(
         container: HTMLElement,
@@ -69,7 +69,7 @@ export interface CoreFilterHandler extends CoreDelegateHandler {
      *
      * @param options Options.
      * @param site Site.
-     * @return Whether filter should be applied.
+     * @returns Whether filter should be applied.
      */
     shouldBeApplied(options: CoreFilterFormatTextOptions, site?: CoreSite): boolean;
 }
@@ -95,7 +95,7 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
      * @param options Options passed to the filters.
      * @param skipFilters Names of filters that shouldn't be applied.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the filtered text.
+     * @returns Promise resolved with the filtered text.
      */
     async filterText(
         text: string,
@@ -143,7 +143,7 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
      *
      * @param contextLevel Context level of the filters.
      * @param instanceId Instance ID.
-     * @return Filters.
+     * @returns Filters.
      */
     getEnabledFilters(contextLevel: string, instanceId: number): CoreFilterFilter[] {
         const filters: CoreFilterFilter[] = [];
@@ -175,7 +175,7 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
      * @param component Component.
      * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async handleHtml(
         container: HTMLElement,
@@ -217,11 +217,11 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
     /**
      * Check if a filter is enabled and should be applied.
      *
-     * @param filters Filters to apply.
+     * @param filter Filter to apply.
      * @param options Options passed to the filters.
      * @param site Site.
      * @param skipFilters Names of filters that shouldn't be applied.
-     * @return Whether the filter is enabled and should be applied.
+     * @returns Whether the filter is enabled and should be applied.
      */
     isEnabledAndShouldApply(
         filter: CoreFilterFilter,
@@ -251,10 +251,10 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
     /**
      * Check if at least 1 filter should be applied in a certain site and with certain options.
      *
-     * @param filter Filter to check.
+     * @param filters Filters to check.
      * @param options Options passed to the filters.
      * @param site Site. If not defined, current site.
-     * @return Promise resolved with true: whether the filter should be applied.
+     * @returns Promise resolved with true: whether the filter should be applied.
      */
     async shouldBeApplied(filters: CoreFilterFilter[], options: CoreFilterFormatTextOptions, site?: CoreSite): Promise<boolean> {
         // Wait for filters to be initialized.
@@ -275,7 +275,7 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
      * @param filter Filter to check.
      * @param options Options passed to the filters.
      * @param site Site. If not defined, current site.
-     * @return Whether the filter should be applied.
+     * @returns Whether the filter should be applied.
      */
     protected shouldFilterBeApplied(filter: CoreFilterFilter, options: CoreFilterFormatTextOptions, site?: CoreSite): boolean {
         if (!this.hasHandler(filter.filter, true)) {

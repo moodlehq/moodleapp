@@ -64,7 +64,7 @@ export class CoreLocalFileComponent implements OnInit {
     protected defaultIsOpenWithPicker = false;
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         this.manage = CoreUtils.isTrueOrOne(this.manage);

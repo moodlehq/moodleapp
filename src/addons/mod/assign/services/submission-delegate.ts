@@ -40,7 +40,7 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
      * @param assign The assignment.
      * @param submission The submission.
      * @param plugin The plugin object.
-     * @return Boolean or promise resolved with boolean: whether it can be edited in offline.
+     * @returns Boolean or promise resolved with boolean: whether it can be edited in offline.
      */
     canEditOffline?(
         assign: AddonModAssignAssign,
@@ -53,7 +53,7 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
      *
      * @param assign The assignment.
      * @param plugin The plugin object.
-     * @return Whether the plugin is empty.
+     * @returns Whether the plugin is empty.
      */
     isEmpty?(
         assign: AddonModAssignAssign,
@@ -84,7 +84,7 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
      * @param pluginData Object where to store the data to send.
      * @param userId User ID. If not defined, site's current user.
      * @param siteId Site ID. If not defined, current site.
-     * @return If the function is async, it should return a Promise resolved when done.
+     * @returns If the function is async, it should return a Promise resolved when done.
      */
     copySubmissionData?(
         assign: AddonModAssignAssign,
@@ -102,7 +102,7 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
      * @param plugin The plugin object.
      * @param offlineData Offline data stored.
      * @param siteId Site ID. If not defined, current site.
-     * @return If the function is async, it should return a Promise resolved when done.
+     * @returns If the function is async, it should return a Promise resolved when done.
      */
     deleteOfflineData?(
         assign: AddonModAssignAssign,
@@ -118,7 +118,7 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
      *
      * @param plugin The plugin object.
      * @param edit Whether the user is editing.
-     * @return The component (or promise resolved with component) to use, undefined if not found.
+     * @returns The component (or promise resolved with component) to use, undefined if not found.
      */
     getComponent?(
         plugin: AddonModAssignPlugin,
@@ -135,7 +135,7 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
      * @param submission The submission.
      * @param plugin The plugin object.
      * @param siteId Site ID. If not defined, current site.
-     * @return The files (or promise resolved with the files).
+     * @returns The files (or promise resolved with the files).
      */
     getPluginFiles?(
         assign: AddonModAssignAssign,
@@ -148,7 +148,7 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
      * Get a readable name to use for the plugin.
      *
      * @param plugin The plugin object.
-     * @return The plugin name.
+     * @returns The plugin name.
      */
     getPluginName?(plugin: AddonModAssignPlugin): string;
 
@@ -157,7 +157,7 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
      *
      * @param assign The assignment.
      * @param plugin The plugin object.
-     * @return The size (or promise resolved with size).
+     * @returns The size (or promise resolved with size).
      */
     getSizeForCopy?(
         assign: AddonModAssignAssign,
@@ -171,7 +171,7 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
      * @param submission The submission.
      * @param plugin The plugin object.
      * @param inputData Data entered by the user for the submission.
-     * @return The size (or promise resolved with size).
+     * @returns The size (or promise resolved with size).
      */
     getSizeForEdit?(
         assign: AddonModAssignAssign,
@@ -187,7 +187,7 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
      * @param submission The submission.
      * @param plugin The plugin object.
      * @param inputData Data entered by the user for the submission.
-     * @return Boolean (or promise resolved with boolean): whether the data has changed.
+     * @returns Boolean (or promise resolved with boolean): whether the data has changed.
      */
     hasDataChanged?(
         assign: AddonModAssignAssign,
@@ -199,7 +199,7 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
     /**
      * Whether or not the handler is enabled for edit on a site level.
      *
-     * @return Whether or not the handler is enabled for edit on a site level.
+     * @returns Whether or not the handler is enabled for edit on a site level.
      */
     isEnabledForEdit?(): boolean | Promise<boolean>;
 
@@ -211,7 +211,7 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
      * @param submission The submission.
      * @param plugin The plugin object.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     prefetch?(
         assign: AddonModAssignAssign,
@@ -231,7 +231,7 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
      * @param offline Whether the user is editing in offline.
      * @param userId User ID. If not defined, site's current user.
      * @param siteId Site ID. If not defined, current site.
-     * @return If the function is async, it should return a Promise resolved when done.
+     * @returns If the function is async, it should return a Promise resolved when done.
      */
     prepareSubmissionData?(
         assign: AddonModAssignAssign,
@@ -254,7 +254,7 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
      * @param offlineData Offline data stored.
      * @param pluginData Object where to store the data to send.
      * @param siteId Site ID. If not defined, current site.
-     * @return If the function is async, it should return a Promise resolved when done.
+     * @returns If the function is async, it should return a Promise resolved when done.
      */
     prepareSyncData?(
         assign: AddonModAssignAssign,
@@ -286,7 +286,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
      * @param assign The assignment.
      * @param submission The submission.
      * @param plugin The plugin object.
-     * @return Promise resolved with boolean: whether it can be edited in offline.
+     * @returns Promise resolved with boolean: whether it can be edited in offline.
      */
     async canPluginEditOffline(
         assign: AddonModAssignAssign,
@@ -310,7 +310,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
         plugin: AddonModAssignPlugin,
         inputData: CoreFormFields,
     ): void {
-        return this.executeFunctionOnEnabled(plugin.type, 'clearTmpData', [assign, submission, plugin, inputData]);
+        this.executeFunctionOnEnabled(plugin.type, 'clearTmpData', [assign, submission, plugin, inputData]);
     }
 
     /**
@@ -321,7 +321,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
      * @param pluginData Object where to store the data to send.
      * @param userId User ID. If not defined, site's current user.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data has been copied.
+     * @returns Promise resolved when the data has been copied.
      */
     async copyPluginSubmissionData(
         assign: AddonModAssignAssign,
@@ -345,7 +345,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
      * @param plugin The plugin object.
      * @param offlineData Offline data stored.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async deletePluginOfflineData(
         assign: AddonModAssignAssign,
@@ -366,7 +366,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
      *
      * @param plugin The plugin object.
      * @param edit Whether the user is editing.
-     * @return Promise resolved with the component to use, undefined if not found.
+     * @returns Promise resolved with the component to use, undefined if not found.
      */
     async getComponentForPlugin(
         plugin: AddonModAssignPlugin,
@@ -383,7 +383,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
      * @param submission The submission.
      * @param plugin The plugin object.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the files.
+     * @returns Promise resolved with the files.
      */
     async getPluginFiles(
         assign: AddonModAssignAssign,
@@ -401,7 +401,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
      * Get a readable name to use for a certain submission plugin.
      *
      * @param plugin Plugin to get the name for.
-     * @return Human readable name.
+     * @returns Human readable name.
      */
     getPluginName(plugin: AddonModAssignPlugin): string | undefined {
         return this.executeFunctionOnEnabled(plugin.type, 'getPluginName', [plugin]);
@@ -412,7 +412,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
      *
      * @param assign The assignment.
      * @param plugin The plugin object.
-     * @return Promise resolved with size.
+     * @returns Promise resolved with size.
      */
     async getPluginSizeForCopy(assign: AddonModAssignAssign, plugin: AddonModAssignPlugin): Promise<number | undefined> {
         return this.executeFunctionOnEnabled(plugin.type, 'getSizeForCopy', [assign, plugin]);
@@ -425,7 +425,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
      * @param submission The submission.
      * @param plugin The plugin object.
      * @param inputData Data entered by the user for the submission.
-     * @return Promise resolved with size.
+     * @returns Promise resolved with size.
      */
     async getPluginSizeForEdit(
         assign: AddonModAssignAssign,
@@ -447,7 +447,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
      * @param submission The submission.
      * @param plugin The plugin object.
      * @param inputData Data entered by the user for the submission.
-     * @return Promise resolved with true if data has changed, resolved with false otherwise.
+     * @returns Promise resolved with true if data has changed, resolved with false otherwise.
      */
     async hasPluginDataChanged(
         assign: AddonModAssignAssign,
@@ -466,7 +466,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
      * Check if a submission plugin is supported.
      *
      * @param pluginType Type of the plugin.
-     * @return Whether it's supported.
+     * @returns Whether it's supported.
      */
     isPluginSupported(pluginType: string): boolean {
         return this.hasHandler(pluginType, true);
@@ -476,7 +476,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
      * Check if a submission plugin is supported for edit.
      *
      * @param pluginType Type of the plugin.
-     * @return Whether it's supported for edit.
+     * @returns Whether it's supported for edit.
      */
     async isPluginSupportedForEdit(pluginType: string): Promise<boolean | undefined> {
         return this.executeFunctionOnEnabled(pluginType, 'isEnabledForEdit');
@@ -487,7 +487,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
      *
      * @param assign The assignment.
      * @param plugin The plugin object.
-     * @return Whether the plugin is empty.
+     * @returns Whether the plugin is empty.
      */
     isPluginEmpty(assign: AddonModAssignAssign, plugin: AddonModAssignPlugin): boolean | undefined {
         return this.executeFunctionOnEnabled(plugin.type, 'isEmpty', [assign, plugin]);
@@ -500,7 +500,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
      * @param submission The submission.
      * @param plugin The plugin object.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async prefetch(
         assign: AddonModAssignAssign,
@@ -522,7 +522,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
      * @param offline Whether the user is editing in offline.
      * @param userId User ID. If not defined, site's current user.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when data has been gathered.
+     * @returns Promise resolved when data has been gathered.
      */
     async preparePluginSubmissionData(
         assign: AddonModAssignAssign,
@@ -551,7 +551,7 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
      * @param offlineData Offline data stored.
      * @param pluginData Object where to store the data to send.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when data has been gathered.
+     * @returns Promise resolved when data has been gathered.
      */
     async preparePluginSyncData(
         assign: AddonModAssignAssign,

@@ -37,7 +37,7 @@ export class CoreSitePluginsAssignFeedbackComponent extends CoreSitePluginsCompi
     @Input() edit = false; // Whether the user is editing.
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         // Pass the input and output data to the component.
@@ -57,7 +57,7 @@ export class CoreSitePluginsAssignFeedbackComponent extends CoreSitePluginsCompi
     /**
      * Invalidate the data.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     invalidate(): Promise<void> {
         return Promise.resolve();

@@ -61,7 +61,7 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.fetchContent();
@@ -86,7 +86,7 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
      * Fetches the content to render.
      *
      * @param refresh Whether the user is refreshing.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async fetchContent(refresh?: boolean): Promise<void> {
         this.onLoadingContent.emit(refresh);
@@ -222,7 +222,7 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
      *
      * @param name Name of the function to call.
      * @param params List of params to send to the function.
-     * @return Result of the call. Undefined if no component instance or the function doesn't exist.
+     * @returns Result of the call. Undefined if no component instance or the function doesn't exist.
      */
     callComponentFunction(name: string, params?: unknown[]): unknown | undefined {
         return this.compileComponent?.callComponentFunction(name, params);

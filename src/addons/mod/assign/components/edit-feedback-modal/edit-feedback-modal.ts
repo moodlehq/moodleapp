@@ -39,8 +39,6 @@ export class AddonModAssignEditFeedbackModalComponent {
 
     /**
      * Close modal checking if there are changes first.
-     *
-     * @param data Data to return to the page.
      */
     async closeModal(): Promise<void> {
         const changed = await this.hasDataChanged();
@@ -71,7 +69,7 @@ export class AddonModAssignEditFeedbackModalComponent {
     /**
      * Get the input data.
      *
-     * @return Object with the data.
+     * @returns Object with the data.
      */
     protected getInputData(): CoreFormFields {
         return CoreForms.getDataFromForm(document.forms['addon-mod_assign-edit-feedback-form']);
@@ -80,7 +78,7 @@ export class AddonModAssignEditFeedbackModalComponent {
     /**
      * Check if data has changed.
      *
-     * @return Promise resolved with boolean: whether the data has changed.
+     * @returns Promise resolved with boolean: whether the data has changed.
      */
     protected async hasDataChanged(): Promise<boolean> {
         const changed = await CoreUtils.ignoreErrors(

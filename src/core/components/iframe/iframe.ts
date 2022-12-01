@@ -142,7 +142,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
     /**
      * Check if the element is in a hidden page.
      *
-     * @return Whether the element is in a hidden page.
+     * @returns Whether the element is in a hidden page.
      */
     protected isInHiddenPage(): boolean {
         // If we can't find the parent ion-page, consider it to be hidden too.
@@ -218,7 +218,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
      * Treat an iframe message event.
      *
      * @param event Event.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async onIframeMessage(event: MessageEvent): Promise<void> {
         if (event.data == 'enterFullScreen' && this.showFullscreenOnToolbar && !this.fullscreen) {

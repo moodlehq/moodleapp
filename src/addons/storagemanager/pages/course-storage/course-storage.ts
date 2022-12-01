@@ -142,7 +142,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
     /**
      * Init course prefetch information.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async initCoursePrefetch(): Promise<void> {
         if (!this.downloadCourseEnabled || this.courseStatusObserver) {
@@ -183,7 +183,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
     /**
      * Init module prefetch information.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async initModulePrefetch(): Promise<void> {
         if (!this.downloadEnabled || this.sectionStatusObserver) {
@@ -300,7 +300,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
      *
      * @param modules Modules.
      * @param section Section the modules belong to.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async updateModulesSizes(
         modules: AddonStorageManagerModule[],
@@ -460,7 +460,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
      *
      * @param modules Modules to delete
      * @param section Section the modules belong to.
-     * @return Promise<void> Once deleting has finished
+     * @returns Promise<void> Once deleting has finished
      */
     protected async deleteModules(modules: AddonStorageManagerModule[], section?: AddonStorageManagerCourseSection): Promise<void> {
         const modal = await CoreDomUtils.showModalLoading('core.deleting', true);
@@ -561,7 +561,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
      *
      * @param module Module to prefetch.
      * @param refresh Whether it's refreshing.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async prefetchModule(
         module: AddonStorageManagerModule,
@@ -616,7 +616,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
      * Calculate and show module status.
      *
      * @param module Module to update.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async calculateModuleStatus(module: AddonStorageManagerModule): Promise<void> {
         if (!module) {
@@ -631,7 +631,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
     /**
      * Determines the prefetch icon of the course.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async determineCoursePrefetchIcon(): Promise<void> {
         this.prefetchCourseData = await CoreCourseHelper.getCourseStatusIconAndTitle(this.courseId);

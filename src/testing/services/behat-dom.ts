@@ -28,7 +28,7 @@ export class TestingBehatDomUtilsService {
      * Check if an element is clickable.
      *
      * @param element Element.
-     * @return Whether the element is clickable or not.
+     * @returns Whether the element is clickable or not.
      */
     isElementClickable(element: HTMLElement): boolean {
         return element.getAttribute('aria-disabled') !== 'true' && !element.hasAttribute('disabled');
@@ -39,7 +39,7 @@ export class TestingBehatDomUtilsService {
      *
      * @param element Element.
      * @param container Container. If set, the function will also check parent elements visibility.
-     * @return Whether the element is visible or not.
+     * @returns Whether the element is visible or not.
      */
     isElementVisible(element: HTMLElement, container?: HTMLElement): boolean {
         if (element.getAttribute('aria-hidden') === 'true' || getComputedStyle(element).display === 'none') {
@@ -67,7 +67,7 @@ export class TestingBehatDomUtilsService {
      *
      * @param element Element.
      * @param container Container.
-     * @return Whether the element is selected or not.
+     * @returns Whether the element is selected or not.
      */
     isElementSelected(element: HTMLElement, container: HTMLElement): boolean {
         const ariaCurrent = element.getAttribute('aria-current');
@@ -93,7 +93,7 @@ export class TestingBehatDomUtilsService {
      * @param container Parent element to search the element within
      * @param text Text to look for
      * @param options Search options.
-     * @return Elements containing the given text with exact boolean.
+     * @returns Elements containing the given text with exact boolean.
      */
     protected findElementsBasedOnTextWithinWithExact(
         container: HTMLElement,
@@ -204,7 +204,7 @@ export class TestingBehatDomUtilsService {
      *
      * @param element Element to check.
      * @param text Text to check.
-     * @return If text matches any of the label attributes.
+     * @returns If text matches any of the label attributes.
      */
     protected checkElementLabel(element: HTMLElement, text: string): boolean {
         return element.title === text ||
@@ -219,7 +219,7 @@ export class TestingBehatDomUtilsService {
      * @param container Parent element to search the element within.
      * @param text Text to look for.
      * @param options Search options.
-     * @return Elements containing the given text.
+     * @returns Elements containing the given text.
      */
     protected findElementsBasedOnTextWithin(
         container: HTMLElement,
@@ -240,7 +240,7 @@ export class TestingBehatDomUtilsService {
      * This will remote duplicates and drop any elements nested within each other.
      *
      * @param elements Elements list.
-     * @return Top ancestors.
+     * @returns Top ancestors.
      */
     protected getTopAncestors(elements: HTMLElement[]): HTMLElement[] {
         const uniqueElements = new Set(elements);
@@ -264,7 +264,7 @@ export class TestingBehatDomUtilsService {
      * Get parent element, including Shadow DOM parents.
      *
      * @param element Element.
-     * @return Parent element.
+     * @returns Parent element.
      */
     protected getParentElement(element: HTMLElement): HTMLElement | null {
         return element.parentElement ||
@@ -278,7 +278,7 @@ export class TestingBehatDomUtilsService {
      * @param element Element.
      * @param selector Selector.
      * @param container Topmost container to search within.
-     * @return Closest matching element.
+     * @returns Closest matching element.
      */
     protected getClosestMatching(element: HTMLElement, selector: string, container: HTMLElement | null): HTMLElement | null {
         if (element.matches(selector)) {
@@ -296,7 +296,7 @@ export class TestingBehatDomUtilsService {
      * Function to find top container elements.
      *
      * @param containerName Whether to search inside the a container name.
-     * @return Found top container elements.
+     * @returns Found top container elements.
      */
     protected getCurrentTopContainerElements(containerName: string): HTMLElement[] {
         const topContainers: HTMLElement[] = [];
@@ -363,7 +363,7 @@ export class TestingBehatDomUtilsService {
      *
      * @param locator Element locator.
      * @param options Search options.
-     * @return First found element.
+     * @returns First found element.
      */
     findElementBasedOnText(
         locator: TestingBehatElementLocator,
@@ -377,7 +377,7 @@ export class TestingBehatDomUtilsService {
      *
      * @param locator Element locator.
      * @param options Search options.
-     * @return Found elements
+     * @returns Found elements
      */
     protected findElementsBasedOnText(
         locator: TestingBehatElementLocator,
@@ -402,7 +402,7 @@ export class TestingBehatDomUtilsService {
      * @param locator Element locator.
      * @param topContainer Container to search in.
      * @param options Search options.
-     * @return Found elements
+     * @returns Found elements
      */
     protected findElementsBasedOnTextInContainer(
         locator: TestingBehatElementLocator,
@@ -486,6 +486,7 @@ export class TestingBehatDomUtilsService {
      * Make sure that an element is visible and wait to trigger the callback.
      *
      * @param element Element.
+     * @returns Promise resolved with the DOM rectangle.
      */
     protected async ensureElementVisible(element: HTMLElement): Promise<DOMRect> {
         const initialRect = element.getBoundingClientRect();

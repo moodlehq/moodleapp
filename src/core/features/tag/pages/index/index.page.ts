@@ -68,7 +68,7 @@ export class CoreTagIndexPage implements OnInit {
     /**
      * Fetch first page of tag index per area.
      *
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     async fetchData(): Promise<void> {
         try {

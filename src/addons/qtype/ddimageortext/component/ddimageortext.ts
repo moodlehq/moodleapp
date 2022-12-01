@@ -42,7 +42,7 @@ export class AddonQtypeDdImageOrTextComponent extends CoreQuestionBaseComponent 
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         if (!this.question) {
@@ -126,7 +126,7 @@ export class AddonQtypeDdImageOrTextComponent extends CoreQuestionBaseComponent 
     }
 
     /**
-     * Component being destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.destroyed = true;

@@ -239,7 +239,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     /**
      * Load course format component.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadCourseFormatComponent(): Promise<void> {
         this.courseFormatComponent = await CoreCourseFormatDelegate.getCourseFormatComponent(this.course);
@@ -248,7 +248,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     /**
      * Load course summary component.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadCourseSummaryComponent(): Promise<void> {
         this.courseSummaryComponent = await CoreCourseFormatDelegate.getCourseSummaryComponent(this.course);
@@ -257,7 +257,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     /**
      * Load single section component.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadSingleSectionComponent(): Promise<void> {
         this.singleSectionComponent = await CoreCourseFormatDelegate.getSingleSectionComponent(this.course);
@@ -266,7 +266,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     /**
      * Load all sections component.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadAllSectionsComponent(): Promise<void> {
         this.allSectionsComponent = await CoreCourseFormatDelegate.getAllSectionsComponent(this.course);
@@ -276,7 +276,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * Treat received sections.
      *
      * @param sections Sections to treat.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async treatSections(sections: CoreCourseSection[]): Promise<void> {
         const hasAllSections = sections[0].id == CoreCourseProvider.ALL_SECTIONS_ID;
@@ -346,7 +346,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     /**
      * Initialize viewed modules.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async initializeViewedModules(): Promise<void> {
         if (this.viewedModulesInitialized) {
@@ -367,7 +367,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      *
      * @param sections List of sections.
      * @param viewedModule Viewed module.
-     * @return Section, undefined if not found.
+     * @returns Section, undefined if not found.
      */
     protected getViewedModuleSection(
         sections: CoreCourseSection[],
@@ -390,7 +390,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     /**
      * Get selected section ID. If viewing all sections, use current scrolled section.
      *
-     * @return Section ID, undefined if not found.
+     * @returns Section ID, undefined if not found.
      */
     protected async getSelectedSectionId(): Promise<number | undefined> {
         if (this.selectedSection?.id !== this.allSectionsId) {
@@ -549,7 +549,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      *
      * @param section1 First section.
      * @param section2 Second section.
-     * @return Whether they're equal.
+     * @returns Whether they're equal.
      */
     compareSections(section1: CoreCourseSection, section2: CoreCourseSection): boolean {
         return section1 && section2 ? section1.id === section2.id : section1 === section2;
@@ -561,7 +561,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @param refresher Refresher.
      * @param done Function to call when done.
      * @param afterCompletionChange Whether the refresh is due to a completion change.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async doRefresh(refresher?: IonRefresher, done?: () => void, afterCompletionChange?: boolean): Promise<void> {
         const promises = this.dynamicComponents?.map(async (component) => {
@@ -655,7 +655,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * Check whether a section can be viewed.
      *
      * @param section The section to check.
-     * @return Whether the section can be viewed.
+     * @returns Whether the section can be viewed.
      */
     canViewSection(section: CoreCourseSection): boolean {
         return CoreCourseHelper.canUserViewSection(section) && !CoreCourseHelper.isSectionStealth(section);

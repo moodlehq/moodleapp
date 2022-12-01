@@ -26,7 +26,7 @@ export class AddonModSurveyHelperProvider {
      * Turns a string with values separated by commas into an array.
      *
      * @param value Value to convert.
-     * @return Array.
+     * @returns Array.
      */
     protected commaStringToArray(value: string | string[]): string[] {
         if (typeof value == 'string') {
@@ -44,7 +44,7 @@ export class AddonModSurveyHelperProvider {
      * Gets the parent questions and puts them in an object: ID -> question.
      *
      * @param questions Questions.
-     * @return Object with parent questions.
+     * @returns Object with parent questions.
      */
     protected getParentQuestions(questions: AddonModSurveyQuestion[]): {[id: number]: AddonModSurveyQuestion} {
         const parents: { [id: number]: AddonModSurveyQuestion } = {};
@@ -63,7 +63,7 @@ export class AddonModSurveyHelperProvider {
      * 'num' and 'name'.
      *
      * @param questions Questions.
-     * @return Promise resolved with the formatted questions.
+     * @returns Promise resolved with the formatted questions.
      */
     formatQuestions(questions: AddonModSurveyQuestion[]): AddonModSurveyQuestionFormatted[] {
         const strIPreferThat = Translate.instant('addon.mod_survey.ipreferthat');

@@ -41,7 +41,7 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
      *
      * @param siteId Site ID to sync. If not defined, sync all sites.
      * @param force Wether to force sync not depending on last execution.
-     * @return Promise resolved if sync is successful, rejected if sync fails.
+     * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllComments(siteId?: string, force?: boolean): Promise<void> {
         return this.syncOnSites('all comments', (siteId) => this.syncAllCommentsFunc(!!force, siteId), siteId);
@@ -52,7 +52,7 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
      *
      * @param force Wether to force sync not depending on last execution.
      * @param siteId Site ID to sync.
-     * @return Promise resolved if sync is successful, rejected if sync fails.
+     * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     private async syncAllCommentsFunc(force: boolean, siteId: string): Promise<void> {
         const comments = await CoreCommentsOffline.getAllComments(siteId);
@@ -117,7 +117,7 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
      * @param itemId Associated id.
      * @param area String comment area. Default empty.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the comments are synced or if they don't need to be synced.
+     * @returns Promise resolved when the comments are synced or if they don't need to be synced.
      */
     private async syncCommentsIfNeeded(
         contextLevel: string,
@@ -145,7 +145,7 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
      * @param itemId Associated id.
      * @param area String comment area. Default empty.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if sync is successful, rejected otherwise.
+     * @returns Promise resolved if sync is successful, rejected otherwise.
      */
     syncComments(
         contextLevel: string,
@@ -181,7 +181,7 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
      * @param itemId Associated id.
      * @param area String comment area. Default empty.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if sync is successful, rejected otherwise.
+     * @returns Promise resolved if sync is successful, rejected otherwise.
      */
     private async performSyncComments(
         contextLevel: string,
@@ -309,7 +309,7 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
      * @param component Component name.
      * @param itemId Associated id.
      * @param area String comment area. Default empty.
-     * @return Sync ID.
+     * @returns Sync ID.
      */
     protected getSyncId(contextLevel: string, instanceId: number, component: string, itemId: number, area: string = ''): string {
         return contextLevel + '#' + instanceId + '#' + component + '#' + itemId + '#' + area;

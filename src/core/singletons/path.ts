@@ -31,7 +31,7 @@ export class CorePath {
      *
      * @param initialFolder The initial folder path.
      * @param finalFolder The final folder. The "root" should be the same as initialFolder.
-     * @return Relative path.
+     * @returns Relative path.
      */
     static calculateRelativePath(initialFolder: string, finalFolder: string): string {
         initialFolder = CoreText.removeStartingSlash(CoreText.removeEndingSlash(initialFolder));
@@ -67,7 +67,7 @@ export class CorePath {
      * @param currentFolder The current folder path.
      * @param path The relative path.
      * @param newFolder The folder to use to calculate the new relative path. The "root" should be the same as currentFolder.
-     * @return Relative path.
+     * @returns Relative path.
      */
     static changeRelativePath(currentFolder: string, path: string, newFolder: string): string {
         return CorePath.concatenatePaths(CorePath.calculateRelativePath(newFolder, currentFolder), path);
@@ -78,7 +78,7 @@ export class CorePath {
      *
      * @param leftPath Left path.
      * @param rightPath Right path.
-     * @return Concatenated path.
+     * @returns Concatenated path.
      */
     static concatenatePaths(leftPath: string, rightPath: string): string {
         if (!leftPath) {

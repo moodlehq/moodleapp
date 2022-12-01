@@ -39,7 +39,7 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
      * @param module The module object returned by WS.
      * @param courseId Course ID.
      * @param dirPath Path of the directory where to store all the content files.
-     * @return Promise resolved when all content is downloaded.
+     * @returns Promise resolved when all content is downloaded.
      */
     download(module: CoreCourseModuleData, courseId: number, dirPath?: string): Promise<void> {
         return this.downloadOrPrefetch(module, courseId, false, dirPath);
@@ -54,7 +54,7 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
      * @param dirPath Path of the directory where to store all the content files. This is to keep the files
      *                relative paths and make the package work in an iframe. Undefined to download the files
      *                in the filepool root folder.
-     * @return Promise resolved when all content is downloaded.
+     * @returns Promise resolved when all content is downloaded.
      */
     async downloadOrPrefetch(module: CoreCourseModuleData, courseId: number, prefetch?: boolean, dirPath?: string): Promise<void> {
         if (!CoreNetwork.isOnline()) {
@@ -78,11 +78,12 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
     /**
      * Download or prefetch the content.
      *
+     * @param siteId Site Id.
      * @param module The module object returned by WS.
      * @param courseId Course ID.
      * @param prefetch True to prefetch, false to download right away.
      * @param dirPath Path of the directory where to store all the content files.
-     * @return Promise resolved when all content is downloaded.
+     * @returns Promise resolved when all content is downloaded.
      */
     protected async performDownloadOrPrefetch(
         siteId: string,
@@ -141,7 +142,7 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
      * @param module Module.
      * @param courseId Course ID the module belongs to.
      * @param single True if we're downloading a single module, false if we're downloading a whole section.
-     * @return Promise resolved with the list of files.
+     * @returns Promise resolved with the list of files.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async getFiles(module: CoreCourseModuleData, courseId: number, single?: boolean): Promise<CoreWSFile[]> {
@@ -158,7 +159,7 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
      *
      * @param moduleId The module ID.
      * @param courseId The course ID the module belongs to.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async invalidateContent(moduleId: number, courseId: number): Promise<void> {
@@ -176,7 +177,7 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
      * @param module Module to load the contents.
      * @param courseId The course ID. Recommended to speed up the process and minimize data usage.
      * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @return Promise resolved when loaded.
+     * @returns Promise resolved when loaded.
      */
     loadContents(module: CoreCourseAnyModuleData, courseId: number, ignoreCache?: boolean): Promise<void> {
         return CoreCourse.loadModuleContents(module, courseId, undefined, false, ignoreCache);
@@ -189,7 +190,7 @@ export class CoreCourseResourcePrefetchHandlerBase extends CoreCourseModulePrefe
      * @param courseId Course ID the module belongs to.
      * @param single True if we're downloading a single module, false if we're downloading a whole section.
      * @param dirPath Path of the directory where to store all the content files.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     prefetch(module: CoreCourseModuleData, courseId: number, single?: boolean, dirPath?: string): Promise<void> {
         return this.downloadOrPrefetch(module, courseId, true, dirPath);

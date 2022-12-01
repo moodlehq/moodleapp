@@ -35,7 +35,7 @@ export class AddonMessagesPushClickHandlerService implements CorePushNotificatio
      * Check if a notification click is handled by this handler.
      *
      * @param notification The notification to check.
-     * @return Whether the notification click is handled by this handler
+     * @returns Whether the notification click is handled by this handler
      */
     async handles(notification: AddonMessagesPushNotificationData): Promise<boolean> {
         if (CoreUtils.isTrueOrOne(notification.notif) && notification.name != 'messagecontactrequests') {
@@ -50,7 +50,7 @@ export class AddonMessagesPushClickHandlerService implements CorePushNotificatio
      * Handle the notification click.
      *
      * @param notification The notification to check.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async handleClick(notification: AddonMessagesPushNotificationData): Promise<void> {
         try {

@@ -95,7 +95,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
      * Get meeting info.
      *
      * @param updateCache Whether to update info cached data (in server).
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async fetchMeetingInfo(updateCache?: boolean): Promise<void> {
         if (!this.bbb) {
@@ -126,7 +126,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
     /**
      * Get recordings.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async fetchRecordings(): Promise<void> {
         if (!this.bbb || !this.showRecordings) {
@@ -204,7 +204,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
      * Update meeting info.
      *
      * @param updateCache Whether to update info cached data (in server).
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async updateMeetingInfo(updateCache?: boolean): Promise<void> {
         if (!this.bbb) {
@@ -242,7 +242,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
     /**
      * Group changed, reload some data.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async groupChanged(): Promise<void> {
         this.showLoading = true;
@@ -261,7 +261,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
     /**
      * Join the room.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async joinRoom(): Promise<void> {
         const modal = await CoreDomUtils.showModalLoading();
@@ -287,7 +287,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
     /**
      * End the meeting.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async endMeeting(): Promise<void> {
         if (!this.bbb) {

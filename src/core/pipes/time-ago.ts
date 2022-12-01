@@ -35,7 +35,7 @@ export class CoreTimeAgoPipe implements PipeTransform {
      * Turn a UNIX timestamp to "time ago".
      *
      * @param timestamp The UNIX timestamp (without milliseconds).
-     * @return Formatted time.
+     * @returns Formatted time.
      */
     transform(timestamp: string | number): string {
         if (typeof timestamp === 'string') {

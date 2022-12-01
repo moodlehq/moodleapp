@@ -95,7 +95,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
     };
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         if (!this.assessmentId || !this.strategy) {
@@ -154,7 +154,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
     /**
      * Convenience function to load the assessment data.
      *
-     * @return Promised resvoled when data is loaded.
+     * @returns Promised resvoled when data is loaded.
      */
     protected async load(): Promise<void> {
         this.data.assessment = await AddonModWorkshopHelper.getReviewerAssessmentById(this.workshop.id, this.assessmentId, {
@@ -242,7 +242,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
     /**
      * Check if data has changed.
      *
-     * @return True if data has changed.
+     * @returns True if data has changed.
      */
     hasDataChanged(): boolean {
         if (!this.assessmentStrategyLoaded) {
@@ -278,7 +278,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
     /**
      * Save the assessment.
      *
-     * @return Promise resolved when done, rejected if assessment could not be saved.
+     * @returns Promise resolved when done, rejected if assessment could not be saved.
      */
     async saveAssessment(): Promise<void> {
         const files = CoreFileSession.getFiles(

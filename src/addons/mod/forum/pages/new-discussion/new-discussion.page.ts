@@ -109,7 +109,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
     constructor(protected route: ActivatedRoute, @Optional() protected splitView: CoreSplitViewComponent) {}
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         try {
@@ -168,7 +168,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
      * Fetch if forum uses groups and the groups it uses.
      *
      * @param refresh Whether we're refreshing data.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchDiscussionData(refresh?: boolean): Promise<void> {
         try {
@@ -320,7 +320,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
      * Validate which of the groups returned by getActivityAllowedGroups in visible groups should be shown to post to.
      *
      * @param forumGroups Forum groups.
-     * @return Promise resolved with the list of groups.
+     * @returns Promise resolved with the list of groups.
      */
     protected async validateVisibleGroups(forumGroups: CoreGroup[]): Promise<CoreGroup[]> {
         let response: AddonModForumCanAddDiscussion;
@@ -378,7 +378,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
      *
      * @param forumGroups Forum groups.
      * @param userGroups User groups.
-     * @return Filtered groups.
+     * @returns Filtered groups.
      */
     protected filterGroups(forumGroups: CoreGroup[], userGroups: CoreGroup[]): CoreGroup[] {
         const userGroupsIds = userGroups.map(group => group.id);
@@ -389,7 +389,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
     /**
      * Get the initial group ID.
      *
-     * @return Initial group ID.
+     * @returns Initial group ID.
      */
     protected getInitialGroupId(): number {
         return (this.initialGroupId && this.groups.find(group => group.id === this.initialGroupId)) ?
@@ -401,7 +401,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
      *
      * @param groups Groups.
      * @param check True to check if the user can add a discussion to all participants.
-     * @return Promise resolved with the list of groups.
+     * @returns Promise resolved with the list of groups.
      */
     protected addAllParticipantsOption(groups: CoreGroup[], check: boolean): Promise<CoreGroup[]> {
         let promise: Promise<boolean>;
@@ -622,7 +622,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
     /**
      * Check if we can leave the page or not.
      *
-     * @return Resolved if we can leave it, rejected if not.
+     * @returns Resolved if we can leave it, rejected if not.
      */
     async canLeave(): Promise<boolean> {
         if (this.forceLeave) {

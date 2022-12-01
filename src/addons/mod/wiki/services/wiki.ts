@@ -68,7 +68,7 @@ export class AddonModWikiProvider {
     /**
      * Delete and return the edited page data if any.
      *
-     * @return Edited page data, undefined if no data.
+     * @returns Edited page data, undefined if no data.
      */
     consumeEditedPageData(): AddonModWikiEditedPageData | undefined {
         const editedPage = this.editedPage;
@@ -83,7 +83,7 @@ export class AddonModWikiProvider {
      * @param pageId Page ID.
      * @param content content to be saved.
      * @param section section to get.
-     * @return Promise resolved with the page ID.
+     * @returns Promise resolved with the page ID.
      */
     async editPage(pageId: number, content: string, section?: string, siteId?: string): Promise<number> {
         const site = await CoreSites.getSite(siteId);
@@ -107,6 +107,7 @@ export class AddonModWikiProvider {
      *
      * @param wikiId Wiki ID.
      * @param path Path.
+     * @returns The first wiki page opened if any.
      */
     getFirstWikiPageOpened(wikiId: number, path: string): string | undefined {
         const tab = CoreNavigator.getMainMenuTabFromPath(path);
@@ -124,7 +125,7 @@ export class AddonModWikiProvider {
      *
      * @param pageId Page ID.
      * @param options Other options.
-     * @return Promise resolved with the page data.
+     * @returns Promise resolved with the page data.
      */
     async getPageContents(pageId: number, options: CoreCourseCommonModWSOptions = {}): Promise<AddonModWikiPageContents> {
         const site = await CoreSites.getSite(options.siteId);
@@ -149,7 +150,7 @@ export class AddonModWikiProvider {
      * Get cache key for wiki Pages Contents WS calls.
      *
      * @param pageId Wiki Page ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getPageContentsCacheKey(pageId: number): string {
         return ROOT_CACHE_KEY + 'page:' + pageId;
@@ -162,7 +163,7 @@ export class AddonModWikiProvider {
      * @param section Section to get.
      * @param lockOnly Just renew lock and not return content.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with page contents.
+     * @returns Promise resolved with page contents.
      */
     async getPageForEditing(
         pageId: number,
@@ -192,7 +193,7 @@ export class AddonModWikiProvider {
      *
      * @param wikiId Wiki ID.
      * @param options Other options.
-     * @return Promise resolved with subwiki files.
+     * @returns Promise resolved with subwiki files.
      */
     async getSubwikiFiles(wikiId: number, options: AddonModWikiGetSubwikiFilesOptions = {}): Promise<CoreWSFile[]> {
         const site = await CoreSites.getSite(options.siteId);
@@ -224,7 +225,7 @@ export class AddonModWikiProvider {
      * @param wikiId Wiki ID.
      * @param groupId Group ID.
      * @param userId User ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getSubwikiFilesCacheKey(wikiId: number, groupId: number, userId: number): string {
         return this.getSubwikiFilesCacheKeyPrefix(wikiId) + ':' + groupId + ':' + userId;
@@ -234,7 +235,7 @@ export class AddonModWikiProvider {
      * Get cache key for all wiki Subwiki Files WS calls.
      *
      * @param wikiId Wiki ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getSubwikiFilesCacheKeyPrefix(wikiId: number): string {
         return ROOT_CACHE_KEY + 'subwikifiles:' + wikiId;
@@ -244,7 +245,7 @@ export class AddonModWikiProvider {
      * Get a list of subwikis and related data for a certain wiki from the cache.
      *
      * @param wikiId wiki Id
-     * @return Subwiki list and related data.
+     * @returns Subwiki list and related data.
      */
     getSubwikiList(wikiId: number): AddonModWikiSubwikiListData {
         return this.subwikiListsCache[wikiId];
@@ -255,7 +256,7 @@ export class AddonModWikiProvider {
      *
      * @param wikiId Wiki ID.
      * @param options Other options.
-     * @return Promise resolved with wiki subwiki pages.
+     * @returns Promise resolved with wiki subwiki pages.
      */
     async getSubwikiPages(wikiId: number, options: AddonModWikiGetSubwikiPagesOptions = {}): Promise<AddonModWikiSubwikiPage[]> {
         const site = await CoreSites.getSite(options.siteId);
@@ -294,7 +295,7 @@ export class AddonModWikiProvider {
      * @param wikiId Wiki ID.
      * @param groupId Group ID.
      * @param userId User ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getSubwikiPagesCacheKey(wikiId: number, groupId: number, userId: number): string {
         return this.getSubwikiPagesCacheKeyPrefix(wikiId) + ':' + groupId + ':' + userId;
@@ -304,7 +305,7 @@ export class AddonModWikiProvider {
      * Get cache key for all wiki Subwiki Pages WS calls.
      *
      * @param wikiId Wiki ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getSubwikiPagesCacheKeyPrefix(wikiId: number): string {
         return ROOT_CACHE_KEY + 'subwikipages:' + wikiId;
@@ -315,7 +316,7 @@ export class AddonModWikiProvider {
      *
      * @param wikiId Wiki ID.
      * @param options Other options.
-     * @return Promise resolved with subwikis.
+     * @returns Promise resolved with subwikis.
      */
     async getSubwikis(wikiId: number, options: CoreCourseCommonModWSOptions = {}): Promise<AddonModWikiSubwiki[]> {
         const site = await CoreSites.getSite(options.siteId);
@@ -343,7 +344,7 @@ export class AddonModWikiProvider {
      * Get cache key for get wiki subWikis WS calls.
      *
      * @param wikiId Wiki ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getSubwikisCacheKey(wikiId: number): string {
         return ROOT_CACHE_KEY + 'subwikis:' + wikiId;
@@ -355,7 +356,7 @@ export class AddonModWikiProvider {
      * @param courseId Course ID.
      * @param cmId Course module ID.
      * @param options Other options.
-     * @return Promise resolved when the wiki is retrieved.
+     * @returns Promise resolved when the wiki is retrieved.
      */
     getWiki(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModWikiWiki> {
         return this.getWikiByField(courseId, 'coursemodule', cmId, options);
@@ -368,7 +369,7 @@ export class AddonModWikiProvider {
      * @param key Name of the property to check.
      * @param value Value to search.
      * @param options Other options.
-     * @return Promise resolved when the wiki is retrieved.
+     * @returns Promise resolved when the wiki is retrieved.
      */
     protected async getWikiByField(
         courseId: number,
@@ -404,7 +405,7 @@ export class AddonModWikiProvider {
      * @param courseId Course ID.
      * @param id Wiki ID.
      * @param options Other options.
-     * @return Promise resolved when the wiki is retrieved.
+     * @returns Promise resolved when the wiki is retrieved.
      */
     getWikiById(courseId: number, id: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModWikiWiki> {
         return this.getWikiByField(courseId, 'id', id, options);
@@ -414,7 +415,7 @@ export class AddonModWikiProvider {
      * Get cache key for wiki data WS calls.
      *
      * @param courseId Course ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getWikiDataCacheKey(courseId: number): string {
         return ROOT_CACHE_KEY + 'wiki:' + courseId;
@@ -425,7 +426,7 @@ export class AddonModWikiProvider {
      *
      * @param wiki Wiki.
      * @param options Other options.
-     * @return Promise resolved with the list of files.
+     * @returns Promise resolved with the list of files.
      */
     async getWikiFileList(wiki: AddonModWikiWiki, options: CoreSitesCommonWSOptions = {}): Promise<CoreWSFile[]> {
         options.siteId = options.siteId || CoreSites.getCurrentSiteId();
@@ -458,7 +459,7 @@ export class AddonModWikiProvider {
      *
      * @param wiki Wiki.
      * @param options Other options.
-     * @return Page list.
+     * @returns Page list.
      */
     async getWikiPageList(wiki: AddonModWikiWiki, options: CoreSitesCommonWSOptions = {}): Promise<AddonModWikiSubwikiPage[]> {
         options.siteId = options.siteId || CoreSites.getCurrentSiteId();
@@ -491,7 +492,7 @@ export class AddonModWikiProvider {
      * @param moduleId The module ID.
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -511,7 +512,7 @@ export class AddonModWikiProvider {
      *
      * @param pageId Wiki Page ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidatePage(pageId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -524,7 +525,7 @@ export class AddonModWikiProvider {
      *
      * @param wikiId Wiki ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSubwikiFiles(wikiId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -537,7 +538,7 @@ export class AddonModWikiProvider {
      *
      * @param wikiId Wiki ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSubwikiPages(wikiId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -550,7 +551,7 @@ export class AddonModWikiProvider {
      *
      * @param wikiId Wiki ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSubwikis(wikiId: number, siteId?: string): Promise<void> {
         this.clearSubwikiList(wikiId);
@@ -565,7 +566,7 @@ export class AddonModWikiProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateWikiData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -580,7 +581,7 @@ export class AddonModWikiProvider {
      * @param subwikiId Subwiki ID.
      * @param title Page title.
      * @param options Other options.
-     * @return Promise resolved with true if used, resolved with false if not used or cannot determine.
+     * @returns Promise resolved with true if used, resolved with false if not used or cannot determine.
      */
     async isTitleUsed(
         wikiId: number,
@@ -622,7 +623,7 @@ export class AddonModWikiProvider {
      * @param wikiId Wiki ID.
      * @param name Name of the wiki.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the WS call is successful.
+     * @returns Promise resolved when the WS call is successful.
      */
     logPageView(id: number, wikiId: number, name?: string, siteId?: string): Promise<void> {
         const params: AddonModWikiViewPageWSParams = {
@@ -647,7 +648,7 @@ export class AddonModWikiProvider {
      * @param id Wiki ID.
      * @param name Name of the wiki.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the WS call is successful.
+     * @returns Promise resolved when the WS call is successful.
      */
     logView(id: number, name?: string, siteId?: string): Promise<void> {
         const params: AddonModWikiViewWikiWSParams = {
@@ -672,7 +673,7 @@ export class AddonModWikiProvider {
      * @param title Title to create the page.
      * @param content Content to save on the page.
      * @param options Other options.
-     * @return Promise resolved with page ID if page was created in server, -1 if stored in device.
+     * @returns Promise resolved with page ID if page was created in server, -1 if stored in device.
      */
     async newPage(title: string, content: string, options: AddonModWikiNewPageOptions = {}): Promise<number> {
 
@@ -741,7 +742,7 @@ export class AddonModWikiProvider {
      * @param title Title to create the page.
      * @param content Content to save on the page.
      * @param options Other options.
-     * @return Promise resolved with the page ID if created, rejected otherwise.
+     * @returns Promise resolved with the page ID if created, rejected otherwise.
      */
     async newPageOnline(title: string, content: string, options: AddonModWikiNewPageOnlineOptions = {}): Promise<number> {
         const site = await CoreSites.getSite(options.siteId);
@@ -809,7 +810,7 @@ export class AddonModWikiProvider {
      *
      * @param pages Pages to sort.
      * @param desc True to sort in descendent order, false to sort in ascendent order. Defaults to false.
-     * @return Sorted pages.
+     * @returns Sorted pages.
      */
     sortPagesByTitle<T extends AddonModWikiSubwikiPage | AddonModWikiPageDBRecord>(
         pages: T[],
@@ -832,7 +833,7 @@ export class AddonModWikiProvider {
      * @param wikiId Wiki ID.
      * @param subwikiId Subwiki ID to search.
      * @param options Other options.
-     * @return Promise resolved with true if it has subwiki, resolved with false otherwise.
+     * @returns Promise resolved with true if it has subwiki, resolved with false otherwise.
      */
     async wikiHasSubwiki(wikiId: number, subwikiId: number, options: CoreCourseCommonModWSOptions = {}): Promise<boolean> {
         try {

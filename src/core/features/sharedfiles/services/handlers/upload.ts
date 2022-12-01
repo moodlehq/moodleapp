@@ -34,7 +34,7 @@ export class CoreSharedFilesUploadHandlerService implements CoreFileUploaderHand
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return True or promise resolved with true if enabled.
+     * @returns True or promise resolved with true if enabled.
      */
     async isEnabled(): Promise<boolean> {
         return CoreApp.isIOS();
@@ -44,7 +44,7 @@ export class CoreSharedFilesUploadHandlerService implements CoreFileUploaderHand
      * Given a list of mimetypes, return the ones that are supported by the handler.
      *
      * @param mimetypes List of mimetypes.
-     * @return Supported mimetypes.
+     * @returns Supported mimetypes.
      */
     getSupportedMimetypes(mimetypes: string[]): string[] {
         return mimetypes;
@@ -53,7 +53,7 @@ export class CoreSharedFilesUploadHandlerService implements CoreFileUploaderHand
     /**
      * Get the data to display the handler.
      *
-     * @return Data.
+     * @returns Data.
      */
     getData(): CoreFileUploaderHandlerData {
         return {

@@ -101,7 +101,7 @@ export class CoreIconComponent implements OnChanges {
      * Check if the value is true or on.
      *
      * @param val Value to be checked.
-     * @return If has a value equivalent to true.
+     * @returns If has a value equivalent to true.
      */
     isTrueProperty(val: unknown): boolean {
         if (typeof val === 'string') {

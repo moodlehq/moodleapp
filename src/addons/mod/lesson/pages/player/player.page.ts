@@ -116,7 +116,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         try {
@@ -147,7 +147,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
     }
 
     /**
-     * Component being destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         if (this.lesson) {
@@ -159,7 +159,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Check if we can leave the page or not.
      *
-     * @return Resolved if we can leave it, rejected if not.
+     * @returns Resolved if we can leave it, rejected if not.
      */
     async canLeave(): Promise<boolean> {
         if (this.forceLeave || !this.questionForm) {
@@ -201,7 +201,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
      *
      * @param func Function to call.
      * @param options Options passed to the function.
-     * @return Promise resolved in success, rejected otherwise.
+     * @returns Promise resolved in success, rejected otherwise.
      */
     protected async callFunction<T>(func: () => Promise<T>, options: CommonOptions): Promise<T> {
         try {
@@ -240,7 +240,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
      *
      * @param pageId Page to load.
      * @param ignoreCurrent If true, allow loading current page.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async changePage(pageId: number, ignoreCurrent?: boolean): Promise<void> {
         if (!ignoreCurrent && !this.eolData && this.currentPage == pageId) {
@@ -263,7 +263,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Get the lesson data and load the page.
      *
-     * @return Promise resolved with true if success, resolved with false otherwise.
+     * @returns Promise resolved with true if success, resolved with false otherwise.
      */
     protected async fetchLessonData(): Promise<boolean> {
         try {
@@ -371,7 +371,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
      * Finish the retake.
      *
      * @param outOfTime Whether the retake is finished because the user ran out of time.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async finishRetake(outOfTime?: boolean): Promise<void> {
         if (!this.lesson) {
@@ -452,7 +452,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
      * Jump to a certain page after performing an action.
      *
      * @param pageId The page to load.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async jumpToPage(pageId: number): Promise<void> {
         if (pageId === 0) {
@@ -477,7 +477,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
      * Start or continue a retake.
      *
      * @param pageId The page to load.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async launchRetake(pageId?: number): Promise<void> {
         let data: AddonModLessonLaunchAttemptWSResponse | undefined;
@@ -515,7 +515,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Load the lesson menu.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadMenu(): Promise<void> {
         if (this.loadingMenu || !this.lesson) {
@@ -549,7 +549,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
      * Load a certain page.
      *
      * @param pageId The page to load.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadPage(pageId: number): Promise<void> {
         if (pageId == AddonModLessonProvider.LESSON_EOL) {
@@ -622,7 +622,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
      *
      * @param data The data to send.
      * @param formSubmitted Whether a form was submitted.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async processPage(data: CoreFormFields, formSubmitted?: boolean): Promise<void> {
         if (!this.lesson || !this.pageData) {
@@ -780,7 +780,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Show the navigation modal.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async showMenu(): Promise<void> {
         this.menuShown = true;

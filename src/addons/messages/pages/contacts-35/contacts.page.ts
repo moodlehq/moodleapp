@@ -124,7 +124,7 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
      * Refresh the data.
      *
      * @param refresher Refresher.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async refreshData(refresher?: IonRefresher): Promise<void> {
         try {
@@ -144,7 +144,7 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
     /**
      * Fetch contacts.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchData(): Promise<void> {
         this.loadingMessage = this.loadingMessages;
@@ -169,7 +169,7 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
      * Sort user list by fullname
      *
      * @param list List to sort.
-     * @return Sorted list.
+     * @returns Sorted list.
      */
     protected sortUsers(list: AddonMessagesSearchContactsContact[]): AddonMessagesSearchContactsContact[] {
         return list.sort((a, b) => {
@@ -201,7 +201,7 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
      * Search users from the UI.
      *
      * @param query Text to search for.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     search(query: string): Promise<void> {
         CoreApp.closeKeyboard();
@@ -218,7 +218,7 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
      * Perform the search of users.
      *
      * @param query Text to search for.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async performSearch(query: string): Promise<void> {
         try {

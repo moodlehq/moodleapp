@@ -50,7 +50,7 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * @param courseId The course ID.
      * @param sectionId The section ID.
      * @param forCoursePage Whether the data will be used to render the course page.
-     * @return Data to render the module.
+     * @returns Data to render the module.
      */
     getData(
         module: CoreCourseModuleData,
@@ -66,7 +66,7 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      *
      * @param course The course object.
      * @param module The module object.
-     * @return Promise resolved with component to use, undefined if not found.
+     * @returns Promise resolved with component to use, undefined if not found.
      */
     getMainComponent(course: CoreCourseAnyCourseData, module: CoreCourseModuleData): Promise<Type<unknown> | undefined>;
 
@@ -74,15 +74,15 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * Whether to display the course refresher in single activity course format. If it returns false, a refresher must be
      * included in the template that calls the doRefresh method of the component. Defaults to true.
      *
-     * @return Whether the refresher should be displayed.
+     * @returns Whether the refresher should be displayed.
      */
     displayRefresherInSingleActivity?(): boolean;
 
     /**
      * Get the icon src for the module.
      *
-     * @param module: Module to get the icon from.
-     * @return The icon src.
+     * @param module Module to get the icon from.
+     * @returns The icon src.
      */
     getIconSrc?(module?: CoreCourseModuleData): Promise<string | undefined> | string | undefined;
 
@@ -91,7 +91,7 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * If this function is implemented, the supportedFeatures object will be ignored.
      *
      * @param feature The feature to check.
-     * @return The result of the supports check.
+     * @returns The result of the supports check.
      */
     supportsFeature?(feature: string): unknown;
 
@@ -100,7 +100,7 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * Returns false by default.
      *
      * @param module Module.
-     * @return Promise resolved with boolean: whether the manual completion should always be displayed.
+     * @returns Promise resolved with boolean: whether the manual completion should always be displayed.
      */
     manualCompletionAlwaysShown?(module: CoreCourseModuleData): Promise<boolean>;
 
@@ -110,7 +110,7 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * @param module The module object.
      * @param courseId The course ID.
      * @param options Options for the navigation.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     openActivityPage(module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions): Promise<void>;
 }
@@ -178,7 +178,7 @@ export interface CoreCourseModuleHandlerData {
      * @param module The module object.
      * @param courseId The course ID.
      * @param options Options for the navigation.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     action?(event: Event, module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions): Promise<void> | void;
 
@@ -204,7 +204,7 @@ export interface CoreCourseModuleMainComponent {
      *
      * @param refresher Refresher.
      * @param showErrors If show errors to the user of hide them.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     doRefresh(refresher?: IonRefresher | null, showErrors?: boolean): Promise<void>;
 }
@@ -249,7 +249,7 @@ export interface CoreCourseModuleHandlerButton {
      * @param module The module object.
      * @param courseId The course ID.
      * @param options Options for the navigation.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     action(event: Event, module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions): Promise<void> | void;
 }
@@ -272,7 +272,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
      *
      * @param course The course object.
      * @param module The module object.
-     * @return Promise resolved with component to use, undefined if not found.
+     * @returns Promise resolved with component to use, undefined if not found.
      */
     async getMainComponent(course: CoreCourseAnyCourseData, module: CoreCourseModuleData): Promise<Type<unknown> | undefined> {
         try {
@@ -290,7 +290,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
      * @param courseId The course ID.
      * @param sectionId The section ID.
      * @param forCoursePage Whether the data will be used to render the course page.
-     * @return Data to render the module.
+     * @returns Data to render the module.
      */
     async getModuleDataFor(
         modname: string,
@@ -315,10 +315,11 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
     /**
      * Opens the activity page.
      *
+     * @param modname The name of the module type.
      * @param module The module object.
      * @param courseId The course ID.
      * @param options Options for the navigation.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async openActivityPage(
         modname: string,
@@ -338,7 +339,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
      *
      * @param modname The name of the module type.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean: whether module is disabled.
+     * @returns Promise resolved with boolean: whether module is disabled.
      */
     async isModuleDisabled(modname: string, siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
@@ -351,7 +352,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
      *
      * @param modname The name of the module type.
      * @param site Site. If not defined, use current site.
-     * @return Whether module is disabled.
+     * @returns Whether module is disabled.
      */
     isModuleDisabledInSite(modname: string, site?: CoreSite): boolean {
         const handler = this.getHandler(modname, false);
@@ -374,7 +375,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
      * included in the template that calls the doRefresh method of the component. Defaults to true.
      *
      * @param modname The name of the module type.
-     * @return Whether the refresher should be displayed.
+     * @returns Whether the refresher should be displayed.
      */
     displayRefresherInSingleActivity(modname: string): boolean {
         return !!this.executeFunctionOnEnabled<boolean>(modname, 'displayRefresherInSingleActivity');
@@ -386,7 +387,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
      * @param modname The name of the module type.
      * @param modicon The mod icon string.
      * @param module The module to use.
-     * @return Promise resolved with the icon src.
+     * @returns Promise resolved with the icon src.
      */
     async getModuleIconSrc(modname: string, modicon?: string, module?: CoreCourseModuleData): Promise<string> {
         const icon = await this.executeFunctionOnEnabled<Promise<string>>(modname, 'getIconSrc', [module]);
@@ -400,7 +401,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
      * @param modname The modname.
      * @param feature The feature to check.
      * @param defaultValue Value to return if the module is not supported or doesn't know if it's supported.
-     * @return The result of the supports check.
+     * @returns The result of the supports check.
      */
     supportsFeature<T = unknown>(modname: string, feature: string, defaultValue: T): T {
         const handler = this.enabledHandlers[modname];
@@ -424,7 +425,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
      * Returns false by default.
      *
      * @param module Module.
-     * @return Promise resolved with boolean: whether the manual completion should always be displayed.
+     * @returns Promise resolved with boolean: whether the manual completion should always be displayed.
      */
     async manualCompletionAlwaysShown(module: CoreCourseModuleData): Promise<boolean> {
         const result = await this.executeFunctionOnEnabled<boolean>(module.modname, 'manualCompletionAlwaysShown', [module]);

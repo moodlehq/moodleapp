@@ -94,7 +94,7 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
     /**
      * Play the H5P.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async play(): Promise<void> {
         let localUrl: string | undefined;
@@ -147,7 +147,7 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
     /**
      * Get the local URL of the package.
      *
-     * @return Promise resolved with the local URL.
+     * @returns Promise resolved with the local URL.
      */
     protected async getLocalUrl(): Promise<string | undefined> {
         try {
@@ -198,7 +198,7 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
     }
 
     /**
-     * Component being destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.subscription?.unsubscribe();

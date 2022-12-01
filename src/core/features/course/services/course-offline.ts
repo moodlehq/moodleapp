@@ -29,7 +29,7 @@ export class CoreCourseOfflineProvider {
      *
      * @param cmId The module ID to remove the completion.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async deleteManualCompletion(cmId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -41,7 +41,7 @@ export class CoreCourseOfflineProvider {
      * Get all offline manual completions for a certain course.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the list of completions.
+     * @returns Promise resolved with the list of completions.
      */
     async getAllManualCompletions(siteId?: string): Promise<CoreCourseManualCompletionDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
@@ -54,7 +54,7 @@ export class CoreCourseOfflineProvider {
      *
      * @param courseId Course ID the module belongs to.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the list of completions.
+     * @returns Promise resolved with the list of completions.
      */
     async getCourseManualCompletions(courseId: number, siteId?: string): Promise<CoreCourseManualCompletionDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
@@ -67,7 +67,7 @@ export class CoreCourseOfflineProvider {
      *
      * @param cmId The module ID to remove the completion.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the completion, rejected if failure or not found.
+     * @returns Promise resolved with the completion, rejected if failure or not found.
      */
     async getManualCompletion(cmId: number, siteId?: string): Promise<CoreCourseManualCompletionDBRecord> {
         const site = await CoreSites.getSite(siteId);
@@ -83,7 +83,7 @@ export class CoreCourseOfflineProvider {
      * @param courseId Course ID the module belongs to.
      * @param courseName Not used since 4.0.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when completion is successfully stored.
+     * @returns Promise resolved when completion is successfully stored.
      */
     async markCompletedManually(
         cmId: number,

@@ -163,7 +163,7 @@ export class CoreScreenService {
      * Calculate the layout given the current breakpoints.
      *
      * @param breakpoints Breakpoints visibility.
-     * @return Active layout.
+     * @returns Active layout.
      */
     protected calculateLayout(breakpoints: Record<Breakpoint, boolean>): CoreScreenLayout {
         if (breakpoints[Breakpoint.MEDIUM]) {

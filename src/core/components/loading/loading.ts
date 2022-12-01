@@ -131,7 +131,7 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
      * Change loaded state.
      *
      * @param loaded True to load, false otherwise.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async changeState(loaded: boolean): Promise<void> {
         this.element.classList.toggle('core-loading-loaded', loaded);
@@ -163,6 +163,8 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
 
     /**
      * Gets current scroll position.
+     *
+     * @returns the scroll position or undefined if scroll not found.
      */
     protected async getScrollPosition(): Promise<number | undefined> {
         const content = this.element.closest('ion-content');

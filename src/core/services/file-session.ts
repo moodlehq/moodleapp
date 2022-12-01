@@ -66,7 +66,7 @@ export class CoreFileSessionProvider {
      * @param component Component Name.
      * @param id File area identifier.
      * @param siteId Site ID. If not defined, current site.
-     * @return Array of files in session.
+     * @returns Array of files in session.
      */
     getFiles(component: string, id: string | number, siteId?: string): CoreFileEntry[] {
         siteId = siteId || CoreSites.getCurrentSiteId();

@@ -42,7 +42,7 @@ export class CoreSitePluginsSettingsHandler extends CoreSitePluginsBaseHandler i
     /**
      * Returns the data needed to render the handler.
      *
-     * @return Data.
+     * @returns Data.
      */
     getDisplayData(): CoreSettingsHandlerData {
         return {

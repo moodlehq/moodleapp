@@ -263,7 +263,7 @@ H5P.XAPIEvent.prototype.getContentXAPIId = function (instance) {
 /**
  * Check if this event is sent from a child (i.e not from grandchild)
  *
- * @return {Boolean}
+ * @returns {Boolean}
  */
 H5P.XAPIEvent.prototype.isFromChild = function () {
   var parentId = this.getVerifiedStatementValue(['context', 'contextActivities', 'parent', 0, 'id']);

@@ -48,7 +48,7 @@ export class CoreSharedFilesListComponent implements OnInit, OnDestroy {
     protected shareObserver?: CoreEventObserver;
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.siteId = this.siteId || CoreSites.getCurrentSiteId();
@@ -70,7 +70,7 @@ export class CoreSharedFilesListComponent implements OnInit, OnDestroy {
     /**
      * Load the files.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadFiles(): Promise<void> {
         this.files = await CoreSharedFiles.getSiteSharedFiles(this.siteId, this.path, this.mimetypes);

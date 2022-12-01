@@ -29,7 +29,7 @@ export class CoreXAPIOfflineProvider {
      *
      * @param contextId Context ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean: true if has offline statements, false otherwise.
+     * @returns Promise resolved with boolean: true if has offline statements, false otherwise.
      */
     async contextHasStatements(contextId: number, siteId?: string): Promise<boolean> {
         const statementsList = await this.getContextStatements(contextId, siteId);
@@ -42,7 +42,7 @@ export class CoreXAPIOfflineProvider {
      *
      * @param id ID of the statements.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if stored, rejected if failure.
+     * @returns Promise resolved if stored, rejected if failure.
      */
     async deleteStatements(id: number, siteId?: string): Promise<void> {
         const db = await CoreSites.getSiteDb(siteId);
@@ -55,7 +55,7 @@ export class CoreXAPIOfflineProvider {
      *
      * @param contextId Context ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if stored, rejected if failure.
+     * @returns Promise resolved if stored, rejected if failure.
      */
     async deleteStatementsForContext(contextId: number, siteId?: string): Promise<void> {
         const db = await CoreSites.getSiteDb(siteId);
@@ -67,7 +67,7 @@ export class CoreXAPIOfflineProvider {
      * Get all offline statements.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with all the data.
+     * @returns Promise resolved with all the data.
      */
     async getAllStatements(siteId?: string): Promise<CoreXAPIStatementDBRecord[]> {
         const db = await CoreSites.getSiteDb(siteId);
@@ -80,7 +80,7 @@ export class CoreXAPIOfflineProvider {
      *
      * @param contextId Context ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the data.
+     * @returns Promise resolved with the data.
      */
     async getContextStatements(contextId: number, siteId?: string): Promise<CoreXAPIStatementDBRecord[]> {
         const db = await CoreSites.getSiteDb(siteId);
@@ -93,7 +93,7 @@ export class CoreXAPIOfflineProvider {
      *
      * @param id ID of the statements.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the data.
+     * @returns Promise resolved with the data.
      */
     async getStatements(id: number, siteId?: string): Promise<CoreXAPIStatementDBRecord> {
         const db = await CoreSites.getSiteDb(siteId);
@@ -108,7 +108,7 @@ export class CoreXAPIOfflineProvider {
      * @param component Component to send the statements to.
      * @param statements Statements (JSON-encoded).
      * @param options Options.
-     * @return Promise resolved when statements are successfully saved.
+     * @returns Promise resolved when statements are successfully saved.
      */
     async saveStatements(
         contextId: number,

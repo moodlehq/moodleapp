@@ -32,7 +32,7 @@ export class AddonModFeedbackOfflineProvider {
      * @param feedbackId Feedback ID.
      * @param page Page of the form to delete responses from.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if deleted, rejected if failure.
+     * @returns Promise resolved if deleted, rejected if failure.
      */
     async deleteFeedbackPageResponses(feedbackId: number, page: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -47,7 +47,7 @@ export class AddonModFeedbackOfflineProvider {
      * Get all the stored feedback responses data from all the feedback.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with entries.
+     * @returns Promise resolved with entries.
      */
     async getAllFeedbackResponses(siteId?: string): Promise<AddonModFeedbackOfflineResponse[]> {
         const site = await CoreSites.getSite(siteId);
@@ -62,7 +62,7 @@ export class AddonModFeedbackOfflineProvider {
      *
      * @param feedbackId Feedback ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with responses.
+     * @returns Promise resolved with responses.
      */
     async getFeedbackResponses(feedbackId: number, siteId?: string): Promise<AddonModFeedbackOfflineResponse[]> {
         const site = await CoreSites.getSite(siteId);
@@ -80,7 +80,7 @@ export class AddonModFeedbackOfflineProvider {
      * @param feedbackId Feedback ID.
      * @param page Page of the form to get responses from.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with responses.
+     * @returns Promise resolved with responses.
      */
     async getFeedbackPageResponses(feedbackId: number, page: number, siteId?: string): Promise<AddonModFeedbackOfflineResponse> {
         const site = await CoreSites.getSite(siteId);
@@ -100,7 +100,7 @@ export class AddonModFeedbackOfflineProvider {
      *
      * @param feedbackId Feedback ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with true if the feedback have something to be synced.
+     * @returns Promise resolved with true if the feedback have something to be synced.
      */
     async hasFeedbackOfflineData(feedbackId: number, siteId?: string): Promise<boolean> {
         const responses = await this.getFeedbackResponses(feedbackId, siteId);
@@ -111,8 +111,8 @@ export class AddonModFeedbackOfflineProvider {
     /**
      * Parse "options" and "attachments" columns of a fetched record.
      *
-     * @param records Record object
-     * @return Record object with columns parsed.
+     * @param record Record object
+     * @returns Record object with columns parsed.
      */
     protected parseResponse(record: AddonModFeedbackResponseDBRecord): AddonModFeedbackOfflineResponse {
         return Object.assign(record, {
@@ -128,7 +128,7 @@ export class AddonModFeedbackOfflineProvider {
      * @param responses The data to be processed the key is the field name (usually type[index]_id)
      * @param courseId Course ID the feedback belongs to.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if stored, rejected if failure.
+     * @returns Promise resolved if stored, rejected if failure.
      */
     async saveResponses(
         feedbackId: number,

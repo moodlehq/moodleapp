@@ -160,7 +160,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Fetch the data needed to render the form.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchData(): Promise<void> {
         this.error = false;
@@ -318,7 +318,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
      *
      * @param event Event data.
      * @param isOffline Whether the data is from offline or not.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadEventData(
         event: AddonCalendarEvent | AddonCalendarOfflineEventDBRecord,
@@ -435,7 +435,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
      * Load groups of a certain course.
      *
      * @param courseId Course ID.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadGroups(courseId: number): Promise<void> {
         this.loadingGroups = true;
@@ -622,7 +622,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Check if we can leave the page or not.
      *
-     * @return Resolved with true if we can leave it, rejected if not.
+     * @returns Resolved with true if we can leave it, rejected if not.
      */
     async canLeave(): Promise<boolean> {
         if (AddonCalendarHelper.hasEventDataChanged(this.form.value, this.originalData)) {
@@ -647,7 +647,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Init reminders.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async initReminders(): Promise<void> {
         // Don't init reminders when editing an event. Right now, only allow adding reminders for new events.

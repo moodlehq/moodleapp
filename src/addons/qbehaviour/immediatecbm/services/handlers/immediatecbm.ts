@@ -35,7 +35,7 @@ export class AddonQbehaviourImmediateCBMHandlerService implements CoreQuestionBe
      * If the behaviour requires to show some extra data, it should return the components to render it.
      *
      * @param question The question.
-     * @return Components (or promise resolved with components) to render some extra data in the question
+     * @returns Components (or promise resolved with components) to render some extra data in the question
      *         (e.g. certainty options). Don't return anything if no extra data is required.
      */
     handleQuestion(question: CoreQuestionQuestionParsed): void | Type<unknown>[] {
@@ -50,7 +50,7 @@ export class AddonQbehaviourImmediateCBMHandlerService implements CoreQuestionBe
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return True or promise resolved with true if enabled.
+     * @returns True or promise resolved with true if enabled.
      */
     async isEnabled(): Promise<boolean> {
         return true;

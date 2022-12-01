@@ -32,7 +32,7 @@ export class AddonNotesOfflineProvider {
      * @param content The note content.
      * @param timecreated The time the note was created.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if deleted, rejected if failure.
+     * @returns Promise resolved if deleted, rejected if failure.
      */
     async deleteOfflineNote(userId: number, content: string, timecreated: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -48,7 +48,7 @@ export class AddonNotesOfflineProvider {
      * Get all offline deleted notes.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with notes.
+     * @returns Promise resolved with notes.
      */
     async getAllDeletedNotes(siteId?: string): Promise<AddonNotesDeletedDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
@@ -61,7 +61,7 @@ export class AddonNotesOfflineProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with notes.
+     * @returns Promise resolved with notes.
      */
     async getCourseDeletedNotes(courseId: number, siteId?: string): Promise<AddonNotesDeletedDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
@@ -73,7 +73,7 @@ export class AddonNotesOfflineProvider {
      * Get all offline notes.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with notes.
+     * @returns Promise resolved with notes.
      */
     async getAllNotes(siteId?: string): Promise<AddonNotesDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
@@ -88,7 +88,7 @@ export class AddonNotesOfflineProvider {
      * @param content The note content.
      * @param timecreated The time the note was created.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the notes.
+     * @returns Promise resolved with the notes.
      */
     async getNote(userId: number, content: string, timecreated: number, siteId?: string): Promise<AddonNotesDBRecord> {
         const site = await CoreSites.getSite(siteId);
@@ -106,7 +106,7 @@ export class AddonNotesOfflineProvider {
      * @param courseId Course ID.
      * @param userId User ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with notes.
+     * @returns Promise resolved with notes.
      */
     async getNotesForCourseAndUser(courseId: number, userId?: number, siteId?: string): Promise<AddonNotesDBRecord[]> {
         if (!userId) {
@@ -123,7 +123,7 @@ export class AddonNotesOfflineProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with notes.
+     * @returns Promise resolved with notes.
      */
     async getNotesForCourse(courseId: number, siteId?: string): Promise<AddonNotesDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
@@ -136,7 +136,7 @@ export class AddonNotesOfflineProvider {
      *
      * @param userId User ID the notes are about.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with notes.
+     * @returns Promise resolved with notes.
      */
     async getNotesForUser(userId: number, siteId?: string): Promise<AddonNotesDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
@@ -149,7 +149,7 @@ export class AddonNotesOfflineProvider {
      *
      * @param state Publish state ('personal', 'site' or 'course').
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with notes.
+     * @returns Promise resolved with notes.
      */
     async getNotesWithPublishState(state: AddonNotesPublishState, siteId?: string): Promise<AddonNotesDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
@@ -162,7 +162,7 @@ export class AddonNotesOfflineProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean: true if has offline notes, false otherwise.
+     * @returns Promise resolved with boolean: true if has offline notes, false otherwise.
      */
     async hasNotesForCourse(courseId: number, siteId?: string): Promise<boolean> {
         const notes = await this.getNotesForCourse(courseId, siteId);
@@ -175,7 +175,7 @@ export class AddonNotesOfflineProvider {
      *
      * @param userId User ID the notes are about.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean: true if has offline notes, false otherwise.
+     * @returns Promise resolved with boolean: true if has offline notes, false otherwise.
      */
     async hasNotesForUser(userId: number, siteId?: string): Promise<boolean> {
         const notes = await this.getNotesForUser(userId, siteId);
@@ -188,7 +188,7 @@ export class AddonNotesOfflineProvider {
      *
      * @param state Publish state ('personal', 'site' or 'course').
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean: true if has offline notes, false otherwise.
+     * @returns Promise resolved with boolean: true if has offline notes, false otherwise.
      */
     async hasNotesWithPublishState(state: AddonNotesPublishState, siteId?: string): Promise<boolean> {
         const notes = await this.getNotesWithPublishState(state, siteId);
@@ -204,7 +204,7 @@ export class AddonNotesOfflineProvider {
      * @param state Publish state ('personal', 'site' or 'course').
      * @param content The note content.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if stored, rejected if failure.
+     * @returns Promise resolved if stored, rejected if failure.
      */
     async saveNote(
         userId: number,
@@ -235,7 +235,7 @@ export class AddonNotesOfflineProvider {
      * @param noteId Note ID.
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if stored, rejected if failure.
+     * @returns Promise resolved if stored, rejected if failure.
      */
     async deleteNote(noteId: number, courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -254,7 +254,7 @@ export class AddonNotesOfflineProvider {
      *
      * @param noteId Note ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if deleted, rejected if failure.
+     * @returns Promise resolved if deleted, rejected if failure.
      */
     async undoDeleteNote(noteId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

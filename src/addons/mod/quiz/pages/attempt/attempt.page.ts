@@ -49,7 +49,7 @@ export class AddonModQuizAttemptPage implements OnInit {
     protected attemptId!: number; // Attempt to view.
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         try {
@@ -83,7 +83,7 @@ export class AddonModQuizAttemptPage implements OnInit {
     /**
      * Get quiz data and attempt data.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchQuizData(): Promise<void> {
         try {
@@ -127,7 +127,7 @@ export class AddonModQuizAttemptPage implements OnInit {
     /**
      * Get the attempt.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchAttempt(): Promise<AddonModQuizAttemptWSData> {
         // Get all the attempts and search the one we want.
@@ -148,7 +148,7 @@ export class AddonModQuizAttemptPage implements OnInit {
     /**
      * Get the access info.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchAccessInfo(): Promise<AddonModQuizGetQuizAccessInformationWSResponse> {
         const accessInfo = await AddonModQuiz.getQuizAccessInformation(this.quiz!.id, { cmId: this.cmId });
@@ -173,7 +173,7 @@ export class AddonModQuizAttemptPage implements OnInit {
     /**
      * Refresh the data.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async refreshData(): Promise<void> {
         const promises: Promise<void>[] = [];
@@ -199,7 +199,7 @@ export class AddonModQuizAttemptPage implements OnInit {
     /**
      * Go to the page to review the attempt.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async reviewAttempt(): Promise<void> {
         CoreNavigator.navigate(`../../review/${this.attempt!.id}`);

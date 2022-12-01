@@ -28,7 +28,7 @@ export class AddonCompetencyHelperProvider {
      * Convenient helper to get the user profile image.
      *
      * @param userId User Id
-     * @return User profile Image URL or true if default icon.
+     * @returns User profile Image URL or true if default icon.
      */
     async getProfile(userId?: number): Promise<CoreUserProfile | undefined> {
         if (!userId || userId == CoreSites.getCurrentSiteUserId()) {
@@ -42,7 +42,9 @@ export class AddonCompetencyHelperProvider {
     /**
      * Get the review status name translated.
      *
-     * @param status
+     * @param status Competency Status name.
+     * @returns The status name translated.
+     * @todo Move statutes into an enum.
      */
     getCompetencyStatusName(status: number): string {
         let statusTranslateName: string;
@@ -67,7 +69,9 @@ export class AddonCompetencyHelperProvider {
     /**
      * Get the status name translated.
      *
-     * @param status
+     * @param status Plan Status name.
+     * @returns The status name translated.
+     * @todo Move statutes into an enum.
      */
     getPlanStatusName(status: number): string {
         let statusTranslateName: string;

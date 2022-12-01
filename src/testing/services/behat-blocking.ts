@@ -53,6 +53,8 @@ export class TestingBehatBlockingService {
 
     /**
      * Get pending list on window M object.
+     *
+     * @returns List of pending JS blockers.
      */
     protected get pendingList(): string[] {
         const win = window as BehatTestsWindow;
@@ -77,7 +79,7 @@ export class TestingBehatBlockingService {
      * Adds a pending key to the array.
      *
      * @param key Key to add. It will be generated if none.
-     * @return Key name.
+     * @returns Key name.
      */
     block(key = ''): string {
         // Add a special DELAY entry whenever another entry is added.

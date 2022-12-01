@@ -113,7 +113,7 @@ export class CoreComboboxComponent implements ControlValueAccessor {
      * Shows combobox modal.
      *
      * @param event Event.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async openSelect(event?: UIEvent): Promise<void> {
         this.touch();

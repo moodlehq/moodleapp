@@ -85,7 +85,7 @@ export class CoreSharedFilesHelperProvider {
      *
      * @param originalName Original name.
      * @param newName New name.
-     * @return Promise resolved with the name to use when the user chooses. Rejected if user cancels.
+     * @returns Promise resolved with the name to use when the user chooses. Rejected if user cancels.
      */
     async askRenameReplace(originalName: string, newName: string): Promise<string> {
         const alert = await AlertController.create({
@@ -138,7 +138,7 @@ export class CoreSharedFilesHelperProvider {
     /**
      * Whether the user is already choosing a site to store a shared file.
      *
-     * @return Whether the user is already choosing a site to store a shared file.
+     * @returns Whether the user is already choosing a site to store a shared file.
      */
     protected isChoosingSite(): boolean {
         return CoreNavigator.getCurrentRoute({ pageComponent: CoreSharedFilesChooseSitePage }) !== null;
@@ -148,7 +148,7 @@ export class CoreSharedFilesHelperProvider {
      * Open the view to select a shared file.
      *
      * @param mimetypes List of supported mimetypes. If undefined, all mimetypes supported.
-     * @return Promise resolved when a file is picked, rejected if file picker is closed without selecting a file.
+     * @returns Promise resolved when a file is picked, rejected if file picker is closed without selecting a file.
      */
     async pickSharedFile(mimetypes?: string[]): Promise<CoreFileUploaderHandlerResult> {
         const file = await CoreDomUtils.openModal<FileEntry>({
@@ -178,7 +178,7 @@ export class CoreSharedFilesHelperProvider {
      *
      * @param fileEntry The file entry to delete.
      * @param isInbox Whether the file is in the Inbox folder.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected removeSharedFile(fileEntry: FileEntry, isInbox?: boolean): Promise<void> {
         if (isInbox) {
@@ -194,7 +194,7 @@ export class CoreSharedFilesHelperProvider {
      * If more than one file is found, treat only the first one.
      *
      * @param path Path to a file received when launching the app.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async searchIOSNewSharedFiles(path?: string): Promise<void> {
         try {
@@ -243,7 +243,7 @@ export class CoreSharedFilesHelperProvider {
      * @param fileEntry Shared file entry.
      * @param siteId Site ID. If not defined, current site.
      * @param isInbox Whether the file is in the Inbox folder.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async storeSharedFileInSite(fileEntry: FileEntry, siteId?: string, isInbox?: boolean): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();

@@ -33,7 +33,7 @@ export interface CoreUserProfileFieldHandler extends CoreDelegateHandler {
      * Return the Component to use to display the user profile field.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @return The component (or promise resolved with component) to use, undefined if not found.
+     * @returns The component (or promise resolved with component) to use, undefined if not found.
      */
     getComponent(): Type<unknown> | Promise<Type<unknown>>;
 
@@ -44,7 +44,7 @@ export interface CoreUserProfileFieldHandler extends CoreDelegateHandler {
      * @param signup True if user is in signup page.
      * @param registerAuth Register auth method. E.g. 'email'.
      * @param formValues Form Values.
-     * @return Data to send for the field.
+     * @returns Data to send for the field.
      */
     getData?(
         field: AuthEmailSignupProfileField | CoreUserProfileField,
@@ -87,7 +87,7 @@ export class CoreUserProfileFieldDelegateService extends CoreDelegate<CoreUserPr
      * Get the type of a field.
      *
      * @param field The field to get its type.
-     * @return The field type.
+     * @returns The field type.
      */
     protected getType(field: AuthEmailSignupProfileField | CoreUserProfileField): string {
         return ('type' in field ? field.type : field.datatype) || '';
@@ -98,7 +98,7 @@ export class CoreUserProfileFieldDelegateService extends CoreDelegate<CoreUserPr
      *
      * @param field User field to get the directive for.
      * @param signup True if user is in signup page.
-     * @return Promise resolved with component to use, undefined if not found.
+     * @returns Promise resolved with component to use, undefined if not found.
      */
     async getComponent(
         field: AuthEmailSignupProfileField | CoreUserProfileField,
@@ -124,7 +124,7 @@ export class CoreUserProfileFieldDelegateService extends CoreDelegate<CoreUserPr
      * @param signup True if user is in signup page.
      * @param registerAuth Register auth method. E.g. 'email'.
      * @param formValues Form values.
-     * @return Data to send for the field.
+     * @returns Data to send for the field.
      */
     async getDataForField(
         field: AuthEmailSignupProfileField | CoreUserProfileField,
@@ -160,7 +160,7 @@ export class CoreUserProfileFieldDelegateService extends CoreDelegate<CoreUserPr
      * @param signup True if user is in signup page.
      * @param registerAuth Register auth method. E.g. 'email'.
      * @param formValues Form values.
-     * @return Data to send.
+     * @returns Data to send.
      */
     async getDataForFields(
         fields: (AuthEmailSignupProfileField | CoreUserProfileField)[] | undefined,
@@ -193,7 +193,7 @@ export class CoreUserProfileFieldDelegateService extends CoreDelegate<CoreUserPr
      * Check if any of the profile fields is not supported in the app.
      *
      * @param fields List of fields.
-     * @return Whether any of the profile fields is not supported in the app.
+     * @returns Whether any of the profile fields is not supported in the app.
      */
     hasRequiredUnsupportedField(fields?: AuthEmailSignupProfileField[]): boolean {
         if (!fields || !fields.length) {

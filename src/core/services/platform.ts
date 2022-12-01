@@ -25,7 +25,7 @@ export class CorePlatformService extends Platform {
     /**
      * Checks if the app is running in a mobile or tablet device (Cordova).
      *
-     * @return Whether the app is running in a mobile or tablet device.
+     * @returns Whether the app is running in a mobile or tablet device.
      */
     isMobile(): boolean {
         return this.is('cordova');

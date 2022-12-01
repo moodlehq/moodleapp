@@ -56,7 +56,7 @@ export class CoreChronoComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.time = this.startTime || 0;

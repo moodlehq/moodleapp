@@ -27,11 +27,12 @@ export class CoreCourseActivitySyncBaseProvider<T = void> extends CoreSyncBasePr
     /**
      * Conveniece function to prefetch data after an update.
      *
+     * @param prefetchHandler Prefetch Handler.
      * @param module Module.
      * @param courseId Course ID.
      * @param preventDownloadRegex If regex matches, don't download the data. Defaults to check files.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean: true if prefetched, false if no need to prefetch.
+     * @returns Promise resolved with boolean: true if prefetched, false if no need to prefetch.
      */
     async prefetchAfterUpdate(
         prefetchHandler: CoreCourseModulePrefetchHandlerBase,

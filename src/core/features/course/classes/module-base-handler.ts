@@ -62,7 +62,7 @@ export class CoreModuleHandlerBase implements Partial<CoreCourseModuleHandler> {
      * @param module The module object.
      * @param courseId The course ID.
      * @param options Options for the navigation.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async openActivityPage(module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions): Promise<void> {
         if (!CoreCourse.moduleHasView(module)) {

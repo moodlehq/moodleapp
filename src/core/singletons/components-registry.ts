@@ -72,7 +72,7 @@ export class CoreComponentsRegistry {
      *
      * @param element Root element.
      * @param componentClass Component class.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     static async waitComponentReady<T extends AsyncComponent>(
         element: Element | null,
@@ -94,7 +94,7 @@ export class CoreComponentsRegistry {
      * @param element Element where to search.
      * @param selector Selector to search on parent.
      * @param componentClass Component class.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     static async waitComponentsReady<T extends AsyncComponent>(
         element: Element,

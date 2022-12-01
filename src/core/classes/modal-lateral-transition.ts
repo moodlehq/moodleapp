@@ -17,7 +17,10 @@ import { Animation } from '@ionic/core';
 import { CorePlatform } from '@services/platform';
 
 /**
- * Sliding transition for lateral modals.
+ * Sliding transition for lateral modals on enter.
+ *
+ * @param baseEl Base element.
+ * @returns The animation.
  */
 export function CoreModalLateralTransitionEnter(baseEl: HTMLElement): Animation {
     const OFF_RIGHT = CorePlatform.isRTL ? '-100%' : '100%';
@@ -50,6 +53,12 @@ export function CoreModalLateralTransitionEnter(baseEl: HTMLElement): Animation 
         .addAnimation(otherAnimations);
 }
 
+/**
+ * Sliding transition for lateral modals on leave.
+ *
+ * @param baseEl Base element.
+ * @returns The animation.
+ */
 export function CoreModalLateralTransitionLeave(baseEl: HTMLElement): Animation {
     const OFF_RIGHT = CorePlatform.isRTL ? '-100%' : '100%';
 

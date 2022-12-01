@@ -34,7 +34,7 @@ export class CoreFileUploaderFileHandlerService implements CoreFileUploaderHandl
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return Promise resolved with true if enabled.
+     * @returns Promise resolved with true if enabled.
      */
     async isEnabled(): Promise<boolean> {
         return true;
@@ -44,7 +44,7 @@ export class CoreFileUploaderFileHandlerService implements CoreFileUploaderHandl
      * Given a list of mimetypes, return the ones that are supported by the handler.
      *
      * @param mimetypes List of mimetypes.
-     * @return Supported mimetypes.
+     * @returns Supported mimetypes.
      */
     getSupportedMimetypes(mimetypes: string[]): string[] {
         return mimetypes;
@@ -53,7 +53,7 @@ export class CoreFileUploaderFileHandlerService implements CoreFileUploaderHandl
     /**
      * Get the data to display the handler.
      *
-     * @return Data.
+     * @returns Data.
      */
     getData(): CoreFileUploaderHandlerData {
         const handler: CoreFileUploaderHandlerData = {

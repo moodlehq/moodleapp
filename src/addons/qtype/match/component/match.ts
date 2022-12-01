@@ -33,7 +33,7 @@ export class AddonQtypeMatchComponent extends CoreQuestionBaseComponent implemen
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.initMatchComponent();

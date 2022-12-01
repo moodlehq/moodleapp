@@ -63,7 +63,7 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
      * @param prefetch True to prefetch, false to download right away.
      * @param onProgress Function to call on progress.
      * @param siteId Site ID.
-     * @return Promise resolved with the "extra" data to store: the hash of the file.
+     * @returns Promise resolved with the "extra" data to store: the hash of the file.
      */
     protected async downloadOrPrefetchScorm(
         module: CoreCourseAnyModuleData,
@@ -99,7 +99,7 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
      * @param prefetch True if prefetch, false otherwise.
      * @param onProgress Function to call on progress.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the file is downloaded and unzipped.
+     * @returns Promise resolved when the file is downloaded and unzipped.
      */
     protected async downloadOrPrefetchMainFile(
         scorm: AddonModScormScorm,
@@ -163,7 +163,7 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
      * @param prefetch True if prefetch, false otherwise.
      * @param onProgress Function to call on progress.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the file is downloaded and unzipped.
+     * @returns Promise resolved when the file is downloaded and unzipped.
      */
     protected async downloadOrPrefetchMainFileIfNeeded(
         scorm: AddonModScormScorm,
@@ -207,7 +207,7 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
      *
      * @param scorm SCORM object.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is prefetched.
+     * @returns Promise resolved when the data is prefetched.
      */
     async fetchWSData(scorm: AddonModScormScorm, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -292,12 +292,7 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
     }
 
     /**
-     * Get list of files. If not defined, we'll assume they're in module.contents.
-     *
-     * @param module Module.
-     * @param courseId Course ID the module belongs to.
-     * @param single True if we're downloading a single module, false if we're downloading a whole section.
-     * @return Promise resolved with the list of files.
+     * @inheritdoc
      */
     async getFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSFile[]> {
         try {
@@ -384,7 +379,7 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
      *
      * @param module Module.
      * @param courseId Course ID the module belongs to.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async removeFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
         const siteId = CoreSites.getCurrentSiteId();
@@ -417,7 +412,7 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
      * @param module Module.
      * @param courseId Course ID the module belongs to
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async sync(module: CoreCourseAnyModuleData, courseId: number, siteId?: string): Promise<unknown> {
         const scorm = await this.getScorm(module, courseId, siteId);

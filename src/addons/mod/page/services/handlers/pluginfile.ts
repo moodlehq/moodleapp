@@ -29,7 +29,7 @@ export class AddonModPagePluginFileHandlerService implements CorePluginFileHandl
      * Return the RegExp to match the revision on pluginfile URLs.
      *
      * @param args Arguments of the pluginfile URL defining component and filearea at least.
-     * @return RegExp to match the revision on pluginfile URLs.
+     * @returns RegExp to match the revision on pluginfile URLs.
      */
     getComponentRevisionRegExp(args: string[]): RegExp | undefined {
         // Check filearea.
@@ -42,7 +42,7 @@ export class AddonModPagePluginFileHandlerService implements CorePluginFileHandl
     /**
      * Should return the string to remove the revision on pluginfile url.
      *
-     * @return String to remove the revision on pluginfile url.
+     * @returns String to remove the revision on pluginfile url.
      */
     getComponentRevisionReplace(): string {
         // Component + Filearea + Revision
@@ -52,7 +52,7 @@ export class AddonModPagePluginFileHandlerService implements CorePluginFileHandl
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return Whether or not the handler is enabled on a site level.
+     * @returns Whether or not the handler is enabled on a site level.
      */
     async isEnabled(): Promise<boolean> {
         return true;

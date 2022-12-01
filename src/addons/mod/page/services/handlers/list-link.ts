@@ -33,7 +33,7 @@ export class AddonModPageListLinkHandlerService extends CoreContentLinksModuleLi
      * Check if the handler is enabled on a site level.
      *
      * @param siteId The site ID.
-     * @return Whether or not the handler is enabled on a site level.
+     * @returns Whether or not the handler is enabled on a site level.
      */
     isEnabled(siteId: string): Promise<boolean> {
         return AddonModPage.isPluginEnabled(siteId);

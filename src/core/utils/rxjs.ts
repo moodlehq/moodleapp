@@ -105,7 +105,7 @@ export function firstValueFrom<T>(observable: Observable<T>): Promise<T> {
  *
  * @param observable Observable to ignore errors.
  * @param fallback Value to return if the observer errors.
- * @return Observable with ignored errors, returning the fallback result if provided.
+ * @returns Observable with ignored errors, returning the fallback result if provided.
  */
 export function ignoreErrors<Result>(observable: Observable<Result>): Observable<Result | undefined>;
 export function ignoreErrors<Result, Fallback>(observable: Observable<Result>, fallback: Fallback): Observable<Result | Fallback>;
@@ -135,7 +135,7 @@ type ZipObservableData<T = unknown> = {
  * as the other observables continue to emit values.
  *
  * @param observables Observables to zip.
- * @return Observable that emits the zipped values.
+ * @returns Observable that emits the zipped values.
  */
 export function zipIncludingComplete<T extends Observable<unknown>[]>(
     ...observables: T

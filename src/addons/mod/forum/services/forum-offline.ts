@@ -40,7 +40,7 @@ export class AddonModForumOfflineProvider {
      * @param timeCreated The time the discussion was created.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User the discussion belongs to. If not defined, current user in site.
-     * @return Promise resolved if stored, rejected if failure.
+     * @returns Promise resolved if stored, rejected if failure.
      */
     async deleteNewDiscussion(forumId: number, timeCreated: number, siteId?: string, userId?: number): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -60,7 +60,7 @@ export class AddonModForumOfflineProvider {
      * @param timeCreated The time the discussion was created.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User the discussion belongs to. If not defined, current user in site.
-     * @return Promise resolved if stored, rejected if failure.
+     * @returns Promise resolved if stored, rejected if failure.
      */
     async getNewDiscussion(
         forumId: number,
@@ -84,7 +84,7 @@ export class AddonModForumOfflineProvider {
      * Get all offline new discussions.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with discussions.
+     * @returns Promise resolved with discussions.
      */
     async getAllNewDiscussions(siteId?: string): Promise<AddonModForumOfflineDiscussion[]> {
         const site = await CoreSites.getSite(siteId);
@@ -99,7 +99,7 @@ export class AddonModForumOfflineProvider {
      * @param forumId Forum ID.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User the discussions belong to. If not defined, current user in site.
-     * @return Promise resolved with boolean: true if has offline answers, false otherwise.
+     * @returns Promise resolved with boolean: true if has offline answers, false otherwise.
      */
     async hasNewDiscussions(forumId: number, siteId?: string, userId?: number): Promise<boolean> {
         try {
@@ -119,7 +119,7 @@ export class AddonModForumOfflineProvider {
      * @param forumId Forum ID to get.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User the discussions belong to. If not defined, current user in site.
-     * @return Promise resolved with the object to be synced.
+     * @returns Promise resolved with the object to be synced.
      */
     async getNewDiscussions(forumId: number, siteId?: string, userId?: number): Promise<AddonModForumOfflineDiscussion[]> {
         const site = await CoreSites.getSite(siteId);
@@ -146,7 +146,7 @@ export class AddonModForumOfflineProvider {
      * @param timeCreated The time the discussion was created. If not defined, current time.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User the discussion belong to. If not defined, current user in site.
-     * @return Promise resolved when new discussion is successfully saved.
+     * @returns Promise resolved when new discussion is successfully saved.
      */
     async addNewDiscussion(
         forumId: number,
@@ -182,7 +182,7 @@ export class AddonModForumOfflineProvider {
      * @param postId ID of the post being replied.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User the reply belongs to. If not defined, current user in site.
-     * @return Promise resolved if stored, rejected if failure.
+     * @returns Promise resolved if stored, rejected if failure.
      */
     async deleteReply(postId: number, siteId?: string, userId?: number): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -198,7 +198,7 @@ export class AddonModForumOfflineProvider {
      * Get all offline replies.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with replies.
+     * @returns Promise resolved with replies.
      */
     async getAllReplies(siteId?: string): Promise<AddonModForumOfflineReply[]> {
         const site = await CoreSites.getSite(siteId);
@@ -213,7 +213,7 @@ export class AddonModForumOfflineProvider {
      * @param forumId ID of the forum being replied.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User the replies belong to. If not defined, current user in site.
-     * @return Promise resolved with boolean: true if has offline answers, false otherwise.
+     * @returns Promise resolved with boolean: true if has offline answers, false otherwise.
      */
     async hasForumReplies(forumId: number, siteId?: string, userId?: number): Promise<boolean> {
         try {
@@ -233,7 +233,7 @@ export class AddonModForumOfflineProvider {
      * @param forumId ID of the forum being replied.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User the replies belong to. If not defined, current user in site.
-     * @return Promise resolved with replies.
+     * @returns Promise resolved with replies.
      */
     async getForumReplies(forumId: number, siteId?: string, userId?: number): Promise<AddonModForumOfflineReply[]> {
         const site = await CoreSites.getSite(siteId);
@@ -253,7 +253,7 @@ export class AddonModForumOfflineProvider {
      * @param discussionId ID of the discussion the user is replying to.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User the replies belong to. If not defined, current user in site.
-     * @return Promise resolved with boolean: true if has offline answers, false otherwise.
+     * @returns Promise resolved with boolean: true if has offline answers, false otherwise.
      */
     async hasDiscussionReplies(discussionId: number, siteId?: string, userId?: number): Promise<boolean> {
         try {
@@ -273,7 +273,7 @@ export class AddonModForumOfflineProvider {
      * @param discussionId ID of the discussion the user is replying to.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User the replies belong to. If not defined, current user in site.
-     * @return Promise resolved with discussions.
+     * @returns Promise resolved with discussions.
      */
     async getDiscussionReplies(discussionId: number, siteId?: string, userId?: number): Promise<AddonModForumOfflineReply[]> {
         const site = await CoreSites.getSite(siteId);
@@ -300,7 +300,7 @@ export class AddonModForumOfflineProvider {
      * @param options Options (subscribe, attachments, ...).
      * @param siteId Site ID. If not defined, current site.
      * @param userId User the post belong to. If not defined, current user in site.
-     * @return Promise resolved when the post is created.
+     * @returns Promise resolved when the post is created.
      */
     async replyPost(
         postId: number,
@@ -336,7 +336,7 @@ export class AddonModForumOfflineProvider {
      *
      * @param forumId Forum ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the path.
+     * @returns Promise resolved with the path.
      */
     async getForumFolder(forumId: number, siteId?: string): Promise<string> {
         const site = await CoreSites.getSite(siteId);
@@ -351,7 +351,7 @@ export class AddonModForumOfflineProvider {
      * @param forumId Forum ID.
      * @param timeCreated The time the discussion was created.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the path.
+     * @returns Promise resolved with the path.
      */
     async getNewDiscussionFolder(forumId: number, timeCreated: number, siteId?: string): Promise<string> {
         const folderPath = await this.getForumFolder(forumId, siteId);
@@ -366,7 +366,7 @@ export class AddonModForumOfflineProvider {
      * @param postId ID of the post being replied.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User the replies belong to. If not defined, current user in site.
-     * @return Promise resolved with the path.
+     * @returns Promise resolved with the path.
      */
     async getReplyFolder(forumId: number, postId: number, siteId?: string, userId?: number): Promise<string> {
         const folderPath = await this.getForumFolder(forumId, siteId);
@@ -380,7 +380,7 @@ export class AddonModForumOfflineProvider {
      * Parse "options" column of fetched record.
      *
      * @param records List of records.
-     * @return List of records with options parsed.
+     * @returns List of records with options parsed.
      */
     protected parseRecordsOptions<
         R extends { options: string },
@@ -393,7 +393,7 @@ export class AddonModForumOfflineProvider {
      * Parse "options" column of fetched record.
      *
      * @param record Record.
-     * @return Record with options parsed.
+     * @returns Record with options parsed.
      */
     protected parseRecordOptions<
         R extends { options: string },

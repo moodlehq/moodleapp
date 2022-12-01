@@ -75,6 +75,8 @@ const singletonsInjector = new CorePromisedValue<Injector>();
 
 /**
  * Helper to create a method that proxies calls to the underlying singleton instance.
+ *
+ * @returns Function.
  */
 // eslint-disable-next-line
 let createSingletonMethodProxy = (instance: any, method: Function, property: string | number | symbol) => method.bind(instance);
@@ -118,7 +120,7 @@ export function setCreateSingletonMethodProxy(method: typeof createSingletonMeth
  *
  * @param injectionToken Injection token used to resolve the service. This is usually the service class if the provider was
  * defined using a class or the string used in the `provide` key if it was defined using an object.
- * @return Singleton proxy.
+ * @returns Singleton proxy.
  */
 export function makeSingleton<Service extends object = object>( // eslint-disable-line @typescript-eslint/ban-types
     injectionToken: Type<Service> | AbstractType<Service> | Type<unknown> | string,

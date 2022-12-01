@@ -105,8 +105,8 @@ export class AddonModChatSessionsSource extends CoreRoutedItemsManagerSource<Add
     /**
      * Load the fullname of a user.
      *
-     * @param id User ID.
-     * @return Promise resolved when done.
+     * @param sessionUser User object.
+     * @returns Promise resolved when done.
      */
     protected async loadUserFullname(sessionUser: AddonModChatUserSessionFormatted): Promise<void> {
         if (sessionUser.userfullname) {

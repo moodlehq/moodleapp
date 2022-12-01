@@ -32,7 +32,7 @@ export class AddonNotificationsCronHandlerService implements CoreCronHandler {
     /**
      * Get the time between consecutive executions.
      *
-     * @return Time between consecutive executions (in ms).
+     * @returns Time between consecutive executions (in ms).
      */
     getInterval(): number {
         return CorePlatform.isMobile() ? 600000 : 60000; // 1 or 10 minutes.
@@ -41,7 +41,7 @@ export class AddonNotificationsCronHandlerService implements CoreCronHandler {
     /**
      * Check whether it's a synchronization process or not. True if not defined.
      *
-     * @return Whether it's a synchronization process or not.
+     * @returns Whether it's a synchronization process or not.
      */
     isSync(): boolean {
         return false;
@@ -50,7 +50,7 @@ export class AddonNotificationsCronHandlerService implements CoreCronHandler {
     /**
      * Check whether the sync can be executed manually. Call isSync if not defined.
      *
-     * @return Whether the sync can be executed manually.
+     * @returns Whether the sync can be executed manually.
      */
     canManualSync(): boolean {
         return true;
@@ -62,7 +62,7 @@ export class AddonNotificationsCronHandlerService implements CoreCronHandler {
      *
      * @param siteId ID of the site affected, undefined for all sites.
      * @param force Wether the execution is forced (manual sync).
-     * @return Promise resolved when done, rejected if failure. If the promise is rejected, this function
+     * @returns Promise resolved when done, rejected if failure. If the promise is rejected, this function
      *         will be called again often, it shouldn't be abused.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

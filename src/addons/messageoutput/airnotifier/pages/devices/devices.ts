@@ -44,7 +44,7 @@ export class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestr
     /**
      * Fetches the list of devices.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchDevices(): Promise<void> {
         try {

@@ -32,7 +32,7 @@ export class AddonQtypeCalculatedComponent extends CoreQuestionBaseComponent imp
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.initCalculatedComponent();

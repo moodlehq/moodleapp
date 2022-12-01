@@ -100,7 +100,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         super.ngOnInit();
@@ -244,7 +244,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
      * Set group to see the summary.
      *
      * @param groupId Group ID.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     async setGroup(groupId = 0): Promise<void> {
         this.group = groupId;

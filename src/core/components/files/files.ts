@@ -50,7 +50,7 @@ export class CoreFilesComponent implements OnInit, DoCheck {
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         if (CoreUtils.isTrueOrOne(this.showInline) && this.files) {

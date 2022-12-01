@@ -102,7 +102,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         super.ngOnInit();
@@ -121,7 +121,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Download a SCORM package or restores an ongoing download.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async downloadScormPackage(): Promise<void> {
         this.downloading = true;
@@ -208,7 +208,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
      * Fetch attempt data.
      *
      * @param scorm Scorm.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchAttemptData(scorm: AddonModScormScorm): Promise<void> {
         // Get the number of attempts.
@@ -253,7 +253,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Load SCORM package size if needed.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadPackageSize(scorm: AddonModScormScorm): Promise<void> {
         if (scorm.packagesize || this.errorMessage) {
@@ -267,7 +267,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Fetch the structure of the SCORM (TOC).
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchStructure(scorm: AddonModScormScorm): Promise<void> {
         this.organizations = await AddonModScorm.getOrganizations(scorm.id, { cmId: this.module.id });
@@ -290,7 +290,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
      * @param attempt The attempt number.
      * @param offline Whether it's an offline attempt.
      * @param attempts Object where to add the attempt.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async getAttemptGrade(
         attempt: number,
@@ -308,7 +308,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Get the grades of each attempt and the grade of the SCORM.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async getReportedGrades(scorm: AddonModScormScorm, attempts: AddonModScormAttemptCountResult): Promise<void> {
         const promises: Promise<void>[] = [];
@@ -364,7 +364,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
      * Checks if sync has succeed from result sync data.
      *
      * @param result Data returned on the sync function.
-     * @return If suceed or not.
+     * @returns If suceed or not.
      */
     protected hasSyncSucceed(result: AddonModScormSyncResult): boolean {
         if (result.updated || this.dataSent) {
@@ -403,7 +403,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Perform the invalidate content function.
      *
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async invalidateContent(): Promise<void> {
         const promises: Promise<void>[] = [];
@@ -421,7 +421,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
      * Compares sync event data with current data to check if refresh content is needed.
      *
      * @param syncEventData Data receiven on sync observer.
-     * @return True if refresh is needed, false otherwise.
+     * @returns True if refresh is needed, false otherwise.
      */
     protected isRefreshSyncNeeded(syncEventData: AddonModScormAutoSyncEventData): boolean {
         if (syncEventData.updated && this.scorm && syncEventData.scormId == this.scorm.id) {
@@ -448,8 +448,9 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Load the TOC of a certain organization.
      *
+     * @param scorm Scorm object.
      * @param organizationId The organization id.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadOrganizationToc(scorm: AddonModScormScorm, organizationId: string): Promise<void> {
         if (!scorm.displaycoursestructure) {
@@ -481,6 +482,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
      * Open a SCORM. It will download the SCORM package if it's not downloaded or it has changed.
      *
      * @param event Event.
+     * @param preview Wether open screen in preview mode or not.
      * @param scoId SCO that needs to be loaded when the SCORM is opened. If not defined, load first SCO.
      */
     async open(event?: Event, preview: boolean = false, scoId?: number): Promise<void> {
@@ -600,7 +602,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
      * Performs the sync of the activity.
      *
      * @param retries Number of retries done.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async sync(retries = 0): Promise<AddonModScormSyncResult> {
         if (CoreSync.isBlocked(AddonModScormProvider.COMPONENT, this.scorm!.id) && retries < 5) {

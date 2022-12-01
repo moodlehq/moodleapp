@@ -63,7 +63,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
     /**
      * Load book data.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadBook(): Promise<void> {
         this.book = await AddonModBook.getBook(this.courseId, this.module.id);
@@ -82,7 +82,7 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
     /**
      * Load book TOC.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadTOC(): Promise<void> {
         const contents = await CoreCourse.getModuleContents(this.module, this.courseId);

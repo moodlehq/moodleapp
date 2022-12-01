@@ -115,7 +115,7 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
      * Get the current mode. Depending on the layout, outlet status, and whether this split view
      * is nested or not, this method will indicate which parts of the split view should be visible.
      *
-     * @return Split view mode.
+     * @returns Split view mode.
      */
     private getCurrentMode(): CoreSplitViewMode {
         if (this.mode) {

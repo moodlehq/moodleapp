@@ -61,7 +61,7 @@ export class AddonModScormOfflineProvider {
      * @param newAttempt New attempt number.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined use site's current user.
-     * @return Promise resolved when the attempt number changes.
+     * @returns Promise resolved when the attempt number changes.
      */
     async changeAttemptNumber(
         scormId: number,
@@ -128,7 +128,7 @@ export class AddonModScormOfflineProvider {
      * @param snapshot Optional. Snapshot to store in the attempt.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined use site's current user.
-     * @return Promise resolved when the new attempt is created.
+     * @returns Promise resolved when the new attempt is created.
      */
     async createNewAttempt(
         scorm: AddonModScormScorm,
@@ -196,7 +196,7 @@ export class AddonModScormOfflineProvider {
      * @param attempt Attempt number.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined use site's current user.
-     * @return Promise resolved when all the data has been deleted.
+     * @returns Promise resolved when all the data has been deleted.
      */
     async deleteAttempt(scormId: number, attempt: number, siteId?: string, userId?: number): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -222,7 +222,7 @@ export class AddonModScormOfflineProvider {
      * This function is based in Moodle's scorm_format_interactions.
      *
      * @param scoUserData Userdata from a certain SCO.
-     * @return Formatted userdata.
+     * @returns Formatted userdata.
      */
     protected formatInteractions(scoUserData: Record<string, AddonModScormDataValue>): Record<string, AddonModScormDataValue> {
         const formatted: Record<string, AddonModScormDataValue> = {};
@@ -277,7 +277,7 @@ export class AddonModScormOfflineProvider {
      * Get all the offline attempts in a certain site.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the offline attempts are retrieved.
+     * @returns Promise resolved when the offline attempts are retrieved.
      */
     async getAllAttempts(siteId?: string): Promise<AddonModScormOfflineAttempt[]> {
         const db = await CoreSites.getSiteDb(siteId);
@@ -294,7 +294,7 @@ export class AddonModScormOfflineProvider {
      * @param attempt Attempt number.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined use site's current user.
-     * @return Promise resolved with the attempt.
+     * @returns Promise resolved with the attempt.
      */
     async getAttempt(scormId: number, attempt: number, siteId?: string, userId?: number): Promise<AddonModScormOfflineAttempt> {
         const site = await CoreSites.getSite(siteId);
@@ -316,7 +316,7 @@ export class AddonModScormOfflineProvider {
      * @param attempt Attempt number.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined use site's current user.
-     * @return Promise resolved with time the attempt was created, undefined if attempt not found.
+     * @returns Promise resolved with time the attempt was created, undefined if attempt not found.
      */
     async getAttemptCreationTime(scormId: number, attempt: number, siteId?: string, userId?: number): Promise<number | undefined> {
         try {
@@ -334,7 +334,7 @@ export class AddonModScormOfflineProvider {
      * @param scormId SCORM ID.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined use site's current user.
-     * @return Promise resolved when the offline attempts are retrieved.
+     * @returns Promise resolved when the offline attempts are retrieved.
      */
     async getAttempts(scormId: number, siteId?: string, userId?: number): Promise<AddonModScormOfflineAttempt[]> {
         const site = await CoreSites.getSite(siteId);
@@ -355,7 +355,7 @@ export class AddonModScormOfflineProvider {
      * @param attempt Attempt number.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined use site's current user.
-     * @return Promise resolved with the snapshot or undefined if no snapshot.
+     * @returns Promise resolved with the snapshot or undefined if no snapshot.
      */
     async getAttemptSnapshot(
         scormId: number,
@@ -376,7 +376,7 @@ export class AddonModScormOfflineProvider {
      * Get launch URLs from a list of SCOs, indexing them by SCO ID.
      *
      * @param scos List of SCOs.
-     * @return Launch URLs indexed by SCO ID.
+     * @returns Launch URLs indexed by SCO ID.
      */
     protected getLaunchUrlsFromScos(scos: AddonModScormWSSco[]): Record<number, string> {
         scos = scos || [];
@@ -399,7 +399,7 @@ export class AddonModScormOfflineProvider {
      * @param excludeNotSynced Whether it should only return synced entries.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined use site's current user.
-     * @return Promise resolved with the entries.
+     * @returns Promise resolved with the entries.
      */
     async getScormStoredData(
         scormId: number,
@@ -442,7 +442,7 @@ export class AddonModScormOfflineProvider {
      *             SCOs that have something stored and cmi.launch_data will be undefined.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined use site's current user.
-     * @return Promise resolved when the user data is retrieved.
+     * @returns Promise resolved when the user data is retrieved.
      */
     async getScormUserData(
         scormId: number,
@@ -580,7 +580,7 @@ export class AddonModScormOfflineProvider {
      * @param scoData User data for the given SCO.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not set use site's current user.
-     * @return Promise resolved when the insert is done.
+     * @returns Promise resolved when the insert is done.
      */
     protected async insertTrack(
         scormId: number,
@@ -644,7 +644,7 @@ export class AddonModScormOfflineProvider {
      * @param element Name of the element to insert.
      * @param value Value of the element to insert.
      * @param synchronous True if insert should NOT return a promise. Please use it only if synchronous is a must.
-     * @return Returns a promise if synchronous=false, otherwise returns a boolean.
+     * @returns Returns a promise if synchronous=false, otherwise returns a boolean.
      */
     protected insertTrackToDB(
         db: SQLiteDB,
@@ -710,7 +710,7 @@ export class AddonModScormOfflineProvider {
      * @param forceCompleted True if SCORM forces completed.
      * @param scoData User data for the given SCO.
      * @param userId User ID. If not set use current user.
-     * @return Promise resolved when the insert is done.
+     * @returns Promise resolved when the insert is done.
      */
     protected insertTrackSync(
         scormId: number,
@@ -776,7 +776,7 @@ export class AddonModScormOfflineProvider {
      * @param scoId SCO ID.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined use site's current user.
-     * @return Promise resolved when marked.
+     * @returns Promise resolved when marked.
      */
     async markAsSynced(scormId: number, attempt: number, scoId: number, siteId?: string, userId?: number): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -823,7 +823,7 @@ export class AddonModScormOfflineProvider {
      * Removes the default data form user data.
      *
      * @param userData User data.
-     * @return User data without default data.
+     * @returns User data without default data.
      */
     protected removeDefaultData(userData: AddonModScormUserDataMap): AddonModScormUserDataMap {
         const result: AddonModScormUserDataMap = CoreUtils.clone(userData);
@@ -845,7 +845,7 @@ export class AddonModScormOfflineProvider {
      * @param userData User data for this attempt and SCO.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined use site's current user.
-     * @return Promise resolved when data is saved.
+     * @returns Promise resolved when data is saved.
      */
     async saveTracks(
         scorm: AddonModScormScorm,
@@ -891,7 +891,7 @@ export class AddonModScormOfflineProvider {
      * @param attempt Attempt number.
      * @param tracks Tracking data to store.
      * @param userData User data for this attempt and SCO.
-     * @return True if data to insert is valid, false otherwise. Returning true doesn't mean that the data
+     * @returns True if data to insert is valid, false otherwise. Returning true doesn't mean that the data
      *         has been stored, this function can return true but the insertion can still fail somehow.
      */
     saveTracksSync(
@@ -930,7 +930,7 @@ export class AddonModScormOfflineProvider {
      * @param userData Contains user's data.
      * @param param Name of parameter that should be checked.
      * @param ifEmpty Value to be replaced with if param is not set.
-     * @return Value from userData[param] if set, ifEmpty otherwise.
+     * @returns Value from userData[param] if set, ifEmpty otherwise.
      */
     protected scormIsset(
         userData: Record<string, AddonModScormDataValue>,
@@ -952,7 +952,7 @@ export class AddonModScormOfflineProvider {
      * @param userData User data to store as snapshot.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined use site's current user.
-     * @return Promise resolved when snapshot has been stored.
+     * @returns Promise resolved when snapshot has been stored.
      */
     async setAttemptSnapshot(
         scormId: number,

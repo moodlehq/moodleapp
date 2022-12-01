@@ -50,7 +50,7 @@ export class CoreTimerComponent implements OnInit, OnDestroy {
     ) {}
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         const timeLeftClass = this.timeLeftClass || 'core-timer-timeleft-';

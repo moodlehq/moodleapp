@@ -64,7 +64,7 @@ export class CoreRemindersService {
     /**
      * Initialize the service.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async initialize(): Promise<void> {
         if (!this.isEnabled()) {
@@ -89,7 +89,7 @@ export class CoreRemindersService {
     /**
      * Returns if Reminders are enabled.
      *
-     * @return True if reminders are enabled and available, false otherwise.
+     * @returns True if reminders are enabled and available, false otherwise.
      */
     isEnabled(): boolean {
         return true;
@@ -100,7 +100,7 @@ export class CoreRemindersService {
      *
      * @param reminder Reminder to set.
      * @param siteId Site ID. If not defined, current site.
-     * @return Resolved when done. Rejected on failure.
+     * @returns Resolved when done. Rejected on failure.
      */
     async addReminder(reminder: CoreReminderData, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -117,7 +117,7 @@ export class CoreRemindersService {
      *
      * @param reminder Fields to update.
      * @param siteId ID of the site the reminder belongs to. If not defined, use current site.
-     * @return Promise resolved when the reminder data is updated.
+     * @returns Promise resolved when the reminder data is updated.
      */
     async updateReminder(
         reminder: CoreReminderDBRecord,
@@ -137,7 +137,7 @@ export class CoreRemindersService {
      * @param newFields Fields to update.
      * @param selector Reminder selector.
      * @param siteId ID of the site the reminder belongs to. If not defined, use current site.
-     * @return Promise resolved when the reminder data is updated.
+     * @returns Promise resolved when the reminder data is updated.
      */
     async updateReminders(
         newFields: Partial<CoreReminderData>,
@@ -159,7 +159,7 @@ export class CoreRemindersService {
      * Get all reminders from local Db.
      *
      * @param siteId ID of the site the reminder belongs to. If not defined, use current site.
-     * @return Promise resolved when the reminder data is retrieved.
+     * @returns Promise resolved when the reminder data is retrieved.
      */
     async getAllReminders(siteId?: string): Promise<CoreReminderDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
@@ -172,7 +172,7 @@ export class CoreRemindersService {
      *
      * @param selector Reminder selector.
      * @param siteId ID of the site the reminder belongs to. If not defined, use current site.
-     * @return Promise resolved when the reminder data is retrieved.
+     * @returns Promise resolved when the reminder data is retrieved.
      */
     async getReminders(selector: CoreReminderSelector, siteId?: string): Promise<CoreReminderDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
@@ -184,7 +184,7 @@ export class CoreRemindersService {
      * Get all reminders of a component with default time.
      *
      * @param siteId ID of the site the reminder belongs to. If not defined, use current site.
-     * @return Promise resolved when the reminder data is retrieved.
+     * @returns Promise resolved when the reminder data is retrieved.
      */
     protected async getRemindersWithDefaultTime(siteId?: string): Promise<CoreReminderDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
@@ -201,7 +201,7 @@ export class CoreRemindersService {
      *
      * @param id Reminder ID.
      * @param siteId ID of the site the reminder belongs to. If not defined, use current site.
-     * @return Promise resolved when the notification is updated.
+     * @returns Promise resolved when the notification is updated.
      */
     async removeReminder(id: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -220,7 +220,7 @@ export class CoreRemindersService {
      *
      * @param selector Reminder selector.
      * @param siteId ID of the site the reminder belongs to. If not defined, use current site.
-     * @return Promise resolved when the notification is updated.
+     * @returns Promise resolved when the notification is updated.
      */
     async removeReminders(selector: CoreReminderSelector, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -243,7 +243,7 @@ export class CoreRemindersService {
      * @param reminderId Reminder Id to cancel.
      * @param component Reminder component.
      * @param siteId ID of the site the reminder belongs to. If not defined, use current site.
-     * @returns
+     * @returns Promise resolved when done.
      */
     async cancelReminder(reminderId: number, component: string, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -256,7 +256,7 @@ export class CoreRemindersService {
      *
      * @param reminder Reminder to schedule.
      * @param siteId Site ID the reminder belongs to. If not defined, use current site.
-     * @return Promise resolved when the notification is scheduled.
+     * @returns Promise resolved when the notification is scheduled.
      */
     async scheduleNotification(
         reminder: CoreReminderDBRecord,
@@ -309,7 +309,7 @@ export class CoreRemindersService {
      * Get the all saved reminders and schedule the notification.
      * If local notification plugin is not enabled, resolve the promise.
      *
-     * @return Promise resolved when all the notifications have been scheduled.
+     * @returns Promise resolved when all the notifications have been scheduled.
      */
     async scheduleAllNotifications(): Promise<void> {
         await CorePlatform.ready();
@@ -336,7 +336,7 @@ export class CoreRemindersService {
      * @param value Value.
      * @param unit Unit.
      * @param addDefaultLabel Whether to add the "Default" text.
-     * @return Translated label.
+     * @returns Translated label.
      */
     getUnitValueLabel(value: number, unit: CoreRemindersUnits, addDefaultLabel = false): string {
         if (value === CoreRemindersService.DISABLED) {
@@ -367,7 +367,7 @@ export class CoreRemindersService {
      * Given a number of seconds, convert it to a unit&value format compatible with reminders.
      *
      * @param seconds Number of seconds.
-     * @return Value and unit.
+     * @returns Value and unit.
      */
     static convertSecondsToValueAndUnit(seconds?: number): CoreReminderValueAndUnit {
         if (seconds === undefined || seconds < 0) {
@@ -407,7 +407,7 @@ export class CoreRemindersService {
      * Get the configured default notification time.
      *
      * @param siteId ID of the site. If not defined, use current site.
-     * @return Promise resolved with the default time (in seconds).
+     * @returns Promise resolved with the default time (in seconds).
      */
     async getDefaultNotificationTime(siteId?: string): Promise<number> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -422,7 +422,7 @@ export class CoreRemindersService {
      *
      * @param time New default time.
      * @param siteId ID of the site. If not defined, use current site.
-     * @return Promise resolved when stored.
+     * @returns Promise resolved when stored.
      */
     async setDefaultNotificationTime(time: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();

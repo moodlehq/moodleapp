@@ -69,8 +69,8 @@
                             <p *ngIf="assign!.intro"
                                 [innerHTML]="'addon.mod_assign.allowsubmissionsfromdatesummary' | translate: {'$a': fromDate}">
                             </p>
-                            <p *ngIf="!assign!.intro" [innerHTML]="'addon.mod_assign.allowsubmissionsanddescriptionfromdatesummary' | translate:
-                                    {'$a': fromDate}">
+                            <p [innerHTML]="'addon.mod_assign.allowsubmissionsanddescriptionfromdatesummary' | translate: {'$a': fromDate}"
+                                *ngIf="!assign!.intro">
                             </p>
                         </ion-label>
                     </ion-item>

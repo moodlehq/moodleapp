@@ -35,7 +35,7 @@ export class AddonModDataFieldFileComponent extends AddonModDataFieldPluginBaseC
      * Get the files from the input value.
      *
      * @param value Input value.
-     * @return List of files.
+     * @returns List of files.
      */
     protected getFiles(value?: Partial<AddonModDataEntryField>): CoreFileEntry[] {
         let files = value?.files || [];

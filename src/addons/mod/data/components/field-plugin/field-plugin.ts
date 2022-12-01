@@ -47,7 +47,7 @@ export class AddonModDataFieldPluginComponent implements OnInit, OnChanges {
     fieldLoaded = false;
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         if (!this.field) {

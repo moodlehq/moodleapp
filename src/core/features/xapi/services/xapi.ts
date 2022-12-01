@@ -32,7 +32,7 @@ export class CoreXAPIProvider {
      * Returns whether or not WS to post XAPI statement is available.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with true if ws is available, false otherwise.
+     * @returns Promise resolved with true if ws is available, false otherwise.
      * @since 3.9
      */
     async canPostStatements(siteId?: string): Promise<boolean> {
@@ -45,7 +45,7 @@ export class CoreXAPIProvider {
      * Returns whether or not WS to post XAPI statement is available in a certain site.
      *
      * @param site Site. If not defined, current site.
-     * @return Promise resolved with true if ws is available, false otherwise.
+     * @returns Promise resolved with true if ws is available, false otherwise.
      * @since 3.9
      */
     canPostStatementsInSite(site?: CoreSite): boolean {
@@ -60,7 +60,7 @@ export class CoreXAPIProvider {
      * @param contextId Context ID.
      * @param type Type (e.g. 'activity').
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async getUrl(contextId: number, type: string, siteId?: string): Promise<string> {
         const site = await CoreSites.getSite(siteId);
@@ -75,7 +75,7 @@ export class CoreXAPIProvider {
      * @param component Component.
      * @param json JSON string to send.
      * @param options Options.
-     * @return Promise resolved with boolean: true if response was sent to server, false if stored in device.
+     * @returns Promise resolved with boolean: true if response was sent to server, false if stored in device.
      */
     async postStatements(
         contextId: number,
@@ -120,7 +120,7 @@ export class CoreXAPIProvider {
      * @param component Component.
      * @param json JSON string to send.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async postStatementsOnline(component: string, json: string, siteId?: string): Promise<number[]> {
 

@@ -22,7 +22,7 @@ export class CoreArray {
      *
      * @param arr Array.
      * @param item Item.
-     * @return Whether item is within the array.
+     * @returns Whether item is within the array.
      * @deprecated since 4.1. Use arr.includes() instead.
      */
     static contains<T>(arr: T[], item: T): boolean {
@@ -38,7 +38,7 @@ export class CoreArray {
      * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flat#reduce_and_concat
      *
      * @param arr Original array.
-     * @return Flattened array.
+     * @returns Flattened array.
      */
     static flatten<T>(arr: T[][]): T[] {
         return (<T[]> []).concat(...arr);
@@ -49,7 +49,7 @@ export class CoreArray {
      *
      * @param arr Array.
      * @param item Item to remove.
-     * @return Array without the specified item.
+     * @returns Array without the specified item.
      */
     static withoutItem<T>(arr: T[], item: T): T[] {
         const newArray = [...arr];

@@ -31,7 +31,7 @@ export class AddonModDataIndexPage extends CoreCourseModuleMainActivityPage<Addo
     group = 0;
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         super.ngOnInit();

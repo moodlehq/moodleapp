@@ -32,7 +32,7 @@ export class AddonQtypeDescriptionComponent extends CoreQuestionBaseComponent im
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         const questionEl = this.initComponent();

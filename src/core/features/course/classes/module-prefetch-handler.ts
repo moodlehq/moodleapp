@@ -58,7 +58,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param id Unique identifier per component.
      * @param promise Promise to add.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise of the current download.
+     * @returns Promise of the current download.
      */
     async addOngoingDownload(id: number, promise: Promise<void>, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -84,7 +84,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param module The module object returned by WS.
      * @param courseId Course ID.
      * @param dirPath Path of the directory where to store all the content files.
-     * @return Promise resolved when all content is downloaded.
+     * @returns Promise resolved when all content is downloaded.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async download(module: CoreCourseAnyModuleData, courseId: number, dirPath?: string): Promise<void> {
@@ -96,7 +96,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * Returns a list of content files that can be downloaded.
      *
      * @param module The module object returned by WS.
-     * @return List of files.
+     * @returns List of files.
      */
     getContentDownloadableFiles(module: CoreCourseAnyModuleData): CoreCourseModuleContentFile[] {
         if (!module.contents?.length) {
@@ -112,7 +112,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param module Module.
      * @param courseId Course ID the module belongs to.
      * @param single True if we're downloading a single module, false if we're downloading a whole section.
-     * @return Promise resolved with the size.
+     * @returns Promise resolved with the size.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async getDownloadSize(module: CoreCourseAnyModuleData, courseId: number, single?: boolean): Promise<CoreFileSizeSum> {
@@ -130,7 +130,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      *
      * @param module Module.
      * @param courseId Course ID the module belongs to.
-     * @return Size, or promise resolved with the size.
+     * @returns Size, or promise resolved with the size.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async getDownloadedSize(module: CoreCourseAnyModuleData, courseId: number): Promise<number> {
@@ -145,7 +145,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param module Module.
      * @param courseId Course ID the module belongs to.
      * @param single True if we're downloading a single module, false if we're downloading a whole section.
-     * @return Promise resolved with the list of files.
+     * @returns Promise resolved with the list of files.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async getFiles(module: CoreCourseAnyModuleData, courseId: number, single?: boolean): Promise<CoreWSFile[]> {
@@ -159,7 +159,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param module The module object returned by WS.
      * @param courseId Course ID.
      * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @return Promise resolved with list of intro files.
+     * @returns Promise resolved with list of intro files.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async getIntroFiles(module: CoreCourseAnyModuleData, courseId: number, ignoreCache?: boolean): Promise<CoreWSFile[]> {
@@ -171,7 +171,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      *
      * @param module The module object returned by WS.
      * @param instance The instance to get the intro files (book, assign, ...). If not defined, module will be used.
-     * @return List of intro files.
+     * @returns List of intro files.
      */
     getIntroFilesFromInstance(module: CoreCourseAnyModuleData, instance?: ModuleInstance): CoreWSFile[] {
         if (instance) {
@@ -194,7 +194,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      *
      * @param id Unique identifier per component.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise of the current download.
+     * @returns Promise of the current download.
      */
     async getOngoingDownload(id: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -209,7 +209,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * Create unique identifier using component and id.
      *
      * @param id Unique ID inside component.
-     * @return Unique ID.
+     * @returns Unique ID.
      */
     getUniqueId(id: number): string {
         return this.component + '#' + id;
@@ -220,7 +220,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      *
      * @param moduleId The module ID.
      * @param courseId The course ID the module belongs to.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async invalidateContent(moduleId: number, courseId: number): Promise<void> {
@@ -234,7 +234,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      *
      * @param module Module.
      * @param courseId Course ID the module belongs to.
-     * @return Promise resolved when invalidated.
+     * @returns Promise resolved when invalidated.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     invalidateModule(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
@@ -246,7 +246,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      *
      * @param module Module.
      * @param courseId Course ID the module belongs to.
-     * @return Whether the module can be downloaded. The promise should never be rejected.
+     * @returns Whether the module can be downloaded. The promise should never be rejected.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async isDownloadable(module: CoreCourseAnyModuleData, courseId: number): Promise<boolean> {
@@ -259,7 +259,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      *
      * @param id Unique identifier per component.
      * @param siteId Site ID. If not defined, current site.
-     * @return True if downloading, false otherwise.
+     * @returns True if downloading, false otherwise.
      */
     isDownloading(id: number, siteId?: string): boolean {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -270,7 +270,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.
+     * @returns A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.
      */
     async isEnabled(): Promise<boolean> {
         return true;
@@ -280,7 +280,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * Check if a file is downloadable.
      *
      * @param file File to check.
-     * @return Whether the file is downloadable.
+     * @returns Whether the file is downloadable.
      */
     isFileDownloadable(file: CoreCourseModuleContentFile): boolean {
         return file.type === 'file';
@@ -292,7 +292,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param module Module to load the contents.
      * @param courseId The course ID. Recommended to speed up the process and minimize data usage.
      * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @return Promise resolved when loaded.
+     * @returns Promise resolved when loaded.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async loadContents(module: CoreCourseAnyModuleData, courseId: number, ignoreCache?: boolean): Promise<void> {
@@ -307,7 +307,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      * @param courseId Course ID the module belongs to.
      * @param single True if we're downloading a single module, false if we're downloading a whole section.
      * @param dirPath Path of the directory where to store all the content files.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async prefetch(module: CoreCourseAnyModuleData, courseId?: number, single?: boolean, dirPath?: string): Promise<void> {
@@ -320,7 +320,7 @@ export class CoreCourseModulePrefetchHandlerBase implements CoreCourseModulePref
      *
      * @param module Module.
      * @param courseId Course ID the module belongs to.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     removeFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {

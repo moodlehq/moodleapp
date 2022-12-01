@@ -44,7 +44,7 @@ export class CoreSiteHomeProvider {
      * Get the news forum for the Site Home.
      *
      * @param siteHomeId Site Home ID.
-     * @return Promise resolved with the forum if found, rejected otherwise.
+     * @returns Promise resolved with the forum if found, rejected otherwise.
      */
     async getNewsForum(siteHomeId?: number): Promise<AddonModForumData> {
         if (!siteHomeId) {
@@ -65,7 +65,7 @@ export class CoreSiteHomeProvider {
      * Invalidate the WS call to get the news forum for the Site Home.
      *
      * @param siteHomeId Site Home ID.
-     * @return Promise resolved when invalidated.
+     * @returns Promise resolved when invalidated.
      */
     async invalidateNewsForum(siteHomeId: number): Promise<void> {
         await AddonModForum.invalidateForumData(siteHomeId);
@@ -75,7 +75,7 @@ export class CoreSiteHomeProvider {
      * Returns whether or not the frontpage is available for the current site.
      *
      * @param siteId The site ID. If not defined, current site.
-     * @return Promise resolved with boolean: whether it's available.
+     * @returns Promise resolved with boolean: whether it's available.
      */
     async isAvailable(siteId?: string): Promise<boolean> {
         try {
@@ -125,7 +125,7 @@ export class CoreSiteHomeProvider {
      * Check if Site Home is disabled in a certain site.
      *
      * @param siteId Site Id. If not defined, use current site.
-     * @return Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     * @returns Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
     async isDisabled(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
@@ -137,7 +137,7 @@ export class CoreSiteHomeProvider {
      * Check if Site Home is disabled in a certain site.
      *
      * @param site Site. If not defined, use current site.
-     * @return Whether it's disabled.
+     * @returns Whether it's disabled.
      */
     isDisabledInSite(site: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
@@ -149,7 +149,7 @@ export class CoreSiteHomeProvider {
      * Get the nams of the valid frontpage items.
      *
      * @param frontpageItemIds CSV string with indexes of site home components.
-     * @return Valid names for each item.
+     * @returns Valid names for each item.
      */
     async getFrontPageItems(frontpageItemIds?: string): Promise<string[]> {
         if (!frontpageItemIds) {

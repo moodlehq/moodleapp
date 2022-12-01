@@ -46,7 +46,7 @@ export class CoreSitePluginsQuestionBehaviourComponent extends CoreSitePluginsCo
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         // Pass the input and output data to the component.

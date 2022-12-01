@@ -31,7 +31,7 @@ export class CoreUserHelperProvider {
      * @param address Address.
      * @param city City.
      * @param country Country.
-     * @return Formatted address.
+     * @returns Formatted address.
      */
     formatAddress(address?: string, city?: string, country?: string): string {
         const separator = Translate.instant('core.listsep');
@@ -46,7 +46,7 @@ export class CoreUserHelperProvider {
      * Formats a user role list, translating and concatenating them.
      *
      * @param roles List of user roles.
-     * @return The formatted roles.
+     * @returns The formatted roles.
      */
     formatRoleList(roles?: CoreUserRole[]): string {
         if (!roles || roles.length <= 0) {

@@ -117,7 +117,7 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
      * Refresh the data.
      *
      * @param refresher Refresher.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async doRefresh(refresher?: IonRefresher): Promise<void> {
         if (this.glossary?.allowcomments && this.entry && this.entry.id > 0 && this.commentsEnabled && this.comments) {
@@ -137,7 +137,7 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
     /**
      * Convenience function to get the glossary entry.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchEntry(): Promise<void> {
         try {

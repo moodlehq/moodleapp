@@ -83,7 +83,7 @@ export class AddonModAssignProvider {
      *
      * @param assign Assignment instance.
      * @param submissionStatus Submission status returned by getSubmissionStatus.
-     * @return Whether it can submit.
+     * @returns Whether it can submit.
      */
     canSubmitOffline(assign: AddonModAssignAssign, submissionStatus: AddonModAssignGetSubmissionStatusWSResponse): boolean {
         if (!this.isSubmissionOpen(assign, submissionStatus)) {
@@ -124,7 +124,7 @@ export class AddonModAssignProvider {
      * @param userId User Id (empty for current user).
      * @param groupId Group Id (empty for all participants).
      * @param isBlind If blind marking is enabled or not.
-     * @return Object with fixed params.
+     * @returns Object with fixed params.
      */
     protected fixSubmissionStatusParams(
         site: CoreSite,
@@ -146,7 +146,7 @@ export class AddonModAssignProvider {
      * @param courseId Course ID the assignment belongs to.
      * @param cmId Assignment module ID.
      * @param options Other options.
-     * @return Promise resolved with the assignment.
+     * @returns Promise resolved with the assignment.
      */
     getAssignment(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModAssignAssign> {
         return this.getAssignmentByField(courseId, 'cmid', cmId, options);
@@ -159,7 +159,7 @@ export class AddonModAssignProvider {
      * @param key Name of the property to check.
      * @param value Value to search.
      * @param options Other options.
-     * @return Promise resolved when the assignment is retrieved.
+     * @returns Promise resolved when the assignment is retrieved.
      */
     protected async getAssignmentByField(
         courseId: number,
@@ -211,7 +211,7 @@ export class AddonModAssignProvider {
      * @param courseId Course ID the assignment belongs to.
      * @param id Assignment instance ID.
      * @param options Other options.
-     * @return Promise resolved with the assignment.
+     * @returns Promise resolved with the assignment.
      */
     getAssignmentById(courseId: number, id: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModAssignAssign> {
         return this.getAssignmentByField(courseId, 'id', id, options);
@@ -221,7 +221,7 @@ export class AddonModAssignProvider {
      * Get cache key for assignment data WS calls.
      *
      * @param courseId Course ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getAssignmentCacheKey(courseId: number): string {
         return ROOT_CACHE_KEY + 'assignment:' + courseId;
@@ -233,7 +233,7 @@ export class AddonModAssignProvider {
      * @param assignId Assignment Id.
      * @param userId User Id to be blinded.
      * @param options Other options.
-     * @return Promise resolved with the user blind id.
+     * @returns Promise resolved with the user blind id.
      */
     async getAssignmentUserMappings(assignId: number, userId: number, options: CoreCourseCommonModWSOptions = {}): Promise<number> {
         if (!userId || userId < 0) {
@@ -274,7 +274,7 @@ export class AddonModAssignProvider {
      * Get cache key for assignment user mappings data WS calls.
      *
      * @param assignId Assignment ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getAssignmentUserMappingsCacheKey(assignId: number): string {
         return ROOT_CACHE_KEY + 'usermappings:' + assignId;
@@ -285,7 +285,7 @@ export class AddonModAssignProvider {
      *
      * @param assignId Assignment Id.
      * @param options Other options.
-     * @return Resolved with requested info when done.
+     * @returns Resolved with requested info when done.
      */
     async getAssignmentGrades(assignId: number, options: CoreCourseCommonModWSOptions = {}): Promise<AddonModAssignGrade[]> {
         const site = await CoreSites.getSite(options.siteId);
@@ -321,7 +321,7 @@ export class AddonModAssignProvider {
      * Get cache key for assignment grades data WS calls.
      *
      * @param assignId Assignment ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getAssignmentGradesCacheKey(assignId: number): string {
         return ROOT_CACHE_KEY + 'assigngrades:' + assignId;
@@ -331,7 +331,7 @@ export class AddonModAssignProvider {
      * Returns the color name for a given grading status name.
      *
      * @param status Grading status name
-     * @return The color name.
+     * @returns The color name.
      */
     getSubmissionGradingStatusColor(status?: AddonModAssignGradingStates): CoreIonicColorNames {
         if (!status) {
@@ -350,7 +350,7 @@ export class AddonModAssignProvider {
      * Returns the translation id for a given grading status name.
      *
      * @param status Grading Status name
-     * @return The status translation identifier.
+     * @returns The status translation identifier.
      */
     getSubmissionGradingStatusTranslationId(status?: AddonModAssignGradingStates): string | undefined {
         if (!status) {
@@ -371,7 +371,7 @@ export class AddonModAssignProvider {
      *
      * @param assign Assign.
      * @param attempt Attempt.
-     * @return Submission object or null.
+     * @returns Submission object or null.
      */
     getSubmissionObjectFromAttempt(
         assign: AddonModAssignAssign,
@@ -388,7 +388,7 @@ export class AddonModAssignProvider {
      * Get attachments of a submission plugin.
      *
      * @param submissionPlugin Submission plugin.
-     * @return Submission plugin attachments.
+     * @returns Submission plugin attachments.
      */
     getSubmissionPluginAttachments(submissionPlugin: AddonModAssignPlugin): CoreWSFile[] {
         if (!submissionPlugin.fileareas) {
@@ -421,7 +421,7 @@ export class AddonModAssignProvider {
      *
      * @param submissionPlugin Submission plugin.
      * @param keepUrls True if it should keep original URLs, false if they should be replaced.
-     * @return Submission text.
+     * @returns Submission text.
      */
     getSubmissionPluginText(submissionPlugin: AddonModAssignPlugin, keepUrls = false): string {
         if (!submissionPlugin.editorfields) {
@@ -445,7 +445,7 @@ export class AddonModAssignProvider {
      *
      * @param assignId Assignment id.
      * @param options Other options.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async getSubmissions(
         assignId: number,
@@ -484,7 +484,7 @@ export class AddonModAssignProvider {
      * Get cache key for assignment submissions data WS calls.
      *
      * @param assignId Assignment id.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getSubmissionsCacheKey(assignId: number): string {
         return ROOT_CACHE_KEY + 'submissions:' + assignId;
@@ -495,7 +495,7 @@ export class AddonModAssignProvider {
      *
      * @param assignId Assignment instance id.
      * @param options Other options.
-     * @return Promise always resolved with the user submission status.
+     * @returns Promise always resolved with the user submission status.
      */
     async getSubmissionStatus(
         assignId: number,
@@ -544,7 +544,7 @@ export class AddonModAssignProvider {
      *
      * @param assign Assignment.
      * @param options Other options.
-     * @return Promise always resolved with the user submission status.
+     * @returns Promise always resolved with the user submission status.
      */
     async getSubmissionStatusWithRetry(
         assign: AddonModAssignAssign,
@@ -579,7 +579,7 @@ export class AddonModAssignProvider {
      * @param userId User id (empty for current user).
      * @param groupId Group Id (empty for all participants).
      * @param isBlind If blind marking is enabled or not.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getSubmissionStatusCacheKey(assignId: number, userId: number, groupId?: number, isBlind = false): string {
         return this.getSubmissionsCacheKey(assignId) + ':' + userId + ':' + (isBlind ? 1 : 0) + ':' + groupId;
@@ -589,7 +589,7 @@ export class AddonModAssignProvider {
      * Returns the color name for a given status name.
      *
      * @param status Status name
-     * @return The color name.
+     * @returns The color name.
      */
     getSubmissionStatusColor(status: AddonModAssignSubmissionStatusValues): CoreIonicColorNames {
         switch (status) {
@@ -612,7 +612,7 @@ export class AddonModAssignProvider {
      * Given a list of plugins, returns the plugin names that aren't supported for editing.
      *
      * @param plugins Plugins to check.
-     * @return Promise resolved with unsupported plugin names.
+     * @returns Promise resolved with unsupported plugin names.
      */
     async getUnsupportedEditPlugins(plugins: AddonModAssignPlugin[]): Promise<string[]> {
         const notSupported: string[] = [];
@@ -636,7 +636,7 @@ export class AddonModAssignProvider {
      * @param assignId Assignment id.
      * @param groupId Group id. If not defined, 0.
      * @param options Other options.
-     * @return Promise resolved with the list of participants and summary of submissions.
+     * @returns Promise resolved with the list of participants and summary of submissions.
      */
     async listParticipants(
         assignId: number,
@@ -670,7 +670,7 @@ export class AddonModAssignProvider {
      *
      * @param assignId Assignment id.
      * @param groupId Group id.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected listParticipantsCacheKey(assignId: number, groupId: number): string {
         return this.listParticipantsPrefixCacheKey(assignId) + ':' + groupId;
@@ -680,7 +680,7 @@ export class AddonModAssignProvider {
      * Get prefix cache key for assignment list participants data WS calls.
      *
      * @param assignId Assignment id.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected listParticipantsPrefixCacheKey(assignId: number): string {
         return ROOT_CACHE_KEY + 'participants:' + assignId;
@@ -691,7 +691,7 @@ export class AddonModAssignProvider {
      *
      * @param assignId Assignment instance id.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllSubmissionData(assignId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -704,7 +704,7 @@ export class AddonModAssignProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAssignmentData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -717,7 +717,7 @@ export class AddonModAssignProvider {
      *
      * @param assignId Assignment ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAssignmentUserMappingsData(assignId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -730,7 +730,7 @@ export class AddonModAssignProvider {
      *
      * @param assignId Assignment ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAssignmentGradesData(assignId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -744,7 +744,7 @@ export class AddonModAssignProvider {
      * @param moduleId The module ID.
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -768,7 +768,7 @@ export class AddonModAssignProvider {
      *
      * @param assignId Assignment instance id.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSubmissionData(assignId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -784,7 +784,7 @@ export class AddonModAssignProvider {
      * @param groupId Group Id (empty for all participants).
      * @param isBlind Whether blind marking is enabled or not.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSubmissionStatusData(
         assignId: number,
@@ -809,7 +809,7 @@ export class AddonModAssignProvider {
      *
      * @param assignId Assignment instance id.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateListParticipantsData(assignId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -822,7 +822,7 @@ export class AddonModAssignProvider {
      *
      * @param assign Assignment instance.
      * @param submissionStatus Submission status returned by getSubmissionStatus.
-     * @return Whether submission is open.
+     * @returns Whether submission is open.
      */
     isSubmissionOpen(assign: AddonModAssignAssign, submissionStatus?: AddonModAssignGetSubmissionStatusWSResponse): boolean {
         if (!assign || !submissionStatus) {
@@ -880,7 +880,7 @@ export class AddonModAssignProvider {
      * @param assignid Assignment ID.
      * @param name Name of the assign.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the WS call is successful.
+     * @returns Promise resolved when the WS call is successful.
      */
     async logSubmissionView(assignid: number, name?: string, siteId?: string): Promise<void> {
         const params: AddonModAssignViewSubmissionStatusWSParams = {
@@ -905,7 +905,7 @@ export class AddonModAssignProvider {
      * @param assignid Assignment ID.
      * @param name Name of the assign.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the WS call is successful.
+     * @returns Promise resolved when the WS call is successful.
      */
     async logGradingView(assignid: number, name?: string, siteId?: string): Promise<void> {
         const params: AddonModAssignViewGradingTableWSParams = {
@@ -930,7 +930,7 @@ export class AddonModAssignProvider {
      * @param assignid Assignment ID.
      * @param name Name of the assign.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the WS call is successful.
+     * @returns Promise resolved when the WS call is successful.
      */
     async logView(assignid: number, name?: string, siteId?: string): Promise<void> {
         const params: AddonModAssignViewAssignWSParams = {
@@ -954,7 +954,7 @@ export class AddonModAssignProvider {
      *
      * @param submission Submission.
      * @param assignId Assignment ID.
-     * @return Promise resolved with boolean: whether it needs to be graded or not.
+     * @returns Promise resolved with boolean: whether it needs to be graded or not.
      */
     async needsSubmissionToBeGraded(submission: AddonModAssignSubmissionFormatted, assignId: number): Promise<boolean> {
         if (submission.status != AddonModAssignSubmissionStatusValues.SUBMITTED) {
@@ -997,7 +997,7 @@ export class AddonModAssignProvider {
      * @param allowsDrafts Whether the assignment allows submission drafts.
      * @param userId User ID. If not defined, site's current user.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with true if sent to server, resolved with false if stored in offline.
+     * @returns Promise resolved with true if sent to server, resolved with false if stored in offline.
      */
     async saveSubmission(
         assignId: number,
@@ -1055,7 +1055,7 @@ export class AddonModAssignProvider {
      * @param assignId Assign ID.
      * @param pluginData Data to save.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when saved, rejected otherwise.
+     * @returns Promise resolved when saved, rejected otherwise.
      */
     async saveSubmissionOnline(assignId: number, pluginData: AddonModAssignSavePluginData, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1076,7 +1076,7 @@ export class AddonModAssignProvider {
      *
      * @param assignId Assign ID.
      * @param siteId Site ID. If not defined, use current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async startSubmission(assignId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1109,7 +1109,7 @@ export class AddonModAssignProvider {
      * @param timemodified The time the submission was last modified in online.
      * @param forceOffline True to always mark it in offline.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with true if sent to server, resolved with false if stored in offline.
+     * @returns Promise resolved with true if sent to server, resolved with false if stored in offline.
      */
     async submitForGrading(
         assignId: number,
@@ -1165,7 +1165,7 @@ export class AddonModAssignProvider {
      * @param assignId Assign ID.
      * @param acceptStatement True if submission statement is accepted, false otherwise.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when submitted, rejected otherwise.
+     * @returns Promise resolved when submitted, rejected otherwise.
      */
     async submitForGradingOnline(assignId: number, acceptStatement: boolean, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1197,7 +1197,7 @@ export class AddonModAssignProvider {
      * @param outcomes Object including all outcomes values. If empty, any of them will be sent.
      * @param pluginData Feedback plugin data to save.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with true if sent to server, resolved with false if stored offline.
+     * @returns Promise resolved with true if sent to server, resolved with false if stored offline.
      */
     async submitGradingForm(
         assignId: number,
@@ -1281,7 +1281,7 @@ export class AddonModAssignProvider {
      * @param outcomes Object including all outcomes values. If empty, any of them will be sent.
      * @param pluginData Feedback plugin data to save.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when submitted, rejected otherwise.
+     * @returns Promise resolved when submitted, rejected otherwise.
      */
     async submitGradingFormOnline(
         assignId: number,

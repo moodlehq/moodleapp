@@ -33,7 +33,7 @@ export class AddonQtypeMultichoiceComponent extends CoreQuestionBaseComponent im
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.initMultichoiceComponent();

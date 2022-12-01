@@ -34,7 +34,7 @@ export class AddonModDataFieldTextareaComponent extends AddonModDataFieldPluginB
      * Format value to be shown. Replacing plugin file Urls.
      *
      * @param value Value to replace.
-     * @return Replaced string to be rendered.
+     * @returns Replaced string to be rendered.
      */
     format(value?: Partial<AddonModDataEntryField>): string {
         const files: CoreWSFile[] = (value && <CoreWSFile[]>value.files) || [];

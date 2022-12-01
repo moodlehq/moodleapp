@@ -35,7 +35,7 @@ export class CoreSitePluginsOnlyTitleBlockComponent extends CoreBlockBaseCompone
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         super.ngOnInit();

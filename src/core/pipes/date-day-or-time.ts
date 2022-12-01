@@ -47,7 +47,7 @@ export class CoreDateDayOrTimePipe implements PipeTransform {
      * Format a timestamp.
      *
      * @param timestamp The UNIX timestamp (without milliseconds).
-     * @return Formatted time.
+     * @returns Formatted time.
      */
     transform(timestamp: string | number): string {
         if (typeof timestamp == 'string') {

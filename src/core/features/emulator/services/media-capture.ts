@@ -33,7 +33,7 @@ export class MediaCaptureMock extends MediaCapture {
      * Start the audio recorder application and return information about captured audio clip files.
      *
      * @param options Options.
-     * @return Promise resolved when captured.
+     * @returns Promise resolved when captured.
      */
     captureAudio(options: CaptureAudioOptions): Promise<MediaFile[]> {
         return CoreEmulatorCaptureHelper.captureMedia('audio', options);
@@ -43,7 +43,7 @@ export class MediaCaptureMock extends MediaCapture {
      * Start the camera application and return information about captured image files.
      *
      * @param options Options.
-     * @return Promise resolved when captured.
+     * @returns Promise resolved when captured.
      */
     captureImage(options: CaptureImageOptions): Promise<MediaFile[]> {
         return CoreEmulatorCaptureHelper.captureMedia('captureimage', options);
@@ -53,7 +53,7 @@ export class MediaCaptureMock extends MediaCapture {
      * Start the video recorder application and return information about captured video clip files.
      *
      * @param options Options.
-     * @return Promise resolved when captured.
+     * @returns Promise resolved when captured.
      */
     captureVideo(options: CaptureVideoOptions): Promise<MediaFile[]> {
         return CoreEmulatorCaptureHelper.captureMedia('video', options);

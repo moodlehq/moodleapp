@@ -37,7 +37,7 @@ export interface CoreQuestionBehaviourHandler extends CoreDelegateHandler {
      * @param question The question.
      * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return State (or promise resolved with state).
+     * @returns State (or promise resolved with state).
      */
     determineNewState?(
         component: string,
@@ -53,7 +53,7 @@ export interface CoreQuestionBehaviourHandler extends CoreDelegateHandler {
      * If the behaviour requires to show some extra data, it should return the components to render it.
      *
      * @param question The question.
-     * @return Components (or promise resolved with components) to render some extra data in the question
+     * @returns Components (or promise resolved with components) to render some extra data in the question
      *         (e.g. certainty options). Don't return anything if no extra data is required.
      */
     handleQuestion?(question: CoreQuestionQuestionParsed): void | Type<unknown>[] | Promise<Type<unknown>[]>;
@@ -74,12 +74,13 @@ export class CoreQuestionBehaviourDelegateService extends CoreDelegate<CoreQuest
     /**
      * Determine a question new state based on its answer(s).
      *
+     * @param behaviour Name of the behaviour.
      * @param component Component the question belongs to.
      * @param attemptId Attempt ID the question belongs to.
      * @param question The question.
      * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with state.
+     * @returns Promise resolved with state.
      */
     async determineNewState(
         behaviour: string,
@@ -105,7 +106,7 @@ export class CoreQuestionBehaviourDelegateService extends CoreDelegate<CoreQuest
      *
      * @param behaviour Default behaviour.
      * @param question The question.
-     * @return Promise resolved with components to render some extra data in the question.
+     * @returns Promise resolved with components to render some extra data in the question.
      */
     async handleQuestion(behaviour: string, question: CoreQuestionQuestionParsed): Promise<Type<unknown>[] | undefined> {
         behaviour = CoreQuestionDelegate.getBehaviourForQuestion(question, behaviour);
@@ -117,7 +118,7 @@ export class CoreQuestionBehaviourDelegateService extends CoreDelegate<CoreQuest
      * Check if a question behaviour is supported.
      *
      * @param behaviour Name of the behaviour.
-     * @return Whether it's supported.
+     * @returns Whether it's supported.
      */
     isBehaviourSupported(behaviour: string): boolean {
         return this.hasHandler(behaviour, true);

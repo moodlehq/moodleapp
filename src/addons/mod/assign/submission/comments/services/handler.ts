@@ -34,7 +34,7 @@ export class AddonModAssignSubmissionCommentsHandlerService implements AddonModA
      * plugin uses Moodle filters. The reason is that the app only prefetches filtered data, and the user should edit
      * unfiltered data.
      *
-     * @return Boolean or promise resolved with boolean: whether it can be edited in offline.
+     * @returns Boolean or promise resolved with boolean: whether it can be edited in offline.
      */
     canEditOffline(): boolean {
         // This plugin is read only, but return true to prevent blocking the edition.
@@ -47,7 +47,7 @@ export class AddonModAssignSubmissionCommentsHandlerService implements AddonModA
      *
      * @param plugin The plugin object.
      * @param edit Whether the user is editing.
-     * @return The component (or promise resolved with component) to use, undefined if not found.
+     * @returns The component (or promise resolved with component) to use, undefined if not found.
      */
     getComponent(plugin: AddonModAssignPlugin, edit = false): Type<AddonModAssignSubmissionPluginBaseComponent> | undefined {
         return edit ? undefined : AddonModAssignSubmissionCommentsComponent;
@@ -56,7 +56,7 @@ export class AddonModAssignSubmissionCommentsHandlerService implements AddonModA
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return True or promise resolved with true if enabled.
+     * @returns True or promise resolved with true if enabled.
      */
     async isEnabled(): Promise<boolean> {
         return true;
@@ -65,7 +65,7 @@ export class AddonModAssignSubmissionCommentsHandlerService implements AddonModA
     /**
      * Whether or not the handler is enabled for edit on a site level.
      *
-     * @return Whether or not the handler is enabled for edit on a site level.
+     * @returns Whether or not the handler is enabled for edit on a site level.
      */
     isEnabledForEdit(): boolean{
         return true;
@@ -79,7 +79,7 @@ export class AddonModAssignSubmissionCommentsHandlerService implements AddonModA
      * @param submission The submission.
      * @param plugin The plugin object.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async prefetch(
         assign: AddonModAssignAssign,

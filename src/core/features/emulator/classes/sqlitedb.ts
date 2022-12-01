@@ -33,7 +33,7 @@ export class SQLiteDBMock extends SQLiteDB {
     /**
      * Close the database.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     close(): Promise<any> {
@@ -44,7 +44,7 @@ export class SQLiteDBMock extends SQLiteDB {
     /**
      * Drop all the data in the database.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async emptyDatabase(): Promise<any> {
@@ -89,7 +89,7 @@ export class SQLiteDBMock extends SQLiteDB {
      *
      * @param sql SQL query to execute.
      * @param params Query parameters.
-     * @return Promise resolved with the result.
+     * @returns Promise resolved with the result.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async execute(sql: string, params?: any[]): Promise<any> {
@@ -114,7 +114,7 @@ export class SQLiteDBMock extends SQLiteDB {
      * these query will be run in SQLite (Mobile) and Web SQL (desktop), so your query should work in both environments.
      *
      * @param sqlStatements SQL statements to execute.
-     * @return Promise resolved with the result.
+     * @returns Promise resolved with the result.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async executeBatch(sqlStatements: any[]): Promise<any> {
@@ -152,7 +152,7 @@ export class SQLiteDBMock extends SQLiteDB {
     /**
      * Open the database. Only needed if it was closed before, a database is automatically opened when created.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     open(): Promise<void> {
         // WebSQL databases can't closed, so the open method isn't needed.

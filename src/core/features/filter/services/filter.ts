@@ -63,7 +63,7 @@ export class CoreFilterProvider {
     /**
      * Returns whether or not WS get available in context is available.
      *
-     * @return Promise resolved with true if ws is available, false otherwise.
+     * @returns Promise resolved with true if ws is available, false otherwise.
      * @deprecated since app 4.0
      */
     async canGetAvailableInContext(): Promise<boolean> {
@@ -73,7 +73,7 @@ export class CoreFilterProvider {
     /**
      * Returns whether or not WS get available in context is available in a certain site.
      *
-     * @return Promise resolved with true if ws is available, false otherwise.
+     * @returns Promise resolved with true if ws is available, false otherwise.
      * @deprecated since app 4.0
      */
     canGetAvailableInContextInSite(): boolean {
@@ -84,7 +84,7 @@ export class CoreFilterProvider {
      * Returns whether or not we can get the available filters: the WS is available and the feature isn't disabled.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean: whethe can get filters.
+     * @returns Promise resolved with boolean: whethe can get filters.
      */
     async canGetFilters(siteId?: string): Promise<boolean> {
         const disabled = await this.checkFiltersDisabled(siteId);
@@ -96,7 +96,7 @@ export class CoreFilterProvider {
      * Returns whether or not we can get the available filters: the WS is available and the feature isn't disabled.
      *
      * @param site Site. If not defined, current site.
-     * @return Promise resolved with boolean: whethe can get filters.
+     * @returns Promise resolved with boolean: whethe can get filters.
      */
     canGetFiltersInSite(site?: CoreSite): boolean {
         return this.checkFiltersDisabledInSite(site);
@@ -106,7 +106,7 @@ export class CoreFilterProvider {
      * Returns whether or not checking the available filters is disabled in the site.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean: whether it's disabled.
+     * @returns Promise resolved with boolean: whether it's disabled.
      */
     async checkFiltersDisabled(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
@@ -118,7 +118,7 @@ export class CoreFilterProvider {
      * Returns whether or not checking the available filters is disabled in the site.
      *
      * @param site Site. If not defined, current site.
-     * @return Whether it's disabled.
+     * @returns Whether it's disabled.
      */
     checkFiltersDisabledInSite(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
@@ -134,7 +134,7 @@ export class CoreFilterProvider {
      * @param hadSystemContext Whether the list of contexts originally had system context.
      * @param hadSiteHomeContext Whether the list of contexts originally had site home context.
      * @param site Site instance.
-     * @return Classified filters.
+     * @returns Classified filters.
      */
     protected classifyFilters(
         contexts: CoreFiltersGetAvailableInContextWSParamContext[],
@@ -188,7 +188,7 @@ export class CoreFilterProvider {
      * @param options Formatting options.
      * @param filters The filters to apply. Required if filter is set to true.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the formatted text.
+     * @returns Promise resolved with the formatted text.
      */
     async formatText(
         text: string,
@@ -240,7 +240,7 @@ export class CoreFilterProvider {
      * Get cache key for available in contexts WS calls.
      *
      * @param contexts The contexts to check.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getAvailableInContextsCacheKey(contexts: CoreFiltersGetAvailableInContextWSParamContext[]): string {
         return this.getAvailableInContextsPrefixCacheKey() + JSON.stringify(contexts);
@@ -249,7 +249,7 @@ export class CoreFilterProvider {
     /**
      * Get prefixed cache key for available in contexts WS calls.
      *
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getAvailableInContextsPrefixCacheKey(): string {
         return this.ROOT_CACHE_KEY + 'availableInContexts:';
@@ -260,7 +260,7 @@ export class CoreFilterProvider {
      *
      * @param contexts The contexts to check.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the filters classified by context.
+     * @returns Promise resolved with the filters classified by context.
      */
     async getAvailableInContexts(
         contexts: CoreFiltersGetAvailableInContextWSParamContext[],
@@ -314,7 +314,7 @@ export class CoreFilterProvider {
      * @param contextLevel The context level to check: system, user, coursecat, course, module, block, ...
      * @param instanceId The instance ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the filters.
+     * @returns Promise resolved with the filters.
      */
     async getAvailableInContext(contextLevel: string, instanceId: number, siteId?: string): Promise<CoreFilterFilter[]> {
         const result = await this.getAvailableInContexts([{ contextlevel: contextLevel, instanceid: instanceId }], siteId);
@@ -327,7 +327,7 @@ export class CoreFilterProvider {
      *
      * @param contexts Contexts to get.
      * @param site Site.
-     * @return The filters classified by context and instance.
+     * @returns The filters classified by context and instance.
      */
     protected getFromMemoryCache(
         contexts: CoreFiltersGetAvailableInContextWSParamContext[],
@@ -369,7 +369,7 @@ export class CoreFilterProvider {
      * Invalidates all available in context WS calls.
      *
      * @param siteId Site ID (empty for current site).
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllAvailableInContext(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -382,7 +382,7 @@ export class CoreFilterProvider {
      *
      * @param contexts The contexts to check.
      * @param siteId Site ID (empty for current site).
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAvailableInContexts(
         contexts: CoreFiltersGetAvailableInContextWSParamContext[],
@@ -399,7 +399,7 @@ export class CoreFilterProvider {
      * @param contextLevel The context level to check.
      * @param instanceId The instance ID.
      * @param siteId Site ID (empty for current site).
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAvailableInContext(contextLevel: string, instanceId: number, siteId?: string): Promise<void> {
         await this.invalidateAvailableInContexts([{ contextlevel: contextLevel, instanceid: instanceId }], siteId);
@@ -411,7 +411,7 @@ export class CoreFilterProvider {
      *
      * @param contexts The contexts to check.
      * @param site Site instance.
-     * @return Whether the filters had system context and whether they had the site home context.
+     * @returns Whether the filters had system context and whether they had the site home context.
      */
     protected replaceSystemContext(
         contexts: CoreFiltersGetAvailableInContextWSParamContext[],

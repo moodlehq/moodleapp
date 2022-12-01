@@ -134,7 +134,7 @@ export class CoreLoginSitePage implements OnInit {
     /**
      * Initialize the site selector.
      *
-     * @return URL of the first site.
+     * @returns URL of the first site.
      */
     protected initSiteSelector(): string {
         this.fixedSites = this.extendCoreLoginSiteInfo(<CoreLoginSiteInfoExtended[]> CoreLoginHelper.getFixedSites());
@@ -153,7 +153,7 @@ export class CoreLoginSitePage implements OnInit {
     /**
      * Initialize and show onboarding if needed.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async initOnboarding(): Promise<void> {
         const onboardingDone = await CoreConfig.get(CoreLoginHelperProvider.ONBOARDING_DONE, false);
@@ -168,7 +168,7 @@ export class CoreLoginSitePage implements OnInit {
      * Extend info of Login Site Info to get UI tweaks.
      *
      * @param sites Sites list.
-     * @return Sites list with extended info.
+     * @returns Sites list with extended info.
      */
     protected extendCoreLoginSiteInfo(sites: CoreLoginSiteInfoExtended[]): CoreLoginSiteInfoExtended[] {
         return sites.map((site) => {
@@ -199,7 +199,7 @@ export class CoreLoginSitePage implements OnInit {
     /**
      * Validate Url.
      *
-     * @return {ValidatorFn} Validation results.
+     * @returns {ValidatorFn} Validation results.
      */
     protected moodleUrlValidator(): ValidatorFn {
         return (control: AbstractControl): ValidationErrors | null => {
@@ -244,7 +244,7 @@ export class CoreLoginSitePage implements OnInit {
      * @param e Event.
      * @param url The URL to connect to.
      * @param foundSite The site clicked, if any, from the found sites list.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async connect(e: Event, url: string, foundSite?: CoreLoginSiteInfoExtended): Promise<void> {
         e.preventDefault();
@@ -316,7 +316,7 @@ export class CoreLoginSitePage implements OnInit {
      * Authenticate in a demo site.
      *
      * @param siteData Site data.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loginDemoSite(siteData: CoreSitesDemoSiteData): Promise<void> {
         const modal = await CoreDomUtils.showModalLoading();
@@ -348,7 +348,7 @@ export class CoreLoginSitePage implements OnInit {
      * @param response Response obtained from the site check request.
      * @param foundSite The site clicked, if any, from the found sites list.
      *
-     * @return Promise resolved after logging in.
+     * @returns Promise resolved after logging in.
      */
     protected async login(response: CoreSiteCheckResponse, foundSite?: CoreLoginSiteInfoExtended): Promise<void> {
         try {
@@ -435,7 +435,7 @@ export class CoreLoginSitePage implements OnInit {
                 ),
         ].filter(button => !!button);
 
-        // @TODO: Remove CoreSite.MINIMUM_MOODLE_VERSION, not used on translations since 3.9.0.
+        // @todo Remove CoreSite.MINIMUM_MOODLE_VERSION, not used on translations since 3.9.0.
         const alertElement = await CoreDomUtils.showAlertWithOptions({
             header: errorTitle ?? (
                 siteExists
@@ -501,7 +501,7 @@ export class CoreLoginSitePage implements OnInit {
     /**
      * Show instructions and scan QR code.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async showInstructionsAndScanQR(): Promise<void> {
         try {
@@ -516,7 +516,7 @@ export class CoreLoginSitePage implements OnInit {
     /**
      * Scan a QR code and put its text in the URL input.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async scanQR(): Promise<void> {
         // Scan for a QR code.
@@ -567,7 +567,7 @@ export class CoreLoginSitePage implements OnInit {
      *
      * @param customURL Custom URL handled.
      * @param error Error data.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async treatErrorInAuthenticationCustomURL(customURL: string, error: CoreCustomURLSchemesHandleError): Promise<void> {
         const siteUrl = error.data?.siteUrl || '';

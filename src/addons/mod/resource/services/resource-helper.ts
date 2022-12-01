@@ -39,7 +39,7 @@ export class AddonModResourceHelperProvider {
      * Get the HTML to display an embedded resource.
      *
      * @param module The module object.
-     * @return Promise resolved with the HTML.
+     * @returns Promise resolved with the HTML.
      */
     async getEmbeddedHtml(module: CoreCourseModuleData): Promise<string> {
         const contents = await CoreCourse.getModuleContents(module);
@@ -59,7 +59,7 @@ export class AddonModResourceHelperProvider {
      * Download all the files needed and returns the src of the iframe.
      *
      * @param module The module object.
-     * @return Promise resolved with the iframe src.
+     * @returns Promise resolved with the iframe src.
      */
     async getIframeSrc(module: CoreCourseModuleData): Promise<string> {
         if (!module.contents?.length) {
@@ -94,7 +94,7 @@ export class AddonModResourceHelperProvider {
      *
      * @param module The module object.
      * @param display The display mode (if available).
-     * @return Whether the resource should be displayed embeded.
+     * @returns Whether the resource should be displayed embeded.
      */
     isDisplayedEmbedded(module: CoreCourseModuleData, display: number): boolean {
         const currentSite = CoreSites.getCurrentSite();
@@ -121,7 +121,7 @@ export class AddonModResourceHelperProvider {
      * Whether the resource has to be displayed in an iframe.
      *
      * @param module The module object.
-     * @return Whether the resource should be displayed in an iframe.
+     * @returns Whether the resource should be displayed in an iframe.
      */
     isDisplayedInIframe(module: CoreCourseModuleData): boolean {
         if (!CoreFile.isAvailable()) {
@@ -147,7 +147,7 @@ export class AddonModResourceHelperProvider {
      *
      * @param module Module instance.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean: whether main file is downloadable.
+     * @returns Promise resolved with boolean: whether main file is downloadable.
      */
     async isMainFileDownloadable(module: CoreCourseModuleData, siteId?: string): Promise<boolean> {
         const contents = await CoreCourse.getModuleContents(module);
@@ -167,7 +167,7 @@ export class AddonModResourceHelperProvider {
      * Check if the resource is a Nextcloud file.
      *
      * @param module Module to check.
-     * @return Whether it's a Nextcloud file.
+     * @returns Whether it's a Nextcloud file.
      */
     isNextcloudFile(module: CoreCourseAnyModuleData): boolean {
         if ('contentsinfo' in module && module.contentsinfo) {
@@ -183,7 +183,7 @@ export class AddonModResourceHelperProvider {
      * @param module Module where to get the contents.
      * @param courseId Course Id, used for completion purposes.
      * @param options Options to open the file.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     async openModuleFile(module: CoreCourseModuleData, courseId: number, options: CoreUtilsOpenFileOptions = {}): Promise<void> {
         const modal = await CoreDomUtils.showModalLoading();

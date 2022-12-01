@@ -37,19 +37,10 @@ export class AddonFilterDisplayH5PHandlerService extends CoreFilterDefaultHandle
     }
 
     /**
-     * Filter some text.
-     *
-     * @param text The text to filter.
-     * @param filter The filter.
-     * @param options Options passed to the filters.
-     * @param siteId Site ID. If not defined, current site.
-     * @return Filtered text (or promise resolved with the filtered text).
+     * @inheritdoc
      */
     filter(
         text: string,
-        filter: CoreFilterFilter, // eslint-disable-line @typescript-eslint/no-unused-vars
-        options: CoreFilterFormatTextOptions, // eslint-disable-line @typescript-eslint/no-unused-vars
-        siteId?: string, // eslint-disable-line @typescript-eslint/no-unused-vars
     ): string | Promise<string> {
         this.template.innerHTML = text;
 
@@ -87,17 +78,7 @@ export class AddonFilterDisplayH5PHandlerService extends CoreFilterDefaultHandle
     }
 
     /**
-     * Handle HTML. This function is called after "filter", and it will receive an HTMLElement containing the text that was
-     * filtered.
-     *
-     * @param container The HTML container to handle.
-     * @param filter The filter.
-     * @param options Options passed to the filters.
-     * @param viewContainerRef The ViewContainerRef where the container is.
-     * @param component Component.
-     * @param componentId Component ID.
-     * @param siteId Site ID. If not defined, current site.
-     * @return If async, promise resolved when done.
+     * @inheritdoc
      */
     handleHtml(
         container: HTMLElement,
@@ -106,7 +87,6 @@ export class AddonFilterDisplayH5PHandlerService extends CoreFilterDefaultHandle
         viewContainerRef: ViewContainerRef,
         component?: string,
         componentId?: string | number,
-        siteId?: string, // eslint-disable-line @typescript-eslint/no-unused-vars
     ): void | Promise<void> {
 
         const placeholders = <HTMLElement[]> Array.from(container.querySelectorAll('div.core-h5p-tmp-placeholder'));

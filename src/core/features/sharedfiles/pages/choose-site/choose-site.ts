@@ -72,7 +72,7 @@ export class CoreSharedFilesChooseSitePage implements OnInit {
     /**
      * Load the file data.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadFile(): Promise<void> {
         this.fileEntry = await CoreFile.getExternalFile(this.filePath!);
@@ -82,7 +82,7 @@ export class CoreSharedFilesChooseSitePage implements OnInit {
     /**
      * Load sites.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadSites(): Promise<void> {
         this.sites = await CoreSites.getSites();

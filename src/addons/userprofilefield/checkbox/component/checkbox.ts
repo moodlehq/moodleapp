@@ -31,7 +31,7 @@ export class AddonUserProfileFieldCheckboxComponent extends CoreUserProfileField
     /**
      * Create the Form control.
      *
-     * @return Form control.
+     * @returns Form control.
      */
     protected createFormControl(field: AuthEmailSignupProfileField): FormControl {
         const formData = {

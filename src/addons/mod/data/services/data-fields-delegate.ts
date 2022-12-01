@@ -41,7 +41,7 @@ export interface AddonModDataFieldHandler extends CoreDelegateHandler {
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
      * @param field The field object.
-     * @return The component to use, undefined if not found.
+     * @returns The component to use, undefined if not found.
      */
     getComponent?(plugin: AddonModDataField): Type<AddonModDataFieldPluginBaseComponent> | undefined;
 
@@ -50,7 +50,7 @@ export interface AddonModDataFieldHandler extends CoreDelegateHandler {
      *
      * @param field Defines the field to be rendered.
      * @param inputData Data entered in the search form.
-     * @return With name and value of the data to be sent.
+     * @returns With name and value of the data to be sent.
      */
     getFieldSearchData?(
         field: AddonModDataField,
@@ -62,7 +62,7 @@ export interface AddonModDataFieldHandler extends CoreDelegateHandler {
      *
      * @param field Defines the field to be rendered.
      * @param inputData Data entered in the edit form.
-     * @return With name and value of the data to be sent.
+     * @returns With name and value of the data to be sent.
      */
     getFieldEditData?(
         field: AddonModDataField,
@@ -77,7 +77,7 @@ export interface AddonModDataFieldHandler extends CoreDelegateHandler {
      * @param field Defines the field to be rendered.
      * @param inputData Data entered in the edit form.
      * @param originalFieldData Original field entered data.
-     * @return If the field has changes.
+     * @returns If the field has changes.
      */
     hasFieldDataChanged?(
         field: AddonModDataField,
@@ -89,7 +89,7 @@ export interface AddonModDataFieldHandler extends CoreDelegateHandler {
      * Get field edit files in the input data.
      *
      * @param field Defines the field..
-     * @return With name and value of the data to be sent.
+     * @returns With name and value of the data to be sent.
      */
     getFieldEditFiles?(
         field: AddonModDataField,
@@ -102,7 +102,7 @@ export interface AddonModDataFieldHandler extends CoreDelegateHandler {
      *
      * @param field Defines the field to be rendered.
      * @param inputData Data entered in the edit form.
-     * @return String with the notification or false.
+     * @returns String with the notification or false.
      */
     getFieldsNotifications?(field: AddonModDataField, inputData: AddonModDataSubfieldData[]): string | undefined;
 
@@ -112,7 +112,7 @@ export interface AddonModDataFieldHandler extends CoreDelegateHandler {
      * @param originalContent Original data to be overriden.
      * @param offlineContent Array with all the offline data to override.
      * @param offlineFiles Array with all the offline files in the field.
-     * @return Data overriden
+     * @returns Data overriden
      */
     overrideData?(
         originalContent: AddonModDataEntryField,
@@ -139,7 +139,7 @@ export class AddonModDataFieldsDelegateService extends CoreDelegate<AddonModData
      * Get the component to use for a certain field field.
      *
      * @param field The field object.
-     * @return Promise resolved with the component to use, undefined if not found.
+     * @returns Promise resolved with the component to use, undefined if not found.
      */
     getComponentForField(field: AddonModDataField): Promise<Type<AddonModDataFieldPluginBaseComponent> | undefined> {
         return Promise.resolve(this.executeFunctionOnEnabled(field.type, 'getComponent', [field]));
@@ -150,7 +150,7 @@ export class AddonModDataFieldsDelegateService extends CoreDelegate<AddonModData
      *
      * @param field Defines the field to be rendered.
      * @param inputData Data entered in the search form.
-     * @return Name and data field.
+     * @returns Name and data field.
      */
     getFieldSearchData(field: AddonModDataField, inputData: CoreFormFields): AddonModDataSearchEntriesAdvancedFieldFormatted[] {
         return this.executeFunctionOnEnabled(field.type, 'getFieldSearchData', [field, inputData]) || [];
@@ -162,7 +162,7 @@ export class AddonModDataFieldsDelegateService extends CoreDelegate<AddonModData
      * @param field Defines the field to be rendered.
      * @param inputData Data entered in the search form.
      * @param originalFieldData Original field entered data.
-     * @return Name and data field.
+     * @returns Name and data field.
      */
     getFieldEditData(
         field: AddonModDataField,
@@ -178,7 +178,7 @@ export class AddonModDataFieldsDelegateService extends CoreDelegate<AddonModData
      * @param field Defines the field to be rendered.
      * @param inputData Data entered in the search form.
      * @param originalFieldData Original field entered data.
-     * @return Name and data field.
+     * @returns Name and data field.
      */
     getFieldEditFiles(
         field: AddonModDataField,
@@ -193,7 +193,7 @@ export class AddonModDataFieldsDelegateService extends CoreDelegate<AddonModData
      *
      * @param field Defines the field to be rendered.
      * @param inputData Data entered in the edit form.
-     * @return String with the notification or false.
+     * @returns String with the notification or false.
      */
     getFieldsNotifications(field: AddonModDataField, inputData: AddonModDataSubfieldData[]): string | undefined {
         return this.executeFunctionOnEnabled(field.type, 'getFieldsNotifications', [field, inputData]);
@@ -203,7 +203,7 @@ export class AddonModDataFieldsDelegateService extends CoreDelegate<AddonModData
      * Check if field type manage files or not.
      *
      * @param field Defines the field to be checked.
-     * @return If the field type manages files.
+     * @returns If the field type manages files.
      */
     hasFiles(field: AddonModDataField): boolean {
         return this.hasFunction(field.type, 'getFieldEditFiles');
@@ -215,7 +215,7 @@ export class AddonModDataFieldsDelegateService extends CoreDelegate<AddonModData
      * @param field Defines the field to be rendered.
      * @param inputData Data entered in the search form.
      * @param originalFieldData Original field entered data.
-     * @return If the field has changes.
+     * @returns If the field has changes.
      */
     hasFieldDataChanged(
         field: AddonModDataField,
@@ -233,7 +233,7 @@ export class AddonModDataFieldsDelegateService extends CoreDelegate<AddonModData
      * Check if a field plugin is supported.
      *
      * @param pluginType Type of the plugin.
-     * @return True if supported, false otherwise.
+     * @returns True if supported, false otherwise.
      */
     isPluginSupported(pluginType: string): boolean {
         return this.hasHandler(pluginType, true);
@@ -246,7 +246,7 @@ export class AddonModDataFieldsDelegateService extends CoreDelegate<AddonModData
      * @param originalContent Original data to be overriden.
      * @param offlineContent Array with all the offline data to override.
      * @param offlineFiles Array with all the offline files in the field.
-     * @return Data overriden
+     * @returns Data overriden
      */
     overrideData(
         field: AddonModDataField,

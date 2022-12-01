@@ -70,7 +70,7 @@ export class CoreLoginSitePolicyPage implements OnInit {
     /**
      * Fetch the site policy URL.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchSitePolicy(): Promise<void> {
         try {
@@ -99,7 +99,7 @@ export class CoreLoginSitePolicyPage implements OnInit {
     /**
      * Cancel.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async cancel(): Promise<void> {
         await CoreUtils.ignoreErrors(CoreSites.logout());
@@ -110,7 +110,7 @@ export class CoreLoginSitePolicyPage implements OnInit {
     /**
      * Accept the site policy.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async accept(): Promise<void> {
         const modal = await CoreDomUtils.showModalLoading('core.sending', true);

@@ -61,7 +61,7 @@ export class CoreIframeUtilsProvider {
      *
      * @param element The frame to check (iframe, embed, ...).
      * @param isSubframe Whether it's a frame inside another frame.
-     * @return True if frame is online and the app is offline, false otherwise.
+     * @returns True if frame is online and the app is offline, false otherwise.
      */
     checkOnlineFrameInOffline(element: CoreFrameElement, isSubframe?: boolean): boolean {
         const src = 'src' in element ? element.src : element.data;
@@ -115,7 +115,7 @@ export class CoreIframeUtilsProvider {
      * @param element The frame to check (iframe, embed, ...).
      * @param src Frame src.
      * @param isSubframe Whether it's a frame inside another frame.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async addOfflineWarning(element: HTMLElement, src: string, isSubframe?: boolean): Promise<void> {
         const site = CoreSites.getCurrentSite();
@@ -134,7 +134,7 @@ export class CoreIframeUtilsProvider {
         const canHandleLink = await CoreContentLinksHelper.canHandleLink(src, undefined, username);
 
         if (!canHandleLink) {
-            // @todo: The not connected icon isn't seen due to the div's height. Also, it's quite big.
+            // @todo The not connected icon isn't seen due to the div's height. Also, it's quite big.
             div.innerHTML = (isSubframe ? '' : '<div class="core-iframe-network-error"></div>') +
                 '<p>' + Translate.instant('core.networkerroriframemsg') + '</p>';
 
@@ -185,7 +185,7 @@ export class CoreIframeUtilsProvider {
      *
      * @param iframe Iframe element.
      * @param url Original URL.
-     * @return Promise resolved with the URL.
+     * @returns Promise resolved with the URL.
      */
     async getAutoLoginUrlForIframe(iframe: HTMLIFrameElement, url: string): Promise<string> {
         const currentSite = CoreSites.getCurrentSite();
@@ -229,7 +229,7 @@ export class CoreIframeUtilsProvider {
      * Please notice that the element should be an iframe, embed or similar.
      *
      * @param element Element to treat (iframe, embed, ...).
-     * @return Window and Document.
+     * @returns Window and Document.
      */
     getContentWindowAndDocument(element: CoreFrameElement): { window: Window | null; document: Document | null } {
         let contentWindow: Window | null = 'contentWindow' in element ? element.contentWindow : null;
@@ -410,7 +410,7 @@ export class CoreIframeUtilsProvider {
      * @param url URL passed to window.open.
      * @param name Name passed to window.open.
      * @param element HTML element of the frame.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async windowOpen(url: string, name: string, element?: CoreFrameElement): Promise<void> {
         const scheme = CoreUrlUtils.getUrlScheme(url);
@@ -464,7 +464,7 @@ export class CoreIframeUtilsProvider {
      * @param link Link clicked, or data of the link clicked.
      * @param element Frame element.
      * @param event Click event.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async linkClicked(
         link: CoreIframeHTMLAnchorElement | {href: string; target?: string; originalHref?: string},
@@ -561,7 +561,7 @@ export class CoreIframeUtilsProvider {
      * Fix cookies for an iframe URL.
      *
      * @param url URL of the iframe.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async fixIframeCookies(url: string): Promise<void> {
         if (!CoreApp.isIOS() || !url || CoreUrlUtils.isLocalFileUrl(url)) {
@@ -590,7 +590,7 @@ export class CoreIframeUtilsProvider {
     /**
      * Check whether the help should be displayed in current OS.
      *
-     * @return Boolean.
+     * @returns Boolean.
      */
     shouldDisplayHelp(): boolean {
         return CoreApp.isIOS() && CoreApp.getPlatformMajorVersion() >= 14;
@@ -600,7 +600,7 @@ export class CoreIframeUtilsProvider {
      * Check whether the help should be displayed for a certain iframe.
      *
      * @param url Iframe URL.
-     * @return Boolean.
+     * @returns Boolean.
      */
     shouldDisplayHelpForUrl(url: string): boolean {
         return this.shouldDisplayHelp() && !CoreUrlUtils.isLocalFileUrl(url);

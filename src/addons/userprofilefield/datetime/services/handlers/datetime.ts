@@ -34,7 +34,7 @@ export class AddonUserProfileFieldDatetimeHandlerService implements CoreUserProf
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return Promise resolved with true if enabled.
+     * @returns Promise resolved with true if enabled.
      */
     async isEnabled(): Promise<boolean> {
         return true;
@@ -47,7 +47,7 @@ export class AddonUserProfileFieldDatetimeHandlerService implements CoreUserProf
      * @param signup True if user is in signup page.
      * @param registerAuth Register auth method. E.g. 'email'.
      * @param formValues Form Values.
-     * @return Data to send for the field.
+     * @returns Data to send for the field.
      */
     async getData(
         field: AuthEmailSignupProfileField | CoreUserProfileField,
@@ -70,7 +70,7 @@ export class AddonUserProfileFieldDatetimeHandlerService implements CoreUserProf
      * Return the Component to use to display the user profile field.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @return The component (or promise resolved with component) to use, undefined if not found.
+     * @returns The component (or promise resolved with component) to use, undefined if not found.
      */
     getComponent(): Type<unknown> | Promise<Type<unknown>> {
         return AddonUserProfileFieldDatetimeComponent;

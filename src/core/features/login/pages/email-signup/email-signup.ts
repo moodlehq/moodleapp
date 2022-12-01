@@ -155,7 +155,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
     /**
      * Fetch the required data from the server.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchData(): Promise<void> {
         try {
@@ -192,7 +192,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
     /**
      * Get signup settings from server.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async getSignupSettings(): Promise<void> {
         this.settings = await CoreWS.callAjax<AuthEmailSignupSettings>(
@@ -230,7 +230,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
     /**
      * Treat the site config, checking if it's valid and extracting the data we're interested in.
      *
-     * @return True if success.
+     * @returns True if success.
      */
     protected treatSiteConfig(): boolean {
         if (this.siteConfig?.registerauth == 'email' && !CoreLoginHelper.isEmailSignupDisabled(this.siteConfig)) {
@@ -259,7 +259,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
      * Create account.
      *
      * @param e Event.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async create(e: Event): Promise<void> {
         e.preventDefault();
@@ -355,7 +355,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
      * Escape mail to avoid special characters to be treated as a RegExp.
      *
      * @param text Initial mail.
-     * @return Escaped mail.
+     * @returns Escaped mail.
      */
     escapeMail(text: string): string {
         return CoreTextUtils.escapeForRegex(text);
@@ -382,7 +382,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
      * Verify Age.
      *
      * @param e Event.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async verifyAge(e: Event): Promise<void> {
         e.preventDefault();

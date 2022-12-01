@@ -39,11 +39,7 @@ export class AddonQtypeCalculatedHandlerService implements CoreQuestionHandler {
     type = 'qtype_calculated';
 
     /**
-     * Return the Component to use to display the question.
-     * It's recommended to return the class of the component, but you can also return an instance of the component.
-     *
-     * @param question The question to render.
-     * @return The component (or promise resolved with component) to use, undefined if not found.
+     * @inheritdoc
      */
     getComponent(): Type<unknown> {
         return AddonQtypeCalculatedComponent;
@@ -53,7 +49,7 @@ export class AddonQtypeCalculatedHandlerService implements CoreQuestionHandler {
      * Check if the units are in a separate field for the question.
      *
      * @param question Question.
-     * @return Whether units are in a separate field.
+     * @returns Whether units are in a separate field.
      */
     hasSeparateUnitField(question: CoreQuestionQuestionParsed): boolean {
         if (!question.parsedSettings) {
@@ -67,21 +63,13 @@ export class AddonQtypeCalculatedHandlerService implements CoreQuestionHandler {
     }
 
     /**
-     * Check if a response is complete.
-     *
-     * @param question The question.
-     * @param answers Object with the question answers (without prefix).
-     * @param component The component the question is related to.
-     * @param componentId Component ID.
-     * @return 1 if complete, 0 if not complete, -1 if cannot determine.
+     * @inheritdoc
      */
     isCompleteResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-        component: string,
-        componentId: string | number,
     ): number {
-        if (!this.isGradableResponse(question, answers, component, componentId)) {
+        if (!this.isGradableResponse(question, answers)) {
             return 0;
         }
 
@@ -120,49 +108,29 @@ export class AddonQtypeCalculatedHandlerService implements CoreQuestionHandler {
     }
 
     /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @return True or promise resolved with true if enabled.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         return true;
     }
 
     /**
-     * Check if a student has provided enough of an answer for the question to be graded automatically,
-     * or whether it must be considered aborted.
-     *
-     * @param question The question.
-     * @param answers Object with the question answers (without prefix).
-     * @param component The component the question is related to.
-     * @param componentId Component ID.
-     * @return 1 if gradable, 0 if not gradable, -1 if cannot determine.
+     * @inheritdoc
      */
     isGradableResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-        component: string, // eslint-disable-line @typescript-eslint/no-unused-vars
-        componentId: string | number, // eslint-disable-line @typescript-eslint/no-unused-vars
     ): number {
         return this.isValidValue(<string> answers.answer) ? 1 : 0;
     }
 
     /**
-     * Check if two responses are the same.
-     *
-     * @param question Question.
-     * @param prevAnswers Object with the previous question answers.
-     * @param newAnswers Object with the new question answers.
-     * @param component The component the question is related to.
-     * @param componentId Component ID.
-     * @return Whether they're the same.
+     * @inheritdoc
      */
     isSameResponse(
         question: CoreQuestionQuestionParsed,
         prevAnswers: CoreQuestionsAnswers,
         newAnswers: CoreQuestionsAnswers,
-        component: string, // eslint-disable-line @typescript-eslint/no-unused-vars
-        componentId: string | number, // eslint-disable-line @typescript-eslint/no-unused-vars
     ): boolean {
         return CoreUtils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer') &&
             CoreUtils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'unit');
@@ -172,7 +140,7 @@ export class AddonQtypeCalculatedHandlerService implements CoreQuestionHandler {
      * Check if a value is valid (not empty).
      *
      * @param value Value to check.
-     * @return Whether the value is valid.
+     * @returns Whether the value is valid.
      */
     isValidValue(value: string | number | null): boolean {
         return !!value || value === '0' || value === 0;
@@ -183,7 +151,7 @@ export class AddonQtypeCalculatedHandlerService implements CoreQuestionHandler {
      *
      * @param question Question.
      * @param answer Answer.
-     * @return Answer and unit.
+     * @returns Answer and unit.
      */
     parseAnswer(question: CoreQuestionQuestionParsed, answer: string): { answer: number | null; unit: string | null } {
         if (!answer) {

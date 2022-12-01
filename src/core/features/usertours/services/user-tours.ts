@@ -235,7 +235,7 @@ export class CoreUserToursService {
     /**
      * Returns the first visible tour in the stack.
      *
-     * @return foreground tour if found or undefined.
+     * @returns foreground tour if found or undefined.
      */
     protected getForegroundTour(): CoreUserToursUserTourComponent | undefined {
         return this.tours.find(({ visible }) => visible)?.component;
@@ -244,7 +244,7 @@ export class CoreUserToursService {
     /**
      * Returns the tour index in the stack.
      *
-     * @return Tour index if found or -1 otherwise.
+     * @returns Tour index if found or -1 otherwise.
      */
     protected getTourIndex(tour: CoreUserToursUserTourComponent): number {
         return this.tours.findIndex(({ component }) => component === tour);
@@ -277,7 +277,7 @@ export class CoreUserToursService {
      * Is user Tour disabled?
      *
      * @param tourId Tour Id or undefined to check all user tours.
-     * @return Wether a particular or all user tours are disabled.
+     * @returns Wether a particular or all user tours are disabled.
      */
     isDisabled(tourId?: string): boolean {
         if (CoreConstants.CONFIG.disableUserTours) {

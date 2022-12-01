@@ -30,71 +30,41 @@ export class AddonQtypeShortAnswerHandlerService implements CoreQuestionHandler 
     type = 'qtype_shortanswer';
 
     /**
-     * Return the Component to use to display the question.
-     * It's recommended to return the class of the component, but you can also return an instance of the component.
-     *
-     * @param question The question to render.
-     * @return The component (or promise resolved with component) to use, undefined if not found.
+     * @inheritdoc
      */
     getComponent(): Type<unknown> {
         return AddonQtypeShortAnswerComponent;
     }
 
     /**
-     * Check if a response is complete.
-     *
-     * @param question The question.
-     * @param answers Object with the question answers (without prefix).
-     * @param component The component the question is related to.
-     * @param componentId Component ID.
-     * @return 1 if complete, 0 if not complete, -1 if cannot determine.
+     * @inheritdoc
      */
     isCompleteResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-        component: string, // eslint-disable-line @typescript-eslint/no-unused-vars
-        componentId: string | number, // eslint-disable-line @typescript-eslint/no-unused-vars
     ): number {
         return answers.answer ? 1 : 0;
     }
 
     /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @return True or promise resolved with true if enabled.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         return true;
     }
 
     /**
-     * Check if a student has provided enough of an answer for the question to be graded automatically,
-     * or whether it must be considered aborted.
-     *
-     * @param question The question.
-     * @param answers Object with the question answers (without prefix).
-     * @param component The component the question is related to.
-     * @param componentId Component ID.
-     * @return 1 if gradable, 0 if not gradable, -1 if cannot determine.
+     * @inheritdoc
      */
     isGradableResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-        component: string,
-        componentId: string | number,
     ): number {
-        return this.isCompleteResponse(question, answers, component, componentId);
+        return this.isCompleteResponse(question, answers);
     }
 
     /**
-     * Check if two responses are the same.
-     *
-     * @param question Question.
-     * @param prevAnswers Object with the previous question answers.
-     * @param newAnswers Object with the new question answers.
-     * @param component The component the question is related to.
-     * @param componentId Component ID.
-     * @return Whether they're the same.
+     * @inheritdoc
      */
     isSameResponse(
         question: CoreQuestionQuestionParsed,

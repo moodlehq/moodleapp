@@ -48,7 +48,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
      *
      * @param siteId Site ID to sync. If not defined, sync all sites.
      * @param force Wether the execution is forced (manual sync).
-     * @return Promise resolved if sync is successful, rejected if sync fails.
+     * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllCourses(siteId?: string, force?: boolean): Promise<void> {
         return this.syncOnSites('courses', (siteId) => this.syncAllCoursesFunc(!!force, siteId), siteId);
@@ -59,7 +59,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
      *
      * @param force Wether the execution is forced (manual sync).
      * @param siteId Site ID to sync.
-     * @return Promise resolved if sync is successful, rejected if sync fails.
+     * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     protected async syncAllCoursesFunc(force: boolean, siteId: string): Promise<void> {
         await Promise.all([
@@ -73,7 +73,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
      *
      * @param siteId Site ID to sync.
      * @param force Wether the execution is forced (manual sync).
-     * @return Promise resolved if sync is successful, rejected if sync fails.
+     * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     protected async syncCoursesCompletion(siteId: string, force: boolean): Promise<void> {
         const completions = await CoreCourseOffline.getAllManualCompletions(siteId);
@@ -109,7 +109,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
      * @param courseId Course ID to be synced.
      * @param courseName Course Name to be synced.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the course is synced or it doesn't need to be synced.
+     * @returns Promise resolved when the course is synced or it doesn't need to be synced.
      */
     syncCourseIfNeeded(courseId: number, courseName?: string, siteId?: string): Promise<CoreCourseSyncResult> {
         // Usually we call isSyncNeeded to check if a certain time has passed.
@@ -123,7 +123,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
      * @param courseId Course ID to be synced.
      * @param courseName Course Name to be synced.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if sync is successful, rejected otherwise.
+     * @returns Promise resolved if sync is successful, rejected otherwise.
      */
     async syncCourse(courseId: number, courseName?: string, siteId?: string): Promise<CoreCourseSyncResult> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -145,7 +145,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
      * @param courseId Course ID to be synced.
      * @param courseName Course Name to be synced.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if sync is successful, rejected otherwise.
+     * @returns Promise resolved if sync is successful, rejected otherwise.
      */
     protected async syncCourseCompletion(courseId: number, courseName?: string, siteId?: string): Promise<CoreCourseSyncResult> {
         const result: CoreCourseSyncResult = {

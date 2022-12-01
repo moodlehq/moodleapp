@@ -30,7 +30,7 @@ export class AddonReportInsightsService {
      * Check if site supports sending insight actions.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean: whether it's supported.
+     * @returns Promise resolved with boolean: whether it's supported.
      */
     async canSendActionInSite(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
@@ -42,7 +42,7 @@ export class AddonReportInsightsService {
      * Check if site supports sending insight actions.
      *
      * @param site Site. If not defined, current site.
-     * @return Whether it's supported.
+     * @returns Whether it's supported.
      */
     canSendAction(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
@@ -56,7 +56,7 @@ export class AddonReportInsightsService {
      * @param actionName Action name.
      * @param ids List of IDs.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if success.
+     * @returns Promise resolved if success.
      */
     async sendActionExecuted(actionName: string, ids: number[], siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

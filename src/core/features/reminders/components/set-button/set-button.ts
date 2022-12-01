@@ -90,7 +90,7 @@ export class CoreRemindersSetButtonComponent implements OnInit {
      * Save reminder.
      *
      * @param timebefore Time before the event to fire the notification.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async saveReminder(timebefore: number): Promise<void> {
         if (this.component === undefined || this.instanceId === undefined || this.type === undefined) {

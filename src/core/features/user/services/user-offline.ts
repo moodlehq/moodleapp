@@ -28,7 +28,7 @@ export class CoreUserOfflineProvider {
      * Get preferences that were changed offline.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with list of preferences.
+     * @returns Promise resolved with list of preferences.
      */
     async getChangedPreferences(siteId?: string): Promise<CoreUserPreferenceDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
@@ -41,7 +41,7 @@ export class CoreUserOfflineProvider {
      *
      * @param name Name of the preference.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the preference, rejected if not found.
+     * @returns Promise resolved with the preference, rejected if not found.
      */
     async getPreference(name: string, siteId?: string): Promise<CoreUserPreferenceDBRecord> {
         const site = await CoreSites.getSite(siteId);
@@ -56,7 +56,7 @@ export class CoreUserOfflineProvider {
      * @param value Value of the preference.
      * @param onlineValue Online value of the preference. If undefined, preserve previously stored value.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async setPreference(name: string, value: string, onlineValue?: string | null , siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

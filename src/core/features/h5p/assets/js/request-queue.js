@@ -85,7 +85,7 @@ H5P.RequestQueue = (function ($, EventDispatcher) {
   /**
    * Start processing of requests queue
    *
-   * @return {boolean} Returns false if it was not possible to resume processing queue
+   * @returns {boolean} Returns false if it was not possible to resume processing queue
    */
   RequestQueue.prototype.resumeQueue = function () {
     // Not supported

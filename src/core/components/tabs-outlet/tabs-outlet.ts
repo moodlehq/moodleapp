@@ -43,8 +43,8 @@ import { CoreComponentsRegistry } from '@singletons/components-registry';
  *
  * Tab contents will only be shown if that tab is selected.
  *
- * @todo: Test RTL and tab history.
- * @todo: This should behave like the split-view in relation to routing (maybe we could reuse some code from
+ * @todo Test RTL and tab history.
+ * @todo This should behave like the split-view in relation to routing (maybe we could reuse some code from
  *  CorePageItemsListManager).
  */
 @Component({
@@ -188,7 +188,7 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
      * Load the tab.
      *
      * @param tabToSelect Tab to load.
-     * @return Promise resolved with true if tab is successfully loaded.
+     * @returns Promise resolved with true if tab is successfully loaded.
      */
     protected async loadTab(tabToSelect: CoreTabsOutletTab): Promise<boolean> {
         return CoreNavigator.navigate(tabToSelect.page, {

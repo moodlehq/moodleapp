@@ -39,7 +39,7 @@ export abstract class CoreSwipeSlidesItemsManagerSource<Item = unknown> extends 
     /**
      * Load items.
      *
-     * @return Items list.
+     * @returns Items list.
      */
     protected abstract loadItems(): Promise<Item[]>;
 
@@ -47,7 +47,7 @@ export abstract class CoreSwipeSlidesItemsManagerSource<Item = unknown> extends 
      * Get a certain item.
      *
      * @param id Item ID.
-     * @return Item, null if not found.
+     * @returns Item, null if not found.
      */
     getItem(id: string | number): Item | null {
         const index = this.getItemIndexById(id);
@@ -59,7 +59,7 @@ export abstract class CoreSwipeSlidesItemsManagerSource<Item = unknown> extends 
      * Get a certain item index.
      *
      * @param item Item.
-     * @return Item index, -1 if not found.
+     * @returns Item index, -1 if not found.
      */
     getItemIndex(item: Item): number {
         return this.getItemIndexById(this.getItemId(item));
@@ -69,7 +69,7 @@ export abstract class CoreSwipeSlidesItemsManagerSource<Item = unknown> extends 
      * Get a certain item index.
      *
      * @param id Item ID.
-     * @return Item index, -1 if not found.
+     * @returns Item index, -1 if not found.
      */
     getItemIndexById(id: string | number): number {
         const index = this.items?.findIndex((listItem) => id === this.getItemId(listItem));
@@ -80,7 +80,7 @@ export abstract class CoreSwipeSlidesItemsManagerSource<Item = unknown> extends 
     /**
      * Get initial item index.
      *
-     * @return Initial item index.
+     * @returns Initial item index.
      */
     getInitialItemIndex(): number {
         if (!this.initialItem) {
@@ -94,7 +94,7 @@ export abstract class CoreSwipeSlidesItemsManagerSource<Item = unknown> extends 
      * Get the ID of an item.
      *
      * @param item Item.
-     * @return Item ID.
+     * @returns Item ID.
      */
     abstract getItemId(item: Item): string | number;
 

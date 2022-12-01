@@ -48,7 +48,7 @@ export abstract class CoreItemsManagerSource<Item = unknown> {
     /**
      * Return a promise that is resolved when the data is loaded.
      *
-     * @return Promise.
+     * @returns Promise.
      */
     waitForLoaded(): Promise<void> {
         return this.loadedPromise;

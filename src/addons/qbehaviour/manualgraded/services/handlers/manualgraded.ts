@@ -36,7 +36,7 @@ export class AddonQbehaviourManualGradedHandlerService implements CoreQuestionBe
      * @param question The question.
      * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return New state (or promise resolved with state).
+     * @returns New state (or promise resolved with state).
      */
     determineNewState(
         component: string,
@@ -58,7 +58,7 @@ export class AddonQbehaviourManualGradedHandlerService implements CoreQuestionBe
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return True or promise resolved with true if enabled.
+     * @returns True or promise resolved with true if enabled.
      */
     async isEnabled(): Promise<boolean> {
         return true;

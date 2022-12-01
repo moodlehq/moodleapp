@@ -34,7 +34,7 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
      * @param question The question to render.
-     * @return The component (or promise resolved with component) to use, undefined if not found.
+     * @returns The component (or promise resolved with component) to use, undefined if not found.
      */
     getComponent(question: CoreQuestionQuestionParsed): undefined | Type<unknown> | Promise<Type<unknown>>;
 
@@ -44,7 +44,7 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
      *
      * @param question The question.
      * @param behaviour The default behaviour.
-     * @return The behaviour to use.
+     * @returns The behaviour to use.
      */
     getBehaviour?(question: CoreQuestionQuestionParsed, behaviour: string): string;
 
@@ -53,7 +53,7 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
      * If a question cannot be submitted it should return a message explaining why (translated or not).
      *
      * @param question The question.
-     * @return Prevent submit message. Undefined or empty if can be submitted.
+     * @returns Prevent submit message. Undefined or empty if can be submitted.
      */
     getPreventSubmitMessage?(question: CoreQuestionQuestionParsed): string | undefined;
 
@@ -65,7 +65,7 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
      * @param onlineError Online validation error.
      * @param component The component the question is related to.
      * @param componentId Component ID.
-     * @return Error message if there's a validation error, undefined otherwise.
+     * @returns Error message if there's a validation error, undefined otherwise.
      */
     getValidationError?(
         question: CoreQuestionQuestionParsed,
@@ -82,7 +82,7 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
      * @param answers Object with the question answers (without prefix).
      * @param component The component the question is related to.
      * @param componentId Component ID.
-     * @return 1 if complete, 0 if not complete, -1 if cannot determine.
+     * @returns 1 if complete, 0 if not complete, -1 if cannot determine.
      */
     isCompleteResponse?(
         question: CoreQuestionQuestionParsed,
@@ -99,7 +99,7 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
      * @param answers Object with the question answers (without prefix).
      * @param component The component the question is related to.
      * @param componentId Component ID.
-     * @return 1 if gradable, 0 if not gradable, -1 if cannot determine.
+     * @returns 1 if gradable, 0 if not gradable, -1 if cannot determine.
      */
     isGradableResponse?(
         question: CoreQuestionQuestionParsed,
@@ -114,7 +114,7 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
      * @param question Question.
      * @param prevAnswers Object with the previous question answers.
      * @param newAnswers Object with the new question answers.
-     * @return Whether they're the same.
+     * @returns Whether they're the same.
      */
     isSameResponse?(
         question: CoreQuestionQuestionParsed,
@@ -133,7 +133,7 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
      * @param component The component the question is related to.
      * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Return a promise resolved when done if async, void if sync.
+     * @returns Return a promise resolved when done if async, void if sync.
      */
     prepareAnswers?(
         question: CoreQuestionQuestionParsed,
@@ -150,7 +150,7 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
      *
      * @param question The question.
      * @param offlineSequenceCheck Sequence check stored in offline.
-     * @return Whether sequencecheck is valid.
+     * @returns Whether sequencecheck is valid.
      */
     validateSequenceCheck?(question: CoreQuestionQuestionParsed, offlineSequenceCheck: string): boolean;
 
@@ -159,7 +159,7 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
      *
      * @param question Question.
      * @param usageId Usage ID.
-     * @return List of files or URLs.
+     * @returns List of files or URLs.
      */
     getAdditionalDownloadableFiles?(question: CoreQuestionQuestionParsed, usageId?: number): CoreWSFile[];
 
@@ -169,7 +169,7 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
      * @param question Question.
      * @param component The component the question is related to.
      * @param componentId Component ID.
-     * @return If async, promise resolved when done.
+     * @returns If async, promise resolved when done.
      */
     clearTmpData?(question: CoreQuestionQuestionParsed, component: string, componentId: string | number): void | Promise<void>;
 
@@ -180,7 +180,7 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
      * @param component The component the question is related to.
      * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return If async, promise resolved when done.
+     * @returns If async, promise resolved when done.
      */
     deleteOfflineData?(
         question: CoreQuestionQuestionParsed,
@@ -197,7 +197,7 @@ export interface CoreQuestionHandler extends CoreDelegateHandler {
      * @param component The component the question is related to.
      * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return If async, promise resolved when done.
+     * @returns If async, promise resolved when done.
      */
     prepareSyncData?(
         question: CoreQuestionQuestionParsed,
@@ -226,7 +226,7 @@ export class CoreQuestionDelegateService extends CoreDelegate<CoreQuestionHandle
      *
      * @param question The question.
      * @param behaviour The default behaviour.
-     * @return The behaviour to use.
+     * @returns The behaviour to use.
      */
     getBehaviourForQuestion(question: CoreQuestionQuestionParsed, behaviour: string): string {
         const type = this.getTypeName(question);
@@ -239,7 +239,7 @@ export class CoreQuestionDelegateService extends CoreDelegate<CoreQuestionHandle
      * Get the directive to use for a certain question type.
      *
      * @param question The question to render.
-     * @return Promise resolved with component to use, undefined if not found.
+     * @returns Promise resolved with component to use, undefined if not found.
      */
     async getComponentForQuestion(question: CoreQuestionQuestionParsed): Promise<Type<unknown> | undefined> {
         const type = this.getTypeName(question);
@@ -252,7 +252,7 @@ export class CoreQuestionDelegateService extends CoreDelegate<CoreQuestionHandle
      * If a question cannot be submitted it should return a message explaining why (translated or not).
      *
      * @param question Question.
-     * @return Prevent submit message. Undefined or empty if can be submitted.
+     * @returns Prevent submit message. Undefined or empty if can be submitted.
      */
     getPreventSubmitMessage(question: CoreQuestionQuestionParsed): string | undefined {
         const type = this.getTypeName(question);
@@ -264,7 +264,7 @@ export class CoreQuestionDelegateService extends CoreDelegate<CoreQuestionHandle
      * Given a type name, return the full name of that type. E.g. 'calculated' -> 'qtype_calculated'.
      *
      * @param type Type to treat.
-     * @return Type full name.
+     * @returns Type full name.
      */
     protected getFullTypeName(type: string): string {
         return 'qtype_' + type;
@@ -274,7 +274,7 @@ export class CoreQuestionDelegateService extends CoreDelegate<CoreQuestionHandle
      * Given a question, return the full name of its question type.
      *
      * @param question Question.
-     * @return Type name.
+     * @returns Type name.
      */
     protected getTypeName(question: CoreQuestionQuestionParsed): string {
         return this.getFullTypeName(question.type);
@@ -287,7 +287,7 @@ export class CoreQuestionDelegateService extends CoreDelegate<CoreQuestionHandle
      * @param answers Object with the question answers (without prefix).
      * @param component The component the question is related to.
      * @param componentId Component ID.
-     * @return 1 if complete, 0 if not complete, -1 if cannot determine.
+     * @returns 1 if complete, 0 if not complete, -1 if cannot determine.
      */
     isCompleteResponse(
         question: CoreQuestionQuestionParsed,
@@ -314,7 +314,7 @@ export class CoreQuestionDelegateService extends CoreDelegate<CoreQuestionHandle
      * @param answers Object with the question answers (without prefix).
      * @param component The component the question is related to.
      * @param componentId Component ID.
-     * @return 1 if gradable, 0 if not gradable, -1 if cannot determine.
+     * @returns 1 if gradable, 0 if not gradable, -1 if cannot determine.
      */
     isGradableResponse(
         question: CoreQuestionQuestionParsed,
@@ -339,7 +339,7 @@ export class CoreQuestionDelegateService extends CoreDelegate<CoreQuestionHandle
      * @param question Question.
      * @param prevAnswers Object with the previous question answers.
      * @param newAnswers Object with the new question answers.
-     * @return Whether they're the same.
+     * @returns Whether they're the same.
      */
     isSameResponse(
         question: CoreQuestionQuestionParsed,
@@ -357,7 +357,7 @@ export class CoreQuestionDelegateService extends CoreDelegate<CoreQuestionHandle
      * Check if a question type is supported.
      *
      * @param type Question type.
-     * @return Whether it's supported.
+     * @returns Whether it's supported.
      */
     isQuestionSupported(type: string): boolean {
         return this.hasHandler(this.getFullTypeName(type), true);
@@ -372,7 +372,7 @@ export class CoreQuestionDelegateService extends CoreDelegate<CoreQuestionHandle
      * @param component The component the question is related to.
      * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when data has been prepared.
+     * @returns Promise resolved when data has been prepared.
      */
     async prepareAnswersForQuestion(
         question: CoreQuestionQuestionParsed,
@@ -396,7 +396,7 @@ export class CoreQuestionDelegateService extends CoreDelegate<CoreQuestionHandle
      *
      * @param question The question.
      * @param offlineSequenceCheck Sequence check stored in offline.
-     * @return Whether sequencecheck is valid.
+     * @returns Whether sequencecheck is valid.
      */
     validateSequenceCheck(question: CoreQuestionQuestionParsed, offlineSequenceCheck: string): boolean {
         const type = this.getTypeName(question);
@@ -409,7 +409,7 @@ export class CoreQuestionDelegateService extends CoreDelegate<CoreQuestionHandle
      *
      * @param question Question.
      * @param usageId Usage ID.
-     * @return List of files or URLs.
+     * @returns List of files or URLs.
      */
     getAdditionalDownloadableFiles(question: CoreQuestionQuestionParsed, usageId?: number): CoreWSFile[] {
         const type = this.getTypeName(question);
@@ -423,7 +423,7 @@ export class CoreQuestionDelegateService extends CoreDelegate<CoreQuestionHandle
      * @param question Question.
      * @param component The component the question is related to.
      * @param componentId Component ID.
-     * @return If async, promise resolved when done.
+     * @returns If async, promise resolved when done.
      */
     clearTmpData(question: CoreQuestionQuestionParsed, component: string, componentId: string | number): void | Promise<void> {
         const type = this.getTypeName(question);
@@ -438,7 +438,7 @@ export class CoreQuestionDelegateService extends CoreDelegate<CoreQuestionHandle
      * @param component The component the question is related to.
      * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return If async, promise resolved when done.
+     * @returns If async, promise resolved when done.
      */
     async deleteOfflineData(
         question: CoreQuestionQuestionParsed,
@@ -459,7 +459,7 @@ export class CoreQuestionDelegateService extends CoreDelegate<CoreQuestionHandle
      * @param component The component the question is related to.
      * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return If async, promise resolved when done.
+     * @returns If async, promise resolved when done.
      */
     async prepareSyncData(
         question: CoreQuestionQuestionParsed,
@@ -481,7 +481,7 @@ export class CoreQuestionDelegateService extends CoreDelegate<CoreQuestionHandle
      * @param onlineError Online validation error.
      * @param component The component the question is related to.
      * @param componentId Component ID.
-     * @return Error message if there's a validation error, undefined otherwise.
+     * @returns Error message if there's a validation error, undefined otherwise.
      */
     getValidationError(
         question: CoreQuestionQuestionParsed,

@@ -32,7 +32,7 @@ export class CoreDom {
      *
      * @param node DOM Element.
      * @param selector Selector to search.
-     * @return Closest ancestor or null if not found.
+     * @returns Closest ancestor or null if not found.
      */
     static closest<T = HTMLElement>(node: HTMLElement | Node | null, selector: string): T | null {
         if (!node) {
@@ -59,7 +59,7 @@ export class CoreDom {
      *
      * @param element Element to get the position.
      * @param parent Parent element to get relative position.
-     * @return X and Y position.
+     * @returns X and Y position.
      */
     static getRelativeElementPosition(element: HTMLElement, parent: HTMLElement): CoreCoordinates {
         // Get the top, left coordinates of two elements
@@ -77,7 +77,7 @@ export class CoreDom {
      * Check whether an element has been added to the DOM.
      *
      * @param element Element.
-     * @return True if element has been added to the DOM, false otherwise.
+     * @returns True if element has been added to the DOM, false otherwise.
      */
     static isElementInDom(element: HTMLElement): boolean {
         return element.getRootNode({ composed: true }) === document;
@@ -86,9 +86,9 @@ export class CoreDom {
     /**
      * Check whether an element is intersecting the intersectionRatio in viewport.
      *
-     * @param element
+     * @param element Element to check.
      * @param intersectionRatio Intersection ratio (From 0 to 1).
-     * @return True if in viewport.
+     * @returns True if in viewport.
      */
     static isElementInViewport(element: HTMLElement, intersectionRatio = 1): boolean {
         const elementRectangle = element.getBoundingClientRect();
@@ -116,7 +116,7 @@ export class CoreDom {
      *
      * @param element Element.
      * @param checkSize Wether to check size to check for visibility.
-     * @return True if element is visible inside the DOM.
+     * @returns True if element is visible inside the DOM.
      */
     static isElementVisible(element: HTMLElement, checkSize = true): boolean {
         if (checkSize && (element.clientWidth === 0 || element.clientHeight === 0)) {
@@ -184,7 +184,7 @@ export class CoreDom {
      *
      * @param resizeFunction Function to execute on resize.
      * @param debounceDelay Debounce time in ms.
-     * @return Event observer to call off when finished.
+     * @returns Event observer to call off when finished.
      */
     static onWindowResize(resizeFunction: (ev?: Event) => void, debounceDelay = 20): CoreEventObserver {
         const resizeListener = CoreUtils.debounce(async (ev?: Event) => {
@@ -208,7 +208,7 @@ export class CoreDom {
      * @param element The element to scroll to.
      * @param selector Selector to find the element to scroll to inside the defined element.
      * @param scrollOptions Scroll Options.
-     * @return Wether the scroll suceeded.
+     * @returns Wether the scroll suceeded.
      */
     static async scrollToElement(element: HTMLElement, selector?: string, scrollOptions: CoreScrollOptions = {}): Promise<boolean> {
         if (selector) {
@@ -253,7 +253,7 @@ export class CoreDom {
      * Search for an input with error (core-input-error directive) and scrolls to it if found.
      *
      * @param container The element that contains the element that must be scrolled.
-     * @return True if the element is found, false otherwise.
+     * @returns True if the element is found, false otherwise.
      */
     static async scrollToInputError(container: HTMLElement): Promise<boolean> {
         return CoreDom.scrollToElement(container, '.core-input-error');
@@ -264,7 +264,7 @@ export class CoreDom {
      *
      * @param scrollElement Scroll Element.
      * @param marginError Error margin when calculating.
-     * @return Wether the scroll reached the bottom.
+     * @returns Wether the scroll reached the bottom.
      */
     static scrollIsBottom(scrollElement?: HTMLElement, marginError = 0): boolean {
         if (!scrollElement) {
@@ -279,7 +279,7 @@ export class CoreDom {
      *
      * @param element HTML Element.
      * @param slot Slot name.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     static slotOnContent(element: HTMLElement, slot = 'fixed'): CoreCancellablePromise<void> {
         element.setAttribute('slot', slot);
@@ -310,7 +310,7 @@ export class CoreDom {
      * Wait an element to be added to the root DOM.
      *
      * @param element Element to wait.
-     * @return Cancellable promise.
+     * @returns Cancellable promise.
      */
     static waitToBeInDOM(element: HTMLElement): CoreCancellablePromise<void> {
         const root = element.getRootNode({ composed: true });
@@ -347,7 +347,7 @@ export class CoreDom {
      * Wait an element to be in dom of another element using a selector
      *
      * @param container Element to wait.
-     * @return Cancellable promise.
+     * @returns Cancellable promise.
      */
     static async waitToBeInsideElement(container: HTMLElement, selector: string): Promise<CoreCancellablePromise<HTMLElement>> {
         await CoreDom.waitToBeInDOM(container);
@@ -387,7 +387,7 @@ export class CoreDom {
      * @param element Element to watch.
      * @param intersectionRatio Intersection ratio (From 0 to 1).
      * @param callback Callback when visibility changes.
-     * @return Function to stop watching.
+     * @returns Function to stop watching.
      */
     static watchElementInViewport(
         element: HTMLElement,
@@ -400,7 +400,7 @@ export class CoreDom {
      *
      * @param element Element to watch.
      * @param callback Callback when visibility changes.
-     * @return Function to stop watching.
+     * @returns Function to stop watching.
      */
     static watchElementInViewport(element: HTMLElement, callback: (visible: boolean) => void): () => void;
 
@@ -442,7 +442,7 @@ export class CoreDom {
      *
      * @param element Element to wait.
      * @param intersectionRatio Intersection ratio (From 0 to 1).
-     * @return Cancellable promise.
+     * @returns Cancellable promise.
      */
     static waitToBeInViewport(element: HTMLElement, intersectionRatio = 1): CoreCancellablePromise<void> {
         let unsubscribe: (() => void) | undefined;
@@ -477,7 +477,7 @@ export class CoreDom {
      *
      * @param element Element to wait.
      * @param checkSize Wether to check size to check for visibility.
-     * @return Cancellable promise.
+     * @returns Cancellable promise.
      */
     static waitToBeVisible(element: HTMLElement, checkSize = true): CoreCancellablePromise<void> {
         const domPromise = CoreDom.waitToBeInDOM(element);

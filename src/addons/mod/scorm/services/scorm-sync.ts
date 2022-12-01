@@ -60,7 +60,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
      * @param lastOfflineIncomplete Whether the last offline attempt is incomplete.
      * @param warnings Array where to add the warnings.
      * @param siteId Site ID.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async addToNewOrDelete(
         scormId: number,
@@ -111,7 +111,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
      * @param lastOnline Last online attempt number.
      * @param cmId Module ID.
      * @param siteId Site ID.
-     * @return Promise resolved if can retry the synchronization, rejected otherwise.
+     * @returns Promise resolved if can retry the synchronization, rejected otherwise.
      */
     protected async canRetrySync(
         scormId: number,
@@ -147,7 +147,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
      * @param newAttempts Object with the attempts to create. The keys are the timecreated, the values are the attempt number.
      * @param lastOffline Number of last offline attempt.
      * @param siteId Site ID.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async createNewAttemptsAtEnd(
         scormId: number,
@@ -178,7 +178,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
      * @param lastOnlineWasFinished Whether the last online attempt was finished before the sync.
      * @param initialCount Attempt count before the sync.
      * @param updated Whether some data was sent to the site.
-     * @return Promise resolved on success.
+     * @returns Promise resolved on success.
      */
     protected async finishSync(
         siteId: string,
@@ -239,7 +239,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
      * @param attempt Attempt number.
      * @param cmId Module ID.
      * @param siteId Site ID.
-     * @return Promise resolved with the data.
+     * @returns Promise resolved with the data.
      */
     protected async getOfflineAttemptData(
         scormId: number,
@@ -275,7 +275,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
      * @param lastCollision Last attempt with collision (exists in online and offline).
      * @param offlineAttempts Numbers of offline attempts.
      * @param siteId Site ID.
-     * @return Promise resolved when attempts have been moved.
+     * @returns Promise resolved when attempts have been moved.
      */
     protected async moveNewAttempts(
         scormId: number,
@@ -356,7 +356,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
      * @param attempt Attemot number.
      * @param cmId Module ID.
      * @param siteId Site ID.
-     * @return Promise resolved when the snapshot is stored.
+     * @returns Promise resolved when the snapshot is stored.
      */
     protected async saveSyncSnapshot(scormId: number, attempt: number, cmId: number, siteId: string): Promise<void> {
         // Try to get current state from the site.
@@ -403,7 +403,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
      *
      * @param snapshot Attempt's snapshot.
      * @param userData Data retrieved from the site.
-     * @return True if snapshot is equal to the user data, false otherwise.
+     * @returns True if snapshot is equal to the user data, false otherwise.
      */
     protected snapshotEquals(snapshot: AddonModScormUserDataMap, userData: AddonModScormUserDataMap): boolean {
         // Check that snapshot contains the data from the site.
@@ -442,7 +442,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
      *
      * @param siteId Site ID to sync. If not defined, sync all sites.
      * @param force Wether to force sync not depending on last execution.
-     * @return Promise resolved if sync is successful, rejected if sync fails.
+     * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllScorms(siteId?: string, force?: boolean): Promise<void> {
         return this.syncOnSites('all SCORMs', (siteId) => this.syncAllScormsFunc(!!force, siteId), siteId);
@@ -453,7 +453,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
      *
      * @param force Wether to force sync or not.
      * @param siteId Site ID to sync.
-     * @param Promise resolved if sync is successful, rejected if sync fails.
+     * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     protected async syncAllScormsFunc(force: boolean, siteId: string): Promise<void> {
 
@@ -495,7 +495,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
      * @param attempt Attempt number.
      * @param cmId Module ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the attempt is successfully synced.
+     * @returns Promise resolved when the attempt is successfully synced.
      */
     protected async syncAttempt(scormId: number, attempt: number, cmId: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -559,7 +559,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
      *
      * @param scorm SCORM.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the SCORM is synced or if it doesn't need to be synced.
+     * @returns Promise resolved when the SCORM is synced or if it doesn't need to be synced.
      */
     async syncScormIfNeeded(scorm: AddonModScormScorm, siteId?: string): Promise<AddonModScormSyncResult | undefined> {
         const needed = await this.isSyncNeeded(scorm.id, siteId);
@@ -574,7 +574,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
      *
      * @param scorm SCORM.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved in success.
+     * @returns Promise resolved in success.
      */
     syncScorm(scorm: AddonModScormScorm, siteId?: string): Promise<AddonModScormSyncResult> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -604,7 +604,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
      *
      * @param scorm SCORM.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved in success.
+     * @returns Promise resolved in success.
      */
     protected async performSyncScorm(scorm: AddonModScormScorm, siteId: string): Promise<AddonModScormSyncResult> {
         let warnings: string[] = [];
@@ -711,7 +711,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
      * @param offlineAttempts Numbers of offline attempts.
      * @param cmId Module ID.
      * @param siteId Site ID.
-     * @return Promise resolved when the collisions have been treated. It returns warnings array.
+     * @returns Promise resolved when the collisions have been treated. It returns warnings array.
      * @description
      *
      * Treat collisions found in a SCORM synchronization process. A collision is when an attempt exists both in offline

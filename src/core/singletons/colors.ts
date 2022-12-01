@@ -46,7 +46,7 @@ export class CoreColors {
      * Returns better contrast color.
      *
      * @param color Black or white texts.
-     * @return True if white contrasts better than black. False otherwise.
+     * @returns True if white contrasts better than black. False otherwise.
      */
     static isWhiteContrastingBetter(color: string): boolean {
         return CoreColors.luma(color) < 165;
@@ -56,7 +56,7 @@ export class CoreColors {
      * Returns the same color % darker.
      *
      * @param color Color to get darker.
-     * @return Darker Hex RGB color.
+     * @returns Darker Hex RGB color.
      */
     static darker(color: string, percent: number = 48): string {
         const inversePercent = 1 - (percent / 100);
@@ -72,7 +72,7 @@ export class CoreColors {
      * Returns the same color % lighter.
      *
      * @param color Color to get lighter.
-     * @return Lighter Hex RGB color.
+     * @returns Lighter Hex RGB color.
      */
     static lighter(color: string, percent: number = 80): string {
         percent = percent / 100;
@@ -90,7 +90,7 @@ export class CoreColors {
      * Returns the hex code from any color css type (ie named).
      *
      * @param color Color in any format.
-     * @return Color in hex format.
+     * @returns Color in hex format.
      */
     static getColorHex(color: string): string {
         const rgba = CoreColors.getColorRGBA(color);
@@ -109,7 +109,7 @@ export class CoreColors {
      * Returns RGBA color from any color format.
      *
      * @param color Color in any format.
-     * @return Red, green, blue and alpha.
+     * @returns Red, green, blue and alpha.
      */
     static getColorRGBA(color: string): number[] {
         if (!color.match(/rgba?\(.*\)/)) {
@@ -131,7 +131,7 @@ export class CoreColors {
      * Gets the luma of a color.
      *
      * @param color Hex RGB color.
-     * @return Luma number based on SMPTE C, Rec. 709 weightings.
+     * @returns Luma number based on SMPTE C, Rec. 709 weightings.
      */
     protected static luma(color: string): number {
         const rgb = CoreColors.hexToRGB(color);
@@ -143,7 +143,7 @@ export class CoreColors {
      * Converts Hex RGB to Color components.
      *
      * @param color Hexadec RGB Color.
-     * @return RGB color components.
+     * @returns RGB color components.
      */
     static hexToRGB(color: string): ColorComponents {
         if (color.charAt(0) == '#') {
@@ -168,7 +168,7 @@ export class CoreColors {
      * Converts RGB components to Hex string.
      *
      * @param color Color components.
-     * @return RGB color in string.
+     * @returns RGB color in string.
      */
     protected static RGBToHex(color: ColorComponents): string {
         return '#' + CoreColors.componentToHex(color.red) +
@@ -181,7 +181,7 @@ export class CoreColors {
      * Converts a color component from decimal to hexadec.
      *
      * @param c color component in decimal.
-     * @return Hexadec of the color component.
+     * @returns Hexadec of the color component.
      */
     protected static componentToHex(c: number): string {
         return ('0' + c.toString(16)).slice(-2);
@@ -190,7 +190,7 @@ export class CoreColors {
     /**
      * Get the toolbar's current background color.
      *
-     * @return Color in hex format.
+     * @returns Color in hex format.
      */
     static getToolbarBackgroundColor(): string {
         const element = document.querySelector('ion-header ion-toolbar');

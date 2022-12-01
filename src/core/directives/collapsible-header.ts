@@ -442,7 +442,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
      * Wait until all <core-format-text> children inside the element are done rendering.
      *
      * @param element Element.
-     * @return Promise resolved when texts are rendered.
+     * @returns Promise resolved when texts are rendered.
      */
     protected async waitFormatTextsRendered(element: Element): Promise<void> {
         await CoreComponentsRegistry.waitComponentsReady(element, 'core-format-text', CoreFormatTextDirective);

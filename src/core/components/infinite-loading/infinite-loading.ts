@@ -132,7 +132,7 @@ export class CoreInfiniteLoadingComponent implements OnChanges {
     /**
      * Get the height of the element.
      *
-     * @return Height.
+     * @returns Height.
      * @todo erase if not needed: I'm depreacating it because if not needed or getBoundingClientRect has the same result, it should
      * be erased, also with getElementHeight
      * @deprecated since 3.9.5
@@ -144,7 +144,7 @@ export class CoreInfiniteLoadingComponent implements OnChanges {
     /**
      * Get the infinite scroll element.
      *
-     * @return Element or null.
+     * @returns Element or null.
      */
     get infiniteScrollElement(): HTMLIonInfiniteScrollElement | null {
         return this.hostElement.querySelector('ion-infinite-scroll');

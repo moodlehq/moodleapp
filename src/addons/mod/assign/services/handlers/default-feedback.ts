@@ -28,18 +28,14 @@ export class AddonModAssignDefaultFeedbackHandler implements AddonModAssignFeedb
     type = 'default';
 
     /**
-     * Discard the draft data of the feedback plugin.
-     *
-     * @return If the function is async, it should return a Promise resolved when done.
+     * @inheritdoc
      */
     discardDraft(): void {
         // Nothing to do.
     }
 
     /**
-     * Return the draft saved data of the feedback plugin.
-     *
-     * @return Data (or promise resolved with the data).
+     * @inheritdoc
      */
     getDraft(): undefined {
         // Nothing to do.
@@ -47,20 +43,14 @@ export class AddonModAssignDefaultFeedbackHandler implements AddonModAssignFeedb
     }
 
     /**
-     * Get files used by this plugin.
-     * The files returned by this function will be prefetched when the user prefetches the assign.
-     *
-     * @return The files (or promise resolved with the files).
+     * @inheritdoc
      */
     getPluginFiles(): CoreWSFile[] {
         return [];
     }
 
     /**
-     * Get a readable name to use for the plugin.
-     *
-     * @param plugin The plugin object.
-     * @return The plugin name.
+     * @inheritdoc
      */
     getPluginName(plugin: AddonModAssignPlugin): string {
         // Check if there's a translated string for the plugin.
@@ -81,55 +71,42 @@ export class AddonModAssignDefaultFeedbackHandler implements AddonModAssignFeedb
     }
 
     /**
-     * Check if the feedback data has changed for this plugin.
-     *
-     * @return Boolean (or promise resolved with boolean): whether the data has changed.
+     * @inheritdoc
      */
     hasDataChanged(): boolean {
         return false;
     }
 
     /**
-     * Check whether the plugin has draft data stored.
-     *
-     * @return Boolean or promise resolved with boolean: whether the plugin has draft data.
+     * @inheritdoc
      */
     hasDraftData(): boolean {
         return false;
     }
 
     /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @return True or promise resolved with true if enabled.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         return true;
     }
 
     /**
-     * Prefetch any required data for the plugin.
-     * This should NOT prefetch files. Files to be prefetched should be returned by the getPluginFiles function.
-     *
-     * @return Promise resolved when done.
+     * @inheritdoc
      */
     async prefetch(): Promise<void> {
         return;
     }
 
     /**
-     * Prepare and add to pluginData the data to send to the server based on the draft data saved.
-     *
-     * @return If the function is async, it should return a Promise resolved when done.
+     * @inheritdoc
      */
     prepareFeedbackData(): void {
         // Nothing to do.
     }
 
     /**
-     * Save draft data of the feedback plugin.
-     *
-     * @return If the function is async, it should return a Promise resolved when done.
+     * @inheritdoc
      */
     saveDraft(): void {
         // Nothing to do.

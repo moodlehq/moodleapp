@@ -42,6 +42,7 @@ export class AddonBlockTimelineEventsComponent {
      *
      * @param event Click event.
      * @param url Url of the action.
+     * @returns Promise resolved when done.
      */
     async action(event: Event, url: string): Promise<void> {
         event.preventDefault();

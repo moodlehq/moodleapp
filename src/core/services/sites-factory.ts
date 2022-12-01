@@ -33,7 +33,7 @@ export class CoreSitesFactoryService {
      * @param privateToken Private token.
      * @param config Site public config.
      * @param loggedOut Whether user is logged out.
-     * @return Site instance.
+     * @returns Site instance.
      */
     makeSite(
         id: string | undefined,

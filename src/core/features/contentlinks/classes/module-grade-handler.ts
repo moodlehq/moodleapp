@@ -58,7 +58,7 @@ export class CoreContentLinksModuleGradeHandler extends CoreContentLinksHandlerB
      * @param url The URL to treat.
      * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
      * @param courseId Course ID related to the URL. Optional but recommended.
-     * @return List of (or promise resolved with list of) actions.
+     * @returns List of (or promise resolved with list of) actions.
      */
     getActions(
         siteIds: string[],
@@ -104,7 +104,7 @@ export class CoreContentLinksModuleGradeHandler extends CoreContentLinksHandlerB
      * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
      * @param courseId Course ID related to the URL.
      * @param siteId Site to use.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async goToReview(
         url: string, // eslint-disable-line @typescript-eslint/no-unused-vars

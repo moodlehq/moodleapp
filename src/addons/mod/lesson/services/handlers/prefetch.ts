@@ -51,7 +51,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
     /**
      * Ask password.
      *
-     * @return Promise resolved with the password.
+     * @returns Promise resolved with the password.
      */
     protected async askUserPassword(): Promise<string> {
         // Create and show the modal.
@@ -72,7 +72,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
      * @param module Module.
      * @param courseId Course ID the module belongs to.
      * @param single True if we're downloading a single module, false if we're downloading a whole section.
-     * @return Promise resolved with the size.
+     * @returns Promise resolved with the size.
      */
     async getDownloadSize(module: CoreCourseAnyModuleData, courseId: number, single?: boolean): Promise<CoreFileSizeSum> {
         const siteId = CoreSites.getCurrentSiteId();
@@ -113,7 +113,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
      *
      * @param lessonId Lesson ID.
      * @param options Other options.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async getLessonPassword(
         lessonId: number,
@@ -165,7 +165,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
      *
      * @param moduleId The module ID.
      * @param courseId The course ID the module belongs to.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number): Promise<void> {
         // Only invalidate the data that doesn't ignore cache when prefetching.
@@ -181,7 +181,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
      *
      * @param module Module.
      * @param courseId Course ID the module belongs to.
-     * @return Promise resolved when invalidated.
+     * @returns Promise resolved when invalidated.
      */
     async invalidateModule(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
         // Invalidate data to determine if module is downloadable.
@@ -203,7 +203,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
      *
      * @param module Module.
      * @param courseId Course ID the module belongs to.
-     * @return Whether the module can be downloaded. The promise should never be rejected.
+     * @returns Whether the module can be downloaded. The promise should never be rejected.
      */
     async isDownloadable(module: CoreCourseAnyModuleData, courseId: number): Promise<boolean> {
         const siteId = CoreSites.getCurrentSiteId();
@@ -235,7 +235,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
      * @param courseId Course ID the module belongs to.
      * @param single True if we're downloading a single module, false if we're downloading a whole section.
      * @param siteId Site ID.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async prefetchLesson(
         module: CoreCourseAnyModuleData,
@@ -296,6 +296,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
      * @param password Password (if needed).
      * @param modOptions Options.
      * @param siteId Site ID.
+     * @returns Access information.
      */
     protected async launchRetake(
         lessonId: number,
@@ -321,7 +322,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
      * @param password Password (if needed).
      * @param retake Retake to prefetch.
      * @param modOptions Options.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async prefetchPlayData(
         lesson: AddonModLessonLessonWSData,
@@ -350,7 +351,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
      *
      * @param lesson Lesson.
      * @param options Options.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async prefetchPagesData(
         lesson: AddonModLessonLessonWSData,
@@ -397,7 +398,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
      * @param lessonId Lesson ID.
      * @param hasRandomBranch Whether any page has a random branch jump.
      * @param modOptions Options.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async prefetchPossibleJumps(
         lessonId: number,
@@ -422,7 +423,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
      * @param moduleId Module ID.
      * @param lessonId Lesson ID.
      * @param modOptions Options.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async prefetchGroupInfo(
         moduleId: number,
@@ -445,7 +446,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
      * @param moduleId Module ID.
      * @param lessonId Lesson ID.
      * @param modOptions Options.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async prefetchReportsData(
         moduleId: number,
@@ -497,7 +498,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
      * @param accessInfo Lesson access info.
      * @param password Password to check.
      * @param options Other options.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async validatePassword(
         lessonId: number,
@@ -529,7 +530,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
      * @param module Module.
      * @param courseId Course ID the module belongs to
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     sync(module: CoreCourseAnyModuleData, courseId: number, siteId?: string): Promise<AddonModLessonSyncResult> {
         return AddonModLessonSync.syncLesson(module.instance, false, false, siteId);

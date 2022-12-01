@@ -30,11 +30,7 @@ export class AddonQtypeCalculatedMultiHandlerService implements CoreQuestionHand
     type = 'qtype_calculatedmulti';
 
     /**
-     * Return the Component to use to display the question.
-     * It's recommended to return the class of the component, but you can also return an instance of the component.
-     *
-     * @param question The question to render.
-     * @return The component (or promise resolved with component) to use, undefined if not found.
+     * @inheritdoc
      */
     getComponent(): Type<unknown> {
         // Calculated multi behaves like a multichoice, use the same component.
@@ -42,13 +38,7 @@ export class AddonQtypeCalculatedMultiHandlerService implements CoreQuestionHand
     }
 
     /**
-     * Check if a response is complete.
-     *
-     * @param question The question.
-     * @param answers Object with the question answers (without prefix).
-     * @param component The component the question is related to.
-     * @param componentId Component ID.
-     * @return 1 if complete, 0 if not complete, -1 if cannot determine.
+     * @inheritdoc
      */
     isCompleteResponse(
         question: CoreQuestionQuestionParsed,
@@ -59,23 +49,14 @@ export class AddonQtypeCalculatedMultiHandlerService implements CoreQuestionHand
     }
 
     /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @return True or promise resolved with true if enabled.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         return true;
     }
 
     /**
-     * Check if a student has provided enough of an answer for the question to be graded automatically,
-     * or whether it must be considered aborted.
-     *
-     * @param question The question.
-     * @param answers Object with the question answers (without prefix).
-     * @param component The component the question is related to.
-     * @param componentId Component ID.
-     * @return 1 if gradable, 0 if not gradable, -1 if cannot determine.
+     * @inheritdoc
      */
     isGradableResponse(
         question: CoreQuestionQuestionParsed,
@@ -86,14 +67,7 @@ export class AddonQtypeCalculatedMultiHandlerService implements CoreQuestionHand
     }
 
     /**
-     * Check if two responses are the same.
-     *
-     * @param question Question.
-     * @param prevAnswers Object with the previous question answers.
-     * @param newAnswers Object with the new question answers.
-     * @param component The component the question is related to.
-     * @param componentId Component ID.
-     * @return Whether they're the same.
+     * @inheritdoc
      */
     isSameResponse(
         question: CoreQuestionQuestionParsed,

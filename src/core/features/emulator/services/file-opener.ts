@@ -28,7 +28,7 @@ export class FileOpenerMock extends FileOpener {
      * Check if an app is already installed.
      *
      * @param packageId Package ID.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     appIsInstalled(packageId: string): Promise<any> {
         return Promise.reject('appIsInstalled not supported in browser.');
@@ -39,7 +39,7 @@ export class FileOpenerMock extends FileOpener {
      *
      * @param filePath File path.
      * @param fileMIMEType File MIME type.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async open(filePath: string, fileMIMEType: string): Promise<any> {
         if (!filePath.match(/^filesystem:/)) {
@@ -66,7 +66,7 @@ export class FileOpenerMock extends FileOpener {
      * Uninstalls a package.
      *
      * @param packageId Package ID.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     uninstall(packageId: string): Promise<any> {
         return Promise.reject('uninstall not supported in browser.');

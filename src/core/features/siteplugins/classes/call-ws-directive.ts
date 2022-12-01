@@ -64,7 +64,7 @@ export class CoreSitePluginsCallWSBaseDirective implements OnInit, OnDestroy {
     /**
      * Call a WS.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async callWS(): Promise<void> {
         try {
@@ -89,7 +89,7 @@ export class CoreSitePluginsCallWSBaseDirective implements OnInit, OnDestroy {
     /**
      * Get the params for the WS call.
      *
-     * @return Params.
+     * @returns Params.
      */
     protected getParamsForWS(): CoreFormFields {
         let params = this.params || {};
@@ -109,7 +109,6 @@ export class CoreSitePluginsCallWSBaseDirective implements OnInit, OnDestroy {
      * Function called when the WS call is successful.
      *
      * @param result Result of the WS call.
-     * @return If async, promise resolved when done.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected wsCallSuccess(result: unknown): void | Promise<void> {
@@ -119,7 +118,7 @@ export class CoreSitePluginsCallWSBaseDirective implements OnInit, OnDestroy {
     /**
      * Invalidate the WS call.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     invalidate(): Promise<void> {
         const params = this.getParamsForWS();

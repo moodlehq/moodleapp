@@ -116,7 +116,7 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Convenience function to login the user.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loginUser(): Promise<void> {
         this.sessionId = await AddonModChat.loginUser(this.chatId);
@@ -125,7 +125,7 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Convenience function to fetch chat messages.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchMessages(): Promise<void> {
         const messagesInfo = await AddonModChat.getLatestMessages(this.sessionId!, this.lastTime);
@@ -194,7 +194,7 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
      * Get the user fullname for a beep.
      *
      * @param id User Id before parsing.
-     * @return User fullname.
+     * @returns User fullname.
      */
     protected async getUserFullname(id: string): Promise<string> {
         const idNumber = parseInt(id, 10);
@@ -252,7 +252,7 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Convenience function to be called every certain time to fetch chat messages.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchMessagesInterval(): Promise<void> {
         if (!this.isOnline || this.pollingRunning) {
@@ -319,7 +319,7 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Try to reconnect.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async reconnect(): Promise<void> {
         const modal = await CoreDomUtils.showModalLoading();
@@ -351,7 +351,7 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Check if we can leave the page or not.
      *
-     * @return Resolved with true if we can leave it, rejected if not.
+     * @returns Resolved with true if we can leave it, rejected if not.
      */
     async canLeave(): Promise<boolean> {
         if (! this.messages.some((message) => !message.special)) {

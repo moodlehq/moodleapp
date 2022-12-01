@@ -79,7 +79,7 @@ export class AddonNotificationsMainMenuHandlerService implements CoreMainMenuHan
     /**
      * Check if the handler is enabled on a site level.
      *
-     * @return Whether or not the handler is enabled on a site level.
+     * @returns Whether or not the handler is enabled on a site level.
      */
     async isEnabled(): Promise<boolean> {
         return true;
@@ -88,7 +88,7 @@ export class AddonNotificationsMainMenuHandlerService implements CoreMainMenuHan
     /**
      * Returns the data needed to render the handler.
      *
-     * @return Data needed to render the handler.
+     * @returns Data needed to render the handler.
      */
     getDisplayData(): CoreMainMenuHandlerData {
         if (this.handlerData.loading) {
@@ -102,7 +102,7 @@ export class AddonNotificationsMainMenuHandlerService implements CoreMainMenuHan
      * Triggers an update for the badge number and loading status. Mandatory if showBadge is enabled.
      *
      * @param siteId Site ID or current Site if undefined.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async updateBadge(siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();

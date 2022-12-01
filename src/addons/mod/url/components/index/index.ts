@@ -54,7 +54,7 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         super.ngOnInit();
@@ -65,7 +65,7 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
     /**
      * Perform the invalidate content function.
      *
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async invalidateContent(): Promise<void> {
         await AddonModUrl.invalidateContent(this.module.id, this.courseId);
@@ -75,7 +75,7 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
      * Download url contents.
      *
      * @param refresh Whether we're refreshing data.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchContent(refresh = false): Promise<void> {
         try {
@@ -129,7 +129,7 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
      * Calculate the display options to determine how the URL should be rendered.
      *
      * @param url Object with the URL data.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async calculateDisplayOptions(url: AddonModUrlUrl): Promise<void> {
         const displayType = AddonModUrl.getFinalDisplayType(url);
@@ -161,7 +161,7 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
     /**
      * Log view into the site and checks module completion.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async logView(): Promise<void> {
         try {

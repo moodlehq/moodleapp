@@ -130,7 +130,7 @@ export class AddonQtypeDdwtosQuestion {
      * Get the choice number of an element. It is extracted from the classes.
      *
      * @param node Element to check.
-     * @return Choice number.
+     * @returns Choice number.
      */
     getChoice(node: HTMLElement | null): number | undefined {
         return this.getClassnameNumericSuffix(node, 'choice');
@@ -141,7 +141,7 @@ export class AddonQtypeDdwtosQuestion {
      *
      * @param node The element to check.
      * @param prefix Prefix of the class to check.
-     * @return The number in the class.
+     * @returns The number in the class.
      */
     getClassnameNumericSuffix(node: HTMLElement | null, prefix: string): number | undefined {
         if (node?.classList.length) {
@@ -164,7 +164,7 @@ export class AddonQtypeDdwtosQuestion {
      * Get the group number of an element. It is extracted from the classes.
      *
      * @param node Element to check.
-     * @return Group number.
+     * @returns Group number.
      */
     getGroup(node: HTMLElement | null): number | undefined {
         return this.getClassnameNumericSuffix(node, 'group');
@@ -174,7 +174,7 @@ export class AddonQtypeDdwtosQuestion {
      * Get the number of an element ('no'). It is extracted from the classes.
      *
      * @param node Element to check.
-     * @return Number.
+     * @returns Number.
      */
     getNo(node: HTMLElement | null): number | undefined {
         return this.getClassnameNumericSuffix(node, 'no');
@@ -184,7 +184,7 @@ export class AddonQtypeDdwtosQuestion {
      * Get the place number of an element. It is extracted from the classes.
      *
      * @param node Element to check.
-     * @return Place number.
+     * @returns Place number.
      */
     getPlace(node: HTMLElement | null): number | undefined {
         return this.getClassnameNumericSuffix(node, 'place');
@@ -422,7 +422,7 @@ export class AddonQtypeDdwtosQuestion {
     /**
      * Wait for the drag home items to be in DOM.
      *
-     * @return Promise resolved when ready in the DOM.
+     * @returns Promise resolved when ready in the DOM.
      */
     protected async waitForReady(): Promise<void> {
         await CoreDom.waitToBeInDOM(this.container);

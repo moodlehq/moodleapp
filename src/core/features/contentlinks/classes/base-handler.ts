@@ -63,7 +63,7 @@ export class CoreContentLinksHandlerBase implements CoreContentLinksHandler {
      * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
      * @param courseId Course ID related to the URL. Optional but recommended.
      * @param data Extra data to handle the URL.
-     * @return List of (or promise resolved with list of) actions.
+     * @returns List of (or promise resolved with list of) actions.
      */
     getActions(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -84,7 +84,7 @@ export class CoreContentLinksHandlerBase implements CoreContentLinksHandler {
      * Check if a URL is handled by this handler.
      *
      * @param url The URL to check.
-     * @return Whether the URL is handled by this handler
+     * @returns Whether the URL is handled by this handler
      */
     handles(url: string): boolean {
         let pattern = this.pattern;
@@ -102,7 +102,7 @@ export class CoreContentLinksHandlerBase implements CoreContentLinksHandler {
      * If the URL is handled by this handler, return the site URL.
      *
      * @param url The URL to check.
-     * @return Site URL if it is handled, undefined otherwise.
+     * @returns Site URL if it is handled, undefined otherwise.
      */
     getSiteUrl(url: string): string | undefined {
         if (this.pattern) {
@@ -121,7 +121,7 @@ export class CoreContentLinksHandlerBase implements CoreContentLinksHandler {
      * @param url The URL to treat.
      * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
      * @param courseId Course ID related to the URL. Optional but recommended.
-     * @return Whether the handler is enabled for the URL and site.
+     * @returns Whether the handler is enabled for the URL and site.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async isEnabled(siteId: string, url: string, params: Record<string, string>, courseId?: number): Promise<boolean> {

@@ -100,7 +100,7 @@ export class CoreListItemsManager<
      * Check whether the given item is selected or not.
      *
      * @param item Item.
-     * @return Whether the given item is selected.
+     * @returns Whether the given item is selected.
      */
     isSelected(item: Item): boolean {
         return this.selectedItem === item;
@@ -110,7 +110,7 @@ export class CoreListItemsManager<
      * Return the current aria value.
      *
      * @param item Item.
-     * @return Will return the current value of the item if selected, false otherwise.
+     * @returns Will return the current value of the item if selected, false otherwise.
      */
     getItemAriaCurrent(item: Item): string {
         return this.isSelected(item) ? 'page' : 'false';
@@ -202,6 +202,8 @@ export class CoreListItemsManager<
 
     /**
      * Get the item that should be selected by default.
+     *
+     * @returns The default item or null if none.
      */
     protected getDefaultItem(): Item | null {
         return this.items[0] || null;
@@ -237,7 +239,7 @@ export class CoreListItemsManager<
      * Get the page route given a child route on the splitview outlet.
      *
      * @param route Child route.
-     * @return Page route.
+     * @returns Page route.
      */
     private getPageRouteFromSplitViewOutlet(route: ActivatedRouteSnapshot | null): ActivatedRouteSnapshot | null {
         const isPageRoute = this.buildRouteMatcher();

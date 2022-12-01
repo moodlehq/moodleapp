@@ -375,7 +375,7 @@ H5P.ConfirmationDialog = (function (EventDispatcher) {
     /**
      * Retrieve element
      *
-     * @return {HTMLElement}
+     * @returns {HTMLElement}
      */
     this.getElement = function () {
       return popup;
@@ -383,7 +383,7 @@ H5P.ConfirmationDialog = (function (EventDispatcher) {
 
     /**
      * Get previously focused element
-     * @return {HTMLElement}
+     * @returns {HTMLElement}
      */
     this.getPreviouslyFocused = function () {
       return previouslyFocused;

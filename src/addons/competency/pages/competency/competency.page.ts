@@ -134,7 +134,7 @@ export class AddonCompetencyCompetencyPage implements OnInit, OnDestroy {
     /**
      * Fetches the competency and updates the view.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchCompetency(): Promise<void> {
         try {
@@ -208,7 +208,7 @@ export class AddonCompetencyCompetencyPage implements OnInit, OnDestroy {
     /**
      * Opens the summary of a competency.
      *
-     * @param competencyId
+     * @param competencyId Competency Id.
      */
     openCompetencySummary(competencyId: number): void {
         CoreNavigator.navigate(

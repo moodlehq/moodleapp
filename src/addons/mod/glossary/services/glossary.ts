@@ -50,7 +50,7 @@ export class AddonModGlossaryProvider {
      * Get the course glossary cache key.
      *
      * @param courseId Course Id.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getCourseGlossariesCacheKey(courseId: number): string {
         return ROOT_CACHE_KEY + 'courseGlossaries:' + courseId;
@@ -61,7 +61,7 @@ export class AddonModGlossaryProvider {
      *
      * @param courseId Course Id.
      * @param options Other options.
-     * @return Resolved with the glossaries.
+     * @returns Resolved with the glossaries.
      */
     async getCourseGlossaries(courseId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModGlossaryGlossary[]> {
         const site = await CoreSites.getSite(options.siteId);
@@ -90,7 +90,7 @@ export class AddonModGlossaryProvider {
      *
      * @param courseId Course Id.
      * @param siteId Site ID. If not defined, current site.
-     * @return Resolved when data is invalidated.
+     * @returns Resolved when data is invalidated.
      */
     async invalidateCourseGlossaries(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -107,7 +107,7 @@ export class AddonModGlossaryProvider {
      * @param letter First letter of firstname or lastname, or either keywords: ALL or SPECIAL.
      * @param field Search and order using: FIRSTNAME or LASTNAME
      * @param sort The direction of the order: ASC or DESC
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getEntriesByAuthorCacheKey(glossaryId: number, letter: string, field: string, sort: string): string {
         return ROOT_CACHE_KEY + 'entriesByAuthor:' + glossaryId + ':' + letter + ':' + field + ':' + sort;
@@ -121,7 +121,7 @@ export class AddonModGlossaryProvider {
      * @param field Search and order using: FIRSTNAME or LASTNAME
      * @param sort The direction of the order: ASC or DESC
      * @param options Other options.
-     * @return Resolved with the entries.
+     * @returns Resolved with the entries.
      */
     async getEntriesByAuthor(
         glossaryId: number,
@@ -159,7 +159,7 @@ export class AddonModGlossaryProvider {
      * @param field Search and order using: FIRSTNAME or LASTNAME
      * @param sort The direction of the order: ASC or DESC
      * @param siteId Site ID. If not defined, current site.
-     * @return Resolved when data is invalidated.
+     * @returns Resolved when data is invalidated.
      */
     async invalidateEntriesByAuthor(
         glossaryId: number,
@@ -182,7 +182,7 @@ export class AddonModGlossaryProvider {
      * @param categoryId The category ID. Use constant SHOW_ALL_CATEGORIES for all categories, or
      *                   constant SHOW_NOT_CATEGORISED for uncategorised entries.
      * @param options Other options.
-     * @return Resolved with the entries.
+     * @returns Resolved with the entries.
      */
     async getEntriesByCategory(
         glossaryId: number,
@@ -215,7 +215,7 @@ export class AddonModGlossaryProvider {
      * @param categoryId The category ID. Use constant SHOW_ALL_CATEGORIES for all categories, or
      *                   constant SHOW_NOT_CATEGORISED for uncategorised entries.
      * @param siteId Site ID. If not defined, current site.
-     * @return Resolved when data is invalidated.
+     * @returns Resolved when data is invalidated.
      */
     async invalidateEntriesByCategory(glossaryId: number, categoryId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -231,7 +231,7 @@ export class AddonModGlossaryProvider {
      * @param glossaryId Glossary Id.
      * @param categoryId The category ID. Use constant SHOW_ALL_CATEGORIES for all categories, or
      *                   constant SHOW_NOT_CATEGORISED for uncategorised entries.
-     * @return Cache key.
+     * @returns Cache key.
      */
     getEntriesByCategoryCacheKey(glossaryId: number, categoryId: number): string {
         return ROOT_CACHE_KEY + 'entriesByCategory:' + glossaryId + ':' + categoryId;
@@ -243,7 +243,7 @@ export class AddonModGlossaryProvider {
      * @param glossaryId Glossary Id.
      * @param order The way to order the records.
      * @param sort The direction of the order.
-     * @return Cache key.
+     * @returns Cache key.
      */
     getEntriesByDateCacheKey(glossaryId: number, order: string, sort: string): string {
         return ROOT_CACHE_KEY + 'entriesByDate:' + glossaryId + ':' + order + ':' + sort;
@@ -256,7 +256,7 @@ export class AddonModGlossaryProvider {
      * @param order The way to order the records.
      * @param sort The direction of the order.
      * @param options Other options.
-     * @return Resolved with the entries.
+     * @returns Resolved with the entries.
      */
     async getEntriesByDate(
         glossaryId: number,
@@ -291,7 +291,7 @@ export class AddonModGlossaryProvider {
      * @param order The way to order the records.
      * @param sort The direction of the order.
      * @param siteId Site ID. If not defined, current site.
-     * @return Resolved when data is invalidated.
+     * @returns Resolved when data is invalidated.
      */
     async invalidateEntriesByDate(glossaryId: number, order: string, sort: string, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -306,7 +306,7 @@ export class AddonModGlossaryProvider {
      *
      * @param glossaryId Glossary Id.
      * @param letter A letter, or a special keyword.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getEntriesByLetterCacheKey(glossaryId: number, letter: string): string {
         return ROOT_CACHE_KEY + 'entriesByLetter:' + glossaryId + ':' + letter;
@@ -318,7 +318,7 @@ export class AddonModGlossaryProvider {
      * @param glossaryId Glossary Id.
      * @param letter A letter, or a special keyword.
      * @param options Other options.
-     * @return Resolved with the entries.
+     * @returns Resolved with the entries.
      */
     async getEntriesByLetter(
         glossaryId: number,
@@ -364,7 +364,7 @@ export class AddonModGlossaryProvider {
      * @param glossaryId Glossary Id.
      * @param letter A letter, or a special keyword.
      * @param siteId Site ID. If not defined, current site.
-     * @return Resolved when data is invalidated.
+     * @returns Resolved when data is invalidated.
      */
     async invalidateEntriesByLetter(glossaryId: number, letter: string, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -382,7 +382,7 @@ export class AddonModGlossaryProvider {
      * @param fullSearch Whether or not full search is required.
      * @param order The way to order the results.
      * @param sort The direction of the order.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getEntriesBySearchCacheKey(
         glossaryId: number,
@@ -402,12 +402,8 @@ export class AddonModGlossaryProvider {
      * @param fullSearch Whether or not full search is required.
      * @param order The way to order the results.
      * @param sort The direction of the order.
-     * @param from Start returning records from here.
-     * @param limit Number of records to return.
-     * @param omitExpires True to always get the value from cache. If data isn't cached, it will call the WS.
-     * @param forceOffline True to always get the value from cache. If data isn't cached, it won't call the WS.
-     * @param siteId Site ID. If not defined, current site.
-     * @return Resolved with the entries.
+     * @param options Get entries options.
+     * @returns Resolved with the entries.
      */
     async getEntriesBySearch(
         glossaryId: number,
@@ -448,7 +444,7 @@ export class AddonModGlossaryProvider {
      * @param order The way to order the results.
      * @param sort The direction of the order.
      * @param siteId Site ID. If not defined, current site.
-     * @return Resolved when data is invalidated.
+     * @returns Resolved when data is invalidated.
      */
     async invalidateEntriesBySearch(
         glossaryId: number,
@@ -469,7 +465,7 @@ export class AddonModGlossaryProvider {
      * Get the glossary categories cache key.
      *
      * @param glossaryId Glossary Id.
-     * @return The cache key.
+     * @returns The cache key.
      */
     protected getCategoriesCacheKey(glossaryId: number): string {
         return ROOT_CACHE_KEY + 'categories:' + glossaryId;
@@ -480,7 +476,7 @@ export class AddonModGlossaryProvider {
      *
      * @param glossaryId Glossary Id.
      * @param options Other options.
-     * @return Promise resolved with the categories if supported or empty array if not.
+     * @returns Promise resolved with the categories if supported or empty array if not.
      */
     async getAllCategories(glossaryId: number, options: CoreCourseCommonModWSOptions = {}): Promise<AddonModGlossaryCategory[]> {
         const site = await CoreSites.getSite(options.siteId);
@@ -495,7 +491,7 @@ export class AddonModGlossaryProvider {
      * @param categories Already fetched categories where to append the fetch.
      * @param site Site object.
      * @param options Other options.
-     * @return Promise resolved with the categories.
+     * @returns Promise resolved with the categories.
      */
     protected async getCategories(
         glossaryId: number,
@@ -537,7 +533,7 @@ export class AddonModGlossaryProvider {
      *
      * @param glossaryId Glossary Id.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when categories data has been invalidated,
+     * @returns Promise resolved when categories data has been invalidated,
      */
     async invalidateCategories(glossaryId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -549,7 +545,7 @@ export class AddonModGlossaryProvider {
      * Get an entry by ID cache key.
      *
      * @param entryId Entry Id.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getEntryCacheKey(entryId: number): string {
         return ROOT_CACHE_KEY + 'getEntry:' + entryId;
@@ -560,7 +556,7 @@ export class AddonModGlossaryProvider {
      *
      * @param entryId Entry ID.
      * @param options Other options.
-     * @return Promise resolved with the entry.
+     * @returns Promise resolved with the entry.
      */
     async getEntry(entryId: number, options: CoreCourseCommonModWSOptions = {}): Promise<AddonModGlossaryGetEntryByIdResponse> {
         const site = await CoreSites.getSite(options.siteId);
@@ -606,7 +602,7 @@ export class AddonModGlossaryProvider {
      *
      * @param entryId Entry ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the glossary ID and the "from".
+     * @returns Promise resolved with the glossary ID and the "from".
      */
     async getStoredDataForEntry(entryId: number, siteId?: string): Promise<{glossaryId: number; from: number}> {
         const site = await CoreSites.getSite(siteId);
@@ -631,7 +627,7 @@ export class AddonModGlossaryProvider {
      * @param from Page to get.
      * @param loadNext Whether to load next pages if not found.
      * @param options Options.
-     * @return Promise resolved with the entry data.
+     * @returns Promise resolved with the entry data.
      */
     protected async getEntryFromList(
         glossaryId: number,
@@ -670,7 +666,7 @@ export class AddonModGlossaryProvider {
      *
      * @param fetchFunction Function to fetch.
      * @param options Other options.
-     * @return Promise resolved with all entrries.
+     * @returns Promise resolved with all entrries.
      */
     fetchAllEntries(
         fetchFunction: (options?: AddonModGlossaryGetEntriesOptions) => Promise<AddonModGlossaryGetEntriesWSResponse>,
@@ -699,7 +695,7 @@ export class AddonModGlossaryProvider {
      *
      * @param entryId Entry Id.
      * @param siteId Site ID. If not defined, current site.
-     * @return Resolved when data is invalidated.
+     * @returns Resolved when data is invalidated.
      */
     async invalidateEntry(entryId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -712,7 +708,7 @@ export class AddonModGlossaryProvider {
      *
      * @param entries Entry objects to invalidate.
      * @param siteId Site ID. If not defined, current site.
-     * @return Resolved when data is invalidated.
+     * @returns Resolved when data is invalidated.
      */
     protected async invalidateEntries(entries: AddonModGlossaryEntry[], siteId?: string): Promise<void> {
         const keys: string[] = [];
@@ -731,7 +727,7 @@ export class AddonModGlossaryProvider {
      *
      * @param moduleId The module ID.
      * @param courseId Course ID.
-     * @return Promise resolved when data is invalidated.
+     * @returns Promise resolved when data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number): Promise<void> {
         const glossary = await this.getGlossary(courseId, moduleId);
@@ -751,7 +747,7 @@ export class AddonModGlossaryProvider {
      * @param glossary The glossary object.
      * @param onlyEntriesList If true, entries won't be invalidated.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when data is invalidated.
+     * @returns Promise resolved when data is invalidated.
      */
     async invalidateGlossaryEntries(glossary: AddonModGlossaryGlossary, onlyEntriesList?: boolean, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -798,7 +794,7 @@ export class AddonModGlossaryProvider {
      * @param courseId Course Id.
      * @param cmId Course Module Id.
      * @param options Other options.
-     * @return Promise resolved with the glossary.
+     * @returns Promise resolved with the glossary.
      */
     async getGlossary(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModGlossaryGlossary> {
         const glossaries = await this.getCourseGlossaries(courseId, options);
@@ -818,7 +814,7 @@ export class AddonModGlossaryProvider {
      * @param courseId Course Id.
      * @param glossaryId Glossary Id.
      * @param options Other options.
-     * @return Promise resolved with the glossary.
+     * @returns Promise resolved with the glossary.
      */
     async getGlossaryById(
         courseId: number,
@@ -846,7 +842,7 @@ export class AddonModGlossaryProvider {
      * @param entryOptions Options for the entry.
      * @param attachments Attachments ID if sending online, result of CoreFileUploaderProvider#storeFilesToUpload otherwise.
      * @param otherOptions Other options.
-     * @return Promise resolved with entry ID if entry was created in server, false if stored in device.
+     * @returns Promise resolved with entry ID if entry was created in server, false if stored in device.
      */
     async addEntry(
         glossaryId: number,
@@ -942,7 +938,7 @@ export class AddonModGlossaryProvider {
      * @param options Options for the entry.
      * @param attachId Attachments ID (if any attachment).
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the entry ID if created, rejected otherwise.
+     * @returns Promise resolved with the entry ID if created, rejected otherwise.
      */
     async addEntryOnline(
         glossaryId: number,
@@ -980,7 +976,7 @@ export class AddonModGlossaryProvider {
      * @param glossaryId Glossary ID.
      * @param concept Concept to check.
      * @param options Other options.
-     * @return Promise resolved with true if used, resolved with false if not used or error.
+     * @returns Promise resolved with true if used, resolved with false if not used or error.
      */
     async isConceptUsed(glossaryId: number, concept: string, options: AddonModGlossaryIsConceptUsedOptions = {}): Promise<boolean> {
         try {
@@ -1014,7 +1010,7 @@ export class AddonModGlossaryProvider {
      * @param mode The mode in which the glossary was viewed.
      * @param name Name of the glossary.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the WS call is successful.
+     * @returns Promise resolved when the WS call is successful.
      */
     logView(glossaryId: number, mode: string, name?: string, siteId?: string): Promise<void> {
         const params: AddonModGlossaryViewGlossaryWSParams = {
@@ -1041,7 +1037,7 @@ export class AddonModGlossaryProvider {
      * @param glossaryId Glossary ID.
      * @param name Name of the glossary.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the WS call is successful.
+     * @returns Promise resolved when the WS call is successful.
      */
     logEntryView(entryId: number, glossaryId: number, name?: string, siteId?: string): Promise<void> {
         const params: AddonModGlossaryViewEntryWSParams = {
@@ -1067,7 +1063,7 @@ export class AddonModGlossaryProvider {
      * @param entries Entries.
      * @param from The "page" the entries belong to.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async storeEntries(
         glossaryId: number,
@@ -1085,7 +1081,7 @@ export class AddonModGlossaryProvider {
      * @param entryId Entry ID.
      * @param from The "page" the entry belongs to.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async storeEntryId(glossaryId: number, entryId: number, from: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

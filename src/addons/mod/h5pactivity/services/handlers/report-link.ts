@@ -86,7 +86,6 @@ export class AddonModH5PActivityReportLinkHandlerService extends CoreContentLink
      * @param attemptId Attempt ID.
      * @param courseId Course ID.
      * @param siteId Site ID.
-     * @return Promise resolved when done.
      */
     protected openAttemptResults(cmId: number, attemptId: number, courseId: number, siteId: string): void {
         const path = AddonModH5PActivityModuleHandlerService.PAGE_NAME + `/${courseId}/${cmId}/attemptresults/${attemptId}`;
@@ -104,7 +103,7 @@ export class AddonModH5PActivityReportLinkHandlerService extends CoreContentLink
      * @param id Instance ID.
      * @param siteId Site ID.
      * @param userId User ID. If not defined, current user in site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async openUserAttempts(cmId: number, courseId: number, id: number, siteId: string, userId?: number): Promise<void> {
         let canViewAllAttempts = false;

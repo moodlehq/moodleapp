@@ -33,7 +33,7 @@ export class AddonModPageIndexLinkHandlerService extends CoreContentLinksModuleI
      * Check if the handler is enabled for a certain site (site + user) and a URL.
      *
      * @param siteId The site ID.
-     * @return Whether the handler is enabled for the URL and site.
+     * @returns Whether the handler is enabled for the URL and site.
      */
     isEnabled(siteId: string): Promise<boolean> {
         return AddonModPage.isPluginEnabled(siteId);

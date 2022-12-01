@@ -44,7 +44,7 @@ export class AddonCalendarSettingsPage implements OnInit {
      * Change default time.
      *
      * @param e Event.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async changeDefaultTime(e: Event): Promise<void> {
         e.stopPropagation();

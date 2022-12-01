@@ -56,7 +56,7 @@ export class AddonModLtiHelperProvider {
      * @param module Module.
      * @param lti LTI instance. If not provided it will be obtained.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async getDataAndLaunch(courseId: number, module: CoreCourseModuleData, lti?: AddonModLtiLti, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -105,7 +105,7 @@ export class AddonModLtiHelperProvider {
      * @param ltiId LTI id.
      * @param name Name of the lti.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async logViewAndCheckCompletion(
         courseId: number,

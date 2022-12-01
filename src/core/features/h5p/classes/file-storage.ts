@@ -44,7 +44,7 @@ export class CoreH5PFileStorage {
      * @param key Hashed key for cached asset.
      * @param folderName Name of the folder of the H5P package.
      * @param siteId The site ID.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async cacheAssets(files: CoreH5PDependenciesFiles, key: string, folderName: string, siteId: string): Promise<void> {
 
@@ -84,7 +84,7 @@ export class CoreH5PFileStorage {
      * @param assets A list of files.
      * @param type The type of files in assets. Either 'scripts' or 'styles'.
      * @param newFolder The new folder where the concatenated content will be stored.
-     * @return Promise resolved with all of the files content in one string.
+     * @returns Promise resolved with all of the files content in one string.
      */
     protected async concatenateFiles(assets: CoreH5PDependencyAsset[], type: string, newFolder: string): Promise<string> {
         let content = '';
@@ -133,9 +133,9 @@ export class CoreH5PFileStorage {
     /**
      * Delete cached assets from file system.
      *
-     * @param libraryId Library identifier.
+     * @param removedEntries Assets to remove.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async deleteCachedAssets(removedEntries: CoreH5PLibraryCachedAssetsDBRecord[], siteId?: string): Promise<void> {
 
@@ -162,7 +162,7 @@ export class CoreH5PFileStorage {
      *
      * @param folderName Folder name of the content.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async deleteContentFolder(folderName: string, siteId: string): Promise<void> {
         await CoreFile.removeDir(this.getContentFolderPath(folderName, siteId));
@@ -173,7 +173,7 @@ export class CoreH5PFileStorage {
      *
      * @param folderName Name of the folder of the H5P package.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async deleteContentIndex(folderName: string, siteId: string): Promise<void> {
         await CoreFile.removeFile(this.getContentIndexPath(folderName, siteId));
@@ -184,7 +184,7 @@ export class CoreH5PFileStorage {
      *
      * @param libraryId Library identifier.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async deleteContentIndexesForLibrary(libraryId: number, siteId?: string): Promise<void> {
 
@@ -217,7 +217,7 @@ export class CoreH5PFileStorage {
      * @param libraryData The library data.
      * @param siteId Site ID.
      * @param folderName Folder name. If not provided, it will be calculated.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async deleteLibraryFolder(
         libraryData: CoreH5PLibraryBasicData | CoreH5PContentMainLibraryData,
@@ -231,7 +231,7 @@ export class CoreH5PFileStorage {
      * Will check if there are cache assets available for content.
      *
      * @param key Hashed key for cached asset
-     * @return Promise resolved with the files.
+     * @returns Promise resolved with the files.
      */
     async getCachedAssets(key: string): Promise<{scripts?: CoreH5PDependencyAsset[]; styles?: CoreH5PDependencyAsset[]} | null> {
 
@@ -254,7 +254,7 @@ export class CoreH5PFileStorage {
      *
      * @param key Key of the cached asset.
      * @param extension Extension of the file to get.
-     * @return Promise resolved with the list of assets (only one), undefined if not found.
+     * @returns Promise resolved with the list of assets (only one), undefined if not found.
      */
     protected async getCachedAsset(key: string, extension: string): Promise<CoreH5PDependencyAsset[] | undefined> {
 
@@ -281,7 +281,7 @@ export class CoreH5PFileStorage {
      *
      * @param folderName Name of the folder of the content the assets belong to.
      * @param siteId Site ID.
-     * @return Path.
+     * @returns Path.
      */
     getCachedAssetsFolderPath(folderName: string, siteId: string): string {
         return CorePath.concatenatePaths(
@@ -295,7 +295,7 @@ export class CoreH5PFileStorage {
      *
      * @param fileUrl Package URL.
      * @param siteId Site ID.
-     * @return Promise resolved with the folder name.
+     * @returns Promise resolved with the folder name.
      */
     async getContentFolderNameByUrl(fileUrl: string, siteId: string): Promise<string> {
         const path = await CoreFilepool.getFilePathByUrl(siteId, fileUrl);
@@ -310,7 +310,7 @@ export class CoreH5PFileStorage {
      *
      * @param folderName Name of the folder of the H5P package.
      * @param siteId The site ID.
-     * @return Folder path.
+     * @returns Folder path.
      */
     getContentFolderPath(folderName: string, siteId: string): string {
         return CorePath.concatenatePaths(
@@ -324,7 +324,7 @@ export class CoreH5PFileStorage {
      *
      * @param fileUrl URL of the H5P package.
      * @param siteId The site ID. If not defined, current site.
-     * @return Promise resolved with the file URL if exists, rejected otherwise.
+     * @returns Promise resolved with the file URL if exists, rejected otherwise.
      */
     async getContentIndexFileUrl(fileUrl: string, siteId?: string): Promise<string> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -341,7 +341,7 @@ export class CoreH5PFileStorage {
      *
      * @param folderName Name of the folder of the H5P package.
      * @param siteId The site ID.
-     * @return Folder path.
+     * @returns Folder path.
      */
     getContentIndexPath(folderName: string, siteId: string): string {
         return CorePath.concatenatePaths(this.getContentFolderPath(folderName, siteId), 'index.html');
@@ -350,7 +350,7 @@ export class CoreH5PFileStorage {
     /**
      * Get the path to the folder that contains the H5P core libraries.
      *
-     * @return Folder path.
+     * @returns Folder path.
      */
     getCoreH5PPath(): string {
         return CorePath.concatenatePaths(CoreFile.getWWWPath(), '/assets/lib/h5p/');
@@ -360,7 +360,7 @@ export class CoreH5PFileStorage {
      * Get the path to the dependency.
      *
      * @param dependency Dependency library.
-     * @return The path to the dependency library
+     * @returns The path to the dependency library
      */
     getDependencyPath(dependency: CoreH5PContentDependencyData): string {
         return 'libraries/' + dependency.machineName + '-' + dependency.majorVersion + '.' + dependency.minorVersion;
@@ -370,7 +370,7 @@ export class CoreH5PFileStorage {
      * Get path to the folder containing H5P files extracted from packages.
      *
      * @param siteId The site ID.
-     * @return Folder path.
+     * @returns Folder path.
      */
     getExternalH5PFolderPath(siteId: string): string {
         return CorePath.concatenatePaths(CoreFile.getSiteFolder(siteId), 'h5p');
@@ -380,7 +380,7 @@ export class CoreH5PFileStorage {
      * Get libraries folder path.
      *
      * @param siteId The site ID.
-     * @return Folder path.
+     * @returns Folder path.
      */
     getLibrariesFolderPath(siteId: string): string {
         return CorePath.concatenatePaths(this.getExternalH5PFolderPath(siteId), 'libraries');
@@ -392,7 +392,7 @@ export class CoreH5PFileStorage {
      * @param libraryData The library data.
      * @param siteId The site ID.
      * @param folderName Folder name. If not provided, it will be calculated.
-     * @return Folder path.
+     * @returns Folder path.
      */
     getLibraryFolderPath(
         libraryData: CoreH5PLibraryBasicData | CoreH5PContentMainLibraryData,
@@ -412,7 +412,7 @@ export class CoreH5PFileStorage {
      * @param contentPath Path to the current content folder (tmp).
      * @param folderName Name to put to the content folder.
      * @param siteId Site ID.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async saveContent(contentPath: string, folderName: string, siteId: string): Promise<void> {
         const folderPath = this.getContentFolderPath(folderName, siteId);
@@ -429,7 +429,7 @@ export class CoreH5PFileStorage {
      *
      * @param libraryData Library data.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async saveLibrary(libraryData: CoreH5PLibraryBeingSaved, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();

@@ -48,7 +48,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         await super.ngOnInit();
@@ -68,7 +68,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      * Compares sync event data with current data to check if refresh content is needed.
      *
      * @param syncEventData Data received on sync observer.
-     * @return True if refresh is needed, false otherwise.
+     * @returns True if refresh is needed, false otherwise.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected isRefreshSyncNeeded(syncEventData: unknown): boolean {
@@ -92,7 +92,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      *
      * @param sync If the refresh needs syncing.
      * @param showErrors Wether to show errors to the user or hide them.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async refreshContent(sync: boolean = false, showErrors: boolean = false): Promise<void> {
         if (!this.module) {
@@ -113,7 +113,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      *
      * @param sync If the fetch needs syncing.
      * @param showErrors Wether to show errors to the user or hide them.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async showLoadingAndFetch(sync: boolean = false, showErrors: boolean = false): Promise<void> {
         this.showLoading = true;
@@ -127,7 +127,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      *
      * @param sync If the refresh needs syncing.
      * @param showErrors Wether to show errors to the user or hide them.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected showLoadingAndRefresh(sync: boolean = false, showErrors: boolean = false): Promise<void> {
         this.showLoading = true;
@@ -142,7 +142,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      * @param refresh Whether we're refreshing data.
      * @param sync If the refresh needs syncing.
      * @param showErrors Wether to show errors to the user or hide them.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected async fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<void> {
@@ -155,7 +155,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      * @param refresh Whether we're refreshing data.
      * @param sync If the refresh needs syncing.
      * @param showErrors Wether to show errors to the user or hide them.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadContent(refresh?: boolean, sync: boolean = false, showErrors: boolean = false): Promise<void> {
         if (!this.module) {
@@ -186,7 +186,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
     /**
      * Performs the sync of the activity.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async sync(): Promise<unknown> {
         return {};
@@ -196,7 +196,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      * Checks if sync has succeed from result sync data.
      *
      * @param result Data returned on the sync function.
-     * @return If suceed or not.
+     * @returns If suceed or not.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected hasSyncSucceed(result: unknown): boolean {
@@ -207,7 +207,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      * Tries to synchronize the activity.
      *
      * @param showErrors If show errors to the user of hide them.
-     * @return Promise resolved with true if sync succeed, or false if failed.
+     * @returns Promise resolved with true if sync succeed, or false if failed.
      */
     protected async syncActivity(showErrors: boolean = false): Promise<boolean> {
         try {
@@ -228,7 +228,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
     }
 
     /**
-     * Component being destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         super.ngOnDestroy();

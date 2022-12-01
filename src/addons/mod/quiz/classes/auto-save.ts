@@ -110,7 +110,7 @@ export class AddonModQuizAutoSave {
     /**
      * Get answers from a form.
      *
-     * @return Answers.
+     * @returns Answers.
      */
     protected getAnswers(): CoreQuestionsAnswers {
         return CoreQuestionHelper.getAnswersFromForm(document.forms[this.formName]);
@@ -128,7 +128,7 @@ export class AddonModQuizAutoSave {
      * Returns an observable that will notify when an error happens or stops.
      * It will send true when there's an error, and false when the error has been ammended.
      *
-     * @return Observable.
+     * @returns Observable.
      */
     onError(): BehaviorSubject<boolean> {
         return this.errorObservable;

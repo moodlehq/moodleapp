@@ -37,6 +37,9 @@ export class CoreMainMenuTabRoutingModule {
 
     /**
      * Use this function to declare routes that will be children of all main menu tabs root routes.
+     *
+     * @param routes Routes to be children of main menu tabs.
+     * @returns Calculated module.
      */
     static forChild(routes: ModuleRoutesConfig): ModuleWithProviders<CoreMainMenuTabRoutingModule> {
         return {

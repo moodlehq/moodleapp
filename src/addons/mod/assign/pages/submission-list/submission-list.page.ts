@@ -163,7 +163,7 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
      * Fetch assignment data.
      *
      * @param sync Whether to try to synchronize data.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchAssignment(sync = false): Promise<void> {
         try {
@@ -177,7 +177,7 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
      * Refresh all the data.
      *
      * @param sync Whether to try to synchronize data.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async refreshAllData(sync?: boolean): Promise<void> {
         try {
@@ -206,7 +206,7 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
     }
 
     /**
-     * Component being destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.gradedObserver?.off();

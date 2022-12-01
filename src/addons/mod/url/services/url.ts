@@ -38,7 +38,7 @@ export class AddonModUrlProvider {
      * Get the final display type for a certain URL. Based on Moodle's url_get_final_display_type.
      *
      * @param url URL data.
-     * @return Final display type.
+     * @returns Final display type.
      */
     getFinalDisplayType(url?: AddonModUrlUrl): number {
         if (!url) {
@@ -90,7 +90,7 @@ export class AddonModUrlProvider {
      * Get cache key for url data WS calls.
      *
      * @param courseId Course ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getUrlCacheKey(courseId: number): string {
         return ROOT_CACHE_KEY + 'url:' + courseId;
@@ -103,7 +103,7 @@ export class AddonModUrlProvider {
      * @param key Name of the property to check.
      * @param value Value to search.
      * @param options Other options.
-     * @return Promise resolved when the url is retrieved.
+     * @returns Promise resolved when the url is retrieved.
      */
     protected async getUrlDataByKey(
         courseId: number,
@@ -140,7 +140,7 @@ export class AddonModUrlProvider {
      * @param courseId Course ID.
      * @param cmId Course module ID.
      * @param options Other options.
-     * @return Promise resolved when the url is retrieved.
+     * @returns Promise resolved when the url is retrieved.
      */
     getUrl(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModUrlUrl> {
         return this.getUrlDataByKey(courseId, 'coursemodule', cmId, options);
@@ -150,7 +150,7 @@ export class AddonModUrlProvider {
      * Guess the icon for a certain URL. Based on Moodle's url_guess_icon.
      *
      * @param url URL to check.
-     * @return Icon, empty if it should use the default icon.
+     * @returns Icon, empty if it should use the default icon.
      */
     guessIcon(url: string): string {
         url = url || '';
@@ -180,7 +180,7 @@ export class AddonModUrlProvider {
      * @param moduleId The module ID.
      * @param courseId Course ID of the module.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -196,9 +196,9 @@ export class AddonModUrlProvider {
     /**
      * Invalidates url data.
      *
-     * @param courseid Course ID.
+     * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUrlData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -212,7 +212,7 @@ export class AddonModUrlProvider {
      * @param id Module ID.
      * @param name Name of the assign.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the WS call is successful.
+     * @returns Promise resolved when the WS call is successful.
      */
     logView(id: number, name?: string, siteId?: string): Promise<void> {
         const params: AddonModUrlViewUrlWSParams = {

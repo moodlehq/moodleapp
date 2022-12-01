@@ -41,7 +41,7 @@ export class AddonModImscpTocComponent {
      * Get dummy array for padding.
      *
      * @param n Array length.
-     * @return Dummy array with n elements.
+     * @returns Dummy array with n elements.
      */
     getNumberForPadding(n: number): number[] {
         return new Array(n);

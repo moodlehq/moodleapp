@@ -732,7 +732,7 @@ if (isIOS()) {
    *
    * @param {string} path
    * @param {string} parameter
-   * @return {string}
+   * @returns {string}
    */
   H5P.addQueryParameter = function (path, parameter) {
     let newPath, secondSplit;
@@ -789,7 +789,7 @@ if (isIOS()) {
    *
    * @private
    * @param {string} path
-   * @return {string}
+   * @returns {string}
    */
   var hasProtocol = function (path) {
     return path.match(/^[a-z0-9]+:\/\//i);
@@ -1544,7 +1544,7 @@ H5P.attachToastTo = function (element, message, config) {
    * @param {boolean} [position.noOverflowBottom=false] True to prevent overflow bottom.
    * @param {boolean} [position.noOverflowX=false] True to prevent overflow left and right.
    * @param {boolean} [position.noOverflowY=false] True to prevent overflow top and bottom.
-   * @return {object}
+   * @returns {object}
    */
   const getToastCoordinates = function (element, toast, position) {
     position = position || {};
@@ -2562,7 +2562,7 @@ H5P.createTitle = function (rawTitle, maxLength) {
    * Function for getting content for a certain ID
    *
    * @param {number} contentId
-   * @return {Object}
+   * @returns {Object}
    */
   H5P.getContentForInstance = function (contentId) {
     var key = 'cid-' + contentId;
@@ -2643,7 +2643,7 @@ H5P.createTitle = function (rawTitle, maxLength) {
   /**
    * Retrieve parsed clipboard data.
    *
-   * @return {Object}
+   * @returns {Object}
    */
   H5P.getClipboard = function () {
     return parseClipboard();
@@ -2665,7 +2665,7 @@ H5P.createTitle = function (rawTitle, maxLength) {
    * Get config for a library
    *
    * @param string machineName
-   * @return Object
+   * @returns Object
    */
   H5P.getLibraryConfig = function (machineName) {
     var hasConfig = H5PIntegration.libraryConfig && H5PIntegration.libraryConfig[machineName];
@@ -2676,7 +2676,7 @@ H5P.createTitle = function (rawTitle, maxLength) {
    * Get item from the H5P Clipboard.
    *
    * @private
-   * @return {Object}
+   * @returns {Object}
    */
   var parseClipboard = function () {
     var clipboardData = localStorage.getItem('h5pClipboard');

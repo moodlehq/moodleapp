@@ -53,6 +53,8 @@ export class CoreConfigProvider {
 
     /**
      * Wait until configuration is ready for use.
+     *
+     * @returns Ready promise.
      */
     ready(): Promise<void> {
         return this.isReady;
@@ -93,7 +95,7 @@ export class CoreConfigProvider {
      * Deletes an app setting.
      *
      * @param name The config name.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async delete(name: string): Promise<void> {
         await this.table.deleteByPrimaryKey({ name });
@@ -104,7 +106,7 @@ export class CoreConfigProvider {
      *
      * @param name The config name.
      * @param defaultValue Default value to use if the entry is not found.
-     * @return Resolves upon success along with the config data. Reject on failure.
+     * @returns Resolves upon success along with the config data. Reject on failure.
      */
     async get<T>(name: string, defaultValue?: T): Promise<T> {
         try {
@@ -124,7 +126,7 @@ export class CoreConfigProvider {
      * Get an app setting directly from the database, without using any optimizations..
      *
      * @param name The config name.
-     * @return Resolves upon success along with the config data. Reject on failure.
+     * @returns Resolves upon success along with the config data. Reject on failure.
      */
     async getFromDB<T>(name: string): Promise<T> {
         const db = CoreApp.getDB();
@@ -154,7 +156,7 @@ export class CoreConfigProvider {
      *
      * @param name The config name.
      * @param value The config value. Can only store number or strings.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async set(name: string, value: number | string): Promise<void> {
         await this.table.insert({ name, value });

@@ -30,14 +30,7 @@ export class AddonQbehaviourInformationItemHandlerService implements CoreQuestio
     type = 'informationitem';
 
     /**
-     * Determine a question new state based on its answer(s).
-     *
-     * @param component Component the question belongs to.
-     * @param attemptId Attempt ID the question belongs to.
-     * @param question The question.
-     * @param componentId Component ID.
-     * @param siteId Site ID. If not defined, current site.
-     * @return New state (or promise resolved with state).
+     * @inheritdoc
      */
     determineNewState(
         component: string,
@@ -52,13 +45,7 @@ export class AddonQbehaviourInformationItemHandlerService implements CoreQuestio
     }
 
     /**
-     * Handle a question behaviour.
-     * If the behaviour requires a submit button, it should add it to question.behaviourButtons.
-     * If the behaviour requires to show some extra data, it should return the components to render it.
-     *
-     * @param question The question.
-     * @return Components (or promise resolved with components) to render some extra data in the question
-     *         (e.g. certainty options). Don't return anything if no extra data is required.
+     * @inheritdoc
      */
     handleQuestion(question: CoreQuestionQuestionParsed): void | Type<unknown>[] {
         if (CoreQuestionHelper.extractQbehaviourSeenInput(question)) {
@@ -67,9 +54,7 @@ export class AddonQbehaviourInformationItemHandlerService implements CoreQuestio
     }
 
     /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @return True or promise resolved with true if enabled.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         return true;

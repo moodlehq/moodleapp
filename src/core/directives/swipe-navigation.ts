@@ -124,6 +124,8 @@ export class CoreSwipeNavigationDirective implements AfterViewInit, OnDestroy {
 
     /**
      * Check whether there is an item to the right of the current selection.
+     *
+     * @returns If has an item to the right.
      */
     protected async hasItemRight(): Promise<boolean> {
         if (!this.manager) {
@@ -137,6 +139,8 @@ export class CoreSwipeNavigationDirective implements AfterViewInit, OnDestroy {
 
     /**
      * Check whether there is an item to the left of the current selection.
+     *
+     * @returns If has an item to the left.
      */
     protected async hasItemLeft(): Promise<boolean> {
         if (!this.manager) {

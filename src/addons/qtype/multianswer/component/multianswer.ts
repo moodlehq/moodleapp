@@ -31,7 +31,7 @@ export class AddonQtypeMultiAnswerComponent extends CoreQuestionBaseComponent im
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.initOriginalTextComponent('.formulation');

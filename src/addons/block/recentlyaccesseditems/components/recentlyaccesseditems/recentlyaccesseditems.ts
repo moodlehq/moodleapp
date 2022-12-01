@@ -58,7 +58,7 @@ export class AddonBlockRecentlyAccessedItemsComponent extends CoreBlockBaseCompo
     /**
      * Perform the invalidate content function.
      *
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     async invalidateContent(): Promise<void> {
         await AddonBlockRecentlyAccessedItems.invalidateRecentItems();
@@ -67,7 +67,7 @@ export class AddonBlockRecentlyAccessedItemsComponent extends CoreBlockBaseCompo
     /**
      * Fetch the data to render the block.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchContent(): Promise<void> {
         this.items = await AddonBlockRecentlyAccessedItems.getRecentItems();
@@ -78,6 +78,7 @@ export class AddonBlockRecentlyAccessedItemsComponent extends CoreBlockBaseCompo
      *
      * @param e Click event.
      * @param item Activity item info.
+     * @returns Promise resolved when done.
      */
     async action(e: Event, item: AddonBlockRecentlyAccessedItemsItem): Promise<void> {
         e.preventDefault();

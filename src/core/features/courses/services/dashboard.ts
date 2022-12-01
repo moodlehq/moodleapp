@@ -38,7 +38,7 @@ export class CoreCoursesDashboardProvider {
      *
      * @param myPage What my page to return blocks of. Default MY_PAGE_DEFAULT.
      * @param userId User ID. Default, 0 means current user.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getDashboardBlocksCacheKey(myPage = CoreCoursesDashboardProvider.MY_PAGE_DEFAULT, userId: number = 0): string {
         return ROOT_CACHE_KEY + 'blocks:' + myPage + ':' + userId;
@@ -50,7 +50,7 @@ export class CoreCoursesDashboardProvider {
      * @param myPage What my page to return blocks of. Default MY_PAGE_DEFAULT.
      * @param userId User ID. Default, current user.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the list of blocks.
+     * @returns Promise resolved with the list of blocks.
      * @since 3.6
      */
     getDashboardBlocksFromWS(
@@ -69,7 +69,7 @@ export class CoreCoursesDashboardProvider {
      * Get dashboard blocks from WS.
      *
      * @param options Options.
-     * @return Observable that returns the list of blocks.
+     * @returns Observable that returns the list of blocks.
      * @since 3.6
      */
     getDashboardBlocksFromWSObservable(options: GetDashboardBlocksOptions = {}): WSObservable<CoreCourseBlock[]> {
@@ -121,7 +121,7 @@ export class CoreCoursesDashboardProvider {
      * @param userId User ID. Default, current user.
      * @param siteId Site ID. If not defined, current site.
      * @param myPage What my page to return blocks of. Default MY_PAGE_DEFAULT.
-     * @return Promise resolved with the list of blocks.
+     * @returns Promise resolved with the list of blocks.
      */
     getDashboardBlocks(
         userId?: number,
@@ -139,7 +139,7 @@ export class CoreCoursesDashboardProvider {
      * Get dashboard blocks.
      *
      * @param options Options.
-     * @return observable that returns the list of blocks.
+     * @returns observable that returns the list of blocks.
      */
     getDashboardBlocksObservable(options: GetDashboardBlocksOptions = {}): WSObservable<CoreCoursesDashboardBlocks> {
         return this.getDashboardBlocksFromWSObservable(options).pipe(map(blocks => {
@@ -177,7 +177,7 @@ export class CoreCoursesDashboardProvider {
      * @param myPage What my page to return blocks of. Default MY_PAGE_DEFAULT.
      * @param userId User ID. Default, current user.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateDashboardBlocks(
         myPage = CoreCoursesDashboardProvider.MY_PAGE_DEFAULT,
@@ -193,7 +193,7 @@ export class CoreCoursesDashboardProvider {
      * Returns whether or not block based Dashboard is available for a certain site.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with true if available, resolved with false or rejected otherwise.
+     * @returns Promise resolved with true if available, resolved with false or rejected otherwise.
      * @since 3.6
      */
     async isAvailable(siteId?: string): Promise<boolean> {
@@ -206,7 +206,7 @@ export class CoreCoursesDashboardProvider {
      * Check if Site Home is disabled in a certain site.
      *
      * @param siteId Site Id. If not defined, use current site.
-     * @return Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     * @returns Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
     async isDisabled(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
@@ -218,7 +218,7 @@ export class CoreCoursesDashboardProvider {
      * Check if Dashboard is disabled in a certain site.
      *
      * @param site Site. If not defined, use current site.
-     * @return Whether it's disabled.
+     * @returns Whether it's disabled.
      */
     isDisabledInSite(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();

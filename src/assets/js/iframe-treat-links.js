@@ -73,7 +73,7 @@
      *
      * @param leftPath Left path.
      * @param rightPath Right path.
-     * @return Concatenated path.
+     * @returns Concatenated path.
      */
     function concatenatePaths(leftPath, rightPath) {
         if (!leftPath) {
@@ -98,7 +98,7 @@
      * Get the root window.
      *
      * @param win Current window to check.
-     * @return Root window.
+     * @returns Root window.
      */
     function getRootWindow(win) {
         if (win.parent === win) {
@@ -112,7 +112,7 @@
      * Get the scheme from a URL.
      *
      * @param url URL to treat.
-     * @return Scheme, undefined if no scheme found.
+     * @returns Scheme, undefined if no scheme found.
      */
     function getUrlScheme(url) {
         if (!url) {
@@ -129,7 +129,7 @@
      * Check if a URL is absolute.
      *
      * @param url URL to treat.
-     * @return Whether it's absolute.
+     * @returns Whether it's absolute.
      */
     function isAbsoluteUrl(url) {
         return /^[^:]{2,}:\/\//i.test(url);
@@ -139,7 +139,7 @@
      * Check whether a URL scheme belongs to a local file.
      *
      * @param scheme Scheme to check.
-     * @return Whether the scheme belongs to a local file.
+     * @returns Whether the scheme belongs to a local file.
      */
     function isLocalFileUrlScheme(scheme) {
         if (scheme) {
@@ -199,7 +199,7 @@
      * Convert a URL to an absolute URL if needed using the frame src.
      *
      * @param url URL to convert.
-     * @return Absolute URL.
+     * @returns Absolute URL.
      */
     function toAbsolute(url) {
         if (isAbsoluteUrl(url)) {

@@ -29,7 +29,7 @@ export class CoreBlockBaseHandler implements CoreBlockHandler {
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return True or promise resolved with true if enabled.
+     * @returns True or promise resolved with true if enabled.
      */
     async isEnabled(): Promise<boolean> {
         return true;
@@ -41,7 +41,7 @@ export class CoreBlockBaseHandler implements CoreBlockHandler {
      * @param block The block to render.
      * @param contextLevel The context where the block will be used.
      * @param instanceId The instance ID associated with the context level.
-     * @return Data or promise resolved with the data.
+     * @returns Data or promise resolved with the data.
      */
     getDisplayData(
         block: CoreCourseBlock, // eslint-disable-line @typescript-eslint/no-unused-vars

@@ -53,7 +53,7 @@ export class CoreBrowser {
      * Read a cookie.
      *
      * @param name Cookie name.
-     * @return Cookie value.
+     * @returns Cookie value.
      */
     static getCookie(name: string): string | null {
         const cookies = (document.cookie ?? '').split(';').reduce((cookies, cookie) => {
@@ -71,7 +71,7 @@ export class CoreBrowser {
      * Read a localStorage key.
      *
      * @param key localStorage key.
-     * @return localStorage value.
+     * @returns localStorage value.
      */
     static getLocalStorage(key: string): string | null {
         return localStorage.getItem(key);
@@ -118,6 +118,7 @@ export class CoreBrowser {
      * Get development setting key.
      *
      * @param name Development setting name.
+     * @returns THe development setting key.
      */
     protected static getDevelopmentSettingKey(name: string): string {
         return `MoodleApp${name}`;

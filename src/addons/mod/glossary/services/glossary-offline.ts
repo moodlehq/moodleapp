@@ -36,7 +36,7 @@ export class AddonModGlossaryOfflineProvider {
      * @param concept Glossary entry concept.
      * @param timeCreated The time the entry was created.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if deleted, rejected if failure.
+     * @returns Promise resolved if deleted, rejected if failure.
      */
     async deleteNewEntry(glossaryId: number, concept: string, timeCreated: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -54,7 +54,7 @@ export class AddonModGlossaryOfflineProvider {
      * Get all the stored new entries from all the glossaries.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with entries.
+     * @returns Promise resolved with entries.
      */
     async getAllNewEntries(siteId?: string): Promise<AddonModGlossaryOfflineEntry[]> {
         const site = await CoreSites.getSite(siteId);
@@ -71,7 +71,7 @@ export class AddonModGlossaryOfflineProvider {
      * @param concept Glossary entry concept.
      * @param timeCreated The time the entry was created.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with entry.
+     * @returns Promise resolved with entry.
      */
     async getNewEntry(
         glossaryId: number,
@@ -98,7 +98,7 @@ export class AddonModGlossaryOfflineProvider {
      * @param glossaryId Glossary ID.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User the entries belong to. If not defined, current user in site.
-     * @return Promise resolved with entries.
+     * @returns Promise resolved with entries.
      */
     async getGlossaryNewEntries(glossaryId: number, siteId?: string, userId?: number): Promise<AddonModGlossaryOfflineEntry[]> {
         const site = await CoreSites.getSite(siteId);
@@ -120,7 +120,7 @@ export class AddonModGlossaryOfflineProvider {
      * @param concept Concept to check.
      * @param timeCreated Time of the entry we are editing.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with true if concept is found, false otherwise.
+     * @returns Promise resolved with true if concept is found, false otherwise.
      */
     async isConceptUsed(glossaryId: number, concept: string, timeCreated?: number, siteId?: string): Promise<boolean> {
         try {
@@ -163,7 +163,7 @@ export class AddonModGlossaryOfflineProvider {
      * @param siteId Site ID. If not defined, current site.
      * @param userId User the entry belong to. If not defined, current user in site.
      * @param discardEntry The entry provided will be discarded if found.
-     * @return Promise resolved if stored, rejected if failure.
+     * @returns Promise resolved if stored, rejected if failure.
      */
     async addNewEntry(
         glossaryId: number,
@@ -206,7 +206,7 @@ export class AddonModGlossaryOfflineProvider {
      *
      * @param glossaryId Glossary ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the path.
+     * @returns Promise resolved with the path.
      */
     async getGlossaryFolder(glossaryId: number, siteId?: string): Promise<string> {
         const site = await CoreSites.getSite(siteId);
@@ -224,7 +224,7 @@ export class AddonModGlossaryOfflineProvider {
      * @param concept The name of the entry.
      * @param timeCreated Time to allow duplicated entries.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the path.
+     * @returns Promise resolved with the path.
      */
     async getEntryFolder(glossaryId: number, concept: string, timeCreated: number, siteId?: string): Promise<string> {
         const folderPath = await this.getGlossaryFolder(glossaryId, siteId);
@@ -235,8 +235,8 @@ export class AddonModGlossaryOfflineProvider {
     /**
      * Parse "options" and "attachments" columns of a fetched record.
      *
-     * @param records Record object
-     * @return Record object with columns parsed.
+     * @param record Record object
+     * @returns Record object with columns parsed.
      */
     protected parseRecord(record: AddonModGlossaryOfflineEntryDBRecord): AddonModGlossaryOfflineEntry {
         return Object.assign(record, {

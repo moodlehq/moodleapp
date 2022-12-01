@@ -41,7 +41,7 @@ export class CoreMainMenuDeepLinkManager {
     /**
      * Whether there is a deep link to be treated.
      *
-     * @return Whether there is a deep link to be treated.
+     * @returns Whether there is a deep link to be treated.
      */
     hasDeepLinkToTreat(): boolean {
         return !!this.pendingRedirect?.urlToOpen || !!this.pendingRedirect?.redirectPath;

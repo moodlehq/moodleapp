@@ -33,7 +33,7 @@ export class AddonQtypeShortAnswerComponent extends CoreQuestionBaseComponent im
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.initInputTextComponent();

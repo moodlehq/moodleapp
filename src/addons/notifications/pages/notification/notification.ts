@@ -116,7 +116,7 @@ export class AddonNotificationsNotificationPage implements OnInit, OnDestroy {
      * Obtain notification by passed id.
      *
      * @param notificationId Notification id.
-     * @return Found notification.
+     * @returns Found notification.
      */
     getNotificationById(notificationId: number): AddonNotificationsNotification | undefined {
         const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
@@ -151,7 +151,7 @@ export class AddonNotificationsNotificationPage implements OnInit, OnDestroy {
      * Load notification actions
      *
      * @param notification Notification.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async loadActions(notification: AddonNotificationsNotification): Promise<void> {
         if (!notification.contexturl && (!notification.customdata || !notification.customdata.appurl)) {

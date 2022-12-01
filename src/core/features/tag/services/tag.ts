@@ -33,7 +33,7 @@ export class CoreTagProvider {
      * Check whether tags are available in a certain site.
      *
      * @param siteId Site Id. If not defined, use current site.
-     * @return Promise resolved with true if available, resolved with false otherwise.
+     * @returns Promise resolved with true if available, resolved with false otherwise.
      * @since 3.7
      */
     async areTagsAvailable(siteId?: string): Promise<boolean> {
@@ -46,7 +46,7 @@ export class CoreTagProvider {
      * Check whether tags are available in a certain site.
      *
      * @param site Site. If not defined, use current site.
-     * @return True if available.
+     * @returns True if available.
      * @since 3.7
      */
     areTagsAvailableInSite(site?: CoreSite): boolean {
@@ -70,7 +70,7 @@ export class CoreTagProvider {
      * @param recursive Retrieve tag instances in the context and its children.
      * @param limit Maximum number of tags to retrieve. Defaults to SEARCH_LIMIT.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the tag cloud.
+     * @returns Promise resolved with the tag cloud.
      * @since 3.7
      */
     async getTagCloud(
@@ -110,7 +110,7 @@ export class CoreTagProvider {
      * Fetch the tag collections.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the tag collections.
+     * @returns Promise resolved with the tag collections.
      * @since 3.7
      */
     async getTagCollections(siteId?: string): Promise<CoreTagCollection[]> {
@@ -141,7 +141,7 @@ export class CoreTagProvider {
      * @param recursive Search in the context and its children.
      * @param page Page number.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the tag index per area.
+     * @returns Promise resolved with the tag index per area.
      * @since 3.7
      */
     async getTagIndexPerArea(
@@ -203,7 +203,7 @@ export class CoreTagProvider {
      * @param fromContextId Context ID where this tag cloud is displayed.
      * @param contextId Only retrieve tag instances in this context.
      * @param recursive Retrieve tag instances in the context and its children.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateTagCloud(
         collectionId: number = 0,
@@ -224,7 +224,7 @@ export class CoreTagProvider {
     /**
      * Invalidate tag collections.
      *
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateTagCollections(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -243,7 +243,7 @@ export class CoreTagProvider {
      * @param fromContextId Context ID where the link was displayed.
      * @param contextId Context ID where to search for items.
      * @param recursive Search in the context and its children.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateTagIndexPerArea(
         id: number,
@@ -271,7 +271,7 @@ export class CoreTagProvider {
      * @param fromContextId Context ID where this tag cloud is displayed.
      * @param contextId Only retrieve tag instances in this context.
      * @param recursive Retrieve tag instances in the context and it's children.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getTagCloudKey(
         collectionId: number,
@@ -295,7 +295,7 @@ export class CoreTagProvider {
     /**
      * Get cache key for tag collections.
      *
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getTagCollectionsKey(): string {
         return ROOT_CACHE_KEY + 'collections';
@@ -311,7 +311,7 @@ export class CoreTagProvider {
      * @param fromContextId Context ID where the link was displayed.
      * @param contextId Context ID where to search for items.
      * @param recursive Search in the context and its children.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getTagIndexPerAreaKey(
         id: number,

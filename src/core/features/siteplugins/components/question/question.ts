@@ -43,7 +43,7 @@ export class CoreSitePluginsQuestionComponent extends CoreSitePluginsCompileInit
     @Output() onAbort = new EventEmitter<void>(); // Should emit an event if the question should be aborted.
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         // Pass the input and output data to the component.

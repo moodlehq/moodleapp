@@ -70,7 +70,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         if (!this.file) {
@@ -124,7 +124,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
     /**
      * Convenience function to get the file state and set variables based on it.
      *
-     * @return Promise resolved when state has been calculated.
+     * @returns Promise resolved when state has been calculated.
      */
     protected async calculateState(): Promise<void> {
         if (!this.siteId) {
@@ -147,7 +147,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
      *
      * @param ev Click event (if any).
      * @param isOpenButton Whether the open button was clicked.
-     * @return Promise resolved when file is opened.
+     * @returns Promise resolved when file is opened.
      */
     openFile(ev?: Event, isOpenButton = false): Promise<void> {
         ev?.preventDefault();
@@ -222,7 +222,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
                 }
 
                 // User confirmed, add the file to queue.
-                // @todo: Is the invalidate really needed?
+                // @todo Is the invalidate really needed?
                 await CoreUtils.ignoreErrors(CoreFilepool.invalidateFileByUrl(this.siteId, this.fileUrl));
 
                 this.isDownloading = true;

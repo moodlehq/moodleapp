@@ -81,7 +81,7 @@ export class AddonModQuizReviewPage implements OnInit {
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         try {
@@ -142,7 +142,7 @@ export class AddonModQuizReviewPage implements OnInit {
     /**
      * Convenience function to get the quiz data.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchData(): Promise<void> {
         try {
@@ -171,7 +171,7 @@ export class AddonModQuizReviewPage implements OnInit {
      * Load a page questions.
      *
      * @param page The page to load.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadPage(page: number): Promise<void> {
         const data = await AddonModQuiz.getAttemptReview(this.attemptId, { page, cmId: this.quiz!.coursemodule });
@@ -199,7 +199,7 @@ export class AddonModQuizReviewPage implements OnInit {
     /**
      * Load data to navigate the questions using the navigation modal.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadNavigation(): Promise<void> {
         // Get all questions in single page to retrieve all the questions.

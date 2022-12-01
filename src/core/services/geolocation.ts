@@ -30,6 +30,7 @@ export class CoreGeolocationProvider {
      * Get current user coordinates.
      *
      * @throws {CoreGeolocationError}
+     * @returns Promise resolved with the geolocation coordinates.
      */
     async getCoordinates(): Promise<Coordinates> {
         try {
@@ -118,6 +119,7 @@ export class CoreGeolocationProvider {
      * Check whether an error was caused by a PERMISSION_DENIED from the cordova plugin.
      *
      * @param error Error.
+     * @returns If error is a permission denied error.
      */
     protected isCordovaPermissionDeniedError(error?: CoreAnyError | GeolocationPositionError): boolean {
         return !!error &&
@@ -130,7 +132,7 @@ export class CoreGeolocationProvider {
     /**
      * Prechecks if it can request location services.
      *
-     * @return If location can be requested.
+     * @returns If location can be requested.
      */
     async canRequest(): Promise<boolean> {
         return CoreUtils.promiseWorks(Diagnostic.getLocationAuthorizationStatus());

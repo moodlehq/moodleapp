@@ -44,7 +44,7 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
     /**
      * Perform the invalidate content function.
      *
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     async invalidateContent(): Promise<void> {
         await CoreCourse.invalidateSections(this.instanceId);
@@ -53,7 +53,7 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
     /**
      * Fetch the data to render the block.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchContent(): Promise<void> {
         const sections = await CoreCourse.getSections(this.getCourseId(), false, true);
@@ -114,7 +114,7 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
     /**
      * Obtain the appropiate course id for the block.
      *
-     * @return Course id.
+     * @returns Course id.
      */
     protected getCourseId(): number {
         if (this.contextLevel == ContextLevel.COURSE) {

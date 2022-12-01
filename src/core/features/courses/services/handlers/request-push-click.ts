@@ -38,7 +38,7 @@ export class CoreCoursesRequestPushClickHandlerService implements CorePushNotifi
      * Check if a notification click is handled by this handler.
      *
      * @param notification The notification to check.
-     * @return Whether the notification click is handled by this handler
+     * @returns Whether the notification click is handled by this handler
      */
     async handles(notification: CorePushNotificationsNotificationBasicData): Promise<boolean> {
         // Don't support 'courserequestrejected', that way the app will open the notifications page.
@@ -50,7 +50,7 @@ export class CoreCoursesRequestPushClickHandlerService implements CorePushNotifi
      * Handle the notification click.
      *
      * @param notification The notification to check.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async handleClick(notification: CoreCoursesRequestNotificationData): Promise<void> {
         const courseId = notification.courseid;

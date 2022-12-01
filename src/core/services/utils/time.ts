@@ -86,7 +86,7 @@ export class CoreTimeUtilsProvider {
      * Convert a PHP format to a Moment format.
      *
      * @param format PHP format.
-     * @return Converted format.
+     * @returns Converted format.
      */
     convertPHPToMoment(format: string): string {
         if (typeof format != 'string') {
@@ -136,7 +136,7 @@ export class CoreTimeUtilsProvider {
      * Fix format to use in an ion-datetime.
      *
      * @param format Format to use.
-     * @return Fixed format.
+     * @returns Fixed format.
      */
     fixFormatForDatetime(format: string): string {
         if (!format) {
@@ -160,7 +160,7 @@ export class CoreTimeUtilsProvider {
      *
      * @param seconds A number of seconds
      * @param precision Number of elements to have in precision.
-     * @return Seconds in a human readable format.
+     * @returns Seconds in a human readable format.
      * @deprecated since app 4.0. Use CoreTime.formatTime instead.
      */
     formatTime(seconds: number, precision = 2): string {
@@ -171,7 +171,7 @@ export class CoreTimeUtilsProvider {
      * Converts a number of seconds into a short human readable format: minutes and seconds, in fromat: 3' 27''.
      *
      * @param duration Seconds
-     * @return Short human readable text.
+     * @returns Short human readable text.
      * @deprecated since app 4.0. Use CoreTime.formatTimeShort instead.
      */
     formatTimeShort(duration: number): string {
@@ -183,7 +183,7 @@ export class CoreTimeUtilsProvider {
      *
      * @param duration Duration in seconds
      * @param precision Number of elements to have in precision. 0 or undefined to full precission.
-     * @return Duration in a human readable format.
+     * @returns Duration in a human readable format.
      * @deprecated since app 4.0. Use CoreTime.formatTime instead.
      */
     formatDuration(duration: number, precision?: number): string {
@@ -194,7 +194,7 @@ export class CoreTimeUtilsProvider {
      * Returns duration in a short human readable format: minutes and seconds, in fromat: 3' 27''.
      *
      * @param duration Duration in seconds
-     * @return Duration in a short human readable format.
+     * @returns Duration in a short human readable format.
      * @deprecated since app 4.0. Use CoreTime.formatTimeShort instead.
      */
     formatDurationShort(duration: number): string {
@@ -204,7 +204,7 @@ export class CoreTimeUtilsProvider {
     /**
      * Return the current timestamp in a "readable" format: YYYYMMDDHHmmSS.
      *
-     * @return The readable timestamp.
+     * @returns The readable timestamp.
      */
     readableTimestamp(): string {
         return moment(Date.now()).format('YYYYMMDDHHmmSS');
@@ -213,7 +213,7 @@ export class CoreTimeUtilsProvider {
     /**
      * Return the current timestamp (UNIX format, seconds).
      *
-     * @return The current timestamp in seconds.
+     * @returns The current timestamp in seconds.
      */
     timestamp(): number {
         return Math.round(Date.now() / 1000);
@@ -227,7 +227,7 @@ export class CoreTimeUtilsProvider {
      * @param convert If true (default), convert the format from PHP to Moment. Set it to false for Moment formats.
      * @param fixDay If true (default) then the leading zero from %d is removed.
      * @param fixHour If true (default) then the leading zero from %I is removed.
-     * @return Readable date.
+     * @returns Readable date.
      */
     userDate(timestamp: number, format?: string, convert: boolean = true, fixDay: boolean = true, fixHour: boolean = true): string {
         format = Translate.instant(format ? format : 'core.strftimedaydatetime') as string;
@@ -252,7 +252,7 @@ export class CoreTimeUtilsProvider {
      * Convert a timestamp to the format to set to a datetime input.
      *
      * @param timestamp Timestamp to convert (in ms). If not provided, current time.
-     * @return Formatted time.
+     * @returns Formatted time.
      */
     toDatetimeFormat(timestamp?: number): string {
         return moment(timestamp || Date.now()).toISOString();
@@ -263,7 +263,7 @@ export class CoreTimeUtilsProvider {
      *
      * @param date To convert to timestamp.
      * @param applyOffset Whether to apply offset to date or not.
-     * @return Converted timestamp.
+     * @returns Converted timestamp.
      * @deprecated since 4.1. Use moment(date).unix() instead.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -276,7 +276,7 @@ export class CoreTimeUtilsProvider {
      * DO NOT USE this function for ion-datetime format. Moment escapes characters with [], but ion-datetime doesn't support it.
      *
      * @param localizedFormat Format to use.
-     * @return Localized ISO format
+     * @returns Localized ISO format
      */
     getLocalizedDateFormat(localizedFormat: LongDateFormatKey): string {
         return moment.localeData().longDateFormat(localizedFormat);
@@ -289,7 +289,7 @@ export class CoreTimeUtilsProvider {
      * for today to ensure that timezones are preserved.
      *
      * @param timestamp The timestamp to calculate from. If not defined, return today's midnight.
-     * @return The midnight value of the user's timestamp.
+     * @returns The midnight value of the user's timestamp.
      */
     getMidnightForTimestamp(timestamp?: number): number {
         if (timestamp) {
@@ -301,6 +301,8 @@ export class CoreTimeUtilsProvider {
 
     /**
      * Get the default max year for datetime inputs.
+     *
+     * @returns The maximum year for datetime inputs.
      */
     getDatetimeDefaultMax(): string {
         return String(moment().year() + 20);
@@ -308,6 +310,8 @@ export class CoreTimeUtilsProvider {
 
     /**
      * Get the default min year for datetime inputs.
+     *
+     * @returns The minimum year for datetime inputs.
      */
     getDatetimeDefaultMin(): string {
         return String(moment().year() - 20);

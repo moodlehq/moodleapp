@@ -33,7 +33,7 @@ export class AddonFilterEmailProtectHandlerService extends CoreFilterDefaultHand
      *
      * @param options Options.
      * @param site Site.
-     * @return Whether filter should be applied.
+     * @returns Whether filter should be applied.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     shouldBeApplied(options: CoreFilterFormatTextOptions, site?: CoreSite): boolean {

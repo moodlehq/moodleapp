@@ -29,13 +29,7 @@ export class AddonQbehaviourAdaptiveHandlerService implements CoreQuestionBehavi
     type = 'adaptive';
 
     /**
-     * Handle a question behaviour.
-     * If the behaviour requires a submit button, it should add it to question.behaviourButtons.
-     * If the behaviour requires to show some extra data, it should return the components to render it.
-     *
-     * @param question The question.
-     * @return Components (or promise resolved with components) to render some extra data in the question
-     *         (e.g. certainty options). Don't return anything if no extra data is required.
+     * @inheritdoc
      */
     handleQuestion(question: CoreQuestionQuestionParsed): void {
         // Just extract the button, it doesn't need any specific component.
@@ -43,9 +37,7 @@ export class AddonQbehaviourAdaptiveHandlerService implements CoreQuestionBehavi
     }
 
     /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @return True or promise resolved with true if enabled.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         return true;

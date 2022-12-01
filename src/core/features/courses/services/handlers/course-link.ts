@@ -116,7 +116,7 @@ export class CoreCoursesCourseLinkHandlerService extends CoreContentLinksHandler
      * @param courseId Course ID.
      * @param url Treated URL.
      * @param pageParams Params to send to the new page.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async actionOpen(courseId: number, url: string, pageParams: Params): Promise<void> {
         const modal = await CoreDomUtils.showModalLoading();
@@ -152,7 +152,7 @@ export class CoreCoursesCourseLinkHandlerService extends CoreContentLinksHandler
      * @param courseId Course ID.
      * @param url Treated URL.
      * @param modal Modal, to dismiss when needed.
-     * @return The course after self enrolling or undefined if the user has access but is not enrolled.
+     * @returns The course after self enrolling or undefined if the user has access but is not enrolled.
      */
     protected async checkSelfUserCanSelfEnrolOrAccess(
         courseId: number,
@@ -221,7 +221,7 @@ export class CoreCoursesCourseLinkHandlerService extends CoreContentLinksHandler
      * Check if user can access the course.
      *
      * @param courseId Course ID.
-     * @return Promise resolved with boolean: whether user can access the course.
+     * @returns Promise resolved with boolean: whether user can access the course.
      */
     protected canAccess(courseId: number): Promise<boolean> {
         return CoreUtils.promiseWorks(CoreCourse.getSections(courseId, false, true));
@@ -231,7 +231,7 @@ export class CoreCoursesCourseLinkHandlerService extends CoreContentLinksHandler
      * Check if a user can be "automatically" self enrolled in a course.
      *
      * @param courseId Course ID.
-     * @return Promise resolved with boolean: whether the user can be enrolled in a course.
+     * @returns Promise resolved with boolean: whether the user can be enrolled in a course.
      */
     protected async canSelfEnrol(courseId: number): Promise<boolean> {
         try {
@@ -258,7 +258,7 @@ export class CoreCoursesCourseLinkHandlerService extends CoreContentLinksHandler
      *
      * @param courseId Course ID.
      * @param password Password.
-     * @return Promise resolved when the user is enrolled, rejected otherwise.
+     * @returns Promise resolved when the user is enrolled, rejected otherwise.
      */
     protected async selfEnrol(courseId: number, password?: string): Promise<CoreEnrolledCourseData | undefined> {
         const modal = await CoreDomUtils.showModalLoading();
@@ -300,7 +300,7 @@ export class CoreCoursesCourseLinkHandlerService extends CoreContentLinksHandler
      *
      * @param courseId The course ID.
      * @param first If it's the first call (true) or it's a recursive call (false).
-     * @return Promise resolved when enrolled or timeout.
+     * @returns Promise resolved when enrolled or timeout.
      */
     protected async waitForEnrolled(courseId: number, first?: boolean): Promise<CoreEnrolledCourseData | undefined> {
         if (first) {

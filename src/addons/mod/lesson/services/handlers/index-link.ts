@@ -43,7 +43,7 @@ export class AddonModLessonIndexLinkHandlerService extends CoreContentLinksModul
      * @param url The URL to treat.
      * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
      * @param courseId Course ID related to the URL. Optional but recommended.
-     * @return List of (or promise resolved with list of) actions.
+     * @returns List of (or promise resolved with list of) actions.
      */
     getActions(
         siteIds: string[],
@@ -77,7 +77,7 @@ export class AddonModLessonIndexLinkHandlerService extends CoreContentLinksModul
      * @param courseId Course ID.
      * @param password Password.
      * @param siteId Site ID.
-     * @return Promise resolved when navigated.
+     * @returns Promise resolved when navigated.
      */
     protected async navigateToModuleWithPassword(
         moduleId: number,

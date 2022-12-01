@@ -40,7 +40,7 @@ export class AddonNotesProvider {
      * @param publishState Personal, Site or Course.
      * @param noteText The note text.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean: true if note was sent to server, false if stored in device.
+     * @returns Promise resolved with boolean: true if note was sent to server, false if stored in device.
      */
     async addNote(
         userId: number,
@@ -86,7 +86,7 @@ export class AddonNotesProvider {
      * @param publishState Personal, Site or Course.
      * @param noteText The note text.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when added, rejected otherwise.
+     * @returns Promise resolved when added, rejected otherwise.
      */
     async addNoteOnline(
         userId: number,
@@ -119,7 +119,7 @@ export class AddonNotesProvider {
      *
      * @param notes Notes to save.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when added, rejected otherwise. Promise resolved doesn't mean that notes
+     * @returns Promise resolved when added, rejected otherwise. Promise resolved doesn't mean that notes
      *         have been added, the resolve param can contain errors for notes not sent.
      */
     async addNotesOnline(notes: AddonNotesCreateNoteData[], siteId?: string): Promise<AddonNotesCreateNotesWSResponse> {
@@ -142,7 +142,7 @@ export class AddonNotesProvider {
      * @param note Note object to delete.
      * @param courseId Course ID where the note belongs.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when deleted, rejected otherwise. Promise resolved doesn't mean that notes
+     * @returns Promise resolved when deleted, rejected otherwise. Promise resolved doesn't mean that notes
      *         have been deleted, the resolve param can contain errors for notes not deleted.
      */
     async deleteNote(note: AddonNotesNoteFormatted, courseId: number, siteId?: string): Promise<boolean> {
@@ -187,7 +187,7 @@ export class AddonNotesProvider {
      * @param noteIds Note IDs to delete.
      * @param courseId Course ID where the note belongs.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when deleted, rejected otherwise. Promise resolved doesn't mean that notes
+     * @returns Promise resolved when deleted, rejected otherwise. Promise resolved doesn't mean that notes
      *         have been deleted, the resolve param can contain errors for notes not deleted.
      */
     async deleteNotesOnline(noteIds: number[], courseId: number, siteId?: string): Promise<void> {
@@ -209,7 +209,7 @@ export class AddonNotesProvider {
      * check, we should not be calling WS from here.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with true if enabled, resolved with false or rejected otherwise.
+     * @returns Promise resolved with true if enabled, resolved with false or rejected otherwise.
      */
     async isPluginEnabled(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
@@ -222,7 +222,7 @@ export class AddonNotesProvider {
      *
      * @param courseId ID of the course.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with true if enabled, resolved with false or rejected otherwise.
+     * @returns Promise resolved with true if enabled, resolved with false or rejected otherwise.
      */
     async isPluginAddNoteEnabledForCourse(courseId: number, siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
@@ -254,7 +254,7 @@ export class AddonNotesProvider {
      *
      * @param courseId ID of the course.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with true if enabled, resolved with false or rejected otherwise.
+     * @returns Promise resolved with true if enabled, resolved with false or rejected otherwise.
      */
     isPluginViewNotesEnabledForCourse(courseId: number, siteId?: string): Promise<boolean> {
         return CoreUtils.promiseWorks(this.getNotes(courseId, undefined, false, true, siteId));
@@ -264,7 +264,7 @@ export class AddonNotesProvider {
      * Get prefix cache key for course notes.
      *
      * @param courseId ID of the course to get the notes from.
-     * @return Cache key.
+     * @returns Cache key.
      */
     getNotesPrefixCacheKey(courseId: number): string {
         return ROOT_CACHE_KEY + 'notes:' + courseId + ':';
@@ -275,7 +275,7 @@ export class AddonNotesProvider {
      *
      * @param courseId ID of the course to get the notes from.
      * @param userId ID of the user to get the notes from if requested.
-     * @return Cache key.
+     * @returns Cache key.
      */
     getNotesCacheKey(courseId: number, userId?: number): string {
         return this.getNotesPrefixCacheKey(courseId) + (userId ? userId : '');
@@ -289,7 +289,7 @@ export class AddonNotesProvider {
      * @param ignoreCache True when we should not get the value from the cache.
      * @param onlyOnline True to return only online notes, false to return both online and offline.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise to be resolved when the notes are retrieved.
+     * @returns Promise to be resolved when the notes are retrieved.
      */
     async getNotes(
         courseId: number,
@@ -341,7 +341,7 @@ export class AddonNotesProvider {
      * @param notes Array of notes.
      * @param courseId ID of the course the notes belong to.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async setOfflineDeletedNotes(
         notes: AddonNotesNoteFormatted[],
@@ -359,7 +359,7 @@ export class AddonNotesProvider {
      * Get user data for notes since they only have userid.
      *
      * @param notes Notes to get the data for.
-     * @return Promise always resolved. Resolve param is the formatted notes.
+     * @returns Promise always resolved. Resolve param is the formatted notes.
      */
     async getNotesUserData(notes: AddonNotesNoteFormatted[]): Promise<AddonNotesNoteFormatted[]> {
         const promises = notes.map((note) =>
@@ -384,7 +384,7 @@ export class AddonNotesProvider {
      * @param courseId Course ID.
      * @param userId User ID if needed.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when data is invalidated.
+     * @returns Promise resolved when data is invalidated.
      */
     async invalidateNotes(courseId: number, userId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -404,7 +404,7 @@ export class AddonNotesProvider {
      * @param courseId ID of the course.
      * @param userId User ID if needed.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the WS call is successful.
+     * @returns Promise resolved when the WS call is successful.
      */
     async logView(courseId: number, userId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

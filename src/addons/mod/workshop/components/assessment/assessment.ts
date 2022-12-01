@@ -59,7 +59,7 @@ export class AddonModWorkshopAssessmentComponent implements OnInit {
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         const canAssess = this.access && this.access.assessingallowed;

@@ -188,7 +188,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
      *
      * @param sync Whether it should try to synchronize offline events.
      * @param showErrors Whether to show sync errors to the user.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async fetchData(sync?: boolean, showErrors?: boolean): Promise<void> {
 
@@ -261,7 +261,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
      * @param refresher Refresher.
      * @param done Function to call when done.
      * @param showErrors Whether to show sync errors to the user.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async doRefresh(refresher?: IonRefresher, done?: () => void, showErrors?: boolean): Promise<void> {
         if (!this.loaded) {
@@ -280,7 +280,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
      * @param sync Whether it should try to synchronize offline events.
      * @param showErrors Whether to show sync errors to the user.
      * @param afterChange Whether the refresh is done after an event has changed or has been synced.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async refreshData(sync = false, showErrors = false, afterChange = false): Promise<void> {
         this.syncIcon = CoreConstants.ICON_LOADING;

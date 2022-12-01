@@ -39,6 +39,8 @@ export class CoreRedirectGuard implements CanLoad, CanActivate {
 
     /**
      * Check if there is a pending redirect and trigger it.
+     *
+     * @returns Promise resolved with true if it's not redirected or the redirection route.
      */
     private async guard(): Promise<true | UrlTree> {
         const redirect = CoreApp.consumeMemoryRedirect();

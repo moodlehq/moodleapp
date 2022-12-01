@@ -33,7 +33,7 @@ export class AddonModAssignSubmissionPluginBaseComponent {
     /**
      * Invalidate the data.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async invalidate(): Promise<void> {
         return;

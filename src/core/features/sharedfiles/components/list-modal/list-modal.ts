@@ -37,7 +37,7 @@ export class CoreSharedFilesListModalComponent implements OnInit {
     title?: string;
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.calculateTitle(this.path);

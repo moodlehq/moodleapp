@@ -100,7 +100,7 @@ export class AddonModLessonProvider {
      * @param answerFormat Answer format.
      * @param response Response.
      * @param className Class to add to the response.
-     * @return New feedback.
+     * @returns New feedback.
      */
     protected addAnswerAndResponseToFeedback(
         feedback: string,
@@ -171,7 +171,7 @@ export class AddonModLessonProvider {
      * Check if an answer page (from getUserRetake) is a content page.
      *
      * @param page Answer page.
-     * @return Whether it's a content page.
+     * @returns Whether it's a content page.
      */
     answerPageIsContent(page: AddonModLessonUserAttemptAnswerPageWSData): boolean {
         // The page doesn't have any reliable field to use for checking this. Check qtype first (translated string).
@@ -197,7 +197,7 @@ export class AddonModLessonProvider {
      * Check if an answer page (from getUserRetake) is a question page.
      *
      * @param page Answer page.
-     * @return Whether it's a question page.
+     * @returns Whether it's a question page.
      */
     answerPageIsQuestion(page: AddonModLessonUserAttemptAnswerPageWSData): boolean {
         if (!page.answerdata) {
@@ -227,7 +227,7 @@ export class AddonModLessonProvider {
      *
      * @param lesson Lesson.
      * @param options Other options.
-     * @return Promise resolved with the data.
+     * @returns Promise resolved with the data.
      */
     protected async calculateOfflineData(
         lesson: AddonModLessonLessonWSData,
@@ -267,7 +267,7 @@ export class AddonModLessonProvider {
      * @param lessonId Lesson ID.
      * @param accessInfo Access info.
      * @param options Other options.
-     * @return Promise resolved with a number: the progress (scale 0-100).
+     * @returns Promise resolved with a number: the progress (scale 0-100).
      */
     async calculateProgress(
         lessonId: number,
@@ -333,7 +333,7 @@ export class AddonModLessonProvider {
      * @param data Data containing the user answer.
      * @param jumps Possible jumps.
      * @param pageIndex Object containing all the pages indexed by ID.
-     * @return Result.
+     * @returns Result.
      */
     protected checkAnswer(
         lesson: AddonModLessonLessonWSData,
@@ -926,7 +926,7 @@ export class AddonModLessonProvider {
      * Create a list of pages indexed by page ID based on a list of pages.
      *
      * @param pageList List of pages.
-     * @return Pages index.
+     * @returns Pages index.
      */
     protected createPagesIndex(pageList: AddonModLessonGetPagesPageWSData[]): Record<number, AddonModLessonPageWSData> {
         // Index the pages by page ID.
@@ -945,7 +945,7 @@ export class AddonModLessonProvider {
      * @param lesson Lesson.
      * @param courseId Course ID the lesson belongs to.
      * @param options Other options.
-     * @return Promise resolved with the result.
+     * @returns Promise resolved with the result.
      */
     async finishRetake(
         lesson: AddonModLessonLessonWSData,
@@ -975,7 +975,7 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param options Other options.
-     * @return Promise resolved with the result.
+     * @returns Promise resolved with the result.
      */
     async finishRetakeOnline(
         lessonId: number,
@@ -1015,7 +1015,7 @@ export class AddonModLessonProvider {
      * @param lesson Lesson.
      * @param courseId Course ID the lesson belongs to.
      * @param options Other options.
-     * @return Promise resolved with the result.
+     * @returns Promise resolved with the result.
      */
     protected async finishRetakeOffline(
         lesson: AddonModLessonLessonWSData,
@@ -1049,7 +1049,7 @@ export class AddonModLessonProvider {
      * @param courseId Course ID the lesson belongs to.
      * @param options Other options.
      * @param gradeInfo Lesson grade info.
-     * @return Promise resolved with the data.
+     * @returns Promise resolved with the data.
      */
     protected async processEolPage(
         lesson: AddonModLessonLessonWSData,
@@ -1166,7 +1166,7 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param options Other options.
-     * @return Promise resolved with the access information.
+     * @returns Promise resolved with the access information.
      */
     async getAccessInformation(
         lessonId: number,
@@ -1192,7 +1192,7 @@ export class AddonModLessonProvider {
      * Get cache key for access information WS calls.
      *
      * @param lessonId Lesson ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getAccessInformationCacheKey(lessonId: number): string {
         return ROOT_CACHE_KEY + 'accessInfo:' + lessonId;
@@ -1204,7 +1204,7 @@ export class AddonModLessonProvider {
      * @param lessonId Lesson ID.
      * @param retake Retake number.
      * @param options Other options.
-     * @return Promise resolved with an object with the online and offline viewed pages.
+     * @returns Promise resolved with an object with the online and offline viewed pages.
      */
     async getContentPagesViewed(
         lessonId: number,
@@ -1231,7 +1231,7 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param retake Retake number.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getContentPagesViewedCacheKey(lessonId: number, retake: number): string {
         return this.getContentPagesViewedCommonCacheKey(lessonId) + ':' + retake;
@@ -1241,7 +1241,7 @@ export class AddonModLessonProvider {
      * Get common cache key for get content pages viewed WS calls.
      *
      * @param lessonId Lesson ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getContentPagesViewedCommonCacheKey(lessonId: number): string {
         return ROOT_CACHE_KEY + 'contentPagesViewed:' + lessonId;
@@ -1253,7 +1253,7 @@ export class AddonModLessonProvider {
      * @param lessonId Lesson ID.
      * @param retake Retake number.
      * @param options Other options.
-     * @return Promise resolved with list of IDs.
+     * @returns Promise resolved with list of IDs.
      */
     async getContentPagesViewedIds(
         lessonId: number,
@@ -1280,7 +1280,7 @@ export class AddonModLessonProvider {
      * @param lessonId Lesson ID.
      * @param retake Retake number.
      * @param options Other options.
-     * @return Promise resolved with the viewed pages.
+     * @returns Promise resolved with the viewed pages.
      */
     async getContentPagesViewedOnline(
         lessonId: number,
@@ -1316,7 +1316,7 @@ export class AddonModLessonProvider {
      * @param lessonId Lesson ID.
      * @param retake Retake number.
      * @param options Other options.
-     * @return Promise resolved with the last content page viewed.
+     * @returns Promise resolved with the last content page viewed.
      */
     async getLastContentPageViewed(
         lessonId: number,
@@ -1356,7 +1356,7 @@ export class AddonModLessonProvider {
      * @param lessonId Lesson ID.
      * @param retake Retake number.
      * @param options Other options.
-     * @return Promise resolved with the last page seen.
+     * @returns Promise resolved with the last page seen.
      */
     async getLastPageSeen(
         lessonId: number,
@@ -1397,9 +1397,9 @@ export class AddonModLessonProvider {
      * Get a Lesson by module ID.
      *
      * @param courseId Course ID.
-     * @param cmid Course module ID.
+     * @param cmId Course module ID.
      * @param options Other options.
-     * @return Promise resolved when the lesson is retrieved.
+     * @returns Promise resolved when the lesson is retrieved.
      */
     getLesson(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModLessonLessonWSData> {
         return this.getLessonByField(courseId, 'coursemodule', cmId, options);
@@ -1412,7 +1412,7 @@ export class AddonModLessonProvider {
      * @param key Name of the property to check.
      * @param value Value to search.
      * @param options Other options.
-     * @return Promise resolved when the lesson is retrieved.
+     * @returns Promise resolved when the lesson is retrieved.
      */
     protected async getLessonByField(
         courseId: number,
@@ -1454,7 +1454,7 @@ export class AddonModLessonProvider {
      * @param courseId Course ID.
      * @param id Lesson ID.
      * @param options Other options.
-     * @return Promise resolved when the lesson is retrieved.
+     * @returns Promise resolved when the lesson is retrieved.
      */
     getLessonById(courseId: number, id: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModLessonLessonWSData> {
         return this.getLessonByField(courseId, 'id', id, options);
@@ -1464,7 +1464,7 @@ export class AddonModLessonProvider {
      * Get cache key for Lesson data WS calls.
      *
      * @param courseId Course ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getLessonDataCacheKey(courseId: number): string {
         return ROOT_CACHE_KEY + 'lesson:' + courseId;
@@ -1475,7 +1475,7 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param options Other options.
-     * @return Promise resolved with the lesson.
+     * @returns Promise resolved with the lesson.
      */
     async getLessonWithPassword(
         lessonId: number,
@@ -1520,7 +1520,7 @@ export class AddonModLessonProvider {
      * Get cache key for get lesson with password WS calls.
      *
      * @param lessonId Lesson ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getLessonWithPasswordCacheKey(lessonId: number): string {
         return ROOT_CACHE_KEY + 'lessonWithPswrd:' + lessonId;
@@ -1532,7 +1532,7 @@ export class AddonModLessonProvider {
      * @param pageId Current page ID.
      * @param jumpTo The jumpto.
      * @param jumps Possible jumps.
-     * @return New page ID.
+     * @returns New page ID.
      */
     protected getNewPageId(pageId: number, jumpTo: number, jumps: AddonModLessonPossibleJumps): number {
         // If jump not found, return current jumpTo.
@@ -1552,7 +1552,7 @@ export class AddonModLessonProvider {
      * @param lesson Lesson.
      * @param accessInfo Access info.
      * @param options Other options.
-     * @return Promise resolved with the ongoing score message.
+     * @returns Promise resolved with the ongoing score message.
      */
     getOngoingScoreMessage(
         lesson: AddonModLessonLessonWSData,
@@ -1590,7 +1590,7 @@ export class AddonModLessonProvider {
      * @param lesson Lesson.
      * @param pageId Page ID.
      * @param options Other options.
-     * @return Promise resolved with the list of possible answers.
+     * @returns Promise resolved with the list of possible answers.
      */
     protected async getPageAnswers(
         lesson: AddonModLessonLessonWSData,
@@ -1613,7 +1613,7 @@ export class AddonModLessonProvider {
      * @param lesson Lesson.
      * @param pageIds List of page IDs.
      * @param options Other options.
-     * @return Promise resolved with an object containing the answers.
+     * @returns Promise resolved with an object containing the answers.
      */
     protected async getPagesAnswers(
         lesson: AddonModLessonLessonWSData,
@@ -1641,7 +1641,7 @@ export class AddonModLessonProvider {
      * @param lesson Lesson.
      * @param pageId Page ID.
      * @param options Other options.
-     * @return Promise resolved with the page data.
+     * @returns Promise resolved with the page data.
      */
     async getPageData(
         lesson: AddonModLessonLessonWSData,
@@ -1697,7 +1697,7 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param pageId Page ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getPageDataCacheKey(lessonId: number, pageId: number): string {
         return this.getPageDataCommonCacheKey(lessonId) + ':' + pageId;
@@ -1707,7 +1707,7 @@ export class AddonModLessonProvider {
      * Get common cache key for get page data WS calls.
      *
      * @param lessonId Lesson ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getPageDataCommonCacheKey(lessonId: number): string {
         return ROOT_CACHE_KEY + 'pageData:' + lessonId;
@@ -1718,7 +1718,7 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param options Other options.
-     * @return Promise resolved with the pages.
+     * @returns Promise resolved with the pages.
      */
     async getPages(lessonId: number, options: AddonModLessonPwdReviewOptions = {}): Promise<AddonModLessonGetPagesPageWSData[]> {
 
@@ -1748,7 +1748,7 @@ export class AddonModLessonProvider {
      * Get cache key for get pages WS calls.
      *
      * @param lessonId Lesson ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getPagesCacheKey(lessonId: number): string {
         return ROOT_CACHE_KEY + 'pages:' + lessonId;
@@ -1759,7 +1759,7 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param options Other options.
-     * @return Promise resolved with the jumps.
+     * @returns Promise resolved with the jumps.
      */
     async getPagesPossibleJumps(
         lessonId: number,
@@ -1801,7 +1801,7 @@ export class AddonModLessonProvider {
      * Get cache key for get pages possible jumps WS calls.
      *
      * @param lessonId Lesson ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getPagesPossibleJumpsCacheKey(lessonId: number): string {
         return ROOT_CACHE_KEY + 'pagesJumps:' + lessonId;
@@ -1817,7 +1817,7 @@ export class AddonModLessonProvider {
      * @param result Result of process page.
      * @param review If the user wants to review just after finishing (1 hour margin).
      * @param jumps Possible jumps.
-     * @return Array with the messages.
+     * @returns Array with the messages.
      */
     getPageProcessMessages(
         lesson: AddonModLessonLessonWSData,
@@ -1858,7 +1858,7 @@ export class AddonModLessonProvider {
      * @param lessonId Lesson ID.
      * @param retake Retake number.
      * @param options Other options.
-     * @return Promise resolved with the IDs.
+     * @returns Promise resolved with the IDs.
      */
     async getPagesIdsWithQuestionAttempts(
         lessonId: number,
@@ -1890,7 +1890,7 @@ export class AddonModLessonProvider {
      * @param page Page loaded.
      * @param jumps Possible jumps.
      * @param options Other options.
-     * @return Promise resolved with the list of messages.
+     * @returns Promise resolved with the list of messages.
      */
     async getPageViewMessages(
         lesson: AddonModLessonLessonWSData,
@@ -1955,7 +1955,7 @@ export class AddonModLessonProvider {
      * @param lessonId Lesson ID.
      * @param retake Retake number.
      * @param options Other options.
-     * @return Promise resolved with the questions attempts.
+     * @returns Promise resolved with the questions attempts.
      */
     async getQuestionsAttempts(
         lessonId: number,
@@ -1986,7 +1986,7 @@ export class AddonModLessonProvider {
      * @param lessonId Lesson ID.
      * @param retake Retake number.
      * @param userId User ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getQuestionsAttemptsCacheKey(lessonId: number, retake: number, userId: number): string {
         return this.getQuestionsAttemptsCommonCacheKey(lessonId) + ':' + userId + ':' + retake;
@@ -1996,7 +1996,7 @@ export class AddonModLessonProvider {
      * Get common cache key for get questions attempts WS calls.
      *
      * @param lessonId Lesson ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getQuestionsAttemptsCommonCacheKey(lessonId: number): string {
         return ROOT_CACHE_KEY + 'questionsAttempts:' + lessonId;
@@ -2008,7 +2008,7 @@ export class AddonModLessonProvider {
      * @param lessonId Lesson ID.
      * @param retake Retake number.
      * @param options Other options.
-     * @return Promise resolved with the questions attempts.
+     * @returns Promise resolved with the questions attempts.
      */
     async getQuestionsAttemptsOnline(
         lessonId: number,
@@ -2062,7 +2062,7 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param options Other options.
-     * @return Promise resolved with the retakes overview, undefined if no attempts.
+     * @returns Promise resolved with the retakes overview, undefined if no attempts.
      */
     async getRetakesOverview(
         lessonId: number,
@@ -2098,7 +2098,7 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param groupId Group ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getRetakesOverviewCacheKey(lessonId: number, groupId: number): string {
         return this.getRetakesOverviewCommonCacheKey(lessonId) + ':' + groupId;
@@ -2108,7 +2108,7 @@ export class AddonModLessonProvider {
      * Get common cache key for get retakes overview WS calls.
      *
      * @param lessonId Lesson ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getRetakesOverviewCommonCacheKey(lessonId: number): string {
         return ROOT_CACHE_KEY + 'retakesOverview:' + lessonId;
@@ -2119,7 +2119,7 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with password on success, rejected otherwise.
+     * @returns Promise resolved with password on success, rejected otherwise.
      */
     async getStoredPassword(lessonId: number, siteId?: string): Promise<string> {
         const site = await CoreSites.getSite(siteId);
@@ -2136,8 +2136,8 @@ export class AddonModLessonProvider {
      *
      * @param pages Index of lesson pages, indexed by page ID. See createPagesIndex.
      * @param pageId Page ID to get subpages of.
-     * @param end An array of LESSON_PAGE_* types that signify an end of the subtype.
-     * @return List of subpages.
+     * @param ends An array of LESSON_PAGE_* types that signify an end of the subtype.
+     * @returns List of subpages.
      */
     getSubpagesOf(pages: Record<number, AddonModLessonPageWSData>, pageId: number, ends: number[]): AddonModLessonPageWSData[] {
         const subPages: AddonModLessonPageWSData[] = [];
@@ -2159,7 +2159,7 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param options Other options.
-     * @return Promise resolved with the pages.
+     * @returns Promise resolved with the pages.
      */
     async getTimers(lessonId: number, options: AddonModLessonUserOptions = {}): Promise<AddonModLessonUserTimerWSData[]> {
         const site = await CoreSites.getSite(options.siteId);
@@ -2186,7 +2186,7 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param userId User ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getTimersCacheKey(lessonId: number, userId: number): string {
         return this.getTimersCommonCacheKey(lessonId) + ':' + userId;
@@ -2196,7 +2196,7 @@ export class AddonModLessonProvider {
      * Get common cache key for get timers WS calls.
      *
      * @param lessonId Lesson ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getTimersCommonCacheKey(lessonId: number): string {
         return ROOT_CACHE_KEY + 'timers:' + lessonId;
@@ -2206,7 +2206,7 @@ export class AddonModLessonProvider {
      * Get the list of used answers (with valid answer) in a multichoice question page.
      *
      * @param pageData Page data for the page to process.
-     * @return List of used answers.
+     * @returns List of used answers.
      */
     protected getUsedAnswersMultichoice(pageData: AddonModLessonGetPageDataWSResponse): AddonModLessonPageAnswerWSData[] {
         const answers = CoreUtils.clone(pageData.answers);
@@ -2218,7 +2218,7 @@ export class AddonModLessonProvider {
      * Get the user's response in a matching question page.
      *
      * @param data Data containing the user answer.
-     * @return User response.
+     * @returns User response.
      */
     protected getUserResponseMatching(data: Record<string, unknown>): Record<string, string> {
         if (data.response) {
@@ -2244,7 +2244,7 @@ export class AddonModLessonProvider {
      * Get the user's response in a multichoice page if multiple answers are allowed.
      *
      * @param data Data containing the user answer.
-     * @return User response.
+     * @returns User response.
      */
     protected getUserResponseMultichoice(data: Record<string, unknown>): number[] | undefined {
         if (data.answer) {
@@ -2274,7 +2274,7 @@ export class AddonModLessonProvider {
      * @param lessonId Lesson ID.
      * @param retake Retake number
      * @param options Other options.
-     * @return Promise resolved with the retake data.
+     * @returns Promise resolved with the retake data.
      */
     async getUserRetake(
         lessonId: number,
@@ -2307,7 +2307,7 @@ export class AddonModLessonProvider {
      * @param lessonId Lesson ID.
      * @param userId User ID.
      * @param retake Retake number
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getUserRetakeCacheKey(lessonId: number, userId: number, retake: number): string {
         return this.getUserRetakeUserCacheKey(lessonId, userId) + ':' + retake;
@@ -2318,7 +2318,7 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param userId User ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getUserRetakeUserCacheKey(lessonId: number, userId: number): string {
         return this.getUserRetakeLessonCacheKey(lessonId) + ':' + userId;
@@ -2328,7 +2328,7 @@ export class AddonModLessonProvider {
      * Get lesson cache key for get user retake WS calls.
      *
      * @param lessonId Lesson ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getUserRetakeLessonCacheKey(lessonId: number): string {
         return ROOT_CACHE_KEY + 'userRetake:' + lessonId;
@@ -2340,7 +2340,7 @@ export class AddonModLessonProvider {
      * @param info Lesson access info.
      * @param ignorePassword Whether password protected reason should be ignored (user already entered the password).
      * @param isReview Whether user is reviewing a retake.
-     * @return Prevent access reason.
+     * @returns Prevent access reason.
      */
     getPreventAccessReason(
         info: AddonModLessonGetAccessInformationWSResponse,
@@ -2381,7 +2381,7 @@ export class AddonModLessonProvider {
      * @param pageId ID of the page from which you are jumping from.
      * @param jumpTo The jumpto number.
      * @param pageIndex Object containing all the pages indexed by ID. See createPagesIndex.
-     * @return Whether jump is correct.
+     * @returns Whether jump is correct.
      */
     jumptoIsCorrect(pageId: number, jumpTo: number, pageIndex: Record<number, AddonModLessonPageWSData>): boolean {
         // First test the special values.
@@ -2417,7 +2417,7 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAccessInformation(lessonId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2430,7 +2430,7 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContentPagesViewed(lessonId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2444,7 +2444,7 @@ export class AddonModLessonProvider {
      * @param lessonId Lesson ID.
      * @param retake Retake number.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContentPagesViewedForRetake(lessonId: number, retake: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2457,7 +2457,7 @@ export class AddonModLessonProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateLessonData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2470,7 +2470,7 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateLessonWithPassword(lessonId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2483,7 +2483,7 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidatePageData(lessonId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2497,7 +2497,7 @@ export class AddonModLessonProvider {
      * @param lessonId Lesson ID.
      * @param pageId Page ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidatePageDataForPage(lessonId: number, pageId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2510,7 +2510,7 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidatePages(lessonId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2523,7 +2523,7 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidatePagesPossibleJumps(lessonId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2536,7 +2536,7 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateQuestionsAttempts(lessonId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2551,7 +2551,7 @@ export class AddonModLessonProvider {
      * @param retake Retake number.
      * @param siteId Site ID. If not defined, current site..
      * @param userId User ID. If not defined, site's user.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateQuestionsAttemptsForRetake(lessonId: number, retake: number, siteId?: string, userId?: number): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2564,7 +2564,7 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateRetakesOverview(lessonId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2578,7 +2578,7 @@ export class AddonModLessonProvider {
      * @param lessonId Lesson ID.
      * @param groupId Group ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateRetakesOverviewForGroup(lessonId: number, groupId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2591,7 +2591,7 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateTimers(lessonId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2605,7 +2605,7 @@ export class AddonModLessonProvider {
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User ID. If not defined, site's current user.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateTimersForUser(lessonId: number, siteId?: string, userId?: number): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2620,7 +2620,7 @@ export class AddonModLessonProvider {
      * @param retake Retake number.
      * @param userId User ID. Undefined for current user.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserRetake(lessonId: number, retake: number, userId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2633,7 +2633,7 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserRetakesForLesson(lessonId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2647,7 +2647,7 @@ export class AddonModLessonProvider {
      * @param lessonId Lesson ID.
      * @param userId User ID. Undefined for current user.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserRetakesForUser(lessonId: number, userId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -2662,7 +2662,7 @@ export class AddonModLessonProvider {
      * @param pageId The page ID.
      * @param answer The answer to check.
      * @param pageIndex Object containing all the pages indexed by ID.
-     * @return Whether the answer is correct.
+     * @returns Whether the answer is correct.
      */
     protected isAnswerCorrect(
         lesson: AddonModLessonLessonWSData,
@@ -2682,7 +2682,7 @@ export class AddonModLessonProvider {
      * Check if a lesson is enabled to be used in offline.
      *
      * @param lesson Lesson.
-     * @return Whether offline is enabled.
+     * @returns Whether offline is enabled.
      */
     isLessonOffline(lesson: AddonModLessonLessonWSData): boolean {
         return !!lesson.allowofflineattempts;
@@ -2692,7 +2692,7 @@ export class AddonModLessonProvider {
      * Check if a lesson is password protected based in the access info.
      *
      * @param info Lesson access info.
-     * @return Whether the lesson is password protected.
+     * @returns Whether the lesson is password protected.
      */
     isPasswordProtected(info: AddonModLessonGetAccessInformationWSResponse): boolean {
         if (!info || !info.preventaccessreasons) {
@@ -2714,7 +2714,7 @@ export class AddonModLessonProvider {
      * Check if a page is a question page or a content page.
      *
      * @param type Type of the page.
-     * @return True if question page, false if content page.
+     * @returns True if question page, false if content page.
      */
     isQuestionPage(type: number): boolean {
         return type == AddonModLessonProvider.TYPE_QUESTION;
@@ -2728,7 +2728,7 @@ export class AddonModLessonProvider {
      * @param pageId Page id to continue from (only when continuing a retake).
      * @param review If the user wants to review just after finishing (1 hour margin).
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the WS call is successful.
+     * @returns Promise resolved when the WS call is successful.
      */
     async launchRetake(
         id: number,
@@ -2764,7 +2764,7 @@ export class AddonModLessonProvider {
      * Check if the user left during a timed session.
      *
      * @param info Lesson access info.
-     * @return True if left during timed, false otherwise.
+     * @returns True if left during timed, false otherwise.
      */
     leftDuringTimed(info?: AddonModLessonGetAccessInformationWSResponse): boolean {
         return !!(info?.lastpageseen && info.lastpageseen != AddonModLessonProvider.LESSON_EOL && info.leftduringtimedsession);
@@ -2775,7 +2775,7 @@ export class AddonModLessonProvider {
      * Based on Moodle's lesson_display_teacher_warning.
      *
      * @param jumps Possible jumps.
-     * @return Whether the lesson uses one of those jumps.
+     * @returns Whether the lesson uses one of those jumps.
      */
     lessonDisplayTeacherWarning(jumps: AddonModLessonPossibleJumps): boolean {
         if (!jumps) {
@@ -2804,7 +2804,7 @@ export class AddonModLessonProvider {
      * @param lesson Lesson.
      * @param retake Retake number.
      * @param options Other options.
-     * @return Promise resolved with the grade data.
+     * @returns Promise resolved with the grade data.
      */
     async lessonGrade(
         lesson: AddonModLessonLessonWSData,
@@ -2952,7 +2952,7 @@ export class AddonModLessonProvider {
      * @param password Lesson password (if any).
      * @param name Name of the assign.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the WS call is successful.
+     * @returns Promise resolved when the WS call is successful.
      */
     async logViewLesson(id: number, password?: string, name?: string, siteId?: string): Promise<void> {
         const params: AddonModLessonViewLessonWSParams = {
@@ -2983,7 +2983,7 @@ export class AddonModLessonProvider {
      * @param pageData Page data for the page to process.
      * @param data Data to save.
      * @param options Other options.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async processPage(
         lesson: AddonModLessonLessonWSData,
@@ -3098,7 +3098,7 @@ export class AddonModLessonProvider {
      * @param pageId Page ID.
      * @param data Data to save.
      * @param options Other options.
-     * @return Promise resolved in success, rejected otherwise.
+     * @returns Promise resolved in success, rejected otherwise.
      */
     async processPageOnline(
         lessonId: number,
@@ -3136,7 +3136,7 @@ export class AddonModLessonProvider {
      * @param jumps Possible jumps.
      * @param pageIndex Object containing all the pages indexed by ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the result.
+     * @returns Promise resolved with the result.
      */
     protected async recordAttempt(
         lesson: AddonModLessonLessonWSData,
@@ -3338,7 +3338,7 @@ export class AddonModLessonProvider {
      *
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when removed.
+     * @returns Promise resolved when removed.
      */
     async removeStoredPassword(lessonId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -3352,7 +3352,7 @@ export class AddonModLessonProvider {
      * @param lessonId Lesson ID.
      * @param password Password to store.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when stored.
+     * @returns Promise resolved when stored.
      */
     async storePassword(lessonId: number, password: string, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -3375,7 +3375,7 @@ export class AddonModLessonProvider {
      * @param page Page to check.
      * @param validPages Valid pages, indexed by page ID.
      * @param viewedPagesIds List of viewed pages IDs.
-     * @return Next page ID.
+     * @returns Next page ID.
      */
     validPageAndView(
         pages: Record<number, AddonModLessonPageWSData>,

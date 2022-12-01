@@ -45,10 +45,9 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
     /**
      * Get the text to submit.
      *
-     * @param textUtils Text utils instance.
      * @param plugin Plugin.
      * @param inputData Data entered in the feedback edit form.
-     * @return Text to submit.
+     * @returns Text to submit.
      */
     getTextFromInputData(plugin: AddonModAssignPlugin, inputData: AddonModAssignFeedbackCommentsTextData): string | undefined {
         if (inputData.assignfeedbackcomments_editor === undefined) {
@@ -66,7 +65,6 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
      * @param assignId The assignment ID.
      * @param userId User ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return If the function is async, it should return a Promise resolved when done.
      */
     discardDraft(assignId: number, userId: number, siteId?: string): void {
         const id = this.getDraftId(assignId, userId, siteId);
@@ -79,7 +77,7 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
      * Return the Component to use to display the plugin data.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @return The component (or promise resolved with component) to use, undefined if not found.
+     * @returns The component (or promise resolved with component) to use, undefined if not found.
      */
     getComponent(): Type<IAddonModAssignFeedbackPluginComponent> {
         return AddonModAssignFeedbackCommentsComponent;
@@ -91,7 +89,7 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
      * @param assignId The assignment ID.
      * @param userId User ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Data (or promise resolved with the data).
+     * @returns Data (or promise resolved with the data).
      */
     getDraft(assignId: number, userId: number, siteId?: string): AddonModAssignFeedbackCommentsDraftData | undefined {
         const id = this.getDraftId(assignId, userId, siteId);
@@ -107,7 +105,7 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
      * @param assignId The assignment ID.
      * @param userId User ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Draft ID.
+     * @returns Draft ID.
      */
     protected getDraftId(assignId: number, userId: number, siteId?: string): string {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -122,7 +120,7 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
      * @param assign The assignment.
      * @param submission The submission.
      * @param plugin The plugin object.
-     * @return The files (or promise resolved with the files).
+     * @returns The files (or promise resolved with the files).
      */
     getPluginFiles(
         assign: AddonModAssignAssign,
@@ -140,7 +138,7 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
      * @param plugin The plugin object.
      * @param inputData Data entered by the user for the feedback.
      * @param userId User ID of the submission.
-     * @return Boolean (or promise resolved with boolean): whether the data has changed.
+     * @returns Boolean (or promise resolved with boolean): whether the data has changed.
      */
     async hasDataChanged(
         assign: AddonModAssignAssign,
@@ -179,7 +177,7 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
      * @param assignId The assignment ID.
      * @param userId User ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Boolean or promise resolved with boolean: whether the plugin has draft data.
+     * @returns Boolean or promise resolved with boolean: whether the plugin has draft data.
      */
     hasDraftData(assignId: number, userId: number, siteId?: string): boolean | Promise<boolean> {
         const draft = this.getDraft(assignId, userId, siteId);
@@ -190,7 +188,7 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return True or promise resolved with true if enabled.
+     * @returns True or promise resolved with true if enabled.
      */
     async isEnabled(): Promise<boolean> {
         // In here we should check if comments is not disabled in site.
@@ -207,7 +205,6 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
      * @param plugin The plugin object.
      * @param pluginData Object where to store the data to send.
      * @param siteId Site ID. If not defined, current site.
-     * @return If the function is async, it should return a Promise resolved when done.
      */
     prepareFeedbackData(
         assignId: number,
@@ -235,7 +232,6 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
      * @param plugin The plugin object.
      * @param data The data to save.
      * @param siteId Site ID. If not defined, current site.
-     * @return If the function is async, it should return a Promise resolved when done.
      */
     saveDraft(
         assignId: number,

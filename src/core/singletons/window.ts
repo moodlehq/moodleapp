@@ -52,7 +52,7 @@ export class CoreWindow {
      * Show a confirm before opening a link in browser, unless the user previously marked to not show again.
      *
      * @param url URL to open.
-     * @return Promise resolved if confirmed, rejected if rejected.
+     * @returns Promise resolved if confirmed, rejected if rejected.
      */
     static async confirmOpenBrowserIfNeeded(url: string): Promise<void> {
         if (!CoreUrlUtils.isHttpURL(url)) {
@@ -88,7 +88,7 @@ export class CoreWindow {
      *
      * @param url URL to open.
      * @param name Name of the browsing context into which to load the URL.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     static async open(url: string, name?: string): Promise<void> {
         if (CoreUrlUtils.isLocalFileUrl(url)) {

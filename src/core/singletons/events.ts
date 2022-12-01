@@ -137,7 +137,7 @@ export class CoreEvents {
      * @param eventName Name of the event to listen to.
      * @param callBack Function to call when the event is triggered.
      * @param siteId Site where to trigger the event. Undefined won't check the site.
-     * @return Observer to stop listening.
+     * @returns Observer to stop listening.
      */
     static on<Fallback = unknown, Event extends string = string>(
         eventName: Event,
@@ -190,7 +190,7 @@ export class CoreEvents {
      * @param eventName Name of the event to listen to.
      * @param callBack Function to call when the event is triggered.
      * @param siteId Site where to trigger the event. Undefined won't check the site.
-     * @return Observer to stop listening.
+     * @returns Observer to stop listening.
      */
     static once<Fallback = unknown, Event extends string = string>(
         eventName: Event,
@@ -214,7 +214,7 @@ export class CoreEvents {
      * @param eventNames Names of the events to listen to.
      * @param callBack Function to call when any of the events is triggered.
      * @param siteId Site where to trigger the event. Undefined won't check the site.
-     * @return Observer to stop listening.
+     * @returns Observer to stop listening.
      */
     static onMultiple<T = unknown>(eventNames: string[], callBack: (value: T) => void, siteId?: string): CoreEventObserver {
         const observers = eventNames.map((name) => this.on<T>(name, callBack, siteId));
@@ -232,7 +232,7 @@ export class CoreEvents {
     /**
      * Triggers an event, notifying all the observers.
      *
-     * @param event Name of the event to trigger.
+     * @param eventName Name of the event to trigger.
      * @param data Data to pass to the observers.
      * @param siteId Site where to trigger the event. Undefined means no Site.
      */
@@ -253,7 +253,7 @@ export class CoreEvents {
     /**
      * Triggers a unique event, notifying all the observers. If the event has already been triggered, don't do anything.
      *
-     * @param event Name of the event to trigger.
+     * @param eventName Name of the event to trigger.
      * @param data Data to pass to the observers.
      * @param siteId Site where to trigger the event. Undefined means no Site.
      */

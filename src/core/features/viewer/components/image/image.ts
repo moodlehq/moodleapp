@@ -75,7 +75,7 @@ export class CoreViewerImageComponent implements OnInit, AfterViewInit {
     /**
      * Zoom In or Out.
      *
-     * @param zoomIn: True to zoom in, false to zoom out.
+     * @param zoomIn True to zoom in, false to zoom out.
      */
     zoom(zoomIn = true): void {
         const imageElement = this.element.nativeElement.querySelector('img');

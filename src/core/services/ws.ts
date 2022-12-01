@@ -67,7 +67,7 @@ export class CoreWSProvider {
      * @param siteUrl Complete site url to perform the call.
      * @param data Arguments to pass to the method.
      * @param preSets Extra settings and information.
-     * @return Deferred promise resolved with the response data in success and rejected with the error if it fails.
+     * @returns Deferred promise resolved with the response data in success and rejected with the error if it fails.
      */
     protected addToRetryQueue<T = unknown>(
         method: string,
@@ -94,7 +94,7 @@ export class CoreWSProvider {
      * @param method The WebService method to be called.
      * @param data Arguments to pass to the method. It's recommended to call convertValuesToString before passing the data.
      * @param preSets Extra settings and information.
-     * @return Promise resolved with the response data in success and rejected if it fails.
+     * @returns Promise resolved with the response data in success and rejected if it fails.
      */
     call<T = unknown>(method: string, data: Record<string, unknown>, preSets: CoreWSPreSets): Promise<T> {
         if (!preSets) {
@@ -130,7 +130,7 @@ export class CoreWSProvider {
      * @param method The WebService method to be called.
      * @param data Arguments to pass to the method.
      * @param preSets Extra settings and information. Only some
-     * @return Promise resolved with the response data in success and rejected with CoreAjaxError.
+     * @returns Promise resolved with the response data in success and rejected with CoreAjaxError.
      */
     callAjax<T = unknown>(method: string, data: Record<string, unknown>, preSets: CoreWSAjaxPreSets): Promise<T> {
         const cacheParams = {
@@ -154,7 +154,7 @@ export class CoreWSProvider {
      *
      * @param data The data that needs all the non-object values set to strings.
      * @param stripUnicode If Unicode long chars need to be stripped.
-     * @return The cleaned object or null if some strings becomes empty after stripping Unicode.
+     * @returns The cleaned object or null if some strings becomes empty after stripping Unicode.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     convertValuesToString(data: any, stripUnicode?: boolean): any {
@@ -213,7 +213,7 @@ export class CoreWSProvider {
      * @param message The message to include in the error.
      * @param needsTranslate If the message needs to be translated.
      * @param translateParams Translation params, if needed.
-     * @return Fake WS error.
+     * @returns Fake WS error.
      * @deprecated since 3.9.5. Just create the error directly.
      */
     createFakeWSError(message: string, needsTranslate?: boolean, translateParams?: {[name: string]: string}): CoreError {
@@ -247,7 +247,7 @@ export class CoreWSProvider {
      * @param path Local path to store the file.
      * @param addExtension True if extension need to be added to the final path.
      * @param onProgress Function to call on progress.
-     * @return Promise resolved with the downloaded file.
+     * @returns Promise resolved with the downloaded file.
      */
     async downloadFile(
         url: string,
@@ -328,6 +328,7 @@ export class CoreWSProvider {
      * @param method Method of the HTTP request.
      * @param url Base URL of the HTTP request.
      * @param params Params of the HTTP request.
+     * @returns the on going call if any.
      */
     protected getPromiseHttp<T = unknown>(method: string, url: string, params?: Record<string, unknown>): Promise<T> | undefined {
         const queueItemId = this.getQueueItemId(method, url, params);
@@ -341,7 +342,7 @@ export class CoreWSProvider {
      *
      * @param url File URL.
      * @param ignoreCache True to ignore cache, false otherwise.
-     * @return Promise resolved with the mimetype or '' if failure.
+     * @returns Promise resolved with the mimetype or '' if failure.
      */
     async getRemoteFileMimeType(url: string, ignoreCache?: boolean): Promise<string> {
         const cachedMimeType = this.mimeTypeCache[url];
@@ -370,7 +371,7 @@ export class CoreWSProvider {
      * Perform a HEAD request to get the size of a remote file.
      *
      * @param url File URL.
-     * @return Promise resolved with the size or -1 if failure.
+     * @returns Promise resolved with the size or -1 if failure.
      */
     getRemoteFileSize(url: string): Promise<number> {
         return this.performHead(url).then((response) => {
@@ -388,7 +389,7 @@ export class CoreWSProvider {
     /**
      * Get a request timeout based on the network connection.
      *
-     * @return Timeout in ms.
+     * @returns Timeout in ms.
      */
     getRequestTimeout(): number {
         return CoreNetwork.isNetworkAccessLimited() ? CoreConstants.WS_TIMEOUT : CoreConstants.WS_TIMEOUT_WIFI;
@@ -400,7 +401,7 @@ export class CoreWSProvider {
      * @param method Method of the HTTP request.
      * @param url Base URL of the HTTP request.
      * @param params Params of the HTTP request.
-     * @return Queue item ID.
+     * @returns Queue item ID.
      */
     protected getQueueItemId(method: string, url: string, params?: Record<string, unknown>): string {
         if (params) {
@@ -416,7 +417,7 @@ export class CoreWSProvider {
      * @param method The WebService method to be called.
      * @param data Arguments to pass to the method.
      * @param preSets Extra settings and information. Only some
-     * @return Promise resolved with the response data in success and rejected with CoreAjaxError.
+     * @returns Promise resolved with the response data in success and rejected with CoreAjaxError.
      */
     protected performAjax<T = unknown>(method: string, data: Record<string, unknown>, preSets: CoreWSAjaxPreSets): Promise<T> {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -531,7 +532,7 @@ export class CoreWSProvider {
      * Perform a HEAD request and save the promise while waiting to be resolved.
      *
      * @param url URL to perform the request.
-     * @return Promise resolved with the response.
+     * @returns Promise resolved with the response.
      */
     performHead<T = unknown>(url: string): Promise<HttpResponse<T>> {
         let promise = this.getPromiseHttp<HttpResponse<T>>('head', url);
@@ -555,7 +556,7 @@ export class CoreWSProvider {
      * @param siteUrl Complete site url to perform the call.
      * @param ajaxData Arguments to pass to the method.
      * @param preSets Extra settings and information.
-     * @return Promise resolved with the response data in success and rejected with CoreWSError if it fails.
+     * @returns Promise resolved with the response data in success and rejected with CoreWSError if it fails.
      */
     async performPost<T = unknown>(
         method: string,
@@ -604,7 +605,7 @@ export class CoreWSProvider {
      *
      * @param object1 First object.
      * @param object2 Second object.
-     * @return First object with items added.
+     * @returns First object with items added.
      */
     protected combineObjectsArrays<T>(object1: T, object2: T): T {
         for (const name in object2) {
@@ -626,7 +627,7 @@ export class CoreWSProvider {
      * @param ajaxData Arguments to pass to the method.
      * @param preSets Extra settings and information.
      * @param options Request options.
-     * @return Promise resolved with the response data in success and rejected with CoreWSError if it fails.
+     * @returns Promise resolved with the response data in success and rejected with CoreWSError if it fails.
      */
     protected performSinglePost<T>(
         method: string,
@@ -780,7 +781,7 @@ export class CoreWSProvider {
      * @param method Method of the HTTP request.
      * @param url Base URL of the HTTP request.
      * @param params Params of the HTTP request.
-     * @return The promise saved.
+     * @returns The promise saved.
      */
     protected setPromiseHttp<T = unknown>(
         promise: Promise<T>,
@@ -812,8 +813,7 @@ export class CoreWSProvider {
      * @param method The WebService method to be called.
      * @param data Arguments to pass to the method.
      * @param preSets Extra settings and information.
-     * @return Promise resolved with the response data in success and rejected with the error message if it fails.
-     * @return Request response.
+     * @returns Promise resolved with the response data in success and rejected with the error message if it fails.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     syncCall<T = unknown>(method: string, data: any, preSets: CoreWSPreSets): T {
@@ -891,7 +891,7 @@ export class CoreWSProvider {
      * @param options File upload options.
      * @param preSets Must contain siteUrl and wsToken.
      * @param onProgress Function to call on progress.
-     * @return Promise resolved when uploaded.
+     * @returns Promise resolved when uploaded.
      */
     async uploadFile(
         filePath: string,
@@ -991,7 +991,7 @@ export class CoreWSProvider {
      *
      * @param error Original error.
      * @param status Status code (if any).
-     * @return CoreHttpError.
+     * @returns CoreHttpError.
      */
     protected createHttpError(error: CoreTextErrorObject, status: number): CoreHttpError {
         const message = CoreTextUtils.buildSeveralParagraphsMessage([
@@ -1008,7 +1008,7 @@ export class CoreWSProvider {
      * Perform an HTTP request requesting for a text response.
      *
      * @param url Url to get.
-     * @return Resolved with the text when done.
+     * @returns Resolved with the text when done.
      */
     async getText(url: string): Promise<string> {
         // Fetch the URL content.
@@ -1033,7 +1033,7 @@ export class CoreWSProvider {
      *
      * @param url URL of the request.
      * @param options Options for the request.
-     * @return Promise resolved with the response.
+     * @returns Promise resolved with the response.
      */
     async sendHTTPRequest<T = unknown>(url: string, options: HttpRequestOptions): Promise<HttpResponse<T>> {
         // Set default values.
@@ -1113,7 +1113,7 @@ export class CoreWSProvider {
      * Check if a URL works (it returns a 2XX status).
      *
      * @param url URL to check.
-     * @return Promise resolved with boolean: whether it works.
+     * @returns Promise resolved with boolean: whether it works.
      */
     async urlWorks(url: string): Promise<boolean> {
         try {
@@ -1130,7 +1130,7 @@ export class CoreWSProvider {
      *
      * @param siteUrl Site url.
      * @param options Error options.
-     * @return Cannot connect error.
+     * @returns Cannot connect error.
      */
     protected async createCannotConnectSiteError(
         siteUrl: string,

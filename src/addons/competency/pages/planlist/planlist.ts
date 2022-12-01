@@ -53,7 +53,7 @@ export class AddonCompetencyPlanListPage implements AfterViewInit, OnDestroy {
     /**
      * Fetches the learning plans and updates the view.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchLearningPlans(): Promise<void> {
         try {

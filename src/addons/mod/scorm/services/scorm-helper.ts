@@ -50,7 +50,7 @@ export class AddonModScormHelperProvider {
      *
      * @param scorm SCORM to download.
      * @param isOutdated True if package outdated, false if not outdated, undefined to calculate it.
-     * @return Promise resolved if the user confirms or no confirmation needed.
+     * @returns Promise resolved if the user confirms or no confirmation needed.
      */
     async confirmDownload(scorm: AddonModScormScorm, isOutdated?: boolean): Promise<void> {
         // Check if file should be downloaded.
@@ -80,7 +80,7 @@ export class AddonModScormHelperProvider {
      * @param scorm SCORM.
      * @param attempt Number of the online attempt.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the attempt is created.
+     * @returns Promise resolved when the attempt is created.
      */
     async convertAttemptToOffline(scorm: AddonModScormScorm, attempt: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -137,7 +137,7 @@ export class AddonModScormHelperProvider {
      * @param newAttempt Number of the new attempt.
      * @param lastOnline Number of the last online attempt.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the attempt is created.
+     * @returns Promise resolved when the attempt is created.
      */
     async createOfflineAttempt(scorm: AddonModScormScorm, newAttempt: number, lastOnline: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -177,7 +177,7 @@ export class AddonModScormHelperProvider {
      * @param scorm SCORM object.
      * @param attempts Attempts count.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the attempt data.
+     * @returns Promise resolved with the attempt data.
      */
     async determineAttemptToContinue(
         scorm: AddonModScormScorm,
@@ -221,7 +221,7 @@ export class AddonModScormHelperProvider {
      * @param scormId Scorm ID.
      * @param attempt Attempt number.
      * @param options Other options.
-     * @return Promise resolved with the first SCO.
+     * @returns Promise resolved with the first SCO.
      */
     async getFirstSco(
         scormId: number,
@@ -253,7 +253,7 @@ export class AddonModScormHelperProvider {
      *
      * @param scorm SCORM object.
      * @param attempts Attempts count.
-     * @return Last attempt data.
+     * @returns Last attempt data.
      */
     protected getLastBeforeMax(
         scorm: AddonModScormScorm,
@@ -277,7 +277,7 @@ export class AddonModScormHelperProvider {
      *
      * @param toc SCORM's TOC.
      * @param scoId SCO ID.
-     * @return Next SCO.
+     * @returns Next SCO.
      */
     getNextScoFromToc(toc: AddonModScormScoWithData[], scoId: number): AddonModScormScoWithData | undefined {
         const currentTocIndex = toc.findIndex((item) => item.id == scoId);
@@ -295,7 +295,7 @@ export class AddonModScormHelperProvider {
      *
      * @param toc SCORM's TOC.
      * @param scoId SCO ID.
-     * @return Previous SCO.
+     * @returns Previous SCO.
      */
     getPreviousScoFromToc(toc: AddonModScormScoWithData[], scoId: number): AddonModScormScoWithData | undefined {
         const currentTocIndex = toc.findIndex((item) => item.id == scoId);
@@ -313,7 +313,7 @@ export class AddonModScormHelperProvider {
      *
      * @param toc SCORM's TOC.
      * @param scoId SCO ID.
-     * @return SCO.
+     * @returns SCO.
      */
     getScoFromToc(toc: AddonModScormScoWithData[], scoId: number): AddonModScormScoWithData | undefined {
         return toc.find(sco => sco.id == scoId);
@@ -326,7 +326,7 @@ export class AddonModScormHelperProvider {
      * @param lastAttempt Last attempt number.
      * @param incomplete Whether last attempt is incomplete.
      * @param options Options.
-     * @return Promise resolved with the TOC.
+     * @returns Promise resolved with the TOC.
      */
     async getToc(
         scormId: number,
@@ -352,7 +352,7 @@ export class AddonModScormHelperProvider {
      * @param scormId SCORM ID.
      * @param attempt Online attempt to get the data.
      * @param options Other options.
-     * @return Promise resolved with user data.
+     * @returns Promise resolved with user data.
      */
     async searchOnlineAttemptUserData(
         scormId: number,

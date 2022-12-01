@@ -89,7 +89,7 @@ export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.element.setAttribute('aria-labelledby', this.id + '-tab');

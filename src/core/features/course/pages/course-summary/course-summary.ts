@@ -131,7 +131,7 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
     /**
      * Check if the user can access as guest.
      *
-     * @return Promise resolved if can access as guest, rejected otherwise. Resolve param indicates if
+     * @returns Promise resolved if can access as guest, rejected otherwise. Resolve param indicates if
      *         password is required for guest access.
      */
     protected async canAccessAsGuest(): Promise<boolean> {
@@ -272,7 +272,7 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
      * Load the course menu handlers.
      *
      * @param refresh If it's refreshing content.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadMenuHandlers(refresh?: boolean): Promise<void> {
         if (!this.course) {
@@ -343,7 +343,7 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
      *
      * @param instanceId The instance ID.
      * @param password Password to use.
-     * @return Promise resolved when self enrolled.
+     * @returns Promise resolved when self enrolled.
      */
     async selfEnrolInCourse(instanceId: number, password = ''): Promise<void> {
         const modal = await CoreDomUtils.showModalLoading('core.loading', true);
@@ -425,7 +425,7 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
      * Wait for the user to be enrolled in the course.
      *
      * @param first If it's the first call (true) or it's a recursive call (false).
-     * @return Promise resolved when enrolled or timeout.
+     * @returns Promise resolved when enrolled or timeout.
      */
     protected async waitForEnrolled(first?: boolean): Promise<void> {
         if (first) {

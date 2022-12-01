@@ -56,7 +56,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      * @param dirPath Path of the directory where to store all the content files.
      * @param single True if we're downloading a single module, false if we're downloading a whole section.
      * @param canStart If true, start a new attempt if needed.
-     * @return Promise resolved when all content is downloaded.
+     * @returns Promise resolved when all content is downloaded.
      */
     download(
         module: CoreCourseAnyModuleData,
@@ -75,7 +75,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      * @param module Module.
      * @param courseId Course ID the module belongs to.
      * @param single True if we're downloading a single module, false if we're downloading a whole section.
-     * @return Promise resolved with the list of files.
+     * @returns Promise resolved with the list of files.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async getFiles(module: CoreCourseAnyModuleData, courseId: number, single?: boolean): Promise<CoreWSFile[]> {
@@ -104,7 +104,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      * @param quiz Quiz.
      * @param attempts Quiz user attempts.
      * @param siteId Site ID. If not defined, current site.
-     * @return List of Files.
+     * @returns List of Files.
      */
     protected async getAttemptsFeedbackFiles(
         quiz: AddonModQuizQuizWSData,
@@ -145,9 +145,9 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      * @param accessInfo Quiz access info returned by AddonModQuizProvider.getQuizAccessInformation.
      * @param attempt Attempt to continue. Don't pass any value if the user needs to start a new attempt.
      * @param askPreflight Whether it should ask for preflight data if needed.
-     * @param modalTitle Lang key of the title to set to preflight modal (e.g. 'addon.mod_quiz.startattempt').
+     * @param title Lang key of the title to set to preflight modal (e.g. 'addon.mod_quiz.startattempt').
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the preflight data.
+     * @returns Promise resolved with the preflight data.
      */
     async getPreflightData(
         quiz: AddonModQuizQuizWSData,
@@ -191,7 +191,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      *
      * @param moduleId The module ID.
      * @param courseId The course ID the module belongs to.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     invalidateContent(moduleId: number, courseId: number): Promise<void> {
         return AddonModQuiz.invalidateContent(moduleId, courseId);
@@ -202,7 +202,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      *
      * @param module Module.
      * @param courseId Course ID the module belongs to.
-     * @return Promise resolved when invalidated.
+     * @returns Promise resolved when invalidated.
      */
     async invalidateModule(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
         // Invalidate the calls required to check if a quiz is downloadable.
@@ -217,7 +217,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      *
      * @param module Module.
      * @param courseId Course ID the module belongs to.
-     * @return Whether the module can be downloaded. The promise should never be rejected.
+     * @returns Whether the module can be downloaded. The promise should never be rejected.
      */
     async isDownloadable(module: CoreCourseAnyModuleData, courseId: number): Promise<boolean> {
         if (CoreSites.getCurrentSite()?.isOfflineDisabled()) {
@@ -247,7 +247,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.
+     * @returns A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.
      */
     async isEnabled(): Promise<boolean> {
         return true;
@@ -261,7 +261,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      * @param single True if we're downloading a single module, false if we're downloading a whole section.
      * @param dirPath Path of the directory where to store all the content files.
      * @param canStart If true, start a new attempt if needed.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async prefetch(
         module: SyncedModule,
@@ -289,7 +289,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      * @param single True if we're downloading a single module, false if we're downloading a whole section.
      * @param canStart If true, start a new attempt if needed.
      * @param siteId Site ID.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async prefetchQuiz(
         module: CoreCourseAnyModuleData,
@@ -400,7 +400,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      * @param attempt Attempt.
      * @param preflightData Preflight required data (like password).
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the prefetch is finished. Data returned is not reliable.
+     * @returns Promise resolved when the prefetch is finished. Data returned is not reliable.
      */
     async prefetchAttempt(
         quiz: AddonModQuizQuizWSData,
@@ -474,9 +474,9 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      *
      * @param quiz Quiz.
      * @param attempt Attempt.
-     * @param options Other options.
+     * @param modOptions Other options.
      * @param siteId Site ID.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async prefetchAttemptReviewFiles(
         quiz: AddonModQuizQuizWSData,
@@ -511,7 +511,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      * @param quiz Quiz.
      * @param modOptions Other options.
      * @param siteId Site ID.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async prefetchGradeAndFeedback(
         quiz: AddonModQuizQuizWSData,
@@ -536,7 +536,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      * @param quiz Quiz.
      * @param askPreflight Whether it should ask for preflight data if needed.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async prefetchQuizAndLastAttempt(quiz: AddonModQuizQuizWSData, askPreflight?: boolean, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -583,7 +583,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      *
      * @param quiz Quiz.
      * @param options Other options.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async setStatusAfterPrefetch(
         quiz: AddonModQuizQuizWSData,
@@ -620,7 +620,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
      * @param module Module.
      * @param courseId Course ID the module belongs to
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async sync(module: SyncedModule, courseId: number, siteId?: string): Promise<AddonModQuizSyncResult | undefined> {
         const quiz = await AddonModQuiz.getQuiz(courseId, module.id, { siteId });

@@ -173,7 +173,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
      * Refresh the user.
      *
      * @param event Event.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async refreshUser(event?: IonRefresher): Promise<void> {
         await CoreUtils.ignoreErrors(Promise.all([

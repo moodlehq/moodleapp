@@ -58,7 +58,6 @@ export class CoreAriaRoleTab<T = unknown> {
      *
      * @param tabFindIndex Tab findable index.
      * @param e Event.
-     * @return Promise resolved when done.
      */
     keyUp(tabFindIndex: string, e: KeyboardEvent): void {
         e.preventDefault();

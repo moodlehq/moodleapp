@@ -38,7 +38,7 @@ export class AddonModQuizAccessOfflineAttemptsComponent implements OnInit {
     constructor(private fb: FormBuilder) { }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         // Always set confirmdatasaved to 1. Sending the data means the user accepted.

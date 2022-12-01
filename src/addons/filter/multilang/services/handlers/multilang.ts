@@ -36,7 +36,7 @@ export class AddonFilterMultilangHandlerService extends CoreFilterDefaultHandler
      * @param filter The filter.
      * @param options Options passed to the filters.
      * @param siteId Site ID. If not defined, current site.
-     * @return Filtered text (or promise resolved with the filtered text).
+     * @returns Filtered text (or promise resolved with the filtered text).
      */
     async filter(
         text: string,
@@ -75,7 +75,7 @@ export class AddonFilterMultilangHandlerService extends CoreFilterDefaultHandler
      *
      * @param options Options.
      * @param site Site.
-     * @return Whether filter should be applied.
+     * @returns Whether filter should be applied.
      */
     shouldBeApplied(options: CoreFilterFormatTextOptions, site?: CoreSite): boolean {
         // The filter should be applied if site is older than 3.7 or the WS didn't filter the text.

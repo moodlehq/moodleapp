@@ -74,7 +74,7 @@ export class CoreQuestionComponent implements OnInit, AsyncComponent {
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         this.offlineEnabled = CoreUtils.isTrueOrOne(this.offlineEnabled);

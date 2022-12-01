@@ -49,7 +49,7 @@ export class AddonModChoicePrefetchHandlerService extends CoreCourseActivityPref
      * @param courseId Course ID the module belongs to.
      * @param single True if we're downloading a single module, false if we're downloading a whole section.
      * @param siteId Site ID.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async prefetchChoice(
         module: CoreCourseAnyModuleData,
@@ -81,9 +81,10 @@ export class AddonModChoicePrefetchHandlerService extends CoreCourseActivityPref
     /**
      * Prefetch choice results.
      *
-     * @param choiceId Choice ID.
+     * @param choiceId Choice Id.
+     * @param courseId Course Id.
      * @param modOptions Options.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async prefetchResults(
         choiceId: number,
@@ -132,7 +133,7 @@ export class AddonModChoicePrefetchHandlerService extends CoreCourseActivityPref
      *
      * @param module Module.
      * @param courseId Course ID the module belongs to.
-     * @return Promise resolved when invalidated.
+     * @returns Promise resolved when invalidated.
      */
     invalidateModule(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
         return AddonModChoice.invalidateChoiceData(courseId);
@@ -144,7 +145,7 @@ export class AddonModChoicePrefetchHandlerService extends CoreCourseActivityPref
      * @param module Module.
      * @param courseId Course ID the module belongs to
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     sync(module: CoreCourseAnyModuleData, courseId: number, siteId?: string): Promise<AddonModChoiceSyncResult> {
         return AddonModChoiceSync.syncChoice(module.instance, undefined, siteId);

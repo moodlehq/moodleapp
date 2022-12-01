@@ -71,7 +71,7 @@ export class CoreLoginSitesComponent implements OnInit {
      *
      * @param event Click event.
      * @param site Site to delete.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async deleteSite(event: Event, site: CoreSiteBasicInfo): Promise<void> {
         event.stopPropagation();
@@ -101,7 +101,7 @@ export class CoreLoginSitesComponent implements OnInit {
      *
      * @param event Click event.
      * @param siteId The site ID.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async login(event: Event, siteId: string): Promise<void> {
         await this.close(event, true);

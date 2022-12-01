@@ -32,7 +32,7 @@ export interface AddonWorkshopAssessmentStrategyHandler extends CoreDelegateHand
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
      * @param injector Injector.
-     * @return The component (or promise resolved with component) to use, undefined if not found.
+     * @returns The component (or promise resolved with component) to use, undefined if not found.
      */
     getComponent?(): Type<unknown>;
 
@@ -41,7 +41,7 @@ export interface AddonWorkshopAssessmentStrategyHandler extends CoreDelegateHand
      *
      * @param form Original data of the form.
      * @param workshopId WorkShop Id
-     * @return Promise resolved with original values sorted.
+     * @returns Promise resolved with original values sorted.
      */
     getOriginalValues?(
         form: AddonModWorkshopGetAssessmentFormDefinitionData,
@@ -53,7 +53,7 @@ export interface AddonWorkshopAssessmentStrategyHandler extends CoreDelegateHand
      *
      * @param originalValues Original values of the form.
      * @param currentValues Current values of the form.
-     * @return True if data has changed, false otherwise.
+     * @returns True if data has changed, false otherwise.
      */
     hasDataChanged?(
         originalValues: AddonModWorkshopGetAssessmentFormFieldsParsedData[],
@@ -65,7 +65,7 @@ export interface AddonWorkshopAssessmentStrategyHandler extends CoreDelegateHand
      *
      * @param currentValues Current values of the form.
      * @param form Assessment form data.
-     * @return Promise resolved with the data to be sent. Or rejected with the input errors object.
+     * @returns Promise resolved with the data to be sent. Or rejected with the input errors object.
      */
     prepareAssessmentData(
         currentValues: AddonModWorkshopGetAssessmentFormFieldsParsedData[],
@@ -90,7 +90,7 @@ export class AddonWorkshopAssessmentStrategyDelegateService extends CoreDelegate
      * Check if an assessment strategy plugin is supported.
      *
      * @param workshopStrategy Assessment strategy name.
-     * @return True if supported, false otherwise.
+     * @returns True if supported, false otherwise.
      */
     isPluginSupported(workshopStrategy: string): boolean {
         return this.hasHandler(workshopStrategy, true);
@@ -99,9 +99,8 @@ export class AddonWorkshopAssessmentStrategyDelegateService extends CoreDelegate
     /**
      * Get the directive to use for a certain assessment strategy plugin.
      *
-     * @param injector Injector.
      * @param workshopStrategy Assessment strategy name.
-     * @return The component, undefined if not found.
+     * @returns The component, undefined if not found.
      */
     getComponentForPlugin(workshopStrategy: string): Type<unknown> | undefined {
         return this.executeFunctionOnEnabled(workshopStrategy, 'getComponent');
@@ -113,7 +112,7 @@ export class AddonWorkshopAssessmentStrategyDelegateService extends CoreDelegate
      * @param workshopStrategy Workshop strategy.
      * @param form Original data of the form.
      * @param workshopId Workshop ID.
-     * @return Resolved with original values sorted.
+     * @returns Resolved with original values sorted.
      */
     getOriginalValues(
         workshopStrategy: string,
@@ -129,7 +128,7 @@ export class AddonWorkshopAssessmentStrategyDelegateService extends CoreDelegate
      * @param workshopStrategy Workshop strategy.
      * @param originalValues Original values of the form.
      * @param currentValues Current values of the form.
-     * @return True if data has changed, false otherwise.
+     * @returns True if data has changed, false otherwise.
      */
     hasDataChanged(
         workshopStrategy: string,
@@ -145,7 +144,7 @@ export class AddonWorkshopAssessmentStrategyDelegateService extends CoreDelegate
      * @param workshopStrategy Workshop strategy to follow.
      * @param currentValues Current values of the form.
      * @param form Assessment form data.
-     * @return Promise resolved with the data to be sent. Or rejected with the input errors object.
+     * @returns Promise resolved with the data to be sent. Or rejected with the input errors object.
      */
     prepareAssessmentData(
         workshopStrategy: string,

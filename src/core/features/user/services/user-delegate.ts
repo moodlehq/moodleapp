@@ -66,7 +66,7 @@ export interface CoreUserProfileHandler extends CoreDelegateHandler {
      * @param contextId Context ID.
      * @param navOptions Navigation options for the course.
      * @param admOptions Admin options for the course.
-     * @return Whether or not the handler is enabled for a user.
+     * @returns Whether or not the handler is enabled for a user.
      */
     isEnabledForContext?(
         context: CoreUserDelegateContext,
@@ -81,7 +81,7 @@ export interface CoreUserProfileHandler extends CoreDelegateHandler {
      * @param user User object.
      * @param context Context.
      * @param contextId Context ID.
-     * @return Whether or not the handler is enabled for a user.
+     * @returns Whether or not the handler is enabled for a user.
      */
     isEnabledForUser?(user: CoreUserProfile, context: CoreUserDelegateContext, contextId: number): Promise<boolean>;
 
@@ -91,7 +91,7 @@ export interface CoreUserProfileHandler extends CoreDelegateHandler {
      * @param user User object.
      * @param context Context.
      * @param contextId Context ID.
-     * @return Data to be shown.
+     * @returns Data to be shown.
      */
     getDisplayData(user: CoreUserProfile, context: CoreUserDelegateContext, contextId: number): CoreUserProfileHandlerData;
 }
@@ -250,7 +250,7 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
      * @param userId User ID.
      * @param context Context.
      * @param contextId Context ID.
-     * @return True if handlers are loaded, false otherwise.
+     * @returns True if handlers are loaded, false otherwise.
      */
     areHandlersLoaded(userId: number, context: CoreUserDelegateContext, contextId?: number): boolean {
         return this.getHandlersData(userId, context, contextId).loaded;
@@ -283,7 +283,7 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
      * @param user The user object.
      * @param context Context.
      * @param contextId Context ID.
-     * @return Resolved with the handlers.
+     * @returns Resolved with the handlers.
      */
     getProfileHandlersFor(
         user: CoreUserProfile,
@@ -301,7 +301,7 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
      * @param user The user object.
      * @param context Context.
      * @param contextId Context ID.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async calculateUserHandlers(
         user: CoreUserProfile,
@@ -364,7 +364,7 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
      * @param contextId Context ID.
      * @param navOptions Navigation options for the course.
      * @param admOptions Admin options for the course.
-     * @return Whether or not the handler is enabled for a user.
+     * @returns Whether or not the handler is enabled for a user.
      */
     protected async getAndCacheEnabledForUserFromHandler(
         handler: CoreUserProfileHandler,
@@ -444,7 +444,7 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
      * @param userId User ID.
      * @param context Context.
      * @param contextId Context ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getCacheKey(userId: number, context: CoreUserDelegateContext, contextId?: number): string {
         return `${userId}#${this.getContextKey(context, contextId)}`;
@@ -455,7 +455,7 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
      *
      * @param context Context.
      * @param contextId Context ID.
-     * @return String to identify the context.
+     * @returns String to identify the context.
      */
     protected getContextKey(context: CoreUserDelegateContext, contextId?: number): string {
         return `${context}#${contextId ?? 0}`;
@@ -467,7 +467,7 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
      * @param userId User ID.
      * @param context Context.
      * @param contextId Context ID.
-     * @return Handlers data.
+     * @returns Handlers data.
      */
     protected getHandlersData(userId: number, context: CoreUserDelegateContext, contextId?: number): CoreUserDelegateHandlersData {
         // Initialize the data if it doesn't exist.

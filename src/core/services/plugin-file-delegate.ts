@@ -39,7 +39,7 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
      * @param fileUrl The file URL used to download the file.
      * @param path The path of the deleted file.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async fileDeleted(fileUrl: string, path: string, siteId?: string): Promise<void> {
         const handler = this.getHandlerForFile({ fileurl: fileUrl });
@@ -54,7 +54,7 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
      *
      * @param file The file data.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the file to use. Rejected if cannot download.
+     * @returns Promise resolved with the file to use. Rejected if cannot download.
      */
     getDownloadableFile(file: CoreWSFile, siteId?: string): Promise<CoreWSFile> {
         const handler = this.getHandlerForFile(file);
@@ -68,7 +68,7 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
      * @param file The file data.
      * @param handler The handler to use.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the file to use. Rejected if cannot download.
+     * @returns Promise resolved with the file to use. Rejected if cannot download.
      */
     protected async getHandlerDownloadableFile(
         file: CoreWSFile,
@@ -94,7 +94,7 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
      * Get the RegExp of the component and filearea described in the URL.
      *
      * @param args Arguments of the pluginfile URL defining component and filearea at least.
-     * @return RegExp to match the revision or undefined if not found.
+     * @returns RegExp to match the revision or undefined if not found.
      */
     getComponentRevisionRegExp(args: string[]): RegExp | void {
         // Get handler based on component (args[1]).
@@ -110,7 +110,7 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
      * CoreFilepoolProvider.extractDownloadableFilesFromHtml.
      *
      * @param container Container where to get the URLs from.
-     * @return List of URLs.
+     * @returns List of URLs.
      */
     getDownloadableFilesFromHTML(container: HTMLElement): string[] {
         let files = <string[]>[];
@@ -131,7 +131,7 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
      *
      * @param files List of files to sum its filesize.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with file size and a boolean to indicate if it is the total size or only partial.
+     * @returns Promise resolved with file size and a boolean to indicate if it is the total size or only partial.
      */
     async getFilesDownloadSize(files: CoreWSFile[], siteId?: string): Promise<CoreFileSizeSum> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -154,7 +154,7 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
      *
      * @param files List of files to sum its filesize.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with file size and a boolean to indicate if it is the total size or only partial.
+     * @returns Promise resolved with file size and a boolean to indicate if it is the total size or only partial.
      */
     async getFilesSize(files: CoreWSFile[], siteId?: string): Promise<CoreFileSizeSum> {
         const result = {
@@ -181,7 +181,7 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
      *
      * @param file The file data.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the size.
+     * @returns Promise resolved with the size.
      */
     async getFileSize(file: CoreWSFile, siteId?: string): Promise<number> {
         const isDownloadable = await this.isFileDownloadable(file, siteId);
@@ -213,7 +213,7 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
      * Get a handler to treat a certain file.
      *
      * @param file File data.
-     * @return Handler.
+     * @returns Handler.
      */
     protected getHandlerForFile(file: CoreWSFile): CorePluginFileHandler | undefined {
         for (const component in this.enabledHandlers) {
@@ -230,7 +230,7 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
      *
      * @param file The file data.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise with the data.
+     * @returns Promise with the data.
      */
     async isFileDownloadable(file: CoreWSFile, siteId?: string): Promise<CorePluginFileDownloadableResult> {
         const handler = this.getHandlerForFile(file);
@@ -248,7 +248,7 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
      *
      * @param url URL to be replaced.
      * @param args Arguments of the pluginfile URL defining component and filearea at least.
-     * @return Replaced URL without revision.
+     * @returns Replaced URL without revision.
      */
     removeRevisionFromUrl(url: string, args: string[]): string {
         // Get handler based on component (args[1]).
@@ -271,7 +271,7 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
      * @param file The file entry of the downloaded file.
      * @param siteId Site ID. If not defined, current site.
      * @param onProgress Function to call on progress.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async treatDownloadedFile(
         fileUrl: string,
@@ -305,7 +305,7 @@ export interface CorePluginFileHandler extends CoreDelegateHandler {
      * Return the RegExp to match the revision on pluginfile URLs.
      *
      * @param args Arguments of the pluginfile URL defining component and filearea at least.
-     * @return RegExp to match the revision on pluginfile URLs.
+     * @returns RegExp to match the revision on pluginfile URLs.
      */
     getComponentRevisionRegExp?(args: string[]): RegExp | undefined;
 
@@ -313,7 +313,7 @@ export interface CorePluginFileHandler extends CoreDelegateHandler {
      * Should return the string to remove the revision on pluginfile url.
      *
      * @param args Arguments of the pluginfile URL defining component and filearea at least.
-     * @return String to remove the revision on pluginfile url.
+     * @returns String to remove the revision on pluginfile url.
      */
     getComponentRevisionReplace?(args: string[]): string;
 
@@ -323,7 +323,7 @@ export interface CorePluginFileHandler extends CoreDelegateHandler {
      * @param fileUrl The file URL used to download the file.
      * @param path The path of the deleted file.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     fileDeleted?(fileUrl: string, path: string, siteId?: string): Promise<void>;
 
@@ -332,7 +332,7 @@ export interface CorePluginFileHandler extends CoreDelegateHandler {
      *
      * @param file The file data.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the file to use. Rejected if cannot download.
+     * @returns Promise resolved with the file to use. Rejected if cannot download.
      */
     getDownloadableFile?(file: CoreWSFile, siteId?: string): Promise<CoreWSFile>;
 
@@ -341,7 +341,7 @@ export interface CorePluginFileHandler extends CoreDelegateHandler {
      * CoreFilepoolProvider.extractDownloadableFilesFromHtml.
      *
      * @param container Container where to get the URLs from.
-     * @return List of URLs.
+     * @returns List of URLs.
      */
     getDownloadableFilesFromHTML?(container: HTMLElement): string[];
 
@@ -350,7 +350,7 @@ export interface CorePluginFileHandler extends CoreDelegateHandler {
      *
      * @param file The file data.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the size.
+     * @returns Promise resolved with the size.
      */
     getFileSize?(file: CoreWSFile, siteId?: string): Promise<number>;
 
@@ -359,7 +359,7 @@ export interface CorePluginFileHandler extends CoreDelegateHandler {
      *
      * @param file The file data.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with a boolean and a reason why it isn't downloadable if needed.
+     * @returns Promise resolved with a boolean and a reason why it isn't downloadable if needed.
      */
     isFileDownloadable?(file: CoreWSFile, siteId?: string): Promise<CorePluginFileDownloadableResult>;
 
@@ -367,7 +367,7 @@ export interface CorePluginFileHandler extends CoreDelegateHandler {
      * Check whether the file should be treated by this handler. It is used in functions where the component isn't used.
      *
      * @param file The file data.
-     * @return Whether the file should be treated by this handler.
+     * @returns Whether the file should be treated by this handler.
      */
     shouldHandleFile?(file: CoreWSFile): boolean;
 
@@ -378,7 +378,7 @@ export interface CorePluginFileHandler extends CoreDelegateHandler {
      * @param file The file entry of the downloaded file.
      * @param siteId Site ID. If not defined, current site.
      * @param onProgress Function to call on progress.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     treatDownloadedFile?(
         fileUrl: string,

@@ -33,7 +33,7 @@ export class CoreUserTagAreaHandlerService implements CoreTagAreaHandler {
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return Whether or not the handler is enabled on a site level.
+     * @returns Whether or not the handler is enabled on a site level.
      */
     async isEnabled(): Promise<boolean> {
         return true;
@@ -43,7 +43,7 @@ export class CoreUserTagAreaHandlerService implements CoreTagAreaHandler {
      * Parses the rendered content of a tag index and returns the items.
      *
      * @param content Rendered content.
-     * @return Area items (or promise resolved with the items).
+     * @returns Area items (or promise resolved with the items).
      */
     parseContent(content: string): CoreUserTagFeedElement[] {
         const items: CoreUserTagFeedElement[] = [];
@@ -83,7 +83,7 @@ export class CoreUserTagAreaHandlerService implements CoreTagAreaHandler {
     /**
      * Get the component to use to display items.
      *
-     * @return The component (or promise resolved with component) to use, undefined if not found.
+     * @returns The component (or promise resolved with component) to use, undefined if not found.
      */
     getComponent(): Type<unknown> | Promise<Type<unknown>> {
         return CoreUserTagAreaComponent;

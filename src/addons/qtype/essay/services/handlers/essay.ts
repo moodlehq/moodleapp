@@ -39,11 +39,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
     type = 'qtype_essay';
 
     /**
-     * Clear temporary data after the data has been saved.
-     *
-     * @param question Question.
-     * @param component The component the question is related to.
-     * @param componentId Component ID.
+     * @inheritdoc
      */
     clearTmpData(question: CoreQuestionQuestionParsed, component: string, componentId: string | number): void {
         const questionComponentId = CoreQuestion.getQuestionComponentId(question, componentId);
@@ -57,13 +53,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
     }
 
     /**
-     * Delete any stored data for the question.
-     *
-     * @param question Question.
-     * @param component The component the question is related to.
-     * @param componentId Component ID.
-     * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @inheritdoc
      */
     deleteOfflineData(
         question: CoreQuestionQuestionParsed,
@@ -75,11 +65,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
     }
 
     /**
-     * Get the list of files that needs to be downloaded in addition to the files embedded in the HTML.
-     *
-     * @param question Question.
-     * @param usageId Usage ID.
-     * @return List of files or URLs.
+     * @inheritdoc
      */
     getAdditionalDownloadableFiles(question: CoreQuestionQuestionParsed): CoreWSFile[] {
         if (!question.responsefileareas) {
@@ -93,7 +79,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
      * Check whether the question allows text and/or attachments.
      *
      * @param question Question to check.
-     * @return Allowed options.
+     * @returns Allowed options.
      */
     protected getAllowedOptions(question: CoreQuestionQuestionParsed): { text: boolean; attachments: boolean } {
         if (question.parsedSettings) {
@@ -112,34 +98,21 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
     }
 
     /**
-     * Return the name of the behaviour to use for the question.
-     * If the question should use the default behaviour you shouldn't implement this function.
-     *
-     * @param question The question.
-     * @param behaviour The default behaviour.
-     * @return The behaviour to use.
+     * @inheritdoc
      */
     getBehaviour(): string {
         return 'manualgraded';
     }
 
     /**
-     * Return the Component to use to display the question.
-     * It's recommended to return the class of the component, but you can also return an instance of the component.
-     *
-     * @param question The question to render.
-     * @return The component (or promise resolved with component) to use, undefined if not found.
+     * @inheritdoc
      */
     getComponent(): Type<unknown> {
         return AddonQtypeEssayComponent;
     }
 
     /**
-     * Check if a question can be submitted.
-     * If a question cannot be submitted it should return a message explaining why (translated or not).
-     *
-     * @param question The question.
-     * @return Prevent submit message. Undefined or empty if can be submitted.
+     * @inheritdoc
      */
     getPreventSubmitMessage(question: CoreQuestionQuestionParsed): string | undefined {
         const element = CoreDomUtils.convertToElement(question.html);
@@ -180,9 +153,9 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
      * Check the input word count and return a message to user when the number of words are outside the boundary settings.
      *
      * @param question The question.
-     * @param answers Object with the question answers (without prefix).
+     * @param answer Object with the question answers (without prefix).
      * @param onlineError Online validation error.
-     * @return Error message if there's a validation error, undefined otherwise.
+     * @returns Error message if there's a validation error, undefined otherwise.
      */
     protected checkInputWordCount(
         question: CoreQuestionQuestionParsed,
@@ -213,13 +186,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
     }
 
     /**
-     * Check if a response is complete.
-     *
-     * @param question The question.
-     * @param answers Object with the question answers (without prefix).
-     * @param component The component the question is related to.
-     * @param componentId Component ID.
-     * @return 1 if complete, 0 if not complete, -1 if cannot determine.
+     * @inheritdoc
      */
     isCompleteResponse(
         question: CoreQuestionQuestionParsed,
@@ -257,23 +224,14 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
     }
 
     /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @return True or promise resolved with true if enabled.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         return true;
     }
 
     /**
-     * Check if a student has provided enough of an answer for the question to be graded automatically,
-     * or whether it must be considered aborted.
-     *
-     * @param question The question.
-     * @param answers Object with the question answers (without prefix).
-     * @param component The component the question is related to.
-     * @param componentId Component ID.
-     * @return 1 if gradable, 0 if not gradable, -1 if cannot determine.
+     * @inheritdoc
      */
     isGradableResponse(
         question: CoreQuestionQuestionParsed,
@@ -293,14 +251,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
     }
 
     /**
-     * Check if two responses are the same.
-     *
-     * @param question Question.
-     * @param prevAnswers Object with the previous question answers.
-     * @param newAnswers Object with the new question answers.
-     * @param component The component the question is related to.
-     * @param componentId Component ID.
-     * @return Whether they're the same.
+     * @inheritdoc
      */
     isSameResponse(
         question: CoreQuestionQuestionParsed,
@@ -330,15 +281,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
     }
 
     /**
-     * Prepare and add to answers the data to send to server based in the input.
-     *
-     * @param question Question.
-     * @param answers The answers retrieved from the form. Prepared answers must be stored in this object.
-     * @param offline Whether the data should be saved in offline.
-     * @param component The component the question is related to.
-     * @param componentId Component ID.
-     * @param siteId Site ID. If not defined, current site.
-     * @return Return a promise resolved when done if async, void if sync.
+     * @inheritdoc
      */
     async prepareAnswers(
         question: CoreQuestionQuestionParsed,
@@ -374,7 +317,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
      * @param componentId Component ID.
      * @param attachmentsInput The HTML input containing the draft ID for attachments.
      * @param siteId Site ID. If not defined, current site.
-     * @return Return a promise resolved when done if async, void if sync.
+     * @returns Return a promise resolved when done if async, void if sync.
      */
     async prepareAttachments(
         question: CoreQuestionQuestionParsed,
@@ -421,7 +364,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
      * @param component The component the question is related to.
      * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async prepareSyncData(
         question: CoreQuestionQuestionParsed,
@@ -483,7 +426,7 @@ export class AddonQtypeEssayHandlerService implements CoreQuestionHandler {
      * @param answers The answers retrieved from the form. Prepared answers must be stored in this object.
      * @param textarea The textarea HTML element of the question.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async prepareTextAnswer(
         question: AddonModQuizEssayQuestion,

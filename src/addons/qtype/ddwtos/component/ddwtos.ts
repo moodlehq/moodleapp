@@ -44,7 +44,7 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent impleme
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         if (!this.question) {
@@ -148,7 +148,7 @@ export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent impleme
     }
 
     /**
-     * Component being destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.destroyed = true;
