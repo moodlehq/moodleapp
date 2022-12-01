@@ -61,8 +61,8 @@
     <ion-list *ngIf="access && access.canviewanalysis && !access.isempty">
         <core-group-selector [groupInfo]="groupInfo" [(selected)]="group" (selectedChange)="setGroup(group)"></core-group-selector>
 
-        <ion-item class="ion-text-wrap" (click)="openAttempts()" [detail]="access.canviewreports && completedCount > 0"
-            [button]="access.canviewreports && completedCount > 0">
+        <ion-item class="ion-text-wrap" (click)="openAttempts()" [class.hide-detail]="!(access.canviewreports && completedCount > 0)"
+            [detail]="true" [button]="access.canviewreports && completedCount > 0">
             <ion-label>
                 <h2>{{ 'addon.mod_feedback.completed_feedbacks' | translate }}</h2>
             </ion-label>

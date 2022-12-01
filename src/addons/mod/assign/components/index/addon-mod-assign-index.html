@@ -63,7 +63,7 @@
 
             <!-- Summary of submissions with draft status. -->
             <ion-item class="ion-text-wrap" *ngIf="assign.submissiondrafts && summary && summary.submissionsenabled"
-                [detail]="summary.submissiondraftscount" [button]="summary.submissiondraftscount"
+                [class.hide-detail]="!summary.submissiondraftscount" [detail]="true" [button]="summary.submissiondraftscount"
                 (click)="goToSubmissionList(submissionStatusDraft, !!summary.submissiondraftscount)">
                 <ion-label>
                     <h2>{{ 'addon.mod_assign.numberofdraftsubmissions' | translate }}</h2>
@@ -78,8 +78,8 @@
             </ion-item>
 
             <!-- Summary of submissions with submitted status. -->
-            <ion-item class="ion-text-wrap" *ngIf="summary && summary.submissionsenabled" [detail]="summary.submissionssubmittedcount"
-                [button]="summary.submissionssubmittedcount"
+            <ion-item class="ion-text-wrap" *ngIf="summary && summary.submissionsenabled"
+                [class.hide-detail]="!summary.submissionssubmittedcount" [detail]="true" [button]="summary.submissionssubmittedcount"
                 (click)="goToSubmissionList(submissionStatusSubmitted, !!summary.submissionssubmittedcount)">
                 <ion-label>
                     <h2>{{ 'addon.mod_assign.numberofsubmittedassignments' | translate }}</h2>
@@ -95,7 +95,7 @@
 
             <!-- Summary of submissions that need grading. -->
             <ion-item class="ion-text-wrap" *ngIf="summary && summary.submissionsenabled && !assign.teamsubmission"
-                [detail]="needsGradingAvailable" [button]="needsGradingAvailable"
+                [class.hide-detail]="!needsGradingAvailable" [detail]="true" [button]="needsGradingAvailable"
                 (click)="goToSubmissionList(needGrading, needsGradingAvailable)">
                 <ion-label>
                     <h2>{{ 'addon.mod_assign.numberofsubmissionsneedgrading' | translate }}</h2>
