@@ -234,6 +234,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
         this.prefetchCourseData.icon = statusData.icon;
         this.prefetchCourseData.statusTranslatable = statusData.statusTranslatable;
         this.prefetchCourseData.loading = statusData.loading;
+        this.prefetchCourseData.downloadSucceeded = status === CoreConstants.DOWNLOADED;
     }
 
     /**
