@@ -129,7 +129,11 @@ export class CoreSwipeNavigationItemsManager<
         while (deltaMoved !== delta) {
             nextIndex += deltaStep;
 
-            if (nextIndex < 0 || nextIndex >= items.length) {
+            if (nextIndex < 0) {
+                return null;
+            }
+
+            if (nextIndex >= items.length) {
                 break;
             }
 
