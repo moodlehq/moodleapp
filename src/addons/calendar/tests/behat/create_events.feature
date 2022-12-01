@@ -5,7 +5,10 @@ Feature: Test creation of calendar events in app
   I need basic to be able to create and edit calendar events in the app
 
   Background:
-    Given the following "users" exist:
+    Given the following config values are set as admin:
+      | nofixday | 1 |
+      | nofixhour | 1 |
+    And the following "users" exist:
       | username | firstname  | lastname  | email                |
       | teacher1 | Teacher    | teacher   | teacher1@example.com |
       | student1 | Student1   | student1  | student1@example.com |
