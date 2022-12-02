@@ -62,7 +62,7 @@ export class AddonModWorkshopPrefetchHandlerService extends CoreCourseActivityPr
      * @param module Module to get the files.
      * @param courseId Course ID the module belongs to.
      * @param options Other options.
-     * @return Promise resolved with the info fetched.
+     * @returns Promise resolved with the info fetched.
      */
     protected async getWorkshopInfoHelper(
         module: CoreCourseAnyModuleData,
@@ -188,7 +188,7 @@ export class AddonModWorkshopPrefetchHandlerService extends CoreCourseActivityPr
      *
      * @param module Module.
      * @param courseId Course ID the module belongs to.
-     * @return Whether the module can be downloaded. The promise should never be rejected.
+     * @returns Whether the module can be downloaded. The promise should never be rejected.
      */
     async isDownloadable(module: CoreCourseAnyModuleData, courseId: number): Promise<boolean> {
         const workshop = await AddonModWorkshop.getWorkshop(courseId, module.id, {
@@ -215,7 +215,7 @@ export class AddonModWorkshopPrefetchHandlerService extends CoreCourseActivityPr
      * @param groups Array of groups in the activity.
      * @param cmId Module ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return All unique entries.
+     * @returns All unique entries.
      */
     protected async getAllGradesReport(
         workshopId: number,
@@ -249,7 +249,7 @@ export class AddonModWorkshopPrefetchHandlerService extends CoreCourseActivityPr
      * @param module The module object returned by WS.
      * @param courseId Course ID the module belongs to.
      * @param siteId Site ID.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async prefetchWorkshop(module: CoreCourseAnyModuleData, courseId: number, siteId: string): Promise<void> {
         const userIds: number[] = [];

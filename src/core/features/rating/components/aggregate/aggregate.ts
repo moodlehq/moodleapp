@@ -133,7 +133,7 @@ export class CoreRatingAggregateComponent implements OnChanges, OnDestroy {
     }
 
     /**
-     * Component being destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.aggregateObserver?.off();

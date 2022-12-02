@@ -33,7 +33,7 @@ export class AddonModBookListLinkHandlerService extends CoreContentLinksModuleLi
      * Check if the handler is enabled for a certain site (site + user) and a URL.
      * If not defined, defaults to true.
      *
-     * @return Whether the handler is enabled for the URL and site.
+     * @returns Whether the handler is enabled for the URL and site.
      */
     isEnabled(): Promise<boolean> {
         return AddonModBook.isPluginEnabled();

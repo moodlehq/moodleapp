@@ -28,7 +28,7 @@ export class CoreCommentsOfflineProvider {
      * Get all offline comments.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with comments.
+     * @returns Promise resolved with comments.
      */
     async getAllComments(siteId?: string): Promise<(CoreCommentsDBRecord | CoreCommentsDeletedDBRecord)[]> {
         const site = await CoreSites.getSite(siteId);
@@ -49,7 +49,7 @@ export class CoreCommentsOfflineProvider {
      * @param itemId Associated id.
      * @param area String comment area. Default empty.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the comments.
+     * @returns Promise resolved with the comments.
      */
     async getComment(
         contextLevel: string,
@@ -83,7 +83,7 @@ export class CoreCommentsOfflineProvider {
      * @param itemId Associated id.
      * @param area String comment area. Default empty.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the comments.
+     * @returns Promise resolved with the comments.
      */
     async getComments(
         contextLevel: string,
@@ -111,7 +111,7 @@ export class CoreCommentsOfflineProvider {
      * Get all offline deleted comments.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with comments.
+     * @returns Promise resolved with comments.
      */
     async getAllDeletedComments(siteId?: string): Promise<CoreCommentsDeletedDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
@@ -128,7 +128,7 @@ export class CoreCommentsOfflineProvider {
      * @param itemId Associated id.
      * @param area String comment area. Default empty.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the comments.
+     * @returns Promise resolved with the comments.
      */
     async getDeletedComments(
         contextLevel: string,
@@ -162,7 +162,7 @@ export class CoreCommentsOfflineProvider {
      * @param itemId Associated id.
      * @param area String comment area. Default empty.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if deleted, rejected if failure.
+     * @returns Promise resolved if deleted, rejected if failure.
      */
     async removeComment(
         contextLevel: string,
@@ -192,7 +192,7 @@ export class CoreCommentsOfflineProvider {
      * @param itemId Associated id.
      * @param area String comment area. Default empty.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if deleted, rejected if failure.
+     * @returns Promise resolved if deleted, rejected if failure.
      */
     async removeDeletedComments(
         contextLevel: string,
@@ -223,7 +223,7 @@ export class CoreCommentsOfflineProvider {
      * @param itemId Associated id.
      * @param area String comment area. Default empty.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if stored, rejected if failure.
+     * @returns Promise resolved if stored, rejected if failure.
      */
     async saveComment(
         content: string,
@@ -261,7 +261,7 @@ export class CoreCommentsOfflineProvider {
      * @param itemId Associated id.
      * @param area String comment area. Default empty.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if stored, rejected if failure.
+     * @returns Promise resolved if stored, rejected if failure.
      */
     async deleteComment(
         commentId: number,
@@ -292,7 +292,7 @@ export class CoreCommentsOfflineProvider {
      *
      * @param commentId Comment ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if deleted, rejected if failure.
+     * @returns Promise resolved if deleted, rejected if failure.
      */
     async undoDeleteComment(commentId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

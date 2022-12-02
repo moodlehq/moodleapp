@@ -41,7 +41,7 @@ export class CoreFileHelperProvider {
     /**
      * Check if the default behaviour of the app is open file with picker.
      *
-     * @return Boolean.
+     * @returns Boolean.
      */
     defaultIsOpenWithPicker(): boolean {
         return CoreApp.isIOS() && CoreConstants.CONFIG.iOSDefaultOpenFileAction === OpenFileAction.OPEN_WITH;
@@ -57,7 +57,7 @@ export class CoreFileHelperProvider {
      * @param onProgress Function to call on progress.
      * @param siteId The site ID. If not defined, current site.
      * @param options Options to open the file.
-     * @return Resolved on success.
+     * @returns Resolved on success.
      */
     async downloadAndOpenFile(
         file: CoreWSFile,
@@ -142,7 +142,7 @@ export class CoreFileHelperProvider {
      * @param onProgress Function to call on progress.
      * @param siteId The site ID. If not defined, current site.
      * @param options Options to open the file.
-     * @return Resolved with the URL to use on success.
+     * @returns Resolved with the URL to use on success.
      */
     protected async downloadFileIfNeeded(
         file: CoreWSFile,
@@ -234,7 +234,7 @@ export class CoreFileHelperProvider {
      * @param onProgress Function to call on progress.
      * @param file The file to download.
      * @param siteId The site ID. If not defined, current site.
-     * @return Resolved with internal URL on success, rejected otherwise.
+     * @returns Resolved with internal URL on success, rejected otherwise.
      */
     async downloadFile(
         fileUrl: string,
@@ -282,7 +282,7 @@ export class CoreFileHelperProvider {
      * Get the file's URL.
      *
      * @param file The file.
-     * @return File URL.
+     * @returns File URL.
      */
     getFileUrl(file: CoreWSFile): string {
         return 'fileurl' in file ? file.fileurl : file.url;
@@ -292,6 +292,7 @@ export class CoreFileHelperProvider {
      * Get the file's timemodified.
      *
      * @param file The file.
+     * @returns File modified timestamp, 0 if none.
      */
     getFileTimemodified(file: CoreWSFile): number {
         return file.timemodified || 0;
@@ -301,6 +302,7 @@ export class CoreFileHelperProvider {
      * Check if a state is downloaded or outdated.
      *
      * @param state The state to check.
+     * @returns If file has been downloaded (or outdated).
      */
     isStateDownloaded(state: string): boolean {
         return state === CoreConstants.DOWNLOADED || state === CoreConstants.OUTDATED;
@@ -310,7 +312,7 @@ export class CoreFileHelperProvider {
      * Whether the file has to be opened in browser.
      *
      * @param file The file to check.
-     * @return Whether the file should be opened in browser.
+     * @returns Whether the file should be opened in browser.
      */
     shouldOpenInBrowser(file: CoreWSFile): boolean {
         if (!file.mimetype) {
@@ -342,7 +344,7 @@ export class CoreFileHelperProvider {
      * Calculate the total size of the given files.
      *
      * @param files The files to check.
-     * @return Total files size.
+     * @returns Total files size.
      */
     async getTotalFilesSize(files: CoreFileEntry[]): Promise<number> {
         let totalSize = 0;
@@ -358,7 +360,7 @@ export class CoreFileHelperProvider {
      * Calculate the file size.
      *
      * @param file The file to check.
-     * @return File size.
+     * @returns File size.
      */
     async getFileSize(file: CoreFileEntry): Promise<number> {
         if ('filesize' in file && (file.filesize || file.filesize === 0)) {
@@ -403,7 +405,7 @@ export class CoreFileHelperProvider {
      * Is the file openable in app.
      *
      * @param file The file to check.
-     * @return bool.
+     * @returns bool.
      */
     isOpenableInApp(file: {filename?: string; name?: string}): boolean {
         const regex = /(?:\.([^.]+))?$/;
@@ -422,7 +424,7 @@ export class CoreFileHelperProvider {
      *
      * @param onlyDownload Whether the user is only downloading the file, not opening it.
      * @param file The file that will be opened.
-     * @return Promise resolved if confirmed, rejected otherwise.
+     * @returns Promise resolved if confirmed, rejected otherwise.
      */
     async showConfirmOpenUnsupportedFile(onlyDownload = false, file: {filename?: string; name?: string}): Promise<void> {
         file = file || {}; // Just in case some plugin doesn't pass it. This can be removed in the future, @since app 4.1.
@@ -462,8 +464,8 @@ export class CoreFileHelperProvider {
     /**
      * Is the file type excluded to open in app.
      *
-     * @param file The file to check.
-     * @return bool.
+     * @param fileType The file to check.
+     * @returns If the file type is excluded in the app.
      */
     isFileTypeExcludedInApp(fileType: string): boolean {
         const currentSite = CoreSites.getCurrentSite();
@@ -482,7 +484,7 @@ export class CoreFileHelperProvider {
      * Extract filename from the path.
      *
      * @param file The file.
-     * @return The file name.
+     * @returns The file name.
      */
     getFilenameFromPath(file: CoreFileEntry): string | undefined {
         const path = CoreUtils.isFileEntry(file) ? file.fullPath : file.filepath;

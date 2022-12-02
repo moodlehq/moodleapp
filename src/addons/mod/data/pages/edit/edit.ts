@@ -122,7 +122,7 @@ export class AddonModDataEditPage implements OnInit {
     /**
      * Check if we can leave the page or not and ask to confirm the lost of data.
      *
-     * @return True if we can leave, false otherwise.
+     * @returns True if we can leave, false otherwise.
      */
     async canLeave(): Promise<boolean> {
         if (this.forceLeave || !this.entry) {
@@ -152,7 +152,7 @@ export class AddonModDataEditPage implements OnInit {
      * Fetch the entry data.
      *
      * @param refresh To refresh all downloaded data.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async fetchEntryData(refresh = false): Promise<void> {
         try {
@@ -240,7 +240,7 @@ export class AddonModDataEditPage implements OnInit {
      * Saves data.
      *
      * @param e Event.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     async save(e: Event): Promise<void> {
         e.preventDefault();
@@ -384,7 +384,7 @@ export class AddonModDataEditPage implements OnInit {
      * Set group to see the database.
      *
      * @param groupId Group identifier to set.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     setGroup(groupId: number): Promise<void> {
         this.selectedGroup = groupId;
@@ -396,7 +396,7 @@ export class AddonModDataEditPage implements OnInit {
     /**
      * Displays Edit Search Fields.
      *
-     * @return Generated HTML.
+     * @returns Generated HTML.
      */
     protected displayEditFields(): string {
         this.jsData = {
@@ -464,7 +464,7 @@ export class AddonModDataEditPage implements OnInit {
     /**
      * Return to the entry list (previous page) discarding temp data.
      *
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async returnToEntryList(): Promise<void> {
         const inputData = this.editForm.value;

@@ -73,7 +73,7 @@ export class CoreRemindersDateComponent implements OnInit {
      *
      * @param timestamp Timestamp.
      * @param relativeTo Base timestamp if timestamp is relative to this one.
-     * @return Readable time string.
+     * @returns Readable time string.
      */
     protected getReadableTime(timestamp: number, relativeTo = 0): string {
         if (!relativeTo) {

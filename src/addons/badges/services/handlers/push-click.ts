@@ -35,7 +35,7 @@ export class AddonBadgesPushClickHandlerService implements CorePushNotifications
      * Check if a notification click is handled by this handler.
      *
      * @param notification The notification to check.
-     * @return Whether the notification click is handled by this handler
+     * @returns Whether the notification click is handled by this handler
      */
     async handles(notification: CorePushNotificationsNotificationBasicData): Promise<boolean> {
         const data = notification.customdata || {};
@@ -52,7 +52,7 @@ export class AddonBadgesPushClickHandlerService implements CorePushNotifications
      * Handle the notification click.
      *
      * @param notification The notification to check.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async handleClick(notification: CorePushNotificationsNotificationBasicData): Promise<void> {
         const data = notification.customdata || {};

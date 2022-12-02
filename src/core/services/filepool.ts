@@ -187,7 +187,7 @@ export class CoreFilepoolProvider {
      * @param fileId The file ID.
      * @param component The component to link the file to.
      * @param componentId An ID to use in conjunction with the component.
-     * @return Promise resolved on success.
+     * @returns Promise resolved on success.
      */
     protected async addFileLink(siteId: string, fileId: string, component: string, componentId?: string | number): Promise<void> {
         if (!component) {
@@ -208,7 +208,7 @@ export class CoreFilepoolProvider {
      * @param fileUrl The file Url.
      * @param component The component to link the file to.
      * @param componentId An ID to use in conjunction with the component.
-     * @return Promise resolved on success.
+     * @returns Promise resolved on success.
      * @description
      * Use this method to create a link between a URL and a component. You usually do not need to call this manually since
      * downloading a file automatically does this. Note that this method does not check if the file exists in the pool.
@@ -226,7 +226,7 @@ export class CoreFilepoolProvider {
      * @param siteId The site ID.
      * @param fileId The file ID.
      * @param links Array of objects containing the component and optionally componentId.
-     * @return Promise resolved on success.
+     * @returns Promise resolved on success.
      */
     protected async addFileLinks(siteId: string, fileId: string, links: CoreFilepoolComponentLink[]): Promise<void> {
         const promises = links.map((link) => this.addFileLink(siteId, fileId, link.component, link.componentId));
@@ -241,7 +241,7 @@ export class CoreFilepoolProvider {
      * @param files Array of files to add.
      * @param component The component to link the file to.
      * @param componentId An ID to use in conjunction with the component (optional).
-     * @return Resolved on success.
+     * @returns Resolved on success.
      */
     addFilesToQueue(siteId: string, files: CoreWSFile[], component?: string, componentId?: string | number): Promise<void> {
         return this.downloadOrPrefetchFiles(siteId, files, true, false, component, componentId);
@@ -253,7 +253,7 @@ export class CoreFilepoolProvider {
      * @param siteId The site ID.
      * @param fileId The file ID.
      * @param data Additional information to store about the file (timemodified, url, ...). See FILES_TABLE schema.
-     * @return Promise resolved on success.
+     * @returns Promise resolved on success.
      */
     protected async addFileToPool(siteId: string, fileId: string, data: Omit<CoreFilepoolFileEntry, 'fileId'>): Promise<void> {
         const record = {
@@ -269,7 +269,7 @@ export class CoreFilepoolProvider {
      *
      * @param url The URL of the file, already treated (decoded, without revision, etc.).
      * @param filename The filename.
-     * @return The filename with the hash.
+     * @returns The filename with the hash.
      */
     protected addHashToFilename(url: string, filename: string): string {
         // Check if the file already has a hash. If a file is downloaded and re-uploaded with the app it will have a hash already.
@@ -303,7 +303,7 @@ export class CoreFilepoolProvider {
      * @param onProgress Function to call on progress.
      * @param options Extra options (isexternalfile, repositorytype).
      * @param link The link to add for the file.
-     * @return Promise resolved when the file is downloaded.
+     * @returns Promise resolved when the file is downloaded.
      */
     protected async addToQueue(
         siteId: string,
@@ -354,7 +354,7 @@ export class CoreFilepoolProvider {
      * @param options Extra options (isexternalfile, repositorytype).
      * @param revision File revision. If not defined, it will be calculated using the URL.
      * @param alreadyFixed Whether the URL has already been fixed.
-     * @return Resolved on success.
+     * @returns Resolved on success.
      */
     async addToQueueByUrl(
         siteId: string,
@@ -473,7 +473,7 @@ export class CoreFilepoolProvider {
      *                        Ignored if checkSize=false.
      * @param options Extra options (isexternalfile, repositorytype).
      * @param revision File revision. If not defined, it will be calculated using the URL.
-     * @return Promise resolved when the file is downloaded.
+     * @returns Promise resolved when the file is downloaded.
      */
     protected async addToQueueIfNeeded(
         siteId: string,
@@ -568,7 +568,7 @@ export class CoreFilepoolProvider {
      * Clear all packages status in a site.
      *
      * @param siteId Site ID.
-     * @return Promise resolved when all status are cleared.
+     * @returns Promise resolved when all status are cleared.
      */
     async clearAllPackagesStatus(siteId: string): Promise<void> {
         this.logger.debug('Clear all packages status for site ' + siteId);
@@ -592,7 +592,7 @@ export class CoreFilepoolProvider {
      * Clears the filepool. Use it only when all the files from a site are deleted.
      *
      * @param siteId ID of the site to clear.
-     * @return Promise resolved when the filepool is cleared.
+     * @returns Promise resolved when the filepool is cleared.
      */
     async clearFilepool(siteId: string): Promise<void> {
         // Read the data first to be able to notify the deletions.
@@ -616,7 +616,7 @@ export class CoreFilepoolProvider {
      * @param siteId The site ID.
      * @param component The component to link the file to.
      * @param componentId An ID to use in conjunction with the component.
-     * @return Resolved means yes, rejected means no.
+     * @returns Resolved means yes, rejected means no.
      */
     async componentHasFiles(siteId: string, component: string, componentId?: string | number): Promise<void> {
         const conditions = {
@@ -636,7 +636,7 @@ export class CoreFilepoolProvider {
      *
      * @param component The component to link the file to.
      * @param componentId An ID to use in conjunction with the component.
-     * @return Link, null if nothing to link.
+     * @returns Link, null if nothing to link.
      */
     protected createComponentLink(component?: string, componentId?: string | number): CoreFilepoolComponentLink | undefined {
         if (component !== undefined && component != null) {
@@ -649,7 +649,7 @@ export class CoreFilepoolProvider {
      *
      * @param component The component to link the file to.
      * @param componentId An ID to use in conjunction with the component.
-     * @return Links.
+     * @returns Links.
      */
     protected createComponentLinks(component?: string, componentId?: string | number): CoreFilepoolComponentLink[] {
         const link = this.createComponentLink(component, componentId);
@@ -669,8 +669,8 @@ export class CoreFilepoolProvider {
      *                                     or CoreConstants.DOWNLOADING, with at least 1 package with CoreConstants.OUTDATED.
      *
      * @param current Current status of the list of packages.
-     * @param packagestatus Status of one of the packages.
-     * @return New status for the list of packages;
+     * @param packageStatus Status of one of the packages.
+     * @returns New status for the list of packages;
      */
     determinePackagesStatus(current: string, packageStatus: string): string {
         if (!current) {
@@ -707,7 +707,7 @@ export class CoreFilepoolProvider {
      * @param filePath Filepath to download the file to. If defined, no extension will be added.
      * @param onProgress Function to call on progress.
      * @param poolFileObject When set, the object will be updated, a new entry will not be created.
-     * @return Resolved with internal URL on success, rejected otherwise.
+     * @returns Resolved with internal URL on success, rejected otherwise.
      */
     protected async downloadForPoolByUrl(
         siteId: string,
@@ -786,7 +786,7 @@ export class CoreFilepoolProvider {
      * @param componentId An ID to use in conjunction with the component.
      * @param dirPath Name of the directory where to store the files (inside filepool dir). If not defined, store
      *                the files directly inside the filepool folder.
-     * @return Resolved on success.
+     * @returns Resolved on success.
      */
     downloadOrPrefetchFiles(
         siteId: string,
@@ -850,7 +850,7 @@ export class CoreFilepoolProvider {
      * @param dirPath Name of the directory where to store the files (inside filepool dir). If not defined, store
      *                the files directly inside the filepool folder.
      * @param onProgress Function to call on progress.
-     * @return Promise resolved when the package is downloaded.
+     * @returns Promise resolved when the package is downloaded.
      */
     downloadOrPrefetchPackage(
         siteId: string,
@@ -975,7 +975,7 @@ export class CoreFilepoolProvider {
      * @param dirPath Name of the directory where to store the files (inside filepool dir). If not defined, store
      *                the files directly inside the filepool folder.
      * @param onProgress Function to call on progress.
-     * @return Promise resolved when all files are downloaded.
+     * @returns Promise resolved when all files are downloaded.
      */
     downloadPackage(
         siteId: string,
@@ -998,10 +998,11 @@ export class CoreFilepoolProvider {
      * @param component The component to link the file to.
      * @param componentId An ID to use in conjunction with the component.
      * @param timemodified The time this file was modified. Can be used to check file state.
+     * @param onProgress On progress callback function.
      * @param filePath Filepath to download the file to. If not defined, download to the filepool folder.
      * @param options Extra options (isexternalfile, repositorytype).
      * @param revision File revision. If not defined, it will be calculated using the URL.
-     * @return Resolved with internal URL on success, rejected otherwise.
+     * @returns Resolved with internal URL on success, rejected otherwise.
      * @description
      * Downloads a file on the spot.
      *
@@ -1093,7 +1094,7 @@ export class CoreFilepoolProvider {
      * Extract the downloadable URLs from an HTML code.
      *
      * @param html HTML code.
-     * @return List of file urls.
+     * @returns List of file urls.
      */
     extractDownloadableFilesFromHtml(html: string): string[] {
         let urls: string[] = [];
@@ -1128,7 +1129,7 @@ export class CoreFilepoolProvider {
      * Extract the downloadable URLs from an HTML code and returns them in fake file objects.
      *
      * @param html HTML code.
-     * @return List of fake file objects with file URLs.
+     * @returns List of fake file objects with file URLs.
      */
     extractDownloadableFilesFromHtmlAsFakeFileObjects(html: string): CoreWSExternalFile[] {
         const urls = this.extractDownloadableFilesFromHtml(html);
@@ -1143,9 +1144,9 @@ export class CoreFilepoolProvider {
      * Fill Missing Extension In the File Object if needed.
      * This is to migrate from old versions.
      *
-     * @param fileObject File object to be migrated.
+     * @param entry File object to be migrated.
      * @param siteId SiteID to get migrated.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fillExtensionInFile(entry: CoreFilepoolFileEntry, siteId: string): Promise<void> {
         if (entry.extension !== undefined) {
@@ -1185,7 +1186,7 @@ export class CoreFilepoolProvider {
      * Fix a component ID to always be a Number if possible.
      *
      * @param componentId The component ID.
-     * @return The normalised component ID. -1 when undefined was passed.
+     * @returns The normalised component ID. -1 when undefined was passed.
      */
     protected fixComponentId(componentId?: string | number): string | number {
         if (typeof componentId == 'number') {
@@ -1212,7 +1213,7 @@ export class CoreFilepoolProvider {
      * @param siteId The site ID.
      * @param fileUrl The file URL.
      * @param timemodified The timemodified of the file.
-     * @return Promise resolved with the file data to use.
+     * @returns Promise resolved with the file data to use.
      */
     protected async fixPluginfileURL(siteId: string, fileUrl: string, timemodified: number = 0): Promise<CoreWSFile> {
         const file = await CorePluginFileDelegate.getDownloadableFile({ fileurl: fileUrl, timemodified });
@@ -1230,10 +1231,10 @@ export class CoreFilepoolProvider {
     /**
      * Convenience function to get component files.
      *
-     * @param db Site's DB.
+     * @param siteId Site Id.
      * @param component The component to get.
      * @param componentId An ID to use in conjunction with the component.
-     * @return Promise resolved with the files.
+     * @returns Promise resolved with the files.
      */
     protected async getComponentFiles(
         siteId: string | undefined,
@@ -1260,7 +1261,7 @@ export class CoreFilepoolProvider {
      *
      * @param siteId The site ID.
      * @param fileUrl The file URL.
-     * @return Resolved with the URL. Rejected otherwise.
+     * @returns Resolved with the URL. Rejected otherwise.
      */
     async getDirectoryUrlByUrl(siteId: string, fileUrl: string): Promise<string> {
         if (!CoreFile.isAvailable()) {
@@ -1280,7 +1281,7 @@ export class CoreFilepoolProvider {
      *
      * @param fileUrl The file URL.
      * @param filePath The file destination path.
-     * @return File download ID.
+     * @returns File download ID.
      */
     protected getFileDownloadId(fileUrl: string, filePath: string): string {
         return <string> Md5.hashAsciiStr(fileUrl + '###' + filePath);
@@ -1291,7 +1292,7 @@ export class CoreFilepoolProvider {
      *
      * @param siteId The site ID.
      * @param fileId The file ID.
-     * @return Event name.
+     * @returns Event name.
      */
     protected getFileEventName(siteId: string, fileId: string): string {
         return 'CoreFilepoolFile:' + siteId + ':' + fileId;
@@ -1302,7 +1303,7 @@ export class CoreFilepoolProvider {
      *
      * @param siteId The site ID.
      * @param fileUrl The absolute URL to the file.
-     * @return Promise resolved with event name.
+     * @returns Promise resolved with event name.
      */
     getFileEventNameByUrl(siteId: string, fileUrl: string): Promise<string> {
         return this.fixPluginfileURL(siteId, fileUrl).then((file) => {
@@ -1319,7 +1320,7 @@ export class CoreFilepoolProvider {
      * pointing to the same pluginfile URL even if the token or extra attributes have changed.
      *
      * @param fileUrl The absolute URL to the file.
-     * @return The file ID.
+     * @returns The file ID.
      */
     protected getFileIdByUrl(fileUrl: string): string {
         let url = fileUrl;
@@ -1356,7 +1357,7 @@ export class CoreFilepoolProvider {
      *
      * @param siteId The site ID.
      * @param fileId The file ID.
-     * @return Promise resolved with the links.
+     * @returns Promise resolved with the links.
      */
     protected async getFileLinks(siteId: string, fileId: string): Promise<CoreFilepoolLinksRecord[]> {
         const items = await this.linksTables[siteId].getMany({ fileId });
@@ -1374,7 +1375,7 @@ export class CoreFilepoolProvider {
      * @param siteId The site ID.
      * @param fileId The file ID.
      * @param extension Previously calculated extension. Empty to not add any. Undefined to calculate it.
-     * @return The path to the file relative to storage root.
+     * @returns The path to the file relative to storage root.
      */
     protected async getFilePath(siteId: string, fileId: string, extension?: string): Promise<string> {
         let path = this.getFilepoolFolderPath(siteId) + '/' + fileId;
@@ -1402,7 +1403,7 @@ export class CoreFilepoolProvider {
      *
      * @param siteId The site ID.
      * @param fileUrl The file URL.
-     * @return Promise resolved with the path to the file relative to storage root.
+     * @returns Promise resolved with the path to the file relative to storage root.
      */
     async getFilePathByUrl(siteId: string, fileUrl: string): Promise<string> {
         const file = await this.fixPluginfileURL(siteId, fileUrl);
@@ -1428,7 +1429,7 @@ export class CoreFilepoolProvider {
      * Get site Filepool Folder Path
      *
      * @param siteId The site ID.
-     * @return The root path to the filepool of the site.
+     * @returns The root path to the filepool of the site.
      */
     getFilepoolFolderPath(siteId: string): string {
         return CoreFile.getSiteFolder(siteId) + '/' + CoreFilepoolProvider.FOLDER;
@@ -1440,7 +1441,7 @@ export class CoreFilepoolProvider {
      * @param siteId The site ID.
      * @param component The component to get.
      * @param componentId An ID to use in conjunction with the component.
-     * @return Promise resolved with the files on success.
+     * @returns Promise resolved with the files on success.
      */
     async getFilesByComponent(siteId: string, component: string, componentId?: string | number): Promise<CoreFilepoolFileEntry[]> {
         const items = await this.getComponentFiles(siteId, component, componentId);
@@ -1469,7 +1470,7 @@ export class CoreFilepoolProvider {
      * @param siteId The site ID.
      * @param component The component to get.
      * @param componentId An ID to use in conjunction with the component.
-     * @return Promise resolved with the size on success.
+     * @returns Promise resolved with the size on success.
      */
     async getFilesSizeByComponent(siteId: string, component: string, componentId?: string | number): Promise<number> {
         const files = await this.getFilesByComponent(siteId, component, componentId);
@@ -1497,7 +1498,7 @@ export class CoreFilepoolProvider {
      * @param timemodified The time this file was modified.
      * @param filePath Filepath to download the file to. If defined, no extension will be added.
      * @param revision File revision. If not defined, it will be calculated using the URL.
-     * @return Promise resolved with the file state.
+     * @returns Promise resolved with the file state.
      */
     async getFileStateByUrl(
         siteId: string,
@@ -1555,16 +1556,16 @@ export class CoreFilepoolProvider {
      *
      * @param siteId The site ID.
      * @param fileUrl The absolute URL to the file.
-     * @param mode The type of URL to return. Accepts 'url' or 'src'.
      * @param component The component to link the file to.
      * @param componentId An ID to use in conjunction with the component.
+     * @param mode The type of URL to return. Accepts 'url' or 'src'.
      * @param timemodified The time this file was modified.
      * @param checkSize True if we shouldn't download files if their size is big, false otherwise.
      * @param downloadUnknown True to download file in WiFi if their size is unknown, false otherwise.
      *                        Ignored if checkSize=false.
      * @param options Extra options (isexternalfile, repositorytype).
      * @param revision File revision. If not defined, it will be calculated using the URL.
-     * @return Resolved with the URL to use.
+     * @returns Resolved with the URL to use.
      * @description
      * This will return a URL pointing to the content of the requested URL.
      *
@@ -1650,7 +1651,7 @@ export class CoreFilepoolProvider {
      *
      * @param siteId The site ID.
      * @param fileId The file ID.
-     * @return Resolved with the internal URL. Rejected otherwise.
+     * @returns Resolved with the internal URL. Rejected otherwise.
      */
     protected async getInternalSrcById(siteId: string, fileId: string): Promise<string> {
         if (!CoreFile.isAvailable()) {
@@ -1668,7 +1669,7 @@ export class CoreFilepoolProvider {
      *
      * @param siteId The site ID.
      * @param fileId The file ID.
-     * @return Resolved with the URL. Rejected otherwise.
+     * @returns Resolved with the URL. Rejected otherwise.
      */
     protected async getInternalUrlById(siteId: string, fileId: string): Promise<string> {
         if (!CoreFile.isAvailable()) {
@@ -1686,7 +1687,7 @@ export class CoreFilepoolProvider {
      * Returns the local URL of a file.
      *
      * @param filePath The file path.
-     * @return Resolved with the URL.
+     * @returns Resolved with the URL.
      */
     protected async getInternalUrlByPath(filePath: string): Promise<string> {
         if (!CoreFile.isAvailable()) {
@@ -1703,7 +1704,7 @@ export class CoreFilepoolProvider {
      *
      * @param siteId The site ID.
      * @param fileUrl The file URL.
-     * @return Resolved with the URL. Rejected otherwise.
+     * @returns Resolved with the URL. Rejected otherwise.
      */
     async getInternalUrlByUrl(siteId: string, fileUrl: string): Promise<string> {
         if (!CoreFile.isAvailable()) {
@@ -1722,7 +1723,7 @@ export class CoreFilepoolProvider {
      * @param siteId Site ID.
      * @param component Package's component.
      * @param componentId An ID to use in conjunction with the component.
-     * @return Promise resolved with the data.
+     * @returns Promise resolved with the data.
      */
     async getPackageData(siteId: string, component: string, componentId?: string | number): Promise<CoreFilepoolPackageEntry> {
         componentId = this.fixComponentId(componentId);
@@ -1736,7 +1737,7 @@ export class CoreFilepoolProvider {
      * Creates the name for a package directory (hash).
      *
      * @param url An URL to identify the package.
-     * @return The directory name.
+     * @returns The directory name.
      */
     protected getPackageDirNameByUrl(url: string): string {
         let extension = '';
@@ -1764,7 +1765,7 @@ export class CoreFilepoolProvider {
      *
      * @param siteId The site ID.
      * @param url An URL to identify the package.
-     * @return Promise resolved with the path of the package.
+     * @returns Promise resolved with the path of the package.
      */
     getPackageDirPathByUrl(siteId: string, url: string): Promise<string> {
         return this.fixPluginfileURL(siteId, url).then((file) => {
@@ -1779,7 +1780,7 @@ export class CoreFilepoolProvider {
      *
      * @param siteId The site ID.
      * @param url An URL to identify the package.
-     * @return Resolved with the URL.
+     * @returns Resolved with the URL.
      */
     async getPackageDirUrlByUrl(siteId: string, url: string): Promise<string> {
         if (!CoreFile.isAvailable()) {
@@ -1800,7 +1801,7 @@ export class CoreFilepoolProvider {
      * @param siteId Site ID.
      * @param component The component of the package.
      * @param componentId An ID to use in conjunction with the component.
-     * @return Download promise or undefined.
+     * @returns Download promise or undefined.
      */
     getPackageDownloadPromise(siteId: string, component: string, componentId?: string | number): Promise<void> | undefined {
         const packageId = this.getPackageId(component, componentId);
@@ -1815,7 +1816,7 @@ export class CoreFilepoolProvider {
      * @param siteId Site ID.
      * @param component Package's component.
      * @param componentId An ID to use in conjunction with the component.
-     * @return Promise resolved with the extra data.
+     * @returns Promise resolved with the extra data.
      */
     getPackageExtra(siteId: string, component: string, componentId?: string | number): Promise<string | undefined> {
         return this.getPackageData(siteId, component, componentId).then((entry) => entry.extra);
@@ -1826,7 +1827,7 @@ export class CoreFilepoolProvider {
      *
      * @param component Package's component.
      * @param componentId An ID to use in conjunction with the component.
-     * @return Package ID.
+     * @returns Package ID.
      */
     getPackageId(component: string, componentId?: string | number): string {
         return <string> Md5.hashAsciiStr(component + '#' + this.fixComponentId(componentId));
@@ -1838,7 +1839,7 @@ export class CoreFilepoolProvider {
      * @param siteId Site ID.
      * @param component Package's component.
      * @param componentId An ID to use in conjunction with the component.
-     * @return Promise resolved with the status.
+     * @returns Promise resolved with the status.
      */
     async getPackagePreviousStatus(siteId: string, component: string, componentId?: string | number): Promise<string> {
         try {
@@ -1856,7 +1857,7 @@ export class CoreFilepoolProvider {
      * @param siteId Site ID.
      * @param component Package's component.
      * @param componentId An ID to use in conjunction with the component.
-     * @return Promise resolved with the status.
+     * @returns Promise resolved with the status.
      */
     async getPackageStatus(siteId: string, component: string, componentId?: string | number): Promise<string> {
         try {
@@ -1872,7 +1873,7 @@ export class CoreFilepoolProvider {
      * Return the array of arguments of the pluginfile url.
      *
      * @param url URL to get the args.
-     * @return The args found, undefined if not a pluginfile.
+     * @returns The args found, undefined if not a pluginfile.
      */
     protected getPluginFileArgs(url: string): string[] | undefined {
         if (!CoreUrlUtils.isPluginFileUrl(url)) {
@@ -1898,7 +1899,7 @@ export class CoreFilepoolProvider {
      * @param fileId The file ID.
      * @param create True if it should create a new deferred if it doesn't exist.
      * @param onProgress Function to call on progress.
-     * @return Deferred.
+     * @returns Deferred.
      */
     protected getQueueDeferred(
         siteId: string,
@@ -1931,7 +1932,7 @@ export class CoreFilepoolProvider {
      *
      * @param siteId The site ID.
      * @param fileId The file ID.
-     * @return On progress function, undefined if not found.
+     * @returns On progress function, undefined if not found.
      */
     protected getQueueOnProgress(siteId: string, fileId: string): CoreFilepoolOnProgressCallback | undefined {
         const deferred = this.getQueueDeferred(siteId, fileId, false);
@@ -1946,7 +1947,7 @@ export class CoreFilepoolProvider {
      * @param fileId The file ID.
      * @param create True if it should create a new promise if it doesn't exist.
      * @param onProgress Function to call on progress.
-     * @return Promise.
+     * @returns Promise.
      */
     protected getQueuePromise(
         siteId: string,
@@ -1961,7 +1962,7 @@ export class CoreFilepoolProvider {
      * Get a revision number from a list of files (highest revision).
      *
      * @param files Package files.
-     * @return Highest revision.
+     * @returns Highest revision.
      */
     getRevisionFromFileList(files: CoreWSFile[]): number {
         let revision = 0;
@@ -1984,7 +1985,7 @@ export class CoreFilepoolProvider {
      * Get the revision number from a file URL.
      *
      * @param url URL to get the revision number.
-     * @return Revision number.
+     * @returns Revision number.
      */
     protected getRevisionFromUrl(url: string): number {
         const args = this.getPluginFileArgs(url);
@@ -2011,7 +2012,6 @@ export class CoreFilepoolProvider {
      *
      * @param siteId The site ID.
      * @param fileUrl The absolute URL to the file.
-     * @param mode The type of URL to return. Accepts 'url' or 'src'.
      * @param component The component to link the file to.
      * @param componentId An ID to use in conjunction with the component.
      * @param timemodified The time this file was modified.
@@ -2020,7 +2020,7 @@ export class CoreFilepoolProvider {
      *                        Ignored if checkSize=false.
      * @param options Extra options (isexternalfile, repositorytype).
      * @param revision File revision. If not defined, it will be calculated using the URL.
-     * @return Resolved with the URL to use.
+     * @returns Resolved with the URL to use.
      * @description
      * This will return a URL pointing to the content of the requested URL.
      * The URL returned is compatible to use with IMG tags.
@@ -2054,7 +2054,7 @@ export class CoreFilepoolProvider {
      * Get time modified from a list of files.
      *
      * @param files List of files.
-     * @return Time modified.
+     * @returns Time modified.
      */
     getTimemodifiedFromFileList(files: CoreWSFile[]): number {
         let timemodified = 0;
@@ -2073,7 +2073,6 @@ export class CoreFilepoolProvider {
      *
      * @param siteId The site ID.
      * @param fileUrl The absolute URL to the file.
-     * @param mode The type of URL to return. Accepts 'url' or 'src'.
      * @param component The component to link the file to.
      * @param componentId An ID to use in conjunction with the component.
      * @param timemodified The time this file was modified.
@@ -2082,7 +2081,7 @@ export class CoreFilepoolProvider {
      *                        Ignored if checkSize=false.
      * @param options Extra options (isexternalfile, repositorytype).
      * @param revision File revision. If not defined, it will be calculated using the URL.
-     * @return Resolved with the URL to use.
+     * @returns Resolved with the URL to use.
      * @description
      * This will return a URL pointing to the content of the requested URL.
      * The URL returned is compatible to use with a local browser.
@@ -2116,7 +2115,7 @@ export class CoreFilepoolProvider {
      * Guess the filename of a file from its URL. This is very weak and unreliable.
      *
      * @param fileUrl The file URL.
-     * @return The filename treated so it doesn't have any special character.
+     * @returns The filename treated so it doesn't have any special character.
      */
     protected guessFilenameFromUrl(fileUrl: string): string {
         let filename = '';
@@ -2174,8 +2173,8 @@ export class CoreFilepoolProvider {
      * Check if the file is already in the pool. This does not check if the file is on the disk.
      *
      * @param siteId The site ID.
-     * @param fileUrl The file URL.
-     * @return Resolved with file object from DB on success, rejected otherwise.
+     * @param fileId The file Id.
+     * @returns Resolved with file object from DB on success, rejected otherwise.
      */
     protected async hasFileInPool(siteId: string, fileId: string): Promise<CoreFilepoolFileEntry> {
         return this.filesTables[siteId].getOneByPrimaryKey({ fileId });
@@ -2185,8 +2184,8 @@ export class CoreFilepoolProvider {
      * Check if the file is in the queue.
      *
      * @param siteId The site ID.
-     * @param fileUrl The file URL.
-     * @return Resolved with file object from DB on success, rejected otherwise.
+     * @param fileId The file Id.
+     * @returns Resolved with file object from DB on success, rejected otherwise.
      */
     protected async hasFileInQueue(siteId: string, fileId: string): Promise<CoreFilepoolQueueEntry> {
         const entry = await this.queueTable.getOneByPrimaryKey({ siteId, fileId });
@@ -2207,7 +2206,7 @@ export class CoreFilepoolProvider {
      * @param siteId The site ID.
      * @param onlyUnknown True to only invalidate files from external repos or without revision/timemodified.
      *                    It is advised to set it to true to reduce the performance and data usage of the app.
-     * @return Resolved on success.
+     * @returns Resolved on success.
      */
     async invalidateAllFiles(siteId: string, onlyUnknown: boolean = true): Promise<void> {
         onlyUnknown
@@ -2226,7 +2225,7 @@ export class CoreFilepoolProvider {
      *
      * @param siteId The site ID.
      * @param fileUrl The file URL.
-     * @return Resolved on success.
+     * @returns Resolved on success.
      * @description
      * Invalidates a file by marking it stale. It will not be added to the queue automatically, but the next time this file
      * is requested it will be added to the queue.
@@ -2248,7 +2247,7 @@ export class CoreFilepoolProvider {
      * @param componentId An ID to use in conjunction with the component.
      * @param onlyUnknown True to only invalidate files from external repos or without revision/timemodified.
      *                It is advised to set it to true to reduce the performance and data usage of the app.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     async invalidateFilesByComponent(
         siteId: string | undefined,
@@ -2291,7 +2290,7 @@ export class CoreFilepoolProvider {
      * Whether a file action indicates a file was downloaded or deleted.
      *
      * @param data Event data.
-     * @return Whether downloaded or deleted.
+     * @returns Whether downloaded or deleted.
      */
     isFileEventDownloadedOrDeleted(data: CoreFilepoolFileEventData): boolean {
         return (data.action == CoreFilepoolFileActions.DOWNLOAD && data.success == true) ||
@@ -2306,7 +2305,7 @@ export class CoreFilepoolProvider {
      * @param timemodified The time this file was modified.
      * @param filePath Filepath to download the file to. If defined, no extension will be added.
      * @param revision File revision. If not defined, it will be calculated using the URL.
-     * @return Promise resolved with a boolean: whether a file is downloadable.
+     * @returns Promise resolved with a boolean: whether a file is downloadable.
      */
     async isFileDownloadable(
         siteId: string,
@@ -2325,7 +2324,7 @@ export class CoreFilepoolProvider {
      *
      * @param siteId The site ID.
      * @param fileUrl File URL.
-     * @param Promise resolved with boolean: whether the file is downloading.
+     * @returns Promise resolved with boolean: whether the file is downloading.
      */
     async isFileDownloadingByUrl(siteId: string, fileUrl: string): Promise<boolean> {
         const file = await this.fixPluginfileURL(siteId, fileUrl);
@@ -2346,7 +2345,7 @@ export class CoreFilepoolProvider {
      * @param entry Filepool entry.
      * @param revision File revision number.
      * @param timemodified The time this file was modified.
-     * @param Whether the file is outdated.
+     * @returns Whether the file is outdated.
      */
     protected isFileOutdated(entry: CoreFilepoolFileEntry, revision = 0, timemodified = 0): boolean {
         // Don't allow undefined values, convert them to 0.
@@ -2360,7 +2359,7 @@ export class CoreFilepoolProvider {
      * Check if cannot determine if a file has been updated.
      *
      * @param entry Filepool entry.
-     * @return Whether it cannot determine updates.
+     * @returns Whether it cannot determine updates.
      */
     protected isFileUpdateUnknown(entry: CoreFilepoolFileEntry): boolean {
         return !!entry.isexternalfile || (!entry.revision && !entry.timemodified);
@@ -2486,7 +2485,7 @@ export class CoreFilepoolProvider {
      * @param dirPath Name of the directory where to store the files (inside filepool dir). If not defined, store
      *                the files directly inside the filepool folder.
      * @param onProgress Function to call on progress.
-     * @return Promise resolved when all files are downloaded.
+     * @returns Promise resolved when all files are downloaded.
      */
     prefetchPackage(
         siteId: string,
@@ -2539,7 +2538,7 @@ export class CoreFilepoolProvider {
     /**
      * Process the most important queue item.
      *
-     * @return Resolved on success. Rejected on failure.
+     * @returns Resolved on success. Rejected on failure.
      */
     protected async processImportantQueueItem(): Promise<void> {
         try {
@@ -2567,7 +2566,7 @@ export class CoreFilepoolProvider {
      * Process a queue item.
      *
      * @param item The object from the queue store.
-     * @return Resolved on success. Rejected on failure.
+     * @returns Resolved on success. Rejected on failure.
      */
     protected async processQueueItem(item: CoreFilepoolQueueEntry): Promise<void> {
         // Cast optional fields to undefined instead of null.
@@ -2682,7 +2681,7 @@ export class CoreFilepoolProvider {
      *
      * @param siteId The site ID.
      * @param fileId The file ID.
-     * @return Resolved on success. Rejected on failure. It is advised to silently ignore failures.
+     * @returns Resolved on success. Rejected on failure. It is advised to silently ignore failures.
      */
     protected async removeFromQueue(siteId: string, fileId: string): Promise<void> {
         await this.queueTable.deleteByPrimaryKey({ siteId, fileId });
@@ -2693,7 +2692,7 @@ export class CoreFilepoolProvider {
      *
      * @param siteId The site ID.
      * @param fileId The file ID.
-     * @return Resolved on success.
+     * @returns Resolved on success.
      */
     protected async removeFileById(siteId: string, fileId: string): Promise<void> {
         // Get the path to the file first since it relies on the file object stored in the pool.
@@ -2752,7 +2751,7 @@ export class CoreFilepoolProvider {
      * @param siteId The site ID.
      * @param component The component to link the file to.
      * @param componentId An ID to use in conjunction with the component.
-     * @return Resolved on success.
+     * @returns Resolved on success.
      */
     async removeFilesByComponent(siteId: string, component: string, componentId?: string | number): Promise<void> {
         const items = await this.getComponentFiles(siteId, component, componentId);
@@ -2765,7 +2764,7 @@ export class CoreFilepoolProvider {
      *
      * @param siteId The site ID.
      * @param fileUrl The file URL.
-     * @return Resolved on success, rejected on failure.
+     * @returns Resolved on success, rejected on failure.
      */
     async removeFileByUrl(siteId: string, fileUrl: string): Promise<void> {
         const file = await this.fixPluginfileURL(siteId, fileUrl);
@@ -2778,7 +2777,7 @@ export class CoreFilepoolProvider {
      * Removes the revision number from a file URL.
      *
      * @param url URL to remove the revision number.
-     * @return URL without revision number.
+     * @returns URL without revision number.
      * @description
      * The revision is used to know if a file has changed. We remove it from the URL to prevent storing a file per revision.
      */
@@ -2798,7 +2797,7 @@ export class CoreFilepoolProvider {
      * @param siteId Site ID.
      * @param component Package's component.
      * @param componentId An ID to use in conjunction with the component.
-     * @return Promise resolved when the status is changed. Resolve param: new status.
+     * @returns Promise resolved when the status is changed. Resolve param: new status.
      */
     async setPackagePreviousStatus(siteId: string, component: string, componentId?: string | number): Promise<string> {
         componentId = this.fixComponentId(componentId);
@@ -2828,7 +2827,7 @@ export class CoreFilepoolProvider {
      * Check if a file should be downloaded based on its size.
      *
      * @param size File size.
-     * @return Whether file should be downloaded.
+     * @returns Whether file should be downloaded.
      */
     shouldDownload(size: number): boolean {
         return size <= CoreFilepoolProvider.DOWNLOAD_THRESHOLD ||
@@ -2840,8 +2839,8 @@ export class CoreFilepoolProvider {
      *
      * @param url File online URL.
      * @param size File size.
-     * @return Promise resolved if should download before open, rejected otherwise.
-     * @ddeprecated since 3.9.5. Please use shouldDownloadFileBeforeOpen instead.
+     * @returns Promise resolved if should download before open, rejected otherwise.
+     * @deprecated since 3.9.5. Please use shouldDownloadFileBeforeOpen instead.
      */
     async shouldDownloadBeforeOpen(url: string, size: number): Promise<void> {
         if (size >= 0 && size <= CoreFilepoolProvider.DOWNLOAD_THRESHOLD) {
@@ -2862,7 +2861,7 @@ export class CoreFilepoolProvider {
      * @param url File online URL.
      * @param size File size.
      * @param options Options.
-     * @return Promise resolved with boolean: whether file should be downloaded before opening it.
+     * @returns Promise resolved with boolean: whether file should be downloaded before opening it.
      * @description
      * Convenience function to check if a file should be downloaded before opening it.
      *
@@ -2896,7 +2895,7 @@ export class CoreFilepoolProvider {
      * @param component Package's component.
      * @param componentId An ID to use in conjunction with the component.
      * @param extra Extra data to store for the package. If you want to store more than 1 value, use JSON.stringify.
-     * @return Promise resolved when status is stored.
+     * @returns Promise resolved when status is stored.
      */
     async storePackageStatus(
         siteId: string,
@@ -2968,7 +2967,7 @@ export class CoreFilepoolProvider {
      * @param component The component to link the file to.
      * @param componentId An ID to use in conjunction with the component.
      * @param revision Revision to use in all files. If not defined, it will be calculated using the URL of each file.
-     * @return Promise resolved with the CSS code.
+     * @returns Promise resolved with the CSS code.
      */
     async treatCSSCode(
         siteId: string,
@@ -3082,7 +3081,7 @@ export class CoreFilepoolProvider {
      * @param siteId Site ID.
      * @param component Package's component.
      * @param componentId An ID to use in conjunction with the component.
-     * @return Promise resolved when status is stored.
+     * @returns Promise resolved when status is stored.
      */
     async updatePackageDownloadTime(siteId: string, component: string, componentId?: string | number): Promise<void> {
         componentId = this.fixComponentId(componentId);

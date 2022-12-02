@@ -80,7 +80,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
     ) {}
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.initVariables();
@@ -127,7 +127,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
     /**
      * Init recording with Cordova media plugin.
      *
-     * @return Promise resolved when ready.
+     * @returns Promise resolved when ready.
      */
     protected async initCordovaMediaPlugin(): Promise<void> {
 
@@ -179,7 +179,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
      * Init HTML recorder for browser
      * .
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async initHtmlCapture(): Promise<void> {
         const constraints = {
@@ -457,7 +457,6 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
     /**
      * Close the modal, returning an error.
      *
-     * @param code Error code. Will not be used if it's a Camera capture.
      * @param message Error message.
      * @param cameraMessage A specific message to use if it's a Camera capture. If not set, message will be used.
      */
@@ -552,7 +551,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
     /**
      * Get path to the file where the media will be stored.
      *
-     * @return Path.
+     * @returns Path.
      */
     protected getFilePath(): string {
         const fileName = this.type + '_' + CoreTimeUtils.readableTimestamp() + '.' + this.extension;

@@ -66,7 +66,7 @@ export class CoreQueueRunner {
      * Get unique ID.
      *
      * @param id ID.
-     * @return Unique ID.
+     * @returns Unique ID.
      */
     protected getUniqueId(id: string): string {
         let newId = id;
@@ -83,7 +83,7 @@ export class CoreQueueRunner {
     /**
      * Process next item in the queue.
      *
-     * @return Promise resolved when next item has been treated.
+     * @returns Promise resolved when next item has been treated.
      */
     protected async processNextItem(): Promise<void> {
         if (!this.orderedQueue.length || this.numberRunning >= this.maxParallel) {
@@ -114,7 +114,7 @@ export class CoreQueueRunner {
      * @param id ID.
      * @param fn Function to call.
      * @param options Options.
-     * @return Promise resolved when the function has been executed.
+     * @returns Promise resolved when the function has been executed.
      */
     run<T>(id: string, fn: CoreQueueRunnerFunction<T>, options?: CoreQueueRunnerAddOptions): Promise<T> {
         options = options || {};

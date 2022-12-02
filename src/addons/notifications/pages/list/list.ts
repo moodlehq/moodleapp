@@ -169,7 +169,7 @@ export class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
     /**
      * Mark all notifications as read.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async markAllNotificationsAsRead(): Promise<void> {
         this.loadingMarkAllNotificationsAsRead = true;
@@ -186,7 +186,7 @@ export class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
     /**
      * Load mark all notifications as read button.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadMarkAllAsReadButton(): Promise<void> {
         // Check if mark all as read should be displayed (there are unread notifications).

@@ -41,7 +41,7 @@ export class AddonModAssignSubmissionFileComponent extends AddonModAssignSubmiss
     maxSubmissions?: number;
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         this.acceptedTypes = this.configs?.filetypeslist;

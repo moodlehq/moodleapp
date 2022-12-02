@@ -39,7 +39,7 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
      * @param module The module object returned by WS.
      * @param courseId Course ID.
      * @param dirPath Path of the directory where to store all the content files.
-     * @return Promise resolved when all content is downloaded.
+     * @returns Promise resolved when all content is downloaded.
      */
     download(module: CoreCourseAnyModuleData, courseId: number, dirPath?: string): Promise<void> {
         // Same implementation for download and prefetch.
@@ -53,7 +53,7 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
      * @param courseId Course ID the module belongs to.
      * @param single True if we're downloading a single module, false if we're downloading a whole section.
      * @param dirPath Path of the directory where to store all the content files.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async prefetch(module: CoreCourseAnyModuleData, courseId?: number, single?: boolean, dirPath?: string): Promise<void> {
@@ -69,9 +69,9 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
      *
      * @param module Module.
      * @param courseId Course ID the module belongs to.
-     * @param downloadFn Function to perform the prefetch. It can return a string to be stored as the package "extra" data.
+     * @param downloadFunction Function to perform the prefetch. It can return a string to be stored as the package "extra" data.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the module has been downloaded. Data returned is not reliable.
+     * @returns Promise resolved when the module has been downloaded. Data returned is not reliable.
      */
     async prefetchPackage(
         module: CoreCourseAnyModuleData,
@@ -101,9 +101,9 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
      *
      * @param module Module.
      * @param courseId Course ID the module belongs to.
-     * @param downloadFn Function to perform the prefetch. It can return a string to be stored as the package "extra" data.
+     * @param downloadFunction Function to perform the prefetch. It can return a string to be stored as the package "extra" data.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the module has been downloaded. Data returned is not reliable.
+     * @returns Promise resolved when the module has been downloaded. Data returned is not reliable.
      */
     protected async changeStatusAndPrefetch(
         module: CoreCourseAnyModuleData,
@@ -145,7 +145,7 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
      * @param id Unique identifier per component.
      * @param siteId Site ID. If not defined, current site.
      * @param extra Extra data to store.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     setDownloaded(id: number, siteId?: string, extra?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -158,7 +158,7 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
      *
      * @param id Unique identifier per component.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     setDownloading(id: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -171,7 +171,7 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
      *
      * @param id Unique identifier per component.
      * @param siteId Site ID. If not defined, current site.
-     * @return Rejected promise.
+     * @returns Rejected promise.
      */
     async setPreviousStatus(id: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -185,7 +185,7 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
      * @param id Unique identifier per component.
      * @param error Error to throw.
      * @param siteId Site ID. If not defined, current site.
-     * @return Rejected promise.
+     * @returns Rejected promise.
      * @deprecated since 3.9.5. Use setPreviousStatus instead.
      */
     async setPreviousStatusAndReject(id: number, error?: Error, siteId?: string): Promise<never> {

@@ -89,7 +89,7 @@ export class AddonModDataSearchComponent implements OnInit {
     /**
      * Displays Advanced Search Fields.
      *
-     * @return Generated HTML.
+     * @returns Generated HTML.
      */
     protected renderAdvancedSearchFields(): string {
         this.jsData = {
@@ -139,7 +139,7 @@ export class AddonModDataSearchComponent implements OnInit {
      * Retrieve the entered data in search in a form.
      *
      * @param searchedData Array with the entered form values.
-     * @return Array with the answers.
+     * @returns Array with the answers.
      */
     getSearchDataFromForm(searchedData: CoreFormFields): AddonModDataSearchEntriesAdvancedField[] {
         const advancedSearch: AddonModDataSearchEntriesAdvancedField[] = [];

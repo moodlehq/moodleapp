@@ -28,7 +28,7 @@ export class AddonModWikiOfflineProvider {
      * Convert a value to a positive number. If not a number or less than 0, 0 will be returned.
      *
      * @param value Value to convert.
-     * @return Converted value.
+     * @returns Converted value.
      */
     convertToPositiveNumber(value: string | number | undefined): number {
         value = Number(value);
@@ -45,7 +45,7 @@ export class AddonModWikiOfflineProvider {
      * @param userId User ID. Optional, will be used create subwiki if not informed.
      * @param groupId Group ID. Optional, will be used create subwiki if not informed.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if deleted, rejected if failure.
+     * @returns Promise resolved if deleted, rejected if failure.
      */
     async deleteNewPage(
         title: string,
@@ -76,7 +76,7 @@ export class AddonModWikiOfflineProvider {
      * Get all the stored new pages from all the wikis.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with pages.
+     * @returns Promise resolved with pages.
      */
     async getAllNewPages(siteId?: string): Promise<AddonModWikiPageDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
@@ -93,7 +93,7 @@ export class AddonModWikiOfflineProvider {
      * @param userId User ID. Optional, will be used create subwiki if not informed.
      * @param groupId Group ID. Optional, will be used create subwiki if not informed.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with page.
+     * @returns Promise resolved with page.
      */
     async getNewPage(
         title: string,
@@ -127,7 +127,7 @@ export class AddonModWikiOfflineProvider {
      * @param userId User ID. Optional, will be used create subwiki if not informed.
      * @param groupId Group ID. Optional, will be used create subwiki if not informed.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with pages.
+     * @returns Promise resolved with pages.
      */
     async getSubwikiNewPages(
         subwikiId?: number,
@@ -156,7 +156,7 @@ export class AddonModWikiOfflineProvider {
      *
      * @param subwikis List of subwiki.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with pages.
+     * @returns Promise resolved with pages.
      */
     async getSubwikisNewPages(subwikis: AddonModWikiSubwiki[], siteId?: string): Promise<AddonModWikiPageDBRecord[]> {
         let pages: AddonModWikiPageDBRecord[] = [];
@@ -180,7 +180,7 @@ export class AddonModWikiOfflineProvider {
      * @param userId User ID. Optional, will be used create subwiki if not informed.
      * @param groupId Group ID. Optional, will be used create subwiki if not informed.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if stored, rejected if failure.
+     * @returns Promise resolved if stored, rejected if failure.
      */
     async saveNewPage(
         title: string,
@@ -215,7 +215,7 @@ export class AddonModWikiOfflineProvider {
      *
      * @param subwikis List of subwikis.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean: whether it has offline data.
+     * @returns Promise resolved with boolean: whether it has offline data.
      */
     async subwikisHaveOfflineData(subwikis: AddonModWikiSubwiki[], siteId?: string): Promise<boolean> {
         try {

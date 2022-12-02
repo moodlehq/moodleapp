@@ -70,8 +70,8 @@ export class AddonModFeedbackAttemptsSource extends CoreRoutedItemsManagerSource
     /**
      * Type guard to infer AddonModFeedbackWSAttempt objects.
      *
-     * @param discussion Item to check.
-     * @return Whether the item is an identifieable attempt.
+     * @param attempt Attempt to check.
+     * @returns Whether the item is an identifieable attempt.
      */
     isIdentifiableAttempt(attempt: AddonModFeedbackAttemptItem): attempt is AddonModFeedbackWSAttempt {
         return 'fullname' in attempt;
@@ -80,8 +80,8 @@ export class AddonModFeedbackAttemptsSource extends CoreRoutedItemsManagerSource
     /**
      * Type guard to infer AddonModFeedbackWSAnonAttempt objects.
      *
-     * @param discussion Item to check.
-     * @return Whether the item is an anonymous attempt.
+     * @param attempt Attempt to check.
+     * @returns Whether the item is an anonymous attempt.
      */
     isAnonymousAttempt(attempt: AddonModFeedbackAttemptItem): attempt is AddonModFeedbackWSAnonAttempt {
         return 'number' in attempt;

@@ -104,7 +104,7 @@ export class CoreTabsComponent extends CoreTabsBaseComponent<CoreTabComponent> i
      * Load the tab.
      *
      * @param tabToSelect Tab to load.
-     * @return Promise resolved with true if tab is successfully loaded.
+     * @returns Promise resolved with true if tab is successfully loaded.
      */
     protected async loadTab(tabToSelect: CoreTabComponent): Promise<boolean> {
         const currentTab = this.getSelected();

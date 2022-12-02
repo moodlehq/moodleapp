@@ -105,7 +105,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         try {
@@ -137,7 +137,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
     }
 
     /**
-     * Component being destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         // Stop auto save.
@@ -154,7 +154,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Check if we can leave the page or not.
      *
-     * @return Resolved if we can leave it, rejected if not.
+     * @returns Resolved if we can leave it, rejected if not.
      */
     async canLeave(): Promise<boolean> {
         if (this.forceLeave || this.quizAborted || !this.questions.length || this.showSummary) {
@@ -253,7 +253,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
      * @param page Page to load. -1 means summary.
      * @param fromModal Whether the page was selected using the navigation modal.
      * @param slot Slot of the question to scroll to.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async changePage(page: number, fromModal?: boolean, slot?: number): Promise<void> {
         if (!this.attempt) {
@@ -329,7 +329,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Convenience function to get the quiz data.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchData(): Promise<void> {
         try {
@@ -395,7 +395,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
      *
      * @param userFinish Whether the user clicked to finish the attempt.
      * @param timeUp Whether the quiz time is up.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async finishAttempt(userFinish?: boolean, timeUp?: boolean): Promise<void> {
         let modal: CoreIonLoadingElement | undefined;
@@ -432,7 +432,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Fix sequence checks of current page.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fixSequenceChecks(): Promise<void> {
         // Get current page data again to get the latest sequencechecks.
@@ -459,7 +459,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Get the input answers.
      *
-     * @return Object with the answers.
+     * @returns Object with the answers.
      */
     protected getAnswers(): CoreQuestionsAnswers {
         return CoreQuestionHelper.getAnswersFromForm(document.forms['addon-mod_quiz-player-form']);
@@ -491,7 +491,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
      * Load a page questions.
      *
      * @param page The page to load.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadPage(page: number): Promise<void> {
         const data = await AddonModQuiz.getAttemptData(this.attempt!.id, page, this.preflightData, {
@@ -533,7 +533,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Load attempt summary.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadSummary(): Promise<void> {
         this.summaryQuestions = [];
@@ -559,7 +559,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Load data to navigate the questions using the navigation modal.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadNavigation(): Promise<void> {
         // We use the attempt summary to build the navigation because it contains all the questions.
@@ -577,7 +577,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Open the navigation modal.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async openNavigation(): Promise<void> {
 
@@ -612,7 +612,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Prepare the answers to be sent for the attempt.
      *
-     * @return Promise resolved with the answers.
+     * @returns Promise resolved with the answers.
      */
     protected prepareAnswers(): Promise<CoreQuestionsAnswers> {
         return CoreQuestionHelper.prepareAnswers(
@@ -630,7 +630,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
      * @param userFinish Whether the user clicked to finish the attempt.
      * @param timeUp Whether the quiz time is up.
      * @param retrying Whether we're retrying the change.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async processAttempt(userFinish?: boolean, timeUp?: boolean, retrying?: boolean): Promise<void> {
         // Get the answers to send.
@@ -730,7 +730,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Start or continue an attempt.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async startOrContinueAttempt(): Promise<void> {
         try {

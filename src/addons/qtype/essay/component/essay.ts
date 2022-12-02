@@ -42,7 +42,7 @@ export class AddonQtypeEssayComponent extends CoreQuestionBaseComponent implemen
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.uploadFilesSupported = this.question?.responsefileareas !== undefined;
@@ -59,7 +59,7 @@ export class AddonQtypeEssayComponent extends CoreQuestionBaseComponent implemen
     /**
      * Load attachments.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async loadAttachments(): Promise<void> {
         if (this.offlineEnabled && this.essayQuestion?.localAnswers?.attachments_offline) {

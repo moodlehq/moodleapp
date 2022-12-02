@@ -30,11 +30,7 @@ export class AddonQtypeCalculatedSimpleHandlerService implements CoreQuestionHan
     type = 'qtype_calculatedsimple';
 
     /**
-     * Return the Component to use to display the question.
-     * It's recommended to return the class of the component, but you can also return an instance of the component.
-     *
-     * @param question The question to render.
-     * @return The component (or promise resolved with component) to use, undefined if not found.
+     * @inheritdoc
      */
     getComponent(): Type<unknown> {
         // Calculated simple behaves like a calculated, use the same component.
@@ -42,72 +38,44 @@ export class AddonQtypeCalculatedSimpleHandlerService implements CoreQuestionHan
     }
 
     /**
-     * Check if a response is complete.
-     *
-     * @param question The question.
-     * @param answers Object with the question answers (without prefix).
-     * @param component The component the question is related to.
-     * @param componentId Component ID.
-     * @return 1 if complete, 0 if not complete, -1 if cannot determine.
+     * @inheritdoc
      */
     isCompleteResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-        component: string,
-        componentId: string | number,
     ): number {
         // This question type depends on calculated.
-        return AddonQtypeCalculatedHandler.isCompleteResponse(question, answers, component, componentId);
+        return AddonQtypeCalculatedHandler.isCompleteResponse(question, answers);
     }
 
     /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @return True or promise resolved with true if enabled.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         return true;
     }
 
     /**
-     * Check if a student has provided enough of an answer for the question to be graded automatically,
-     * or whether it must be considered aborted.
-     *
-     * @param question The question.
-     * @param answers Object with the question answers (without prefix).
-     * @param component The component the question is related to.
-     * @param componentId Component ID.
-     * @return 1 if gradable, 0 if not gradable, -1 if cannot determine.
+     * @inheritdoc
      */
     isGradableResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-        component: string,
-        componentId: string | number,
     ): number {
         // This question type depends on calculated.
-        return AddonQtypeCalculatedHandler.isGradableResponse(question, answers, component, componentId);
+        return AddonQtypeCalculatedHandler.isGradableResponse(question, answers);
     }
 
     /**
-     * Check if two responses are the same.
-     *
-     * @param question Question.
-     * @param prevAnswers Object with the previous question answers.
-     * @param newAnswers Object with the new question answers.
-     * @param component The component the question is related to.
-     * @param componentId Component ID.
-     * @return Whether they're the same.
+     * @inheritdoc
      */
     isSameResponse(
         question: CoreQuestionQuestionParsed,
         prevAnswers: CoreQuestionsAnswers,
         newAnswers: CoreQuestionsAnswers,
-        component: string,
-        componentId: string | number,
     ): boolean {
         // This question type depends on calculated.
-        return AddonQtypeCalculatedHandler.isSameResponse(question, prevAnswers, newAnswers, component, componentId);
+        return AddonQtypeCalculatedHandler.isSameResponse(question, prevAnswers, newAnswers);
     }
 
 }

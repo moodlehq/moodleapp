@@ -44,7 +44,7 @@ export class AddonModLessonGradeLinkHandlerService extends CoreContentLinksModul
      * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
      * @param courseId Course ID related to the URL.
      * @param siteId Site to use.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async goToReview(
         url: string,

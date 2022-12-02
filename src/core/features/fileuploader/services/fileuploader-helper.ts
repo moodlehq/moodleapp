@@ -59,9 +59,8 @@ export class CoreFileUploaderHelperProvider {
      *
      * @param maxSize Max size of the upload. -1 for no max size.
      * @param upload True if the file should be uploaded, false to return the picked file.
-     * @param mimetypes List of supported mimetypes. If undefined, all mimetypes supported.
      * @param allowOffline True to allow uploading in offline.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async chooseAndUploadFile(
         maxSize?: number,
@@ -110,7 +109,7 @@ export class CoreFileUploaderHelperProvider {
      * @param allowOffline True to allow uploading in offline.
      * @param wifiThreshold Threshold for WiFi connection. Default: CoreFileUploaderProvider.WIFI_SIZE_WARNING.
      * @param limitedThreshold Threshold for limited connection. Default: CoreFileUploaderProvider.LIMITED_SIZE_WARNING.
-     * @return Promise resolved when the user confirms or if there's no need to show a modal.
+     * @returns Promise resolved when the user confirms or if there's no need to show a modal.
      */
     async confirmUploadFile(
         size: number,
@@ -150,7 +149,7 @@ export class CoreFileUploaderHelperProvider {
      * @param file File to copy and upload.
      * @param upload True if the file should be uploaded, false to return the copy of the file.
      * @param name Name to use when uploading the file. If not defined, use the file's name.
-     * @return Promise resolved when the file is uploaded.
+     * @returns Promise resolved when the file is uploaded.
      */
     async copyAndUploadFile(file: IFile | File, upload?: boolean, name?: string): Promise<CoreWSUploadFileResult | FileEntry> {
         name = name || file.name;
@@ -194,7 +193,7 @@ export class CoreFileUploaderHelperProvider {
      * @param shouldDelete True if original file should be deleted (move), false otherwise (copy).
      * @param maxSize Max size of the file. If not defined or -1, no max size.
      * @param defaultExt Defaut extension to use if the file doesn't have any.
-     * @return Promise resolved with the copied file.
+     * @returns Promise resolved with the copied file.
      */
     protected async copyToTmpFolder(
         path: string,
@@ -235,7 +234,7 @@ export class CoreFileUploaderHelperProvider {
      *
      * @param maxSize Max size (bytes).
      * @param fileName Name of the file.
-     * @return Message.
+     * @returns Message.
      */
     protected createMaxBytesError(maxSize: number, fileName: string): CoreError {
         return new CoreError(Translate.instant('core.fileuploader.maxbytesfile', {
@@ -274,7 +273,7 @@ export class CoreFileUploaderHelperProvider {
      * Given the result of choosing a file, try to get its file name from the path.
      *
      * @param result Chosen file data.
-     * @return File name, undefined if cannot get it.
+     * @returns File name, undefined if cannot get it.
      */
     protected getChosenFileNameFromPath(result: ChooserResult): string | undefined {
         const nameAndDir = CoreFile.getFileAndDirectoryFromPath(result.uri);
@@ -303,7 +302,7 @@ export class CoreFileUploaderHelperProvider {
      * @param maxSize Max size of the file to upload. If not defined or -1, no max size.
      * @param title File picker title.
      * @param mimetypes List of supported mimetypes. If undefined, all mimetypes supported.
-     * @return Promise resolved when a file is uploaded, rejected if file picker is closed without a file uploaded.
+     * @returns Promise resolved when a file is uploaded, rejected if file picker is closed without a file uploaded.
      *         The resolve value is the response of the upload request.
      */
     async selectAndUploadFile(maxSize?: number, title?: string, mimetypes?: string[]): Promise<CoreWSUploadFileResult> {
@@ -317,7 +316,7 @@ export class CoreFileUploaderHelperProvider {
      * @param allowOffline True to allow selecting in offline, false to require connection.
      * @param title File picker title.
      * @param mimetypes List of supported mimetypes. If undefined, all mimetypes supported.
-     * @return Promise resolved when a file is selected, rejected if file picker is closed without selecting a file.
+     * @returns Promise resolved when a file is selected, rejected if file picker is closed without selecting a file.
      *         The resolve value is the FileEntry of a copy of the picked file, so it can be deleted afterwards.
      */
     async selectFile(maxSize?: number, allowOffline?: boolean, title?: string, mimetypes?: string[]): Promise<FileEntry> {
@@ -332,7 +331,7 @@ export class CoreFileUploaderHelperProvider {
      * @param title File picker title.
      * @param mimetypes List of supported mimetypes. If undefined, all mimetypes supported.
      * @param upload Whether the file should be uploaded.
-     * @return Promise resolved when a file is selected/uploaded, rejected if file picker is closed.
+     * @returns Promise resolved when a file is selected/uploaded, rejected if file picker is closed.
      */
     protected async selectFileWithPicker(
         maxSize?: number,
@@ -443,7 +442,7 @@ export class CoreFileUploaderHelperProvider {
      * @param fileEntry FileEntry of the file to upload.
      * @param deleteAfterUpload Whether the file should be deleted after upload.
      * @param siteId Id of the site to upload the file to. If not defined, use current site.
-     * @return Promise resolved when the file is uploaded.
+     * @returns Promise resolved when the file is uploaded.
      */
     async showConfirmAndUploadInSite(fileEntry: FileEntry, deleteAfterUpload?: boolean, siteId?: string): Promise<void> {
         try {
@@ -466,9 +465,8 @@ export class CoreFileUploaderHelperProvider {
      *
      * @param error Error returned by the Cordova plugin.
      * @param defaultMessage Key of the default message to show.
-     * @return Rejected promise.
      */
-    protected treatCaptureError(error: CoreCaptureError, defaultMessage: string): CoreError {
+    protected treatCaptureError(error: CoreCaptureError, defaultMessage: string): void {
         // Cancelled or error. If cancelled, error is an object with code = 3.
         if (error) {
             if (error.code != 3) {
@@ -491,7 +489,7 @@ export class CoreFileUploaderHelperProvider {
      * Check if a capture error is because there is no app to capture.
      *
      * @param error Error.
-     * @return Whether it's because there is no app.
+     * @returns Whether it's because there is no app.
      */
     protected isNoAppError(error: CoreCaptureError): boolean {
         return error && error.code == 20;
@@ -502,7 +500,7 @@ export class CoreFileUploaderHelperProvider {
      *
      * @param error Error returned by the Cordova plugin.
      * @param defaultMessage Key of the default message to show.
-     * @return Rejected promise. If it doesn't have an error message it means it was cancelled.
+     * @returns Rejected promise. If it doesn't have an error message it means it was cancelled.
      */
     protected treatImageError(error: number | string | CoreError | CoreCaptureError, defaultMessage: string): CoreError {
         // Cancelled or error.
@@ -532,7 +530,7 @@ export class CoreFileUploaderHelperProvider {
      * @param maxSize Max size of the upload. -1 for no max size.
      * @param upload True if the file should be uploaded, false to return the picked file.
      * @param mimetypes List of supported mimetypes. If undefined, all mimetypes supported.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async uploadAudioOrVideo(
         isAudio: boolean,
@@ -599,7 +597,7 @@ export class CoreFileUploaderHelperProvider {
      * @param type File type.
      * @param deleteAfterUpload Whether the file should be deleted after upload.
      * @param siteId Id of the site to upload the file to. If not defined, use current site.
-     * @return Promise resolved when the file is uploaded.
+     * @returns Promise resolved when the file is uploaded.
      */
     uploadGenericFile(
         uri: string,
@@ -620,7 +618,7 @@ export class CoreFileUploaderHelperProvider {
      * @param maxSize Max size of the upload. -1 for no max size.
      * @param upload True if the file should be uploaded, false to return the picked file.
      * @param mimetypes List of supported mimetypes. If undefined, all mimetypes supported.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async uploadImage(
         fromAlbum: boolean,
@@ -700,7 +698,7 @@ export class CoreFileUploaderHelperProvider {
      * @param upload True if the file should be uploaded, false to return the picked file.
      * @param allowOffline True to allow selecting in offline, false to require connection.
      * @param name Name to use when uploading the file. If not defined, use the file's name.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async uploadFileEntry(
         fileEntry: FileEntry,
@@ -730,7 +728,7 @@ export class CoreFileUploaderHelperProvider {
      * @param upload True if the file should be uploaded, false to return the picked file.
      * @param allowOffline True to allow selecting in offline, false to require connection.
      * @param name Name to use when uploading the file. If not defined, use the file's name.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async uploadFileObject(
         file: IFile | File,
@@ -765,9 +763,9 @@ export class CoreFileUploaderHelperProvider {
      * @param path Absolute path of the file to upload.
      * @param maxSize Max size of the upload. -1 for no max size.
      * @param checkSize True to check size.
-     * @param Options.
+     * @param options Options.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if the file is uploaded, rejected otherwise.
+     * @returns Promise resolved if the file is uploaded, rejected otherwise.
      */
     async uploadFile(
         path: string,

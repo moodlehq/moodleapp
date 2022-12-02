@@ -39,7 +39,7 @@ export class AddonModQuizAccessPasswordHandlerService implements AddonModQuizAcc
      * @param attempt The attempt started/continued. If not supplied, user is starting a new attempt.
      * @param prefetch Whether the user is prefetching the quiz.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done if async, void if it's synchronous.
+     * @returns Promise resolved when done if async, void if it's synchronous.
      */
     async getFixedPreflightData(
         quiz: AddonModQuizQuizWSData,
@@ -67,7 +67,7 @@ export class AddonModQuizAccessPasswordHandlerService implements AddonModQuizAcc
      *
      * @param quizId Quiz ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the DB entry on success.
+     * @returns Promise resolved with the DB entry on success.
      */
     protected async getPasswordEntry(quizId: number, siteId?: string): Promise<AddonModQuizAccessPasswordDBRecord> {
         const site = await CoreSites.getSite(siteId);
@@ -80,7 +80,7 @@ export class AddonModQuizAccessPasswordHandlerService implements AddonModQuizAcc
      * Implement this if your access rule requires a preflight check with user interaction.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @return The component (or promise resolved with component) to use, undefined if not found.
+     * @returns The component (or promise resolved with component) to use, undefined if not found.
      */
     getPreflightComponent(): Type<unknown> | Promise<Type<unknown>> {
         return AddonModQuizAccessPasswordComponent;
@@ -89,7 +89,7 @@ export class AddonModQuizAccessPasswordHandlerService implements AddonModQuizAcc
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return True or promise resolved with true if enabled.
+     * @returns True or promise resolved with true if enabled.
      */
     async isEnabled(): Promise<boolean> {
         return true;
@@ -102,7 +102,7 @@ export class AddonModQuizAccessPasswordHandlerService implements AddonModQuizAcc
      * @param attempt The attempt started/continued. If not supplied, user is starting a new attempt.
      * @param prefetch Whether the user is prefetching the quiz.
      * @param siteId Site ID. If not defined, current site.
-     * @return Whether the rule requires a preflight check.
+     * @returns Whether the rule requires a preflight check.
      */
     async isPreflightCheckRequired(
         quiz: AddonModQuizQuizWSData,
@@ -124,7 +124,7 @@ export class AddonModQuizAccessPasswordHandlerService implements AddonModQuizAcc
      * @param preflightData Preflight data gathered.
      * @param prefetch Whether the user is prefetching the quiz.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done if async, void if it's synchronous.
+     * @returns Promise resolved when done if async, void if it's synchronous.
      */
     async notifyPreflightCheckPassed(
         quiz: AddonModQuizQuizWSData,
@@ -147,7 +147,7 @@ export class AddonModQuizAccessPasswordHandlerService implements AddonModQuizAcc
      * @param preflightData Preflight data gathered.
      * @param prefetch Whether the user is prefetching the quiz.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done if async, void if it's synchronous.
+     * @returns Promise resolved when done if async, void if it's synchronous.
      */
     notifyPreflightCheckFailed?(
         quiz: AddonModQuizQuizWSData,
@@ -165,7 +165,7 @@ export class AddonModQuizAccessPasswordHandlerService implements AddonModQuizAcc
      *
      * @param quizId Quiz ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async removePassword(quizId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -179,7 +179,7 @@ export class AddonModQuizAccessPasswordHandlerService implements AddonModQuizAcc
      * @param quizId Quiz ID.
      * @param password Password.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async storePassword(quizId: number, password: string, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

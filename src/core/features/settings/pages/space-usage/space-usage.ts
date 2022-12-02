@@ -87,7 +87,7 @@ export class CoreSettingsSpaceUsagePage implements OnInit, OnDestroy {
     /**
      * Convenience function to load site data/usage and calculate the totals.
      *
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async loadSiteData(): Promise<void> {
         // Calculate total usage.
@@ -136,7 +136,7 @@ export class CoreSettingsSpaceUsagePage implements OnInit, OnDestroy {
      * Get site with space usage.
      *
      * @param site Site to check.
-     * @return Site with usage.
+     * @returns Site with usage.
      */
     protected async getSiteWithUsage(site: CoreSiteBasicInfo): Promise<CoreSiteBasicInfoWithUsage> {
         const siteInfo = await CoreSettingsHelper.getSiteSpaceUsage(site.id);

@@ -113,7 +113,7 @@ export class CoreLangProvider {
      * We cannot use a function from text utils because it would cause a circular dependency.
      *
      * @param value String to capitalize.
-     * @return Capitalized string.
+     * @returns Capitalized string.
      */
     protected capitalize(value: string): string {
         return value.charAt(0).toUpperCase() + value.slice(1);
@@ -163,7 +163,7 @@ export class CoreLangProvider {
      * Change current language.
      *
      * @param language New language to use.
-     * @return Promise resolved when the change is finished.
+     * @returns Promise resolved when the change is finished.
      */
     async changeCurrentLanguage(language: string): Promise<void> {
         const promises: Promise<unknown>[] = [];
@@ -230,7 +230,7 @@ export class CoreLangProvider {
     /**
      * Get all current custom strings.
      *
-     * @return Custom strings.
+     * @returns Custom strings.
      */
     getAllCustomStrings(): CoreLanguageObject {
         return this.customStrings;
@@ -239,7 +239,7 @@ export class CoreLangProvider {
     /**
      * Get all current site plugins strings.
      *
-     * @return Site plugins strings.
+     * @returns Site plugins strings.
      */
     getAllSitePluginsStrings(): CoreLanguageObject {
         return this.sitePluginsStrings;
@@ -248,7 +248,7 @@ export class CoreLangProvider {
     /**
      * Get current language.
      *
-     * @return Promise resolved with the current language.
+     * @returns Promise resolved with the current language.
      */
     async getCurrentLanguage(): Promise<string> {
         if (this.currentLanguage !== undefined) {
@@ -263,7 +263,7 @@ export class CoreLangProvider {
     /**
      * Get the current language from settings, or detect the browser one.
      *
-     * @return Promise resolved with the selected language.
+     * @returns Promise resolved with the selected language.
      */
     protected async detectLanguage(): Promise<string> {
         // Get current language from config (user might have changed it).
@@ -299,7 +299,7 @@ export class CoreLangProvider {
     /**
      * Get the default language.
      *
-     * @return Default language.
+     * @returns Default language.
      */
     getDefaultLanguage(): string {
         return this.defaultLanguage;
@@ -308,7 +308,7 @@ export class CoreLangProvider {
     /**
      * Get the fallback language.
      *
-     * @return Fallback language.
+     * @returns Fallback language.
      */
     getFallbackLanguage(): string {
         return this.fallbackLanguage;
@@ -317,7 +317,7 @@ export class CoreLangProvider {
     /**
      * Get translated month names.
      *
-     * @return Translated month names.
+     * @returns Translated month names.
      */
     getMonthNames(): string[] {
         return moment.months().map(month => this.capitalize(month));
@@ -326,7 +326,7 @@ export class CoreLangProvider {
     /**
      * Get translated month short names.
      *
-     * @return Translated month short names.
+     * @returns Translated month short names.
      */
     getMonthShortNames(): string[] {
         return moment.monthsShort().map(month => this.capitalize(month));
@@ -335,7 +335,7 @@ export class CoreLangProvider {
     /**
      * Get translated day names.
      *
-     * @return Translated day names.
+     * @returns Translated day names.
      */
     getDayNames(): string[] {
         return moment.weekdays().map(weekDay => this.capitalize(weekDay));
@@ -344,7 +344,7 @@ export class CoreLangProvider {
     /**
      * Get translated day short names.
      *
-     * @return Translated day short names.
+     * @returns Translated day short names.
      */
     getDayShortNames(): string[] {
         return moment.weekdaysShort().map(weekDay => this.capitalize(weekDay));
@@ -354,7 +354,7 @@ export class CoreLangProvider {
      * Get the full list of translations for a certain language.
      *
      * @param lang The language to check.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     getTranslationTable(lang: string): Promise<Record<string, unknown>> {
         // Create a promise to convert the observable into a promise.
@@ -445,7 +445,7 @@ export class CoreLangProvider {
      *
      * @param langObject The object with the strings to load.
      * @param lang Language to load.
-     * @return Whether the translation table was modified.
+     * @returns Whether the translation table was modified.
      */
     loadLangStrings(langObject: CoreLanguageObject, lang: string): boolean {
         let langApplied = false;
@@ -506,7 +506,7 @@ export class CoreLangProvider {
      * Read a language file.
      *
      * @param lang Language code.
-     * @return Promise resolved with the file contents.
+     * @returns Promise resolved with the file contents.
      */
     async readLangFile(lang: CoreLangLanguage): Promise<Record<string, string>> {
         const observable = Http.get(`assets/lang/${lang}.json`, {

@@ -36,7 +36,7 @@ export class AddonCalendarOfflineProvider {
      *
      * @param eventId Event ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if deleted, rejected if failure.
+     * @returns Promise resolved if deleted, rejected if failure.
      */
     async deleteEvent(eventId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -52,7 +52,7 @@ export class AddonCalendarOfflineProvider {
      * Get the IDs of all the events created/edited/deleted in offline.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the IDs.
+     * @returns Promise resolved with the IDs.
      */
     async getAllEventsIds(siteId?: string): Promise<number[]> {
         const promises: Promise<number[]>[] = [];
@@ -69,7 +69,7 @@ export class AddonCalendarOfflineProvider {
      * Get all the events deleted in offline.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with all the events deleted in offline.
+     * @returns Promise resolved with all the events deleted in offline.
      */
     async getAllDeletedEvents(siteId?: string): Promise<AddonCalendarOfflineDeletedEventDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
@@ -81,7 +81,7 @@ export class AddonCalendarOfflineProvider {
      * Get the IDs of all the events deleted in offline.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the IDs of all the events deleted in offline.
+     * @returns Promise resolved with the IDs of all the events deleted in offline.
      */
     async getAllDeletedEventsIds(siteId?: string): Promise<number[]> {
         const events = await this.getAllDeletedEvents(siteId);
@@ -93,7 +93,7 @@ export class AddonCalendarOfflineProvider {
      * Get all the events created/edited in offline.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with events.
+     * @returns Promise resolved with events.
      */
     async getAllEditedEvents(siteId?: string): Promise<AddonCalendarOfflineEventDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
@@ -105,7 +105,7 @@ export class AddonCalendarOfflineProvider {
      * Get the IDs of all the events created/edited in offline.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with events IDs.
+     * @returns Promise resolved with events IDs.
      */
     async getAllEditedEventsIds(siteId?: string): Promise<number[]> {
         const events = await this.getAllEditedEvents(siteId);
@@ -118,7 +118,7 @@ export class AddonCalendarOfflineProvider {
      *
      * @param eventId Event ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the deleted event.
+     * @returns Promise resolved with the deleted event.
      */
     async getDeletedEvent(eventId: number, siteId?: string): Promise<AddonCalendarOfflineDeletedEventDBRecord> {
         const site = await CoreSites.getSite(siteId);
@@ -134,7 +134,7 @@ export class AddonCalendarOfflineProvider {
      *
      * @param eventId Event ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the event.
+     * @returns Promise resolved with the event.
      */
     async getEvent(eventId: number, siteId?: string): Promise<AddonCalendarOfflineEventDBRecord> {
         const site = await CoreSites.getSite(siteId);
@@ -149,7 +149,7 @@ export class AddonCalendarOfflineProvider {
      * Check if there are offline events to send.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean: true if has offline events, false otherwise.
+     * @returns Promise resolved with boolean: true if has offline events, false otherwise.
      */
     async hasEditedEvents(siteId?: string): Promise<boolean> {
         try {
@@ -166,7 +166,7 @@ export class AddonCalendarOfflineProvider {
      * Check whether there's offline data for a site.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean: true if has offline data, false otherwise.
+     * @returns Promise resolved with boolean: true if has offline data, false otherwise.
      */
     async hasOfflineData(siteId?: string): Promise<boolean> {
         const ids = await this.getAllEventsIds(siteId);
@@ -179,7 +179,7 @@ export class AddonCalendarOfflineProvider {
      *
      * @param eventId Event ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean: whether the event is deleted.
+     * @returns Promise resolved with boolean: whether the event is deleted.
      */
     async isEventDeleted(eventId: number, siteId?: string): Promise<boolean> {
         try {
@@ -198,7 +198,7 @@ export class AddonCalendarOfflineProvider {
      * @param name Name of the event to delete.
      * @param deleteAll If it's a repeated event. whether to delete all events of the series.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async markDeleted(eventId: number, name: string, deleteAll?: boolean, siteId?: string): Promise<number> {
         const site = await CoreSites.getSite(siteId);
@@ -218,7 +218,7 @@ export class AddonCalendarOfflineProvider {
      * @param eventId Event ID. Negative value to edit offline event. If it's a new event, set it to undefined/null.
      * @param data Event data.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the stored event.
+     * @returns Promise resolved with the stored event.
      */
     async saveEvent(
         eventId: number | undefined,
@@ -258,7 +258,7 @@ export class AddonCalendarOfflineProvider {
      *
      * @param eventId Event ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if deleted, rejected if failure.
+     * @returns Promise resolved if deleted, rejected if failure.
      */
     async unmarkDeleted(eventId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

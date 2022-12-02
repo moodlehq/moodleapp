@@ -136,7 +136,7 @@ export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
     /**
      * Format labels if needed.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async formatLabels(): Promise<void> {
         if (!this.contextLevel || !this.contextInstanceId || this.filter === false) {
@@ -161,7 +161,7 @@ export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
      * Generate random colors if needed.
      *
      * @param n Number of colors needed.
-     * @return Array with the number of background colors requested.
+     * @returns Array with the number of background colors requested.
      */
     protected getRandomColors(n: number): string[] {
         while (CoreChartComponent.backgroundColors.length < n) {

@@ -54,7 +54,7 @@ export class AddonModAssignSubmissionPluginComponent implements OnInit {
     pluginLoaded = false;
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         if (!this.plugin) {
@@ -97,7 +97,7 @@ export class AddonModAssignSubmissionPluginComponent implements OnInit {
     /**
      * Invalidate the plugin data.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async invalidate(): Promise<void> {
         await this.dynamicComponent.callComponentMethod('invalidate');

@@ -37,7 +37,7 @@ export class CoreCache {
      * Get all the data stored in the cache for a certain id.
      *
      * @param id The ID to identify the entry.
-     * @return The data from the cache. Undefined if not found.
+     * @returns The data from the cache. Undefined if not found.
      */
     getEntry(id: string): CoreCacheEntry {
         if (!this.cacheStore[id]) {
@@ -53,7 +53,7 @@ export class CoreCache {
      * @param id The ID to identify the entry.
      * @param name Name of the value to get.
      * @param ignoreInvalidate Whether it should always return the cached data, even if it's expired.
-     * @return Cached value. Undefined if not cached or expired.
+     * @returns Cached value. Undefined if not cached or expired.
      */
     getValue<T = unknown>(id: string, name: string, ignoreInvalidate = false): T | undefined {
         const entry = this.getEntry(id);
@@ -87,7 +87,7 @@ export class CoreCache {
      * @param id The ID to identify the entry.
      * @param name Name of the value to set.
      * @param value Value to set.
-     * @return The set value.
+     * @returns The set value.
      */
     setValue<T>(id: string, name: string, value: T): T {
         const entry = this.getEntry(id);

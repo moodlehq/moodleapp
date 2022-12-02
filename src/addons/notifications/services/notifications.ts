@@ -60,7 +60,7 @@ export class AddonNotificationsProvider {
      * Function to format notification data.
      *
      * @param notifications List of notifications.
-     * @return Promise resolved with notifications.
+     * @returns Promise resolved with notifications.
      */
     protected async formatNotificationsData(
         notifications: AddonNotificationsNotificationMessage[],
@@ -119,7 +119,7 @@ export class AddonNotificationsProvider {
     /**
      * Get the cache key for the get notification preferences call.
      *
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getNotificationPreferencesCacheKey(): string {
         return ROOT_CACHE_KEY + 'notificationPreferences';
@@ -129,7 +129,7 @@ export class AddonNotificationsProvider {
      * Get notification preferences.
      *
      * @param options Options.
-     * @return Promise resolved with the notification preferences.
+     * @returns Promise resolved with the notification preferences.
      */
     async getNotificationPreferences(options: CoreSitesCommonWSOptions = {}): Promise<AddonNotificationsPreferences> {
         this.logger.debug('Get notification preferences');
@@ -153,7 +153,7 @@ export class AddonNotificationsProvider {
     /**
      * Get cache key for notification list WS calls.
      *
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getNotificationsCacheKey(): string {
         return ROOT_CACHE_KEY + 'list';
@@ -164,7 +164,7 @@ export class AddonNotificationsProvider {
      *
      * @param notifications Current list of loaded notifications. It's used to calculate the offset.
      * @param options Other options.
-     * @return Promise resolved with notifications and if can load more.
+     * @returns Promise resolved with notifications and if can load more.
      * @deprecated since 4.1. Use getNotificationsWithStatus instead.
      */
     async getNotifications(
@@ -230,7 +230,7 @@ export class AddonNotificationsProvider {
      *
      * @param read True if should get read notifications, false otherwise.
      * @param options Other options.
-     * @return Promise resolved with notifications.
+     * @returns Promise resolved with notifications.
      */
     async getNotificationsWithStatus(
         read: AddonNotificationsGetReadType,
@@ -273,7 +273,7 @@ export class AddonNotificationsProvider {
      *
      * @param userId The user id who received the notification. If not defined, use current user.
      * @param siteId Site ID. If not defined, use current site.
-     * @return Promise resolved with the message notifications count.
+     * @returns Promise resolved with the message notifications count.
      */
     async getUnreadNotificationsCount(userId?: number, siteId?: string): Promise<{ count: number; hasMore: boolean} > {
         const site = await CoreSites.getSite(siteId);
@@ -330,7 +330,7 @@ export class AddonNotificationsProvider {
      * Get cache key for unread notifications count WS calls.
      *
      * @param userId User ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getUnreadNotificationsCountCacheKey(userId: number): string {
         return `${ROOT_CACHE_KEY}count:${userId}`;
@@ -339,7 +339,7 @@ export class AddonNotificationsProvider {
     /**
      * Mark all message notification as read.
      *
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     async markAllNotificationsAsRead(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
@@ -356,7 +356,7 @@ export class AddonNotificationsProvider {
      *
      * @param notificationId ID of notification to mark as read
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async markNotificationRead(
         notificationId: number,
@@ -377,7 +377,7 @@ export class AddonNotificationsProvider {
      * Invalidate get notification preferences.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when data is invalidated.
+     * @returns Promise resolved when data is invalidated.
      */
     async invalidateNotificationPreferences(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -389,7 +389,7 @@ export class AddonNotificationsProvider {
      * Invalidates notifications list WS calls.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the list is invalidated.
+     * @returns Promise resolved when the list is invalidated.
      */
     async invalidateNotificationsList(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

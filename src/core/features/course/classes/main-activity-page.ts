@@ -33,7 +33,7 @@ export class CoreCourseModuleMainActivityPage<ActivityType extends CoreCourseMod
     courseId!: number;
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         try {

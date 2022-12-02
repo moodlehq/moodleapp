@@ -52,7 +52,7 @@ export class CoreContextMenuPopoverComponent {
      *
      * @param event Click event.
      * @param item Item clicked.
-     * @return Return true if success, false if error.
+     * @returns Return true if success, false if error.
      */
     itemClicked(event: Event, item: CoreContextMenuItemComponent): boolean {
         if (item.iconAction == 'toggle' && !event.defaultPrevented) {

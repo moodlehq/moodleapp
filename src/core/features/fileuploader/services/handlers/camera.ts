@@ -33,7 +33,7 @@ export class CoreFileUploaderCameraHandlerService implements CoreFileUploaderHan
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return Promise resolved with true if enabled.
+     * @returns Promise resolved with true if enabled.
      */
     async isEnabled(): Promise<boolean> {
         return CorePlatform.isMobile() || CoreApp.canGetUserMedia();
@@ -43,7 +43,7 @@ export class CoreFileUploaderCameraHandlerService implements CoreFileUploaderHan
      * Given a list of mimetypes, return the ones that are supported by the handler.
      *
      * @param mimetypes List of mimetypes.
-     * @return Supported mimetypes.
+     * @returns Supported mimetypes.
      */
     getSupportedMimetypes(mimetypes: string[]): string[] {
         // Camera only supports JPEG and PNG.
@@ -53,7 +53,7 @@ export class CoreFileUploaderCameraHandlerService implements CoreFileUploaderHan
     /**
      * Get the data to display the handler.
      *
-     * @return Data.
+     * @returns Data.
      */
     getData(): CoreFileUploaderHandlerData {
         return {

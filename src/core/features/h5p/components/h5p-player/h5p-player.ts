@@ -66,7 +66,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.checkCanDownload();
@@ -109,7 +109,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
     /**
      * Download the package.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async download(): Promise<void> {
         if (!CoreNetwork.isOnline()) {
@@ -141,7 +141,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
     /**
      * Download the H5P in background if the size is low.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async attemptDownloadInBg(): Promise<void> {
         if (!this.urlParams || !this.src || !this.siteCanDownload || !CoreH5P.canGetTrustedH5PFileInSite() ||
@@ -161,7 +161,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
     /**
      * Check if the package can be downloaded.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async checkCanDownload(): Promise<void> {
         this.observer && this.observer.off();
@@ -191,7 +191,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
     /**
      * Calculate state of the file.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async calculateState(): Promise<void> {
         this.calculating$.next(true);

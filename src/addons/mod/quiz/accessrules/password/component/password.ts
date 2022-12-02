@@ -36,7 +36,7 @@ export class AddonModQuizAccessPasswordComponent implements OnInit {
     constructor(private fb: FormBuilder) { }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         // Add the control for the password.

@@ -156,7 +156,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
      * Check whether a discussion is online.
      *
      * @param discussion Discussion
-     * @return Whether the discussion is online.
+     * @returns Whether the discussion is online.
      */
     isOnlineDiscussion(discussion: AddonModForumDiscussionItem): boolean {
         return !!this.discussions?.getSource().isOnlineDiscussion(discussion);
@@ -166,14 +166,14 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
      * Check whether a discussion is offline.
      *
      * @param discussion Discussion
-     * @return Whether the discussion is offline.
+     * @returns Whether the discussion is offline.
      */
     isOfflineDiscussion(discussion: AddonModForumDiscussionItem): boolean {
         return !!this.discussions?.getSource().isOfflineDiscussion(discussion);
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         this.addDiscussionText = Translate.instant('addon.mod_forum.addanewdiscussion');
@@ -312,7 +312,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     }
 
     /**
-     * Component being destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         super.ngOnDestroy();
@@ -437,8 +437,8 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Convenience function to load more forum discussions.
      *
-     * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
-     * @return Promise resolved when done.
+     * @param complete Infinite scroll complete function. Only used from core-infinite-loading.
+     * @returns Promise resolved when done.
      */
     async fetchMoreDiscussions(complete: () => void): Promise<void> {
         const discussions = await this.promisedDiscussions;
@@ -459,7 +459,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Convenience function to fetch the sort order preference.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchSortOrderPreference(): Promise<void> {
         const discussions = await this.promisedDiscussions;
@@ -475,7 +475,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Perform the invalidate content function.
      *
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async invalidateContent(): Promise<void> {
         const promises: Promise<void>[] = [];
@@ -498,7 +498,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Performs the sync of the activity.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected sync(): Promise<AddonModForumSyncResult> {
         return AddonModForumPrefetchHandler.sync(this.module, this.courseId);
@@ -508,7 +508,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
      * Checks if sync has succeed from result sync data.
      *
      * @param result Data returned on the sync function.
-     * @return Whether it succeed or not.
+     * @returns Whether it succeed or not.
      */
     protected hasSyncSucceed(result: AddonModForumSyncResult): boolean {
         return result.updated;
@@ -518,7 +518,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
      * Compares sync event data with current data to check if refresh content is needed.
      *
      * @param syncEventData Data receiven on sync observer.
-     * @return True if refresh is needed, false otherwise.
+     * @returns True if refresh is needed, false otherwise.
      */
     protected isRefreshSyncNeeded(syncEventData: AddonModForumAutoSyncData | AddonModForumManualSyncData): boolean {
         return !!this.forum
@@ -583,8 +583,6 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
     /**
      * Opens the new discussion form.
-     *
-     * @param timeCreated Creation time of the offline discussion.
      */
     openNewDiscussion(): void {
         this.discussions?.select(AddonModForumDiscussionsSource.NEW_DISCUSSION);
@@ -729,7 +727,7 @@ class AddonModForumDiscussionsManager extends CoreListItemsManager<AddonModForum
     /**
      * Check whether there is any discussion in the items.
      *
-     * @return Whether there is a discussion.
+     * @returns Whether there is a discussion.
      */
     get hasDiscussions(): boolean {
         const source = this.getSource();

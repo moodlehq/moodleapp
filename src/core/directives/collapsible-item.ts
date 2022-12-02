@@ -116,7 +116,7 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
     /**
      * Wait until all <core-loading> children inside the page.
      *
-     * @return Promise resolved when loadings are done.
+     * @returns Promise resolved when loadings are done.
      */
     protected async waitLoadingsDone(): Promise<void> {
         this.domPromise = CoreDom.waitToBeInDOM(this.element);

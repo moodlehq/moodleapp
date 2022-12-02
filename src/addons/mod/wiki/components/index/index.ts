@@ -285,7 +285,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      * Get wiki page contents.
      *
      * @param pageId Page to get.
-     * @return Promise resolved with the page data.
+     * @returns Promise resolved with the page data.
      */
     protected async fetchPageContents(pageId: number): Promise<AddonModWikiPageContents>;
     protected async fetchPageContents(): Promise<AddonModWikiPageDBRecord | undefined>;
@@ -405,7 +405,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Fetch the page to be shown.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchWikiPage(): Promise<void> {
         // Search the current Subwiki.
@@ -464,7 +464,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Get path to the wiki home view. If cannot determine or it's current view, return undefined.
      *
-     * @return The path of the home view
+     * @returns The path of the home view
      */
     protected getWikiHomeView(): string | undefined {
         if (!this.wiki) {
@@ -586,7 +586,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      * Open a page or a subwiki in the current wiki.
      *
      * @param options Options
-     * @return Promise.
+     * @returns Promise.
      */
     protected async openPageOrSubwiki(options: AddonModWikiOpenPageOptions): Promise<void> {
         const hash = <string> Md5.hashAsciiStr(JSON.stringify({
@@ -656,7 +656,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Checks if there is any subwiki selected.
      *
-     * @return Whether there is any subwiki selected.
+     * @returns Whether there is any subwiki selected.
      */
     protected isAnySubwikiSelected(): boolean {
         return this.subwikiData.subwikiSelected > 0 || this.subwikiData.userSelected > 0 || this.subwikiData.groupSelected > 0;
@@ -666,7 +666,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      * Checks if the given subwiki is the one picked on the subwiki picker.
      *
      * @param subwiki Subwiki to check.
-     * @return Whether it's the selected subwiki.
+     * @returns Whether it's the selected subwiki.
      */
     protected isSubwikiSelected(subwiki: AddonModWikiSubwiki): boolean {
         if (subwiki.id > 0 && this.subwikiData.subwikiSelected > 0) {
@@ -680,7 +680,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      * Replace edit links to have full url.
      *
      * @param content Content to treat.
-     * @return Treated content.
+     * @returns Treated content.
      */
     protected replaceEditLinks(content: string): string {
         content = content.trim();
@@ -710,7 +710,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      * Checks if sync has succeed from result sync data.
      *
      * @param result Data returned on the sync function.
-     * @return If suceed or not.
+     * @returns If suceed or not.
      */
     protected hasSyncSucceed(result: AddonModWikiSyncWikiResult | undefined): boolean {
         if (!result) {
@@ -845,7 +845,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     /**
      * Performs the sync of the activity.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async sync(): Promise<AddonModWikiSyncWikiResult | undefined> {
         if (!this.wiki) {
@@ -856,7 +856,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     }
 
     /**
-     * Component being destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         super.ngOnDestroy();
@@ -873,7 +873,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      * Create the subwiki list for the selector and store it in the cache.
      *
      * @param userGroups Groups.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async createSubwikiList(userGroups: CoreGroup[]): Promise<void> {
         const subwikiList: AddonModWikiSubwikiListSubwiki[] = [];

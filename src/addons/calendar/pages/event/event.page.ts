@@ -145,7 +145,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
     /**
      * Load reminders.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadReminders(): Promise<void> {
         if (!this.remindersEnabled || !this.event) {
@@ -180,7 +180,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
      *
      * @param sync Whether it should try to synchronize offline events.
      * @param showErrors Whether to show sync errors to the user.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async fetchEvent(sync = false, showErrors = false): Promise<void> {
         this.isOnline = CoreNetwork.isOnline();
@@ -319,7 +319,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
      * Sync offline events.
      *
      * @param showErrors Whether to show sync errors to the user.
-     * @return Promise resolved with boolean: whether event was deleted on sync.
+     * @returns Promise resolved with boolean: whether event was deleted on sync.
      */
     protected async syncEvents(showErrors = false): Promise<boolean> {
         let deleted = false;
@@ -363,7 +363,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
      *
      * @param event Event.
      * @param courseId Course ID.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadGroupName(event: AddonCalendarEventToDisplay, courseId: number): Promise<void> {
         try {
@@ -438,7 +438,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
      * @param refresher Refresher.
      * @param done Function to call when done.
      * @param showErrors Whether to show sync errors to the user.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async doRefresh(refresher?: IonRefresher, done?: () => void, showErrors= false): Promise<void> {
         if (!this.eventLoaded) {
@@ -456,7 +456,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
      *
      * @param sync Whether it should try to synchronize offline events.
      * @param showErrors Whether to show sync errors to the user.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async refreshEvent(sync = false, showErrors = false): Promise<void> {
         this.syncIcon = CoreConstants.ICON_LOADING;

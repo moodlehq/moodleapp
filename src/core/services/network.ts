@@ -106,7 +106,7 @@ export class CoreNetworkService extends Network {
     /**
      * Returns whether we are online.
      *
-     * @return Whether the app is online.
+     * @returns Whether the app is online.
      */
     isOnline(): boolean {
         return this.online;
@@ -114,8 +114,6 @@ export class CoreNetworkService extends Network {
 
     /**
      * Returns whether we are online.
-     *
-     * @return Whether the app is online.
      */
     checkOnline(): void {
         if (this.forceConnectionMode === CoreNetworkConnection.NONE) {
@@ -139,7 +137,7 @@ export class CoreNetworkService extends Network {
     /**
      * Returns an observable to watch connection changes.
      *
-     * @return Observable.
+     * @returns Observable.
      */
     onChange(): Observable<'connected' | 'disconnected'> {
         return merge(this.connectObservable, this.disconnectObservable);
@@ -149,7 +147,7 @@ export class CoreNetworkService extends Network {
      * Returns an observable to notify when the app is connected.
      * It will also be fired when connection type changes.
      *
-     * @return Observable.
+     * @returns Observable.
      */
     onConnect(): Observable<'connected'> {
         return this.connectObservable;
@@ -158,7 +156,7 @@ export class CoreNetworkService extends Network {
     /**
      * Returns an observable to notify when the app is disconnected.
      *
-     * @return Observable.
+     * @returns Observable.
      */
     onDisconnect(): Observable<'disconnected'> {
         return this.disconnectObservable;
@@ -180,7 +178,7 @@ export class CoreNetworkService extends Network {
     /**
      * Check if device uses a limited connection.
      *
-     * @return Whether the device uses a limited connection.
+     * @returns Whether the device uses a limited connection.
      */
     isNetworkAccessLimited(): boolean {
         const limited: CoreNetworkConnection[] = [
@@ -198,7 +196,7 @@ export class CoreNetworkService extends Network {
     /**
      * Check if device uses a wifi connection.
      *
-     * @return Whether the device uses a wifi connection.
+     * @returns Whether the device uses a wifi connection.
      */
     isWifi(): boolean {
         return this.isOnline() && !this.isNetworkAccessLimited();

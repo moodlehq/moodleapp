@@ -35,7 +35,7 @@ export class CoreCoursesEnrolPushClickHandlerService implements CorePushNotifica
      * Check if a notification click is handled by this handler.
      *
      * @param notification The notification to check.
-     * @return Whether the notification click is handled by this handler
+     * @returns Whether the notification click is handled by this handler
      */
     async handles(notification: CorePushNotificationsNotificationBasicData): Promise<boolean> {
         return CoreUtils.isTrueOrOne(notification.notif) && notification.moodlecomponent?.indexOf('enrol_') === 0 &&
@@ -46,7 +46,7 @@ export class CoreCoursesEnrolPushClickHandlerService implements CorePushNotifica
      * Handle the notification click.
      *
      * @param notification The notification to check.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async handleClick(notification: CoreCoursesEnrolNotificationData): Promise<void> {
         const courseId = notification.courseid;
@@ -63,7 +63,7 @@ export class CoreCoursesEnrolPushClickHandlerService implements CorePushNotifica
 
             if (notification.contexturl?.indexOf('user/index.php') != -1) {
                 // Open the participants tab.
-                params.selectedTab = 'participants'; // @todo: Set this when participants is done.
+                params.selectedTab = 'participants'; // @todo Set this when participants is done.
             } else if (!result.enrolled) {
                 // User not enrolled anymore, open the preview page.
                 page += '/summary';

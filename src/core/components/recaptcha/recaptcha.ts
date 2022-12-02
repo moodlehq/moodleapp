@@ -42,7 +42,7 @@ export class CoreRecaptchaComponent implements OnInit {
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.siteUrl = this.siteUrl || CoreSites.getCurrentSite()?.getURL();

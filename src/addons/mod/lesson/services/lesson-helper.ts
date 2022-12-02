@@ -42,7 +42,7 @@ export class AddonModLessonHelperProvider {
      * Given the HTML of next activity link, format it to extract the href and the text.
      *
      * @param activityLink HTML of the activity link.
-     * @return Formatted data.
+     * @returns Formatted data.
      */
     formatActivityLink(activityLink: string): AddonModLessonActivityLink {
         const element = CoreDomUtils.convertToElement(activityLink);
@@ -68,7 +68,7 @@ export class AddonModLessonHelperProvider {
      * Given the HTML of an answer from a content page, extract the data to render the answer.
      *
      * @param html Answer's HTML.
-     * @return Data to render the answer.
+     * @returns Data to render the answer.
      */
     getContentPageAnswerDataFromHtml(html: string): {buttonText: string; content: string} {
         const data = {
@@ -95,7 +95,7 @@ export class AddonModLessonHelperProvider {
      * Get the buttons to change pages.
      *
      * @param html Page's HTML.
-     * @return List of buttons.
+     * @returns List of buttons.
      */
     getPageButtonsFromHtml(html: string): AddonModLessonPageButton[] {
         const buttons: AddonModLessonPageButton[] = [];
@@ -147,7 +147,7 @@ export class AddonModLessonHelperProvider {
      * Given a page data, get the page contents.
      *
      * @param data Page data.
-     * @return Page contents.
+     * @returns Page contents.
      */
     getPageContentsFromPageData(data: AddonModLessonGetPageDataWSResponse): string {
         // Search the page contents inside the whole page HTML. Use data.pagecontent because it's filtered.
@@ -174,7 +174,7 @@ export class AddonModLessonHelperProvider {
      *
      * @param questionForm The form group where to add the controls.
      * @param pageData Page data.
-     * @return Question data.
+     * @returns Question data.
      */
     getQuestionFromPageData(questionForm: FormGroup, pageData: AddonModLessonGetPageDataWSResponse): AddonModLessonQuestion {
         const element = CoreDomUtils.convertToElement(pageData.pagecontent || '');
@@ -230,7 +230,7 @@ export class AddonModLessonHelperProvider {
      * @param questionForm The form group where to add the controls.
      * @param question Basic question data.
      * @param fieldContainer HTMLElement containing the data.
-     * @return Question data.
+     * @returns Question data.
      */
     protected getMultiChoiceQuestionData(
         questionForm: FormGroup,
@@ -302,7 +302,7 @@ export class AddonModLessonHelperProvider {
      * @param question Basic question data.
      * @param fieldContainer HTMLElement containing the data.
      * @param type Type of the input.
-     * @return Question data.
+     * @returns Question data.
      */
     protected getInputQuestionData(
         questionForm: FormGroup,
@@ -339,7 +339,7 @@ export class AddonModLessonHelperProvider {
      * @param questionForm The form group where to add the controls.
      * @param question Basic question data.
      * @param fieldContainer HTMLElement containing the data.
-     * @return Question data.
+     * @returns Question data.
      */
     protected getEssayQuestionData(
         questionForm: FormGroup,
@@ -381,7 +381,7 @@ export class AddonModLessonHelperProvider {
      * @param questionForm The form group where to add the controls.
      * @param question Basic question data.
      * @param fieldContainer HTMLElement containing the data.
-     * @return Question data.
+     * @returns Question data.
      */
     protected getMatchingQuestionData(
         questionForm: FormGroup,
@@ -454,7 +454,7 @@ export class AddonModLessonHelperProvider {
      * Given the HTML of an answer from a question page, extract the data to render the answer.
      *
      * @param html Answer's HTML.
-     * @return Object with the data to render the answer. If the answer doesn't require any parsing, return a string with the HTML.
+     * @returns Object with the data to render the answer. If the answer doesn't require any parsing, return a string with the HTML.
      */
     getQuestionPageAnswerDataFromHtml(html: string): AddonModLessonAnswerData {
         const element = CoreDomUtils.convertToElement(html);
@@ -514,7 +514,7 @@ export class AddonModLessonHelperProvider {
      *
      * @param retake Retake object.
      * @param includeDuration Whether to include the duration of the retake.
-     * @return Retake label.
+     * @returns Retake label.
      */
     getRetakeLabel(retake: AddonModLessonAttemptsOverviewsAttemptWSData, includeDuration?: boolean): string {
         const data = {
@@ -550,7 +550,7 @@ export class AddonModLessonHelperProvider {
      *
      * @param question Question to prepare.
      * @param data Data to prepare.
-     * @return Data to send.
+     * @returns Data to send.
      */
     prepareQuestionData(question: AddonModLessonQuestion, data: CoreFormFields): CoreFormFields {
         if (question.template == 'essay') {
@@ -576,7 +576,7 @@ export class AddonModLessonHelperProvider {
      * Given the feedback of a process page in HTML, remove the question text.
      *
      * @param html Feedback's HTML.
-     * @return Feedback without the question text.
+     * @returns Feedback without the question text.
      */
     removeQuestionFromFeedback(html: string): string {
         const element = CoreDomUtils.convertToElement(html);

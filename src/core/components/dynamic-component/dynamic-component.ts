@@ -131,7 +131,7 @@ export class CoreDynamicComponent<ComponentClass> implements OnChanges, DoCheck 
      *
      * @param method Name of the method to call.
      * @param params List of params to send to the method.
-     * @return Result of the call. Undefined if the component instance is not ready.
+     * @returns Result of the call. Undefined if the component instance is not ready.
      */
     callComponentMethod<Method extends keyof ComponentClass>(
         method: Method,
@@ -147,7 +147,7 @@ export class CoreDynamicComponent<ComponentClass> implements OnChanges, DoCheck 
     /**
      * Create a component, add it to a container and set the input data.
      *
-     * @return Whether the component was successfully created.
+     * @returns Whether the component was successfully created.
      */
     protected createComponent(): boolean {
         this.lastComponent = this.component;

@@ -79,7 +79,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
     /**
      * Initialize MathJax.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async initialize(): Promise<void> {
         this.loadJS();
@@ -112,7 +112,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
      * @param filter The filter.
      * @param options Options passed to the filters.
      * @param siteId Site ID. If not defined, current site.
-     * @return Filtered text (or promise resolved with the filtered text).
+     * @returns Filtered text (or promise resolved with the filtered text).
      */
     async filter(
         text: string,
@@ -163,7 +163,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
      * @param component Component.
      * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return If async, promise resolved when done.
+     * @returns If async, promise resolved when done.
      */
     async handleHtml(
         container: HTMLElement,
@@ -185,7 +185,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
      * @param text The text to modify.
      * @param start The start index of the substring in text that should be wrapped in the span.
      * @param end The end index of the substring in text that should be wrapped in the span.
-     * @return The whole text with the span inserted around the defined substring.
+     * @returns The whole text with the span inserted around the defined substring.
      */
     protected insertSpan(text: string, start: number, end: number): string {
         return CoreTextUtils.substrReplace(
@@ -273,7 +273,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
      * Perform a mapping of the app language code to the equivalent for MathJax.
      *
      * @param langCode The app language code.
-     * @return The MathJax language code.
+     * @returns The MathJax language code.
      */
     protected mapLanguageCode(langCode: string): string {
 
@@ -302,7 +302,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
      *
      * @param options Options.
      * @param site Site.
-     * @return Whether filter should be applied.
+     * @returns Whether filter should be applied.
      */
     shouldBeApplied(options: CoreFilterFormatTextOptions, site?: CoreSite): boolean {
         // Only apply the filter if logged in and we're filtering current site.
@@ -313,7 +313,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
      * Wait for the MathJax library and our JS object to be loaded.
      *
      * @param retries Number of times this has been retried.
-     * @return Promise resolved when ready or if it took too long to load.
+     * @returns Promise resolved when ready or if it took too long to load.
      */
     protected async waitForReady(retries: number = 0): Promise<void> {
         if (this.window.MathJax || retries >= 20) {
@@ -334,7 +334,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
      * mathematics and \( \) for inline mathematics.
      *
      * @param text The text to filter.
-     * @return Object containing the potentially modified text and a boolean that is true if any changes were made to the text.
+     * @returns Object containing the potentially modified text and a boolean that is true if any changes were made to the text.
      */
     protected wrapMathInNoLink(text: string): {text: string; changed: boolean} {
         let len = text.length;

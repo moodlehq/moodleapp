@@ -60,7 +60,7 @@ export abstract class AddonModDataFieldPluginBaseComponent implements OnInit, On
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.init();
@@ -89,7 +89,7 @@ export abstract class AddonModDataFieldPluginBaseComponent implements OnInit, On
         this.value = value;
     }
 
-    /** Magic mode getters */
+    /* Magic mode getters */
     get listMode(): boolean {
         return this.mode == AddonModDataTemplateMode.LIST;
     }

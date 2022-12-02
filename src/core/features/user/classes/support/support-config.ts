@@ -20,14 +20,14 @@ export abstract class CoreUserSupportConfig {
     /**
      * Check whether the user can contact support or not.
      *
-     * @return Whether the user can contact support.
+     * @returns Whether the user can contact support.
      */
     public abstract canContactSupport(): boolean;
 
     /**
      * Get language used in the support page, if any.
      *
-     * @return Support page language.
+     * @returns Support page language.
      */
     public abstract getSupportPageLang(): string | null;
 
@@ -47,7 +47,7 @@ export abstract class CoreUserSupportConfig {
     /**
      * Build page url string with the internal information.
      *
-     * @return Support page url.
+     * @returns Support page url.
      */
     protected abstract buildSupportPageUrl(): string;
 

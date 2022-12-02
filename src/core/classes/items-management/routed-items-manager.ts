@@ -53,7 +53,7 @@ export abstract class CoreRoutedItemsManager<
      * Get the path of the selected item given the current route.
      *
      * @param route Page route.
-     * @return Path of the selected item in the given route.
+     * @returns Path of the selected item in the given route.
      */
     protected abstract getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot): string | null;
 
@@ -61,7 +61,7 @@ export abstract class CoreRoutedItemsManager<
      * Get the path of the selected item.
      *
      * @param route Page route, if any.
-     * @return Path of the selected item.
+     * @returns Path of the selected item.
      */
     protected getSelectedItemPath(route?: ActivatedRouteSnapshot | null): string | null {
         if (!route) {

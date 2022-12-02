@@ -93,7 +93,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     /**
      * Convenience function to fetch the data.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadContent(): Promise<void> {
         this.hasContent = false;
@@ -214,7 +214,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Component being destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.updateSiteObserver.off();

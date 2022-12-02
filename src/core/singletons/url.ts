@@ -81,7 +81,7 @@ export class CoreUrl {
      * Parse parts of a url, using an implicit protocol if it is missing from the url.
      *
      * @param url Url.
-     * @return Url parts.
+     * @returns Url parts.
      */
     static parse(url: string): UrlParts | null {
         // Parse url with regular expression taken from RFC 3986: https://tools.ietf.org/html/rfc3986#appendix-B.
@@ -116,7 +116,7 @@ export class CoreUrl {
      * Given some parts of a URL, returns the URL as a string.
      *
      * @param parts Parts.
-     * @return Assembled URL.
+     * @returns Assembled URL.
      */
     static assemble(parts: UrlParts): string {
         return (parts.protocol ? `${parts.protocol}://` : '') +
@@ -132,7 +132,7 @@ export class CoreUrl {
      * Guess the Moodle domain from a site url.
      *
      * @param url Site url.
-     * @return Guessed Moodle domain.
+     * @returns Guessed Moodle domain.
      */
     static guessMoodleDomain(url: string): string | null {
         // Add protocol if it was missing. Moodle can only be served through http or https, so this is a fair assumption to make.
@@ -164,7 +164,7 @@ export class CoreUrl {
     /**
      * Returns the pattern to check if the URL is a valid Moodle Url.
      *
-     * @return Desired RegExp.
+     * @returns Desired RegExp.
      */
     static getValidMoodleUrlPattern(): RegExp {
         // Regular expression based on RFC 3986: https://tools.ietf.org/html/rfc3986#appendix-B.
@@ -176,7 +176,7 @@ export class CoreUrl {
      * Check if the given url is valid for the app to connect.
      *
      * @param url Url to check.
-     * @return True if valid, false otherwise.
+     * @returns True if valid, false otherwise.
      */
     static isValidMoodleUrl(url: string): boolean {
         const patt = CoreUrl.getValidMoodleUrlPattern();
@@ -188,7 +188,7 @@ export class CoreUrl {
      * Removes protocol from the url.
      *
      * @param url Site url.
-     * @return Url without protocol.
+     * @returns Url without protocol.
      */
     static removeProtocol(url: string): string {
         return url.replace(/^[a-zA-Z]+:\/\//i, '');
@@ -199,7 +199,7 @@ export class CoreUrl {
      *
      * @param urlA First URL.
      * @param urlB Second URL.
-     * @return Whether they have same domain and path.
+     * @returns Whether they have same domain and path.
      */
     static sameDomainAndPath(urlA: string, urlB: string): boolean {
         // Add protocol if missing, the parse function requires it.
@@ -225,7 +225,7 @@ export class CoreUrl {
      * E.g. myurl.com#foo=1#bar=2 will return #foo=1#bar=2.
      *
      * @param url URL.
-     * @return Anchor, undefined if no anchor.
+     * @returns Anchor, undefined if no anchor.
      */
     static getUrlAnchor(url: string): string | undefined {
         const firstAnchorIndex = url.indexOf('#');
@@ -240,7 +240,7 @@ export class CoreUrl {
      * Remove the anchor from a URL.
      *
      * @param url URL.
-     * @return URL without anchor if any.
+     * @returns URL without anchor if any.
      */
     static removeUrlAnchor(url: string): string {
         const urlAndAnchor = url.split('#');
@@ -253,7 +253,7 @@ export class CoreUrl {
      *
      * @param parentUrl The parent URL.
      * @param url The url to convert.
-     * @return Absolute URL.
+     * @returns Absolute URL.
      */
     static toAbsoluteURL(parentUrl: string, url: string): string {
         const parsedUrl = CoreUrl.parse(url);
@@ -286,7 +286,7 @@ export class CoreUrl {
      *
      * @param parentUrl The parent URL.
      * @param url The url to convert.
-     * @return Relative URL.
+     * @returns Relative URL.
      */
     static toRelativeURL(parentUrl: string, url: string): string {
         parentUrl = CoreUrl.removeProtocol(parentUrl);

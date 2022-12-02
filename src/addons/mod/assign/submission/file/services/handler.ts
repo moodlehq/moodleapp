@@ -49,7 +49,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
      * plugin uses Moodle filters. The reason is that the app only prefetches filtered data, and the user should edit
      * unfiltered data.
      *
-     * @return Boolean or promise resolved with boolean: whether it can be edited in offline.
+     * @returns Boolean or promise resolved with boolean: whether it can be edited in offline.
      */
     canEditOffline(): boolean {
         // This plugin doesn't use Moodle filters, it can be edited in offline.
@@ -61,7 +61,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
      *
      * @param assign The assignment.
      * @param plugin The plugin object.
-     * @return Whether the plugin is empty.
+     * @returns Whether the plugin is empty.
      */
     isEmpty(assign: AddonModAssignAssign, plugin: AddonModAssignPlugin): boolean {
         const files = AddonModAssign.getSubmissionPluginAttachments(plugin);
@@ -91,7 +91,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
      * @param assign The assignment.
      * @param plugin The plugin object.
      * @param pluginData Object where to store the data to send.
-     * @return If the function is async, it should return a Promise resolved when done.
+     * @returns If the function is async, it should return a Promise resolved when done.
      */
     async copySubmissionData(
         assign: AddonModAssignAssign,
@@ -109,7 +109,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
      * Return the Component to use to display the plugin data, either in read or in edit mode.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @return The component (or promise resolved with component) to use, undefined if not found.
+     * @returns The component (or promise resolved with component) to use, undefined if not found.
      */
     getComponent(): Type<AddonModAssignSubmissionPluginBaseComponent> {
         return AddonModAssignSubmissionFileComponent;
@@ -123,7 +123,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
      * @param plugin The plugin object.
      * @param offlineData Offline data stored.
      * @param siteId Site ID. If not defined, current site.
-     * @return If the function is async, it should return a Promise resolved when done.
+     * @returns If the function is async, it should return a Promise resolved when done.
      */
     async deleteOfflineData(
         assign: AddonModAssignAssign,
@@ -150,8 +150,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
      * @param assign The assignment.
      * @param submission The submission.
      * @param plugin The plugin object.
-     * @param siteId Site ID. If not defined, current site.
-     * @return The files (or promise resolved with the files).
+     * @returns The files (or promise resolved with the files).
      */
     getPluginFiles(
         assign: AddonModAssignAssign,
@@ -166,7 +165,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
      *
      * @param assign The assignment.
      * @param plugin The plugin object.
-     * @return The size (or promise resolved with size).
+     * @returns The size (or promise resolved with size).
      */
     async getSizeForCopy(assign: AddonModAssignAssign, plugin: AddonModAssignPlugin): Promise<number> {
         const files = AddonModAssign.getSubmissionPluginAttachments(plugin);
@@ -180,7 +179,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
      * @param assign The assignment.
      * @param submission The submission.
      * @param plugin The plugin object.
-     * @return The size (or promise resolved with size).
+     * @returns The size (or promise resolved with size).
      */
     async getSizeForEdit(
         assign: AddonModAssignAssign,
@@ -205,7 +204,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
      * @param assign The assignment.
      * @param submission The submission.
      * @param plugin The plugin object.
-     * @return Boolean (or promise resolved with boolean): whether the data has changed.
+     * @returns Boolean (or promise resolved with boolean): whether the data has changed.
      */
     async hasDataChanged(
         assign: AddonModAssignAssign,
@@ -246,7 +245,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return True or promise resolved with true if enabled.
+     * @returns True or promise resolved with true if enabled.
      */
     async isEnabled(): Promise<boolean> {
         return true;
@@ -255,7 +254,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
     /**
      * Whether or not the handler is enabled for edit on a site level.
      *
-     * @return Whether or not the handler is enabled for edit on a site level.
+     * @returns Whether or not the handler is enabled for edit on a site level.
      */
     isEnabledForEdit(): boolean {
         return true;
@@ -272,7 +271,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
      * @param offline Whether the user is editing in offline.
      * @param userId User ID. If not defined, site's current user.
      * @param siteId Site ID. If not defined, current site.
-     * @return If the function is async, it should return a Promise resolved when done.
+     * @returns If the function is async, it should return a Promise resolved when done.
      */
     async prepareSubmissionData(
         assign: AddonModAssignAssign,
@@ -318,7 +317,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
      * @param offlineData Offline data stored.
      * @param pluginData Object where to store the data to send.
      * @param siteId Site ID. If not defined, current site.
-     * @return If the function is async, it should return a Promise resolved when done.
+     * @returns If the function is async, it should return a Promise resolved when done.
      */
     async prepareSyncData(
         assign: AddonModAssignAssign,
@@ -345,7 +344,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
      * @param submission The submission.
      * @param offlineData Offline data stored.
      * @param siteId Site ID. If not defined, current site.
-     * @return File entries when is all resolved.
+     * @returns File entries when is all resolved.
      */
     protected async getSubmissionFilesToSync(
         assign: AddonModAssignAssign,

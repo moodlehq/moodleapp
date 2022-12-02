@@ -42,7 +42,7 @@ export abstract class CoreUserProfileFieldBaseComponent implements OnInit {
     required?: boolean;
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         if (!this.field) {
@@ -88,7 +88,7 @@ export abstract class CoreUserProfileFieldBaseComponent implements OnInit {
     /**
      * Create the Form control.
      *
-     * @return Form control.
+     * @returns Form control.
      */
     protected createFormControl(field: AuthEmailSignupProfileField): FormControl {
         const formData = {

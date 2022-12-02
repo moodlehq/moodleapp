@@ -95,7 +95,7 @@ export class CoreSyncProvider {
      * @param component Component name.
      * @param id Unique ID per component.
      * @param siteId Site ID. If not defined, current site.
-     * @return Record if found or reject.
+     * @returns Record if found or reject.
      */
     async getSyncRecord(component: string, id: string | number, siteId?: string): Promise<CoreSyncRecord> {
         const db = await CoreSites.getSiteDb(siteId);
@@ -110,7 +110,7 @@ export class CoreSyncProvider {
      * @param id Unique ID per component.
      * @param data Data that updates the record.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with done.
+     * @returns Promise resolved with done.
      */
     async insertOrUpdateSyncRecord(
         component: string,
@@ -131,7 +131,7 @@ export class CoreSyncProvider {
      *
      * @param component Component name.
      * @param id Unique ID per component.
-     * @return Unique sync id.
+     * @returns Unique sync id.
      */
     protected getUniqueSyncBlockId(component: string, id: string | number): string {
         return component + '#' + id;
@@ -144,7 +144,7 @@ export class CoreSyncProvider {
      * @param component Component name.
      * @param id Unique ID per component.
      * @param siteId Site ID. If not defined, current site.
-     * @return Whether it's blocked.
+     * @returns Whether it's blocked.
      */
     isBlocked(component: string, id: string | number, siteId?: string): boolean {
         siteId = siteId || CoreSites.getCurrentSiteId();

@@ -30,7 +30,7 @@ export class AddonMessagesSyncCronHandlerService implements CoreCronHandler {
      * Receives the ID of the site affected, undefined for all sites.
      *
      * @param siteId ID of the site affected, undefined for all sites.
-     * @return Promise resolved when done, rejected if failure.
+     * @returns Promise resolved when done, rejected if failure.
      */
     execute(siteId?: string): Promise<void> {
         return AddonMessagesSync.syncAllDiscussions(siteId);
@@ -39,7 +39,7 @@ export class AddonMessagesSyncCronHandlerService implements CoreCronHandler {
     /**
      * Get the time between consecutive executions.
      *
-     * @return Time between consecutive executions (in ms).
+     * @returns Time between consecutive executions (in ms).
      */
     getInterval(): number {
         return 300000; // 5 minutes.

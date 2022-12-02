@@ -33,7 +33,7 @@ export class CoreCoursesCourseOptionsMenuComponent implements OnInit {
     downloadCourseEnabled = false;
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();

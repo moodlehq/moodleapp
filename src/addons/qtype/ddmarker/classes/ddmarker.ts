@@ -83,7 +83,7 @@ export class AddonQtypeDdMarkerQuestion {
      *
      * @param dragHome The element to clone.
      * @param itemNo The number of the new item.
-     * @return The new element.
+     * @returns The new element.
      */
     cloneNewDragItem(dragHome: HTMLElement, itemNo: number): HTMLElement {
         // Clone the element and add the right classes.
@@ -107,7 +107,7 @@ export class AddonQtypeDdMarkerQuestion {
      * Convert the X and Y position of the BG IMG to a position relative to the window.
      *
      * @param bgImgXY X and Y of the BG IMG relative position.
-     * @return Position relative to the window.
+     * @returns Position relative to the window.
      */
     convertToWindowXY(bgImgXY: string): number[] {
         const bgImg = this.doc.bgImg();
@@ -127,7 +127,7 @@ export class AddonQtypeDdMarkerQuestion {
      * Returns elements coordinates relative to ddarea container.
      *
      * @param element Element.
-     * @return Array of X and Y coordinates.
+     * @returns Array of X and Y coordinates.
      */
     protected getElementCoordinates(element: HTMLElement): number[] {
         const ddArea = this.container.querySelector<HTMLElement>('.ddarea');
@@ -144,7 +144,7 @@ export class AddonQtypeDdMarkerQuestion {
      * Check if some coordinates (X, Y) are inside the background image.
      *
      * @param coords Coordinates to check.
-     * @return Whether they're inside the background image.
+     * @returns Whether they're inside the background image.
      */
     coordsInImg(coords: CoreCoordinates): boolean {
         const bgImg = this.doc.bgImg();
@@ -218,7 +218,7 @@ export class AddonQtypeDdMarkerQuestion {
      * Get the coordinates of the drag home of a certain choice.
      *
      * @param choiceNo Choice number.
-     * @return Coordinates.
+     * @returns Coordinates.
      */
     dragHomeXY(choiceNo: number): number[] {
         const dragItemHome = this.doc.dragItemHome(choiceNo);
@@ -324,7 +324,7 @@ export class AddonQtypeDdMarkerQuestion {
      * @param dropZoneNo Number of the drop zone.
      * @param coordinates Coordinates of the circle.
      * @param colour Colour of the circle.
-     * @return X and Y position of the center of the circle.
+     * @returns X and Y position of the center of the circle.
      */
     drawShapeCircle(dropZoneNo: number, coordinates: string, colour: string): CoreCoordinates | null {
         if (!coordinates.match(/^\d+(\.\d+)?,\d+(\.\d+)?;\d+(\.\d+)?$/)) {
@@ -363,7 +363,7 @@ export class AddonQtypeDdMarkerQuestion {
      * @param dropZoneNo Number of the drop zone.
      * @param coordinates Coordinates of the rectangle.
      * @param colour Colour of the rectangle.
-     * @return X and Y position of the center of the rectangle.
+     * @returns X and Y position of the center of the rectangle.
      */
     drawShapeRectangle(dropZoneNo: number, coordinates: string, colour: string): CoreCoordinates | null {
         if (!coordinates.match(/^\d+(\.\d+)?,\d+(\.\d+)?;\d+(\.\d+)?,\d+(\.\d+)?$/)) {
@@ -406,7 +406,7 @@ export class AddonQtypeDdMarkerQuestion {
      * @param dropZoneNo Number of the drop zone.
      * @param coordinates Coordinates of the polygon.
      * @param colour Colour of the polygon.
-     * @return X and Y position of the center of the polygon.
+     * @returns X and Y position of the center of the polygon.
      */
     drawShapePolygon(dropZoneNo: number, coordinates: string, colour: string): CoreCoordinates | null {
         if (!coordinates.match(/^\d+(\.\d+)?,\d+(\.\d+)?(?:;\d+(\.\d+)?,\d+(\.\d+)?)*$/)) {
@@ -456,7 +456,7 @@ export class AddonQtypeDdMarkerQuestion {
      * Make a point from the string representation.
      *
      * @param coordinates "x,y".
-     * @return Coordinates to the point.
+     * @returns Coordinates to the point.
      */
     parsePoint(coordinates: string): CoreCoordinates {
         const bits = coordinates.split(',');
@@ -471,7 +471,7 @@ export class AddonQtypeDdMarkerQuestion {
      * Make proportional position of the point.
      *
      * @param point Point coordinates.
-     * @return Converted point.
+     * @returns Converted point.
      */
     makePointProportional(point: CoreCoordinates): CoreCoordinates {
         return {
@@ -507,7 +507,7 @@ export class AddonQtypeDdMarkerQuestion {
      * dragged based on contents of hidden inputs and whether drags are 'infinite' or how many drags should be shown.
      *
      * @param input The input element.
-     * @return List of coordinates.
+     * @returns List of coordinates.
      */
     getCoords(input: HTMLElement): number[][] {
         const choiceNo = this.getChoiceNoForNode(input);
@@ -538,7 +538,7 @@ export class AddonQtypeDdMarkerQuestion {
      * Get the choice number from an HTML element.
      *
      * @param node Element to check.
-     * @return Choice number.
+     * @returns Choice number.
      */
     getChoiceNoForNode(node: HTMLElement): number {
         return Number(this.doc.getClassnameNumericSuffix(node, 'choice'));
@@ -548,7 +548,7 @@ export class AddonQtypeDdMarkerQuestion {
      * Get the coordinates (X, Y) of a draggable element.
      *
      * @param dragItem The draggable item.
-     * @return Coordinates.
+     * @returns Coordinates.
      */
     getDragXY(dragItem: HTMLElement): number[] {
         const position = this.getElementCoordinates(dragItem);
@@ -573,7 +573,7 @@ export class AddonQtypeDdMarkerQuestion {
      * Get the item number from an HTML element.
      *
      * @param node Element to check.
-     * @return Choice number.
+     * @returns Choice number.
      */
     getItemNoForNode(node: HTMLElement): number {
         return Number(this.doc.getClassnameNumericSuffix(node, 'item'));
@@ -582,7 +582,7 @@ export class AddonQtypeDdMarkerQuestion {
     /**
      * Get the next colour.
      *
-     * @return Colour.
+     * @returns Colour.
      */
     getNextColour(): string {
         const colour = this.COLOURS[this.nextColourIndex];
@@ -600,7 +600,7 @@ export class AddonQtypeDdMarkerQuestion {
      * Get the number of drags from an HTML element.
      *
      * @param node Element to check.
-     * @return Choice number.
+     * @returns Choice number.
      */
     getNoOfDragsForNode(node: HTMLElement): number {
         return Number(this.doc.getClassnameNumericSuffix(node, 'noofdrags'));
@@ -608,8 +608,6 @@ export class AddonQtypeDdMarkerQuestion {
 
     /**
      * Initialize the question.
-     *
-     * @param question Question.
      */
     initializer(): void {
         this.doc = new AddonQtypeDdMarkerQuestionDocStructure(this.container);

@@ -98,7 +98,7 @@ export class TestingBehatRuntimeService {
      * Run an operation inside the angular zone and return result.
      *
      * @param operation Operation callback.
-     * @return OK if successful, or ERROR: followed by message.
+     * @returns OK if successful, or ERROR: followed by message.
      */
     async runInZone(operation: () => unknown, blocking: boolean = false): Promise<string> {
         const blockKey = blocking && TestingBehatBlocking.block();
@@ -117,7 +117,7 @@ export class TestingBehatRuntimeService {
     /**
      * Wait all controlled components to be rendered.
      *
-     * @return Promise resolved when all components have been rendered.
+     * @returns Promise resolved when all components have been rendered.
      */
     async waitLoadingToFinish(): Promise<void> {
         await NgZone.run(async () => {
@@ -133,7 +133,7 @@ export class TestingBehatRuntimeService {
      * Function to find and click an app standard button.
      *
      * @param button Type of button to press.
-     * @return OK if successful, or ERROR: followed by message.
+     * @returns OK if successful, or ERROR: followed by message.
      */
     async pressStandard(button: string): Promise<string> {
         this.log('Action - Click standard button: ' + button);
@@ -179,7 +179,7 @@ export class TestingBehatRuntimeService {
     /**
      * When there is a popup, clicks on the backdrop.
      *
-     * @return OK if successful, or ERROR: followed by message
+     * @returns OK if successful, or ERROR: followed by message
      */
     closePopup(): string {
         this.log('Action - Close popup');
@@ -207,7 +207,7 @@ export class TestingBehatRuntimeService {
      *
      * @param locator Element locator.
      * @param options Search options.
-     * @return OK if successful, or ERROR: followed by message
+     * @returns OK if successful, or ERROR: followed by message
      */
     find(locator: TestingBehatElementLocator, options: Partial<TestingBehatFindOptions> = {}): string {
         this.log('Action - Find', { locator, ...options });
@@ -235,7 +235,7 @@ export class TestingBehatRuntimeService {
      * Scroll an element into view.
      *
      * @param locator Element locator.
-     * @return OK if successful, or ERROR: followed by message
+     * @returns OK if successful, or ERROR: followed by message
      */
     scrollTo(locator: TestingBehatElementLocator): string {
         this.log('Action - scrollTo', { locator });
@@ -262,7 +262,7 @@ export class TestingBehatRuntimeService {
     /**
      * Load more items form an active list with infinite loader.
      *
-     * @return OK if successful, or ERROR: followed by message
+     * @returns OK if successful, or ERROR: followed by message
      */
     async loadMoreItems(): Promise<string> {
         this.log('Action - loadMoreItems');
@@ -309,7 +309,7 @@ export class TestingBehatRuntimeService {
      * Check whether an item is selected or not.
      *
      * @param locator Element locator.
-     * @return YES or NO if successful, or ERROR: followed by message
+     * @returns YES or NO if successful, or ERROR: followed by message
      */
     isSelected(locator: TestingBehatElementLocator): string {
         this.log('Action - Is Selected', locator);
@@ -331,7 +331,7 @@ export class TestingBehatRuntimeService {
      * Function to press arbitrary item based on its text or Aria label.
      *
      * @param locator Element locator.
-     * @return OK if successful, or ERROR: followed by message
+     * @returns OK if successful, or ERROR: followed by message
      */
     async press(locator: TestingBehatElementLocator): Promise<string> {
         this.log('Action - Press', locator);
@@ -354,7 +354,7 @@ export class TestingBehatRuntimeService {
     /**
      * Trigger a pull to refresh gesture in the current page.
      *
-     * @return OK if successful, or ERROR: followed by message
+     * @returns OK if successful, or ERROR: followed by message
      */
     async pullToRefresh(): Promise<string> {
         this.log('Action - pullToRefresh');
@@ -381,7 +381,7 @@ export class TestingBehatRuntimeService {
     /**
      * Gets the currently displayed page header.
      *
-     * @return OK: followed by header text if successful, or ERROR: followed by message.
+     * @returns OK: followed by header text if successful, or ERROR: followed by message.
      */
     getHeader(): string {
         this.log('Action - Get header');
@@ -407,7 +407,7 @@ export class TestingBehatRuntimeService {
      *
      * @param field Field name
      * @param value New value
-     * @return OK or ERROR: followed by message
+     * @returns OK or ERROR: followed by message
      */
     async setField(field: string, value: string): Promise<string> {
         this.log('Action - Set field ' + field + ' to: ' + value);
@@ -430,7 +430,7 @@ export class TestingBehatRuntimeService {
      *
      * @param field Field name
      * @param value New value
-     * @return OK or ERROR: followed by message
+     * @returns OK or ERROR: followed by message
      */
     async fieldMatches(field: string, value: string): Promise<string> {
         this.log('Action - Field ' + field + ' matches value: ' + value);
@@ -453,7 +453,7 @@ export class TestingBehatRuntimeService {
      * Find a field.
      *
      * @param field Field name.
-     * @return Field element.
+     * @returns Field element.
      */
     protected findField(field: string): HTMLElement | HTMLInputElement | undefined {
         return TestingBehatDomUtils.findElementBasedOnText(
@@ -466,7 +466,7 @@ export class TestingBehatRuntimeService {
      * Get the value of a certain field.
      *
      * @param element Field to get the value.
-     * @return Value.
+     * @returns Value.
      */
     protected getFieldValue(element: HTMLElement | HTMLInputElement): string {
         if (element.tagName === 'ION-DATETIME') {
@@ -485,7 +485,7 @@ export class TestingBehatRuntimeService {
      *
      * @param selector Element selector
      * @param className Constructor class name
-     * @return Component instance
+     * @returns Component instance
      */
     getAngularInstance<T = unknown>(selector: string, className: string): T | null {
         this.log('Action - Get Angular instance ' + selector + ', ' + className);
@@ -518,7 +518,7 @@ export class TestingBehatRuntimeService {
      * Check a notification is present.
      *
      * @param title Title of the notification
-     * @return YES or NO: depending on the result.
+     * @returns YES or NO: depending on the result.
      */
     async notificationIsPresentWithText(title: string): Promise<string> {
         const notifications = await LocalNotifications.getAllTriggered();
@@ -541,7 +541,7 @@ export class TestingBehatRuntimeService {
      * Close notification.
      *
      * @param title Title of the notification
-     * @return OK or ERROR
+     * @returns OK or ERROR
      */
     async closeNotification(title: string): Promise<string> {
         const notifications = await LocalNotifications.getAllTriggered();

@@ -36,6 +36,8 @@ export class CoreHorizontalScrollControlsComponent {
 
     /**
      * Get target element.
+     *
+     * @returns The target element or null.
      */
     private get target(): HTMLElement | null {
         return this.targetId && document.getElementById(this.targetId) || null;

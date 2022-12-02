@@ -41,6 +41,7 @@ export class AddonNotificationsHelperProvider {
      * Formats the text of a notification.
      *
      * @param notification The notification object.
+     * @returns The notification formatted to render.
      */
     formatNotificationText(
         notification: AddonNotificationsNotificationMessageFormatted,
@@ -64,7 +65,7 @@ export class AddonNotificationsHelperProvider {
      * Format preferences data.
      *
      * @param preferences Preferences to format.
-     * @return Formatted preferences.
+     * @returns Formatted preferences.
      */
     formatPreferences(preferences: AddonNotificationsPreferences): AddonNotificationsPreferencesFormatted {
         const formattedPreferences: AddonNotificationsPreferencesFormatted = preferences;
@@ -87,7 +88,7 @@ export class AddonNotificationsHelperProvider {
      *
      * @param processorName Name of the processor to filter.
      * @param components Array of components.
-     * @return Filtered components.
+     * @returns Filtered components.
      */
     getProcessorComponents(
         processorName: string,
@@ -124,7 +125,7 @@ export class AddonNotificationsHelperProvider {
      * Mark notification as read, trigger event and invalidate data.
      *
      * @param notification Notification object.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async markNotificationAsRead(
         notification: AddonNotificationsNotificationMessageFormatted | AddonNotificationsNotificationData,

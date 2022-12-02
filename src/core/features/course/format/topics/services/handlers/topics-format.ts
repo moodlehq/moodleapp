@@ -29,7 +29,7 @@ export class CoreCourseFormatTopicsHandlerService implements CoreCourseFormatHan
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return True or promise resolved with true if enabled.
+     * @returns True or promise resolved with true if enabled.
      */
     async isEnabled(): Promise<boolean> {
         return true;

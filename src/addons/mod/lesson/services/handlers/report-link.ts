@@ -39,7 +39,7 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
      * @param siteIds List of sites the URL belongs to.
      * @param url The URL to treat.
      * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
-     * @return List of (or promise resolved with list of) actions.
+     * @returns List of (or promise resolved with list of) actions.
      */
     getActions(
         siteIds: string[],
@@ -65,7 +65,7 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
      * @param siteId The site ID.
      * @param url The URL to treat.
      * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
-     * @return Whether the handler is enabled for the URL and site.
+     * @returns Whether the handler is enabled for the URL and site.
      */
     async isEnabled(siteId: string, url: string, params: Record<string, string>): Promise<boolean> {
         if (params.action == 'reportdetail' && !params.userid) {
@@ -82,7 +82,7 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
      * @param moduleId Module ID.
      * @param groupId Group ID.
      * @param siteId Site ID.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async openReportOverview(moduleId: number, groupId?: number, siteId?: string): Promise<void> {
 
@@ -123,7 +123,7 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
      * @param userId User ID.
      * @param retake Retake to open.
      * @param siteId Site ID.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async openUserRetake(
         moduleId: number,

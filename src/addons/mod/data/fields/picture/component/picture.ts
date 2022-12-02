@@ -43,7 +43,7 @@ export class AddonModDataFieldPictureComponent extends AddonModDataFieldPluginBa
      * Get the files from the input value.
      *
      * @param value Input value.
-     * @return List of files.
+     * @returns List of files.
      */
     protected getFiles(value?: Partial<AddonModDataEntryField>): CoreFileEntry[] {
         let files = value?.files || [];
@@ -61,7 +61,7 @@ export class AddonModDataFieldPictureComponent extends AddonModDataFieldPluginBa
      *
      * @param files File list where to search.
      * @param filenameSeek Filename to search.
-     * @return File found or false.
+     * @returns File found or false.
      */
     protected findFile(
         files: CoreFileEntry[],

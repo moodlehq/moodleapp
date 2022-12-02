@@ -48,7 +48,7 @@ export class CoreCustomURLSchemesProvider {
      * Given some data of a custom URL with a token, create a site if it needs to be created.
      *
      * @param data URL data.
-     * @return Promise resolved with the site ID if created or already exists.
+     * @returns Promise resolved with the site ID if created or already exists.
      */
     protected async createSiteIfNeeded(data: CoreCustomURLSchemesParams): Promise<string | undefined> {
         if (!data.token) {
@@ -86,7 +86,7 @@ export class CoreCustomURLSchemesProvider {
      * Handle an URL received by custom URL scheme.
      *
      * @param url URL to treat.
-     * @return Promise resolved when done. If rejected, the parameter is of type CoreCustomURLSchemesHandleError.
+     * @returns Promise resolved when done. If rejected, the parameter is of type CoreCustomURLSchemesHandleError.
      */
     async handleCustomURL(url: string): Promise<void> {
         if (!this.isCustomURL(url)) {
@@ -226,7 +226,7 @@ export class CoreCustomURLSchemesProvider {
      * moodlemobile://username@domain.com?token=TOKEN&privatetoken=PRIVATETOKEN&redirect=http://domain.com/course/view.php?id=2
      *
      * @param url URL to treat.
-     * @return Promise resolved with the data.
+     * @returns Promise resolved with the data.
      */
     protected async getCustomURLData(url: string): Promise<CoreCustomURLSchemesParams> {
         if (!this.isCustomURL(url)) {
@@ -279,7 +279,7 @@ export class CoreCustomURLSchemesProvider {
      * Get the data from a "link" custom URL scheme. This kind of URL is deprecated.
      *
      * @param url URL to treat.
-     * @return Promise resolved with the data.
+     * @returns Promise resolved with the data.
      */
     protected async getCustomURLLinkData(url: string): Promise<CoreCustomURLSchemesParams> {
         if (!this.isCustomURLLink(url)) {
@@ -341,7 +341,7 @@ export class CoreCustomURLSchemesProvider {
      * Get the data from a "token" custom URL scheme. This kind of URL is deprecated.
      *
      * @param url URL to treat.
-     * @return Promise resolved with the data.
+     * @returns Promise resolved with the data.
      */
     protected async getCustomURLTokenData(url: string): Promise<CoreCustomURLSchemesParams> {
         if (!this.isCustomURLToken(url)) {
@@ -387,7 +387,7 @@ export class CoreCustomURLSchemesProvider {
      *
      * @param data URL data.
      * @param checkResponse Result of checkSite.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async goToAddSite(data: CoreCustomURLSchemesParams, checkResponse: CoreSiteCheckResponse): Promise<void> {
         const ssoNeeded = CoreLoginHelper.isSSOLoginNeeded(checkResponse.code);
@@ -430,7 +430,7 @@ export class CoreCustomURLSchemesProvider {
      * Check whether a URL is a custom URL scheme.
      *
      * @param url URL to check.
-     * @return Whether it's a custom URL scheme.
+     * @returns Whether it's a custom URL scheme.
      */
     isCustomURL(url: string): boolean {
         if (!url) {
@@ -444,7 +444,7 @@ export class CoreCustomURLSchemesProvider {
      * Check whether a URL is a custom URL scheme with the "link" param (deprecated).
      *
      * @param url URL to check.
-     * @return Whether it's a custom URL scheme.
+     * @returns Whether it's a custom URL scheme.
      */
     isCustomURLLink(url: string): boolean {
         if (!url) {
@@ -458,7 +458,7 @@ export class CoreCustomURLSchemesProvider {
      * Check whether a URL is a custom URL scheme with a "token" param (deprecated).
      *
      * @param url URL to check.
-     * @return Whether it's a custom URL scheme.
+     * @returns Whether it's a custom URL scheme.
      */
     isCustomURLToken(url: string): boolean {
         if (!url) {
@@ -472,7 +472,7 @@ export class CoreCustomURLSchemesProvider {
      * Remove the scheme from a custom URL.
      *
      * @param url URL to treat.
-     * @return URL without scheme.
+     * @returns URL without scheme.
      */
     removeCustomURLScheme(url: string): string {
         return url.replace(CoreConstants.CONFIG.customurlscheme + '://', '');
@@ -482,7 +482,7 @@ export class CoreCustomURLSchemesProvider {
      * Remove the scheme and the "link=" prefix from a link custom URL.
      *
      * @param url URL to treat.
-     * @return URL without scheme and prefix.
+     * @returns URL without scheme and prefix.
      */
     removeCustomURLLinkScheme(url: string): string {
         return url.replace(CoreConstants.CONFIG.customurlscheme + '://link=', '');
@@ -492,7 +492,7 @@ export class CoreCustomURLSchemesProvider {
      * Remove the scheme and the "token=" prefix from a token custom URL.
      *
      * @param url URL to treat.
-     * @return URL without scheme and prefix.
+     * @returns URL without scheme and prefix.
      */
     removeCustomURLTokenScheme(url: string): string {
         return url.replace(CoreConstants.CONFIG.customurlscheme + '://token=', '');

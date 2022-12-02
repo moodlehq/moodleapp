@@ -109,7 +109,7 @@ export class CoreSearchBoxComponent implements OnInit {
      * Saves the search term onto the history.
      *
      * @param text Text to save.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async saveSearchToHistory(text: string): Promise<void> {
         try {
@@ -122,7 +122,7 @@ export class CoreSearchBoxComponent implements OnInit {
     /**
      * Loads search history.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadHistory(): Promise<void> {
         this.history = await CoreSearchHistory.getSearchHistory(this.searchArea);

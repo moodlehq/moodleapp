@@ -35,7 +35,7 @@ export class CoreObject {
      *
      * @param a First object.
      * @param b Second object.
-     * @return Whether objects are equal.
+     * @returns Whether objects are equal.
      */
     static deepEquals<T=unknown>(a: T, b: T): boolean {
         return JSON.stringify(a) === JSON.stringify(b);
@@ -45,7 +45,7 @@ export class CoreObject {
      * Get all the properties names of an object, including the inherited ones except the ones from Object.prototype.
      *
      * @param object Object to get its properties.
-     * @return Set of property names.
+     * @returns Set of property names.
      */
     static getAllPropertyNames(object: unknown): Set<string> {
         if (typeof object !== 'object' || object === null || object === Object.prototype) {
@@ -64,7 +64,7 @@ export class CoreObject {
      * Check whether the given object is empty.
      *
      * @param object Object.
-     * @return Whether the given object is empty.
+     * @returns Whether the given object is empty.
      */
     static isEmpty(object: Record<string, unknown>): boolean {
         return Object.keys(object).length === 0;
@@ -75,7 +75,7 @@ export class CoreObject {
      *
      * @param obj Object.
      * @param keysOrRegex If array is supplied, keys to include. Otherwise, regular expression used to filter keys.
-     * @return New object with only the specified keys.
+     * @returns New object with only the specified keys.
      */
     static only<T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K>;
     static only<T>(obj: T, regex: RegExp): Partial<T>;
@@ -104,7 +104,7 @@ export class CoreObject {
      *
      * @param obj Object.
      * @param keys Keys to remove from the new object.
-     * @return New object without the specified keys.
+     * @returns New object without the specified keys.
      */
     static without<T, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
         const newObject: T = { ...obj };
@@ -120,7 +120,7 @@ export class CoreObject {
      * Create a new object without empty values (null or undefined).
      *
      * @param obj Objet.
-     * @return New object without empty values.
+     * @returns New object without empty values.
      */
     static withoutEmpty<T>(obj: T): CoreObjectWithoutEmpty<T> {
         const cleanObj = {};
@@ -140,7 +140,7 @@ export class CoreObject {
      * Create a new object without undefined values.
      *
      * @param obj Objet.
-     * @return New object without undefined values.
+     * @returns New object without undefined values.
      */
     static withoutUndefined<T>(obj: T): CoreObjectWithoutUndefined<T> {
         const cleanObj = {};

@@ -38,12 +38,7 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
     updatesNames = /^configuration$|^.*files$|^discussions$/;
 
     /**
-     * Get list of files. If not defined, we'll assume they're in module.contents.
-     *
-     * @param module Module.
-     * @param courseId Course ID the module belongs to.
-     * @param single True if we're downloading a single module, false if we're downloading a whole section.
-     * @return Promise resolved with the list of files.
+     * @inheritdoc
      */
     async getFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSFile[]> {
         try {
@@ -68,7 +63,7 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
      * Given a list of forum posts, return a list with all the files (attachments and embedded files).
      *
      * @param posts Forum posts.
-     * @return Files.
+     * @returns Files.
      */
     protected getPostsFiles(posts: AddonModForumPost[]): CoreWSFile[] {
         let files: CoreWSFile[] = [];
@@ -93,7 +88,7 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
      *
      * @param forum Forum instance.
      * @param options Other options.
-     * @return Promise resolved with array of posts.
+     * @returns Promise resolved with array of posts.
      */
     protected async getPostsForPrefetch(
         forum: AddonModForumData,
@@ -146,7 +141,7 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
      * Prefetch all participants if the user can view them. Otherwise, prefetch the groups the user can view.
      *
      * @param forum Forum instance.
-     * @return Promise resolved with array of group IDs.
+     * @returns Promise resolved with array of group IDs.
      */
     protected async getGroupsIdsToPrefetch(forum: AddonModForumData): Promise<number[]> {
         const groupInfo = await CoreGroups.getActivityGroupInfo(forum.cmid);
@@ -176,7 +171,7 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
      *
      * @param moduleId The module ID.
      * @param courseId The course ID the module belongs to.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     invalidateContent(moduleId: number, courseId: number): Promise<void> {
         return AddonModForum.invalidateContent(moduleId, courseId);
@@ -188,7 +183,7 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
      *
      * @param module Module.
      * @param courseId Course ID the module belongs to.
-     * @return Promise resolved when invalidated.
+     * @returns Promise resolved when invalidated.
      */
     async invalidateModule(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
         // Invalidate forum data to recalculate unread message count badge.
@@ -214,7 +209,7 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
      * @param courseId Course ID the module belongs to.
      * @param single True if we're downloading a single module, false if we're downloading a whole section.
      * @param siteId Site ID.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async prefetchForum(
         module: CoreCourseAnyModuleData,
@@ -263,11 +258,11 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
     /**
      * Prefetch groups info for a forum.
      *
-     * @param module The module object returned by WS.
-     * @param courseI Course ID the module belongs to.
+     * @param forum The module object returned by WS.
+     * @param courseId Course ID the module belongs to.
      * @param canCreateDiscussions Whether the user can create discussions in the forum.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when group data has been prefetched.
+     * @returns Promise resolved when group data has been prefetched.
      */
     protected async prefetchGroupsInfo(
         forum: AddonModForumData,
@@ -316,7 +311,7 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
      * @param module Module.
      * @param courseId Course ID the module belongs to
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async sync(
         module: CoreCourseAnyModuleData,

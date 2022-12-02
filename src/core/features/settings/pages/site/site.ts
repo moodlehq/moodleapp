@@ -129,7 +129,7 @@ export class CoreSitePreferencesPage implements AfterViewInit, OnDestroy {
     /**
      * Returns true if site is beeing synchronized.
      *
-     * @return True if site is beeing synchronized, false otherwise.
+     * @returns True if site is beeing synchronized, false otherwise.
      */
     isSynchronizing(): boolean {
         return !!CoreSettingsHelper.getSiteSyncPromise(this.siteId);

@@ -86,8 +86,6 @@ export class AddonModChatSessionsPage implements AfterViewInit, OnDestroy {
 
     /**
      * Fetch chat sessions.
-     *
-     * @param showLoading Display a loading modal.
      */
     async fetchSessions(): Promise<void> {
         try {

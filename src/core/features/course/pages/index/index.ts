@@ -199,7 +199,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
     /**
      * Load course option handlers.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadCourseHandlers(): Promise<void> {
         if (!this.course) {
@@ -239,7 +239,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
     /**
      * Load title for the page.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadBasinInfo(): Promise<void> {
         if (!this.course) {

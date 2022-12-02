@@ -81,7 +81,7 @@ export class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
     /**
      * Fetch the issued badge required for the view.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async fetchIssuedBadge(): Promise<void> {
         this.currentTime = CoreTimeUtils.timestamp();

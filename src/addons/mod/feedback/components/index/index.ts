@@ -224,7 +224,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
     /**
      * Convenience function to get feedback overview data.
      *
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async fetchFeedbackOverviewData(): Promise<void> {
         const promises: Promise<void>[] = [];
@@ -258,8 +258,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
     /**
      * Convenience function to get feedback analysis data.
      *
-     * @param accessData Retrieved access data.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async fetchFeedbackAnalysisData(): Promise<void> {
         try {
@@ -279,7 +278,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
      * Fetch Group info data.
      *
      * @param cmId Course module ID.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async fetchGroupInfo(cmId: number): Promise<void> {
         this.groupInfo = await CoreGroups.getActivityGroupInfo(cmId);
@@ -291,7 +290,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
      * Parse the analysis info to show the info correctly formatted.
      *
      * @param item Item to parse.
-     * @return Parsed item.
+     * @returns Parsed item.
      */
     protected parseAnalysisInfo(item: AddonModFeedbackItem): AddonModFeedbackItem {
         switch (item.typ) {
@@ -439,7 +438,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
      * Set group to see the analysis.
      *
      * @param groupId Group ID.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     async setGroup(groupId: number): Promise<void> {
         this.group = groupId;
@@ -489,7 +488,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
     }
 
     /**
-     * Component being destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         super.ngOnDestroy();

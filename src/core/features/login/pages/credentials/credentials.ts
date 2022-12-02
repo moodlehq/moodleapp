@@ -74,7 +74,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     ) {}
 
     /**
-     * Initialize the component.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         try {
@@ -148,7 +148,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
      *
      * @param siteUrl Site URL to check.
      * @param onInit Whether the check site is done when initializing the page.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async checkSite(siteUrl: string, onInit = false): Promise<void> {
         this.pageLoaded = false;
@@ -229,7 +229,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
      * Tries to authenticate the user.
      *
      * @param e Event.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async login(e?: Event): Promise<void> {
         if (e) {
@@ -342,7 +342,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     /**
      * Show instructions and scan QR code.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async showInstructionsAndScanQR(): Promise<void> {
         try {

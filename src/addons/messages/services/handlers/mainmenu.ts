@@ -99,7 +99,7 @@ export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler,
     /**
      * Check if the handler is enabled on a site level.
      *
-     * @return Whether or not the handler is enabled on a site level.
+     * @returns Whether or not the handler is enabled on a site level.
      */
     isEnabled(): Promise<boolean> {
         return AddonMessages.isPluginEnabled();
@@ -108,7 +108,7 @@ export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler,
     /**
      * Returns the data needed to render the handler.
      *
-     * @return Data needed to render the handler.
+     * @returns Data needed to render the handler.
      */
     getDisplayData(): CoreMainMenuHandlerToDisplay {
         if (this.handler.loading) {
@@ -123,7 +123,7 @@ export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler,
      *
      * @param siteId Site ID or current Site if undefined.
      * @param unreadOnly If true only the unread conversations count is refreshed.
-     * @return Resolve when done.
+     * @returns Resolve when done.
      */
     async refreshBadge(siteId?: string, unreadOnly?: boolean): Promise<void> {
         const badgeSiteId = siteId || CoreSites.getCurrentSiteId();
@@ -188,7 +188,7 @@ export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler,
      * Receives the ID of the site affected, undefined for all sites.
      *
      * @param siteId ID of the site affected, undefined for all sites.
-     * @return Promise resolved when done, rejected if failure.
+     * @returns Promise resolved when done, rejected if failure.
      */
     async execute(siteId?: string): Promise<void> {
         if (!CoreSites.isCurrentSite(siteId)) {
@@ -201,7 +201,7 @@ export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler,
     /**
      * Get the time between consecutive executions.
      *
-     * @return Time between consecutive executions (in ms).
+     * @returns Time between consecutive executions (in ms).
      */
     getInterval(): number {
         if (!this.isSync()) {
@@ -214,7 +214,7 @@ export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler,
     /**
      * Whether it's a synchronization process or not.
      *
-     * @return True if is a sync process, false otherwise.
+     * @returns True if is a sync process, false otherwise.
      */
     isSync(): boolean {
         return false;
@@ -223,7 +223,7 @@ export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler,
     /**
      * Whether the process should be executed during a manual sync.
      *
-     * @return True if is a manual sync process, false otherwise.
+     * @returns True if is a manual sync process, false otherwise.
      */
     canManualSync(): boolean {
         return true;

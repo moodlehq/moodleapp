@@ -41,7 +41,7 @@ export class AddonModWikiCreateLinkHandlerService extends CoreContentLinksHandle
      * @param route Activated route if current route is wiki index page, null otherwise.
      * @param subwikiId Subwiki ID to check.
      * @param siteId Site ID.
-     * @return Promise resolved with boolean: whether current view belongs to the same wiki.
+     * @returns Promise resolved with boolean: whether current view belongs to the same wiki.
      */
     protected async currentStateIsSameWiki(route: ActivatedRoute | null, subwikiId: number, siteId: string): Promise<boolean> {
         if (!route) {

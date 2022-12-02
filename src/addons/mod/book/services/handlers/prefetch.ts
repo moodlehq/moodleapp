@@ -38,7 +38,7 @@ export class AddonModBookPrefetchHandlerService extends CoreCourseResourcePrefet
      * @param module The module object returned by WS.
      * @param courseId Course ID.
      * @param prefetch True to prefetch, false to download right away.
-     * @return Promise resolved when all content is downloaded. Data returned is not reliable.
+     * @returns Promise resolved when all content is downloaded. Data returned is not reliable.
      */
     async downloadOrPrefetch(module: CoreCourseModuleData, courseId: number, prefetch?: boolean): Promise<void> {
         const promises: Promise<unknown>[] = [];
@@ -54,7 +54,7 @@ export class AddonModBookPrefetchHandlerService extends CoreCourseResourcePrefet
      *
      * @param module The module object returned by WS.
      * @param courseId Course ID.
-     * @return Promise resolved with list of intro files.
+     * @returns Promise resolved with list of intro files.
      */
     async getIntroFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSFile[]> {
         const book = await CoreUtils.ignoreErrors(AddonModBook.getBook(courseId, module.id));
@@ -67,7 +67,7 @@ export class AddonModBookPrefetchHandlerService extends CoreCourseResourcePrefet
      *
      * @param moduleId The module ID.
      * @param courseId Course ID the module belongs to.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number): Promise<void> {
         await AddonModBook.invalidateContent(moduleId, courseId);
@@ -76,7 +76,7 @@ export class AddonModBookPrefetchHandlerService extends CoreCourseResourcePrefet
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.
+     * @returns A boolean, or a promise resolved with a boolean, indicating if the handler is enabled.
      */
     isEnabled(): Promise<boolean> {
         return AddonModBook.isPluginEnabled();

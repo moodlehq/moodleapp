@@ -85,7 +85,7 @@ export class CorePushNotificationsProvider {
     /**
      * Initialize the service.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async initialize(): Promise<void> {
         await Promise.all([
@@ -150,7 +150,7 @@ export class CorePushNotificationsProvider {
     /**
      * Initialize the default channel for Android.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async initializeDefaultChannel(): Promise<void> {
         await CorePlatform.ready();
@@ -167,7 +167,7 @@ export class CorePushNotificationsProvider {
     /**
      * Initialize database.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async initializeDatabase(): Promise<void> {
         try {
@@ -202,7 +202,7 @@ export class CorePushNotificationsProvider {
     /**
      * Check whether the device can be registered in Moodle to receive push notifications.
      *
-     * @return Whether the device can be registered in Moodle.
+     * @returns Whether the device can be registered in Moodle.
      */
     canRegisterOnMoodle(): boolean {
         return !!this.pushID && CorePlatform.isMobile();
@@ -212,7 +212,7 @@ export class CorePushNotificationsProvider {
      * Delete all badge records for a given site.
      *
      * @param siteId Site ID.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     async cleanSiteCounters(siteId: string): Promise<void> {
         try {
@@ -225,7 +225,7 @@ export class CorePushNotificationsProvider {
     /**
      * Create the default push channel. It is used to change the name.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async createDefaultChannel(): Promise<void> {
         if (!CoreApp.isAndroid()) {
@@ -247,7 +247,7 @@ export class CorePushNotificationsProvider {
      * Enable or disable Firebase analytics.
      *
      * @param enable Whether to enable or disable.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async enableAnalytics(enable: boolean): Promise<void> {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -269,7 +269,7 @@ export class CorePushNotificationsProvider {
     /**
      * Returns options for push notifications based on device.
      *
-     * @return Promise with the push options resolved when done.
+     * @returns Promise with the push options resolved when done.
      */
     protected async getOptions(): Promise<PushOptions> {
         let soundEnabled = true;
@@ -298,7 +298,7 @@ export class CorePushNotificationsProvider {
     /**
      * Get the pushID for this device.
      *
-     * @return Push ID.
+     * @returns Push ID.
      */
     getPushId(): string | undefined {
         return this.pushID;
@@ -307,7 +307,7 @@ export class CorePushNotificationsProvider {
     /**
      * Get data to register the device in Moodle.
      *
-     * @return Data.
+     * @returns Data.
      */
     protected getRegisterData(): CoreUserAddUserDeviceWSParams {
         if (!this.pushID) {
@@ -329,7 +329,7 @@ export class CorePushNotificationsProvider {
      * Get Sitebadge counter from the database.
      *
      * @param siteId Site ID.
-     * @return Promise resolved with the stored badge counter for the site.
+     * @returns Promise resolved with the stored badge counter for the site.
      */
     getSiteCounter(siteId: string): Promise<number> {
         return this.getAddonBadge(siteId);
@@ -341,7 +341,7 @@ export class CorePushNotificationsProvider {
      * @param name Name of the event.
      * @param data Data of the event.
      * @param filter Whether to filter the data. This is useful when logging a full notification.
-     * @return Promise resolved when done. This promise is never rejected.
+     * @returns Promise resolved when done. This promise is never rejected.
      */
     async logEvent(name: string, data: Record<string, unknown>, filter?: boolean): Promise<void> {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -374,7 +374,7 @@ export class CorePushNotificationsProvider {
      * @param wsName Name of the WS.
      * @param data Other data to pass to the event.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done. This promise is never rejected.
+     * @returns Promise resolved when done. This promise is never rejected.
      */
     logViewEvent(
         itemId: number | string | undefined,
@@ -411,7 +411,7 @@ export class CorePushNotificationsProvider {
      * @param wsName Name of the WS.
      * @param data Other data to pass to the event.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done. This promise is never rejected.
+     * @returns Promise resolved when done. This promise is never rejected.
      */
     logViewListEvent(itemCategory: string, wsName: string, data?: Record<string, unknown>, siteId?: string): Promise<void> {
         data = data || {};
@@ -432,7 +432,7 @@ export class CorePushNotificationsProvider {
      * Function called when a push notification is clicked. Redirect the user to the right state.
      *
      * @param data Notification data.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async notificationClicked(data: CorePushNotificationsNotificationBasicData): Promise<void> {
         await ApplicationInit.donePromise;
@@ -446,6 +446,7 @@ export class CorePushNotificationsProvider {
      * if we are in background this code is executed when we open the app clicking in the notification bar.
      *
      * @param notification Notification received.
+     * @returns Promise resolved when done.
      */
     async onMessageReceived(notification: NotificationEventResponse): Promise<void> {
         const rawData: CorePushNotificationsNotificationBasicRawData = notification ? notification.additionalData : {};
@@ -520,7 +521,7 @@ export class CorePushNotificationsProvider {
      *
      * @param notification Notification.
      * @param data Notification data.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async notifyReceived(
         notification: NotificationEventResponse,
@@ -535,7 +536,7 @@ export class CorePushNotificationsProvider {
      * Unregisters a device from a certain Moodle site.
      *
      * @param site Site to unregister from.
-     * @return Promise resolved when device is unregistered.
+     * @returns Promise resolved when device is unregistered.
      */
     async unregisterDeviceOnMoodle(site: CoreSite): Promise<void> {
         if (!site || !CorePlatform.isMobile()) {
@@ -593,7 +594,7 @@ export class CorePushNotificationsProvider {
      * @param addon Registered addon name to set the badge number.
      * @param value The number to be stored.
      * @param siteId Site ID. If not defined, use current site.
-     * @return Promise resolved with the stored badge counter for the addon on the site.
+     * @returns Promise resolved with the stored badge counter for the addon on the site.
      */
     async updateAddonCounter(addon: string, value: number, siteId?: string): Promise<number> {
         if (!CorePushNotificationsDelegate.isCounterHandlerRegistered(addon)) {
@@ -611,7 +612,7 @@ export class CorePushNotificationsProvider {
     /**
      * Update total badge counter of the app.
      *
-     * @return Promise resolved with the stored badge counter for the site.
+     * @returns Promise resolved with the stored badge counter for the site.
      */
     async updateAppCounter(): Promise<number> {
         const sitesIds = await CoreSites.getSitesIds();
@@ -633,7 +634,7 @@ export class CorePushNotificationsProvider {
      * It will return the updated site counter.
      *
      * @param siteId Site ID.
-     * @return Promise resolved with the stored badge counter for the site.
+     * @returns Promise resolved with the stored badge counter for the site.
      */
     async updateSiteCounter(siteId: string): Promise<number> {
         const addons = CorePushNotificationsDelegate.getCounterHandlers();
@@ -653,7 +654,7 @@ export class CorePushNotificationsProvider {
     /**
      * Register a device in Apple APNS or Google GCM.
      *
-     * @return Promise resolved when the device is registered.
+     * @returns Promise resolved when the device is registered.
      */
     async registerDevice(): Promise<void> {
         try {
@@ -707,7 +708,7 @@ export class CorePushNotificationsProvider {
      *
      * @param siteId Site ID. If not defined, current site.
      * @param forceUnregister Whether to force unregister and register.
-     * @return Promise resolved when device is registered.
+     * @returns Promise resolved when device is registered.
      */
     async registerDeviceOnMoodle(siteId?: string, forceUnregister?: boolean): Promise<void> {
         this.logger.debug('Register device on Moodle.');
@@ -756,7 +757,7 @@ export class CorePushNotificationsProvider {
      *
      * @param siteId Site ID.
      * @param addon Registered addon name. If not defined it will store the site total.
-     * @return Promise resolved with the stored badge counter for the addon or site or 0 if none.
+     * @returns Promise resolved with the stored badge counter for the addon or site or 0 if none.
      */
     protected async getAddonBadge(siteId?: string, addon: string = 'site'): Promise<number> {
         try {
@@ -772,7 +773,7 @@ export class CorePushNotificationsProvider {
      * Retry pending unregisters.
      *
      * @param siteId If defined, retry only for that site if needed. Otherwise, retry all pending unregisters.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async retryUnregisters(siteId?: string): Promise<void> {
         const results = await this.pendingUnregistersTable.getMany(CoreObject.withoutEmpty({ siteid: siteId }));
@@ -796,7 +797,7 @@ export class CorePushNotificationsProvider {
      * @param value The number to be stored.
      * @param siteId Site ID. If not defined, use current site.
      * @param addon Registered addon name. If not defined it will store the site total.
-     * @return Promise resolved with the stored badge counter for the addon or site.
+     * @returns Promise resolved with the stored badge counter for the addon or site.
      */
     protected async saveAddonBadge(value: number, siteId?: string, addon: string = 'site'): Promise<number> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -815,7 +816,7 @@ export class CorePushNotificationsProvider {
      *
      * @param data Data of the device.
      * @param site Site to use.
-     * @return Promise resolved with booleans: whether to register/unregister.
+     * @returns Promise resolved with booleans: whether to register/unregister.
      */
     protected async shouldRegister(
         data: CoreUserAddUserDeviceWSParams,

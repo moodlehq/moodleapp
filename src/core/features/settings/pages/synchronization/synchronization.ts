@@ -157,7 +157,7 @@ export class CoreSettingsSynchronizationPage implements OnInit, OnDestroy {
      * Returns true if site is beeing synchronized.
      *
      * @param siteId Site ID.
-     * @return True if site is beeing synchronized, false otherwise.
+     * @returns True if site is beeing synchronized, false otherwise.
      */
     isSynchronizing(siteId: string): boolean {
         return !!CoreSettingsHelper.getSiteSyncPromise(siteId);

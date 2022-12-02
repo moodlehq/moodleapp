@@ -31,7 +31,7 @@ export class CoreBlockPreRenderedComponent extends CoreBlockBaseComponent implem
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         await super.ngOnInit();

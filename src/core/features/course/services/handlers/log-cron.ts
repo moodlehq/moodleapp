@@ -33,7 +33,7 @@ export class CoreCourseLogCronHandlerService implements CoreCronHandler {
      *
      * @param siteId ID of the site affected, undefined for all sites.
      * @param force Wether the execution is forced (manual sync).
-     * @return Promise resolved when done, rejected if failure.
+     * @returns Promise resolved when done, rejected if failure.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async execute(siteId?: string, force?: boolean): Promise<void> {
@@ -50,7 +50,7 @@ export class CoreCourseLogCronHandlerService implements CoreCronHandler {
     /**
      * Check whether it's a synchronization process or not.
      *
-     * @return Whether it's a synchronization process or not.
+     * @returns Whether it's a synchronization process or not.
      */
     isSync(): boolean {
         return false;
@@ -59,7 +59,7 @@ export class CoreCourseLogCronHandlerService implements CoreCronHandler {
     /**
      * Get the time between consecutive executions.
      *
-     * @return Time between consecutive executions (in ms).
+     * @returns Time between consecutive executions (in ms).
      */
     getInterval(): number {
         return 240000; // 4 minutes. By default platform will see the user as online if lastaccess is less than 5 minutes.

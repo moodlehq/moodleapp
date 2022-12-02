@@ -51,7 +51,7 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         try {
@@ -106,7 +106,7 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
     /**
      * Get the text for the plugin.
      *
-     * @return Promise resolved with the text.
+     * @returns Promise resolved with the text.
      */
     protected async getText(): Promise<string> {
         // Check if the user already modified the comment.
@@ -149,8 +149,8 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
     /**
      * Replace @@PLUGINFILE@@ wildcards with the real URL of embedded files.
      *
-     * @param Text to treat.
-     * @return Treated text.
+     * @param text Text to treat.
+     * @returns Treated text.
      */
     replacePluginfileUrls(text: string): string {
         const files = this.plugin.fileareas && this.plugin.fileareas[0] && this.plugin.fileareas[0].files;

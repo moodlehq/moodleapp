@@ -85,7 +85,7 @@ export class CoreSyncBaseProvider<T = void> {
      * @param id Unique sync identifier per component.
      * @param promise The promise of the sync to add.
      * @param siteId Site ID. If not defined, current site.
-     * @return The sync promise.
+     * @returns The sync promise.
      */
     async addOngoingSync(id: string | number, promise: Promise<T>, siteId?: string): Promise<T> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -114,7 +114,7 @@ export class CoreSyncBaseProvider<T = void> {
      *
      * @param name Instance name.
      * @param error Specific error message.
-     * @return Warning message.
+     * @returns Warning message.
      */
     protected getOfflineDataDeletedWarning(name: string, error: CoreAnyError): string {
         return Translate.instant('core.warningofflinedatadeleted', {
@@ -129,7 +129,7 @@ export class CoreSyncBaseProvider<T = void> {
      *
      * @param id Unique sync identifier per component.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise of the current sync or undefined if there isn't any.
+     * @returns Promise of the current sync or undefined if there isn't any.
      */
     getOngoingSync(id: string | number, siteId?: string): Promise<T> | undefined {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -145,7 +145,7 @@ export class CoreSyncBaseProvider<T = void> {
      *
      * @param id Unique sync identifier per component.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the readable time.
+     * @returns Promise resolved with the readable time.
      */
     async getReadableSyncTime(id: string | number, siteId?: string): Promise<string> {
         const time = await this.getSyncTime(id, siteId);
@@ -157,7 +157,7 @@ export class CoreSyncBaseProvider<T = void> {
      * Given a timestamp return it in a human readable format.
      *
      * @param timestamp Timestamp
-     * @return Human readable time.
+     * @returns Human readable time.
      */
     getReadableTimeFromTimestamp(timestamp: number): string {
         if (!timestamp) {
@@ -172,7 +172,7 @@ export class CoreSyncBaseProvider<T = void> {
      *
      * @param id Unique sync identifier per component.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the time.
+     * @returns Promise resolved with the time.
      */
     async getSyncTime(id: string | number, siteId?: string): Promise<number> {
         try {
@@ -189,7 +189,7 @@ export class CoreSyncBaseProvider<T = void> {
      *
      * @param id Unique sync identifier per component.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the warnings.
+     * @returns Promise resolved with the warnings.
      */
     async getSyncWarnings(id: string | number, siteId?: string): Promise<string[]> {
         try {
@@ -205,7 +205,7 @@ export class CoreSyncBaseProvider<T = void> {
      * Create a unique identifier from component and id.
      *
      * @param id Unique sync identifier per component.
-     * @return Unique identifier from component and id.
+     * @returns Unique identifier from component and id.
      */
     protected getUniqueSyncId(id: string | number): string {
         return this.component + '#' + id;
@@ -216,7 +216,7 @@ export class CoreSyncBaseProvider<T = void> {
      *
      * @param id Unique sync identifier per component.
      * @param siteId Site ID. If not defined, current site.
-     * @return Whether it's synchronizing.
+     * @returns Whether it's synchronizing.
      */
     isSyncing(id: string | number, siteId?: string): boolean {
         return !!this.getOngoingSync(id, siteId);
@@ -227,7 +227,7 @@ export class CoreSyncBaseProvider<T = void> {
      *
      * @param id Unique sync identifier per component.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean: whether sync is needed.
+     * @returns Promise resolved with boolean: whether sync is needed.
      */
     async isSyncNeeded(id: string | number, siteId?: string): Promise<boolean> {
         const time = await this.getSyncTime(id, siteId);
@@ -241,7 +241,7 @@ export class CoreSyncBaseProvider<T = void> {
      * @param id Unique sync identifier per component.
      * @param siteId Site ID. If not defined, current site.
      * @param time Time to set. If not defined, current time.
-     * @return Promise resolved when the time is set.
+     * @returns Promise resolved when the time is set.
      */
     async setSyncTime(id: string | number, siteId?: string, time?: number): Promise<void> {
         time = time !== undefined ? time : Date.now();
@@ -255,7 +255,7 @@ export class CoreSyncBaseProvider<T = void> {
      * @param id Unique sync identifier per component.
      * @param warnings Warnings to set.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async setSyncWarnings(id: string | number, warnings: string[], siteId?: string): Promise<void> {
         const warningsText = JSON.stringify(warnings || []);
@@ -269,7 +269,7 @@ export class CoreSyncBaseProvider<T = void> {
      * @param syncFunctionLog Log message to explain the sync function purpose.
      * @param syncFunction Sync function to execute.
      * @param siteId Site ID to sync. If not defined, sync all sites.
-     * @return Resolved with siteIds selected. Rejected if offline.
+     * @returns Resolved with siteIds selected. Rejected if offline.
      */
     async syncOnSites(syncFunctionLog: string, syncFunction: (siteId: string) => void, siteId?: string): Promise<void> {
         if (!CoreNetwork.isOnline()) {
@@ -300,7 +300,7 @@ export class CoreSyncBaseProvider<T = void> {
      *
      * @param id Unique sync identifier per component.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when there's no sync going on for the identifier.
+     * @returns Promise resolved when there's no sync going on for the identifier.
      */
     async waitForSync(id: string | number, siteId?: string): Promise<T | undefined> {
         const promise = this.getOngoingSync(id, siteId);
@@ -319,7 +319,7 @@ export class CoreSyncBaseProvider<T = void> {
     /**
      * Get component name translated.
      *
-     * @return Component name translated.
+     * @returns Component name translated.
      */
     protected get componentTranslate(): string {
         if (!this.componentTranslateInternal) {

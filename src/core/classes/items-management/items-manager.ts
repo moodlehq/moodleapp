@@ -91,7 +91,7 @@ export abstract class CoreItemsManager<
     /**
      * Get selected item.
      *
-     * @return Selected item, null if none.
+     * @returns Selected item, null if none.
      */
     getSelectedItem(): Item | null {
         return this.selectedItem;
@@ -160,7 +160,7 @@ export abstract class CoreItemsManager<
      * Get item by ID.
      *
      * @param id ID
-     * @return Item, null if not found.
+     * @returns Item, null if not found.
      */
     getItemById(id: string | number): Item | null {
         return this.itemsMap?.[id] ?? null;
@@ -170,7 +170,7 @@ export abstract class CoreItemsManager<
      * Get an ID to identify an item.
      *
      * @param item Data about the item.
-     * @return Item ID.
+     * @returns Item ID.
      */
     abstract getItemId(item: Item): string | number;
 

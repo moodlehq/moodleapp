@@ -79,7 +79,7 @@ export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
      * Get quiz data and attempt data.
      *
      * @param refresh Whether user is refreshing data.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchData(refresh?: boolean): Promise<void> {
         try {
@@ -104,7 +104,7 @@ export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
      * Get users.
      *
      * @param refresh Whether user is refreshing data.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchUsers(refresh?: boolean): Promise<void> {
         if (!this.h5pActivity) {
@@ -137,7 +137,7 @@ export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
      *
      * @param h5pActivity Activity data.
      * @param users Users to format.
-     * @return Formatted users.
+     * @returns Formatted users.
      */
     protected async formatUsers(
         h5pActivity: AddonModH5PActivityData,
@@ -186,7 +186,7 @@ export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
     /**
      * Refresh the data.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async refreshData(): Promise<void> {
         const promises = [

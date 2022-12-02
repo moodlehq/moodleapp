@@ -76,7 +76,7 @@ H5P.ActionBar = (function ($, EventDispatcher) {
     /**
      * Returns a reference to the dom element
      *
-     * @return {H5P.jQuery}
+     * @returns {H5P.jQuery}
      */
     self.getDOMElement = function () {
       return $actions;
@@ -85,7 +85,7 @@ H5P.ActionBar = (function ($, EventDispatcher) {
     /**
      * Does the actionbar contain actions?
      *
-     * @return {Boolean}
+     * @returns {Boolean}
      */
     self.hasActions = function () {
       return hasActions;

@@ -35,7 +35,7 @@ export class AddonModLessonPushClickHandlerService implements CorePushNotificati
      * Check if a notification click is handled by this handler.
      *
      * @param notification The notification to check.
-     * @return Whether the notification click is handled by this handler.
+     * @returns Whether the notification click is handled by this handler.
      */
     async handles(notification: NotificationData): Promise<boolean> {
         if (CoreUtils.isTrueOrOne(notification.notif) && notification.moodlecomponent == 'mod_lesson' &&
@@ -51,7 +51,7 @@ export class AddonModLessonPushClickHandlerService implements CorePushNotificati
      * Handle the notification click.
      *
      * @param notification The notification to check.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     handleClick(notification: NotificationData): Promise<void> {
         const data = notification.customdata || {};

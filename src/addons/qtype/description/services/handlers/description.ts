@@ -28,44 +28,28 @@ export class AddonQtypeDescriptionHandlerService implements CoreQuestionHandler 
     type = 'qtype_description';
 
     /**
-     * Return the name of the behaviour to use for the question.
-     * If the question should use the default behaviour you shouldn't implement this function.
-     *
-     * @param question The question.
-     * @param behaviour The default behaviour.
-     * @return The behaviour to use.
+     * @inheritdoc
      */
     getBehaviour(): string {
         return 'informationitem';
     }
 
     /**
-     * Return the Component to use to display the question.
-     * It's recommended to return the class of the component, but you can also return an instance of the component.
-     *
-     * @param question The question to render.
-     * @return The component (or promise resolved with component) to use, undefined if not found.
+     * @inheritdoc
      */
     getComponent(): Type<unknown> {
         return AddonQtypeDescriptionComponent;
     }
 
     /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @return True or promise resolved with true if enabled.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         return true;
     }
 
     /**
-     * Validate if an offline sequencecheck is valid compared with the online one.
-     * This function only needs to be implemented if a specific compare is required.
-     *
-     * @param question The question.
-     * @param offlineSequenceCheck Sequence check stored in offline.
-     * @return Whether sequencecheck is valid.
+     * @inheritdoc
      */
     validateSequenceCheck(): boolean {
         // Descriptions don't have any answer so we'll always treat them as valid.

@@ -24,7 +24,7 @@ export class CoreH5PMetadata {
      * Here we are converting these to booleans, and also doing JSON encoding.
      *
      * @param metadataSettings Settings.
-     * @return Stringified settings.
+     * @returns Stringified settings.
      */
     static boolifyAndEncodeSettings(metadataSettings: CoreH5PLibraryMetadataSettings | string): string {
         if (typeof metadataSettings == 'string') {

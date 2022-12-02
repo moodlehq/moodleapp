@@ -118,7 +118,7 @@ export class AddonMessagesSearchPage implements OnDestroy {
      * @param query Text to search for.
      * @param loadMore Load more contacts, noncontacts or messages. If undefined, start a new search.
      * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     async search(query: string, loadMore?: 'contacts' | 'noncontacts' | 'messages', infiniteComplete?: () => void): Promise<void> {
         CoreApp.closeKeyboard();

@@ -312,7 +312,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
     /**
      * Check if current route is the root of the current main menu tab.
      *
-     * @return Promise.
+     * @returns Promise.
      */
     protected async currentRouteIsMainMenuRoot(): Promise<boolean> {
         // Check if the current route is the root of the current main menu tab.

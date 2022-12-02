@@ -40,7 +40,7 @@ export class CoreSitePluginsCourseOptionPage implements OnInit {
     ptrEnabled = true;
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.courseId = CoreNavigator.getRouteNumberParam('courseId');
@@ -116,7 +116,7 @@ export class CoreSitePluginsCourseOptionPage implements OnInit {
     /**
      * Check if we can leave the page or not.
      *
-     * @return Resolved if we can leave it, rejected if not.
+     * @returns Resolved if we can leave it, rejected if not.
      */
     async canLeave(): Promise<boolean> {
         if (!this.content) {

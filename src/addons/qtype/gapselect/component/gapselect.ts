@@ -32,7 +32,7 @@ export class AddonQtypeGapSelectComponent extends CoreQuestionBaseComponent impl
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.initOriginalTextComponent('.qtext');

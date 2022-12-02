@@ -28,13 +28,7 @@ export class CoreFilterDefaultHandler implements CoreFilterHandler {
     filterName = 'default';
 
     /**
-     * Filter some text.
-     *
-     * @param text The text to filter.
-     * @param filter The filter.
-     * @param options Options passed to the filters.
-     * @param siteId Site ID. If not defined, current site.
-     * @return Filtered text (or promise resolved with the filtered text).
+     * @inheritdoc
      */
     filter(
         text: string,
@@ -46,17 +40,7 @@ export class CoreFilterDefaultHandler implements CoreFilterHandler {
     }
 
     /**
-     * Handle HTML. This function is called after "filter", and it will receive an HTMLElement containing the text that was
-     * filtered.
-     *
-     * @param container The HTML container to handle.
-     * @param filter The filter.
-     * @param options Options passed to the filters.
-     * @param viewContainerRef The ViewContainerRef where the container is.
-     * @param component Component.
-     * @param componentId Component ID.
-     * @param siteId Site ID. If not defined, current site.
-     * @return If async, promise resolved when done.
+     * @inheritdoc
      */
     handleHtml(
         container: HTMLElement, // eslint-disable-line @typescript-eslint/no-unused-vars
@@ -71,20 +55,14 @@ export class CoreFilterDefaultHandler implements CoreFilterHandler {
     }
 
     /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @return Whether or not the handler is enabled on a site level.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         return true;
     }
 
     /**
-     * Check if the filter should be applied in a certain site based on some filter options.
-     *
-     * @param options Options.
-     * @param site Site.
-     * @return Whether filter should be applied.
+     * @inheritdoc
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     shouldBeApplied(options: CoreFilterFormatTextOptions, site?: CoreSite): boolean {

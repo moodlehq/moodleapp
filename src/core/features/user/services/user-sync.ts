@@ -38,7 +38,7 @@ export class CoreUserSyncProvider extends CoreSyncBaseProvider<string[]> {
      * Try to synchronize user preferences in a certain site or in all sites.
      *
      * @param siteId Site ID to sync. If not defined, sync all sites.
-     * @return Promise resolved with warnings if sync is successful, rejected if sync fails.
+     * @returns Promise resolved with warnings if sync is successful, rejected if sync fails.
      */
     syncPreferences(siteId?: string): Promise<void> {
         return this.syncOnSites('all user preferences', (siteId) => this.syncSitePreferences(siteId), siteId);
@@ -48,7 +48,7 @@ export class CoreUserSyncProvider extends CoreSyncBaseProvider<string[]> {
      * Sync user preferences of a site.
      *
      * @param siteId Site ID to sync.
-     * @param Promise resolved with warnings if sync is successful, rejected if sync fails.
+     * @returns Promise resolved with warnings if sync is successful, rejected if sync fails.
      */
     async syncSitePreferences(siteId: string): Promise<string[]> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -72,7 +72,7 @@ export class CoreUserSyncProvider extends CoreSyncBaseProvider<string[]> {
      * Sync user preferences of a site.
      *
      * @param siteId Site ID to sync.
-     * @param Promise resolved if sync is successful, rejected if sync fails.
+     * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     protected async performSyncSitePreferences(siteId: string): Promise<string[]> {
         const warnings: string[] = [];

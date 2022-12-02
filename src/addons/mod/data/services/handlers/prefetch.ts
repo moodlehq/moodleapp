@@ -44,7 +44,7 @@ export class AddonModDataPrefetchHandlerService extends CoreCourseActivityPrefet
      * @param dataId Database Id.
      * @param groups Array of groups in the activity.
      * @param options Other options.
-     * @return All unique entries.
+     * @returns All unique entries.
      */
     protected async getAllUniqueEntries(
         dataId: number,
@@ -76,7 +76,7 @@ export class AddonModDataPrefetchHandlerService extends CoreCourseActivityPrefet
      * @param courseId Course ID the module belongs to.
      * @param omitFail True to always return even if fails. Default false.
      * @param options Other options.
-     * @return Promise resolved with the info fetched.
+     * @returns Promise resolved with the info fetched.
      */
     protected async getDatabaseInfoHelper(
         module: CoreCourseAnyModuleData,
@@ -130,7 +130,7 @@ export class AddonModDataPrefetchHandlerService extends CoreCourseActivityPrefet
      * Returns the file contained in the entries.
      *
      * @param entries List of entries to get files from.
-     * @return List of files.
+     * @returns List of files.
      */
     protected getEntriesFiles(entries: AddonModDataEntry[]): CoreWSFile[] {
         let files: CoreWSFile[] = [];
@@ -216,7 +216,7 @@ export class AddonModDataPrefetchHandlerService extends CoreCourseActivityPrefet
      * @param module Module.
      * @param courseId Course ID the module belongs to.
      * @param siteId Site ID.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async prefetchDatabase(module: CoreCourseAnyModuleData, courseId: number, siteId: string): Promise<void> {
         const options = {
@@ -275,7 +275,7 @@ export class AddonModDataPrefetchHandlerService extends CoreCourseActivityPrefet
      * @param module Module.
      * @param courseId Course ID the module belongs to
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async sync(module: CoreCourseAnyModuleData, courseId: number, siteId?: string): Promise<AddonModDataSyncResult> {
         const promises = [

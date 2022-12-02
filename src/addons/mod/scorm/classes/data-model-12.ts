@@ -123,7 +123,7 @@ export class AddonModScormDataModel12 {
      *
      * @param first First time.
      * @param second Second time.
-     * @return Total time.
+     * @returns Total time.
      */
     protected addTime(first: string, second: string): string {
         const sFirst = first.split(':');
@@ -178,7 +178,7 @@ export class AddonModScormDataModel12 {
     /**
      * Collect all the user tracking data that must be persisted in the system, this is usually called by LMSCommit().
      *
-     * @return Collected data.
+     * @returns Collected data.
      */
     protected collectData(): AddonModScormDataEntry[] {
         if (!this.currentUserData[this.scoId]) {
@@ -239,7 +239,7 @@ export class AddonModScormDataModel12 {
      * Get the value of the given element from the non-persistent (current) user data.
      *
      * @param el The element
-     * @return The element value
+     * @returns The element value
      */
     protected getEl(el: string): string | number {
         if (this.currentUserData[this.scoId] && this.currentUserData[this.scoId].userdata[el] !== undefined) {
@@ -602,7 +602,7 @@ export class AddonModScormDataModel12 {
      * Commit the changes.
      *
      * @param param Param.
-     * @return "true" if success, "false" otherwise.
+     * @returns "true" if success, "false" otherwise.
      */
     LMSCommit(param: string): string {
         if (this.timeout) {
@@ -636,7 +636,7 @@ export class AddonModScormDataModel12 {
      * Finish the data model.
      *
      * @param param Param.
-     * @return "true" if success, "false" otherwise.
+     * @returns "true" if success, "false" otherwise.
      */
     LMSFinish(param: string): string {
         this.errorCode = '0';
@@ -679,7 +679,7 @@ export class AddonModScormDataModel12 {
      * Get diagnostic.
      *
      * @param param Param.
-     * @return Result.
+     * @returns Result.
      */
     LMSGetDiagnostic(param: string): string {
         if (param == '') {
@@ -693,7 +693,7 @@ export class AddonModScormDataModel12 {
      * Get the error message for a certain code.
      *
      * @param param Error code.
-     * @return Error message.
+     * @returns Error message.
      */
     LMSGetErrorString(param: string): string {
         if (param != '') {
@@ -706,7 +706,7 @@ export class AddonModScormDataModel12 {
     /**
      * Get the last error code.
      *
-     * @return Last error code.
+     * @returns Last error code.
      */
     LMSGetLastError(): string {
         return this.errorCode;
@@ -716,7 +716,7 @@ export class AddonModScormDataModel12 {
      * Get the value of a certain element.
      *
      * @param element Name of the element to get.
-     * @return Value.
+     * @returns Value.
      */
     LMSGetValue(element: string): AddonModScormDataValue {
         this.errorCode = '0';
@@ -772,7 +772,7 @@ export class AddonModScormDataModel12 {
      * Initialize the data model.
      *
      * @param param Param.
-     * @return "true" if initialized, "false" otherwise.
+     * @returns "true" if initialized, "false" otherwise.
      */
     LMSInitialize(param: string): string {
         this.errorCode = '0';
@@ -798,7 +798,7 @@ export class AddonModScormDataModel12 {
      *
      * @param element Name of the element to set.
      * @param value Value to set.
-     * @return "true" if success, "false" otherwise.
+     * @returns "true" if success, "false" otherwise.
      */
     LMSSetValue(element: string, value: AddonModScormDataValue): string {
         this.errorCode = '0';
@@ -968,7 +968,7 @@ export class AddonModScormDataModel12 {
      * Persist the current user data (this is usually called by LMSCommit).
      *
      * @param storeTotalTime If true, we need to calculate the total time too.
-     * @return True if success, false otherwise.
+     * @returns True if success, false otherwise.
      */
     protected storeData(storeTotalTime?: boolean): boolean {
         if (!this.canSaveTracks) {
@@ -1025,7 +1025,7 @@ export class AddonModScormDataModel12 {
     /**
      * Utility function for calculating the total time spent in the SCO.
      *
-     * @return Total time element.
+     * @returns Total time element.
      */
     protected totalTime(): AddonModScormDataEntry {
         const totalTime = this.addTime(<string> this.getEl('cmi.core.total_time'), <string> this.getEl('cmi.core.session_time'));

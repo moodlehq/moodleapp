@@ -99,7 +99,7 @@ export class CoreAttachmentsComponent implements OnInit {
     /**
      * Get max size of the area.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async getMaxSizeOfArea(): Promise<void> {
         if (this.courseId) {

@@ -45,7 +45,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
     avatarUrl?: string;
 
     // Variable to check if we consider this user online or not.
-    // @TODO: Use setting when available (see MDL-63972) so we can use site setting.
+    // @todo Use setting when available (see MDL-63972) so we can use site setting.
     protected timetoshowusers = 300000; // Miliseconds default.
     protected currentUserId: number;
     protected pictureObserver: CoreEventObserver;
@@ -65,7 +65,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.setFields();
@@ -101,7 +101,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
     /**
      * Helper function for checking the time meets the 'online' condition.
      *
-     * @return boolean
+     * @returns boolean
      */
     isOnline(): boolean {
         if (!this.user) {

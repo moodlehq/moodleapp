@@ -39,7 +39,7 @@ export class AddonModAssignSubmissionCommentsComponent extends AddonModAssignSub
     /**
      * Invalidate the data.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     invalidate(): Promise<void> {
         return CoreComments.invalidateCommentsData(

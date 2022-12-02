@@ -71,7 +71,7 @@ export class CoreTagSearchPage implements OnInit {
     /**
      * Fetch tag collections.
      *
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     async fetchCollections(): Promise<void> {
         const collections = await CoreTag.getTagCollections();
@@ -88,7 +88,7 @@ export class CoreTagSearchPage implements OnInit {
     /**
      * Fetch tags.
      *
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     async fetchTags(): Promise<void> {
         this.cloud = await CoreTag.getTagCloud(this.collectionId, undefined, undefined, this.query);
@@ -120,7 +120,7 @@ export class CoreTagSearchPage implements OnInit {
      * Search tags.
      *
      * @param query Search query.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     searchTags(query: string): Promise<void> {
         this.searching = true;

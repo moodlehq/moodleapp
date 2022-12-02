@@ -33,7 +33,7 @@ export class AddonBlockHtmlHandlerService extends CoreBlockBaseHandler {
      * Returns the data needed to render the block.
      *
      * @param block The block to render.
-     * @return Data or promise resolved with the data.
+     * @returns Data or promise resolved with the data.
      */
     getDisplayData(block: CoreCourseBlock): CoreBlockHandlerData {
 

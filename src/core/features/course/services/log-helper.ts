@@ -37,7 +37,7 @@ export class CoreCourseLogHelperProvider {
      * @param component Component name.
      * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when deleted, rejected if failure.
+     * @returns Promise resolved when deleted, rejected if failure.
      */
     protected async deleteLogs(component: string, componentId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -57,7 +57,7 @@ export class CoreCourseLogHelperProvider {
      * @param componentId Component ID.
      * @param ws WS name.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when deleted, rejected if failure.
+     * @returns Promise resolved when deleted, rejected if failure.
      */
     protected async deleteWSLogsByComponent(component: string, componentId: number, ws: string, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -77,7 +77,7 @@ export class CoreCourseLogHelperProvider {
      * @param ws WS name.
      * @param data Data to send to the WS.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when deleted, rejected if failure.
+     * @returns Promise resolved when deleted, rejected if failure.
      */
     protected async deleteWSLogs(ws: string, data: Record<string, unknown>, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -94,7 +94,7 @@ export class CoreCourseLogHelperProvider {
      * Get all the offline saved activity logs.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the list of offline logs.
+     * @returns Promise resolved with the list of offline logs.
      */
     protected async getAllLogs(siteId?: string): Promise<CoreCourseActivityLogDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
@@ -108,7 +108,7 @@ export class CoreCourseLogHelperProvider {
      * @param component Component name.
      * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the list of offline logs.
+     * @returns Promise resolved with the list of offline logs.
      */
     protected async getLogs(component: string, componentId: number, siteId?: string): Promise<CoreCourseActivityLogDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
@@ -129,7 +129,7 @@ export class CoreCourseLogHelperProvider {
      * @param component Component name.
      * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async log(ws: string, data: Record<string, unknown>, component: string, componentId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -158,7 +158,7 @@ export class CoreCourseLogHelperProvider {
      * @param ws WS name.
      * @param data Data to send to the WS.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when log is successfully submitted. Rejected with object containing
+     * @returns Promise resolved when log is successfully submitted. Rejected with object containing
      *         the error message (if any) and a boolean indicating if the error was returned by WS.
      */
     protected async logOnline<T extends CoreStatusWithWarningsWSResponse>(
@@ -200,7 +200,7 @@ export class CoreCourseLogHelperProvider {
      * @param category Category of the viewed item.
      * @param eventData Data to pass to the Firebase event.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     logSingle(
         ws: string,
@@ -228,7 +228,7 @@ export class CoreCourseLogHelperProvider {
      * @param category Category of the viewed item.
      * @param eventData Data to pass to the Firebase event.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     logList(
         ws: string,
@@ -252,7 +252,7 @@ export class CoreCourseLogHelperProvider {
      * @param component Component name.
      * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async storeOffline(
         ws: string,
@@ -279,7 +279,7 @@ export class CoreCourseLogHelperProvider {
      * Sync all the offline saved activity logs.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async syncSite(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -310,7 +310,7 @@ export class CoreCourseLogHelperProvider {
      * @param component Component name.
      * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      * @deprecated since 3.9.5. Please use syncActivity instead.
      */
     syncIfNeeded(component: string, componentId: number, siteId?: string): Promise<void> {
@@ -323,7 +323,7 @@ export class CoreCourseLogHelperProvider {
      * @param component Component name.
      * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async syncActivity(component: string, componentId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -352,7 +352,7 @@ export class CoreCourseLogHelperProvider {
      *
      * @param logs Array of log objects.
      * @param siteId Site Id.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async syncLogs(logs: CoreCourseActivityLogDBRecord[], siteId: string): Promise<void> {
         await Promise.all(logs.map(async (log) => {

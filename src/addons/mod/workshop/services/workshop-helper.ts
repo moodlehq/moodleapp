@@ -54,7 +54,7 @@ export class AddonModWorkshopHelperProvider {
      *
      * @param tasks Array of tasks.
      * @param taskCode Unique task code.
-     * @return Task requested
+     * @returns Task requested
      */
     getTask(tasks: AddonModWorkshopPhaseTaskData[], taskCode: string): AddonModWorkshopPhaseTaskData | undefined {
         return tasks.find((task) => task.code == taskCode);
@@ -65,7 +65,7 @@ export class AddonModWorkshopHelperProvider {
      *
      * @param tasks Array of tasks.
      * @param taskCode Unique task code.
-     * @return True if task is completed.
+     * @returns True if task is completed.
      */
     isTaskDone(tasks: AddonModWorkshopPhaseTaskData[], taskCode: string): boolean {
         const task = this.getTask(tasks, taskCode);
@@ -84,7 +84,7 @@ export class AddonModWorkshopHelperProvider {
      * @param workshop Workshop info.
      * @param access Access information.
      * @param tasks Array of tasks.
-     * @return True if the user can submit the workshop.
+     * @returns True if the user can submit the workshop.
      */
     canSubmit(
         workshop: AddonModWorkshopData,
@@ -105,7 +105,7 @@ export class AddonModWorkshopHelperProvider {
      *
      * @param workshop Workshop info.
      * @param access Access information.
-     * @return True if the user can assess the workshop.
+     * @returns True if the user can assess the workshop.
      */
     canAssess(workshop: AddonModWorkshopData, access: AddonModWorkshopGetWorkshopAccessInformationWSResponse): boolean {
         const examplesMust = workshop.useexamples &&
@@ -121,7 +121,7 @@ export class AddonModWorkshopHelperProvider {
      *
      * @param workshopId Workshop ID.
      * @param options Other options.
-     * @return Resolved with the submission, resolved with false if not found.
+     * @returns Resolved with the submission, resolved with false if not found.
      */
     async getUserSubmission(
         workshopId: number,
@@ -140,7 +140,7 @@ export class AddonModWorkshopHelperProvider {
      * @param workshopId Workshop ID.
      * @param submissionId Submission ID.
      * @param options Other options.
-     * @return Resolved with the submission, resolved with false if not found.
+     * @returns Resolved with the submission, resolved with false if not found.
      */
     async getSubmissionById(
         workshopId: number,
@@ -168,7 +168,7 @@ export class AddonModWorkshopHelperProvider {
      * @param workshopId Workshop ID.
      * @param assessmentId Assessment ID.
      * @param options Other options.
-     * @return Resolved with the assessment.
+     * @returns Resolved with the assessment.
      */
     async getReviewerAssessmentById(
         workshopId: number,
@@ -198,7 +198,7 @@ export class AddonModWorkshopHelperProvider {
      *
      * @param workshopId Workshop ID.
      * @param options Other options.
-     * @return Promise resolved when the workshop data is retrieved.
+     * @returns Promise resolved when the workshop data is retrieved.
      */
     async getReviewerAssessments(
         workshopId: number,
@@ -233,7 +233,7 @@ export class AddonModWorkshopHelperProvider {
      *
      * @param workshopId Workshop ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when deleted.
+     * @returns Promise resolved when deleted.
      */
     async deleteSubmissionStoredFiles(workshopId: number, siteId?: string): Promise<void> {
         const folderPath = await AddonModWorkshopOffline.getSubmissionFolder(workshopId, siteId);
@@ -249,7 +249,7 @@ export class AddonModWorkshopHelperProvider {
      * @param workshopId Workshop ID.
      * @param files List of files.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if success, rejected otherwise.
+     * @returns Promise resolved if success, rejected otherwise.
      */
     async storeSubmissionFiles(
         workshopId: number,
@@ -271,7 +271,7 @@ export class AddonModWorkshopHelperProvider {
      * @param editing If the submission is being edited or added otherwise.
      * @param offline True if files sould be stored for offline, false to upload them.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if success.
+     * @returns Promise resolved if success.
      */
     uploadOrStoreSubmissionFiles(
         workshopId: number,
@@ -302,10 +302,8 @@ export class AddonModWorkshopHelperProvider {
      * Get a list of stored attachment files for a submission. See AddonModWorkshopHelperProvider#storeFiles.
      *
      * @param workshopId Workshop ID.
-     * @param submissionId If not editing, it will refer to timecreated.
-     * @param editing If the submission is being edited or added otherwise.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the files.
+     * @returns Promise resolved with the files.
      */
     async getStoredSubmissionFiles(
         workshopId: number,
@@ -323,7 +321,7 @@ export class AddonModWorkshopHelperProvider {
      * @param filesObject Files object combining offline and online information.
      * @param workshopId Workshop ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the files.
+     * @returns Promise resolved with the files.
      */
     async getSubmissionFilesFromOfflineFilesObject(
         filesObject: CoreFileUploaderStoreFilesResult,
@@ -341,7 +339,7 @@ export class AddonModWorkshopHelperProvider {
      * @param workshopId Workshop ID.
      * @param assessmentId Assessment ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when deleted.
+     * @returns Promise resolved when deleted.
      */
     async deleteAssessmentStoredFiles(workshopId: number, assessmentId: number, siteId?: string): Promise<void> {
         const folderPath = await AddonModWorkshopOffline.getAssessmentFolder(workshopId, assessmentId, siteId);
@@ -358,7 +356,7 @@ export class AddonModWorkshopHelperProvider {
      * @param assessmentId Assessment ID.
      * @param files List of files.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if success, rejected otherwise.
+     * @returns Promise resolved if success, rejected otherwise.
      */
     async storeAssessmentFiles(
         workshopId: number,
@@ -380,7 +378,7 @@ export class AddonModWorkshopHelperProvider {
      * @param files List of files.
      * @param offline True if files sould be stored for offline, false to upload them.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if success.
+     * @returns Promise resolved if success.
      */
     uploadOrStoreAssessmentFiles(
         workshopId: number,
@@ -416,7 +414,7 @@ export class AddonModWorkshopHelperProvider {
      * @param workshopId Workshop ID.
      * @param assessmentId Assessment ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the files.
+     * @returns Promise resolved with the files.
      */
     async getStoredAssessmentFiles(workshopId: number, assessmentId: number, siteId?: string): Promise<FileEntry[]> {
         const folderPath = await AddonModWorkshopOffline.getAssessmentFolder(workshopId, assessmentId, siteId);
@@ -432,7 +430,7 @@ export class AddonModWorkshopHelperProvider {
      * @param workshopId Workshop ID.
      * @param assessmentId Assessment ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the files.
+     * @returns Promise resolved with the files.
      */
     async getAssessmentFilesFromOfflineFilesObject(
         filesObject: CoreFileUploaderStoreFilesResult,
@@ -450,7 +448,7 @@ export class AddonModWorkshopHelperProvider {
      *
      * @param submission Submission object to be modified.
      * @param actions Offline actions to be applied to the given submission.
-     * @return Promise resolved with the files.
+     * @returns Promise resolved with the files.
      */
     async applyOfflineData(
         submission?: AddonModWorkshopSubmissionDataWithOfflineData,
@@ -517,10 +515,9 @@ export class AddonModWorkshopHelperProvider {
      * @param workshop Workshop object.
      * @param selectedValues Assessment current values
      * @param feedbackText Feedback text.
-     * @param feedbackFiles Feedback attachments.
      * @param form Assessment form original data.
      * @param attachmentsId The draft file area id for attachments.
-     * @return Promise resolved with the data to be sent. Or rejected with the input errors object.
+     * @returns Promise resolved with the data to be sent. Or rejected with the input errors object.
      */
     async prepareAssessmentData(
         workshop: AddonModWorkshopData,
@@ -551,7 +548,7 @@ export class AddonModWorkshopHelperProvider {
      * @param value Percentual value from 0 to 100.
      * @param max The maximal grade.
      * @param decimals Decimals to show in the formatted grade.
-     * @return Real grade formatted.
+     * @returns Real grade formatted.
      */
     protected realGradeValueHelper(value?: number | string, max = 0, decimals = 0): string | undefined {
         if (typeof value == 'string') {
@@ -577,7 +574,7 @@ export class AddonModWorkshopHelperProvider {
      *
      * @param workshop Workshop object.
      * @param assessment Assessment data.
-     * @return Assessment with real grades.
+     * @returns Assessment with real grades.
      */
     realGradeValue(
         workshop: AddonModWorkshopData,
@@ -599,7 +596,7 @@ export class AddonModWorkshopHelperProvider {
      * Check grade should be shown
      *
      * @param grade Grade to be shown
-     * @return If grade should be shown or not.
+     * @returns If grade should be shown or not.
      */
     showGrade(grade?: number|string): boolean {
         return grade !== undefined && grade !== null;

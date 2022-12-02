@@ -26,7 +26,7 @@ export class CoreForms {
      * Get the data from a form. It will only collect elements that have a name.
      *
      * @param form The form to get the data from.
-     * @return Object with the data. The keys are the names of the inputs.
+     * @returns Object with the data. The keys are the names of the inputs.
      */
     static getDataFromForm(form: HTMLFormElement): CoreFormFields {
         if (!form || !form.elements) {

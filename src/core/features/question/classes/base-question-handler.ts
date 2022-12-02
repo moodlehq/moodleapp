@@ -31,7 +31,7 @@ export class CoreQuestionBaseHandler implements CoreQuestionHandler {
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return True or promise resolved with true if enabled.
+     * @returns True or promise resolved with true if enabled.
      */
     async isEnabled(): Promise<boolean> {
         return true;
@@ -42,12 +42,12 @@ export class CoreQuestionBaseHandler implements CoreQuestionHandler {
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
      * @param question The question to render.
-     * @return The component (or promise resolved with component) to use, undefined if not found.
+     * @returns The component (or promise resolved with component) to use, undefined if not found.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     getComponent(question: CoreQuestionQuestionParsed): undefined | Type<unknown> | Promise<Type<unknown>> {
         // There is no default component for questions.
-        return;
+        return undefined;
     }
 
     /**
@@ -56,7 +56,7 @@ export class CoreQuestionBaseHandler implements CoreQuestionHandler {
      *
      * @param question The question.
      * @param behaviour The default behaviour.
-     * @return The behaviour to use.
+     * @returns The behaviour to use.
      */
     getBehaviour(question: CoreQuestionQuestionParsed, behaviour: string): string {
         return behaviour;
@@ -67,12 +67,12 @@ export class CoreQuestionBaseHandler implements CoreQuestionHandler {
      * If a question cannot be submitted it should return a message explaining why (translated or not).
      *
      * @param question The question.
-     * @return Prevent submit message. Undefined or empty if can be submitted.
+     * @returns Prevent submit message. Undefined or empty if can be submitted.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     getPreventSubmitMessage(question: CoreQuestionQuestionParsed): string | undefined {
         // Never prevent by default.
-        return;
+        return undefined;
     }
 
     /**
@@ -93,7 +93,7 @@ export class CoreQuestionBaseHandler implements CoreQuestionHandler {
      * @param answers Object with the question answers (without prefix).
      * @param component The component the question is related to.
      * @param componentId Component ID.
-     * @return 1 if complete, 0 if not complete, -1 if cannot determine.
+     * @returns 1 if complete, 0 if not complete, -1 if cannot determine.
      */
     isCompleteResponse(
         question: CoreQuestionQuestionParsed, // eslint-disable-line @typescript-eslint/no-unused-vars
@@ -112,7 +112,7 @@ export class CoreQuestionBaseHandler implements CoreQuestionHandler {
      * @param answers Object with the question answers (without prefix).
      * @param component The component the question is related to.
      * @param componentId Component ID.
-     * @return 1 if gradable, 0 if not gradable, -1 if cannot determine.
+     * @returns 1 if gradable, 0 if not gradable, -1 if cannot determine.
      */
     isGradableResponse(
         question: CoreQuestionQuestionParsed, // eslint-disable-line @typescript-eslint/no-unused-vars
@@ -129,7 +129,7 @@ export class CoreQuestionBaseHandler implements CoreQuestionHandler {
      * @param question Question.
      * @param prevAnswers Object with the previous question answers.
      * @param newAnswers Object with the new question answers.
-     * @return Whether they're the same.
+     * @returns Whether they're the same.
      */
     isSameResponse(
         question: CoreQuestionQuestionParsed, // eslint-disable-line @typescript-eslint/no-unused-vars
@@ -150,7 +150,6 @@ export class CoreQuestionBaseHandler implements CoreQuestionHandler {
      * @param component The component the question is related to.
      * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Return a promise resolved when done if async, void if sync.
      */
     prepareAnswers(
         question: CoreQuestionQuestionParsed, // eslint-disable-line @typescript-eslint/no-unused-vars
@@ -169,7 +168,7 @@ export class CoreQuestionBaseHandler implements CoreQuestionHandler {
      *
      * @param question The question.
      * @param offlineSequenceCheck Sequence check stored in offline.
-     * @return Whether sequencecheck is valid.
+     * @returns Whether sequencecheck is valid.
      */
     validateSequenceCheck(question: CoreQuestionQuestionParsed, offlineSequenceCheck: string): boolean {
         return question.sequencecheck == Number(offlineSequenceCheck);

@@ -70,7 +70,7 @@ export class AddonModChatSessionMessagesPage implements OnInit {
     /**
      * Fetch session messages.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchMessages(): Promise<void> {
         try {
@@ -113,7 +113,7 @@ export class AddonModChatSessionMessagesPage implements OnInit {
      * Get the user fullname for a beep.
      *
      * @param id User Id before parsing.
-     * @return User fullname.
+     * @returns User fullname.
      */
     protected async getUserFullname(id: string): Promise<string> {
         const idNumber = parseInt(id, 10);

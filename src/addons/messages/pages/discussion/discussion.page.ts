@@ -176,7 +176,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
      *
      * @param message Message to be added.
      * @param keep If set the keep flag or not.
-     * @return If message is not mine and was recently added.
+     * @returns If message is not mine and was recently added.
      */
     protected addMessage(
         message: AddonMessagesConversationMessageFormatted,
@@ -225,7 +225,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
     /**
      * Convenience function to fetch the conversation data.
      *
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async fetchData(): Promise<void> {
         let loader: CoreIonLoadingElement | undefined;
@@ -365,7 +365,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
      * Convenience function to fetch messages.
      *
      * @param messagesAreNew If messages loaded are new messages.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async fetchMessages(messagesAreNew: boolean = true): Promise<void> {
         this.loadMoreError = false;
@@ -417,8 +417,8 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
     /**
      * Format and load a list of messages into the view.
      *
-     * @param messagesAreNew If messages loaded are new messages.
      * @param messages Messages to load.
+     * @param messagesAreNew If messages loaded are new messages.
      */
     protected loadMessages(
         messages: AddonMessagesConversationMessageFormatted[],
@@ -531,7 +531,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
      *
      * @param conversationId Conversation ID.
      * @param userId User ID.
-     * @return Promise resolved with a boolean: whether the conversation exists or not.
+     * @returns Promise resolved with a boolean: whether the conversation exists or not.
      */
     protected async getConversation(conversationId?: number, userId?: number): Promise<boolean> {
         let fallbackConversation: AddonMessagesConversationFormatted | undefined;
@@ -611,7 +611,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
      *
      * @param pagesToLoad Number of "pages" to load.
      * @param offset Offset for message list.
-     * @return Promise resolved with the list of messages.
+     * @returns Promise resolved with the list of messages.
      */
     protected async getConversationMessages(
         pagesToLoad: number,
@@ -664,7 +664,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
      * @param lfReceivedRead Number of read received messages already fetched, so fetch will be done from this.
      * @param lfSentUnread Number of unread sent messages already fetched, so fetch will be done from this.
      * @param lfSentRead Number of read sent messages already fetched, so fetch will be done from this.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async getDiscussionMessages(
         pagesToLoad: number,
@@ -874,7 +874,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
     /**
      * Wait until fetching is false.
      *
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async waitForFetch(): Promise<void> {
         if (!this.fetching) {
@@ -982,7 +982,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
      * Function to load previous messages.
      *
      * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     async loadPrevious(infiniteComplete?: () => void): Promise<void> {
         if (!this.initialized) {
@@ -1189,7 +1189,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
      *
      * @param message Current message where to show the date.
      * @param prevMessage Previous message where to compare the date with.
-     * @return If date has changed and should be shown.
+     * @returns If date has changed and should be shown.
      */
     showDate(
         message: AddonMessagesConversationMessageFormatted,
@@ -1211,7 +1211,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
      *
      * @param message Current message where to show the user info.
      * @param prevMessage Previous message.
-     * @return Whether user data should be shown.
+     * @returns Whether user data should be shown.
      */
     showUserData(
         message: AddonMessagesConversationMessageFormatted,
@@ -1227,7 +1227,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
      *
      * @param message Current message where to show the user info.
      * @param nextMessage Next message.
-     * @return Whether user data should be shown.
+     * @returns Whether user data should be shown.
      */
     showTail(
         message: AddonMessagesConversationMessageFormatted,
@@ -1378,7 +1378,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
     /**
      * Displays a confirmation modal to block the user of the individual conversation.
      *
-     * @return Promise resolved when user is blocked or dialog is cancelled.
+     * @returns Promise resolved when user is blocked or dialog is cancelled.
      */
     async blockUser(): Promise<void> {
         if (!this.otherMember) {
@@ -1465,7 +1465,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
     /**
      * Displays a confirmation modal to unblock the user of the individual conversation.
      *
-     * @return Promise resolved when user is unblocked or dialog is cancelled.
+     * @returns Promise resolved when user is unblocked or dialog is cancelled.
      */
     async unblockUser(): Promise<void> {
         if (!this.otherMember) {
@@ -1504,7 +1504,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
     /**
      * Displays a confirmation modal to send a contact request to the other user of the individual conversation.
      *
-     * @return Promise resolved when the request is sent or the dialog is cancelled.
+     * @returns Promise resolved when the request is sent or the dialog is cancelled.
      */
     async createContactRequest(): Promise<void> {
         if (!this.otherMember) {
@@ -1543,7 +1543,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
     /**
      * Confirms the contact request of the other user of the individual conversation.
      *
-     * @return Promise resolved when the request is confirmed.
+     * @returns Promise resolved when the request is confirmed.
      */
     async confirmContactRequest(): Promise<void> {
         if (!this.otherMember) {
@@ -1569,7 +1569,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
     /**
      * Declines the contact request of the other user of the individual conversation.
      *
-     * @return Promise resolved when the request is confirmed.
+     * @returns Promise resolved when the request is confirmed.
      */
     async declineContactRequest(): Promise<void> {
         if (!this.otherMember) {
@@ -1595,7 +1595,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
     /**
      * Displays a confirmation modal to remove the other user of the conversation from contacts.
      *
-     * @return Promise resolved when the request is sent or the dialog is cancelled.
+     * @returns Promise resolved when the request is sent or the dialog is cancelled.
      */
     async removeContact(): Promise<void> {
         if (!this.otherMember) {

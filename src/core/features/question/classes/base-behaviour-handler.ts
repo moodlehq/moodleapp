@@ -37,7 +37,7 @@ export class CoreQuestionBehaviourBaseHandler implements CoreQuestionBehaviourHa
      * @param question The question.
      * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return New state (or promise resolved with state).
+     * @returns New state (or promise resolved with state).
      */
     determineNewState(
         component: string,
@@ -56,19 +56,19 @@ export class CoreQuestionBehaviourBaseHandler implements CoreQuestionBehaviourHa
      * If the behaviour requires to show some extra data, it should return the components to render it.
      *
      * @param question The question.
-     * @return Components (or promise resolved with components) to render some extra data in the question
+     * @returns Components (or promise resolved with components) to render some extra data in the question
      *         (e.g. certainty options). Don't return anything if no extra data is required.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     handleQuestion(question: CoreQuestionQuestionParsed): undefined | Type<unknown>[] | Promise<Type<unknown>[]> {
         // Nothing to do.
-        return;
+        return undefined;
     }
 
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return True or promise resolved with true if enabled.
+     * @returns True or promise resolved with true if enabled.
      */
     async isEnabled(): Promise<boolean> {
         return true;

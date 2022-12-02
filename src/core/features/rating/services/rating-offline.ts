@@ -46,7 +46,7 @@ export class CoreRatingOfflineProvider {
      * @param ratingArea Rating area. Example: "post".
      * @param itemId Item id. Example: forum post id.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the saved rating, rejected if not found.
+     * @returns Promise resolved with the saved rating, rejected if not found.
      */
     async getRating(
         contextLevel: ContextLevel,
@@ -84,7 +84,7 @@ export class CoreRatingOfflineProvider {
      * @param ratedUserId Rated user id.
      * @param aggregateMethod Aggregate method.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the rating is saved.
+     * @returns Promise resolved when the rating is saved.
      */
     async addRating(
         component: string,
@@ -125,9 +125,10 @@ export class CoreRatingOfflineProvider {
      * @param component Component. Example: "mod_forum".
      * @param ratingArea Rating area. Example: "post".
      * @param contextLevel Context level: course, module, user, etc.
-     * @param itemId Item id. Example: forum post id.
+     * @param instanceId Instance Id.
+     * @param itemId Item Id. Example: forum post id.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the rating is saved.
+     * @returns Promise resolved when the rating is saved.
      */
     async deleteRating(
         component: string,
@@ -159,7 +160,7 @@ export class CoreRatingOfflineProvider {
      * @param instanceId Context instance id.
      * @param itemSetId Item set id.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the list of item set ids.
+     * @returns Promise resolved with the list of item set ids.
      */
     async getItemSets(
         component: string,
@@ -205,10 +206,10 @@ export class CoreRatingOfflineProvider {
      * @param component Component. Example: "mod_forum".
      * @param ratingArea Rating Area. Example: "post".
      * @param contextLevel Context level: course, module, user, etc.
-     * @param itemId Item id. Example: forum post id.
+     * @param instanceId Context instance id.
      * @param itemSetId Item set id. Example: forum discussion id.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the list of ratings.
+     * @returns Promise resolved with the list of ratings.
      */
     async getRatings(
         component: string,
@@ -240,7 +241,7 @@ export class CoreRatingOfflineProvider {
      * @param instanceId Context instance id.
      * @param itemSetId Item set id. Example: forum discussion id.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with a boolean.
+     * @returns Promise resolved with a boolean.
      */
     async hasRatings(
         component: string,

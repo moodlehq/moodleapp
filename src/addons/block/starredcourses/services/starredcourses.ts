@@ -28,7 +28,7 @@ export class AddonBlockStarredCoursesProvider {
     /**
      * Get cache key for get starred courrses value WS call.
      *
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getStarredCoursesCacheKey(): string {
         return ROOT_CACHE_KEY + ':starredcourses';
@@ -38,7 +38,7 @@ export class AddonBlockStarredCoursesProvider {
      * Get starred courrses.
      *
      * @param siteId Site ID. If not defined, use current site.
-     * @return Promise resolved when the info is retrieved.
+     * @returns Promise resolved when the info is retrieved.
      */
     async getStarredCourses(siteId?: string): Promise<AddonBlockStarredCourse[]> {
         const site = await CoreSites.getSite(siteId);
@@ -54,7 +54,7 @@ export class AddonBlockStarredCoursesProvider {
      * Invalidates get starred courrses WS call.
      *
      * @param siteId Site ID to invalidate. If not defined, use current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateStarredCourses(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

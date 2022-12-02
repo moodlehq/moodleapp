@@ -56,6 +56,7 @@ export class CorePromisedValue<T = unknown> extends CorePromise<T> {
     }
 
     /**
+     * @returns Promise.
      * @deprecated since app 4.1. The instance can be directly used as a promise.
      */
     get promise(): Promise<T> {
@@ -69,7 +70,7 @@ export class CorePromisedValue<T = unknown> extends CorePromise<T> {
     /**
      * Check whether the promise resolved successfully.
      *
-     * @return Whether the promise resolved successfuly.
+     * @returns Whether the promise resolved successfuly.
      */
     isResolved(): this is { value: T } {
         return 'resolvedValue' in this;
@@ -78,7 +79,7 @@ export class CorePromisedValue<T = unknown> extends CorePromise<T> {
     /**
      * Check whether the promise was rejected.
      *
-     * @return Whether the promise was rejected.
+     * @returns Whether the promise was rejected.
      */
     isRejected(): boolean {
         return 'rejectedReason' in this;
@@ -112,7 +113,7 @@ export class CorePromisedValue<T = unknown> extends CorePromise<T> {
     /**
      * Reject the promise.
      *
-     * @param value Rejection reason.
+     * @param reason Rejection reason.
      */
     reject(reason?: Error): void {
         if (this.isSettled()) {

@@ -61,7 +61,7 @@ export class AddonModLessonUserRetakePage implements OnInit {
     protected previousSelectedRetake?: number; // To be able to detect the previous selected retake when it has changed.
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         try {
@@ -115,7 +115,7 @@ export class AddonModLessonUserRetakePage implements OnInit {
     /**
      * Get lesson and retake data.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchData(): Promise<void> {
         try {
@@ -168,7 +168,7 @@ export class AddonModLessonUserRetakePage implements OnInit {
     /**
      * Refreshes data.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async refreshData(): Promise<void> {
         const promises: Promise<void>[] = [];
@@ -188,7 +188,7 @@ export class AddonModLessonUserRetakePage implements OnInit {
      * Set the retake to view and load its data.
      *
      * @param retakeNumber Retake number to set.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async setRetake(retakeNumber: number): Promise<void> {
         this.selectedRetake = retakeNumber;
@@ -205,8 +205,8 @@ export class AddonModLessonUserRetakePage implements OnInit {
     /**
      * Format retake data, adding some calculated data.
      *
-     * @param data Retake data.
-     * @return Formatted data.
+     * @param retakeData Retake data.
+     * @returns Formatted data.
      */
     protected formatRetake(retakeData: AddonModLessonGetUserAttemptWSResponse): RetakeToDisplay {
         const formattedData = <RetakeToDisplay> retakeData;

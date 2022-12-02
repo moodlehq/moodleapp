@@ -39,7 +39,7 @@ export class AddonQbehaviourDeferredCBMHandlerService implements CoreQuestionBeh
      * @param question The question.
      * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return New state (or promise resolved with state).
+     * @returns New state (or promise resolved with state).
      */
     determineNewState(
         component: string,
@@ -66,7 +66,7 @@ export class AddonQbehaviourDeferredCBMHandlerService implements CoreQuestionBeh
      * If the behaviour requires to show some extra data, it should return the components to render it.
      *
      * @param question The question.
-     * @return Components (or promise resolved with components) to render some extra data in the question
+     * @returns Components (or promise resolved with components) to render some extra data in the question
      *         (e.g. certainty options). Don't return anything if no extra data is required.
      */
     handleQuestion(question: CoreQuestionQuestionParsed): void | Type<unknown>[] {
@@ -82,7 +82,7 @@ export class AddonQbehaviourDeferredCBMHandlerService implements CoreQuestionBeh
      * @param answers Object with the question answers (without prefix).
      * @param component The component the question is related to.
      * @param componentId Component ID.
-     * @return 1 if complete, 0 if not complete, -1 if cannot determine.
+     * @returns 1 if complete, 0 if not complete, -1 if cannot determine.
      */
     protected isCompleteResponse(
         question: CoreQuestionQuestionParsed,
@@ -103,7 +103,7 @@ export class AddonQbehaviourDeferredCBMHandlerService implements CoreQuestionBeh
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return True or promise resolved with true if enabled.
+     * @returns True or promise resolved with true if enabled.
      */
     async isEnabled(): Promise<boolean> {
         return true;
@@ -119,7 +119,7 @@ export class AddonQbehaviourDeferredCBMHandlerService implements CoreQuestionBeh
      * @param newBasicAnswers Object with the previous basic" answers (without sequencecheck, certainty, ...).
      * @param component The component the question is related to.
      * @param componentId Component ID.
-     * @return Whether they're the same.
+     * @returns Whether they're the same.
      */
     protected isSameResponse(
         question: CoreQuestionQuestionParsed,

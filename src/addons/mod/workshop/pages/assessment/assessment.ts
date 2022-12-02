@@ -114,7 +114,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy, CanLea
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         try {
@@ -139,7 +139,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy, CanLea
     /**
      * Check if we can leave the page or not.
      *
-     * @return Resolved if we can leave it, rejected if not.
+     * @returns Resolved if we can leave it, rejected if not.
      */
     async canLeave(): Promise<boolean> {
         if (this.forceLeave || !this.evaluating) {
@@ -161,7 +161,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy, CanLea
     /**
      * Fetch the assessment data.
      *
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async fetchAssessmentData(): Promise<void> {
         try {
@@ -268,7 +268,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy, CanLea
     /**
      * Check if data has changed.
      *
-     * @return True if changed, false otherwise.
+     * @returns True if changed, false otherwise.
      */
     protected hasEvaluationChanged(): boolean {
         if (!this.loaded || !this.evaluating) {
@@ -297,7 +297,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy, CanLea
     /**
      * Convenience function to refresh all the data.
      *
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async refreshAllData(): Promise<void> {
         const promises: Promise<void>[] = [];
@@ -349,7 +349,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy, CanLea
     /**
      * Sends the evaluation to be saved on the server.
      *
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async sendEvaluation(): Promise<void> {
         const modal = await CoreDomUtils.showModalLoading('core.sending', true);
@@ -389,7 +389,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy, CanLea
     }
 
     /**
-     * Component being destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.isDestroyed = true;

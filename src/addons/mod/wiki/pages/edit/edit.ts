@@ -135,7 +135,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Convenience function to get wiki page data.
      *
-     * @return Promise resolved with boolean: whether it was successful.
+     * @returns Promise resolved with boolean: whether it was successful.
      */
     protected async fetchWikiPageData(): Promise<boolean> {
         let canEdit = false;
@@ -255,7 +255,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Load cmId and courseId if they aren't set.
      *
-     * @return Promise.
+     * @returns Promise.
      */
     protected async fetchModuleAndCourseId(): Promise<void> {
         if (!this.wikiId || (this.cmId && this.courseId)) {
@@ -304,7 +304,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Check if data has changed.
      *
-     * @return Whether data has changed.
+     * @returns Whether data has changed.
      */
     protected hasDataChanged(): boolean {
         const values = this.pageForm!.value;
@@ -344,6 +344,8 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
 
     /**
      * Save the data.
+     *
+     * @returns Promise resolved when done.
      */
     async save(): Promise<void> {
         const values = this.pageForm!.value;

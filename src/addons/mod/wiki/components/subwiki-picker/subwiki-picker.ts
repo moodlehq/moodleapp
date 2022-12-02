@@ -32,7 +32,7 @@ export class AddonModWikiSubwikiPickerComponent {
      * Checks if the given subwiki is the one currently selected.
      *
      * @param subwiki Subwiki to check.
-     * @return Whether it's the selected subwiki.
+     * @returns Whether it's the selected subwiki.
      */
     isSubwikiSelected(subwiki: AddonModWikiSubwiki): boolean {
 

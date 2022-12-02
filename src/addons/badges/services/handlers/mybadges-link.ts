@@ -32,7 +32,7 @@ export class AddonBadgesMyBadgesLinkHandlerService extends CoreContentLinksHandl
     /**
      * Get the list of actions for a link (url).
      *
-     * @return List of (or promise resolved with list of) actions.
+     * @returns List of (or promise resolved with list of) actions.
      */
     getActions(): CoreContentLinksAction[] {
         return [{
@@ -47,7 +47,7 @@ export class AddonBadgesMyBadgesLinkHandlerService extends CoreContentLinksHandl
      * If not defined, defaults to true.
      *
      * @param siteId The site ID.
-     * @return Whether the handler is enabled for the URL and site.
+     * @returns Whether the handler is enabled for the URL and site.
      */
     async isEnabled(siteId: string): Promise<boolean> {
         return AddonBadges.isPluginEnabled(siteId);

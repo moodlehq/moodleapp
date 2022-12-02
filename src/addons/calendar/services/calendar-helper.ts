@@ -61,7 +61,7 @@ export class AddonCalendarHelperProvider {
      * Returns event icon based on event type.
      *
      * @param eventType Type of the event.
-     * @return Event icon.
+     * @returns Event icon.
      */
     getEventIcon(eventType: AddonCalendarEventType | string): string {
         if (this.eventTypeIcons.length == 0) {
@@ -101,7 +101,7 @@ export class AddonCalendarHelperProvider {
      *
      * @param courseId Course ID. If not defined, site calendar.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean: whether the user can create events.
+     * @returns Promise resolved with boolean: whether the user can create events.
      */
     async canEditEvents(courseId?: number, siteId?: string): Promise<boolean> {
         try {
@@ -123,7 +123,7 @@ export class AddonCalendarHelperProvider {
      * it will be included in all the days it lasts.
      *
      * @param offlineEvents Events to classify.
-     * @return Object with the classified events.
+     * @returns Object with the classified events.
      */
     classifyIntoMonths(
         offlineEvents: AddonCalendarOfflineEventDBRecord[],
@@ -162,6 +162,7 @@ export class AddonCalendarHelperProvider {
      * Convenience function to format some event data to be rendered.
      *
      * @param event Event to format.
+     * @returns The formatted event to display.
      */
     formatEventData(
         event: AddonCalendarEvent | AddonCalendarEventBase | AddonCalendarGetEventsEvent,
@@ -219,6 +220,7 @@ export class AddonCalendarHelperProvider {
      * Convenience function to format some event data to be rendered.
      *
      * @param event Event to format.
+     * @returns The formatted offline event to display.
      */
     formatOfflineEventData(event: AddonCalendarOfflineEventDBRecord): AddonCalendarEventToDisplay {
 
@@ -293,7 +295,7 @@ export class AddonCalendarHelperProvider {
      * @param reminders Reminders.
      * @param timestart Event timestart.
      * @param siteId Site ID.
-     * @return Formatted reminders.
+     * @returns Formatted reminders.
      * @deprecated since 4.1 Use AddonCalendarHelper.getEventReminders.
      */
     async formatReminders(
@@ -314,7 +316,7 @@ export class AddonCalendarHelperProvider {
      * @param eventId Event Id.
      * @param eventTimestart Event timestart.
      * @param siteId Site ID.
-     * @return Formatted reminders.
+     * @returns Formatted reminders.
      */
     async getEventReminders(
         eventId: number,
@@ -370,7 +372,7 @@ export class AddonCalendarHelperProvider {
      * Get options (name & value) for each allowed event type.
      *
      * @param eventTypes Result of getAllowedEventTypes.
-     * @return Options.
+     * @returns Options.
      */
     getEventTypeOptions(eventTypes: {[name: string]: boolean}): AddonCalendarEventTypeOption[] {
         const options: AddonCalendarEventTypeOption[] = [];
@@ -398,7 +400,7 @@ export class AddonCalendarHelperProvider {
      * Get the month "id".
      *
      * @param moment Month moment.
-     * @return The "id".
+     * @returns The "id".
      */
     getMonthId(moment: moment.Moment): string {
         return `${moment.year()}#${moment.month() + 1}`;
@@ -408,7 +410,7 @@ export class AddonCalendarHelperProvider {
      * Get the day "id".
      *
      * @param moment Day moment.
-     * @return The "id".
+     * @returns The "id".
      */
     getDayId(moment: moment.Moment): string {
         return `${this.getMonthId(moment)}#${moment.date()}`;
@@ -422,7 +424,7 @@ export class AddonCalendarHelperProvider {
      * @param year Year to get.
      * @param month Month to get.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the response.
+     * @returns Promise resolved with the response.
      */
     async getOfflineMonthWeeks(
         year: number,
@@ -497,7 +499,7 @@ export class AddonCalendarHelperProvider {
      *
      * @param data Current data.
      * @param original Original data.
-     * @return True if data has changed, false otherwise.
+     * @returns True if data has changed, false otherwise.
      */
     hasEventDataChanged(data: AddonCalendarOfflineEventDBRecord, original?: AddonCalendarOfflineEventDBRecord): boolean {
         if (!original) {
@@ -539,7 +541,7 @@ export class AddonCalendarHelperProvider {
      * @param events Events without filtering.
      * @param filter Filter from popover.
      * @param categories Categories indexed by ID.
-     * @return Filtered events.
+     * @returns Filtered events.
      */
     getFilteredEvents(
         events: AddonCalendarEventToDisplay[],
@@ -571,7 +573,7 @@ export class AddonCalendarHelperProvider {
      * @param categories Categories indexed by ID.
      * @param courseId Course ID to filter.
      * @param categoryId Category ID the course belongs to.
-     * @return Whether it should be displayed.
+     * @returns Whether it should be displayed.
      */
     protected shouldDisplayEvent(
         event: AddonCalendarEventToDisplay,
@@ -624,7 +626,7 @@ export class AddonCalendarHelperProvider {
      *
      * @param events Events that have been touched and number of times each event is repeated.
      * @param siteId Site ID. If not defined, current site.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     async refreshAfterChangeEvents(events: AddonCalendarSyncInvalidateEvent[], siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -759,7 +761,7 @@ export class AddonCalendarHelperProvider {
      * @param event Event that has been touched.
      * @param repeated Number of times the event is repeated.
      * @param siteId Site ID. If not defined, current site.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     refreshAfterChangeEvent(
         event: {
@@ -785,6 +787,7 @@ export class AddonCalendarHelperProvider {
      * Sort events by timestart.
      *
      * @param events List to sort.
+     * @returns Events sorted.
      */
     sortEvents(events: (AddonCalendarEventToDisplay)[]): (AddonCalendarEventToDisplay)[] {
         return events.sort((a, b) => {

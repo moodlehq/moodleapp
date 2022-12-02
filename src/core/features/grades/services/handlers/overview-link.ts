@@ -32,7 +32,7 @@ export class CoreGradesOverviewLinkHandlerService extends CoreContentLinksHandle
     /**
      * Get the list of actions for a link (url).
      *
-     * @return List of (or promise resolved with list of) actions.
+     * @returns List of (or promise resolved with list of) actions.
      */
     getActions(): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
@@ -47,7 +47,7 @@ export class CoreGradesOverviewLinkHandlerService extends CoreContentLinksHandle
      * If not defined, defaults to true.
      *
      * @param siteId The site ID.
-     * @return Whether the handler is enabled for the URL and site.
+     * @returns Whether the handler is enabled for the URL and site.
      */
     async isEnabled(siteId: string): Promise<boolean> {
         return CoreGrades.isCourseGradesEnabled(siteId);

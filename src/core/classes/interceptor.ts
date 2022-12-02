@@ -28,7 +28,7 @@ export class CoreInterceptor implements HttpInterceptor {
      *
      * @param obj Object to serialize.
      * @param addNull Add null values to the serialized as empty parameters.
-     * @return Serialization of the object.
+     * @returns Serialization of the object.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static serialize(obj: any, addNull?: boolean): string {

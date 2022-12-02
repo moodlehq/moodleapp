@@ -52,7 +52,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
      *
      * @param dataId Database ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean: true if has data to sync, false otherwise.
+     * @returns Promise resolved with boolean: true if has data to sync, false otherwise.
      */
     hasDataToSync(dataId: number, siteId?: string): Promise<boolean> {
         return AddonModDataOffline.hasOfflineData(dataId, siteId);
@@ -63,7 +63,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
      *
      * @param siteId Site ID to sync. If not defined, sync all sites.
      * @param force Wether to force sync not depending on last execution.
-     * @return Promise resolved if sync is successful, rejected if sync fails.
+     * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllDatabases(siteId?: string, force?: boolean): Promise<void> {
         return this.syncOnSites('all databases', (siteId) => this.syncAllDatabasesFunc(!!force, siteId), siteId);
@@ -74,7 +74,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
      *
      * @param force Wether to force sync not depending on last execution.
      * @param siteId Site ID to sync. If not defined, sync all sites.
-     * @param Promise resolved if sync is successful, rejected if sync fails.
+     * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     protected async syncAllDatabasesFunc(force: boolean, siteId: string): Promise<void> {
         const promises: Promise<unknown>[] = [];
@@ -115,7 +115,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
      *
      * @param dataId Database ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is synced or if it doesn't need to be synced.
+     * @returns Promise resolved when the data is synced or if it doesn't need to be synced.
      */
     async syncDatabaseIfNeeded(dataId: number, siteId?: string): Promise<AddonModDataSyncResult | undefined> {
         const needed = await this.isSyncNeeded(dataId, siteId);
@@ -130,7 +130,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
      *
      * @param dataId Data ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if sync is successful, rejected otherwise.
+     * @returns Promise resolved if sync is successful, rejected otherwise.
      */
     syncDatabase(dataId: number, siteId?: string): Promise<AddonModDataSyncResult> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -160,7 +160,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
      *
      * @param dataId Data ID.
      * @param siteId Site ID.
-     * @return Promise resolved if sync is successful, rejected otherwise.
+     * @returns Promise resolved if sync is successful, rejected otherwise.
      */
     protected async performSyncDatabase(dataId: number, siteId: string): Promise<AddonModDataSyncResult> {
         // Sync offline logs.
@@ -227,7 +227,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
      * @param entryActions Entry actions.
      * @param result Object with the result of the sync.
      * @param siteId Site ID.
-     * @return Promise resolved if success, rejected otherwise.
+     * @returns Promise resolved if success, rejected otherwise.
      */
     protected async syncEntry(
         database: AddonModDataData,
@@ -259,7 +259,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
      * @param entryActions Entry actions.
      * @param result Object with the result of the sync.
      * @param siteId Site ID.
-     * @return Promise resolved if success, rejected otherwise.
+     * @returns Promise resolved if success, rejected otherwise.
      */
     protected async performSyncEntry(
         database: AddonModDataData,
@@ -424,7 +424,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
      * @param cmId Course module to be synced. If not defined, sync all databases.
      * @param force Wether to force sync not depending on last execution.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if sync is successful, rejected otherwise.
+     * @returns Promise resolved if sync is successful, rejected otherwise.
      */
     async syncRatings(cmId?: number, force?: boolean, siteId?: string): Promise<AddonModDataSyncResult> {
         siteId = siteId || CoreSites.getCurrentSiteId();

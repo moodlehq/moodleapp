@@ -53,7 +53,7 @@ export class CoreBlockSideBlocksComponent implements OnInit {
     /**
      * Invalidate blocks data.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async invalidateBlocks(): Promise<void> {
         const promises: Promise<void>[] = [];
@@ -77,7 +77,7 @@ export class CoreBlockSideBlocksComponent implements OnInit {
     /**
      * Convenience function to fetch the data.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async loadContent(): Promise<void> {
         try {

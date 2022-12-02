@@ -54,7 +54,7 @@ export class AddonModQuizPreflightModalComponent implements OnInit {
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         this.title = this.title || Translate.instant('addon.mod_quiz.startattempt');

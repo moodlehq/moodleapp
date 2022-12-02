@@ -79,7 +79,7 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
     /**
      * Fetches preference data.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchPreferences(): Promise<void> {
         try {

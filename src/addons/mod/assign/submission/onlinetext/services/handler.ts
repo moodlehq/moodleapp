@@ -45,7 +45,7 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
      * plugin uses Moodle filters. The reason is that the app only prefetches filtered data, and the user should edit
      * unfiltered data.
      *
-     * @return Boolean or promise resolved with boolean: whether it can be edited in offline.
+     * @returns Boolean or promise resolved with boolean: whether it can be edited in offline.
      */
     canEditOffline(): boolean {
         // This plugin uses Moodle filters, it cannot be edited in offline.
@@ -57,7 +57,7 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
      *
      * @param assign The assignment.
      * @param plugin The plugin object.
-     * @return Whether the plugin is empty.
+     * @returns Whether the plugin is empty.
      */
     isEmpty(assign: AddonModAssignAssign, plugin: AddonModAssignPlugin): boolean {
         const text = AddonModAssign.getSubmissionPluginText(plugin, true);
@@ -75,7 +75,7 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
      * @param pluginData Object where to store the data to send.
      * @param userId User ID. If not defined, site's current user.
      * @param siteId Site ID. If not defined, current site.
-     * @return If the function is async, it should return a Promise resolved when done.
+     * @returns If the function is async, it should return a Promise resolved when done.
      */
     async copySubmissionData(
         assign: AddonModAssignAssign,
@@ -105,7 +105,7 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
      * Return the Component to use to display the plugin data, either in read or in edit mode.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
      *
-     * @return The component (or promise resolved with component) to use, undefined if not found.
+     * @returns The component (or promise resolved with component) to use, undefined if not found.
      */
     getComponent(): Type<AddonModAssignSubmissionPluginBaseComponent> {
         return AddonModAssignSubmissionOnlineTextComponent;
@@ -118,7 +118,7 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
      * @param assign The assignment.
      * @param submission The submission.
      * @param plugin The plugin object.
-     * @return The files (or promise resolved with the files).
+     * @returns The files (or promise resolved with the files).
      */
     getPluginFiles(
         assign: AddonModAssignAssign,
@@ -133,7 +133,7 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
      *
      * @param assign The assignment.
      * @param plugin The plugin object.
-     * @return The size (or promise resolved with size).
+     * @returns The size (or promise resolved with size).
      */
     async getSizeForCopy(assign: AddonModAssignAssign, plugin: AddonModAssignPlugin): Promise<number> {
         const text = AddonModAssign.getSubmissionPluginText(plugin, true);
@@ -150,8 +150,7 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
      * @param assign The assignment.
      * @param submission The submission.
      * @param plugin The plugin object.
-     * @param inputData Data entered by the user for the submission.
-     * @return The size (or promise resolved with size).
+     * @returns The size (or promise resolved with size).
      */
     getSizeForEdit(
         assign: AddonModAssignAssign,
@@ -168,7 +167,7 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
      *
      * @param plugin The plugin object.
      * @param inputData Data entered by the user for the submission.
-     * @return Text to submit.
+     * @returns Text to submit.
      */
     protected getTextToSubmit(plugin: AddonModAssignPlugin, inputData: AddonModAssignSubmissionOnlineTextData): string {
         const text = inputData.onlinetext_editor_text;
@@ -184,7 +183,7 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
      * @param submission The submission.
      * @param plugin The plugin object.
      * @param inputData Data entered by the user for the submission.
-     * @return Boolean (or promise resolved with boolean): whether the data has changed.
+     * @returns Boolean (or promise resolved with boolean): whether the data has changed.
      */
     async hasDataChanged(
         assign: AddonModAssignAssign,
@@ -212,7 +211,7 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return True or promise resolved with true if enabled.
+     * @returns True or promise resolved with true if enabled.
      */
     async isEnabled(): Promise<boolean> {
         return true;
@@ -221,7 +220,7 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
     /**
      * Whether or not the handler is enabled for edit on a site level.
      *
-     * @return Whether or not the handler is enabled for edit on a site level.
+     * @returns Whether or not the handler is enabled for edit on a site level.
      */
     isEnabledForEdit(): boolean {
         return true;
@@ -235,10 +234,6 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
      * @param plugin The plugin object.
      * @param inputData Data entered by the user for the submission.
      * @param pluginData Object where to store the data to send.
-     * @param offline Whether the user is editing in offline.
-     * @param userId User ID. If not defined, site's current user.
-     * @param siteId Site ID. If not defined, current site.
-     * @return If the function is async, it should return a Promise resolved when done.
      */
     prepareSubmissionData(
         assign: AddonModAssignAssign,
@@ -246,7 +241,7 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
         plugin: AddonModAssignPlugin,
         inputData: AddonModAssignSubmissionOnlineTextData,
         pluginData: AddonModAssignSubmissionOnlineTextPluginData,
-    ): void | Promise<void> {
+    ): void {
 
         let text = this.getTextToSubmit(plugin, inputData);
 
@@ -282,8 +277,6 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
      * @param plugin The plugin object.
      * @param offlineData Offline data stored.
      * @param pluginData Object where to store the data to send.
-     * @param siteId Site ID. If not defined, current site.
-     * @return If the function is async, it should return a Promise resolved when done.
      */
     prepareSyncData(
         assign: AddonModAssignAssign,
@@ -291,7 +284,7 @@ export class AddonModAssignSubmissionOnlineTextHandlerService implements AddonMo
         plugin: AddonModAssignPlugin,
         offlineData: AddonModAssignSubmissionsDBRecordFormatted,
         pluginData: AddonModAssignSubmissionOnlineTextPluginData,
-    ): void | Promise<void> {
+    ): void {
 
         const offlinePluginData = <AddonModAssignSubmissionOnlineTextPluginData>(offlineData && offlineData.plugindata);
         const textData = offlinePluginData.onlinetext_editor;

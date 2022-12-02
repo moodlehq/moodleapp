@@ -39,7 +39,7 @@ export class AddonModAssignFeedbackPluginBaseComponent implements IAddonModAssig
     /**
      * Open a modal to edit the feedback plugin.
      *
-     * @return Promise resolved with the input data, rejected if cancelled.
+     * @returns Promise resolved with the input data, rejected if cancelled.
      */
     async editFeedback(): Promise<AddonModAssignFeedbackCommentsTextData> {
         if (!this.canEdit) {
@@ -81,7 +81,7 @@ export interface IAddonModAssignFeedbackPluginComponent {
     /**
      * Invalidate the data.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     invalidate(): Promise<void>;
 

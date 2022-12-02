@@ -35,7 +35,7 @@ export class AddonPrivateFilesProvider {
     /**
      * Check if user can view his private files.
      *
-     * @return Whether the user can view his private files.
+     * @returns Whether the user can view his private files.
      */
     canViewPrivateFiles(): boolean {
         const currentSite = CoreSites.getCurrentSite();
@@ -49,7 +49,7 @@ export class AddonPrivateFilesProvider {
     /**
      * Check if user can view site files.
      *
-     * @return Whether the user can view site files.
+     * @returns Whether the user can view site files.
      */
     canViewSiteFiles(): boolean {
         return !this.isSiteFilesDisabledInSite();
@@ -58,7 +58,7 @@ export class AddonPrivateFilesProvider {
     /**
      * Check if user can upload private files.
      *
-     * @return Whether the user can upload private files.
+     * @returns Whether the user can upload private files.
      */
     canUploadFiles(): boolean {
         const currentSite = CoreSites.getCurrentSite();
@@ -74,7 +74,7 @@ export class AddonPrivateFilesProvider {
      *
      * @param params A list of parameters accepted by the Web service.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the files.
+     * @returns Promise resolved with the files.
      */
     async getFiles(params: AddonPrivateFilesGetFilesWSParams, siteId?: string): Promise<AddonPrivateFilesFile[]> {
 
@@ -109,7 +109,7 @@ export class AddonPrivateFilesProvider {
      * Get cache key for file list WS calls.
      *
      * @param params Params of the WS.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getFilesListCacheKey(params: AddonPrivateFilesGetFilesWSParams): string {
         const root = !params.component ? 'site' : 'my';
@@ -120,7 +120,7 @@ export class AddonPrivateFilesProvider {
     /**
      * Get the private files of the current user.
      *
-     * @return Promise resolved with the files.
+     * @returns Promise resolved with the files.
      */
     getPrivateFiles(): Promise<AddonPrivateFilesFile[]> {
         return this.getFiles(this.getPrivateFilesRootParams());
@@ -129,7 +129,7 @@ export class AddonPrivateFilesProvider {
     /**
      * Get params to get root private files directory.
      *
-     * @return Params.
+     * @returns Params.
      */
     protected getPrivateFilesRootParams(): AddonPrivateFilesGetFilesWSParams {
         return {
@@ -149,7 +149,7 @@ export class AddonPrivateFilesProvider {
      *
      * @param userId User ID. If not defined, current user in the site.
      * @param siteId Site ID. If not defined, use current site.
-     * @return Promise resolved with the info.
+     * @returns Promise resolved with the info.
      */
     async getPrivateFilesInfo(userId?: number, siteId?: string): Promise<AddonPrivateFilesGetUserInfoWSResult> {
         const site = await CoreSites.getSite(siteId);
@@ -171,7 +171,7 @@ export class AddonPrivateFilesProvider {
      * Get the cache key for private files info WS calls.
      *
      * @param userId User ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getPrivateFilesInfoCacheKey(userId: number): string {
         return this.getPrivateFilesInfoCommonCacheKey() + ':' + userId;
@@ -180,7 +180,7 @@ export class AddonPrivateFilesProvider {
     /**
      * Get the common part of the cache keys for private files info WS calls.
      *
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getPrivateFilesInfoCommonCacheKey(): string {
         return ROOT_CACHE_KEY + 'privateInfo';
@@ -189,7 +189,7 @@ export class AddonPrivateFilesProvider {
     /**
      * Get the site files.
      *
-     * @return Promise resolved with the files.
+     * @returns Promise resolved with the files.
      */
     getSiteFiles(): Promise<AddonPrivateFilesFile[]> {
         return this.getFiles(this.getSiteFilesRootParams());
@@ -198,7 +198,7 @@ export class AddonPrivateFilesProvider {
     /**
      * Get params to get root site files directory.
      *
-     * @return Params.
+     * @returns Params.
      */
     protected getSiteFilesRootParams(): AddonPrivateFilesGetFilesWSParams {
         return {
@@ -217,7 +217,7 @@ export class AddonPrivateFilesProvider {
      * @param root Root of the directory ('my' for private files, 'site' for site files).
      * @param params Params to the directory.
      * @param siteId Site ID. If not defined, use current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateDirectory(root?: 'my' | 'site', params?: AddonPrivateFilesGetFilesWSParams, siteId?: string): Promise<void> {
         if (!root) {
@@ -241,7 +241,7 @@ export class AddonPrivateFilesProvider {
      * Invalidates private files info for all users.
      *
      * @param siteId Site ID. If not defined, use current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidatePrivateFilesInfo(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -254,7 +254,7 @@ export class AddonPrivateFilesProvider {
      *
      * @param userId User ID. If not defined, current user in the site.
      * @param siteId Site ID. If not defined, use current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidatePrivateFilesInfoForUser(userId?: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -266,7 +266,7 @@ export class AddonPrivateFilesProvider {
      * Check if Files is disabled in a certain site.
      *
      * @param siteId Site Id. If not defined, use current site.
-     * @return Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     * @returns Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
     async isDisabled(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
@@ -278,7 +278,7 @@ export class AddonPrivateFilesProvider {
      * Check if Files is disabled in a certain site.
      *
      * @param site Site. If not defined, use current site.
-     * @return Whether it's disabled.
+     * @returns Whether it's disabled.
      */
     isDisabledInSite(site: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
@@ -289,7 +289,7 @@ export class AddonPrivateFilesProvider {
     /**
      * Return whether or not the plugin is enabled.
      *
-     * @return True if enabled, false otherwise.
+     * @returns True if enabled, false otherwise.
      */
     isPluginEnabled(): boolean {
         return this.canViewPrivateFiles() || this.canViewSiteFiles() || this.canUploadFiles();
@@ -299,7 +299,7 @@ export class AddonPrivateFilesProvider {
      * Check if private files is disabled in a certain site.
      *
      * @param siteId Site Id. If not defined, use current site.
-     * @return Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     * @returns Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
     async isPrivateFilesDisabled(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
@@ -311,7 +311,7 @@ export class AddonPrivateFilesProvider {
      * Check if private files is disabled in a certain site.
      *
      * @param site Site. If not defined, use current site.
-     * @return Whether it's disabled.
+     * @returns Whether it's disabled.
      */
     isPrivateFilesDisabledInSite(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
@@ -323,7 +323,7 @@ export class AddonPrivateFilesProvider {
      * Check if site files is disabled in a certain site.
      *
      * @param siteId Site Id. If not defined, use current site.
-     * @return Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     * @returns Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
     async isSiteFilesDisabled(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
@@ -335,7 +335,7 @@ export class AddonPrivateFilesProvider {
      * Check if site files is disabled in a certain site.
      *
      * @param site Site. If not defined, use current site.
-     * @return Whether it's disabled.
+     * @returns Whether it's disabled.
      */
     isSiteFilesDisabledInSite(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
@@ -347,7 +347,7 @@ export class AddonPrivateFilesProvider {
      * Check if upload files is disabled in a certain site.
      *
      * @param siteId Site Id. If not defined, use current site.
-     * @return Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     * @returns Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
     async isUploadDisabled(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
@@ -359,7 +359,7 @@ export class AddonPrivateFilesProvider {
      * Check if upload files is disabled in a certain site.
      *
      * @param site Site. If not defined, use current site.
-     * @return Whether it's disabled.
+     * @returns Whether it's disabled.
      */
     isUploadDisabledInSite(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
@@ -371,8 +371,8 @@ export class AddonPrivateFilesProvider {
      * Move a file from draft area to private files.
      *
      * @param draftId The draft area ID of the file.
-     * @param siteid ID of the site. If not defined, use current site.
-     * @return Promise resolved in success, rejected otherwise.
+     * @param siteId ID of the site. If not defined, use current site.
+     * @returns Promise resolved in success, rejected otherwise.
      */
     async moveFromDraftToPrivate(draftId: number, siteId?: string): Promise<null> {
         const params: AddonPrivateFilesAddUserPrivateFilesWSParams = {

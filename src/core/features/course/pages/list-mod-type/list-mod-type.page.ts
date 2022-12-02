@@ -58,7 +58,7 @@ export class CoreCourseListModTypePage implements OnInit {
     /**
      * Fetches the data.
      *
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async fetchData(): Promise<void> {
         if (!this.courseId) {
@@ -114,7 +114,7 @@ export class CoreCourseListModTypePage implements OnInit {
      * Refresh the data.
      *
      * @param refresher Refresher.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async refreshData(refresher: IonRefresher): Promise<void> {
         await CoreUtils.ignoreErrors(CoreCourse.invalidateSections(this.courseId || 0));

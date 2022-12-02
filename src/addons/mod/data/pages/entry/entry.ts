@@ -157,7 +157,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
      *
      * @param refresh Whether to refresh the current data or not.
      * @param isPtr Whether is a pull to refresh action.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async fetchEntryData(refresh = false, isPtr = false): Promise<void> {
         this.isPullingToRefresh = isPtr;
@@ -232,7 +232,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
      * Go to selected entry without changing state.
      *
      * @param offset Entry offset.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     async gotoEntry(offset: number): Promise<void> {
         this.offset = offset;
@@ -248,7 +248,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
      * Refresh all the data.
      *
      * @param isPtr Whether is a pull to refresh action.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async refreshAllData(isPtr?: boolean): Promise<void> {
         const promises: Promise<void>[] = [];
@@ -276,7 +276,6 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
      * Refresh the data.
      *
      * @param refresher Refresher.
-     * @return Promise resolved when done.
      */
     refreshDatabase(refresher?: IonRefresher): void {
         if (!this.entryLoaded) {
@@ -292,7 +291,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
      * Set group to see the database.
      *
      * @param groupId Group identifier to set.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     async setGroup(groupId: number): Promise<void> {
         this.selectedGroup = groupId;
@@ -308,7 +307,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
     /**
      * Convenience function to fetch the entry and set next/previous entries.
      *
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async setEntryFromOffset(): Promise<void> {
         if (this.offset === undefined && this.entryId !== undefined) {
@@ -412,7 +411,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Component being destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.syncObserver?.off();

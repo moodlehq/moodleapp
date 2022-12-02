@@ -33,7 +33,7 @@ export class AddonBlockTimelineHandlerService extends CoreBlockBaseHandler {
     /**
      * Check if the handler is enabled on a site level.
      *
-     * @return Whether or not the handler is enabled on a site level.
+     * @returns Whether or not the handler is enabled on a site level.
      */
     async isEnabled(): Promise<boolean> {
         const enabled = !CoreCoursesDashboard.isDisabledInSite();
@@ -46,7 +46,7 @@ export class AddonBlockTimelineHandlerService extends CoreBlockBaseHandler {
     /**
      * Returns the data needed to render the block.
      *
-     * @return Data or promise resolved with the data.
+     * @returns Data or promise resolved with the data.
      */
     getDisplayData(): CoreBlockHandlerData {
 

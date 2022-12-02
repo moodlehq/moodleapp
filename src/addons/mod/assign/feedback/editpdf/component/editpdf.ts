@@ -30,7 +30,7 @@ export class AddonModAssignFeedbackEditPdfComponent extends AddonModAssignFeedba
     files: CoreWSFile[] = [];
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         if (this.plugin) {

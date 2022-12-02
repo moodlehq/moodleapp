@@ -41,7 +41,7 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
      * @param fileUrl The file URL used to download the file.
      * @param path The path of the deleted file.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async fileDeleted(fileUrl: string, path: string, siteId?: string): Promise<void> {
         // If an h5p file is deleted, remove the contents folder.
@@ -53,7 +53,7 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
      *
      * @param file The file data.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the file to use. Rejected if cannot download.
+     * @returns Promise resolved with the file to use. Rejected if cannot download.
      */
     async getDownloadableFile(file: CoreWSFile, siteId?: string): Promise<CoreWSFile> {
         const site = await CoreSites.getSite(siteId);
@@ -73,7 +73,7 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
      * CoreFilepoolProvider.extractDownloadableFilesFromHtml.
      *
      * @param container Container where to get the URLs from.
-     * @return List of URLs.
+     * @returns List of URLs.
      */
     getDownloadableFilesFromHTML(container: HTMLElement): string[] {
         const iframes = <HTMLIFrameElement[]> Array.from(container.querySelectorAll('iframe.h5p-iframe'));
@@ -95,7 +95,7 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
      *
      * @param file The file data.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the size.
+     * @returns Promise resolved with the size.
      */
     async getFileSize(file: CoreWSFile, siteId?: string): Promise<number> {
         try {
@@ -115,7 +115,7 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return Whether or not the handler is enabled on a site level.
+     * @returns Whether or not the handler is enabled on a site level.
      */
     async isEnabled(): Promise<boolean> {
         return CoreH5P.canGetTrustedH5PFileInSite();
@@ -126,7 +126,7 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
      *
      * @param file The file data.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with a boolean and a reason why it isn't downloadable if needed.
+     * @returns Promise resolved with a boolean and a reason why it isn't downloadable if needed.
      */
     async isFileDownloadable(file: CoreWSFile, siteId?: string): Promise<CorePluginFileDownloadableResult> {
         const offlineDisabled = await CoreH5P.isOfflineDisabled(siteId);
@@ -147,7 +147,7 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
      * Check whether the file should be treated by this handler. It is used in functions where the component isn't used.
      *
      * @param file The file data.
-     * @return Whether the file should be treated by this handler.
+     * @returns Whether the file should be treated by this handler.
      */
     shouldHandleFile(file: CoreWSFile): boolean {
         return CoreMimetypeUtils.guessExtensionFromUrl(CoreFileHelper.getFileUrl(file)) == 'h5p';
@@ -160,7 +160,7 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
      * @param file The file entry of the downloaded file.
      * @param siteId Site ID. If not defined, current site.
      * @param onProgress Function to call on progress.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     treatDownloadedFile(
         fileUrl: string,

@@ -42,7 +42,7 @@ export class AddonQbehaviourDeferredFeedbackHandlerService implements CoreQuesti
      * @param question The question.
      * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return New state (or promise resolved with state).
+     * @returns New state (or promise resolved with state).
      */
     determineNewState(
         component: string,
@@ -64,7 +64,7 @@ export class AddonQbehaviourDeferredFeedbackHandlerService implements CoreQuesti
      * @param siteId Site ID. If not defined, current site.
      * @param isCompleteFn Function to override the default isCompleteResponse check.
      * @param isSameFn Function to override the default isSameResponse check.
-     * @return Promise resolved with state.
+     * @returns Promise resolved with state.
      */
     async determineNewStateDeferred(
         component: string,
@@ -166,7 +166,7 @@ export class AddonQbehaviourDeferredFeedbackHandlerService implements CoreQuesti
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return True or promise resolved with true if enabled.
+     * @returns True or promise resolved with true if enabled.
      */
     async isEnabled(): Promise<boolean> {
         return true;
@@ -183,7 +183,7 @@ export const AddonQbehaviourDeferredFeedbackHandler = makeSingleton(AddonQbehavi
  * @param answers Object with the question answers (without prefix).
  * @param component The component the question is related to.
  * @param componentId Component ID.
- * @return 1 if complete, 0 if not complete, -1 if cannot determine.
+ * @returns 1 if complete, 0 if not complete, -1 if cannot determine.
  */
 export type isCompleteResponseFunction = (
     question: CoreQuestionQuestionParsed,
@@ -202,7 +202,7 @@ export type isCompleteResponseFunction = (
  * @param newBasicAnswers Object with the previous basic" answers (without sequencecheck, certainty, ...).
  * @param component The component the question is related to.
  * @param componentId Component ID.
- * @return Whether they're the same.
+ * @returns Whether they're the same.
  */
 export type isSameResponseFunction = (
     question: CoreQuestionQuestionParsed,

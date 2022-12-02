@@ -19,7 +19,7 @@
     <core-loading [hideUntil]="loaded">
         <ion-list *ngIf="users.length">
             <!-- "Header" of the table -->
-            <ion-item class="addon-mod_h5pactivity-table-header font-bold" [detail]="false">
+            <ion-item class="addon-mod_h5pactivity-table-header hide-detail font-bold" detail="true">
                 <ion-label>
                     <ion-row class="ion-align-items-center">
                         <ion-col class="ion-text-center" size="4">{{ 'core.user' | translate }}</ion-col>

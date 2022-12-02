@@ -54,7 +54,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
      *
      * @param module Module.
      * @param courseId Course ID the module belongs to.
-     * @return Whether the module can use check_updates. The promise should never be rejected.
+     * @returns Whether the module can use check_updates. The promise should never be rejected.
      */
     async canUseCheckUpdates(module: CoreCourseAnyModuleData, courseId: number): Promise<boolean> {
         // Teachers cannot use the WS because it doesn't check student submissions.
@@ -80,7 +80,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
      *
      * @param module Module.
      * @param courseId Course ID the module belongs to.
-     * @return Promise resolved with the list of files.
+     * @returns Promise resolved with the list of files.
      */
     async getFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSFile[]> {
         const siteId = CoreSites.getCurrentSiteId();
@@ -147,7 +147,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
      * @param blindMarking True if blind marking, false otherwise.
      * @param canViewAllSubmissions Whether the user can view all submissions.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with array of files.
+     * @returns Promise resolved with array of files.
      */
     protected async getSubmissionFiles(
         assign: AddonModAssignAssign,
@@ -201,7 +201,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
      *
      * @param moduleId The module ID.
      * @param courseId The course ID the module belongs to.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number): Promise<void> {
         await AddonModAssign.invalidateContent(moduleId, courseId);
@@ -211,8 +211,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
      * Invalidate WS calls needed to determine module status.
      *
      * @param module Module.
-     * @param courseId Course ID the module belongs to.
-     * @return Promise resolved when invalidated.
+     * @returns Promise resolved when invalidated.
      */
     async invalidateModule(module: CoreCourseAnyModuleData): Promise<void> {
         return CoreCourse.invalidateModule(module.id);
@@ -231,7 +230,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
      * @param module Module.
      * @param courseId Course ID the module belongs to.
      * @param siteId Site ID.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async prefetchAssign(module: CoreCourseAnyModuleData, courseId: number, siteId: string): Promise<void> {
         const userId = CoreSites.getCurrentSiteUserId();
@@ -280,7 +279,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
      * @param moduleId Module ID.
      * @param userId User ID. If not defined, site's current user.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when prefetched, rejected otherwise.
+     * @returns Promise resolved when prefetched, rejected otherwise.
      */
     protected async prefetchSubmissions(
         assign: AddonModAssignAssign,
@@ -413,7 +412,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
      * @param moduleId Module ID.
      * @param options Other options, see getSubmissionStatusWithRetry.
      * @param resolveOnNoPermission If true, will avoid throwing if a nopermission error is raised.
-     * @return Promise resolved when prefetched, rejected otherwise.
+     * @returns Promise resolved when prefetched, rejected otherwise.
      */
     protected async prefetchSubmission(
         assign: AddonModAssignAssign,
@@ -527,7 +526,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
      * @param module Module.
      * @param courseId Course ID the module belongs to
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     sync(module: CoreCourseAnyModuleData, courseId: number, siteId?: string): Promise<AddonModAssignSyncResult> {
         return AddonModAssignSync.syncAssign(module.instance, siteId);

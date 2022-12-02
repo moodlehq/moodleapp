@@ -70,7 +70,7 @@ export class CoreSitePluginsNewContentDirective implements OnInit {
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.element.addEventListener('click', (ev: Event): void => {

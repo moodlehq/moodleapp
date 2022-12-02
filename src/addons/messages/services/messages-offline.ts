@@ -38,7 +38,7 @@ export class AddonMessagesOfflineProvider {
      * @param message The message.
      * @param timeCreated The time the message was created.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if stored, rejected if failure.
+     * @returns Promise resolved if stored, rejected if failure.
      */
     async deleteConversationMessage(conversationId: number, message: string, timeCreated: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -55,7 +55,7 @@ export class AddonMessagesOfflineProvider {
      *
      * @param conversationId Conversation ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if stored, rejected if failure.
+     * @returns Promise resolved if stored, rejected if failure.
      */
     async deleteConversationMessages(conversationId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -72,7 +72,7 @@ export class AddonMessagesOfflineProvider {
      * @param message The message.
      * @param timeCreated The time the message was created.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if stored, rejected if failure.
+     * @returns Promise resolved if stored, rejected if failure.
      */
     async deleteMessage(toUserId: number, message: string, timeCreated: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -88,7 +88,7 @@ export class AddonMessagesOfflineProvider {
      * Get all messages where deviceoffline is set to 1.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with messages.
+     * @returns Promise resolved with messages.
      */
     async getAllDeviceOfflineMessages(
         siteId?: string,
@@ -118,7 +118,7 @@ export class AddonMessagesOfflineProvider {
      * Get all offline messages.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with messages.
+     * @returns Promise resolved with messages.
      */
     async getAllMessages(
         siteId?: string,
@@ -147,7 +147,7 @@ export class AddonMessagesOfflineProvider {
      * @param conversationId Conversation ID.
      * @param userIdFrom To add to the conversation messages when parsing.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with messages.
+     * @returns Promise resolved with messages.
      */
     async getConversationMessages(
         conversationId: number,
@@ -169,7 +169,7 @@ export class AddonMessagesOfflineProvider {
      *
      * @param toUserId User ID to get messages to.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with messages.
+     * @returns Promise resolved with messages.
      */
     async getMessages(toUserId: number, siteId?: string): Promise<AddonMessagesOfflineMessagesDBRecordFormatted[]> {
         const site = await CoreSites.getSite(siteId);
@@ -185,7 +185,7 @@ export class AddonMessagesOfflineProvider {
      *
      * @param conversationId Conversation ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean: true if has offline messages, false otherwise.
+     * @returns Promise resolved with boolean: true if has offline messages, false otherwise.
      */
     async hasConversationMessages(conversationId: number, siteId?: string): Promise<boolean> {
         const messages = await this.getConversationMessages(conversationId, undefined, siteId);
@@ -198,7 +198,7 @@ export class AddonMessagesOfflineProvider {
      *
      * @param toUserId User ID to check.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean: true if has offline messages, false otherwise.
+     * @returns Promise resolved with boolean: true if has offline messages, false otherwise.
      */
     async hasMessages(toUserId: number, siteId?: string): Promise<boolean> {
         const messages = await this.getMessages(toUserId, siteId);
@@ -211,7 +211,7 @@ export class AddonMessagesOfflineProvider {
      *
      * @param messages List of messages to parse.
      * @param userIdFrom To add to the conversation messages when parsin.
-     * @return Parsed messages.
+     * @returns Parsed messages.
      */
     protected parseConversationMessages(
         messages: AddonMessagesOfflineConversationMessagesDBRecord[],
@@ -240,7 +240,7 @@ export class AddonMessagesOfflineProvider {
      * Parse some fields of each offline messages.
      *
      * @param messages List of messages to parse.
-     * @return Parsed messages.
+     * @returns Parsed messages.
      */
     protected parseMessages(
         messages: AddonMessagesOfflineMessagesDBRecord[],
@@ -270,7 +270,7 @@ export class AddonMessagesOfflineProvider {
      * @param conversation Conversation.
      * @param message The message to send.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if stored, rejected if failure.
+     * @returns Promise resolved if stored, rejected if failure.
      */
     async saveConversationMessage(
         conversation: AddonMessagesConversation,
@@ -304,7 +304,7 @@ export class AddonMessagesOfflineProvider {
      * @param toUserId User ID recipient of the message.
      * @param message The message to send.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if stored, rejected if failure.
+     * @returns Promise resolved if stored, rejected if failure.
      */
     async saveMessage(toUserId: number, message: string, siteId?: string): Promise<AddonMessagesOfflineMessagesDBRecord> {
         const site = await CoreSites.getSite(siteId);
@@ -328,7 +328,7 @@ export class AddonMessagesOfflineProvider {
      * @param messages Messages to update. Should be the same entry as retrieved from the DB.
      * @param value Value to set.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if stored, rejected if failure.
+     * @returns Promise resolved if stored, rejected if failure.
      */
     async setMessagesDeviceOffline(
         messages: AddonMessagesOfflineAnyMessagesFormatted[],

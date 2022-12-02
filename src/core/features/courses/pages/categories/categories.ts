@@ -101,7 +101,7 @@ export class CoreCoursesCategoriesPage implements OnInit, OnDestroy {
     /**
      * Fetch the categories.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchCategories(): Promise<void> {
         try {

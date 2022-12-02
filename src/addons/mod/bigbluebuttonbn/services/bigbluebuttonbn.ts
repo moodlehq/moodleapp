@@ -40,7 +40,7 @@ export class AddonModBBBService {
      * @param id BBB ID.
      * @param groupId Group ID, 0 means that the function will determine the user group.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async endMeeting(
         id: number,
@@ -63,7 +63,7 @@ export class AddonModBBBService {
      * @param courseId Course ID.
      * @param cmId Course module ID.
      * @param options Other options.
-     * @return Promise resolved when the activity is retrieved.
+     * @returns Promise resolved when the activity is retrieved.
      */
     async getBBB(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModBBBData> {
         const site = await CoreSites.getSite(options.siteId);
@@ -96,7 +96,7 @@ export class AddonModBBBService {
      * Get cache key for get BBB WS call.
      *
      * @param courseId Course ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getBBBsCacheKey(courseId: number): string {
         return ROOT_CACHE_KEY + 'bbb:' + courseId;
@@ -108,7 +108,7 @@ export class AddonModBBBService {
      * @param cmId Course module ID.
      * @param groupId Group ID, 0 means that the function will determine the user group.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the list of messages.
+     * @returns Promise resolved with the list of messages.
      */
     async getJoinUrl(
         cmId: number,
@@ -148,7 +148,7 @@ export class AddonModBBBService {
      * @param id BBB ID.
      * @param groupId Group ID, 0 means that the function will determine the user group.
      * @param options Other options.
-     * @return Promise resolved with the list of messages.
+     * @returns Promise resolved with the list of messages.
      */
     async getMeetingInfo(
         id: number,
@@ -191,7 +191,7 @@ export class AddonModBBBService {
      *
      * @param id BBB ID.
      * @param groupId Group ID, 0 means that the function will determine the user group.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getMeetingInfoCacheKey(id: number, groupId: number = 0): string {
         return this.getMeetingInfoCacheKeyPrefix(id) + groupId;
@@ -201,7 +201,7 @@ export class AddonModBBBService {
      * Get cache key prefix for meeting info WS call.
      *
      * @param id BBB ID.
-     * @return Cache key prefix.
+     * @returns Cache key prefix.
      */
     protected getMeetingInfoCacheKeyPrefix(id: number): string {
         return ROOT_CACHE_KEY + 'meetingInfo:' + id + ':';
@@ -213,7 +213,7 @@ export class AddonModBBBService {
      * @param id BBB ID.
      * @param groupId Group ID, 0 means that the function will determine the user group.
      * @param options Other options.
-     * @return Promise resolved with the list of messages.
+     * @returns Promise resolved with the list of messages.
      */
     async getRecordings(
         id: number,
@@ -256,7 +256,7 @@ export class AddonModBBBService {
      *
      * @param id BBB ID.
      * @param groupId Group ID, 0 means that the function will determine the user group.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getRecordingsCacheKey(id: number, groupId: number = 0): string {
         return this.getRecordingsCacheKeyPrefix(id) + groupId;
@@ -266,7 +266,7 @@ export class AddonModBBBService {
      * Get cache key prefix for get recordings WS call.
      *
      * @param id BBB ID.
-     * @return Cache key prefix.
+     * @returns Cache key prefix.
      */
     protected getRecordingsCacheKeyPrefix(id: number): string {
         return ROOT_CACHE_KEY + 'recordings:' + id + ':';
@@ -278,7 +278,7 @@ export class AddonModBBBService {
      * @param id BBB instance ID.
      * @param name Name of the BBB.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the WS call is successful.
+     * @returns Promise resolved when the WS call is successful.
      */
     async logView(id: number, name?: string, siteId?: string): Promise<void> {
         const params: AddonModBBBViewBigBlueButtonBNWSParams = {
@@ -302,7 +302,7 @@ export class AddonModBBBService {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateBBBs(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -316,7 +316,7 @@ export class AddonModBBBService {
      * @param id BBB ID.
      * @param groupId Group ID, 0 means that the function will determine the user group.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateMeetingInfo(id: number, groupId: number = 0, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -329,7 +329,7 @@ export class AddonModBBBService {
      *
      * @param id BBB ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllGroupsMeetingInfo(id: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -343,7 +343,7 @@ export class AddonModBBBService {
      * @param id BBB ID.
      * @param groupId Group ID, 0 means that the function will determine the user group.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateRecordings(id: number, groupId: number = 0, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -356,7 +356,7 @@ export class AddonModBBBService {
      *
      * @param id BBB ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllGroupsRecordings(id: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -368,7 +368,7 @@ export class AddonModBBBService {
      * Returns whether or not the BBB plugin is enabled for a certain site.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with true if enabled, resolved with false or rejected otherwise.
+     * @returns Promise resolved with true if enabled, resolved with false or rejected otherwise.
      * @since 4.0, but the WebServices were backported to the plugin so it can be supported in older versions.
      */
     async isPluginEnabled(siteId?: string): Promise<boolean> {

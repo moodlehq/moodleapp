@@ -50,7 +50,7 @@ export class CoreUpdateManagerProvider {
     /**
      * Returns a promise resolved when the load function is done.
      *
-     * @return Promise resolved when the load function is done.
+     * @returns Promise resolved when the load function is done.
      */
     get donePromise(): Promise<void> {
         return this.doneDeferred;
@@ -60,7 +60,7 @@ export class CoreUpdateManagerProvider {
      * Check if the app has been updated and performs the needed processes.
      * This function shouldn't be used outside of core.
      *
-     * @return Promise resolved when the update process finishes.
+     * @returns Promise resolved when the update process finishes.
      */
     async initialize(): Promise<void> {
         const promises: Promise<unknown>[] = [];
@@ -106,7 +106,7 @@ export class CoreUpdateManagerProvider {
     /**
      * If there is a current site, check if it's still supported in the new app.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async checkCurrentSiteAllowed(): Promise<void> {
         if (!CoreLoginHelper.getFixedSites()) {

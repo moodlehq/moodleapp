@@ -187,7 +187,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      *
      * @param refresher Refresher.
      * @param done Function to call when done.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async doRefresh(refresher?: IonRefresher, done?: () => void): Promise<void> {
         if (this.loaded) {
@@ -211,7 +211,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     /**
      * Invalidate list of courses.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected invalidateCourseList(): Promise<void> {
         return CoreCourses.invalidateUserCourses();
@@ -221,7 +221,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * Helper function to invalidate only selected courses.
      *
      * @param courseIds Course Id array.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async invalidateCourses(courseIds: number[]): Promise<void> {
         const promises: Promise<void>[] = [];
@@ -269,7 +269,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * Load all courses.
      *
      * @param loadWatcher To manage the requests.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadAllCourses(loadWatcher: PageLoadWatcher): Promise<void> {
         const showCategories = this.block.configsRecord?.displaycategories?.value === '1';
@@ -290,7 +290,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * Load grace period.
      *
      * @param loadWatcher To manage the requests.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadGracePeriod(loadWatcher: PageLoadWatcher): Promise<void> {
         this.hasCourses = this.allCourses.length > 0;
@@ -334,7 +334,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      *
      * @param config Block configuration.
      * @param loadWatcher To manage the requests.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadFilters(
         config?: Record<string, { name: string; value: string; type: string }>,
@@ -421,7 +421,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * Refresh course list based on a EVENT_MY_COURSES_UPDATED event.
      *
      * @param data Event data.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async refreshCourseList(data: CoreCoursesMyCoursesUpdatedEventData): Promise<void> {
         if (data.action == CoreCoursesProvider.ACTION_ENROL) {
@@ -464,7 +464,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     /**
      * Initialize the prefetch icon for selected courses.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async initPrefetchCoursesIcons(): Promise<void> {
         if (this.prefetchIconsInitialized) {
@@ -480,7 +480,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     /**
      * Prefetch all the shown courses.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async prefetchCourses(): Promise<void> {
         const initialIcon = this.prefetchCoursesData.icon;
@@ -510,7 +510,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * Set selected courses filter.
      *
      * @param loadWatcher To manage the requests.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async filterCourses(loadWatcher?: PageLoadWatcher): Promise<void> {
         let timeFilter = this.filters.timeFilterSelected;
@@ -655,7 +655,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * Saves filters value.
      *
      * @param timeFilter New time filter.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async saveFilters(timeFilter: string): Promise<void> {
         this.filters.timeFilterSelected = timeFilter;
@@ -666,7 +666,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * Toggle layout value.
      *
      * @param layout New layout.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async toggleLayout(layout: AddonBlockMyOverviewLayouts): Promise<void> {
         this.layout = layout;
@@ -678,7 +678,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * Saves sort courses value.
      *
      * @param sort New sorting.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async saveSort(sort: string): Promise<void> {
         this.sort.selected = sort;
@@ -690,7 +690,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * Option selected save and apply filter.
      *
      * @param selected Option selected.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async filterOptionsChanged(selected: AddonBlockMyOverviewTimeFilters): Promise<void> {
         this.filters.timeFilterSelected = selected;
@@ -709,7 +709,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      *
      * @param previousCourses Previous courses.
      * @param newCourses New courses.
-     * @return Whether it has meaningful changes.
+     * @returns Whether it has meaningful changes.
      */
     protected async coursesHaveMeaningfulChanges(
         previousCourses: CoreEnrolledCourseDataWithExtraInfoAndOptions[],
@@ -744,7 +744,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      *
      * @param previousCourses Previous courses.
      * @param newCourses New courses.
-     * @return Whether it has meaningful changes.
+     * @returns Whether it has meaningful changes.
      */
     protected async customFilterCoursesHaveMeaningfulChanges(
         previousCourses: CoreCourseSummaryData[],

@@ -37,7 +37,7 @@ export class ClipboardMock extends Clipboard {
      * Copy some text to the clipboard.
      *
      * @param text The text to copy.
-     * @return Promise resolved when copied.
+     * @returns Promise resolved when copied.
      */
     copy(text: string): Promise<void> {
         return new Promise((resolve, reject): void => {
@@ -62,7 +62,7 @@ export class ClipboardMock extends Clipboard {
     /*
      * Get the text stored in the clipboard.
      *
-     * @return Promise resolved with the text.
+     * @returns Promise resolved with the text.
      */
     paste(): Promise<string> {
         return new Promise((resolve, reject): void => {

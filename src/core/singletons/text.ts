@@ -28,7 +28,7 @@ export class CoreText {
      * Add starting slash to a string if needed.
      *
      * @param text Text to treat.
-     * @return Treated text.
+     * @returns Treated text.
      */
     static addStartingSlash(text = ''): string {
         if (text[0] === '/') {
@@ -42,7 +42,7 @@ export class CoreText {
      * Remove ending slash from a path or URL.
      *
      * @param text Text to treat.
-     * @return Treated text.
+     * @returns Treated text.
      */
     static removeEndingSlash(text?: string): string {
         if (!text) {
@@ -60,7 +60,7 @@ export class CoreText {
      * Remove starting slash from a string if needed.
      *
      * @param text Text to treat.
-     * @return Treated text.
+     * @returns Treated text.
      */
     static removeStartingSlash(text = ''): string {
         if (text[0] !== '/') {
@@ -75,7 +75,7 @@ export class CoreText {
      *
      * @param leftPath Left path.
      * @param rightPath Right path.
-     * @return Concatenated path.
+     * @returns Concatenated path.
      * @deprecated since 4.1.0. Please use CorePath.concatenatePaths instead.
      */
     static concatenatePaths(leftPath: string, rightPath: string): string {

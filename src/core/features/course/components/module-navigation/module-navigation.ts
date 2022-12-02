@@ -88,7 +88,7 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
      * @param readingStrategy Reading strategy.
      * @param checkNext Check next module.
      * @param checkPrevious Check previous module.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async setNextAndPreviousModules(
         readingStrategy: CoreSitesReadingStrategy,
@@ -178,7 +178,7 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
      * Module is visible by the user and it has a specific view (e.g. not a label).
      *
      * @param module Module to check.
-     * @return Wether the module is available to the user or not.
+     * @returns Wether the module is available to the user or not.
      */
     protected async isModuleAvailable(module: CoreCourseModuleData): Promise<boolean> {
         return !CoreCourseHelper.isModuleStealth(module) && CoreCourse.instance.moduleHasView(module);
@@ -188,7 +188,7 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
      * Section is visible by the user and its not stealth
      *
      * @param section Section to check.
-     * @return Wether the module is available to the user or not.
+     * @returns Wether the module is available to the user or not.
      */
     protected isSectionAvailable(section: CoreCourseWSSection): boolean {
         return CoreCourseHelper.canUserViewSection(section) && !CoreCourseHelper.isSectionStealth(section);
@@ -197,7 +197,7 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
     /**
      * Go to next/previous module.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async goToActivity(next = true): Promise<void> {
         if (!this.loaded) {

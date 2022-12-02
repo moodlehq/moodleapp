@@ -33,6 +33,8 @@ export class AddonMessagesIndexGuard implements CanActivate {
 
     /**
      * Check if there is a pending redirect and trigger it.
+     *
+     * @returns The redirection route.
      */
     private guard(route: ActivatedRouteSnapshot): UrlTree {
         const enabled = AddonMessages.isGroupMessagingEnabled();

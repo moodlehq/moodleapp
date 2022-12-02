@@ -44,6 +44,8 @@ export class CoreDatabaseTable<
 
     /**
      * Get database configuration.
+     *
+     * @returns The database configuration.
      */
     getConfig(): Partial<CoreDatabaseConfiguration> {
         return this.config;
@@ -135,6 +137,7 @@ export class CoreDatabaseTable<
      * method should be favored otherwise for better performance.
      *
      * @param conditions Matching conditions in SQL and JavaScript.
+     * @returns Records matching the given conditions.
      */
     getManyWhere(conditions: CoreDatabaseConditions<DBRecord>): Promise<DBRecord[]>  {
         return this.database.getRecordsSelect(this.tableName, conditions.sql, conditions.sqlParams);

@@ -99,7 +99,7 @@ export class AddonModAssignSubmissionReviewPage implements OnInit, OnDestroy, Ca
     /**
      * Check if we can leave the page or not.
      *
-     * @return Resolved if we can leave it, rejected if not.
+     * @returns Resolved if we can leave it, rejected if not.
      */
     async canLeave(): Promise<boolean> {
         if (!this.submissionComponent || this.forceLeave) {
@@ -127,7 +127,7 @@ export class AddonModAssignSubmissionReviewPage implements OnInit, OnDestroy, Ca
     /**
      * Get the submission.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchSubmission(): Promise<void> {
         this.assign = await AddonModAssign.getAssignment(this.courseId, this.moduleId);
@@ -154,7 +154,7 @@ export class AddonModAssignSubmissionReviewPage implements OnInit, OnDestroy, Ca
     /**
      * Refresh all the data.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async refreshAllData(): Promise<void> {
         const promises: Promise<void>[] = [];

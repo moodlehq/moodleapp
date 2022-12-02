@@ -40,7 +40,7 @@ export class AddonModSurveyProvider {
      *
      * @param surveyId Survey ID.
      * @param options Other options.
-     * @return Promise resolved when the questions are retrieved.
+     * @returns Promise resolved when the questions are retrieved.
      */
     async getQuestions(surveyId: number, options: CoreCourseCommonModWSOptions = {}): Promise<AddonModSurveyQuestion[]> {
         const site = await CoreSites.getSite(options.siteId);
@@ -69,7 +69,7 @@ export class AddonModSurveyProvider {
      * Get cache key for survey questions WS calls.
      *
      * @param surveyId Survey ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getQuestionsCacheKey(surveyId: number): string {
         return ROOT_CACHE_KEY + 'questions:' + surveyId;
@@ -79,7 +79,7 @@ export class AddonModSurveyProvider {
      * Get cache key for survey data WS calls.
      *
      * @param courseId Course ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getSurveyCacheKey(courseId: number): string {
         return ROOT_CACHE_KEY + 'survey:' + courseId;
@@ -92,7 +92,7 @@ export class AddonModSurveyProvider {
      * @param key Name of the property to check.
      * @param value Value to search.
      * @param options Other options.
-     * @return Promise resolved when the survey is retrieved.
+     * @returns Promise resolved when the survey is retrieved.
      */
     protected async getSurveyDataByKey(
         courseId: number,
@@ -130,7 +130,7 @@ export class AddonModSurveyProvider {
      * @param courseId Course ID.
      * @param cmId Course module ID.
      * @param options Other options.
-     * @return Promise resolved when the survey is retrieved.
+     * @returns Promise resolved when the survey is retrieved.
      */
     getSurvey(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModSurveySurvey> {
         return this.getSurveyDataByKey(courseId, 'coursemodule', cmId, options);
@@ -142,7 +142,7 @@ export class AddonModSurveyProvider {
      * @param courseId Course ID.
      * @param id Survey ID.
      * @param options Other options.
-     * @return Promise resolved when the survey is retrieved.
+     * @returns Promise resolved when the survey is retrieved.
      */
     getSurveyById(courseId: number, id: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModSurveySurvey> {
         return this.getSurveyDataByKey(courseId, 'id', id, options);
@@ -154,7 +154,7 @@ export class AddonModSurveyProvider {
      * @param moduleId The module ID.
      * @param courseId Course ID of the module.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -183,7 +183,7 @@ export class AddonModSurveyProvider {
      *
      * @param surveyId Survey ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateQuestions(surveyId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -196,7 +196,7 @@ export class AddonModSurveyProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSurveyData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -210,7 +210,7 @@ export class AddonModSurveyProvider {
      * @param id Module ID.
      * @param name Name of the assign.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the WS call is successful.
+     * @returns Promise resolved when the WS call is successful.
      */
     async logView(id: number, name?: string, siteId?: string): Promise<void> {
         const params: AddonModSurveyViewSurveyWSParams = {
@@ -237,7 +237,7 @@ export class AddonModSurveyProvider {
      * @param courseId Course ID the survey belongs to.
      * @param answers Answers.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean if success: true if answers were sent to server,
+     * @returns Promise resolved with boolean if success: true if answers were sent to server,
      *         false if stored in device.
      */
     async submitAnswers(
@@ -286,7 +286,7 @@ export class AddonModSurveyProvider {
      * @param surveyId Survey ID.
      * @param answers Answers.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when answers are successfully submitted.
+     * @returns Promise resolved when answers are successfully submitted.
      */
     async submitAnswersOnline(surveyId: number, answers: AddonModSurveySubmitAnswerData[], siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

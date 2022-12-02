@@ -37,7 +37,7 @@ export interface CanLeave {
     /**
      * Check whether the user can leave the current route.
      *
-     * @return Promise resolved with true if can leave, resolved with false or rejected if cannot leave.
+     * @returns Promise resolved with true if can leave, resolved with false or rejected if cannot leave.
      */
     canLeave: () => Promise<boolean>;
 }

@@ -64,7 +64,7 @@ export class AddonModGlossaryPrefetchHandlerService extends CoreCourseActivityPr
      * @param module Module to get the files.
      * @param glossary Glossary
      * @param entries Entries of the Glossary.
-     * @return List of Files.
+     * @returns List of Files.
      */
     protected getFilesFromGlossaryAndEntries(
         module: CoreCourseAnyModuleData,
@@ -105,7 +105,7 @@ export class AddonModGlossaryPrefetchHandlerService extends CoreCourseActivityPr
      * @param module The module object returned by WS.
      * @param courseId Course ID the module belongs to.
      * @param siteId Site ID.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async prefetchGlossary(module: CoreCourseAnyModuleData, courseId: number, siteId: string): Promise<void> {
         const options = {

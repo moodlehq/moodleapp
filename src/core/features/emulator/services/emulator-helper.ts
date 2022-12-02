@@ -35,7 +35,7 @@ export class CoreEmulatorHelperProvider {
     /**
      * Load the Mocks that need it.
      *
-     * @return Promise resolved when loaded.
+     * @returns Promise resolved when loaded.
      */
     async load(): Promise<void> {
         window.FileTransferError = FileTransferErrorMock;

@@ -161,7 +161,7 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
      *
      * @param refresher Refresher.
      * @param refreshUnreadCounts Whteher to refresh unread counts.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async refreshData(refresher?: IonRefresher, refreshUnreadCounts: boolean = true): Promise<void> {
         const promises: Promise<void>[] = [];
@@ -181,7 +181,7 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
     /**
      * Fetch discussions.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchData(): Promise<void> {
         this.loadingMessage = this.loadingMessages;
@@ -229,7 +229,7 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
      * Search messages cotaining text.
      *
      * @param query Text to search for.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     async searchMessage(query: string): Promise<void> {
         CoreApp.closeKeyboard();
@@ -252,7 +252,6 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
      *
      * @param discussionUserId Discussion Id to load.
      * @param messageId Message to scroll after loading the discussion. Used when searching.
-     * @param onlyWithSplitView Only go to Discussion if split view is on.
      */
     async gotoDiscussion(discussionUserId: number, messageId?: number): Promise<void> {
         this.discussionUserId = discussionUserId;

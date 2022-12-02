@@ -45,7 +45,7 @@ export class CoreEmulatorCaptureHelperProvider {
      *
      * @param type Type of media: image, audio, video.
      * @param options Optional options.
-     * @return Promise resolved when captured, rejected if error.
+     * @returns Promise resolved when captured, rejected if error.
      */
     captureMedia(type: 'image', options?: MockCameraOptions): Promise<string>;
     captureMedia(type: 'captureimage', options?: MockCaptureImageOptions): Promise<MediaFile[]>;
@@ -123,7 +123,7 @@ export class CoreEmulatorCaptureHelperProvider {
      *
      * @param type Type of media: image, audio, video.
      * @param mimetypes List of supported mimetypes. If undefined, all mimetypes supported.
-     * @return An object with mimetype and extension to use.
+     * @returns An object with mimetype and extension to use.
      */
     protected getMimeTypeAndExtension(type: string, mimetypes?: string[]): { extension?: string; mimetype?: string } {
         const result: { extension?: string; mimetype?: string } = {};
@@ -160,7 +160,7 @@ export class CoreEmulatorCaptureHelperProvider {
     /**
      * Init the getUserMedia function, using a deprecated function as fallback if the new one doesn't exist.
      *
-     * @return Whether the function is supported.
+     * @returns Whether the function is supported.
      */
     protected initGetUserMedia(): boolean {
         return !!navigator.mediaDevices.getUserMedia;
@@ -189,7 +189,7 @@ export class CoreEmulatorCaptureHelperProvider {
     /**
      * Load the Mocks that need it.
      *
-     * @return Promise resolved when loaded.
+     * @returns Promise resolved when loaded.
      */
     load(): Promise<void> {
         if (window.MediaRecorder !== undefined && this.initGetUserMedia()) {

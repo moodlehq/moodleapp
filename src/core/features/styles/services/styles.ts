@@ -43,7 +43,7 @@ export interface CoreStyleHandler {
      *
      * @param siteId Site Id.
      * @param config Site public config for temp sites.
-     * @return Wether the handler should be enabled for the site.
+     * @returns Wether the handler should be enabled for the site.
      */
     isEnabled(siteId: string, config?: CoreSitePublicConfigResponse): boolean | Promise<boolean>;
 
@@ -52,7 +52,7 @@ export interface CoreStyleHandler {
      *
      * @param siteId Site Id.
      * @param config Site public config for temp sites.
-     * @return CSS to apply.
+     * @returns CSS to apply.
      */
     getStyle(siteId?: string, config?: CoreSitePublicConfigResponse): string | Promise<string>;
 }
@@ -203,7 +203,7 @@ export class CoreStylesService {
      * @param handler Style handler.
      * @param disabled Whether the element should be disabled.
      * @param config Site public config.
-     * @return New element.
+     * @returns New element.
      */
     protected async setStyle(
         siteId: string,
@@ -246,7 +246,7 @@ export class CoreStylesService {
      * Add a style element for a site and load the styles for that element. The style will be disabled.
      *
      * @param siteId Site ID.
-     * @return Promise resolved when added and loaded.
+     * @returns Promise resolved when added and loaded.
      */
     protected async addSite(siteId?: string): Promise<void> {
         if (!siteId || this.stylesEls[siteId]) {
@@ -287,7 +287,7 @@ export class CoreStylesService {
      *
      * @param siteId Site Id.
      * @param sourceName Source or handler name.
-     * @return Element Id.
+     * @returns Element Id.
      */
     protected getStyleId(siteId: string, sourceName: string): string {
         return `${sourceName}-${siteId}`;
@@ -350,7 +350,7 @@ export class CoreStylesService {
      *
      * @param siteId Site ID. If not defined, current site.
      * @param disabled Whether loaded styles should be disabled.
-     * @return Promise resolved when styles are loaded.
+     * @returns Promise resolved when styles are loaded.
      */
     protected async load(siteId?: string, disabled = false): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -380,7 +380,7 @@ export class CoreStylesService {
      * Load styles for a temporary site, given its public config. These styles aren't prefetched.
      *
      * @param config Site public config.
-     * @return Promise resolved when loaded.
+     * @returns Promise resolved when loaded.
      */
     protected async loadTmpStyles(config: CoreSitePublicConfigResponse): Promise<void> {
         // Create the style and add it to the header.
@@ -396,7 +396,7 @@ export class CoreStylesService {
     /**
      * Preload the styles of the current site (stored in DB).
      *
-     * @return Promise resolved when loaded.
+     * @returns Promise resolved when loaded.
      */
     protected async preloadCurrentSite(): Promise<void> {
         const siteId = await CoreUtils.ignoreErrors(CoreSites.getStoredCurrentSiteId());
@@ -412,7 +412,7 @@ export class CoreStylesService {
     /**
      * Preload the styles of all the stored sites.
      *
-     * @return Promise resolved when loaded.
+     * @returns Promise resolved when loaded.
      */
     protected async preloadSites(): Promise<void> {
         const ids = await CoreSites.getSitesIds();
@@ -446,7 +446,7 @@ export class CoreStylesService {
      * Unload styles for a temporary site.
      */
     protected unloadTmpStyles(): void {
-        return this.removeSite(CoreStylesService.TMP_SITE_ID);
+        this.removeSite(CoreStylesService.TMP_SITE_ID);
     }
 
 }

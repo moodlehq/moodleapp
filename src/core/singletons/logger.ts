@@ -64,7 +64,7 @@ export class CoreLogger {
      * Get a logger instance for a certain class, service or component.
      *
      * @param className Name to use in the messages.
-     * @return Instance.
+     * @returns Instance.
      */
     static getInstance(className: string): CoreLogger {
         // Disable log on production and testing.
@@ -103,7 +103,7 @@ export class CoreLogger {
      *
      * @param logFn Log function to use.
      * @param className Name to use in the messages.
-     * @return Prepared function.
+     * @returns Prepared function.
      */
     private static prepareLogFn(logFn: LogFunction, className: string): LogFunction {
         // Return our own function that will call the logging function with the treated message.

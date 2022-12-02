@@ -68,7 +68,7 @@ export class CoreCourseModulePreviewPage implements OnInit {
     /**
      * Fetch module.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchModule(refresh = false): Promise<void> {
         if (refresh) {
@@ -96,7 +96,7 @@ export class CoreCourseModulePreviewPage implements OnInit {
      * Refresh the data.
      *
      * @param refresher Refresher.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async doRefresh(refresher?: IonRefresher): Promise<void> {
 
@@ -110,7 +110,7 @@ export class CoreCourseModulePreviewPage implements OnInit {
     /**
      * The completion of the modules has changed.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async onCompletionChange(): Promise<void> {
         // Update the module data after a while.

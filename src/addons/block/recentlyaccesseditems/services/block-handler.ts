@@ -28,12 +28,7 @@ export class AddonBlockRecentlyAccessedItemsHandlerService extends CoreBlockBase
     blockName = 'recentlyaccesseditems';
 
     /**
-     * Returns the data needed to render the block.
-     *
-     * @param block The block to render.
-     * @param contextLevel The context where the block will be used.
-     * @param instanceId The instance ID associated with the context level.
-     * @return Data or promise resolved with the data.
+     * @inheritdoc
      */
     getDisplayData(): CoreBlockHandlerData{
 

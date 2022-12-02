@@ -88,7 +88,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
     /**
      * Invalidate list of courses.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async invalidateCourseList(): Promise<void> {
         return this.site.isVersionGreaterEqualThan('3.8')
@@ -100,7 +100,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
      * Helper function to invalidate only selected courses.
      *
      * @param courseIds Course Id array.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async invalidateCourses(courseIds: number[]): Promise<void> {
         const promises: Promise<void>[] = [];
@@ -166,7 +166,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
      * Refresh course list based on a EVENT_MY_COURSES_UPDATED event.
      *
      * @param data Event data.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async refreshCourseList(data: CoreCoursesMyCoursesUpdatedEventData): Promise<void> {
         if (data.action == CoreCoursesProvider.ACTION_ENROL) {

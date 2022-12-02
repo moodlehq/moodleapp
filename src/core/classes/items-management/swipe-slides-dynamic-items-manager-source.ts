@@ -50,7 +50,7 @@ export abstract class CoreSwipeSlidesDynamicItemsManagerSource<Item extends Core
      * Load a certain item and preload next and previous ones.
      *
      * @param item Item to load.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async loadItem(item: Item): Promise<void> {
         const previousItem = this.getPreviousItem(item);
@@ -68,7 +68,7 @@ export abstract class CoreSwipeSlidesDynamicItemsManagerSource<Item extends Core
      *
      * @param item Item to load.
      * @param preload Whether to preload.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async loadItemInList(item: Item, preload = false): Promise<void> {
         const preloadedItem = await this.performLoadItemData(item, preload);
@@ -126,7 +126,7 @@ export abstract class CoreSwipeSlidesDynamicItemsManagerSource<Item extends Core
      *
      * @param item Item to load.
      * @param preload Whether to preload.
-     * @return Promise resolved with item. Resolve with null if already loading or item is not valid (e.g. there are no more items).
+     * @returns Promise resolved with item. Resolve with null if already loading or item is not valid (e.g. there are no more items)
      */
     protected async performLoadItemData(item: Item, preload: boolean): Promise<Item | null> {
         const itemId = this.getItemId(item);
@@ -189,7 +189,7 @@ export abstract class CoreSwipeSlidesDynamicItemsManagerSource<Item extends Core
      *
      * @param item Basic data about the item to load.
      * @param preload Whether to preload.
-     * @return Promise resolved with item. Resolve with null if item is not valid (e.g. there are no more items).
+     * @returns Promise resolved with item. Resolve with null if item is not valid (e.g. there are no more items).
      */
     abstract loadItemData(item: Item, preload: boolean): Promise<Item | null>;
 
@@ -197,7 +197,7 @@ export abstract class CoreSwipeSlidesDynamicItemsManagerSource<Item extends Core
      * Return the data to identify the previous item.
      *
      * @param item Data about the item.
-     * @return Previous item data. Null if no previous item.
+     * @returns Previous item data. Null if no previous item.
      */
     abstract getPreviousItem(item: Item): Item | null;
 
@@ -205,7 +205,7 @@ export abstract class CoreSwipeSlidesDynamicItemsManagerSource<Item extends Core
      * Return the data to identify the next item.
      *
      * @param item Data about the item.
-     * @return Next item data. Null if no next item.
+     * @returns Next item data. Null if no next item.
      */
     abstract getNextItem(item: Item): Item | null;
 

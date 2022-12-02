@@ -216,7 +216,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
      * Get the tab on a index.
      *
      * @param tabId Tab ID.
-     * @return Selected tab.
+     * @returns Selected tab.
      */
     protected getTabIndex(tabId: string): number {
         return this.tabs.findIndex((tab) => tabId == tab.id);
@@ -225,7 +225,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
     /**
      * Get the current selected tab.
      *
-     * @return Selected tab.
+     * @returns Selected tab.
      */
     getSelected(): T | undefined {
         const index = this.selected && this.getTabIndex(this.selected);
@@ -314,7 +314,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
     /**
      * Calculate the initial tab to load.
      *
-     * @return Initial tab, undefined if no valid tab found.
+     * @returns Initial tab, undefined if no valid tab found.
      */
     protected calculateInitialTab(): T | undefined {
         const selectedTab: T | undefined = this.tabs[this.selectedIndex || 0] || undefined;
@@ -479,7 +479,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
      *
      * @param tabId Tab ID.
      * @param e Event.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async selectTab(tabId: string, e?: Event): Promise<void> {
         const index = this.tabs.findIndex((tab) => tabId == tab.id);
@@ -495,7 +495,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
      *
      * @param index Index to select.
      * @param e Event.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async selectByIndex(index: number, e?: Event): Promise<void> {
         e?.preventDefault();
@@ -557,7 +557,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
      * Load the tab.
      *
      * @param tabToSelect Tab to load.
-     * @return Promise resolved with true if tab is successfully loaded.
+     * @returns Promise resolved with true if tab is successfully loaded.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     protected async loadTab(tabToSelect: T): Promise<boolean> {

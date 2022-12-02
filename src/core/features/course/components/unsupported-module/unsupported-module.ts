@@ -33,7 +33,7 @@ export class CoreCourseUnsupportedModuleComponent implements OnInit {
     isDisabledInSite = false; // It is implicit than if not disabled it will be unsupported.
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         if (!this.module) {

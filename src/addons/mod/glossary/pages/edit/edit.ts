@@ -90,7 +90,7 @@ export class AddonModGlossaryEditPage implements OnInit, OnDestroy, CanLeave {
     constructor(protected route: ActivatedRoute, @Optional() protected splitView: CoreSplitViewComponent) {}
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         try {
@@ -132,7 +132,7 @@ export class AddonModGlossaryEditPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Fetch required data.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchData(): Promise<void> {
         try {
@@ -157,7 +157,7 @@ export class AddonModGlossaryEditPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Load offline data when editing an offline entry.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadOfflineData(): Promise<void> {
         if (!this.glossary) {
@@ -228,7 +228,7 @@ export class AddonModGlossaryEditPage implements OnInit, OnDestroy, CanLeave {
     /**
      * Check if we can leave the page or not.
      *
-     * @return Resolved if we can leave it, rejected if not.
+     * @returns Resolved if we can leave it, rejected if not.
      */
     async canLeave(): Promise<boolean> {
         if (this.saved) {
@@ -371,7 +371,7 @@ export class AddonModGlossaryEditPage implements OnInit, OnDestroy, CanLeave {
      * Upload entry attachments if any.
      *
      * @param timecreated Entry's timecreated.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async uploadAttachments(
         timecreated: number,

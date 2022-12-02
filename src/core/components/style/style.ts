@@ -53,7 +53,7 @@ export class CoreStyleComponent implements OnChanges {
      *
      * @param css CSS code to be prefixed.
      * @param prefix Prefix css selector.
-     * @return Prefixed CSS.
+     * @returns Prefixed CSS.
      */
     protected prefixCSS(css: string, prefix: string): string {
         if (!css) {

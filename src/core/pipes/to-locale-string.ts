@@ -39,7 +39,7 @@ export class CoreToLocaleStringPipe implements PipeTransform {
      * Format a timestamp to a locale string.
      *
      * @param timestamp The timestamp (can be in seconds or milliseconds).
-     * @return Formatted time.
+     * @returns Formatted time.
      */
     transform(timestamp: number | string): string {
         if (typeof timestamp == 'string') {

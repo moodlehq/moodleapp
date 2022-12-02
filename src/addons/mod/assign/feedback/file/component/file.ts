@@ -30,7 +30,7 @@ export class AddonModAssignFeedbackFileComponent extends AddonModAssignFeedbackP
     files: CoreWSFile[] = [];
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         if (this.plugin) {

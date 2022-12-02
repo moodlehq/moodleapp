@@ -112,7 +112,7 @@ export class CoreSettingsGeneralPage {
     /**
      * Called when a new language is selected.
      *
-     * @param ev: Event
+     * @param ev Event
      */
     async languageChanged(ev: Event): Promise<void> {
         ev.stopPropagation();
@@ -183,8 +183,8 @@ export class CoreSettingsGeneralPage {
     /**
      * Called when a new zoom level is selected.
      *
-     * @param ev: Event
-     * @param value: New value
+     * @param ev Event
+     * @param value New value
      */
     zoomLevelChanged(ev: Event, value: CoreZoomLevel): void {
         ev.stopPropagation();
@@ -205,7 +205,7 @@ export class CoreSettingsGeneralPage {
     /**
      * Called when a new color scheme is selected.
      *
-     * @param ev: Event
+     * @param ev Event
      */
     colorSchemeChanged(ev: Event): void {
         ev.stopPropagation();
@@ -218,7 +218,7 @@ export class CoreSettingsGeneralPage {
     /**
      * Called when the rich text editor is enabled or disabled.
      *
-     * @param ev: Event
+     * @param ev Event
      */
     richTextEditorChanged(ev: Event): void {
         ev.stopPropagation();
@@ -230,7 +230,7 @@ export class CoreSettingsGeneralPage {
     /**
      * Called when the debug display setting is enabled or disabled.
      *
-     * @param ev: Event
+     * @param ev Event
      */
     debugDisplayChanged(ev: Event): void {
         ev.stopPropagation();
@@ -243,7 +243,7 @@ export class CoreSettingsGeneralPage {
     /**
      * Called when the analytics setting is enabled or disabled.
      *
-     * @param ev: Event
+     * @param ev Event
      */
     async analyticsEnabledChanged(ev: Event):  Promise<void> {
         ev.stopPropagation();
@@ -257,7 +257,7 @@ export class CoreSettingsGeneralPage {
     /**
      * Open native settings.
      *
-     * @param ev: Event
+     * @param ev Event
      */
     openNativeSettings(ev: Event): void {
         ev.stopPropagation();

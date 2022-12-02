@@ -36,7 +36,7 @@ export class CoreSitePluginsAssignSubmissionComponent extends CoreSitePluginsCom
     @Input() allowOffline = false; // Whether to allow offline.
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         // Pass the input and output data to the component.
@@ -55,7 +55,7 @@ export class CoreSitePluginsAssignSubmissionComponent extends CoreSitePluginsCom
     /**
      * Invalidate the data.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     invalidate(): Promise<void> {
         return Promise.resolve();

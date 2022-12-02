@@ -54,7 +54,7 @@ export class AddonMessageOutputAirnotifierProvider {
      * @param deviceId Device ID.
      * @param enable True to enable, false to disable.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if success.
+     * @returns Promise resolved if success.
      */
     async enableDevice(deviceId: number, enable: boolean, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -84,7 +84,7 @@ export class AddonMessageOutputAirnotifierProvider {
     /**
      * Get the cache key for the is system configured call.
      *
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getSystemConfiguredCacheKey(): string {
         return ROOT_CACHE_KEY + 'isAirnotifierConfigured';
@@ -94,7 +94,7 @@ export class AddonMessageOutputAirnotifierProvider {
      * Check if airnotifier is configured.
      *
      * @param options Options.
-     * @return Promise resolved with boolean: whether it's configured.
+     * @returns Promise resolved with boolean: whether it's configured.
      */
     async isSystemConfigured(options: CoreSitesCommonWSOptions = {}): Promise<boolean> {
         const site = await CoreSites.getSite(options.siteId);
@@ -113,7 +113,7 @@ export class AddonMessageOutputAirnotifierProvider {
     /**
      * Get the cache key for the get user devices call.
      *
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getUserDevicesCacheKey(): string {
         return ROOT_CACHE_KEY + 'userDevices';
@@ -124,7 +124,7 @@ export class AddonMessageOutputAirnotifierProvider {
      *
      * @param ignoreCache Whether to ignore cache.
      * @param siteId Site ID. If not defined, use current site.
-     * @return Promise resolved with the devices.
+     * @returns Promise resolved with the devices.
      */
     async getUserDevices(ignoreCache?: boolean, siteId?: string): Promise<AddonMessageOutputAirnotifierDevice[]> {
 
@@ -156,7 +156,7 @@ export class AddonMessageOutputAirnotifierProvider {
      * Invalidate get user devices.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when data is invalidated.
+     * @returns Promise resolved when data is invalidated.
      */
     async invalidateUserDevices(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -168,7 +168,7 @@ export class AddonMessageOutputAirnotifierProvider {
      * Is user is an admin and push are disabled, notify him.
      *
      * @param siteId Site ID.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async warnPushDisabledForAdmin(siteId?: string): Promise<void> {
         if (!siteId) {

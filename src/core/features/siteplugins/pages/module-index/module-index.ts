@@ -93,7 +93,7 @@ export class CoreSitePluginsModuleIndexPage implements OnInit, CanLeave {
     /**
      * Check if we can leave the page or not.
      *
-     * @return Resolved if we can leave it, rejected if not.
+     * @returns Resolved if we can leave it, rejected if not.
      */
     async canLeave(): Promise<boolean> {
         if (!this.content) {

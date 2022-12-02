@@ -58,7 +58,7 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
      * @param url The URL to treat.
      * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
      * @param courseId Course ID related to the URL. Optional but recommended.
-     * @return List of params to pass to navigateToModule / navigateToModuleByInstance.
+     * @returns List of params to pass to navigateToModule / navigateToModuleByInstance.
      * @deprecated since 4.0
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -73,7 +73,7 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
      * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
      * @param siteId The site ID.
      * @param courseId Course ID related to the URL. Optional but recommended.
-     * @return Navigation options to open the module.
+     * @returns Navigation options to open the module.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     getModNavOptions(url: string, params: Record<string, string>, siteId: string, courseId?: number): CoreNavigationOptions {
@@ -87,7 +87,7 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
      * @param url The URL to treat.
      * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
      * @param courseId Course ID related to the URL. Optional but recommended.
-     * @return List of (or promise resolved with list of) actions.
+     * @returns List of (or promise resolved with list of) actions.
      */
     getActions(
         siteIds: string[],

@@ -66,7 +66,7 @@ export class AddonModFeedbackNonRespondentsPage implements OnInit {
      * Fetch all the data required for the view.
      *
      * @param refresh Empty events array first.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchData(refresh: boolean = false): Promise<void> {
         this.page = 0;
@@ -95,7 +95,7 @@ export class AddonModFeedbackNonRespondentsPage implements OnInit {
      * Load Group responses.
      *
      * @param groupId If defined it will change group if not, it will load more users for the same group.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadGroupUsers(groupId?: number): Promise<void> {
         this.loadMoreError = false;

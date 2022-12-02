@@ -42,7 +42,7 @@ export class AddonModLessonOfflineProvider {
      * @param pageId Page ID.
      * @param timemodified The timemodified of the attempt.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async deleteAttempt(lessonId: number, retake: number, pageId: number, timemodified: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -60,7 +60,7 @@ export class AddonModLessonOfflineProvider {
      *
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async deleteRetake(lessonId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -75,7 +75,7 @@ export class AddonModLessonOfflineProvider {
      * @param retake Lesson retake number.
      * @param pageId Page ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async deleteRetakeAttemptsForPage(lessonId: number, retake: number, pageId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -96,7 +96,7 @@ export class AddonModLessonOfflineProvider {
      * @param finished Whether retake is finished.
      * @param outOfTime If the user ran out of time.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved in success, rejected otherwise.
+     * @returns Promise resolved in success, rejected otherwise.
      */
     async finishRetake(
         lessonId: number,
@@ -123,7 +123,7 @@ export class AddonModLessonOfflineProvider {
      * Get all the offline page attempts in a certain site.
      *
      * @param siteId Site ID. If not set, use current site.
-     * @return Promise resolved when the offline attempts are retrieved.
+     * @returns Promise resolved when the offline attempts are retrieved.
      */
     async getAllAttempts(siteId?: string): Promise<AddonModLessonPageAttemptRecord[]> {
         const db = await CoreSites.getSiteDb(siteId);
@@ -137,7 +137,7 @@ export class AddonModLessonOfflineProvider {
      * Get all the lessons that have offline data in a certain site.
      *
      * @param siteId Site ID. If not set, use current site.
-     * @return Promise resolved with an object containing the lessons.
+     * @returns Promise resolved with an object containing the lessons.
      */
     async getAllLessonsWithData(siteId?: string): Promise<AddonModLessonLessonStoredData[]> {
         const lessons: Record<number, AddonModLessonLessonStoredData> = {};
@@ -157,7 +157,7 @@ export class AddonModLessonOfflineProvider {
      * Get all the offline retakes in a certain site.
      *
      * @param siteId Site ID. If not set, use current site.
-     * @return Promise resolved when the offline retakes are retrieved.
+     * @returns Promise resolved when the offline retakes are retrieved.
      */
     async getAllRetakes(siteId?: string): Promise<AddonModLessonRetakeDBRecord[]> {
         const db = await CoreSites.getSiteDb(siteId);
@@ -171,7 +171,7 @@ export class AddonModLessonOfflineProvider {
      * @param lessonId Lesson ID.
      * @param retake Retake number.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the attempt (undefined if no attempts).
+     * @returns Promise resolved with the attempt (undefined if no attempts).
      */
     async getLastQuestionPageAttempt(
         lessonId: number,
@@ -204,7 +204,7 @@ export class AddonModLessonOfflineProvider {
      *
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the attempts.
+     * @returns Promise resolved with the attempts.
      */
     async getLessonAttempts(lessonId: number, siteId?: string): Promise<AddonModLessonPageAttemptRecord[]> {
         const site = await CoreSites.getSite(siteId);
@@ -245,7 +245,7 @@ export class AddonModLessonOfflineProvider {
      * @param correct True to only fetch correct attempts, false to get them all.
      * @param pageId If defined, only get attempts on this page.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the attempts.
+     * @returns Promise resolved with the attempts.
      */
     async getQuestionsAttempts(
         lessonId: number,
@@ -270,7 +270,7 @@ export class AddonModLessonOfflineProvider {
      *
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the retake.
+     * @returns Promise resolved with the retake.
      */
     async getRetake(lessonId: number, siteId?: string): Promise<AddonModLessonRetakeDBRecord> {
         const site = await CoreSites.getSite(siteId);
@@ -284,7 +284,7 @@ export class AddonModLessonOfflineProvider {
      * @param lessonId Lesson ID.
      * @param retake Retake number.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the retake attempts.
+     * @returns Promise resolved with the retake attempts.
      */
     async getRetakeAttempts(lessonId: number, retake: number, siteId?: string): Promise<AddonModLessonPageAttemptRecord[]> {
         const site = await CoreSites.getSite(siteId);
@@ -307,7 +307,7 @@ export class AddonModLessonOfflineProvider {
      * @param retake Lesson retake number.
      * @param pageId Page ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the retake attempts.
+     * @returns Promise resolved with the retake attempts.
      */
     async getRetakeAttemptsForPage(
         lessonId: number,
@@ -336,7 +336,7 @@ export class AddonModLessonOfflineProvider {
      * @param retake Retake number.
      * @param type Type of the pages to get: TYPE_QUESTION or TYPE_STRUCTURE.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the retake attempts.
+     * @returns Promise resolved with the retake attempts.
      */
     async getRetakeAttemptsForType(
         lessonId: number,
@@ -365,7 +365,7 @@ export class AddonModLessonOfflineProvider {
      * @param courseId Course ID the lesson belongs to.
      * @param retake Retake number.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the retake.
+     * @returns Promise resolved with the retake.
      */
     protected async getRetakeWithFallback(
         lessonId: number,
@@ -398,7 +398,7 @@ export class AddonModLessonOfflineProvider {
      *
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean.
+     * @returns Promise resolved with boolean.
      */
     async hasFinishedRetake(lessonId: number, siteId?: string): Promise<boolean> {
         try {
@@ -415,7 +415,7 @@ export class AddonModLessonOfflineProvider {
      *
      * @param lessonId Lesson ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean.
+     * @returns Promise resolved with boolean.
      */
     async hasOfflineData(lessonId: number, siteId?: string): Promise<boolean> {
         const [retake, attempts] = await Promise.all([
@@ -432,7 +432,7 @@ export class AddonModLessonOfflineProvider {
      * @param lessonId Lesson ID.
      * @param retake Retake number.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with a boolean.
+     * @returns Promise resolved with a boolean.
      */
     async hasRetakeAttempts(lessonId: number, retake: number, siteId?: string): Promise<boolean> {
         try {
@@ -448,7 +448,7 @@ export class AddonModLessonOfflineProvider {
      * Parse some properties of a page attempt.
      *
      * @param attempt The attempt to treat.
-     * @return The treated attempt.
+     * @returns The treated attempt.
      */
     protected parsePageAttempt(attempt: AddonModLessonPageAttemptDBRecord): AddonModLessonPageAttemptRecord {
         return {
@@ -462,7 +462,7 @@ export class AddonModLessonOfflineProvider {
      * Parse some properties of some page attempts.
      *
      * @param attempts The attempts to treat.
-     * @return The treated attempts.
+     * @returns The treated attempts.
      */
     protected parsePageAttempts(attempts: AddonModLessonPageAttemptDBRecord[]): AddonModLessonPageAttemptRecord[] {
         return attempts.map((attempt) => this.parsePageAttempt(attempt));
@@ -481,7 +481,7 @@ export class AddonModLessonOfflineProvider {
      * @param correct If answer is correct. Only for question pages.
      * @param userAnswer The user's answer (userresponse from checkAnswer).
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved in success, rejected otherwise.
+     * @returns Promise resolved in success, rejected otherwise.
      */
     async processPage(
         lessonId: number,
@@ -528,7 +528,7 @@ export class AddonModLessonOfflineProvider {
      * @param retake Retake number.
      * @param lastPage ID of the last question page attempted.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved in success, rejected otherwise.
+     * @returns Promise resolved in success, rejected otherwise.
      */
     async setLastQuestionPageAttempted(
         lessonId: number,

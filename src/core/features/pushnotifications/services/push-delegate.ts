@@ -45,7 +45,7 @@ export interface CorePushNotificationsClickHandler {
      * Check if a notification click is handled by this handler.
      *
      * @param notification The notification to check.
-     * @return Whether the notification click is handled by this handler.
+     * @returns Whether the notification click is handled by this handler.
      */
     handles(notification: CorePushNotificationsNotificationBasicData): Promise<boolean>;
 
@@ -53,7 +53,7 @@ export interface CorePushNotificationsClickHandler {
      * Handle the notification click.
      *
      * @param notification The notification to check.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     handleClick(notification: CorePushNotificationsNotificationBasicData): Promise<void>;
 }
@@ -78,7 +78,7 @@ export class CorePushNotificationsDelegateService {
      * Function called when a push notification is clicked. Sends notification to handlers.
      *
      * @param notification Notification clicked.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async clicked(notification: CorePushNotificationsNotificationBasicData): Promise<void> {
         if (!notification) {
@@ -116,7 +116,7 @@ export class CorePushNotificationsDelegateService {
      *
      * @param handler Handler to check.
      * @param siteId The site ID to check.
-     * @return Promise resolved with boolean: whether the handler feature is disabled.
+     * @returns Promise resolved with boolean: whether the handler feature is disabled.
      */
     protected async isFeatureDisabled(handler: CorePushNotificationsClickHandler, siteId?: string): Promise<boolean> {
         if (!siteId) {
@@ -147,7 +147,7 @@ export class CorePushNotificationsDelegateService {
      * observer.unsuscribe();
      *
      * @param eventName Only receive is permitted.
-     * @return Observer to subscribe.
+     * @returns Observer to subscribe.
      */
     on<T = CorePushNotificationsNotificationBasicData>(eventName: string): Subject<T> {
         if (this.observables[eventName] === undefined) {
@@ -164,7 +164,7 @@ export class CorePushNotificationsDelegateService {
      * Register a click handler.
      *
      * @param handler The handler to register.
-     * @return True if registered successfully, false otherwise.
+     * @returns True if registered successfully, false otherwise.
      */
     registerClickHandler(handler: CorePushNotificationsClickHandler): boolean {
         if (this.clickHandlers[handler.name] !== undefined) {
@@ -198,7 +198,7 @@ export class CorePushNotificationsDelegateService {
      * Check if a counter handler is present.
      *
      * @param name Handler's name.
-     * @return If handler name is present.
+     * @returns If handler name is present.
      */
     isCounterHandlerRegistered(name: string): boolean {
         return this.counterHandlers[name] !== undefined;
@@ -207,7 +207,7 @@ export class CorePushNotificationsDelegateService {
     /**
      * Get all counter badge handlers.
      *
-     * @return with all the handler names.
+     * @returns with all the handler names.
      */
     getCounterHandlers(): Record<string, string> {
         return this.counterHandlers;

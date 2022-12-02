@@ -88,7 +88,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         await this.fetchNotes(true);
@@ -99,7 +99,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
      *
      * @param sync When to resync notes.
      * @param showErrors When to display errors or not.
-     * @return Promise with the notes.
+     * @returns Promise with the notes.
      */
     protected async fetchNotes(sync = false, showErrors = false): Promise<void> {
         if (sync) {
@@ -267,7 +267,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
      * Tries to synchronize course notes.
      *
      * @param showErrors Whether to display errors or not.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async syncNotes(showErrors: boolean): Promise<void> {
         try {

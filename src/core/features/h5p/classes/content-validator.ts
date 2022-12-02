@@ -55,7 +55,7 @@ export class CoreH5PContentValidator {
      * Add Addon library.
      *
      * @param library The addon library to add.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async addon(library: CoreH5PLibraryAddonData): Promise<void> {
         const depKey = 'preloaded-' + library.machineName;
@@ -73,7 +73,7 @@ export class CoreH5PContentValidator {
     /**
      * Get the flat dependency tree.
      *
-     * @return Dependencies.
+     * @returns Dependencies.
      */
     getDependencies(): {[key: string]: CoreH5PContentDepsTreeDependency} {
         return this.dependencies;
@@ -83,7 +83,7 @@ export class CoreH5PContentValidator {
      * Validate metadata
      *
      * @param metadata Metadata.
-     * @return Promise resolved with metadata validated & filtered.
+     * @returns Promise resolved with metadata validated & filtered.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     validateMetadata(metadata: any): Promise<unknown> {
@@ -103,7 +103,7 @@ export class CoreH5PContentValidator {
      *
      * @param text Text to validate.
      * @param semantics Semantics.
-     * @return Validated text.
+     * @returns Validated text.
      */
     validateText(text: string, semantics: CoreH5PSemantics): string {
         if (typeof text != 'string') {
@@ -180,7 +180,7 @@ export class CoreH5PContentValidator {
      *
      * @param contentPath The path containing content files to validate.
      * @param isLibrary Whether it's a library.
-     * @return True if all files are valid.
+     * @returns True if all files are valid.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     validateContentFiles(contentPath: string, isLibrary: boolean = false): boolean {
@@ -193,7 +193,7 @@ export class CoreH5PContentValidator {
      *
      * @param value Number to validate.
      * @param semantics Semantics.
-     * @return Validated number.
+     * @returns Validated number.
      */
     validateNumber(value: unknown, semantics: CoreH5PSemantics): number {
         // Validate that num is indeed a number.
@@ -228,7 +228,7 @@ export class CoreH5PContentValidator {
      * Validate given value against boolean semantics.
      *
      * @param bool Boolean to check.
-     * @return Validated bool.
+     * @returns Validated bool.
      */
     validateBoolean(bool: unknown): boolean {
         return !!bool;
@@ -239,7 +239,7 @@ export class CoreH5PContentValidator {
      *
      * @param select Values to validate.
      * @param semantics Semantics.
-     * @return Validated select.
+     * @returns Validated select.
      */
     validateSelect(select: string | string[], semantics: CoreH5PSemantics): string | string[] {
         const optional = semantics.optional;
@@ -294,7 +294,7 @@ export class CoreH5PContentValidator {
      *
      * @param list List to validate.
      * @param semantics Semantics.
-     * @return Validated list.
+     * @returns Validated list.
      */
     async validateList(list: Record<string, unknown> | unknown[], semantics: CoreH5PSemantics): Promise<unknown[] | null> {
         const field = semantics.field!;
@@ -347,7 +347,7 @@ export class CoreH5PContentValidator {
      * @param file File to validate.
      * @param semantics Semantics.
      * @param typeValidKeys List of valid keys.
-     * @return Promise resolved with the validated file.
+     * @returns Promise resolved with the validated file.
      */
     protected async validateFilelike(file: FileLike, semantics: CoreH5PSemantics, typeValidKeys: string[] = []): Promise<FileLike> {
         // Do not allow to use files from other content folders.
@@ -414,7 +414,7 @@ export class CoreH5PContentValidator {
      *
      * @param file File.
      * @param semantics Semantics.
-     * @return Promise resolved with the validated file.
+     * @returns Promise resolved with the validated file.
      */
     validateFile(file: FileLike, semantics: CoreH5PSemantics): Promise<FileLike> {
         return this.validateFilelike(file, semantics);
@@ -425,7 +425,7 @@ export class CoreH5PContentValidator {
      *
      * @param image Image.
      * @param semantics Semantics.
-     * @return Promise resolved with the validated file.
+     * @returns Promise resolved with the validated file.
      */
     validateImage(image: FileLike, semantics: CoreH5PSemantics): Promise<FileLike> {
         return this.validateFilelike(image, semantics, ['width', 'height', 'originalImage']);
@@ -436,7 +436,7 @@ export class CoreH5PContentValidator {
      *
      * @param video Video.
      * @param semantics Semantics.
-     * @return Promise resolved with the validated file.
+     * @returns Promise resolved with the validated file.
      */
     async validateVideo(video: Record<string, FileLike>, semantics: CoreH5PSemantics): Promise<Record<string, FileLike>> {
         for (const key in video) {
@@ -451,7 +451,7 @@ export class CoreH5PContentValidator {
      *
      * @param audio Audio.
      * @param semantics Semantics.
-     * @return Promise resolved with the validated file.
+     * @returns Promise resolved with the validated file.
      */
     async validateAudio(audio: Record<string, FileLike>, semantics: CoreH5PSemantics): Promise<Record<string, FileLike>> {
         for (const key in audio) {
@@ -468,7 +468,7 @@ export class CoreH5PContentValidator {
      * @param group Group.
      * @param semantics Semantics.
      * @param flatten Whether to flatten.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async validateGroup(group: unknown, semantics: CoreH5PSemantics, flatten: boolean = true): Promise<unknown> {
         if (!semantics.fields) {
@@ -525,7 +525,7 @@ export class CoreH5PContentValidator {
      *
      * @param value Value.
      * @param semantics Semantics.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async validateLibrary(value: LibraryType, semantics: CoreH5PSemantics): Promise<LibraryType | undefined> {
         if (!value.library) {
@@ -605,7 +605,7 @@ export class CoreH5PContentValidator {
      * @param text The string with raw HTML in it.
      * @param allowedTags An array of allowed tags.
      * @param allowedStyles Allowed styles.
-     * @return An XSS safe version of the string.
+     * @returns An XSS safe version of the string.
      */
     protected filterXss(text: string, allowedTags?: string[], allowedStyles?: RegExp[]): string {
         if (!text || typeof text != 'string') {
@@ -650,7 +650,7 @@ export class CoreH5PContentValidator {
      *             If store is TRUE then the array contains the allowed tags.
      *             If store is FALSE then the array has one element, the HTML tag to process.
      * @param store Whether to store m.
-     * @return string If the element isn't allowed, an empty string. Otherwise, the cleaned up version of the HTML element.
+     * @returns string If the element isn't allowed, an empty string. Otherwise, the cleaned up version of the HTML element.
      */
     protected filterXssSplit(tags: string[], store: boolean = false): string {
         if (store) {
@@ -717,7 +717,7 @@ export class CoreH5PContentValidator {
      *
      * @param attr HTML attributes.
      * @param allowedStyles Allowed styles.
-     * @return Cleaned up version of the HTML attributes.
+     * @returns Cleaned up version of the HTML attributes.
      */
     protected filterXssAttributes(attr: string, allowedStyles?: RegExp[]): string[] {
         const attrArray: string[] = [];
@@ -839,7 +839,7 @@ export class CoreH5PContentValidator {
      *
      * @param str The string with the attribute value.
      * @param decode Whether to decode entities in the str.
-     * @return Cleaned up and HTML-escaped version of str.
+     * @returns Cleaned up and HTML-escaped version of str.
      */
     filterXssBadProtocol(str: string, decode: boolean = true): string {
         // Get the plain text representation of the attribute value (i.e. its meaning).
@@ -854,7 +854,7 @@ export class CoreH5PContentValidator {
      * Strips dangerous protocols (e.g. 'javascript:') from a URI.
      *
      * @param uri A plain-text URI that might contain dangerous protocols.
-     * @return A plain-text URI stripped of dangerous protocols.
+     * @returns A plain-text URI stripped of dangerous protocols.
      */
     protected stripDangerousProtocols(uri: string): string {
 
@@ -892,7 +892,7 @@ export class CoreH5PContentValidator {
     /**
      * Get metadata semantics.
      *
-     * @return Semantics.
+     * @returns Semantics.
      */
     getMetadataSemantics(): CoreH5PSemantics[] {
 
@@ -1118,7 +1118,7 @@ export class CoreH5PContentValidator {
     /**
      * Get copyright semantics.
      *
-     * @return Semantics.
+     * @returns Semantics.
      */
     getCopyrightSemantics(): CoreH5PSemantics {
 
@@ -1262,7 +1262,7 @@ export class CoreH5PContentValidator {
     /**
      * Get CC versions for semantics.
      *
-     * @return CC versions.
+     * @returns CC versions.
      */
     protected getCCVersions(): VersionSemantics[] {
         return [

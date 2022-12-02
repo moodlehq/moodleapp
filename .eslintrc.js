@@ -17,6 +17,7 @@ const appConfig = {
         'prettier',
         'plugin:@angular-eslint/recommended',
         'plugin:promise/recommended',
+        'plugin:jsdoc/recommended',
     ],
     parser: '@typescript-eslint/parser',
     parserOptions: {
@@ -199,6 +200,10 @@ const appConfig = {
         'id-match': 'error',
         'jsdoc/check-alignment': 'error',
         'jsdoc/newline-after-description': 'error',
+        'jsdoc/require-param-type': 'off',
+        'jsdoc/require-returns-type': 'off',
+        'jsdoc/require-param': 'off',
+        'jsdoc/check-values': 'off',
         'linebreak-style': [
             'error',
             'unix',

@@ -50,7 +50,7 @@ export class AddonModFeedbackHelperProvider {
      *
      * @param feedbackId Feedback ID.
      * @param options Other options.
-     * @return Promise resolved when the info is retrieved.
+     * @returns Promise resolved when the info is retrieved.
      */
     async getNonRespondents(
         feedbackId: number,
@@ -67,7 +67,7 @@ export class AddonModFeedbackHelperProvider {
      * Get page items responses to be sent.
      *
      * @param items Items where the values are.
-     * @return Responses object to be sent.
+     * @returns Responses object to be sent.
      */
     getPageItemsResponses(items: AddonModFeedbackFormItem[]): Record<string, AddonModFeedbackResponseValue> {
         const responses: Record<string, AddonModFeedbackResponseValue> = {};
@@ -150,7 +150,7 @@ export class AddonModFeedbackHelperProvider {
      *
      * @param feedbackId Feedback ID.
      * @param options Other options.
-     * @return Promise resolved when the info is retrieved.
+     * @returns Promise resolved when the info is retrieved.
      */
     async getResponsesAnalysis(
         feedbackId: number,
@@ -168,7 +168,7 @@ export class AddonModFeedbackHelperProvider {
      *
      * @param params URL params.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async handleShowEntriesLink(params: Record<string, string>, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -218,7 +218,7 @@ export class AddonModFeedbackHelperProvider {
      * Add Image profile url field on some entries.
      *
      * @param entries Entries array to get profile from.
-     * @return Returns the same array with the profileimageurl added if found.
+     * @returns Returns the same array with the profileimageurl added if found.
      */
     protected async addImageProfile(entries: AddonModFeedbackWSAttempt[]): Promise<AddonModFeedbackAttempt[]>;
     protected async addImageProfile(entries: AddonModFeedbackWSNonRespondent[]): Promise<AddonModFeedbackNonRespondent[]>;
@@ -242,7 +242,7 @@ export class AddonModFeedbackHelperProvider {
      * Helper funtion for item type Label.
      *
      * @param item Item to process.
-     * @return Item processed to show form.
+     * @returns Item processed to show form.
      */
     protected getItemFormLabel(item: AddonModFeedbackItem): AddonModFeedbackFormBasicItem {
         item.name = '';
@@ -259,7 +259,7 @@ export class AddonModFeedbackHelperProvider {
      * Helper funtion for item type Info.
      *
      * @param item Item to process.
-     * @return Item processed to show form.
+     * @returns Item processed to show form.
      */
     protected getItemFormInfo(item: AddonModFeedbackItem): AddonModFeedbackFormBasicItem | undefined {
         const formItem: AddonModFeedbackFormBasicItem = Object.assign(item, {
@@ -291,7 +291,7 @@ export class AddonModFeedbackHelperProvider {
      * Helper funtion for item type Numeric.
      *
      * @param item Item to process.
-     * @return Item processed to show form.
+     * @returns Item processed to show form.
      */
     protected getItemFormNumeric(item: AddonModFeedbackItem): AddonModFeedbackNumericItem {
 
@@ -315,7 +315,7 @@ export class AddonModFeedbackHelperProvider {
      * Helper funtion for item type Text field.
      *
      * @param item Item to process.
-     * @return Item processed to show form.
+     * @returns Item processed to show form.
      */
     protected getItemFormTextfield(item: AddonModFeedbackItem): AddonModFeedbackTextItem {
         return Object.assign(item, {
@@ -330,7 +330,7 @@ export class AddonModFeedbackHelperProvider {
      * Helper funtion for item type Textarea.
      *
      * @param item Item to process.
-     * @return Item processed to show form.
+     * @returns Item processed to show form.
      */
     protected getItemFormTextarea(item: AddonModFeedbackItem): AddonModFeedbackFormBasicItem {
         return Object.assign(item, {
@@ -344,7 +344,7 @@ export class AddonModFeedbackHelperProvider {
      * Helper funtion for item type Multichoice.
      *
      * @param item Item to process.
-     * @return Item processed to show form.
+     * @returns Item processed to show form.
      */
     protected getItemFormMultichoice(item: AddonModFeedbackItem): AddonModFeedbackMultichoiceItem {
 
@@ -405,7 +405,7 @@ export class AddonModFeedbackHelperProvider {
      * Helper funtion for item type Captcha.
      *
      * @param item Item to process.
-     * @return Item processed to show form.
+     * @returns Item processed to show form.
      */
     protected getItemFormCaptcha(item: AddonModFeedbackItem): AddonModFeedbackCaptchaItem {
         const formItem: AddonModFeedbackCaptchaItem = Object.assign(item, {
@@ -429,7 +429,7 @@ export class AddonModFeedbackHelperProvider {
      *
      * @param item Item to process.
      * @param preview Previewing options.
-     * @return Item processed to show form.
+     * @returns Item processed to show form.
      */
     getItemForm(item: AddonModFeedbackItem, preview: boolean): AddonModFeedbackFormItem | undefined {
         switch (item.typ) {
@@ -467,7 +467,7 @@ export class AddonModFeedbackHelperProvider {
      *
      * @param rangeFrom Range from.
      * @param rangeTo Range to.
-     * @return Human-readable boundaries.
+     * @returns Human-readable boundaries.
      */
     protected getNumericBoundariesForDisplay(rangeFrom: number | string, rangeTo: number | string): string {
         const rangeFromSet = typeof rangeFrom == 'number';
@@ -488,7 +488,7 @@ export class AddonModFeedbackHelperProvider {
      * Check if a form item is multichoice.
      *
      * @param item Item.
-     * @return Whether item is multichoice.
+     * @returns Whether item is multichoice.
      */
     protected isMultiChoiceItem(item: AddonModFeedbackFormItem): item is AddonModFeedbackMultichoiceItem {
         return item.typ == 'multichoice';
@@ -498,7 +498,7 @@ export class AddonModFeedbackHelperProvider {
      * Check if a form item is numeric.
      *
      * @param item Item.
-     * @return Whether item is numeric.
+     * @returns Whether item is numeric.
      */
     protected isNumericItem(item: AddonModFeedbackFormItem): item is AddonModFeedbackNumericItem {
         return item.typ == 'numeric';

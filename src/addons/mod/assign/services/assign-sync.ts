@@ -61,7 +61,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
      *
      * @param assignId Assign ID.
      * @param userId User the grade belongs to.
-     * @return Sync ID.
+     * @returns Sync ID.
      */
     getGradeSyncId(assignId: number, userId: number): string {
         return 'assignGrade#' + assignId + '#' + userId;
@@ -72,7 +72,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
      *
      * @param options Possible options.
      * @param selected Selected option to search.
-     * @return Index of the selected option.
+     * @returns Index of the selected option.
      */
     protected getSelectedScaleId(options: string, selected: string): number {
         let optionsList = options.split(',');
@@ -94,7 +94,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
      *
      * @param assignId Assign ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean: whether it has data to sync.
+     * @returns Promise resolved with boolean: whether it has data to sync.
      */
     hasDataToSync(assignId: number, siteId?: string): Promise<boolean> {
         return AddonModAssignOffline.hasAssignOfflineData(assignId, siteId);
@@ -105,7 +105,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
      *
      * @param siteId Site ID to sync. If not defined, sync all sites.
      * @param force Wether to force sync not depending on last execution.
-     * @return Promise resolved if sync is successful, rejected if sync fails.
+     * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllAssignments(siteId?: string, force?: boolean): Promise<void> {
         return this.syncOnSites('all assignments', (siteId) => this.syncAllAssignmentsFunc(!!force, siteId), siteId);
@@ -116,7 +116,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
      *
      * @param force Wether to force sync not depending on last execution.
      * @param siteId Site ID to sync. If not defined, sync all sites.
-     * @param Promise resolved if sync is successful, rejected if sync fails.
+     * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     protected async syncAllAssignmentsFunc(force: boolean, siteId: string): Promise<void> {
         // Get all assignments that have offline data.
@@ -143,7 +143,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
      *
      * @param assignId Assign ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the assign is synced or it doesn't need to be synced.
+     * @returns Promise resolved when the assign is synced or it doesn't need to be synced.
      */
     async syncAssignIfNeeded(assignId: number, siteId?: string): Promise<AddonModAssignSyncResult | undefined> {
         const needed = await this.isSyncNeeded(assignId, siteId);
@@ -158,7 +158,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
      *
      * @param assignId Assign ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved in success.
+     * @returns Promise resolved in success.
      */
     async syncAssign(assignId: number, siteId?: string): Promise<AddonModAssignSyncResult> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -188,7 +188,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
      *
      * @param assignId Assign ID.
      * @param siteId Site ID.
-     * @return Promise resolved in success.
+     * @returns Promise resolved in success.
      */
     protected async performSyncAssign(assignId: number, siteId: string): Promise<AddonModAssignSyncResult> {
         // Sync offline logs.
@@ -268,7 +268,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
      *
      * @param assignId Assign ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise with grades.
+     * @returns Promise with grades.
      */
     protected async getOfflineGrades(
         assignId: number,
@@ -283,7 +283,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
      *
      * @param assignId Assign ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise with submissions.
+     * @returns Promise with submissions.
      */
     protected async getOfflineSubmissions(
         assignId: number,
@@ -300,7 +300,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
      * @param offlineData Submission offline data.
      * @param warnings List of warnings.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if success, rejected otherwise.
+     * @returns Promise resolved if success, rejected otherwise.
      */
     protected async syncSubmission(
         assign: AddonModAssignAssign,
@@ -377,10 +377,10 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
      * Delete the submission offline data (not grades).
      *
      * @param assign Assign.
-     * @param submission Submission.
      * @param offlineData Offline data.
+     * @param submission Submission.
      * @param siteId Site ID.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async deleteSubmissionData(
         assign: AddonModAssignAssign,
@@ -413,7 +413,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
      * @param warnings List of warnings.
      * @param courseId Course Id.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if success, rejected otherwise.
+     * @returns Promise resolved if success, rejected otherwise.
      */
     protected async syncSubmissionGrade(
         assign: AddonModAssignAssign,

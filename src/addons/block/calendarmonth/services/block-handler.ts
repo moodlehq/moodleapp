@@ -36,7 +36,7 @@ export class AddonBlockCalendarMonthHandlerService extends CoreBlockBaseHandler 
      * @param block The block to render.
      * @param contextLevel The context where the block will be used.
      * @param instanceId The instance ID associated with the context level.
-     * @return Data or promise resolved with the data.
+     * @returns Data or promise resolved with the data.
      */
     getDisplayData(block: CoreCourseBlock, contextLevel: string, instanceId: number): CoreBlockHandlerData {
         const linkParams: Params = contextLevel == 'course' ? { courseId: instanceId } : {};

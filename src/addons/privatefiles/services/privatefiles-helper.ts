@@ -31,7 +31,7 @@ export class AddonPrivateFilesHelperProvider {
      * Select a file, upload it and move it to private files.
      *
      * @param info Private files info. See AddonPrivateFilesProvider.getPrivateFilesInfo.
-     * @return Promise resolved when a file is uploaded, rejected otherwise.
+     * @returns Promise resolved when a file is uploaded, rejected otherwise.
      */
     async uploadPrivateFile(info?: AddonPrivateFilesGetUserInfoWSResult): Promise<void> {
         // Calculate the max size.

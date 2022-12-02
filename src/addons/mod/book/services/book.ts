@@ -62,7 +62,7 @@ export class AddonModBookProvider {
      * @param courseId Course ID.
      * @param cmId Course module ID.
      * @param options Other options.
-     * @return Promise resolved when the book is retrieved.
+     * @returns Promise resolved when the book is retrieved.
      */
     getBook(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModBookBookWSData> {
         return this.getBookByField(courseId, 'coursemodule', cmId, options);
@@ -74,8 +74,8 @@ export class AddonModBookProvider {
      * @param courseId Course ID.
      * @param key Name of the property to check.
      * @param value Value to search.
-     * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the book is retrieved.
+     * @param options Common WS options.
+     * @returns Promise resolved when the book is retrieved.
      */
     protected async getBookByField(
         courseId: number,
@@ -110,7 +110,7 @@ export class AddonModBookProvider {
      * Get cache key for get book data WS calls.
      *
      * @param courseId Course ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getBookDataCacheKey(courseId: number): string {
         return ROOT_CACHE_KEY + 'book:' + courseId;
@@ -122,7 +122,7 @@ export class AddonModBookProvider {
      * @param contentsMap Contents map returned by getContentsMap.
      * @param chapterId Chapter to retrieve.
      * @param moduleId The module ID.
-     * @return Promise resolved with the contents.
+     * @returns Promise resolved with the contents.
      */
     async getChapterContent(contentsMap: AddonModBookContentsMap, chapterId: number, moduleId: number): Promise<string> {
 
@@ -152,7 +152,7 @@ export class AddonModBookProvider {
      * Each chapter has an indexUrl and the list of contents in that chapter.
      *
      * @param contents The module contents.
-     * @return Contents map.
+     * @returns Contents map.
      */
     getContentsMap(contents: CoreCourseModuleContentFile[]): AddonModBookContentsMap {
         const map: AddonModBookContentsMap = {};
@@ -206,7 +206,7 @@ export class AddonModBookProvider {
      * Get the first chapter of a book.
      *
      * @param chapters The chapters list.
-     * @return The chapter id.
+     * @returns The chapter id.
      */
     getFirstChapter(chapters: AddonModBookTocChapter[]): number | undefined {
         if (!chapters || !chapters.length) {
@@ -221,7 +221,7 @@ export class AddonModBookProvider {
      *
      * @param id Book instance ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with last chapter viewed, undefined if none.
+     * @returns Promise resolved with last chapter viewed, undefined if none.
      */
     async getLastChapterViewed(id: number, siteId?: string): Promise<number | undefined> {
         const site = await CoreSites.getSite(siteId);
@@ -236,7 +236,7 @@ export class AddonModBookProvider {
      * Get the book toc as an array.
      *
      * @param contents The module contents.
-     * @return The toc.
+     * @returns The toc.
      */
     getToc(contents: CoreCourseModuleContentFile[]): AddonModBookTocChapterParsed[] {
         if (!contents || !contents.length || contents[0].content === undefined) {
@@ -250,7 +250,7 @@ export class AddonModBookProvider {
      * Get the book toc as an array of chapters (not nested).
      *
      * @param contents The module contents.
-     * @return The toc as a list.
+     * @returns The toc as a list.
      */
     getTocList(contents: CoreCourseModuleContentFile[]): AddonModBookTocChapter[] {
         // Convenience function to get chapter info.
@@ -302,7 +302,7 @@ export class AddonModBookProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateBookData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -316,7 +316,7 @@ export class AddonModBookProvider {
      * @param moduleId The module ID.
      * @param courseId Course ID of the module.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -334,7 +334,7 @@ export class AddonModBookProvider {
      * Check if a file is downloadable. The file param must have a 'type' attribute like in core_course_get_contents response.
      *
      * @param file File to check.
-     * @return Whether it's downloadable.
+     * @returns Whether it's downloadable.
      */
     isFileDownloadable(file: CoreCourseModuleContentFile): boolean {
         return file.type === 'file';
@@ -344,7 +344,7 @@ export class AddonModBookProvider {
      * Return whether or not the plugin is enabled.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
+     * @returns Promise resolved with true if plugin is enabled, rejected or resolved with false otherwise.
      */
     async isPluginEnabled(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
@@ -359,7 +359,7 @@ export class AddonModBookProvider {
      * @param chapterId Chapter ID.
      * @param name Name of the book.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the WS call is successful.
+     * @returns Promise resolved when the WS call is successful.
      */
     async logView(id: number, chapterId?: number, name?: string, siteId?: string): Promise<void> {
         const params: AddonModBookViewBookWSParams = {
@@ -386,7 +386,7 @@ export class AddonModBookProvider {
      * @param chapterId Chapter ID.
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with last chapter viewed, undefined if none.
+     * @returns Promise resolved with last chapter viewed, undefined if none.
      */
     async storeLastChapterViewed(id: number, chapterId: number, courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

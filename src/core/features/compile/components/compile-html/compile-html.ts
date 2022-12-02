@@ -164,7 +164,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     /**
      * Get a class that defines the dynamic component.
      *
-     * @return The component class.
+     * @returns The component class.
      */
     protected getComponentClass(): Type<unknown> {
         // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -284,7 +284,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
      * @param params List of params to send to the function.
      * @param callWhenCreated If this param is true and the component hasn't been created yet, call the function
      *                        once the component has been created.
-     * @return Result of the call. Undefined if no component instance or the function doesn't exist.
+     * @returns Result of the call. Undefined if no component instance or the function doesn't exist.
      */
     callComponentFunction(name: string, params?: unknown[], callWhenCreated: boolean = true): unknown {
         if (this.componentInstance) {

@@ -30,7 +30,7 @@ export class AddonBlockRecentlyAccessedItemsProvider {
     /**
      * Get cache key for get last accessed items value WS call.
      *
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getRecentItemsCacheKey(): string {
         return ROOT_CACHE_KEY + ':recentitems';
@@ -40,7 +40,7 @@ export class AddonBlockRecentlyAccessedItemsProvider {
      * Get last accessed items.
      *
      * @param siteId Site ID. If not defined, use current site.
-     * @return Promise resolved when the info is retrieved.
+     * @returns Promise resolved when the info is retrieved.
      */
     async getRecentItems(siteId?: string): Promise<AddonBlockRecentlyAccessedItemsItem[]> {
         const site = await CoreSites.getSite(siteId);
@@ -90,7 +90,7 @@ export class AddonBlockRecentlyAccessedItemsProvider {
      * Invalidates get last accessed items WS call.
      *
      * @param siteId Site ID to invalidate. If not defined, use current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateRecentItems(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

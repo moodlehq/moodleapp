@@ -32,7 +32,7 @@ export class CoreTagMainMenuHandlerService implements CoreMainMenuHandler {
     /**
      * Check if the handler is enabled on a site level.
      *
-     * @return Whether or not the handler is enabled on a site level.
+     * @returns Whether or not the handler is enabled on a site level.
      */
     async isEnabled(): Promise<boolean> {
         const available = await CoreTag.areTagsAvailable();
@@ -47,7 +47,7 @@ export class CoreTagMainMenuHandlerService implements CoreMainMenuHandler {
     /**
      * Returns the data needed to render the handler.
      *
-     * @return Data needed to render the handler.
+     * @returns Data needed to render the handler.
      */
     getDisplayData(): CoreMainMenuHandlerData {
         return {

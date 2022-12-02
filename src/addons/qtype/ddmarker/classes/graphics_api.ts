@@ -30,7 +30,7 @@ export class AddonQtypeDdMarkerGraphicsApi {
      *
      * @param shapeAttribs Attributes for the shape: type and color.
      * @param styles Object with the styles for the shape (name -> value).
-     * @return The new shape.
+     * @returns The new shape.
      */
     addShape(shapeAttribs: {type: string; color: string}, styles: {[name: string]: number | string}): SVGElement {
         const shape = document.createElementNS(this.NS, shapeAttribs.type);

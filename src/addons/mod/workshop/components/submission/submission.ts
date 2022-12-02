@@ -67,7 +67,7 @@ export class AddonModWorkshopSubmissionComponent implements OnInit {
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.componentId = this.module.instance;

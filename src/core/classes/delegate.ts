@@ -118,7 +118,7 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
      * @param handlerName The handler name.
      * @param fnName Name of the function to execute.
      * @param params Parameters to pass to the function.
-     * @return Function returned value or default value.
+     * @returns Function returned value or default value.
      */
     protected executeFunctionOnEnabled<T = unknown>(handlerName: string, fnName: string, params?: unknown[]): T | undefined {
         return this.execute<T>(this.enabledHandlers[handlerName], fnName, params);
@@ -131,7 +131,7 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
      * @param handlerName The handler name.
      * @param fnName Name of the function to execute.
      * @param params Parameters to pass to the function.
-     * @return Function returned value or default value.
+     * @returns Function returned value or default value.
      */
     protected executeFunction<T = unknown>(handlerName: string, fnName: string, params?: unknown[]): T | undefined {
         return this.execute<T>(this.handlers[handlerName], fnName, params);
@@ -144,7 +144,7 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
      * @param handler The handler.
      * @param fnName Name of the function to execute.
      * @param params Parameters to pass to the function.
-     * @return Function returned value or default value.
+     * @returns Function returned value or default value.
      */
     private execute<T = unknown>(handler: HandlerType, fnName: string, params?: unknown[]): T | undefined {
         if (handler && handler[fnName]) {
@@ -159,7 +159,7 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
      *
      * @param handlerName The handler name.
      * @param enabled Only enabled, or any.
-     * @return Handler.
+     * @returns Handler.
      */
     protected getHandler(handlerName: string, enabled: boolean = false): HandlerType {
         return enabled ? this.enabledHandlers[handlerName] : this.handlers[handlerName];
@@ -170,7 +170,7 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
      * E.g. blocks are indexed by blockName. If you call this function passing the blockName it will return the name.
      *
      * @param name Name used to indentify the handler.
-     * @return Full name of corresponding handler.
+     * @returns Full name of corresponding handler.
      */
     getHandlerName(name: string): string {
         const handler = this.getHandler(name, true);
@@ -188,7 +188,7 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
      * @param handlerName The handler name.
      * @param fnName Name of the function to execute.
      * @param onlyEnabled If check only enabled handlers or all.
-     * @return Function returned value or default value.
+     * @returns Function returned value or default value.
      */
     protected hasFunction(handlerName: string, fnName: string, onlyEnabled: boolean = true): boolean {
         const handler = onlyEnabled ? this.enabledHandlers[handlerName] : this.handlers[handlerName];
@@ -201,7 +201,7 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
      *
      * @param name The handler name.
      * @param enabled Only enabled, or any.
-     * @return If the handler is registered or not.
+     * @returns If the handler is registered or not.
      */
     hasHandler(name: string, enabled: boolean = false): boolean {
         return enabled ? this.enabledHandlers[name] !== undefined : this.handlers[name] !== undefined;
@@ -212,7 +212,7 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
      * This is to handle the cases where updateHandlers don't finish in the same order as they're called.
      *
      * @param time Time to check.
-     * @return Whether it's the last call.
+     * @returns Whether it's the last call.
      */
     isLastUpdateCall(time: number): boolean {
         if (!this.lastUpdateHandlersStart) {
@@ -226,7 +226,7 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
      * Register a handler.
      *
      * @param handler The handler delegate object to register.
-     * @return True when registered, false if already registered.
+     * @returns True when registered, false if already registered.
      */
     registerHandler(handler: HandlerType): boolean {
         const key = handler[this.handlerNameProperty] || handler.name;
@@ -247,8 +247,7 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
      * Update the handler for the current site.
      *
      * @param handler The handler to check.
-     * @param time Time this update process started.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected updateHandler(handler: HandlerType): Promise<void> {
         const siteId = CoreSites.getCurrentSiteId();
@@ -295,7 +294,7 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
      *
      * @param handler Handler to check.
      * @param site Site to check.
-     * @return Whether is enabled or disabled in site.
+     * @returns Whether is enabled or disabled in site.
      */
     protected isFeatureDisabled(handler: HandlerType, site: CoreSite): boolean {
         return this.featurePrefix !== undefined && site.isFeatureDisabled(this.featurePrefix + handler.name);
@@ -304,7 +303,7 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
     /**
      * Update the handlers for the current site.
      *
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async updateHandlers(): Promise<void> {
         const promises: Promise<void>[] = [];
@@ -357,7 +356,7 @@ export interface CoreDelegateHandler {
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return Whether or not the handler is enabled on a site level.
+     * @returns Whether or not the handler is enabled on a site level.
      */
     isEnabled(): Promise<boolean>;
 }
@@ -389,7 +388,7 @@ export interface CoreDelegateDisplayHandler<HandlerData extends CoreDelegateToDi
     /**
      * Returns the data needed to render the handler.
      *
-     * @return Data.
+     * @returns Data.
      */
     getDisplayData(): HandlerData;
 }

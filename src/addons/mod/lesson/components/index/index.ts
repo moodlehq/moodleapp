@@ -99,7 +99,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         super.ngOnInit();
@@ -113,7 +113,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      * Change the group displayed.
      *
      * @param groupId Group ID to display.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async changeGroup(groupId: number): Promise<void> {
         this.reportLoaded = false;
@@ -204,7 +204,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Load offline data for the lesson.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadOfflineData(): Promise<void> {
         if (!this.lesson || !this.accessInfo) {
@@ -253,7 +253,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Fetch the reports data.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchReportData(): Promise<void> {
         if (!this.module) {
@@ -273,7 +273,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      * Checks if sync has succeed from result sync data.
      *
      * @param result Data returned on the sync function.
-     * @return If suceed or not.
+     * @returns If suceed or not.
      */
     protected hasSyncSucceed(result: AddonModLessonSyncResult): boolean {
         if (result.updated || this.dataSent) {
@@ -319,7 +319,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Perform the invalidate content function.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async invalidateContent(): Promise<void> {
         const promises: Promise<unknown>[] = [];
@@ -346,7 +346,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      * Compares sync event data with current data to check if refresh content is needed.
      *
      * @param syncEventData Data receiven on sync observer.
-     * @return True if refresh is needed, false otherwise.
+     * @returns True if refresh is needed, false otherwise.
      */
     protected isRefreshSyncNeeded(syncEventData: AddonModLessonAutoSyncData): boolean {
         return !!(this.lesson && syncEventData.lessonId == this.lesson.id);
@@ -380,7 +380,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      * Open the lesson player.
      *
      * @param continueLast Whether to continue the last retake.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async playLesson(continueLast?: boolean): Promise<void> {
         if (!this.lesson || !this.accessInfo) {
@@ -480,7 +480,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      * Set a group to view the reports.
      *
      * @param groupId Group ID.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async setGroup(groupId: number): Promise<void> {
         if (!this.lesson) {
@@ -639,7 +639,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Performs the sync of the activity.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async sync(): Promise<AddonModLessonSyncResult> {
         const result = await AddonModLessonSync.syncLesson(this.lesson!.id, true);
@@ -660,7 +660,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      * Validate a password and retrieve extra data.
      *
      * @param password The password to validate.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async validatePassword(password: string): Promise<void> {
         try {
@@ -678,7 +678,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      * Open a certain user retake.
      *
      * @param userId User ID to view.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async openRetake(userId: number): Promise<void> {
         CoreNavigator.navigateToSitePath(
@@ -687,7 +687,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     }
 
     /**
-     * Component being destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         super.ngOnDestroy();

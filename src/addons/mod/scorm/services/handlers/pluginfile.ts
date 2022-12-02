@@ -47,7 +47,7 @@ export class AddonModScormPluginFileHandlerService implements CorePluginFileHand
     /**
      * Whether or not the handler is enabled on a site level.
      *
-     * @return Whether or not the handler is enabled on a site level.
+     * @returns Whether or not the handler is enabled on a site level.
      */
     async isEnabled(): Promise<boolean> {
         return true;

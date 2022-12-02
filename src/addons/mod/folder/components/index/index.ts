@@ -46,7 +46,7 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         super.ngOnInit();
@@ -71,7 +71,7 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
     /**
      * Perform the invalidate content function.
      *
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async invalidateContent(): Promise<void> {
         await AddonModFolder.invalidateContent(this.module.id, this.courseId);

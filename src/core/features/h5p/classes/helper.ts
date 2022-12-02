@@ -48,7 +48,7 @@ export class CoreH5PHelper {
      * Convert the number representation of display options into an object.
      *
      * @param displayOptions Number representing display options.
-     * @return Object with display options.
+     * @returns Object with display options.
      */
     static decodeDisplayOptions(displayOptions: number): CoreH5PDisplayOptions {
         const displayOptionsObject = CoreH5P.h5pCore.getDisplayOptionsAsObject(displayOptions);
@@ -70,7 +70,7 @@ export class CoreH5PHelper {
     /**
      * Get the core H5P assets, including all core H5P JavaScript and CSS.
      *
-     * @return Array core H5P assets.
+     * @returns Array core H5P assets.
      */
     static async getCoreAssets(
         siteId?: string,
@@ -109,7 +109,7 @@ export class CoreH5PHelper {
      * Get the settings needed by the H5P library.
      *
      * @param siteId The site ID. If not defined, current site.
-     * @return Promise resolved with the settings.
+     * @returns Promise resolved with the settings.
      */
     static async getCoreSettings(siteId?: string): Promise<CoreH5PCoreSettings> {
 
@@ -167,7 +167,7 @@ export class CoreH5PHelper {
      * @param file The file entry of the downloaded file.
      * @param siteId Site ID. If not defined, current site.
      * @param onProgress Function to call on progress.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     static async saveH5P(fileUrl: string, file: FileEntry, siteId?: string, onProgress?: CoreH5PSaveOnProgress): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -187,7 +187,7 @@ export class CoreH5PHelper {
      * @param file The file entry of the downloaded file.
      * @param siteId Site ID. If not defined, current site.
      * @param onProgress Function to call on progress.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected static async performSave(
         fileUrl: string,

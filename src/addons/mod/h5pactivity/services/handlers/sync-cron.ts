@@ -32,7 +32,7 @@ export class AddonModH5PActivitySyncCronHandlerService implements CoreCronHandle
      *
      * @param siteId ID of the site affected, undefined for all sites.
      * @param force Wether the execution is forced (manual sync).
-     * @return Promise resolved when done, rejected if failure.
+     * @returns Promise resolved when done, rejected if failure.
      */
     execute(siteId?: string, force?: boolean): Promise<void> {
         return AddonModH5PActivitySync.syncAllActivities(siteId, force);
@@ -41,7 +41,7 @@ export class AddonModH5PActivitySyncCronHandlerService implements CoreCronHandle
     /**
      * Get the time between consecutive executions.
      *
-     * @return Time between consecutive executions (in ms).
+     * @returns Time between consecutive executions (in ms).
      */
     getInterval(): number {
         return AddonModH5PActivitySync.syncInterval;

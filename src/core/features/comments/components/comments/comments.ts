@@ -146,7 +146,7 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
     /**
      * Refresh comments.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async doRefresh(): Promise<void> {
         await this.invalidateComments();
@@ -157,7 +157,7 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
     /**
      * Invalidate comments data.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async invalidateComments(): Promise<void> {
         await CoreComments.invalidateCommentsData(
@@ -208,7 +208,7 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
      *
      * @param data Data object.
      * @param name Name of the property to check.
-     * @return Whether it's undefined or equal.
+     * @returns Whether it's undefined or equal.
      */
     protected undefinedOrEqual(data: Record<string, unknown>, name: string): boolean {
         return data[name] === undefined || data[name] == this[name];

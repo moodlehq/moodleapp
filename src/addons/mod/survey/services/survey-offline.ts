@@ -31,7 +31,7 @@ export class AddonModSurveyOfflineProvider {
      * @param surveyId Survey ID.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User the answers belong to. If not defined, current user in site.
-     * @return Promise resolved if deleted, rejected if failure.
+     * @returns Promise resolved if deleted, rejected if failure.
      */
     async deleteSurveyAnswers(surveyId: number, siteId?: string, userId?: number): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -44,7 +44,7 @@ export class AddonModSurveyOfflineProvider {
      * Get all the stored data from all the surveys.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with answers.
+     * @returns Promise resolved with answers.
      */
     async getAllData(siteId?: string): Promise<AddonModSurveyAnswersDBRecordFormatted[]> {
         const site = await CoreSites.getSite(siteId);
@@ -61,7 +61,7 @@ export class AddonModSurveyOfflineProvider {
      * @param surveyId Survey ID.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User the answers belong to. If not defined, current user in site.
-     * @return Promise resolved with the answers.
+     * @returns Promise resolved with the answers.
      */
     async getSurveyAnswers(surveyId: number, siteId?: string, userId?: number): Promise<AddonModSurveySubmitAnswerData[]> {
         try {
@@ -79,7 +79,7 @@ export class AddonModSurveyOfflineProvider {
      * @param surveyId Survey ID.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User the answers belong to. If not defined, current user in site.
-     * @return Promise resolved with the data.
+     * @returns Promise resolved with the data.
      */
     async getSurveyData(surveyId: number, siteId?: string, userId?: number): Promise<AddonModSurveyAnswersDBRecordFormatted> {
         const site = await CoreSites.getSite(siteId);
@@ -101,7 +101,7 @@ export class AddonModSurveyOfflineProvider {
      * @param surveyId Survey ID.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User the answers belong to. If not defined, current user in site.
-     * @return Promise resolved with boolean: true if has offline answers, false otherwise.
+     * @returns Promise resolved with boolean: true if has offline answers, false otherwise.
      */
     async hasAnswers(surveyId: number, siteId?: string, userId?: number): Promise<boolean> {
         const answers = await this.getSurveyAnswers(surveyId, siteId, userId);
@@ -118,7 +118,7 @@ export class AddonModSurveyOfflineProvider {
      * @param answers Answers.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User the answers belong to. If not defined, current user in site.
-     * @return Promise resolved if stored, rejected if failure.
+     * @returns Promise resolved if stored, rejected if failure.
      */
     async saveAnswers(
         surveyId: number,

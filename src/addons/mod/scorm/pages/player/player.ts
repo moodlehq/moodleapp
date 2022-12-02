@@ -139,7 +139,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
     /**
      * Initialize.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async initialize(): Promise<void> {
         // Get the SCORM instance.
@@ -240,7 +240,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
      *
      * @param attemptsData Attempts count.
      * @param accessInfo Access info.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async determineAttemptAndMode(
         attemptsData: AddonModScormAttemptCountResult,
@@ -303,7 +303,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
     /**
      * Fetch data needed to play the SCORM.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchData(): Promise<void> {
         if (!this.scorm) {
@@ -343,7 +343,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
     /**
      * Fetch the TOC.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchToc(): Promise<void> {
         this.loadingToc = true;
@@ -405,7 +405,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
      * Load a SCO.
      *
      * @param sco The SCO to load.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async loadSco(sco: AddonModScormScoWithData): Promise<void> {
         if (!this.dataModel) {
@@ -450,7 +450,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
      * Load SCO src.
      *
      * @param sco SCO to load.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadScoSrc(sco: AddonModScormScoWithData): Promise<void> {
         const src = await AddonModScorm.getScoSrc(this.scorm, sco);
@@ -469,7 +469,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
      * Given an SCO, mark it as completed.
      *
      * @param sco SCO to mark.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async markCompleted(sco: AddonModScormScoWithData): Promise<void> {
         if (!this.canSaveTracks) {
@@ -540,7 +540,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
     /**
      * Refresh the TOC.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async refreshToc(): Promise<void> {
         try {
@@ -556,7 +556,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
      * Set SCORM start time.
      *
      * @param scoId SCO ID.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async setStartTime(scoId: number): Promise<void> {
         if (!this.canSaveTracks) {

@@ -160,7 +160,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
     /**
      * Perform the invalidate content function.
      *
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     protected async invalidateContent(): Promise<void> {
         const promises: Promise<void>[] = [];
@@ -191,7 +191,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
      * Compares sync event data with current data to check if refresh content is needed.
      *
      * @param syncEventData Data receiven on sync observer.
-     * @return True if refresh is needed, false otherwise.
+     * @returns True if refresh is needed, false otherwise.
      */
     protected isRefreshSyncNeeded(syncEventData: AddonModWorkshopAutoSyncData): boolean {
         if (this.workshop && syncEventData.workshopId == this.workshop.id) {
@@ -261,7 +261,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
      * Retrieves and shows submissions grade page.
      *
      * @param page Page number to be retrieved.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     async gotoSubmissionsPage(page: number): Promise<void> {
         const report = await AddonModWorkshop.getGradesReport(this.workshop!.id, {
@@ -399,7 +399,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
      * Set group to see the workshop.
      *
      * @param groupId Group Id.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async setGroup(groupId: number): Promise<void> {
         this.group = groupId;
@@ -410,7 +410,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
     /**
      * Convenience function to set current phase information.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async setPhaseInfo(): Promise<void> {
         this.submission = undefined;
@@ -516,7 +516,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
     /**
      * Performs the sync of the activity.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected sync(): Promise<AddonModWorkshopSyncResult> {
         return AddonModWorkshopSync.syncWorkshop(this.workshop!.id);
@@ -526,14 +526,14 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
      * Checks if sync has succeed from result sync data.
      *
      * @param result Data returned on the sync function.
-     * @return If suceed or not.
+     * @returns If suceed or not.
      */
     protected hasSyncSucceed(result: AddonModWorkshopSyncResult): boolean {
         return result.updated;
     }
 
     /**
-     * Component being destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         super.ngOnDestroy();

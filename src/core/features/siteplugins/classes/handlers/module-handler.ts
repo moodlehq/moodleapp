@@ -128,7 +128,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
      *
      * @param module Module.
      * @param forCoursePage Whether the data will be used to render the course page.
-     * @return Bool.
+     * @returns Bool.
      */
     protected shouldOnlyDisplayDescription(module: CoreCourseModuleData, forCoursePage?: boolean): boolean {
         if (forCoursePage && this.handlerSchema.coursepagemethod) {
@@ -150,7 +150,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
     /**
      * Check whether the module supports NO_VIEW_LINK.
      *
-     * @return Bool if defined, undefined if not specified.
+     * @returns Bool if defined, undefined if not specified.
      */
     supportsNoViewLink(): boolean | undefined {
         return <boolean | undefined> (this.supportsFeature ?
@@ -166,7 +166,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
      * @param handlerData Handler data.
      * @param method Method to call.
      * @param refresh Whether to refresh the data.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadCoursePageTemplate(
         module: CoreCourseModuleData,

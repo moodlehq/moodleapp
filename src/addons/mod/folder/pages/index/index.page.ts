@@ -34,7 +34,7 @@ export class AddonModFolderIndexPage extends CoreCourseModuleMainActivityPage<Ad
     subfolder?: AddonModFolderFolderFormattedData;
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         super.ngOnInit();

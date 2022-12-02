@@ -32,7 +32,7 @@ export class AddonModFeedbackIndexPage extends CoreCourseModuleMainActivityPage<
     selectedGroup?: number;
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         super.ngOnInit();

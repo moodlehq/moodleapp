@@ -66,7 +66,7 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         try {
@@ -127,9 +127,9 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
      *
      * @param refresher Refresher.
      */
-    refreshData(event?: IonRefresher): void {
+    refreshData(refresher?: IonRefresher): void {
         this.refreshFiles().finally(() => {
-            event?.complete();
+            refresher?.complete();
         });
     }
 
@@ -177,7 +177,7 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
     /**
      * Fetch the files.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchFiles(): Promise<void> {
         try {
@@ -220,7 +220,7 @@ export class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
     /**
      * Refresh the displayed files.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async refreshFiles(): Promise<void> {
         try {

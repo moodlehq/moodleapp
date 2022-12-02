@@ -73,7 +73,7 @@ export class CoreFilterHelperProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the contexts.
+     * @returns Promise resolved with the contexts.
      */
     async getBlocksContexts(courseId: number, siteId?: string): Promise<CoreFiltersGetAvailableInContextWSParamContext[]> {
         // Use stale while revalidate, but always use the first value. If data is updated it will be stored in DB.
@@ -99,9 +99,10 @@ export class CoreFilterHelperProvider {
      *
      * @param contextLevel The context level.
      * @param instanceId Instance ID related to the context.
+     * @param getFilters Function to get filter contexts from.
      * @param options Options for format text.
-     * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the filters.
+     * @param site Site. If not defined, current site.
+     * @returns Promise resolved with the filters.
      */
     protected async getCacheableFilters(
         contextLevel: string,
@@ -133,7 +134,7 @@ export class CoreFilterHelperProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the contexts.
+     * @returns Promise resolved with the contexts.
      */
     async getCourseContexts(courseId: number, siteId?: string): Promise<CoreFiltersGetAvailableInContextWSParamContext[]> {
         const courseIds = await CoreCourses.getCourseIdsIfEnrolled(courseId, siteId);
@@ -155,7 +156,7 @@ export class CoreFilterHelperProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the contexts.
+     * @returns Promise resolved with the contexts.
      */
     async getCourseModulesContexts(courseId: number, siteId?: string): Promise<CoreFiltersGetAvailableInContextWSParamContext[]> {
         // Use stale while revalidate, but always use the first value. If data is updated it will be stored in DB.
@@ -192,7 +193,7 @@ export class CoreFilterHelperProvider {
      * @param instanceId Instance ID related to the context.
      * @param options Options for format text.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the filters.
+     * @returns Promise resolved with the filters.
      */
     async getFilters(
         contextLevel: string,
@@ -268,7 +269,7 @@ export class CoreFilterHelperProvider {
      * @param instanceId Instance ID related to the context.
      * @param options Options for format text.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the formatted text and the filters.
+     * @returns Promise resolved with the formatted text and the filters.
      */
     async getFiltersAndFormatText(
         text: string,
@@ -292,7 +293,7 @@ export class CoreFilterHelperProvider {
      * @param contextLevel Context level.
      * @param instanceId Instance ID.
      * @param site Site.
-     * @return The filters, undefined if not found.
+     * @returns The filters, undefined if not found.
      */
     protected getFromMemoryCache(
         courseId: number,
@@ -321,7 +322,7 @@ export class CoreFilterHelperProvider {
      *
      * @param options Options passed to the filters.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean: whether it has filters to treat.
+     * @returns Promise resolved with boolean: whether it has filters to treat.
      */
     async siteHasFiltersToTreat(options?: CoreFilterFormatTextOptions, siteId?: string): Promise<boolean> {
         options = options || {};
@@ -337,7 +338,9 @@ export class CoreFilterHelperProvider {
     /**
      * Store filters in the memory cache.
      *
-     * @param contexts Filters to store, classified by contextlevel and instanceid
+     * @param courseId Course the module belongs to.
+     * @param contextLevel Context level.
+     * @param contexts Contexts.
      * @param siteId Site ID.
      */
     protected storeInMemoryCache(

@@ -181,7 +181,7 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
     /**
      * Create a new and empty context menu to be used as a "parent".
      *
-     * @return Created component.
+     * @returns Created component.
      */
     protected createMainContextMenu(): CoreContextMenuComponent {
         const factory = this.factoryResolver.resolveComponentFactory(CoreContextMenuComponent);
@@ -195,7 +195,7 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
     /**
      * Search the ion-header where the buttons should be added.
      *
-     * @return Promise resolved with the header element.
+     * @returns Promise resolved with the header element.
      */
     protected async searchHeader(): Promise<HTMLIonHeaderElement> {
         await CoreDom.waitToBeInDOM(this.element);

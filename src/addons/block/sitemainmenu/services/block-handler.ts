@@ -30,7 +30,7 @@ export class AddonBlockSiteMainMenuHandlerService extends CoreBlockBaseHandler {
     /**
      * Returns the data needed to render the block.
      *
-     * @return Data or promise resolved with the data.
+     * @returns Data or promise resolved with the data.
      */
     getDisplayData(): CoreBlockHandlerData {
 

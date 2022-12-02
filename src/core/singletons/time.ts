@@ -25,7 +25,7 @@ export class CoreTime {
      *
      * @param seconds A number of seconds
      * @param precision Number of elements to have in precision.
-     * @return Seconds in a human readable format.
+     * @returns Seconds in a human readable format.
      */
     static formatTime(seconds: number, precision = 2): string {
         precision = precision || 5; // Use max precision if 0 is passed.
@@ -82,7 +82,7 @@ export class CoreTime {
      * Converts a number of seconds into a short human readable format: minutes and seconds, in fromat: 3' 27''.
      *
      * @param duration Duration in seconds.
-     * @return Short human readable text.
+     * @returns Short human readable text.
      */
     static formatTimeShort(duration: number): string {
         const minutes = Math.floor(duration / 60);
@@ -104,7 +104,7 @@ export class CoreTime {
      * Wrap a function so that it is called only once.
      *
      * @param fn Function.
-     * @return Wrapper that will call the underlying function only once.
+     * @returns Wrapper that will call the underlying function only once.
      */
     static once<T extends unknown[]>(fn: (...args: T) => unknown): (...args: T) => void {
         let called = false;

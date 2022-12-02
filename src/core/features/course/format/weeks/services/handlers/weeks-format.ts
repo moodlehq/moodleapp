@@ -89,7 +89,7 @@ export class CoreCourseFormatWeeksHandlerService implements CoreCourseFormatHand
      *
      * @param section The section to treat.
      * @param startDate The course start date (in seconds).
-     * @return An object with the start and end date of the section.
+     * @returns An object with the start and end date of the section.
      */
     protected getSectionDates(section: CoreCourseWSSection, startDate: number): { start: number; end: number } {
         // Hack alert. We add 2 hours to avoid possible DST problems. (e.g. we go into daylight savings and the date changes).

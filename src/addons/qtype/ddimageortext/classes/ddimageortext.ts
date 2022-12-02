@@ -70,7 +70,7 @@ export class AddonQtypeDdImageOrTextQuestion {
      * Convert the X and Y position of the BG IMG to a position relative to the window.
      *
      * @param bgImgXY X and Y of the BG IMG relative position.
-     * @return Position relative to the window.
+     * @returns Position relative to the window.
      */
     convertToWindowXY(bgImgXY: number[]): number[] {
         const bgImg = this.doc.bgImg();
@@ -239,7 +239,7 @@ export class AddonQtypeDdImageOrTextQuestion {
      *
      * @param choice Choice number.
      * @param drop Drop zone.
-     * @return Draggable elements.
+     * @returns Draggable elements.
      */
     getChoicesForDrop(choice: number, drop: HTMLElement): HTMLElement[] {
         if (!this.doc.topNode) {
@@ -256,7 +256,7 @@ export class AddonQtypeDdImageOrTextQuestion {
      *
      * @param choice Choice number.
      * @param drop Drop zone.
-     * @return Unplaced draggable element.
+     * @returns Unplaced draggable element.
      */
     getUnplacedChoiceForDrop(choice: number, drop: HTMLElement): HTMLElement | null {
         const dragItems = this.getChoicesForDrop(choice, drop);
@@ -316,8 +316,6 @@ export class AddonQtypeDdImageOrTextQuestion {
 
     /**
      * Initialize the question.
-     *
-     * @param question Question.
      */
     initializer(): void {
         this.doc = new AddonQtypeDdImageOrTextQuestionDocStructure(this.container, this.question.slot);

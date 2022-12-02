@@ -57,7 +57,7 @@ export class AddonMessagesConversationInfoComponent implements OnInit {
     /**
      * Fetch the required data.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchData(): Promise<void> {
         // Get the conversation data first.
@@ -76,7 +76,7 @@ export class AddonMessagesConversationInfoComponent implements OnInit {
      * Get conversation members.
      *
      * @param loadingMore Whether we are loading more data or just the first ones.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchMembers(loadingMore?: boolean): Promise<void> {
         this.loadMoreError = false;
@@ -97,7 +97,7 @@ export class AddonMessagesConversationInfoComponent implements OnInit {
      * Function to load more members.
      *
      * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     async loadMoreMembers(infiniteComplete?: () => void): Promise<void> {
         try {
@@ -114,7 +114,7 @@ export class AddonMessagesConversationInfoComponent implements OnInit {
      * Refresh the data.
      *
      * @param refresher Refresher.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async refreshData(refresher?: IonRefresher): Promise<void> {
         const promises: Promise<void>[] = [];

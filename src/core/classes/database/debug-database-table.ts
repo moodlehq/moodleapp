@@ -45,6 +45,8 @@ export class CoreDebugDatabaseTable<
 
     /**
      * Get underlying table instance.
+     *
+     * @returns Table instance.
      */
     getTarget(): CoreDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey> {
         return this.target;

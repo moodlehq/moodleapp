@@ -29,7 +29,7 @@ export class CorePushNotificationsRegisterCronHandlerService implements CoreCron
     /**
      * Check whether the sync can be executed manually. Call isSync if not defined.
      *
-     * @return Whether the sync can be executed manually.
+     * @returns Whether the sync can be executed manually.
      */
     canManualSync(): boolean {
         return true; // Execute the handler when the site is manually synchronized.
@@ -40,7 +40,7 @@ export class CorePushNotificationsRegisterCronHandlerService implements CoreCron
      * Receives the ID of the site affected, undefined for all sites.
      *
      * @param siteId ID of the site affected, undefined for all sites.
-     * @return Promise resolved when done, rejected if failure.
+     * @returns Promise resolved when done, rejected if failure.
      */
     async execute(siteId?: string): Promise<void> {
         if (!siteId || !CorePushNotifications.canRegisterOnMoodle()) {
@@ -55,7 +55,7 @@ export class CorePushNotificationsRegisterCronHandlerService implements CoreCron
     /**
      * Get the time between consecutive executions.
      *
-     * @return Time between consecutive executions (in ms).
+     * @returns Time between consecutive executions (in ms).
      */
     getInterval(): number {
         return 86400000; // 1 day. We won't do anything with automatic execution, so use a big number.
@@ -64,7 +64,7 @@ export class CorePushNotificationsRegisterCronHandlerService implements CoreCron
     /**
      * Check whether it's a synchronization process or not. True if not defined.
      *
-     * @return Whether it's a synchronization process or not.
+     * @returns Whether it's a synchronization process or not.
      */
     isSync(): boolean {
         return false;

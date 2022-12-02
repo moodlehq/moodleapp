@@ -191,7 +191,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
      * @param targetAttr Attribute to modify.
      * @param url Original URL to treat.
      * @param siteId Site ID.
-     * @return Promise resolved if the element is successfully treated.
+     * @returns Promise resolved if the element is successfully treated.
      */
     protected async handleExternalContent(targetAttr: string, url: string, siteId?: string): Promise<void> {
 
@@ -250,7 +250,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
      * Handle inline styles, trying to download referenced files.
      *
      * @param siteId Site ID.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async handleInlineStyles(siteId?: string): Promise<void> {
         if (!siteId) {
@@ -324,7 +324,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
      * @param targetAttr Attribute to modify.
      * @param url Original URL to treat.
      * @param site Site.
-     * @return Promise resolved with the URL.
+     * @returns Promise resolved with the URL.
      */
     protected async getUrlToUse(targetAttr: string, url: string, site: CoreSite): Promise<string> {
         const tagName = this.element.tagName;
@@ -379,7 +379,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
      * @param targetAttr Attribute to modify.
      * @param url Original URL to treat.
      * @param site Site.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async setListeners(targetAttr: string, url: string, site: CoreSite): Promise<void> {
         if (this.fileEventObserver) {

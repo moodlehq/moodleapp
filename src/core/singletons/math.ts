@@ -23,7 +23,7 @@ export class CoreMath {
      * @param value Original value.
      * @param min Minimum value.
      * @param max Maximum value.
-     * @return Clamped value.
+     * @returns Clamped value.
      */
     static clamp(value: number, min: number, max: number): number {
         return Math.min(Math.max(value, min), max);

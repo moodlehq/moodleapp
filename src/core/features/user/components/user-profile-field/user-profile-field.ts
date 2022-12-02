@@ -42,7 +42,7 @@ export class CoreUserProfileFieldComponent implements OnInit {
     data: CoreUserProfileFieldComponentData = {}; // Data to pass to the component.
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         if (!this.field) {

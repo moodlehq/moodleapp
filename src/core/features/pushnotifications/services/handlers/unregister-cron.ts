@@ -31,7 +31,7 @@ export class CorePushNotificationsUnregisterCronHandlerService implements CoreCr
      * Receives the ID of the site affected, undefined for all sites.
      *
      * @param siteId ID of the site affected, undefined for all sites.
-     * @return Promise resolved when done, rejected if failure.
+     * @returns Promise resolved when done, rejected if failure.
      */
     async execute(siteId?: string): Promise<void> {
         await CorePushNotifications.retryUnregisters(siteId);
@@ -40,7 +40,7 @@ export class CorePushNotificationsUnregisterCronHandlerService implements CoreCr
     /**
      * Get the time between consecutive executions.
      *
-     * @return Time between consecutive executions (in ms).
+     * @returns Time between consecutive executions (in ms).
      */
     getInterval(): number {
         return 300000;

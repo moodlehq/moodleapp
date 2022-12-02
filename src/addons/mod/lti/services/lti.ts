@@ -40,7 +40,7 @@ export class AddonModLtiProvider {
     /**
      * Delete launcher.
      *
-     * @return Promise resolved when the launcher file is deleted.
+     * @returns Promise resolved when the launcher file is deleted.
      */
     deleteLauncher(): Promise<void> {
         return CoreFile.removeFile(LAUNCHER_FILE_NAME);
@@ -51,7 +51,7 @@ export class AddonModLtiProvider {
      *
      * @param url Launch URL.
      * @param params Launch params.
-     * @return Promise resolved with the file URL.
+     * @returns Promise resolved with the file URL.
      */
     async generateLauncher(url: string, params: AddonModLtiParam[]): Promise<string> {
         if (!CoreFile.isAvailable()) {
@@ -88,7 +88,7 @@ export class AddonModLtiProvider {
      * @param courseId Course ID.
      * @param cmId Course module ID.
      * @param options Other options.
-     * @return Promise resolved when the LTI is retrieved.
+     * @returns Promise resolved when the LTI is retrieved.
      */
     async getLti(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModLtiLti> {
         const params: AddonModLtiGetLtisByCoursesWSParams = {
@@ -117,7 +117,7 @@ export class AddonModLtiProvider {
      * Get cache key for LTI data WS calls.
      *
      * @param courseId Course ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getLtiCacheKey(courseId: number): string {
         return ROOT_CACHE_KEY + 'lti:' + courseId;
@@ -128,7 +128,7 @@ export class AddonModLtiProvider {
      *
      * @param id LTI id.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the launch data is retrieved.
+     * @returns Promise resolved when the launch data is retrieved.
      */
     async getLtiLaunchData(id: number, siteId?: string): Promise<AddonModLtiGetToolLaunchDataWSResponse> {
         const params: AddonModLtiGetToolLaunchDataWSParams = {
@@ -152,7 +152,7 @@ export class AddonModLtiProvider {
      * Get cache key for LTI launch data WS calls.
      *
      * @param id LTI id.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getLtiLaunchDataCacheKey(id: number): string {
         return `${ROOT_CACHE_KEY}launch:${id}`;
@@ -163,7 +163,7 @@ export class AddonModLtiProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateLti(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -176,7 +176,7 @@ export class AddonModLtiProvider {
      *
      * @param id LTI id.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateLtiLaunchData(id: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -189,7 +189,7 @@ export class AddonModLtiProvider {
      * This setting was added in 3.11.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean: whether it's disabled.
+     * @returns Promise resolved with boolean: whether it's disabled.
      */
     async isLaunchViaSiteDisabled(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
@@ -202,7 +202,7 @@ export class AddonModLtiProvider {
      * This setting was added in 3.11.
      *
      * @param site Site. If not defined, current site.
-     * @return Whether it's disabled.
+     * @returns Whether it's disabled.
      */
     isLaunchViaSiteDisabledInSite(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
@@ -215,7 +215,7 @@ export class AddonModLtiProvider {
      * This setting was removed in Moodle 3.11 because the default behaviour of the app changed.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with boolean: whether it's disabled.
+     * @returns Promise resolved with boolean: whether it's disabled.
      */
     async isOpenInAppBrowserDisabled(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
@@ -228,7 +228,7 @@ export class AddonModLtiProvider {
      * This setting was removed in Moodle 3.11 because the default behaviour of the app changed.
      *
      * @param site Site. If not defined, current site.
-     * @return Whether it's disabled.
+     * @returns Whether it's disabled.
      */
     isOpenInAppBrowserDisabledInSite(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
@@ -241,7 +241,7 @@ export class AddonModLtiProvider {
      *
      * @param url Launch URL.
      * @param params Launch params.
-     * @return Promise resolved when the WS call is successful.
+     * @returns Promise resolved when the WS call is successful.
      */
     async launch(url: string, params: AddonModLtiParam[]): Promise<void> {
         if (!CoreUrlUtils.isHttpURL(url)) {
@@ -265,7 +265,7 @@ export class AddonModLtiProvider {
      * @param id LTI id.
      * @param name Name of the lti.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the WS call is successful.
+     * @returns Promise resolved when the WS call is successful.
      */
     logView(id: number, name?: string, siteId?: string): Promise<void> {
         const params: AddonModLtiViewLtiWSParams = {
@@ -288,7 +288,7 @@ export class AddonModLtiProvider {
      * Check whether the LTI should be launched in browser via the site with auto-login.
      *
      * @param siteId Site ID.
-     * @return Promise resolved with boolean.
+     * @returns Promise resolved with boolean.
      */
     async shouldLaunchInBrowser(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);

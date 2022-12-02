@@ -281,7 +281,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
     /**
      * Check if we can leave the page or not.
      *
-     * @return Resolved if we can leave it, rejected if not.
+     * @returns Resolved if we can leave it, rejected if not.
      */
     async canLeave(): Promise<boolean> {
         if (AddonModForumHelper.hasPostDataChanged(this.formData, this.originalData)) {
@@ -335,7 +335,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
     /**
      * Get sort type configured by the current user.
      *
-     * @return Promise resolved with the sort type.
+     * @returns Promise resolved with the sort type.
      */
     protected async getUserSort(): Promise<SortType> {
         try {
@@ -369,7 +369,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
     /**
      * Convenience function to get the forum.
      *
-     * @return Promise resolved with the forum.
+     * @returns Promise resolved with the forum.
      */
     protected fetchForum(): Promise<AddonModForumData> {
         if (this.courseId && this.cmId) {
@@ -389,7 +389,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
      * @param sync Whether to try to synchronize the discussion.
      * @param showErrors Whether to show errors in a modal.
      * @param forceMarkAsRead Whether to mark all posts as read.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchPosts(sync?: boolean, showErrors?: boolean, forceMarkAsRead?: boolean): Promise<void> {
         let onlinePosts: AddonModForumPost[] = [];
@@ -585,7 +585,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
      * @param discussionId Discussion ID.
      * @param forumId Forum ID.
      * @param cmId Forum cmid.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadDiscussion(discussionId: number, forumId?: number, cmId?: number): Promise<void> {
         // Fetch the discussion if not passed as parameter.
@@ -601,7 +601,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
      * Tries to synchronize the posts discussion.
      *
      * @param showErrors Whether to show errors in a modal.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async syncDiscussion(showErrors: boolean): Promise<void> {
         const promises: Promise<void>[] = [];
@@ -656,7 +656,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
      * @param refresher Refresher.
      * @param done Function to call when done.
      * @param showErrors If show errors to the user of hide them.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async doRefresh(refresher?: IonRefresher | null, done?: () => void, showErrors: boolean = false): Promise<void> {
         if (this.discussionLoaded) {
@@ -672,7 +672,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
      *
      * @param sync Whether to try to synchronize the discussion.
      * @param showErrors Whether to show errors in a modal.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async refreshPosts(sync?: boolean, showErrors?: boolean): Promise<void> {
         this.content.scrollToTop();
@@ -695,7 +695,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
      * Function to change posts sorting
      *
      * @param type Sort type.
-     * @return Promised resolved when done.
+     * @returns Promised resolved when done.
      */
     changeSort(type: SortType): Promise<void> {
         this.discussionLoaded = false;
@@ -829,7 +829,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
     /**
      * Get all the posts contained in the discussion.
      *
-     * @return Array containing all the posts of the discussion.
+     * @returns Array containing all the posts of the discussion.
      */
     protected getAllPosts(): Post[] {
         const allPosts = this.posts.map(post => this.flattenPostHierarchy(post));
@@ -841,7 +841,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
      * Flatten a post's hierarchy into an array.
      *
      * @param parent Parent post.
-     * @return Array containing all the posts within the hierarchy (including the parent).
+     * @returns Array containing all the posts within the hierarchy (including the parent).
      */
     protected flattenPostHierarchy(parent: Post): Post[] {
         const posts = [parent];

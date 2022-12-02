@@ -52,7 +52,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
      *
      * @param siteId Site ID to sync. If not defined, sync all sites.
      * @param force Wether to force sync not depending on last execution.
-     * @return Promise resolved if sync is successful, rejected if sync fails.
+     * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     async syncAllEvents(siteId?: string, force = false): Promise<void> {
         await this.syncOnSites('all calendar events', (siteId) => this.syncAllEventsFunc(force, siteId), siteId);
@@ -63,7 +63,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
      *
      * @param force Wether to force sync not depending on last execution.
      * @param siteId Site ID to sync.
-     * @return Promise resolved if sync is successful, rejected if sync fails.
+     * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     protected async syncAllEventsFunc(force = false, siteId?: string): Promise<void> {
         const result = force
@@ -80,7 +80,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
      * Sync a site events only if a certain time has passed since the last time.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the events are synced or if it doesn't need to be synced.
+     * @returns Promise resolved when the events are synced or if it doesn't need to be synced.
      */
     async syncEventsIfNeeded(siteId?: string): Promise<AddonCalendarSyncEvents | undefined> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -96,7 +96,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
      * Synchronize all offline events of a certain site.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if sync is successful, rejected otherwise.
+     * @returns Promise resolved if sync is successful, rejected otherwise.
      */
     async syncEvents(siteId?: string): Promise<AddonCalendarSyncEvents> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -119,7 +119,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
      * Sync user preferences of a site.
      *
      * @param siteId Site ID to sync.
-     * @param Promise resolved if sync is successful, rejected if sync fails.
+     * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     protected async performSyncEvents(siteId: string): Promise<AddonCalendarSyncEvents> {
         const result: AddonCalendarSyncEvents = {
@@ -168,7 +168,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
      * @param eventId The event ID to sync.
      * @param result Object where to store the result of the sync.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved if sync is successful, rejected otherwise.
+     * @returns Promise resolved if sync is successful, rejected otherwise.
      */
     protected async syncOfflineEvent(eventId: number, result: AddonCalendarSyncEvents, siteId?: string): Promise<void> {
 

@@ -58,7 +58,7 @@ export class AddonMessagesSendMessageUserHandlerService implements CoreUserProfi
     /**
      * Returns the data needed to render the handler.
      *
-     * @return Data needed to render the handler.
+     * @returns Data needed to render the handler.
      */
     getDisplayData(): CoreUserProfileHandlerData {
         return {

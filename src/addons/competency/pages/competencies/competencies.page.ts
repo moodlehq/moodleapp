@@ -79,7 +79,7 @@ export class AddonCompetencyCompetenciesPage implements AfterViewInit, OnDestroy
     /**
      * Fetches the competencies and updates the view.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchCompetencies(): Promise<void> {
         try {

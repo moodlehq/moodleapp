@@ -38,7 +38,7 @@ export class CoreContentLinksChooseSiteModalComponent implements OnInit {
     protected isRootURL = false;
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         if (!this.url) {

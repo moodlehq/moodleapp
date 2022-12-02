@@ -53,7 +53,7 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         // Get the text. Check if we have anything offline.

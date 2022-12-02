@@ -47,7 +47,7 @@ export class CoreRatingProvider {
     /**
      * Returns whether the web serivce to add ratings is available.
      *
-     * @return If WS is available.
+     * @returns If WS is available.
      * @deprecated since app 4.0
      */
     isAddRatingWSAvailable(): boolean {
@@ -69,7 +69,7 @@ export class CoreRatingProvider {
      * @param ratedUserId Rated user id.
      * @param aggregateMethod Aggregate method.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the aggregated rating or void if stored offline.
+     * @returns Promise resolved with the aggregated rating or void if stored offline.
      */
     async addRating(
         component: string,
@@ -160,7 +160,7 @@ export class CoreRatingProvider {
      * @param ratedUserId Rated user id.
      * @param aggregateMethod Aggregate method.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with the aggregated rating.
+     * @returns Promise resolved with the aggregated rating.
      */
     async addRatingOnline(
         component: string,
@@ -218,7 +218,7 @@ export class CoreRatingProvider {
      * @param courseId Course id. Used for fetching user profiles.
      * @param siteId Site ID. If not defined, current site.
      * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @return Promise resolved with the list of ratings.
+     * @returns Promise resolved with the list of ratings.
      */
     async getItemRatings(
         contextLevel: ContextLevel,
@@ -285,7 +285,7 @@ export class CoreRatingProvider {
      * @param scaleId Scale id.
      * @param sort Sort field.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateRatingItems(
         contextLevel: ContextLevel,
@@ -308,7 +308,7 @@ export class CoreRatingProvider {
      * Check if rating is disabled in a certain site.
      *
      * @param site Site. If not defined, use current site.
-     * @return Whether it's disabled.
+     * @returns Whether it's disabled.
      */
     isRatingDisabledInSite(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
@@ -320,7 +320,7 @@ export class CoreRatingProvider {
      * Check if rating is disabled in a certain site.
      *
      * @param siteId Site Id. If not defined, use current site.
-     * @return Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     * @returns Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
     async isRatingDisabled(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
@@ -332,7 +332,7 @@ export class CoreRatingProvider {
      * Convenience function to merge two or more rating infos of the same instance.
      *
      * @param ratingInfos Array of rating infos.
-     * @return Merged rating info or undefined.
+     * @returns Merged rating info or undefined.
      */
     mergeRatingInfos(ratingInfos: CoreRatingInfo[]): CoreRatingInfo | undefined {
         let result: CoreRatingInfo | undefined;
@@ -372,11 +372,12 @@ export class CoreRatingProvider {
      * This function should be called from the prefetch handler of activities with ratings.
      *
      * @param contextLevel Context level: course, module, user, etc.
-     * @param instanceId Instance id.
-     * @param siteId Site id. If not defined, current site.
+     * @param instanceId Instance Id.
+     * @param scaleId Scale Id.
      * @param courseId Course id. Used for prefetching user profiles.
      * @param ratingInfo Rating info returned by web services.
-     * @return Promise resolved when done.
+     * @param siteId Site id. If not defined, current site.
+     * @returns Promise resolved when done.
      */
     async prefetchRatings(
         contextLevel: ContextLevel,
@@ -419,12 +420,13 @@ export class CoreRatingProvider {
      * Get cache key for rating items WS calls.
      *
      * @param contextLevel Context level: course, module, user, etc.
+     * @param instanceId Instance Id.
      * @param component Component. Example: "mod_forum".
      * @param ratingArea Rating area. Example: "post".
      * @param itemId Item id. Example: forum post id.
-     * @param scaleId Scale id.
+     * @param scaleId Scale Id.
      * @param sort Sort field.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getItemRatingsCacheKey(
         contextLevel: ContextLevel,

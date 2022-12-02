@@ -47,7 +47,7 @@ export class AddonQtypeDdMarkerComponent extends CoreQuestionBaseComponent imple
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     ngOnInit(): void {
         if (!this.question) {
@@ -168,7 +168,7 @@ export class AddonQtypeDdMarkerComponent extends CoreQuestionBaseComponent imple
     }
 
     /**
-     * Component being destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.destroyed = true;

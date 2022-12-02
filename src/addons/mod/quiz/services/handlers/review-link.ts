@@ -36,7 +36,7 @@ export class AddonModQuizReviewLinkHandlerService extends CoreContentLinksHandle
      * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
      * @param courseId Course ID related to the URL. Optional but recommended.
      * @param data Extra data to handle the URL.
-     * @return List of (or promise resolved with list of) actions.
+     * @returns List of (or promise resolved with list of) actions.
      */
 
     getActions(

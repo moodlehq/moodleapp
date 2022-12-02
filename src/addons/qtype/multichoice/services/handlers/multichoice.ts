@@ -31,30 +31,18 @@ export class AddonQtypeMultichoiceHandlerService implements CoreQuestionHandler 
     type = 'qtype_multichoice';
 
     /**
-     * Return the Component to use to display the question.
-     * It's recommended to return the class of the component, but you can also return an instance of the component.
-     *
-     * @param question The question to render.
-     * @return The component (or promise resolved with component) to use, undefined if not found.
+     * @inheritdoc
      */
     getComponent(): Type<unknown> {
         return AddonQtypeMultichoiceComponent;
     }
 
     /**
-     * Check if a response is complete.
-     *
-     * @param question The question.
-     * @param answers Object with the question answers (without prefix).
-     * @param component The component the question is related to.
-     * @param componentId Component ID.
-     * @return 1 if complete, 0 if not complete, -1 if cannot determine.
+     * @inheritdoc
      */
     isCompleteResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-        component: string, // eslint-disable-line @typescript-eslint/no-unused-vars
-        componentId: string | number, // eslint-disable-line @typescript-eslint/no-unused-vars
     ): number {
         let isSingle = true;
         let isMultiComplete = false;
@@ -81,39 +69,28 @@ export class AddonQtypeMultichoiceHandlerService implements CoreQuestionHandler 
     /**
      * Check if a response is complete. Only for single answer.
      *
-     * @param question The question.uestion answers (without prefix).
-     * @return 1 if complete, 0 if not complete, -1 if cannot determine.
+     * @param answers The question answers (without prefix).
+     * @returns 1 if complete, 0 if not complete, -1 if cannot determine.
      */
     isCompleteResponseSingle(answers: CoreQuestionsAnswers): number {
         return (answers.answer && answers.answer !== '') ? 1 : 0;
     }
 
     /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @return True or promise resolved with true if enabled.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         return true;
     }
 
     /**
-     * Check if a student has provided enough of an answer for the question to be graded automatically,
-     * or whether it must be considered aborted.
-     *
-     * @param question The question.
-     * @param answers Object with the question answers (without prefix).
-     * @param component The component the question is related to.
-     * @param componentId Component ID.
-     * @return 1 if gradable, 0 if not gradable, -1 if cannot determine.
+     * @inheritdoc
      */
     isGradableResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-        component: string,
-        componentId: string | number,
     ): number {
-        return this.isCompleteResponse(question, answers, component, componentId);
+        return this.isCompleteResponse(question, answers);
     }
 
     /**
@@ -121,21 +98,14 @@ export class AddonQtypeMultichoiceHandlerService implements CoreQuestionHandler 
      * or whether it must be considered aborted. Only for single answer.
      *
      * @param answers Object with the question answers (without prefix).
-     * @return 1 if gradable, 0 if not gradable, -1 if cannot determine.
+     * @returns 1 if gradable, 0 if not gradable, -1 if cannot determine.
      */
     isGradableResponseSingle(answers: CoreQuestionsAnswers): number {
         return this.isCompleteResponseSingle(answers);
     }
 
     /**
-     * Check if two responses are the same.
-     *
-     * @param question Question.
-     * @param prevAnswers Object with the previous question answers.
-     * @param newAnswers Object with the new question answers.
-     * @param component The component the question is related to.
-     * @param componentId Component ID.
-     * @return Whether they're the same.
+     * @inheritdoc
      */
     isSameResponse(
         question: CoreQuestionQuestionParsed,
@@ -168,22 +138,14 @@ export class AddonQtypeMultichoiceHandlerService implements CoreQuestionHandler 
      *
      * @param prevAnswers Object with the previous question answers.
      * @param newAnswers Object with the new question answers.
-     * @return Whether they're the same.
+     * @returns Whether they're the same.
      */
     isSameResponseSingle(prevAnswers: CoreQuestionsAnswers, newAnswers: CoreQuestionsAnswers): boolean {
         return CoreUtils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer');
     }
 
     /**
-     * Prepare and add to answers the data to send to server based in the input. Return promise if async.
-     *
-     * @param question Question.
-     * @param answers The answers retrieved from the form. Prepared answers must be stored in this object.
-     * @param offline Whether the data should be saved in offline.
-     * @param component The component the question is related to.
-     * @param componentId Component ID.
-     * @param siteId Site ID. If not defined, current site.
-     * @return Return a promise resolved when done if async, void if sync.
+     * @inheritdoc
      */
     prepareAnswers(
         question: AddonModQuizMultichoiceQuestion,

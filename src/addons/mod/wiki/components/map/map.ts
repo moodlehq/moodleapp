@@ -59,8 +59,6 @@ export class AddonModWikiMapModalComponent implements OnInit {
 
     /**
      * Construct the map of pages.
-     *
-     * @param pages List of pages.
      */
     protected constructMap(): void {
         let letter: AddonModWikiPagesMapLetter;

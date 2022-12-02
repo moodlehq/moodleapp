@@ -48,7 +48,7 @@ export class AddonModFeedbackProvider {
      *
      * @param items All question items to check dependency.
      * @param item Item to check.
-     * @return Return true if dependency is acomplished and it can be shown. False, otherwise.
+     * @returns Return true if dependency is acomplished and it can be shown. False, otherwise.
      */
     protected checkDependencyItem(items: AddonModFeedbackItem[], item: AddonModFeedbackItem): boolean {
         const depend = items.find((itemFind) => itemFind.id == item.dependitem);
@@ -76,7 +76,7 @@ export class AddonModFeedbackProvider {
      *
      * @param item Item to check.
      * @param dependValue Value to compare.
-     * @return Return true if dependency is acomplished and it can be shown. False, otherwise.
+     * @returns Return true if dependency is acomplished and it can be shown. False, otherwise.
      */
     protected compareDependItemMultichoice(item: AddonModFeedbackItem, dependValue: string): boolean {
         const parts = item.presentation.split(AddonModFeedbackProvider.MULTICHOICE_TYPE_SEP) || [];
@@ -127,7 +127,7 @@ export class AddonModFeedbackProvider {
      * @param feedbackId Feedback ID.
      * @param items Item to fill the value.
      * @param options Other options.
-     * @return Resolved with values when done.
+     * @returns Resolved with values when done.
      */
     protected async fillValues(
         feedbackId: number,
@@ -212,7 +212,7 @@ export class AddonModFeedbackProvider {
      * @param feedbackId Feedback ID.
      * @param options Other options.
      * @param previous Only for recurrent use. Object with the previous fetched info.
-     * @return Promise resolved when the info is retrieved.
+     * @returns Promise resolved when the info is retrieved.
      */
     async getAllNonRespondents(
         feedbackId: number,
@@ -253,7 +253,7 @@ export class AddonModFeedbackProvider {
      * @param feedbackId Feedback ID.
      * @param options Other options.
      * @param previous Only for recurrent use. Object with the previous fetched info.
-     * @return Promise resolved when the info is retrieved.
+     * @returns Promise resolved when the info is retrieved.
      */
     async getAllResponsesAnalysis(
         feedbackId: number,
@@ -300,7 +300,7 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param options Other options.
-     * @return Promise resolved when the feedback is retrieved.
+     * @returns Promise resolved when the feedback is retrieved.
      */
     async getAnalysis(
         feedbackId: number,
@@ -330,7 +330,7 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param groupId Group ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getAnalysisDataCacheKey(feedbackId: number, groupId: number = 0): string {
         return this.getAnalysisDataPrefixCacheKey(feedbackId) + groupId;
@@ -340,7 +340,7 @@ export class AddonModFeedbackProvider {
      * Get prefix cache key for feedback analysis data WS calls.
      *
      * @param feedbackId Feedback ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getAnalysisDataPrefixCacheKey(feedbackId: number): string {
         return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':analysis:';
@@ -353,7 +353,7 @@ export class AddonModFeedbackProvider {
      * @param attemptId Attempt ID to find.
      * @param options Other options.
      * @param previous Only for recurrent use. Object with the previous fetched info.
-     * @return Promise resolved when the info is retrieved.
+     * @returns Promise resolved when the info is retrieved.
      */
     async getAttempt(
         feedbackId: number,
@@ -408,7 +408,7 @@ export class AddonModFeedbackProvider {
      * Get prefix cache key for feedback completion data WS calls.
      *
      * @param feedbackId Feedback ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getCompletedDataCacheKey(feedbackId: number): string {
         return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':completed:';
@@ -419,7 +419,7 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param options Other options.
-     * @return Promise resolved when the info is retrieved.
+     * @returns Promise resolved when the info is retrieved.
      */
     async getCurrentCompletedTimeModified(feedbackId: number, options: CoreCourseCommonModWSOptions = {}): Promise<number> {
         const site = await CoreSites.getSite(options.siteId);
@@ -452,7 +452,7 @@ export class AddonModFeedbackProvider {
      * Get prefix cache key for feedback current completed temp data WS calls.
      *
      * @param feedbackId Feedback ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getCurrentCompletedTimeModifiedDataCacheKey(feedbackId: number): string {
         return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':completedtime:';
@@ -463,7 +463,7 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param options Other options.
-     * @return Promise resolved when the info is retrieved.
+     * @returns Promise resolved when the info is retrieved.
      */
     async getCurrentValues(
         feedbackId: number,
@@ -505,7 +505,7 @@ export class AddonModFeedbackProvider {
      * Get cache key for get current values feedback data WS calls.
      *
      * @param feedbackId Feedback ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getCurrentValuesDataCacheKey(feedbackId: number): string {
         return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':currentvalues';
@@ -516,7 +516,7 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param options Other options.
-     * @return Promise resolved when the feedback is retrieved.
+     * @returns Promise resolved when the feedback is retrieved.
      */
     async getFeedbackAccessInformation(
         feedbackId: number,
@@ -541,7 +541,7 @@ export class AddonModFeedbackProvider {
      * Get cache key for feedback access information data WS calls.
      *
      * @param feedbackId Feedback ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getFeedbackAccessInformationDataCacheKey(feedbackId: number): string {
         return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':access';
@@ -551,7 +551,7 @@ export class AddonModFeedbackProvider {
      * Get cache key for feedback data WS calls.
      *
      * @param courseId Course ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getFeedbackCacheKey(courseId: number): string {
         return ROOT_CACHE_KEY + 'feedback:' + courseId;
@@ -561,7 +561,7 @@ export class AddonModFeedbackProvider {
      * Get prefix cache key for all feedback activity data WS calls.
      *
      * @param feedbackId Feedback ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getFeedbackDataPrefixCacheKey(feedbackId: number): string {
         return ROOT_CACHE_KEY + feedbackId;
@@ -574,7 +574,7 @@ export class AddonModFeedbackProvider {
      * @param key Name of the property to check.
      * @param value Value to search.
      * @param options Other options.
-     * @return Promise resolved when the feedback is retrieved.
+     * @returns Promise resolved when the feedback is retrieved.
      */
     protected async getFeedbackDataByKey(
         courseId: number,
@@ -614,7 +614,7 @@ export class AddonModFeedbackProvider {
      * @param courseId Course ID.
      * @param cmId Course module ID.
      * @param options Other options.
-     * @return Promise resolved when the feedback is retrieved.
+     * @returns Promise resolved when the feedback is retrieved.
      */
     getFeedback(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModFeedbackWSFeedback> {
         return this.getFeedbackDataByKey(courseId, 'coursemodule', cmId, options);
@@ -626,7 +626,7 @@ export class AddonModFeedbackProvider {
      * @param courseId Course ID.
      * @param id Feedback ID.
      * @param options Other options.
-     * @return Promise resolved when the feedback is retrieved.
+     * @returns Promise resolved when the feedback is retrieved.
      */
     getFeedbackById(courseId: number, id: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModFeedbackWSFeedback> {
         return this.getFeedbackDataByKey(courseId, 'id', id, options);
@@ -637,7 +637,7 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param options Other options.
-     * @return Promise resolved when the info is retrieved.
+     * @returns Promise resolved when the info is retrieved.
      */
     async getItems(feedbackId: number, options: CoreCourseCommonModWSOptions = {}): Promise<AddonModFeedbackGetItemsWSResponse> {
         const site = await CoreSites.getSite(options.siteId);
@@ -660,7 +660,7 @@ export class AddonModFeedbackProvider {
      * Get cache key for get items feedback data WS calls.
      *
      * @param feedbackId Feedback ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getItemsDataCacheKey(feedbackId: number): string {
         return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':items';
@@ -671,7 +671,7 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param options Other options.
-     * @return Promise resolved when the info is retrieved.
+     * @returns Promise resolved when the info is retrieved.
      */
     async getNonRespondents(
         feedbackId: number,
@@ -703,7 +703,7 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param groupId Group id, 0 means that the function will determine the user group.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getNonRespondentsDataCacheKey(feedbackId: number, groupId: number = 0): string {
         return this.getNonRespondentsDataPrefixCacheKey(feedbackId) + groupId;
@@ -713,7 +713,7 @@ export class AddonModFeedbackProvider {
      * Get prefix cache key for feedback non respondents data WS calls.
      *
      * @param feedbackId Feedback ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getNonRespondentsDataPrefixCacheKey(feedbackId: number): string {
         return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':nonrespondents:';
@@ -725,7 +725,7 @@ export class AddonModFeedbackProvider {
      * @param feedbackId Feedback ID.
      * @param page The page to get.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the info is retrieved.
+     * @returns Promise resolved when the info is retrieved.
      */
     async getPageItems(feedbackId: number, page: number, siteId?: string): Promise<AddonModFeedbackGetPageItemsWSResponse> {
         const site = await CoreSites.getSite(siteId);
@@ -744,7 +744,7 @@ export class AddonModFeedbackProvider {
      * @param feedbackId Feedback ID.
      * @param page The page to get.
      * @param options Other options.
-     * @return Promise resolved when the info is retrieved.
+     * @returns Promise resolved when the info is retrieved.
      */
     async getPageItemsWithValues(
         feedbackId: number,
@@ -813,7 +813,7 @@ export class AddonModFeedbackProvider {
      * @param page Page where we want to jump.
      * @param changePage If page change is forward (1) or backward (-1).
      * @param options Other options.
-     * @return Page number where to jump. Or false if completed or first page.
+     * @returns Page number where to jump. Or false if completed or first page.
      */
     protected async getPageJumpTo(
         feedbackId: number,
@@ -847,7 +847,7 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param options Other options.
-     * @return Promise resolved when the info is retrieved.
+     * @returns Promise resolved when the info is retrieved.
      */
     async getResponsesAnalysis(
         feedbackId: number,
@@ -879,7 +879,7 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param groupId Group id, 0 means that the function will determine the user group.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getResponsesAnalysisDataCacheKey(feedbackId: number, groupId: number = 0): string {
         return this.getResponsesAnalysisDataPrefixCacheKey(feedbackId) + groupId;
@@ -889,7 +889,7 @@ export class AddonModFeedbackProvider {
      * Get prefix cache key for feedback responses analysis data WS calls.
      *
      * @param feedbackId Feedback ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getResponsesAnalysisDataPrefixCacheKey(feedbackId: number): string {
         return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':responsesanalysis:';
@@ -900,7 +900,7 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param options Other options.
-     * @return Promise resolved when the info is retrieved.
+     * @returns Promise resolved when the info is retrieved.
      */
     async getResumePage(feedbackId: number, options: CoreCourseCommonModWSOptions = {}): Promise<number> {
         const site = await CoreSites.getSite(options.siteId);
@@ -925,7 +925,7 @@ export class AddonModFeedbackProvider {
      * Get prefix cache key for resume feedback page data WS calls.
      *
      * @param feedbackId Feedback ID.
-     * @return Cache key.
+     * @returns Cache key.
      */
     protected getResumePageDataCacheKey(feedbackId: number): string {
         return this.getFeedbackDataPrefixCacheKey(feedbackId) + ':launch';
@@ -936,7 +936,7 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllFeedbackData(feedbackId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -949,7 +949,7 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAnalysisData(feedbackId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -964,7 +964,7 @@ export class AddonModFeedbackProvider {
      * @param moduleId The module ID.
      * @param courseId Course ID of the module.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -982,7 +982,7 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateCurrentValuesData(feedbackId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -995,7 +995,7 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateFeedbackAccessInformationData(feedbackId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1008,7 +1008,7 @@ export class AddonModFeedbackProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateFeedbackData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1021,7 +1021,7 @@ export class AddonModFeedbackProvider {
      *
      * @param moduleId The module ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the files are invalidated.
+     * @returns Promise resolved when the files are invalidated.
      */
     async invalidateFiles(moduleId: number, siteId?: string): Promise<void> {
         return CoreFilepool.invalidateFilesByComponent(siteId, AddonModFeedbackProvider.COMPONENT, moduleId);
@@ -1032,7 +1032,7 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateNonRespondentsData(feedbackId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1045,7 +1045,7 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateResponsesAnalysisData(feedbackId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1058,7 +1058,7 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the data is invalidated.
+     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateResumePageData(feedbackId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1071,7 +1071,7 @@ export class AddonModFeedbackProvider {
      *
      * @param feedbackId Feedback ID.
      * @param options Other options.
-     * @return Promise resolved when the info is retrieved.
+     * @returns Promise resolved when the info is retrieved.
      */
     async isCompleted(feedbackId: number, options: CoreCourseCommonModWSOptions = {}): Promise<boolean> {
         const site = await CoreSites.getSite(options.siteId);
@@ -1096,7 +1096,7 @@ export class AddonModFeedbackProvider {
      * @param name Name of the feedback.
      * @param formViewed True if form was viewed.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the WS call is successful.
+     * @returns Promise resolved when the WS call is successful.
      */
     async logView(id: number, name?: string, formViewed: boolean = false, siteId?: string): Promise<void> {
         const params: AddonModFeedbackViewFeedbackWSParams = {
@@ -1123,7 +1123,7 @@ export class AddonModFeedbackProvider {
      * @param page The page being processed.
      * @param responses The data to be processed the key is the field name (usually type[index]_id).
      * @param options Other options.
-     * @return Promise resolved when the info is retrieved.
+     * @returns Promise resolved when the info is retrieved.
      */
     async processPage(
         feedbackId: number,
@@ -1216,7 +1216,7 @@ export class AddonModFeedbackProvider {
      * @param responses The data to be processed the key is the field name (usually type[index]_id).
      * @param goPrevious Whether we want to jump to previous page.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when the info is retrieved.
+     * @returns Promise resolved when the info is retrieved.
      */
     async processPageOnline(
         feedbackId: number,

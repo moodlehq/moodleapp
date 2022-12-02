@@ -109,7 +109,7 @@ export class CoreBlockComponent implements OnChanges, OnDestroy {
     /**
      * Invalidate some data.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async invalidate(): Promise<void> {
         if (this.dynamicComponent) {

@@ -57,7 +57,7 @@ export class AddonModDataActionComponent implements OnInit {
     }
 
     /**
-     * Component being initialized.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         if (this.action == AddonModDataAction.USERPICTURE) {
@@ -122,7 +122,7 @@ export class AddonModDataActionComponent implements OnInit {
     /**
      * Undo delete action.
      *
-     * @return Solved when done.
+     * @returns Solved when done.
      */
     async undoDelete(): Promise<void> {
         const dataId = this.database.id;

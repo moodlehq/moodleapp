@@ -231,7 +231,7 @@ export function requireElement<E = HTMLElement>(
  *
  * @param instance Instance to mock.
  * @param overrides Object with the properties or methods to override, or a list of methods to override with an empty function.
- * @return Mock instance.
+ * @returns Mock instance.
  */
 export function mock<T>(
     instance: T | Partial<T> = {},

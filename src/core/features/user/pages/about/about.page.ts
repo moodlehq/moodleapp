@@ -97,7 +97,7 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
     /**
      * Fetches the user data.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async fetchUser(): Promise<void> {
         try {
@@ -129,7 +129,7 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
     /**
      * Check if current user image has changed.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async checkUserImageUpdated(): Promise<void> {
         if (!this.site || !this.site.getInfo() || !this.user) {
@@ -200,7 +200,7 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
      * Refresh the user data.
      *
      * @param event Event.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async refreshUser(event?: IonRefresher): Promise<void> {
         await CoreUtils.ignoreErrors(CoreUser.invalidateUserCache(this.userId));
@@ -221,7 +221,7 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
     /**
      * Check whether the user avatar is not up to date with site info.
      *
-     * @return Whether the user avatar differs from site info cache.
+     * @returns Whether the user avatar differs from site info cache.
      */
     protected isUserAvatarDirty(): boolean {
         if (!this.user || !this.site) {
@@ -241,7 +241,7 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
      * the values returned by this function may not be valid urls, given that they are intended for string comparison.
      *
      * @param avatarUrl Avatar url.
-     * @return Normalized avatar string (may not be a valid url).
+     * @returns Normalized avatar string (may not be a valid url).
      */
     protected normalizeAvatarUrl(avatarUrl?: string): string {
         if (!avatarUrl) {

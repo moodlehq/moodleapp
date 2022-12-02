@@ -65,7 +65,7 @@ export class AddonCourseCompletionReportPage implements OnInit {
     /**
      * Fetch compleiton data.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchCompletion(): Promise<void> {
         try {

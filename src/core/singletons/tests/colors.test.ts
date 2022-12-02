@@ -47,7 +47,7 @@ describe('CoreColors singleton', () => {
         expect(CoreColors.getColorHex('rgb(255, 100, 70)')).toEqual('#ff6446');
         expect(CoreColors.getColorHex('rgba(255, 100, 70, 0.5)')).toEqual('#ff6446');
 
-        // @todo: There are problems when testing color names (e.g. violet) or hsf colors.
+        // @todo There are problems when testing color names (e.g. violet) or hsf colors.
         // They work fine in real browsers but not in unit tests.
     });
 
@@ -56,7 +56,7 @@ describe('CoreColors singleton', () => {
         expect(CoreColors.getColorRGBA('rgb(255, 100, 70)')).toEqual([255, 100, 70]);
         expect(CoreColors.getColorRGBA('rgba(255, 100, 70, 0.5)')).toEqual([255, 100, 70, 0.5]);
 
-        // @todo: There are problems when testing color names (e.g. violet) or hsf colors.
+        // @todo There are problems when testing color names (e.g. violet) or hsf colors.
         // They work fine in real browsers but not in unit tests.
     });
 

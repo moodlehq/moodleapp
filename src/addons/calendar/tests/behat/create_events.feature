@@ -64,4 +64,4 @@ Feature: Test creation of calendar events in app
     And I press "OK" in the app
     Then the app should have opened a browser tab with url "google.com"
 
-  # @todo: Add more Scenarios to test teacher, different values, and creating events from other views (e.g. day view).
+  # @todo Add more Scenarios to test teacher, different values, and creating events from other views (e.g. day view).

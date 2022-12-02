@@ -39,7 +39,7 @@ export class AddonBlogProvider {
      * check, we should not be calling WS from here.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved with true if enabled, resolved with false or rejected otherwise.
+     * @returns Promise resolved with true if enabled, resolved with false or rejected otherwise.
      * @since 3.6
      */
     async isPluginEnabled(siteId?: string): Promise<boolean> {
@@ -52,7 +52,7 @@ export class AddonBlogProvider {
      * Get the cache key for the blog entries.
      *
      * @param filter Filter to apply on search.
-     * @return Cache key.
+     * @returns Cache key.
      */
     getEntriesCacheKey(filter: AddonBlogFilter = {}): string {
         return ROOT_CACHE_KEY + CoreUtils.sortAndStringify(filter);
@@ -64,7 +64,7 @@ export class AddonBlogProvider {
      * @param filter Filter to apply on search.
      * @param page Page of the blog entries to fetch.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise to be resolved when the entries are retrieved.
+     * @returns Promise to be resolved when the entries are retrieved.
      */
     async getEntries(filter: AddonBlogFilter = {}, page: number = 0, siteId?: string): Promise<CoreBlogGetEntriesWSResponse> {
         const site = await CoreSites.getSite(siteId);
@@ -88,7 +88,7 @@ export class AddonBlogProvider {
      *
      * @param filter Filter to apply on search
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise resolved when data is invalidated.
+     * @returns Promise resolved when data is invalidated.
      */
     async invalidateEntries(filter: AddonBlogFilter = {}, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -101,7 +101,7 @@ export class AddonBlogProvider {
      *
      * @param filter Filter to apply on search.
      * @param siteId Site ID. If not defined, current site.
-     * @return Promise to be resolved when done.
+     * @returns Promise to be resolved when done.
      */
     async logView(filter: AddonBlogFilter = {}, siteId?: string): Promise<CoreStatusWithWarningsWSResponse> {
         CorePushNotifications.logViewListEvent('blog', 'core_blog_view_entries', filter, siteId);

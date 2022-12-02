@@ -28,7 +28,7 @@ export class AddonModFolderHelperProvider {
      * type (folder), filepath and contents (array with files and subfolders).
      *
      * @param fileEntries Folder contents.
-     * @return Formatted contents.
+     * @returns Formatted contents.
      */
     formatContents(fileEntries: CoreCourseModuleContentFile[]): AddonModFolderFolderFormattedData {
         const rootFolder: AddonModFolderFolderFormattedData = {

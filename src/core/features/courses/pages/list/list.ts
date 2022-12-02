@@ -129,7 +129,7 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
     /**
      * Load the course list.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async fetchCourses(): Promise<void> {
         try {
@@ -149,7 +149,7 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
      * Fetch the courses.
      *
      * @param clearTheList If list needs to be reloaded.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async loadCourses(clearTheList = false): Promise<void> {
         this.loadMoreError = false;
@@ -262,7 +262,7 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
     /**
      * Search courses or load the next page of current search.
      *
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     protected async searchCourses(): Promise<void> {
         this.loadMoreError = false;

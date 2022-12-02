@@ -39,7 +39,7 @@ export interface CoreBlockHandler extends CoreDelegateHandler {
      * @param block The block to render.
      * @param contextLevel The context where the block will be used.
      * @param instanceId The instance ID associated with the context level.
-     * @return Data or promise resolved with the data.
+     * @returns Data or promise resolved with the data.
      */
     getDisplayData?(
         block: CoreCourseBlock,
@@ -113,7 +113,7 @@ export class CoreBlockDelegateService extends CoreDelegate<CoreBlockHandler> {
      * Check if blocks are disabled in a certain site.
      *
      * @param site Site. If not defined, use current site.
-     * @return Whether it's disabled.
+     * @returns Whether it's disabled.
      */
     areBlocksDisabledInSite(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
@@ -125,7 +125,7 @@ export class CoreBlockDelegateService extends CoreDelegate<CoreBlockHandler> {
      * Check if blocks are disabled in a certain site for courses.
      *
      * @param site Site. If not defined, use current site.
-     * @return Whether it's disabled.
+     * @returns Whether it's disabled.
      */
     areBlocksDisabledInCourses(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
@@ -137,7 +137,7 @@ export class CoreBlockDelegateService extends CoreDelegate<CoreBlockHandler> {
      * Check if blocks are disabled in a certain site.
      *
      * @param siteId Site Id. If not defined, use current site.
-     * @return Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     * @returns Promise resolved with true if disabled, rejected or resolved with false otherwise.
      */
     async areBlocksDisabled(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
@@ -151,7 +151,7 @@ export class CoreBlockDelegateService extends CoreDelegate<CoreBlockHandler> {
      * @param block The block to render.
      * @param contextLevel The context where the block will be used.
      * @param instanceId The instance ID associated with the context level.
-     * @return Promise resolved with the display data.
+     * @returns Promise resolved with the display data.
      */
     async getBlockDisplayData(
         block: CoreCourseBlock,
@@ -169,7 +169,7 @@ export class CoreBlockDelegateService extends CoreDelegate<CoreBlockHandler> {
      * Check if any of the blocks in a list is supported.
      *
      * @param blocks The list of blocks.
-     * @return Whether any of the blocks is supported.
+     * @returns Whether any of the blocks is supported.
      */
     hasSupportedBlock(blocks: CoreCourseBlock[]): boolean {
         blocks = blocks || [];
@@ -181,7 +181,7 @@ export class CoreBlockDelegateService extends CoreDelegate<CoreBlockHandler> {
      * Check if a block is supported.
      *
      * @param name Block "name". E.g. 'activity_modules'.
-     * @return Whether it's supported.
+     * @returns Whether it's supported.
      */
     isBlockSupported(name: string): boolean {
         return this.hasHandler(name, true);
@@ -192,7 +192,7 @@ export class CoreBlockDelegateService extends CoreDelegate<CoreBlockHandler> {
      *
      * @param handler Handler to check.
      * @param site Site to check.
-     * @return Whether is enabled or disabled in site.
+     * @returns Whether is enabled or disabled in site.
      */
     protected isFeatureDisabled(handler: CoreBlockHandler, site: CoreSite): boolean {
         // Allow displaying my overview even if all blocks are disabled, to avoid having an empty My Courses.

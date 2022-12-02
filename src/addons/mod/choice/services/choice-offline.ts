@@ -30,7 +30,7 @@ export class AddonModChoiceOfflineProvider {
      * @param choiceId Choice ID to remove.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User the responses belong to. If not defined, current user in site.
-     * @return Promise resolved if stored, rejected if failure.
+     * @returns Promise resolved if stored, rejected if failure.
      */
     async deleteResponse(choiceId: number, siteId?: string, userId?: number): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -43,7 +43,7 @@ export class AddonModChoiceOfflineProvider {
      * Get all offline responses.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @return Promi[se resolved with responses.
+     * @returns Promi[se resolved with responses.
      */
     async getResponses(siteId?: string): Promise<AddonModChoiceOfflineResponses[]> {
         const site = await CoreSites.getSite(siteId);
@@ -59,7 +59,7 @@ export class AddonModChoiceOfflineProvider {
      * @param choiceId Choice ID.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User the responses belong to. If not defined, current user in site.
-     * @return Promise resolved with boolean: true if has offline answers, false otherwise.
+     * @returns Promise resolved with boolean: true if has offline answers, false otherwise.
      */
     async hasResponse(choiceId: number, siteId?: string, userId?: number): Promise<boolean> {
         try {
@@ -78,7 +78,7 @@ export class AddonModChoiceOfflineProvider {
      * @param choiceId Choice ID to get.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User the responses belong to. If not defined, current user in site.
-     * @return Promise resolved with the object to be synced.
+     * @returns Promise resolved with the object to be synced.
      */
     async getResponse(choiceId: number, siteId?: string, userId?: number): Promise<AddonModChoiceOfflineResponses> {
         const site = await CoreSites.getSite(siteId);
@@ -96,7 +96,7 @@ export class AddonModChoiceOfflineProvider {
      * Parse responses.
      *
      * @param entry Entry to parse.
-     * @return Parsed entry.
+     * @returns Parsed entry.
      */
     protected parseResponse(entry: AddonModChoiceResponsesDBRecord): AddonModChoiceOfflineResponses {
         return {
@@ -115,7 +115,7 @@ export class AddonModChoiceOfflineProvider {
      * @param deleting If true, the user is deleting responses, if false, submitting.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User the responses belong to. If not defined, current user in site.
-     * @return Promise resolved when results are successfully submitted.
+     * @returns Promise resolved when results are successfully submitted.
      */
     async saveResponse(
         choiceId: number,

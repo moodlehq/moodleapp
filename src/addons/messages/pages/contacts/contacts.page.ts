@@ -159,7 +159,7 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
      * Fetch contacts.
      *
      * @param refresh True if we are refreshing contacts, false if we are loading more.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async confirmedFetchData(refresh: boolean = false): Promise<void> {
         this.confirmedLoadMoreError = false;
@@ -185,7 +185,7 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
      * Fetch contact requests.
      *
      * @param refresh True if we are refreshing contact requests, false if we are loading more.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async requestsFetchData(refresh: boolean = false): Promise<void> {
         this.requestsLoadMoreError = false;
@@ -211,7 +211,7 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
      * Refresh contacts or requests.
      *
      * @param refresher Refresher.
-     * @return Promise resolved when done.
+     * @returns Promise resolved when done.
      */
     async refreshData(refresher?: IonRefresher): Promise<void> {
         try {
@@ -234,7 +234,7 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
      * Load more contacts or requests.
      *
      * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
-     * @return Resolved when done.
+     * @returns Resolved when done.
      */
     async loadMore(infiniteComplete?: () => void): Promise<void> {
         try {
