@@ -13,9 +13,9 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="columns && rows">
-        <core-empty-box *ngIf="rows && rows.length === 0" icon="fas-chart-bar" [message]="'core.grades.nogradesreturned' | translate">
+        <core-empty-box *ngIf="!rows.length" icon="fas-chart-bar" [message]="'core.grades.nogradesreturned' | translate">
         </core-empty-box>
-        <div *ngIf="rows && rows.length > 0" class="core-grades-container">
+        <div *ngIf="rows.length" class="core-grades-container">
             <table class="core-grades-table" [class.summary]="showSummary">
                 <thead>
                     <tr>
@@ -26,7 +26,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <ng-container *ngFor="let row of rows">
+                    <ng-container *ngFor="let row of rows | slice:0:rowsOnView">
                         <tr *ngIf="row.itemtype === 'leader'">
                             <td [attr.rowspan]="row.rowspan" class="core-grades-table-leader"></td>
                         </tr>
@@ -55,7 +55,7 @@
                                 <ng-container *ngIf="row.itemtype !== 'category'">
                                     <ng-container *ngFor="let column of columns">
                                         <td *ngIf="column.name !== 'gradeitem' && column.name !== 'feedback' && column.name !== 'grade' &&
-                                        row[column.name] != undefined" [class]="'ion-text-start core-grades-table-' + column.name"
+                                        row[column.name] !== undefined" [class]="'ion-text-start core-grades-table-' + column.name"
                                             [class.ion-hide-md-down]="column.hiddenPhone" [innerHTML]="row[column.name]">
                                         </td>
                                         <td *ngIf="column.name === 'feedback' && row.feedback !== undefined"
@@ -74,61 +74,61 @@
                                 </ng-container>
                             </ng-container>
                         </tr>
-                        <tr *ngIf="row.expandable" [id]="row.detailsid" [class]="row.rowclass" [hidden]="!row.expanded">
+                        <tr *ngIf="row.expandable && row.expanded" [id]="row.detailsid" [class]="row.rowclass">
                             <td [attr.colspan]="totalColumnsSpan">
                                 <ion-list>
                                     <ion-item class="ion-text-wrap" *ngIf="row.weight">
                                         <ion-label>
-                                            <h2>{{ 'core.grades.weight' | translate}}</h2>
+                                            <p class="item-heading">{{ 'core.grades.weight' | translate}}</p>
                                             <p [innerHTML]="row.weight"></p>
                                         </ion-label>
                                     </ion-item>
 
                                     <ion-item class="ion-text-wrap" *ngIf="row.grade">
                                         <ion-label>
-                                            <h2>{{ 'core.grades.grade' | translate}}</h2>
+                                            <p class="item-heading">{{ 'core.grades.grade' | translate}}</p>
                                             <p [innerHTML]="row.grade"></p>
                                         </ion-label>
                                     </ion-item>
 
                                     <ion-item class="ion-text-wrap" *ngIf="row.range">
                                         <ion-label>
-                                            <h2>{{ 'core.grades.range' | translate}}</h2>
+                                            <p class="item-heading">{{ 'core.grades.range' | translate}}</p>
                                             <p [innerHTML]="row.range"></p>
                                         </ion-label>
                                     </ion-item>
 
                                     <ion-item class="ion-text-wrap" *ngIf="row.percentage">
                                         <ion-label>
-                                            <h2>{{ 'core.grades.percentage' | translate}}</h2>
+                                            <p class="item-heading">{{ 'core.grades.percentage' | translate}}</p>
                                             <p [innerHTML]="row.percentage"></p>
                                         </ion-label>
                                     </ion-item>
 
                                     <ion-item class="ion-text-wrap" *ngIf="row.lettergrade">
                                         <ion-label>
-                                            <h2>{{ 'core.grades.lettergrade' | translate}}</h2>
+                                            <p class="item-heading">{{ 'core.grades.lettergrade' | translate}}</p>
                                             <p [innerHTML]="row.lettergrade"></p>
                                         </ion-label>
                                     </ion-item>
 
                                     <ion-item class="ion-text-wrap" *ngIf="row.rank">
                                         <ion-label>
-                                            <h2>{{ 'core.grades.rank' | translate}}</h2>
+                                            <p class="item-heading">{{ 'core.grades.rank' | translate}}</p>
                                             <p [innerHTML]="row.rank"></p>
                                         </ion-label>
                                     </ion-item>
 
                                     <ion-item class="ion-text-wrap" *ngIf="row.average">
                                         <ion-label>
-                                            <h2>{{ 'core.grades.average' | translate}}</h2>
+                                            <p class="item-heading">{{ 'core.grades.average' | translate}}</p>
                                             <p [innerHTML]="row.average"></p>
                                         </ion-label>
                                     </ion-item>
 
                                     <ion-item class="ion-text-wrap" *ngIf="row.feedback">
                                         <ion-label>
-                                            <h2>{{ 'core.grades.feedback' | translate}}</h2>
+                                            <p class="item-heading">{{ 'core.grades.feedback' | translate}}</p>
                                             <p>
                                                 <core-format-text collapsible-item [text]="row.feedback" contextLevel="course"
                                                     [contextInstanceId]="courseId">
@@ -139,7 +139,7 @@
 
                                     <ion-item class="ion-text-wrap" *ngIf="row.contributiontocoursetotal">
                                         <ion-label>
-                                            <h2>{{ 'core.grades.contributiontocoursetotal' | translate}}</h2>
+                                            <p class="item-heading">{{ 'core.grades.contributiontocoursetotal' | translate}}</p>
                                             <p [innerHTML]="row.contributiontocoursetotal"></p>
                                         </ion-label>
                                     </ion-item>
@@ -149,6 +149,7 @@
                     </ng-container>
                 </tbody>
             </table>
+            <core-infinite-loading [enabled]="rowsOnView < rows.length" (action)="loadMore($event)"></core-infinite-loading>
         </div>
     </core-loading>
 </ion-content>
