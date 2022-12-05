@@ -210,6 +210,9 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
             if (tagName === 'SOURCE') {
                 // Restoring original src.
                 this.addSource(url);
+            } else if (url && !this.element.getAttribute(targetAttr)) {
+                // By default, Angular inputs aren't added as DOM attributes. Add it now.
+                this.element.setAttribute(targetAttr, url);
             }
 
             throw new CoreError('Non-downloadable URL');
