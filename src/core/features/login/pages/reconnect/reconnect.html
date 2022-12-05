@@ -78,8 +78,18 @@
                     {{ 'core.login.loginbutton' | translate }}
                 </ion-button>
 
+                <!-- Forgotten password option. -->
+                <ion-button *ngIf="showForgottenPassword && !isOAuth" expand="block" fill="clear"
+                    class="core-login-forgotten-password core-button-as-link ion-text-wrap" (click)="forgottenPassword()">
+                    {{ 'core.login.forgotten' | translate }}
+                </ion-button>
+
+                <div class="ion-text-center ion-padding core-login-site-qrcode-separator">{{ 'core.login.or' | translate }}</div>
+
+                <!-- Login methods -->
+                <core-login-methods></core-login-methods>
+
                 <ng-container *ngIf="showScanQR && !isBrowserSSO">
-                    <div class="ion-text-center ion-padding core-login-site-qrcode-separator">{{ 'core.login.or' | translate }}</div>
                     <ion-button expand="block" fill="outline" class="ion-margin core-login-site-qrcode"
                         (click)="showInstructionsAndScanQR()">
                         <ion-icon slot="start" name="fas-qrcode" aria-hidden="true"></ion-icon>
@@ -88,14 +98,7 @@
                 </ng-container>
             </form>
 
-            <!-- Forgotten password option. -->
-            <ion-button *ngIf="showForgottenPassword && !isOAuth" expand="block" fill="clear"
-                class="core-login-forgotten-password core-button-as-link ion-text-wrap" (click)="forgottenPassword()">
-                {{ 'core.login.forgotten' | translate }}
-            </ion-button>
 
-            <!-- Login methods -->
-            <core-login-methods></core-login-methods>
 
             <!-- Identity providers. -->
             <ion-list *ngIf="identityProviders?.length" class="ion-padding-top core-login-identity-providers">

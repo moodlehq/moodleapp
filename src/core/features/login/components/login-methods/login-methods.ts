@@ -17,7 +17,7 @@ import { CoreLoginHelper, CoreLoginMethod } from '@features/login/services/login
 @Component({
     selector: 'core-login-methods',
     templateUrl: 'login-methods.html',
-    styleUrls: ['../../login.scss', 'login-methods.scss'],
+    styleUrls: ['../../login.scss'],
 })
 export class CoreLoginMethodsComponent implements OnInit {
 
