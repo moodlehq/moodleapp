@@ -118,10 +118,10 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
         this.updateVisibility();
 
         this.subscription = CoreMainMenuDelegate.getHandlersObservable().subscribe((handlers) => {
-            // Remove the handlers that should only appear in the More menu.
+            const previousHandlers = this.allHandlers;
             this.allHandlers = handlers;
 
-            this.updateHandlers();
+            this.updateHandlers(previousHandlers);
         });
 
         this.badgeUpdateObserver = CoreEvents.on(CoreMainMenuProvider.MAIN_MENU_HANDLER_BADGE_UPDATED, (data) => {
@@ -154,8 +154,10 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
 
     /**
      * Update handlers on change (size or handlers).
+     *
+     * @param previousHandlers Previous handlers (if they haave just been updated).
      */
-    async updateHandlers(): Promise<void> {
+    async updateHandlers(previousHandlers?: CoreMainMenuHandlerToDisplay[]): Promise<void> {
         if (!this.allHandlers) {
             return;
         }
@@ -167,7 +169,6 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
             .slice(0, CoreMainMenu.getNumItems()); // Get main handlers.
 
         // Re-build the list of tabs. If a handler is already in the list, use existing object to prevent re-creating the tab.
-        const previousTabs = this.tabs.map(tab => tab.page);
         const newTabs: CoreMainMenuHandlerToDisplay[] = [];
 
         for (let i = 0; i < handlers.length; i++) {
@@ -190,13 +191,18 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
 
         this.updateMoreBadge();
 
-        const removedTabs = previousTabs.filter(page => !this.tabs.some(tab => tab.page === page));
-        const mainMenuTab = CoreNavigator.getCurrentMainMenuTab();
+        let removedHandlersPages: string[] = [];
+        if (previousHandlers) {
+            const allHandlers = this.allHandlers;
+            removedHandlersPages = previousHandlers.map(handler => handler.page)
+                .filter(page => !allHandlers.some(handler => handler.page === page));
+        }
 
+        const mainMenuTab = CoreNavigator.getCurrentMainMenuTab();
         this.loaded = CoreMainMenuDelegate.areHandlersLoaded();
 
-        if (this.loaded && (!mainMenuTab || removedTabs.includes(mainMenuTab))) {
-            // No tab selected, select the first one.
+        if (this.loaded && (!mainMenuTab || removedHandlersPages.includes(mainMenuTab))) {
+            // No tab selected or handler no longer available, select the first one.
             await CoreUtils.nextTick();
 
             const tabPage = this.tabs[0] ? this.tabs[0].page : this.morePageName;
@@ -205,6 +211,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
 
             // Use navigate instead of mainTabs.select to be able to pass page params.
             CoreNavigator.navigateToSitePath(tabPage, {
+                preferCurrentTab: false,
                 params: {
                     urlToOpen: this.urlToOpen,
                     redirectPath: this.redirectPath,
