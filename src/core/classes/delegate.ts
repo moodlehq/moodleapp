@@ -306,7 +306,7 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
      *
      * @return Resolved when done.
      */
-    protected async updateHandlers(): Promise<void> {
+    async updateHandlers(): Promise<void> {
         const promises: Promise<void>[] = [];
         const now = Date.now();
 
