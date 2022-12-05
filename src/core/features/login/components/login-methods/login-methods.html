@@ -1,8 +1,7 @@
-<core-spacer *ngIf="loginMethods?.length" class="core-login-methods__spacer"></core-spacer>
-<ion-list *ngIf="loginMethods?.length" class="ion-padding-top core-login-methods">
-    <ion-button [fill]="'clear'" class="ion-text-wrap" *ngFor="let method of loginMethods" (click)="method.action()"
+<ng-container *ngIf="loginMethods?.length">
+    <ion-button [fill]="'outline'" class="ion-text-wrap ion-margin" *ngFor="let method of loginMethods" (click)="method.action()"
         [attr.aria-label]="method.name" expand="block">
         <ion-icon *ngIf="method.icon" [name]="method.icon" slot="start"></ion-icon>
         <ion-label>{{ method.name }}</ion-label>
     </ion-button>
-</ion-list>
+</ng-container>
