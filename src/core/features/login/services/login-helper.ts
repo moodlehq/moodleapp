@@ -58,6 +58,8 @@ export class CoreLoginHelperProvider {
     static readonly FAQ_URL_IMAGE_HTML = '<img src="assets/img/login/faq_url.png" role="presentation" alt="">';
     static readonly FAQ_QRCODE_IMAGE_HTML = '<img src="assets/img/login/faq_qrcode.png" role="presentation" alt="">';
 
+    static readonly GET_STARTED_URL = 'https://moodle.com/get-moodle/';
+
     protected logger: CoreLogger;
     protected sessionExpiredCheckingSite: Record<string, boolean> = {};
     protected isOpenEditAlertShown = false;
