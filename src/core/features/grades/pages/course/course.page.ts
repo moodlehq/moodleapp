@@ -50,8 +50,9 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     collapseLabel!: string;
     title?: string;
     courses?: CoreSwipeNavigationItemsManager;
-    columns?: CoreGradesFormattedTableColumn[];
-    rows?: CoreGradesFormattedTableRow[];
+    columns: CoreGradesFormattedTableColumn[] = [];
+    rows: CoreGradesFormattedTableRow[] = [];
+    rowsOnView = 0;
     totalColumnsSpan?: number;
     withinSplitView?: boolean;
 
@@ -196,6 +197,7 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
 
             this.columns = [];
             this.rows = [];
+            this.rowsOnView = 0;
         }
     }
 
@@ -209,12 +211,32 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
         this.title = formattedTable.rows[0]?.gradeitem ?? Translate.instant('core.grades.grades');
         this.columns = formattedTable.columns;
         this.rows = formattedTable.rows;
+        this.rowsOnView = this.getRowsOnHeight();
         this.totalColumnsSpan = formattedTable.columns.reduce((total, column) => total + column.colspan, 0);
 
         if (!this.fetchSuccess) {
             this.fetchSuccess = true;
             await CoreGrades.logCourseGradesView(this.courseId, this.userId);
         }
+    }
+
+    /**
+     * Function to get the number of rows that can be shown on the screen.
+     *
+     * @returns The number of rows.
+     */
+    protected getRowsOnHeight(): number {
+        return Math.floor(window.innerHeight / 44);
+    }
+
+    /**
+     * Function to load more rows.
+     *
+     * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
+     */
+    loadMore(infiniteComplete?: () => void): void {
+        this.rowsOnView += this.getRowsOnHeight();
+        infiniteComplete && infiniteComplete();
     }
 
 }
