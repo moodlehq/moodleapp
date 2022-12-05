@@ -277,10 +277,12 @@ export class CoreTextUtilsProvider {
      * Clean HTML tags.
      *
      * @param text The text to be cleaned.
-     * @param singleLine True if new lines should be removed (all the text in a single line).
+     * @param options Processing options.
+     * @param options.singleLine True if new lines should be removed (all the text in a single line).
+     * @param options.trim True if text should be trimmed.
      * @returns Clean text.
      */
-    cleanTags(text: string | undefined, singleLine?: boolean): string {
+    cleanTags(text: string | undefined, options: { singleLine?: boolean; trim?: boolean } = {}): string {
         if (!text) {
             return '';
         }
@@ -289,8 +291,10 @@ export class CoreTextUtilsProvider {
         text = text.replace(/(<([^>]+)>)/ig, '');
         // Then, we rely on the browser. We need to wrap the text to be sure is HTML.
         text = this.convertToElement(text).textContent || '';
+        // Trim text
+        text = options.trim ? text.trim() : text;
         // Recover or remove new lines.
-        text = this.replaceNewLines(text, singleLine ? ' ' : '<br>');
+        text = this.replaceNewLines(text, options.singleLine ? ' ' : '<br>');
 
         return text;
     }

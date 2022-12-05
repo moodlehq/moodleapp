@@ -222,7 +222,7 @@ export class CoreFilterProvider {
         }
 
         if (options.clean) {
-            text = CoreTextUtils.cleanTags(text, options.singleLine);
+            text = CoreTextUtils.cleanTags(text, { singleLine: options.singleLine });
         }
 
         if (options.shortenLength && options.shortenLength > 0) {
