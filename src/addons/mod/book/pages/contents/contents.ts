@@ -64,6 +64,8 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
     navigationItems: CoreNavigationBarItem<AddonModBookTocChapter>[] = [];
     slidesOpts: CoreSwipeSlidesOptions = {
         autoHeight: true,
+        observer: true,
+        observeParents: true,
         scrollOnChange: 'top',
     };
 
