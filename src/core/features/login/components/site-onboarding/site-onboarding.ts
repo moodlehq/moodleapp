@@ -16,7 +16,7 @@ import { Component } from '@angular/core';
 
 import { CoreConfig } from '@services/config';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreLoginHelperProvider } from '@features/login/services/login-helper';
+import { CoreLoginHelperProvider, GET_STARTED_URL } from '@features/login/services/login-helper';
 import { ModalController } from '@singletons';
 
 /**
@@ -79,7 +79,7 @@ export class CoreLoginSiteOnboardingComponent {
 
         this.saveOnboardingDone();
 
-        CoreUtils.openInBrowser('https://moodle.com/getstarted/', { showBrowserWarning: false });
+        CoreUtils.openInBrowser(GET_STARTED_URL, { showBrowserWarning: false });
 
         ModalController.dismiss();
     }
