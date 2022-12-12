@@ -621,6 +621,9 @@ class behat_app extends behat_app_helper {
         });
 
         $this->wait_for_pending_js();
+
+        // Wait for UI to settle after refreshing.
+        $this->getSession()->wait(300);
     }
 
     /**

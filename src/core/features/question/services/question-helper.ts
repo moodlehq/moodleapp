@@ -415,7 +415,7 @@ export class CoreQuestionHelperProvider {
 
             // Check anchor is valid.
             if (anchor.href && content) {
-                content = CoreTextUtils.cleanTags(content, true).trim();
+                content = CoreTextUtils.cleanTags(content, { singleLine: true, trim: true });
                 attachments.push({
                     filename: content,
                     fileurl: anchor.href,

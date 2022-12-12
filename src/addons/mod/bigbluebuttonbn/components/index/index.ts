@@ -181,7 +181,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
             return {
                 type: playbackAnchor?.innerText ??
                     Translate.instant('addon.mod_bigbluebuttonbn.view_recording_format_presentation'),
-                name: CoreTextUtils.cleanTags(String(recordingData.recording), true),
+                name: CoreTextUtils.cleanTags(String(recordingData.recording), { singleLine: true }),
                 url: playbackAnchor?.href ?? '',
                 details,
                 expanded: false,

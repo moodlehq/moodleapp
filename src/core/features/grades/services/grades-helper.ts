@@ -137,15 +137,13 @@ export class CoreGradesHelperProvider {
                 row.rowclass += itemNameColumn.class.indexOf('hidden') >= 0 ? ' hidden' : '';
                 row.rowclass += itemNameColumn.class.indexOf('dimmed_text') >= 0 ? ' dimmed_text' : '';
 
-                if (useLegacyLayout) {
-                    content = content.replace(/<\/span>/gi, '\n');
-                    content = CoreTextUtils.cleanTags(content);
-                } else {
-                    // The activity type won't be included in the webservice response if behat is running.
-                    content = CoreAppProvider.isAutomated() ? content : content.replace(/<span[^>]+>.+?<\/span>/i, '');
-                    content = CoreTextUtils.cleanTags(content, true);
+                if (!useLegacyLayout && !CoreAppProvider.isAutomated()) {
+                    // Activity name is only included in the webservice response from the latest version when behat is not running.
+                    content = content.replace(/<span[^>]+>.+?<\/span>/i, '');
                 }
 
+                content = content.replace(/<\/span>/gi, '\n');
+                content = CoreTextUtils.cleanTags(content, { trim: true });
                 name = 'gradeitem';
             } else if (name === 'grade') {
                 // Add the pass/fail class if present.
