@@ -152,6 +152,11 @@ export abstract class CoreRoutedItemsManager<
      */
     protected onSourceItemsUpdated(items: Item[]): void {
         super.onSourceItemsUpdated(items);
+        const selectedItem = this.selectedItem;
+
+        if (selectedItem !== null && items.some(item => item === selectedItem)) {
+            return;
+        }
 
         this.updateSelectedItem();
     }

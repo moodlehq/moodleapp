@@ -22,6 +22,7 @@ import { CoreUtils } from '@services/utils/utils';
 
 import { CoreRoutedItemsManagerSource } from './routed-items-manager-source';
 import { CoreRoutedItemsManager } from './routed-items-manager';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Helper class to manage the state and routing of a list of items in a page.
@@ -129,6 +130,7 @@ export class CoreListItemsManager<
         }
 
         await this.navigateToItem(item, { reset: this.resetNavigation() });
+        setTimeout(async () => await this.scrollToCurrentElement(), 100);
     }
 
     /**
@@ -196,8 +198,31 @@ export class CoreListItemsManager<
         super.updateSelectedItem(route);
 
         const selectDefault = CoreScreen.isTablet && this.selectedItem === null && this.splitView && !this.splitView.isNested;
-
         this.select(selectDefault ? this.getDefaultItem() : this.selectedItem);
+    }
+
+    /**
+     * Scroll to current element in split-view list.
+     */
+    protected async scrollToCurrentElement(): Promise<void> {
+        if (CoreScreen.isMobile) {
+            return;
+        }
+
+        const element = this.splitView?.nativeElement ?? document;
+        const currentItem = element.querySelector<HTMLElement>('[aria-current="page"]');
+
+        if (!currentItem) {
+            return;
+        }
+
+        const isElementInViewport = CoreDom.isElementInViewport(currentItem, 1, this.splitView?.nativeElement);
+
+        if (isElementInViewport) {
+            return;
+        }
+
+        currentItem.scrollIntoView({ behavior: 'smooth' });
     }
 
     /**

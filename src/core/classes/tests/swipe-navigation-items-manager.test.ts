@@ -81,6 +81,8 @@ describe('CoreSwipeNavigationItemsManager', () => {
 
         await source.load();
 
+        instance.setSelectedItem(items[0]);
+
         // Act.
         await instance.navigateToNextItem();
 
@@ -95,6 +97,8 @@ describe('CoreSwipeNavigationItemsManager', () => {
         items.push({ path: 'bar' });
 
         await source.load();
+
+        instance.setSelectedItem(items[1]);
 
         // Act.
         await instance.navigateToPreviousItem();
@@ -112,6 +116,8 @@ describe('CoreSwipeNavigationItemsManager', () => {
 
         await source.load();
 
+        instance.setSelectedItem(items[0]);
+
         // Act.
         await instance.navigateToNextItem();
 
@@ -126,6 +132,8 @@ describe('CoreSwipeNavigationItemsManager', () => {
         items.push({ path: 'bar' });
 
         await source.load();
+
+        instance.setSelectedItem(items[0]);
 
         // Assert.
         await expect(instance.hasNextItem()).resolves.toBe(true);
