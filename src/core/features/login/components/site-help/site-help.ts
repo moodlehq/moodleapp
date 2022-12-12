@@ -16,7 +16,7 @@ import { Component } from '@angular/core';
 
 import { CoreUtils } from '@services/utils/utils';
 import { ModalController, Translate } from '@singletons';
-import { CoreLoginHelperProvider } from '@features/login/services/login-helper';
+import { CoreLoginHelperProvider, GET_STARTED_URL } from '@features/login/services/login-helper';
 
 /**
  * Component that displays help to connect to a site.
@@ -34,12 +34,12 @@ export class CoreLoginSiteHelpComponent {
     canScanQR: boolean;
 
     constructor() {
+        const getStartedTitle = Translate.instant('core.login.faqsetupsitelinktitle');
 
         this.canScanQR = CoreUtils.canScanQR();
         this.urlImageHtml = CoreLoginHelperProvider.FAQ_URL_IMAGE_HTML;
         this.qrCodeImageHtml = CoreLoginHelperProvider.FAQ_QRCODE_IMAGE_HTML;
-        this.setupLinkHtml = '<a href="https://moodle.com/getstarted/" title="' +
-            Translate.instant('core.login.faqsetupsitelinktitle') + '">https://moodle.com/getstarted/</a>';
+        this.setupLinkHtml = `<a href="${GET_STARTED_URL}" title="${getStartedTitle}">${GET_STARTED_URL}</a>`;
     }
 
     /**
