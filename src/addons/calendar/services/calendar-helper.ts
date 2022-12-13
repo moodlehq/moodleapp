@@ -617,7 +617,7 @@ export class AddonCalendarHelperProvider {
         const eventCourse = (event.course && event.course.id) || event.courseid;
 
         // Show the event if it is from site home or if it matches the selected course.
-        return !!eventCourse && (eventCourse == CoreSites.getCurrentSiteHomeId() || eventCourse == courseId);
+        return !eventCourse || (eventCourse === CoreSites.getCurrentSiteHomeId() || eventCourse === courseId);
     }
 
     /**

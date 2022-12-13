@@ -166,7 +166,7 @@
 
                     <!-- Add or edit submission. -->
                     <div collapsible-footer *ngIf="loaded && !isSubmittedForGrading" [hidden]="selectedTab !== 'submission'" slot="fixed">
-                        <div class="list-item-limited-width adaptable-buttons-row" *ngIf="canEdit || canSubmit">
+                        <div class="list-item-limited-width" *ngIf="canEdit || canSubmit">
                             <ng-container *ngIf="canEdit">
                                 <ng-container *ngIf=" !unsupportedEditPlugins.length && !showErrorStatementEdit">
                                     <!-- If has offline data, show edit. -->
