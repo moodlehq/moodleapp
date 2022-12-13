@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
+import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { PREFERENCES_TABLE_NAME, CoreUserPreferenceDBRecord } from './database/user';
 
@@ -33,7 +34,10 @@ export class CoreUserOfflineProvider {
     async getChangedPreferences(siteId?: string): Promise<CoreUserPreferenceDBRecord[]> {
         const site = await CoreSites.getSite(siteId);
 
-        return site.getDb().getRecordsSelect(PREFERENCES_TABLE_NAME, 'value != onlineValue');
+        return site.getDb().getRecordsSelect(
+            PREFERENCES_TABLE_NAME,
+            'value != onlinevalue OR onlinevalue IS NULL',
+        );
     }
 
     /**
@@ -64,7 +68,18 @@ export class CoreUserOfflineProvider {
         const record: Partial<CoreUserPreferenceDBRecord> = {
             name,
             value,
+            onlinevalue: onlineValue,
         };
+
+        if (onlineValue === undefined) {
+            // Keep online value already stored (if any).
+            const entry = await CoreUtils.ignoreErrors(
+                site.getDb().getRecord<CoreUserPreferenceDBRecord>(PREFERENCES_TABLE_NAME, { name }),
+                null,
+            );
+
+            record.onlinevalue = entry?.onlinevalue;
+        }
 
         await site.getDb().insertRecord(PREFERENCES_TABLE_NAME, record);
     }
