@@ -62,14 +62,14 @@
 
     <!-- Reset search. -->
     <ng-container *ngIf="search.searching && !isEmpty">
-        <ion-item (click)="searchReset()" button detail="false" *ngIf="!foundRecordsTranslationData">
+        <ion-item (click)="searchReset($event)" button detail="false" *ngIf="!foundRecordsTranslationData">
             <ion-label color="info">
                 {{ 'addon.mod_data.resetsettings' | translate}}
             </ion-label>
         </ion-item>
 
         <ion-card class="core-success-card" *ngIf="foundRecordsTranslationData">
-            <ion-item (click)="searchReset()" button detail="false">
+            <ion-item (click)="searchReset($event)" button detail="false">
                 <ion-label>
                     <p [innerHTML]="'addon.mod_data.foundrecords' | translate:{$a: foundRecordsTranslationData}"></p>
                 </ion-label>
@@ -105,7 +105,7 @@
 
     <core-empty-box *ngIf="isEmpty && search.searching" icon="fas-database" [message]="'addon.mod_data.nomatch' | translate"
         class="core-empty-box-clickable">
-        <button class="as-link" (click)="searchReset()">{{ 'addon.mod_data.resetsettings' | translate}}</button>
+        <button class="as-link" (click)="searchReset($event)">{{ 'addon.mod_data.resetsettings' | translate}}</button>
     </core-empty-box>
 
 </core-loading>
