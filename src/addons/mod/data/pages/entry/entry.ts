@@ -56,6 +56,8 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
     protected fields: Record<number, AddonModDataField> = {};
     protected fieldsArray: AddonModDataField[] = [];
     protected logAfterFetch = true;
+    protected sortBy = 0;
+    protected sortDirection = 'DESC';
 
     moduleId = 0;
     courseId!: number;
@@ -139,6 +141,9 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
             this.title = CoreNavigator.getRouteParam<string>('title') || '';
             this.selectedGroup = CoreNavigator.getRouteNumberParam('group') || 0;
             this.offset = CoreNavigator.getRouteNumberParam('offset');
+            this.sortDirection = CoreNavigator.getRouteParam('sortDirection') ?? this.sortDirection;
+            const sortBy = Number(CoreNavigator.getRouteParam('sortBy'));
+            this.sortBy = isNaN(sortBy) ? this.sortBy : sortBy;
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
 
@@ -189,9 +194,13 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
                 template,
                 this.fieldsArray,
                 this.entry!,
-                this.offset,
                 AddonModDataTemplateMode.SHOW,
                 actions,
+                {
+                    offset: this.offset,
+                    sortBy: this.sortBy,
+                    sortDirection: this.sortDirection,
+                },
             );
 
             this.showComments = actions.comments;
@@ -330,8 +339,8 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
 
         const entries = await AddonModDataHelper.fetchEntries(this.database!, this.fieldsArray, {
             groupId: this.selectedGroup,
-            sort: 0,
-            order: 'DESC',
+            sort: this.sortBy,
+            order: this.sortDirection,
             page,
             perPage,
         });

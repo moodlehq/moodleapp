@@ -200,9 +200,9 @@ export class AddonModDataHelperProvider {
         template: string,
         fields: AddonModDataField[],
         entry: AddonModDataEntry,
-        offset = 0,
         mode: AddonModDataTemplateMode,
         actions: Record<AddonModDataAction, boolean>,
+        options: AddonModDatDisplayFieldsOptions = {},
     ): string {
 
         if (!template) {
@@ -233,8 +233,12 @@ export class AddonModDataHelperProvider {
                 } else if (action == 'approvalstatus') {
                     render = Translate.instant('addon.mod_data.' + (entry.approved ? 'approved' : 'notapproved'));
                 } else {
-                    render = '<addon-mod-data-action action="' + action + '" [entry]="entries[' + entry.id + ']" mode="' + mode +
-                    '" [database]="database" [title]="title" [offset]="' + offset + '" [group]="group" ></addon-mod-data-action>';
+                    render = `<addon-mod-data-action action="${action}" [entry]="entries[${entry.id}]" mode="${mode}" ` +
+                        '[database]="database" [title]="title" ' +
+                        (options.offset !== undefined ? `[offset]="${options.offset}" ` : '') +
+                        (options.sortBy !== undefined ? `[sortBy]="${options.sortBy}" ` : '') +
+                        (options.sortDirection !== undefined ? `sortDirection="${options.sortDirection}" ` : '') +
+                        '[group]="group"></addon-mod-data-action>';
                 }
                 template = template.replace(replaceRegex, render);
             } else {
@@ -822,3 +826,9 @@ export class AddonModDataHelperProvider {
 
 }
 export const AddonModDataHelper = makeSingleton(AddonModDataHelperProvider);
+
+export type AddonModDatDisplayFieldsOptions = {
+    sortBy?: string | number;
+    sortDirection?: string;
+    offset?: number;
+};
