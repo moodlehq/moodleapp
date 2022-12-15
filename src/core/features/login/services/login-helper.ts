@@ -1487,6 +1487,15 @@ export class CoreLoginHelperProvider {
     }
 
     /**
+     * Retrieve default login method.
+     *
+     * @returns Default login method.
+     */
+    async getDefaultLoginMethod(): Promise<CoreLoginMethod | null> {
+        return null;
+    }
+
+    /**
      * Record that a password reset has been requested for a given site.
      *
      * @param siteUrl Site url.
