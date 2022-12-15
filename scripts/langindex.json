@@ -639,6 +639,8 @@
   "addon.mod_forum.erroremptysubject": "forum",
   "addon.mod_forum.errorgetforum": "local_moodlemobileapp",
   "addon.mod_forum.errorgetgroups": "local_moodlemobileapp",
+  "addon.mod_forum.errorloadingsortingorder": "local_moodlemobileapp",
+  "addon.mod_forum.errorloadingsortingorderdetails": "local_moodlemobileapp",
   "addon.mod_forum.errorposttoallgroups": "local_moodlemobileapp",
   "addon.mod_forum.favourites": "forum",
   "addon.mod_forum.favouriteupdated": "forum",

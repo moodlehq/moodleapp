@@ -152,6 +152,10 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         return !!(this.forum && this.canAddDiscussion && this.discussions?.getSource().canAddDiscussionToGroup);
     }
 
+    get errorLoadingDiscussions(): boolean {
+        return !!this.discussions?.getSource().errorLoadingDiscussions;
+    }
+
     /**
      * Check whether a discussion is online.
      *

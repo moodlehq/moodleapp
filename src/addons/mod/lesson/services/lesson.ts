@@ -811,13 +811,13 @@ export class AddonModLessonProvider {
                             const matches = studentAnswer.match(new RegExp(expectedAnswer, 'g' + ignoreCase));
                             if (matches) {
                                 isMatch = true;
-                                const nb = matches[0].length;
+                                const nb = matches.length;
                                 const original: string[] = [];
                                 const marked: string[] = [];
 
                                 for (let j = 0; j < nb; j++) {
-                                    original.push(matches[0][j]);
-                                    marked.push('<span class="incorrect matches">' + matches[0][j] + '</span>');
+                                    original.push(matches[j]);
+                                    marked.push('<span class="incorrect matches">' + matches[j] + '</span>');
                                 }
 
                                 for (let j = 0; j < original.length; j++) {

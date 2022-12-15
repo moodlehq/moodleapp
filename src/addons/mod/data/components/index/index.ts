@@ -426,8 +426,13 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
     /**
      * Reset all search filters and closes the modal.
+     *
+     * @param ev Event.
      */
-    searchReset(): void {
+    searchReset(ev: Event): void {
+        ev.preventDefault();
+        ev.stopPropagation();
+
         this.search.sortBy = '0';
         this.search.sortDirection = 'DESC';
         this.search.text = '';

@@ -28,6 +28,8 @@
     "erroremptysubject": "Post subject cannot be empty.",
     "errorgetforum": "Error getting forum data.",
     "errorgetgroups": "Error getting group settings.",
+    "errorloadingsortingorder": "Forum not available in this sorting order",
+    "errorloadingsortingorderdetails": "Try changing the sorting order or going online to view this forum.",
     "errorposttoallgroups": "Could not create new discussion in all groups.",
     "favourites": "Starred",
     "favouriteupdated": "Your star option has been updated.",

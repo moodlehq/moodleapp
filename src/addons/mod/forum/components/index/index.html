@@ -54,16 +54,21 @@
         </ion-card>
 
         <ng-container *ngIf="forum">
-            <core-empty-box *ngIf="!discussions || !discussions.hasDiscussions" icon="far-comments"
-                [message]="'addon.mod_forum.forumnodiscussionsyet' | translate">
-            </core-empty-box>
-
-            <div *ngIf="discussions?.hasDiscussions && sortingAvailable && selectedSortOrder" class="ion-text-wrap">
+            <div *ngIf="discussions && sortingAvailable && selectedSortOrder" class="ion-text-wrap">
                 <core-combobox [modalOptions]="sortOrderSelectorModalOptions" listboxId="addon-mod-forum-sort-selector"
                     [label]="('core.sort' | translate)" (onChange)="setSortOrder($event)" [selection]="selectedSortOrder.label | translate"
                     interface="modal">
                 </core-combobox>
             </div>
+
+            <core-empty-box *ngIf="!discussions || (!discussions.hasDiscussions && !errorLoadingDiscussions)" icon="far-comments"
+                [message]="'addon.mod_forum.forumnodiscussionsyet' | translate">
+            </core-empty-box>
+
+            <core-empty-box *ngIf="errorLoadingDiscussions" icon="fas-exclamation-triangle"
+                [message]="'addon.mod_forum.errorloadingsortingorder' | translate">
+                <p>{{ 'addon.mod_forum.errorloadingsortingorderdetails' | translate }}</p>
+            </core-empty-box>
 
             <ion-item *ngFor="let discussion of discussionsItems" class="addon-mod-forum-discussion" detail="true"
                 [lines]="discussion.groupname && 'none'" [attr.aria-current]="discussions?.getItemAriaCurrent(discussion)"

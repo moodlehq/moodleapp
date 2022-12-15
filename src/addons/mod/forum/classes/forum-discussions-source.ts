@@ -44,6 +44,7 @@ export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource
     groupInfo?: CoreGroupInfo;
     allPartsPermissions?: AddonModForumCanAddDiscussion;
     canAddDiscussionToGroup = true;
+    errorLoadingDiscussions = false;
 
     constructor(courseId: number, cmId: number, discussionsPathPrefix: string) {
         super();
@@ -222,13 +223,27 @@ export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource
             throw new Error('Can\'t load discussions without a forum or selected sort order');
         }
 
-        const response = await AddonModForum.getDiscussions(this.forum.id, {
-            cmId: this.forum.cmid,
-            sortOrder: this.selectedSortOrder.value,
-            page,
-            groupId: this.groupId,
-        });
-        let discussions = response.discussions;
+        let discussions: AddonModForumDiscussion[] = [];
+        let canLoadMore = false;
+        try {
+            const response = await AddonModForum.getDiscussions(this.forum.id, {
+                cmId: this.forum.cmid,
+                sortOrder: this.selectedSortOrder.value,
+                page,
+                groupId: this.groupId,
+            });
+
+            discussions = response.discussions;
+            canLoadMore = response.canLoadMore;
+            this.errorLoadingDiscussions = false;
+        } catch (error) {
+            if (page > 0 || CoreUtils.isWebServiceError(error)) {
+                throw error;
+            }
+
+            // Error loading first discussions, use an empty list.
+            this.errorLoadingDiscussions = true;
+        }
 
         if (this.usesGroups) {
             discussions = await AddonModForum.formatDiscussionsGroups(this.forum.cmid, discussions);
@@ -254,7 +269,7 @@ export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource
             }
         }
 
-        return { discussions, canLoadMore: response.canLoadMore };
+        return { discussions, canLoadMore };
     }
 
     /**
