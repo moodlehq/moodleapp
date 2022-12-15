@@ -333,7 +333,15 @@ export class TestingBehatRuntimeService {
      * @param locator Element locator.
      * @returns OK if successful, or ERROR: followed by message
      */
-    async press(locator: TestingBehatElementLocator): Promise<string> {
+    async press(locator: TestingBehatElementLocator): Promise<string>;
+    async press(text: string, nearText?: string): Promise<string>;
+    async press(locatorOrText: TestingBehatElementLocator | string, nearText?: string): Promise<string> {
+        const locator = typeof locatorOrText === 'string' ? { text: locatorOrText } : locatorOrText;
+
+        if (nearText) {
+            locator.near = { text: nearText };
+        }
+
         this.log('Action - Press', locator);
 
         try {
