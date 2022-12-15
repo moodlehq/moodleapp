@@ -1482,6 +1482,7 @@ ion-item.ion-activatable:not(.only-links) {
 
         ion-anchor, a,
         ion-button, button,
+        ion-item.ion-focusable,
         audio, video, select, input, iframe {
             pointer-events: visible;
         }
