@@ -39,7 +39,7 @@ import {
     AddonModDataData,
     AddonModDataSearchEntriesAdvancedField,
 } from '../../services/data';
-import { AddonModDataHelper } from '../../services/data-helper';
+import { AddonModDataHelper, AddonModDatDisplayFieldsOptions } from '../../services/data-helper';
 import { AddonModDataAutoSyncData, AddonModDataSyncProvider, AddonModDataSyncResult } from '../../services/data-sync';
 import { AddonModDataModuleHandlerService } from '../../services/handlers/module';
 import { AddonModDataPrefetchHandler } from '../../services/handlers/prefetch';
@@ -349,17 +349,20 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
                 entriesById[entry.id] = entry;
 
                 const actions = AddonModDataHelper.getActions(this.database!, this.access!, entry);
-                const offset = this.search.searching
-                    ? 0
-                    : this.search.page * AddonModDataProvider.PER_PAGE + index - numOfflineEntries;
+                const options: AddonModDatDisplayFieldsOptions = {};
+                if (!this.search.searching) {
+                    options.offset = this.search.page * AddonModDataProvider.PER_PAGE + index - numOfflineEntries;
+                    options.sortBy = this.search.sortBy;
+                    options.sortDirection = this.search.sortDirection;
+                }
 
                 entriesHTML += AddonModDataHelper.displayShowFields(
                     template,
                     this.fieldsArray,
                     entry,
-                    offset,
                     AddonModDataTemplateMode.LIST,
                     actions,
+                    options,
                 );
             });
 
@@ -504,6 +507,8 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
             const pageXOffset = this.entries.findIndex((entry) => entry.id == entryId);
             if (pageXOffset >= 0) {
                 params.offset = this.search.page * AddonModDataProvider.PER_PAGE + pageXOffset;
+                params.sortBy = this.search.sortBy;
+                params.sortDirection = this.search.sortDirection;
             }
         }
 
@@ -556,7 +561,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 }
 
 export type AddonModDataSearchDataParams = {
-    sortBy: string;
+    sortBy: string | number;
     sortDirection: string;
     page: number;
     text: string;
