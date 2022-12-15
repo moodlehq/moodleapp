@@ -352,6 +352,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
         if (this.offset === undefined) {
             // No offset passed, display the first entry.
             pageIndex = 0;
+            this.offset = 0;
         } else if (this.offset > 0) {
             // Online entry.
             pageIndex = this.offset % perPage + (entries.offlineEntries?.length || 0);
