@@ -13,6 +13,7 @@
 // limitations under the License.
 import { Component, OnInit } from '@angular/core';
 import { CoreLoginHelper, CoreLoginMethod } from '@features/login/services/login-helper';
+import { CoreSites } from '@services/sites';
 
 @Component({
     selector: 'core-login-methods',
@@ -28,6 +29,12 @@ export class CoreLoginMethodsComponent implements OnInit {
      */
     async ngOnInit(): Promise<void> {
         this.loginMethods = await CoreLoginHelper.getLoginMethods();
+        const currentSite = CoreSites.getCurrentSite();
+        const defaultMethod = await CoreLoginHelper.getDefaultLoginMethod();
+
+        if (currentSite?.isLoggedOut() && defaultMethod) {
+            await defaultMethod.action();
+        }
     }
 
 }
