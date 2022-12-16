@@ -52,7 +52,7 @@
                         <div *ngIf="question.status || question.readableMark" slot="end"
                             class="ion-text-wrap ion-margin-horizontal addon-mod_quiz-question-note">
                             <p *ngIf="question.status" class="block">{{question.status}}</p>
-                            <p *ngIf="question.readableMark">{{ question.readableMark }}</p>
+                            <p *ngIf="question.readableMark" [innerHTML]="question.readableMark"></p>
                         </div>
                     </ion-item-divider>
 
