@@ -329,4 +329,9 @@ Feature: Test basic usage of forum activity in app
     When I press the back button in the app
     And I press "Sort by last post creation date in descending order" in the app
     And I press "Sort by last post creation date in ascending order" in the app
-    Then I should find "There was a problem connecting to the site. Please check your connection and try again." in the app
+    Then I should find "Forum not available in this sorting order" in the app
+
+    When I press the back button in the app
+    And I press "Test forum name" in the app
+    Then I should find "Forum not available in this sorting order" in the app
+    And I should find "Sort by last post creation date in ascending order" in the app
