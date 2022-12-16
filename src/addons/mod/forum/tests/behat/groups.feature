@@ -366,4 +366,4 @@ Feature: Test usage of forum activity with groups in app
 
     When I press "Visible groups" in the app
     And I press "Group 1" in the app
-    Then I should find "There was a problem connecting to the site. Please check your connection and try again." in the app
+    Then I should find "Forum not available in this sorting order" in the app
