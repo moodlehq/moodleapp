@@ -52,7 +52,7 @@
                         <div *ngIf="question.status || question.readableMark" slot="end"
                             class="ion-text-wrap ion-margin-horizontal addon-mod_quiz-question-note">
                             <p *ngIf="question.status" class="block">{{question.status}}</p>
-                            <p *ngIf="question.readableMark">{{ question.readableMark }}</p>
+                            <p *ngIf="question.readableMark" [innerHTML]="question.readableMark"></p>
                         </div>
                     </ion-item-divider>
 
@@ -149,19 +149,20 @@
             </ion-button>
         </ion-card>
 
-        <div collapsible-footer appearOnBottom *ngIf="!quizAborted && showSummary && summaryQuestions.length && loaded" slot="fixed"
-            class="list-item-limited-width">
-            <ion-button *ngIf="preventSubmitMessages.length" expand="block" class="ion-margin ion-text-wrap" [href]="moduleUrl" core-link
-                [showBrowserWarning]="false">
-                {{ 'core.openinbrowser' | translate }}
-                <ion-icon name="fas-external-link-alt" slot="end" aria-hidden="true"></ion-icon>
-            </ion-button>
+        <div collapsible-footer appearOnBottom *ngIf="!quizAborted && showSummary && summaryQuestions.length && loaded" slot="fixed">
+            <div class="list-item-limited-width">
+                <ion-button *ngIf="preventSubmitMessages.length" expand="block" class="ion-margin ion-text-wrap" [href]="moduleUrl"
+                    core-link [showBrowserWarning]="false">
+                    {{ 'core.openinbrowser' | translate }}
+                    <ion-icon name="fas-external-link-alt" slot="end" aria-hidden="true"></ion-icon>
+                </ion-button>
 
-            <!-- Button to submit the quiz. -->
-            <ion-button *ngIf="!attempt!.finishedOffline && !preventSubmitMessages.length" expand="block" class="ion-margin ion-text-wrap"
-                (click)="finishAttempt(true)">
-                {{ 'addon.mod_quiz.submitallandfinish' | translate }}
-            </ion-button>
+                <!-- Button to submit the quiz. -->
+                <ion-button *ngIf="!attempt!.finishedOffline && !preventSubmitMessages.length" expand="block"
+                    class="ion-margin ion-text-wrap" (click)="finishAttempt(true)">
+                    {{ 'addon.mod_quiz.submitallandfinish' | translate }}
+                </ion-button>
+            </div>
         </div>
     </core-loading>
 </ion-content>
