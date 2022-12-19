@@ -14,8 +14,8 @@
 
 import { CoreError } from '@classes/errors/error';
 import { SQLiteDBRecordValues } from '@classes/sqlitedb';
+import { CoreInMemoryDatabaseTable } from './inmemory-database-table';
 import {
-    CoreDatabaseTable,
     CoreDatabaseConditions,
     GetDBRecordPrimaryKey,
     CoreDatabaseReducer,
@@ -32,7 +32,7 @@ export class CoreEagerDatabaseTable<
     DBRecord extends SQLiteDBRecordValues = SQLiteDBRecordValues,
     PrimaryKeyColumn extends keyof DBRecord = 'id',
     PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>
-> extends CoreDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey> {
+> extends CoreInMemoryDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey> {
 
     protected records: Record<string, DBRecord> = {};
 
