@@ -17,6 +17,9 @@ import 'jest-preset-angular/setup-jest';
 import { setCreateSingletonMethodProxy, setSingletonsInjector } from '@singletons';
 
 import { resetTestingEnvironment, getServiceInstance } from './utils';
+import { CoreConstants } from '@/core/constants';
+import { CoreDatabaseCachingStrategy } from '@classes/database/database-table-proxy';
+import { CoreConfig } from '@services/config';
 
 // eslint-disable-next-line no-console
 console.debug = () => {
@@ -39,4 +42,10 @@ setCreateSingletonMethodProxy(
 );
 
 setSingletonsInjector({ get: injectionToken => getServiceInstance(injectionToken) });
-beforeEach(() => resetTestingEnvironment());
+
+beforeAll(() => CoreConstants.CONFIG.databaseOptimizations = { cachingStrategy: CoreDatabaseCachingStrategy.Testing });
+
+beforeEach(async () => {
+    resetTestingEnvironment();
+    await CoreConfig.initialize();
+});

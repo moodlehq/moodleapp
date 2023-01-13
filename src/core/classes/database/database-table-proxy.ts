@@ -29,6 +29,7 @@ import {
 import { CoreDebugDatabaseTable } from './debug-database-table';
 import { CoreEagerDatabaseTable } from './eager-database-table';
 import { CoreLazyDatabaseTable } from './lazy-database-table';
+import { CoreInMemoryDatabaseTable } from './inmemory-database-table';
 
 /**
  * Database table proxy used to route database interactions through different implementations.
@@ -52,6 +53,7 @@ export class CoreDatabaseTableProxy<
         [CoreDatabaseCachingStrategy.Eager]: CoreEagerDatabaseTable,
         [CoreDatabaseCachingStrategy.Lazy]: CoreLazyDatabaseTable,
         [CoreDatabaseCachingStrategy.None]: CoreDatabaseTable,
+        [CoreDatabaseCachingStrategy.Testing]: CoreInMemoryDatabaseTable,
     };
 
     /**
@@ -281,4 +283,5 @@ export enum CoreDatabaseCachingStrategy {
     Eager = 'eager',
     Lazy = 'lazy',
     None = 'none',
+    Testing = 'testing',
 }

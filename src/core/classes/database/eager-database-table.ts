@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreError } from '@classes/errors/error';
 import { SQLiteDBRecordValues } from '@classes/sqlitedb';
-import { CoreInMemoryDatabaseTable } from './inmemory-database-table';
+import { CoreSingletonDatabaseTable } from './singleton-database-table';
 import {
     CoreDatabaseConditions,
     GetDBRecordPrimaryKey,
     CoreDatabaseReducer,
     CoreDatabaseQueryOptions,
 } from './database-table';
+import { CoreInMemoryDatabaseTable } from './inmemory-database-table';
 
 /**
  * Wrapper used to improve performance by caching all the records for faster read operations.
@@ -32,48 +32,37 @@ export class CoreEagerDatabaseTable<
     DBRecord extends SQLiteDBRecordValues = SQLiteDBRecordValues,
     PrimaryKeyColumn extends keyof DBRecord = 'id',
     PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>
-> extends CoreInMemoryDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey> {
+> extends CoreSingletonDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey> {
 
-    protected records: Record<string, DBRecord> = {};
+    protected inMemoryDb!: CoreInMemoryDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey>;
 
     /**
      * @inheritdoc
      */
     async initialize(): Promise<void> {
+        this.inMemoryDb = new CoreInMemoryDatabaseTable(this.config, this.database, this.tableName, this.primaryKeyColumns);
+
         await super.initialize();
 
         const records = await super.getMany();
 
-        this.records = records.reduce((data, record) => {
-            const primaryKey = this.serializePrimaryKey(this.getPrimaryKeyFromRecord(record));
-
-            data[primaryKey] = record;
-
-            return data;
-        }, {});
+        for (const record of records) {
+            await this.inMemoryDb.insert(record);
+        }
     }
 
     /**
      * @inheritdoc
      */
     async getMany(conditions?: Partial<DBRecord>, options?: Partial<CoreDatabaseQueryOptions<DBRecord>>): Promise<DBRecord[]> {
-        const records = Object.values(this.records);
-        const filteredRecords = conditions
-            ? records.filter(record => this.recordMatches(record, conditions))
-            : records;
-
-        if (options?.sorting) {
-            this.sortRecords(filteredRecords, options.sorting);
-        }
-
-        return filteredRecords.slice(options?.offset ?? 0, options?.limit);
+        return await this.inMemoryDb.getMany(conditions, options);
     }
 
     /**
      * @inheritdoc
      */
     async getManyWhere(conditions: CoreDatabaseConditions<DBRecord>): Promise<DBRecord[]> {
-        return Object.values(this.records).filter(record => conditions.js(record));
+        return await this.inMemoryDb.getManyWhere(conditions);
     }
 
     /**
@@ -83,71 +72,42 @@ export class CoreEagerDatabaseTable<
         conditions?: Partial<DBRecord>,
         options?: Partial<Omit<CoreDatabaseQueryOptions<DBRecord>, 'offset' | 'limit'>>,
     ): Promise<DBRecord> {
-        let record: DBRecord | undefined;
-
-        if (options?.sorting) {
-            record = this.getMany(conditions, { ...options, limit: 1 })[0];
-        } else if (conditions) {
-            record = Object.values(this.records).find(record => this.recordMatches(record, conditions));
-        } else {
-            record = Object.values(this.records)[0];
-        }
-
-        if (!record) {
-            throw new CoreError('No records found.');
-        }
-
-        return record;
+        return await this.inMemoryDb.getOne(conditions, options);
     }
 
     /**
      * @inheritdoc
      */
     async getOneByPrimaryKey(primaryKey: PrimaryKey): Promise<DBRecord> {
-        const record = this.records[this.serializePrimaryKey(primaryKey)] ?? null;
-
-        if (record === null) {
-            throw new CoreError('No records found.');
-        }
-
-        return record;
+        return await this.inMemoryDb.getOneByPrimaryKey(primaryKey);
     }
 
     /**
      * @inheritdoc
      */
     async reduce<T>(reducer: CoreDatabaseReducer<DBRecord, T>, conditions?: CoreDatabaseConditions<DBRecord>): Promise<T> {
-        return Object
-            .values(this.records)
-            .reduce(
-                (result, record) => (!conditions || conditions.js(record)) ? reducer.js(result, record) : result,
-                reducer.jsInitialValue,
-            );
+        return this.inMemoryDb.reduce(reducer, conditions);
     }
 
     /**
      * @inheritdoc
      */
     async hasAny(conditions?: Partial<DBRecord>): Promise<boolean> {
-        return conditions
-            ? Object.values(this.records).some(record => this.recordMatches(record, conditions))
-            : Object.values(this.records).length > 0;
+        return this.inMemoryDb.hasAny(conditions);
     }
 
     /**
      * @inheritdoc
      */
     async hasAnyByPrimaryKey(primaryKey: PrimaryKey): Promise<boolean> {
-        return this.serializePrimaryKey(primaryKey) in this.records;
+        return this.inMemoryDb.hasAnyByPrimaryKey(primaryKey);
     }
 
     /**
      * @inheritdoc
      */
     async count(conditions?: Partial<DBRecord>): Promise<number> {
-        return conditions
-            ? Object.values(this.records).filter(record => this.recordMatches(record, conditions)).length
-            : Object.values(this.records).length;
+        return await this.inMemoryDb.count(conditions);
     }
 
     /**
@@ -155,10 +115,7 @@ export class CoreEagerDatabaseTable<
      */
     async insert(record: DBRecord): Promise<void> {
         await super.insert(record);
-
-        const primaryKey = this.serializePrimaryKey(this.getPrimaryKeyFromRecord(record));
-
-        this.records[primaryKey] = record;
+        await this.inMemoryDb.insert(record);
     }
 
     /**
@@ -166,14 +123,7 @@ export class CoreEagerDatabaseTable<
      */
     async update(updates: Partial<DBRecord>, conditions?: Partial<DBRecord>): Promise<void> {
         await super.update(updates, conditions);
-
-        for (const record of Object.values(this.records)) {
-            if (conditions && !this.recordMatches(record, conditions)) {
-                continue;
-            }
-
-            Object.assign(record, updates);
-        }
+        await this.inMemoryDb.update(updates, conditions);
     }
 
     /**
@@ -181,14 +131,7 @@ export class CoreEagerDatabaseTable<
      */
     async updateWhere(updates: Partial<DBRecord>, conditions: CoreDatabaseConditions<DBRecord>): Promise<void> {
         await super.updateWhere(updates, conditions);
-
-        for (const record of Object.values(this.records)) {
-            if (!conditions.js(record)) {
-                continue;
-            }
-
-            Object.assign(record, updates);
-        }
+        await this.inMemoryDb.updateWhere(updates, conditions);
     }
 
     /**
@@ -196,20 +139,7 @@ export class CoreEagerDatabaseTable<
      */
     async delete(conditions?: Partial<DBRecord>): Promise<void> {
         await super.delete(conditions);
-
-        if (!conditions) {
-            this.records = {};
-
-            return;
-        }
-
-        Object.entries(this.records).forEach(([id, record]) => {
-            if (!this.recordMatches(record, conditions)) {
-                return;
-            }
-
-            delete this.records[id];
-        });
+        await this.inMemoryDb.delete(conditions);
     }
 
     /**
@@ -217,8 +147,7 @@ export class CoreEagerDatabaseTable<
      */
     async deleteByPrimaryKey(primaryKey: PrimaryKey): Promise<void> {
         await super.deleteByPrimaryKey(primaryKey);
-
-        delete this.records[this.serializePrimaryKey(primaryKey)];
+        await this.inMemoryDb.deleteByPrimaryKey(primaryKey);
     }
 
 }

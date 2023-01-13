@@ -14,7 +14,7 @@
 
 import { CoreError } from '@classes/errors/error';
 import { SQLiteDBRecordValues } from '@classes/sqlitedb';
-import { CoreInMemoryDatabaseTable } from './inmemory-database-table';
+import { CoreSingletonDatabaseTable } from './singleton-database-table';
 import {
     CoreDatabaseConfiguration,
     CoreDatabaseConditions,
@@ -32,7 +32,7 @@ export class CoreLazyDatabaseTable<
     DBRecord extends SQLiteDBRecordValues = SQLiteDBRecordValues,
     PrimaryKeyColumn extends keyof DBRecord = 'id',
     PrimaryKey extends GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn> = GetDBRecordPrimaryKey<DBRecord, PrimaryKeyColumn>
-> extends CoreInMemoryDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey> {
+> extends CoreSingletonDatabaseTable<DBRecord, PrimaryKeyColumn, PrimaryKey> {
 
     protected readonly DEFAULT_CACHE_LIFETIME = 60000;
 

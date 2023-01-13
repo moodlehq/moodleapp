@@ -12,11 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreConstants } from '@/core/constants';
+import { asyncInstance } from '@/core/utils/async-instance';
 import { mock, mockSingleton } from '@/testing/utils';
 import { CoreDatabaseConfiguration, CoreDatabaseSorting, CoreDatabaseTable } from '@classes/database/database-table';
 import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
+import { CoreInMemoryDatabaseTable } from '@classes/database/inmemory-database-table';
+import { CoreError } from '@classes/errors/error';
+import { CoreSite } from '@classes/site';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreConfig } from '@services/config';
+import { CONFIG_TABLE } from '@services/database/sites';
+import { CoreSites } from '@services/sites';
 
 type User = {
     id: number;
@@ -24,10 +31,23 @@ type User = {
     surname: string;
 };
 
-function userMatches(user: User, conditions: Partial<User>) {
+/**
+ * Retrieves if the provided user matches with some condition.
+ *
+ * @param user User to compare
+ * @param conditions Conditions to check.
+ * @returns if matches or not.
+ */
+function userMatches(user: User, conditions: Partial<User>): boolean {
     return !Object.entries(conditions).some(([column, value]) => user[column] !== value);
 }
 
+/**
+ * Prepare stubs.
+ *
+ * @param config Stubs config.
+ * @returns User, Db and Table.
+ */
 function prepareStubs(config: Partial<CoreDatabaseConfiguration> = {}): [User[], SQLiteDB, CoreDatabaseTable<User>] {
     const records: User[] = [];
     const database = mock<SQLiteDB>({
@@ -68,6 +88,12 @@ function prepareStubs(config: Partial<CoreDatabaseConfiguration> = {}): [User[],
     return [records, database, table];
 }
 
+/**
+ * Test case of items finding.
+ *
+ * @param records User records.
+ * @param table Db table.
+ */
 async function testFindItems(records: User[], table: CoreDatabaseTable<User>) {
     const john = { id: 1, name: 'John', surname: 'Doe' };
     const amy = { id: 2, name: 'Amy', surname: 'Doe' };
@@ -83,6 +109,13 @@ async function testFindItems(records: User[], table: CoreDatabaseTable<User>) {
     await expect(table.getOneByPrimaryKey({ id: 2 })).resolves.toEqual(amy);
 }
 
+/**
+ * Test case of items insertion.
+ *
+ * @param records User records.
+ * @param database Database to use.
+ * @param table Table to use.
+ */
 async function testInsertItems(records: User[], database: SQLiteDB, table: CoreDatabaseTable<User>) {
     // Arrange.
     const john = { id: 1, name: 'John', surname: 'Doe' };
@@ -98,6 +131,13 @@ async function testInsertItems(records: User[], database: SQLiteDB, table: CoreD
     await expect(table.getOneByPrimaryKey({ id: 1 })).resolves.toEqual(john);
 }
 
+/**
+ * Test case of items removing.
+ *
+ * @param records User records.
+ * @param database Database to use.
+ * @param table Table to use.
+ */
 async function testDeleteItems(records: User[], database: SQLiteDB, table: CoreDatabaseTable<User>) {
     // Arrange.
     const john = { id: 1, name: 'John', surname: 'Doe' };
@@ -121,6 +161,13 @@ async function testDeleteItems(records: User[], database: SQLiteDB, table: CoreD
     await expect(table.getOneByPrimaryKey({ id: 3 })).resolves.toEqual(jane);
 }
 
+/**
+ * Test case of items removing by primary key.
+ *
+ * @param records User records.
+ * @param database Database to use.
+ * @param table Table to use.
+ */
 async function testDeleteItemsByPrimaryKey(records: User[], database: SQLiteDB, table: CoreDatabaseTable<User>) {
     // Arrange.
     const john = { id: 1, name: 'John', surname: 'Doe' };
@@ -142,11 +189,11 @@ async function testDeleteItemsByPrimaryKey(records: User[], database: SQLiteDB, 
 }
 
 describe('CoreDatabaseTable with eager caching', () => {
-
     let records: User[];
     let database: SQLiteDB;
     let table: CoreDatabaseTable<User>;
 
+    beforeAll(() => CoreConstants.CONFIG.databaseOptimizations = { cachingStrategy: CoreDatabaseCachingStrategy.Eager });
     beforeEach(() => [records, database, table] = prepareStubs({ cachingStrategy: CoreDatabaseCachingStrategy.Eager }));
 
     it('reads all records on initialization', async () => {
@@ -162,7 +209,7 @@ describe('CoreDatabaseTable with eager caching', () => {
     });
 
     it('sorts items', async () => {
-        // Arrange.
+    // Arrange.
         const john = { id: 1, name: 'John', surname: 'Doe' };
         const amy = { id: 2, name: 'Amy', surname: 'Doe' };
         const jane = { id: 3, name: 'Jane', surname: 'Smith' };
@@ -194,11 +241,11 @@ describe('CoreDatabaseTable with eager caching', () => {
 });
 
 describe('CoreDatabaseTable with lazy caching', () => {
-
     let records: User[];
     let database: SQLiteDB;
     let table: CoreDatabaseTable<User>;
 
+    beforeAll(() => CoreConstants.CONFIG.databaseOptimizations = { cachingStrategy: CoreDatabaseCachingStrategy.Lazy });
     beforeEach(() => [records, database, table] = prepareStubs({ cachingStrategy: CoreDatabaseCachingStrategy.Lazy }));
 
     it('reads no records on initialization', async () => {
@@ -221,11 +268,11 @@ describe('CoreDatabaseTable with lazy caching', () => {
 });
 
 describe('CoreDatabaseTable with no caching', () => {
-
     let records: User[];
     let database: SQLiteDB;
     let table: CoreDatabaseTable<User>;
 
+    beforeAll(() => CoreConstants.CONFIG.databaseOptimizations = { cachingStrategy: CoreDatabaseCachingStrategy.None });
     beforeEach(() => [records, database, table] = prepareStubs({ cachingStrategy: CoreDatabaseCachingStrategy.None }));
 
     it('reads no records on initialization', async () => {
@@ -244,5 +291,85 @@ describe('CoreDatabaseTable with no caching', () => {
     it('inserts items', () => testInsertItems(records, database, table));
     it('deletes items', () => testDeleteItems(records, database, table));
     it('deletes items by primary key', () => testDeleteItemsByPrimaryKey(records, database, table));
+
+});
+
+describe('CoreDatabaseTable in testing mode', () => {
+
+    const siteUrl = 'https://school.moodledemo.net';
+    const siteId = CoreSites.createSiteID(siteUrl, 'student');
+    let site: CoreSite;
+
+    beforeAll(() => CoreConstants.CONFIG.databaseOptimizations = { cachingStrategy: CoreDatabaseCachingStrategy.Testing });
+
+    beforeEach(() => {
+        site = new CoreSite(siteId, siteUrl);
+
+        mockSingleton(CoreSites, mock({
+            getSite: () => Promise.resolve(site),
+            getStoredCurrentSiteId: () => Promise.resolve(siteId),
+            getCurrentSite: () => site,
+        }));
+    });
+
+    it('Save a record successfully', async () => {
+        const testingDbSpy = jest.spyOn(CoreInMemoryDatabaseTable.prototype, 'insert');
+        const value = 'test 1';
+        const key = 'test';
+        await site.setLocalSiteConfig(key, value);
+        const storedValue = await site.getLocalSiteConfig(key);
+
+        expect(storedValue).toBe(value);
+        expect(testingDbSpy).toHaveBeenCalledWith({ name: key, value });
+    });
+
+    it('Update a record successfully', async () => {
+        const key = 'test';
+        const value = 'test1';
+
+        const configTable = asyncInstance(() => CoreSites.getSiteTable(CONFIG_TABLE, {
+            siteId,
+            config: { cachingStrategy: CoreDatabaseCachingStrategy.Testing },
+            primaryKeyColumns: ['name'],
+        }));
+
+        const insertDbSpy = jest.spyOn(CoreInMemoryDatabaseTable.prototype, 'insert');
+        const updateDbSpy = jest.spyOn(CoreInMemoryDatabaseTable.prototype, 'update');
+        await site.setLocalSiteConfig(key, value);
+        const storedValue = await site.getLocalSiteConfig(key);
+
+        expect(storedValue).toBe(value);
+        expect(insertDbSpy).toHaveBeenCalledWith({ name: key, value });
+
+        await configTable.update({ name: key, value: 'test2' }, { name: key, value });
+
+        expect(updateDbSpy).toHaveBeenCalledWith({ name: key, value: 'test2' }, { name: key, value });
+        expect(await site.getLocalSiteConfig(key)).toBe('test2');
+    });
+
+    it('Remove a record successfully', async () => {
+        const key = 'test';
+        const value = 'test 1';
+
+        const insertDbSpy = jest.spyOn(CoreInMemoryDatabaseTable.prototype, 'insert');
+        await site.setLocalSiteConfig(key, value);
+        const storedValue = await site.getLocalSiteConfig(key);
+
+        expect(storedValue).toBe(value);
+        expect(insertDbSpy).toHaveBeenCalledWith({ name: key, value });
+
+        const deleteDbSpy = jest.spyOn(CoreInMemoryDatabaseTable.prototype, 'deleteByPrimaryKey');
+        await site.deleteSiteConfig(key);
+        let error: CoreError | null = null;
+
+        try {
+            await site.getLocalSiteConfig(key);
+        } catch (err) {
+            error = err;
+        }
+
+        expect(error).toBeInstanceOf(Error);
+        expect(deleteDbSpy).toHaveBeenCalledWith({ name: key });
+    });
 
 });
