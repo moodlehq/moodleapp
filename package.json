@@ -1,6 +1,6 @@
 {
   "name": "moodlemobile",
-  "version": "4.1.0",
+  "version": "4.1.1",
   "description": "The official app for Moodle.",
   "author": {
     "name": "Moodle Pty Ltd.",
@@ -40,13 +40,13 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
-    "@angular/animations": "10.0.14",
-    "@angular/common": "10.0.14",
-    "@angular/core": "10.0.14",
-    "@angular/forms": "10.0.14",
-    "@angular/platform-browser": "10.0.14",
-    "@angular/platform-browser-dynamic": "10.0.14",
-    "@angular/router": "10.0.14",
+    "@angular/animations": "11.2.14",
+    "@angular/common": "11.2.14",
+    "@angular/core": "11.2.14",
+    "@angular/forms": "11.2.14",
+    "@angular/platform-browser": "11.2.14",
+    "@angular/platform-browser-dynamic": "11.2.14",
+    "@angular/router": "11.2.14",
     "@ionic-native/badge": "5.36.0",
     "@ionic-native/camera": "5.36.0",
     "@ionic-native/chooser": "5.36.0",
@@ -125,22 +125,22 @@
     "nl.kingsquare.cordova.background-audio": "1.0.1",
     "rxjs": "6.5.5",
     "ts-md5": "1.2.7",
-    "tslib": "2.3.1",
+    "tslib": "^2.0.0",
     "zone.js": "0.10.3"
   },
   "devDependencies": {
     "@angular-builders/custom-webpack": "10.0.1",
     "@angular-devkit/architect": "0.1202.7",
-    "@angular-devkit/build-angular": "0.1000.8",
+    "@angular-devkit/build-angular": "0.1102.19",
     "@angular-eslint/builder": "4.2.0",
     "@angular-eslint/eslint-plugin": "4.2.0",
     "@angular-eslint/eslint-plugin-template": "4.2.0",
     "@angular-eslint/schematics": "4.2.0",
     "@angular-eslint/template-parser": "4.2.0",
-    "@angular/cli": "10.0.8",
-    "@angular/compiler": "10.0.14",
-    "@angular/compiler-cli": "10.0.14",
-    "@angular/language-service": "10.0.14",
+    "@angular/cli": "11.2.19",
+    "@angular/compiler": "11.2.14",
+    "@angular/compiler-cli": "11.2.14",
+    "@angular/language-service": "11.2.14",
     "@ionic/angular-toolkit": "2.3.3",
     "@ionic/cli": "6.19.0",
     "@storybook/addon-controls": "6.1.21",
@@ -181,7 +181,7 @@
     "terser-webpack-plugin": "4.2.3",
     "ts-jest": "26.4.1",
     "ts-node": "8.3.0",
-    "typescript": "3.9.9"
+    "typescript": "4.1.6"
   },
   "engines": {
     "node": ">=14.15.0 <15"
