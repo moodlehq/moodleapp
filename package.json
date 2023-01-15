@@ -125,7 +125,7 @@
     "nl.kingsquare.cordova.background-audio": "1.0.1",
     "rxjs": "6.5.5",
     "ts-md5": "1.2.7",
-    "tslib": "^2.0.0",
+    "tslib": "2.4.1",
     "zone.js": "0.10.3"
   },
   "devDependencies": {
