@@ -45,7 +45,6 @@ import { CoreErrorInfoComponent } from '@components/error-info/error-info';
 import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
 import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
 import { CoreLoginError } from '@classes/errors/loginerror';
-import { CoreSite } from '@classes/site';
 
 /**
  * Site (url) chooser when adding a new site.
@@ -420,7 +419,7 @@ export class CoreLoginSitePage implements OnInit {
                     text: Translate.instant('core.contactsupport'),
                     handler: () => CoreUserSupport.contact({
                         supportConfig: alertSupportConfig,
-                        subject: Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }),
+                        subject: Translate.instant('core.cannotconnect'),
                         message: `Error: ${errorCode}\n\n${errorDetails}`,
                     }),
                 }
@@ -435,11 +434,10 @@ export class CoreLoginSitePage implements OnInit {
                 ),
         ].filter(button => !!button);
 
-        // @todo Remove CoreSite.MINIMUM_MOODLE_VERSION, not used on translations since 3.9.0.
         const alertElement = await CoreDomUtils.showAlertWithOptions({
             header: errorTitle ?? (
                 siteExists
-                    ? Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION })
+                    ? Translate.instant('core.cannotconnect')
                     : Translate.instant('core.sitenotfound')
             ),
             message: errorMessage ?? Translate.instant('core.sitenotfoundhelp'),

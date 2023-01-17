@@ -806,7 +806,7 @@ export class CoreSite {
     ): Promise<T> {
         if (preSets.forceOffline) {
             // Don't call the WS, just fail.
-            throw new CoreError(Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }));
+            throw new CoreError(Translate.instant('core.cannotconnect'));
         }
 
         try {
@@ -1694,7 +1694,7 @@ export class CoreSite {
             .catch(async () => {
                 if (cachePreSets.forceOffline) {
                     // Don't call the WS, just fail.
-                    throw new CoreError(Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }));
+                    throw new CoreError(Translate.instant('core.cannotconnect'));
                 }
 
                 // Call the WS.

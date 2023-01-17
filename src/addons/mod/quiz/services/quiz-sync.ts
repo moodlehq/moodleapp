@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 
 import { CoreError } from '@classes/errors/error';
-import { CoreSite } from '@classes/site';
 import { CoreCourseActivitySyncBaseProvider } from '@features/course/classes/activity-sync';
 import { CoreCourse, CoreCourseModuleBasicInfo } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
@@ -314,7 +313,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
 
         if (!CoreNetwork.isOnline()) {
             // Cannot sync in offline.
-            throw new CoreError(Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }));
+            throw new CoreError(Translate.instant('core.cannotconnect'));
         }
 
         const offlineAttempt = offlineAttempts.pop()!;

@@ -57,7 +57,6 @@ import { CoreNetwork } from '@services/network';
 import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreUserSupport } from '@features/user/services/support';
 import { CoreErrorInfoComponent } from '@components/error-info/error-info';
-import { CoreSite } from '@classes/site';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -1373,7 +1372,7 @@ export class CoreDomUtilsProvider {
         } else if (this.isSiteUnavailableError(message)) {
             alertOptions.header = CoreSites.isLoggedIn()
                 ? Translate.instant('core.connectionlost')
-                : Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION });
+                : Translate.instant('core.cannotconnect');
         } else {
             alertOptions.header = Translate.instant('core.error');
         }
