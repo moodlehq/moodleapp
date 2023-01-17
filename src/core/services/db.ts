@@ -18,7 +18,6 @@ import { SQLiteDB } from '@classes/sqlitedb';
 import { SQLiteDBMock } from '@features/emulator/classes/sqlitedb';
 import { CoreBrowser } from '@singletons/browser';
 import { makeSingleton, SQLite } from '@singletons';
-import { CoreAppProvider } from './app';
 import { CorePlatform } from '@services/platform';
 
 const tableNameRegex = new RegExp([
@@ -47,7 +46,7 @@ export class CoreDbProvider {
      * @returns Whether queries should be logged.
      */
     loggingEnabled(): boolean {
-        return CoreBrowser.hasDevelopmentSetting('DBLoggingEnabled') || CoreAppProvider.isAutomated();
+        return CoreBrowser.hasDevelopmentSetting('DBLoggingEnabled');
     }
 
     /**
