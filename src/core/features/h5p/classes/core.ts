@@ -271,8 +271,13 @@ export class CoreH5PCore {
                 if (addon.addTo?.content?.types?.length) {
                     for (let i = 0; i < addon.addTo.content.types.length; i++) {
                         const type = addon.addTo.content.types[i];
+                        let regex = type?.text?.regex;
+                        if (regex && regex[0] === '/' && regex.slice(-1) === '/') {
+                            // Regex designed for PHP. Remove the starting and ending slashes to convert them to JS format.
+                            regex = regex.substring(1, regex.length - 1);
+                        }
 
-                        if (type && type.text && type.text.regex && this.textAddonMatches(params.params, type.text.regex)) {
+                        if (regex && this.textAddonMatches(params.params, regex)) {
                             await validator.addon(addon);
 
                             // An addon shall only be added once.
