@@ -19,6 +19,9 @@ import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CanLeave } from '@guards/can-leave';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitePluginsModuleIndexComponent } from '../../components/module-index/module-index';
+import { CoreSites } from '@services/sites';
+import { CoreFilterFormatTextOptions } from '@features/filter/services/filter';
+import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 
 /**
  * Page to render the index page of a module site plugin.
@@ -38,10 +41,31 @@ export class CoreSitePluginsModuleIndexPage implements OnInit, CanLeave {
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         this.title = CoreNavigator.getRouteParam('title');
         this.module = CoreNavigator.getRouteParam('module');
         this.courseId = CoreNavigator.getRouteNumberParam('courseId');
+
+        if (this.title) {
+            const siteId = CoreSites.getCurrentSiteId();
+
+            const options: CoreFilterFormatTextOptions = {
+                clean: false,
+                courseId: this.courseId,
+                wsNotFiltered: false,
+                singleLine: true,
+            };
+
+            const filteredTitle = await CoreFilterHelper.getFiltersAndFormatText(
+                this.title.trim(),
+                'module',
+                this.module?.id ?? -1,
+                options,
+                siteId,
+            );
+
+            this.title = filteredTitle.text;
+        }
     }
 
     /**
