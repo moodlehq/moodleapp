@@ -123,9 +123,11 @@
     "moment": "2.29.4",
     "moment-timezone": "0.5.38",
     "nl.kingsquare.cordova.background-audio": "1.0.1",
+    "ogv": "1.8.9",
     "rxjs": "6.5.5",
     "ts-md5": "1.2.7",
     "tslib": "2.3.1",
+    "video.js": "7.21.1",
     "zone.js": "0.10.3"
   },
   "devDependencies": {
