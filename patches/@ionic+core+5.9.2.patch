@@ -1,0 +1,13 @@
+diff --git a/node_modules/@ionic/core/dist/types/components.d.ts b/node_modules/@ionic/core/dist/types/components.d.ts
+index fd9b7ad..4d29d1e 100644
+--- a/node_modules/@ionic/core/dist/types/components.d.ts
++++ b/node_modules/@ionic/core/dist/types/components.d.ts
+@@ -972,7 +972,7 @@ export namespace Components {
+         /**
+           * If `true`, a button tag will be rendered and the item will be tappable.
+          */
+-        "button": boolean;
++        "button": boolean | '';
+         /**
+           * The color to use from your application's color palette. Default options are: `"primary"`, `"secondary"`, `"tertiary"`, `"success"`, `"warning"`, `"danger"`, `"light"`, `"medium"`, and `"dark"`. For more information on colors, see [theming](/docs/theming/basics).
+          */
