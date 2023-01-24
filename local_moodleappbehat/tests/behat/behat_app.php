@@ -19,6 +19,7 @@
 require_once(__DIR__ . '/../../../../lib/behat/behat_base.php');
 require_once(__DIR__ . '/behat_app_helper.php');
 
+use Behat\Behat\Hook\Scope\ScenarioScope;
 use Behat\Gherkin\Node\TableNode;
 use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\ExpectationException;
@@ -44,6 +45,27 @@ class behat_app extends behat_app_helper {
     ];
 
     protected $windowsize = '360x720';
+
+    /**
+     * @BeforeScenario
+     */
+    public function before_scenario(ScenarioScope $scope) {
+        if (!$scope->getFeature()->hasTag('app')) {
+            return;
+        }
+
+        global $CFG;
+
+        $performanceLogs = $CFG->behat_profiles['default']['capabilities']['extra_capabilities']['goog:loggingPrefs']['performance'] ?? null;
+
+        if ($performanceLogs !== 'ALL') {
+            return;
+        }
+
+        // Enable DB Logging only for app tests with performance logs activated.
+        $this->getSession()->visit($this->get_app_url() . '/assets/env.json');
+        $this->execute_script("document.cookie = 'MoodleAppDBLoggingEnabled=true;path=/';");
+    }
 
     /**
      * Opens the Moodle App in the browser and optionally logs in.
