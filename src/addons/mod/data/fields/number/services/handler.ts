@@ -45,17 +45,17 @@ export class AddonModDataFieldNumberHandlerService extends AddonModDataFieldText
         originalFieldData: AddonModDataEntryField,
     ): boolean {
         const fieldName = 'f_' + field.id;
-        const input = inputData[fieldName] || '';
-        const content = originalFieldData?.content || '';
+        const input = inputData[fieldName] ?? '';
+        const content = originalFieldData?.content ?? '';
 
-        return input != content;
+        return input !== content;
     }
 
     /**
      * @inheritdoc
      */
     getFieldsNotifications(field: AddonModDataField, inputData: AddonModDataSubfieldData[]): string | undefined {
-        if (field.required && (!inputData || !inputData.length || inputData[0].value == '')) {
+        if (field.required && (!inputData || !inputData.length || inputData[0].value === '')) {
             return Translate.instant('addon.mod_data.errormustsupplyvalue');
         }
     }

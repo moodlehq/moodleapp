@@ -42,6 +42,7 @@ import {
 import { AddonModDataHelper } from '../../services/data-helper';
 import { CoreDom } from '@singletons/dom';
 import { AddonModDataEntryFieldInitialized } from '../../classes/base-field-plugin-component';
+import { CoreTextUtils } from '@services/utils/text';
 
 /**
  * Page that displays the view edit page.
@@ -368,9 +369,18 @@ export class AddonModDataEditPage implements OnInit {
                             }
                         });
                     }
+
                     this.jsData!.errors = this.errors;
 
                     this.scrollToFirstError();
+
+                    if (updateEntryResult.generalnotifications?.length) {
+                        CoreDomUtils.showAlertWithOptions({
+                            header: Translate.instant('core.notice'),
+                            message: CoreTextUtils.buildMessage(updateEntryResult.generalnotifications),
+                            buttons: [Translate.instant('core.ok')],
+                        });
+                    }
                 }
             } finally {
                 modal.dismiss();
