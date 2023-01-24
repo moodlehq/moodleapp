@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ElementRef } from '@angular/core';
+import { Component, ElementRef } from '@angular/core';
 import { CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
 
@@ -24,7 +24,7 @@ import { CoreQuestionHelper } from '@features/question/services/question-helper'
     templateUrl: 'addon-qtype-multianswer.html',
     styleUrls: ['multianswer.scss'],
 })
-export class AddonQtypeMultiAnswerComponent extends CoreQuestionBaseComponent implements OnInit {
+export class AddonQtypeMultiAnswerComponent extends CoreQuestionBaseComponent {
 
     constructor(elementRef: ElementRef) {
         super('AddonQtypeMultiAnswerComponent', elementRef);
@@ -33,7 +33,7 @@ export class AddonQtypeMultiAnswerComponent extends CoreQuestionBaseComponent im
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
+    init(): void {
         this.initOriginalTextComponent('.formulation');
     }
 

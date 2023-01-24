@@ -289,8 +289,8 @@ export class CoreFileUploaderProvider {
 
             if (!stillInList) {
                 filesToDelete.push({
-                    filepath: file.filepath!,
-                    filename: file.filename!,
+                    filepath: file.filepath || '',
+                    filename: file.filename || '',
                 });
             }
         });
@@ -646,7 +646,7 @@ export class CoreFileUploaderProvider {
                 filesToUpload.push(<FileEntry> file);
             } else {
                 // It's an online file.
-                usedNames[file.filename!.toLowerCase()] = file;
+                usedNames[(file.filename || '').toLowerCase()] = file;
             }
         });
 
@@ -684,7 +684,7 @@ export class CoreFileUploaderProvider {
     ): Promise<number> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        let fileName: string | undefined;
+        let fileName = '';
         let fileEntry: FileEntry | undefined;
 
         const isOnline = !CoreUtils.isFileEntry(file);
@@ -695,7 +695,7 @@ export class CoreFileUploaderProvider {
             fileEntry = file;
         } else {
             // It's an online file. We need to download it and re-upload it.
-            fileName = file.filename;
+            fileName = file.filename || '';
 
             const path = await CoreFilepool.downloadUrl(
                 siteId,
@@ -713,9 +713,9 @@ export class CoreFileUploaderProvider {
         }
 
         // Now upload the file.
-        const extension = CoreMimetypeUtils.getFileExtension(fileName!);
+        const extension = CoreMimetypeUtils.getFileExtension(fileName);
         const mimetype = extension ? CoreMimetypeUtils.getMimeType(extension) : undefined;
-        const options = this.getFileUploadOptions(fileEntry.toURL(), fileName!, mimetype, isOnline, 'draft', itemId);
+        const options = this.getFileUploadOptions(fileEntry.toURL(), fileName, mimetype, isOnline, 'draft', itemId);
 
         const result = await this.uploadFile(fileEntry.toURL(), options, undefined, siteId);
 

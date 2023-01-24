@@ -77,17 +77,17 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
             AddonMessagesProvider.NEW_MESSAGE_EVENT,
             (data) => {
                 if (data.userId && this.discussions) {
-                    const discussion = this.discussions.find((disc) => disc.message!.user == data.userId);
+                    const discussion = this.discussions.find((disc) => disc.message?.user === data.userId);
 
                     if (discussion === undefined) {
                         this.loaded = false;
                         this.refreshData().finally(() => {
                             this.loaded = true;
                         });
-                    } else {
-                    // An existing discussion has a new message, update the last message.
-                        discussion.message!.message = data.message;
-                        discussion.message!.timecreated = data.timecreated;
+                    } else if (discussion.message) {
+                        // An existing discussion has a new message, update the last message.
+                        discussion.message.message = data.message;
+                        discussion.message.timecreated = data.timecreated;
                     }
                 }
             },
@@ -99,10 +99,10 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
             AddonMessagesProvider.READ_CHANGED_EVENT,
             (data) => {
                 if (data.userId && this.discussions) {
-                    const discussion = this.discussions.find((disc) => disc.message!.user == data.userId);
+                    const discussion = this.discussions.find((disc) => disc.message?.user === data.userId);
 
                     if (discussion !== undefined) {
-                    // A discussion has been read reset counter.
+                        // A discussion has been read reset counter.
                         discussion.unread = false;
 
                         // Conversations changed, invalidate them and refresh unread counts.
@@ -135,7 +135,7 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
     }
 
     /**
-     * Component loaded.
+     * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         this.route.queryParams.subscribe(async (params) => {
@@ -147,9 +147,9 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
 
         await this.fetchData();
 
-        if (!this.discussionUserId && this.discussions.length > 0 && CoreScreen.isTablet) {
+        if (!this.discussionUserId && this.discussions.length > 0 && CoreScreen.isTablet && this.discussions[0].message) {
             // Take first and load it.
-            await this.gotoDiscussion(this.discussions[0].message!.user);
+            await this.gotoDiscussion(this.discussions[0].message.user);
         }
 
         // Treat deep link now that the conversation route has been loaded if needed.
@@ -281,7 +281,7 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
     }
 
     /**
-     * Component destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.newMessagesObserver?.off();

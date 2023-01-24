@@ -18,7 +18,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { Translate } from '@singletons';
-import { CoreWSExternalWarning } from '@services/ws';
 import { CoreNavigator } from '@services/navigator';
 import { CoreForms } from '@singletons/form';
 import { CorePlatform } from '@services/platform';
@@ -91,7 +90,7 @@ export class CoreLoginForgottenPasswordPage implements OnInit {
         }
 
         const modal = await CoreDomUtils.showModalLoading('core.sending', true);
-        const isMail = field == 'email';
+        const isMail = field === 'email';
 
         try {
             const response = await CoreLoginHelper.requestPasswordReset(
@@ -100,10 +99,14 @@ export class CoreLoginForgottenPasswordPage implements OnInit {
                 isMail ? value : '',
             );
 
-            if (response.status == 'dataerror') {
-                // Error in the data sent.
-                this.showError(isMail, response.warnings!);
-            } else if (response.status == 'emailpasswordconfirmnotsent' || response.status == 'emailpasswordconfirmnoemail') {
+            if (response.status === 'dataerror') {
+                // Show an error from the warnings.
+                const warning = response.warnings?.find((warning) =>
+                    (warning.item === 'email' && isMail) || (warning.item === 'username' && !isMail));
+                if (warning) {
+                    CoreDomUtils.showErrorModal(warning.message);
+                }
+            } else if (response.status === 'emailpasswordconfirmnotsent' || response.status === 'emailpasswordconfirmnoemail') {
                 // Error, not found.
                 CoreDomUtils.showErrorModal(response.notice);
             } else {
@@ -118,17 +121,6 @@ export class CoreLoginForgottenPasswordPage implements OnInit {
             CoreDomUtils.showErrorModal(error);
         } finally {
             modal.dismiss();
-        }
-    }
-
-    // Show an error from the warnings.
-    protected showError(isMail: boolean, warnings: CoreWSExternalWarning[]): void {
-        for (let i = 0; i < warnings.length; i++) {
-            const warning = warnings[i];
-            if ((warning.item == 'email' && isMail) || (warning.item == 'username' && !isMail)) {
-                CoreDomUtils.showErrorModal(warning.message);
-                break;
-            }
         }
     }
 

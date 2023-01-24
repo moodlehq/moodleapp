@@ -91,7 +91,10 @@ export class CoreUserSyncProvider extends CoreSyncBaseProvider<string[]> {
                 await CoreUser.setUserPreference(preference.name, preference.value, siteId);
             } catch (error) {
                 if (CoreUtils.isWebServiceError(error)) {
-                    warnings.push(CoreTextUtils.getErrorMessageFromError(error)!);
+                    const warning = CoreTextUtils.getErrorMessageFromError(error);
+                    if (warning) {
+                        warnings.push(warning);
+                    }
                 } else {
                     // Couldn't connect to server, reject.
                     throw error;

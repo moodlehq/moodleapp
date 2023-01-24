@@ -32,10 +32,10 @@ import { CoreUtilsOpenFileOptions } from '@services/utils/utils';
 export class CoreCourseDownloadModuleMainFileDirective implements OnInit {
 
     @Input() module?: CoreCourseModuleData; // The module.
-    @Input() moduleId?: string | number; // The module ID. Required if module is not supplied.
-    @Input() courseId?: string | number; // The course ID.
+    @Input() moduleId?: number; // The module ID. Required if module is not supplied.
+    @Input() courseId?: number; // The course ID.
     @Input() component?: string; // Component to link the file to.
-    @Input() componentId?: string | number; // Component ID to use in conjunction with the component. If not defined, use moduleId.
+    @Input() componentId?: number; // Component ID to use in conjunction with the component. If not defined, use moduleId.
     @Input() files?: CoreCourseModuleContentFile[]; // List of files of the module. If not provided, use module.contents.
     @Input() options?: CoreUtilsOpenFileOptions = {};
 
@@ -58,16 +58,18 @@ export class CoreCourseDownloadModuleMainFileDirective implements OnInit {
             ev.stopPropagation();
 
             const modal = await CoreDomUtils.showModalLoading();
-            const courseId = typeof this.courseId == 'string' ? parseInt(this.courseId, 10) : this.courseId;
+            const courseId = this.courseId;
 
             try {
                 if (!this.module) {
-                    // Try to get the module from cache.
-                    this.moduleId = typeof this.moduleId == 'string' ? parseInt(this.moduleId, 10) : this.moduleId;
-                    this.module = await CoreCourse.getModule(this.moduleId!, courseId);
+                    if (!this.moduleId) {
+                        return;
+                    }
+
+                    this.module = await CoreCourse.getModule(this.moduleId, courseId);
                 }
 
-                const componentId = this.componentId || module.id;
+                const componentId = this.componentId || this.module.id;
 
                 await CoreCourseHelper.downloadModuleAndOpenFile(
                     this.module,

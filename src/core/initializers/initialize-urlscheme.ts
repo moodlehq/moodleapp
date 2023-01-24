@@ -20,6 +20,7 @@ export default async function(): Promise<void> {
     const lastUrls: Record<string, number> = {};
 
     // Handle app launched with a certain URL (custom URL scheme).
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (<any> window).handleOpenURL = (url: string): void => {
         // Execute the callback in the Angular zone, so change detection doesn't stop working.
         NgZone.run(() => {

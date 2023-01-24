@@ -113,7 +113,7 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
      * @returns List of URLs.
      */
     getDownloadableFilesFromHTML(container: HTMLElement): string[] {
-        let files = <string[]>[];
+        let files: string[] = [];
 
         for (const component in this.enabledHandlers) {
             const handler = this.enabledHandlers[component];
@@ -134,19 +134,19 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
      * @returns Promise resolved with file size and a boolean to indicate if it is the total size or only partial.
      */
     async getFilesDownloadSize(files: CoreWSFile[], siteId?: string): Promise<CoreFileSizeSum> {
-        siteId = siteId || CoreSites.getCurrentSiteId();
+        const siteIdentifier = siteId || CoreSites.getCurrentSiteId();
 
-        const filteredFiles = <CoreWSFile[]>[];
+        const filteredFiles: CoreWSFile[] = [];
 
         await Promise.all(files.map(async (file) => {
-            const state = await CoreFilepool.getFileStateByUrl(siteId!, CoreFileHelper.getFileUrl(file), file.timemodified);
+            const state = await CoreFilepool.getFileStateByUrl(siteIdentifier, CoreFileHelper.getFileUrl(file), file.timemodified);
 
-            if (state != CoreConstants.DOWNLOADED && state != CoreConstants.NOT_DOWNLOADABLE) {
+            if (state !== CoreConstants.DOWNLOADED && state !== CoreConstants.NOT_DOWNLOADABLE) {
                 filteredFiles.push(file);
             }
         }));
 
-        return this.getFilesSize(filteredFiles, siteId);
+        return this.getFilesSize(filteredFiles, siteIdentifier);
     }
 
     /**
@@ -157,7 +157,7 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
      * @returns Promise resolved with file size and a boolean to indicate if it is the total size or only partial.
      */
     async getFilesSize(files: CoreWSFile[], siteId?: string): Promise<CoreFileSizeSum> {
-        const result = {
+        const result: CoreFileSizeSum = {
             size: 0,
             total: true,
         };

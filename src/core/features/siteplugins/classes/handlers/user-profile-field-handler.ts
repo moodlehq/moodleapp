@@ -50,7 +50,7 @@ export class CoreSitePluginsUserProfileFieldHandler extends CoreSitePluginsBaseH
         const name = 'profile_field_' + field.shortname;
 
         return {
-            type: 'type' in field ? field.type : field.datatype!,
+            type: ('type' in field ? field.type : field.datatype) || '',
             name: name,
             value: formValues[name],
         };

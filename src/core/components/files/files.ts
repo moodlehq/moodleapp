@@ -30,7 +30,7 @@ import { CoreUtils } from '@services/utils/utils';
 })
 export class CoreFilesComponent implements OnInit, DoCheck {
 
-    @Input() files?: CoreFileEntry[]; // List of files.
+    @Input() files: CoreFileEntry[] = []; // List of files.
     @Input() component?: string; // Component the downloaded files will be linked to.
     @Input() componentId?: string | number; // Component ID.
     @Input() alwaysDownload?: boolean | string; // Whether it should always display the refresh button when the file is downloaded.
@@ -75,7 +75,7 @@ export class CoreFilesComponent implements OnInit, DoCheck {
      * Calculate contentText based on fils that can be rendered inline.
      */
     protected renderInlineFiles(): void {
-        this.contentText = this.files!.reduce((previous, file) => {
+        this.contentText = this.files.reduce((previous, file) => {
             const text = CoreMimetypeUtils.getEmbeddedHtml(file);
 
             return text ? previous + '<br>' + text : previous;

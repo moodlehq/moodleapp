@@ -181,7 +181,7 @@ export class AddonModWorkshopHelperProvider {
             assessment = await AddonModWorkshop.getAssessment(workshopId, assessmentId, options);
         } catch (error) {
             const assessments = await AddonModWorkshop.getReviewerAssessments(workshopId, options);
-            assessment = assessments.find((assessment_1) => assessment_1.id == assessmentId);
+            assessment = assessments.find((ass) => ass.id === assessmentId);
 
             if (!assessment) {
                 throw error;
@@ -266,9 +266,7 @@ export class AddonModWorkshopHelperProvider {
      * Upload or store some files for a submission, depending if the user is offline or not.
      *
      * @param workshopId Workshop ID.
-     * @param submissionId If not editing, it will refer to timecreated.
      * @param files List of files.
-     * @param editing If the submission is being edited or added otherwise.
      * @param offline True if files sould be stored for offline, false to upload them.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved if success.
@@ -451,28 +449,24 @@ export class AddonModWorkshopHelperProvider {
      * @returns Promise resolved with the files.
      */
     async applyOfflineData(
-        submission?: AddonModWorkshopSubmissionDataWithOfflineData,
+        submission: AddonModWorkshopSubmissionDataWithOfflineData = {
+            id: 0,
+            workshopid: 0,
+            title: '',
+            content: '',
+            timemodified: 0,
+            example: false,
+            authorid: 0,
+            timecreated: 0,
+            contenttrust: 0,
+            attachment: 0,
+            published: false,
+            late: 0,
+        },
         actions: AddonModWorkshopOfflineSubmission[] = [],
     ): Promise<AddonModWorkshopSubmissionDataWithOfflineData | undefined> {
-        if (actions.length == 0) {
+        if (actions.length === 0) {
             return submission;
-        }
-
-        if (submission === undefined) {
-            submission = {
-                id: 0,
-                workshopid: 0,
-                title: '',
-                content: '',
-                timemodified: 0,
-                example: false,
-                authorid: 0,
-                timecreated: 0,
-                contenttrust: 0,
-                attachment: 0,
-                published: false,
-                late: 0,
-            };
         }
 
         let attachmentsId: CoreFileUploaderStoreFilesResult | undefined;
@@ -482,17 +476,17 @@ export class AddonModWorkshopHelperProvider {
             switch (action.action) {
                 case AddonModWorkshopAction.ADD:
                 case AddonModWorkshopAction.UPDATE:
-                    submission!.title = action.title;
-                    submission!.content = action.content;
-                    submission!.title = action.title;
-                    submission!.courseid = action.courseid;
-                    submission!.submissionmodified = action.timemodified / 1000;
-                    submission!.offline = true;
+                    submission.title = action.title;
+                    submission.content = action.content;
+                    submission.title = action.title;
+                    submission.courseid = action.courseid;
+                    submission.submissionmodified = action.timemodified / 1000;
+                    submission.offline = true;
                     attachmentsId = action.attachmentsid as CoreFileUploaderStoreFilesResult;
                     break;
                 case AddonModWorkshopAction.DELETE:
-                    submission!.deleted = true;
-                    submission!.submissionmodified = action.timemodified / 1000;
+                    submission.deleted = true;
+                    submission.submissionmodified = action.timemodified / 1000;
                     break;
                 default:
             }
@@ -534,7 +528,8 @@ export class AddonModWorkshopHelperProvider {
         }
 
         const data =
-            (await AddonWorkshopAssessmentStrategyDelegate.prepareAssessmentData(workshop.strategy!, selectedValues, form)) || {};
+            (await AddonWorkshopAssessmentStrategyDelegate.prepareAssessmentData(workshop.strategy ?? '', selectedValues, form)) ||
+            {};
         data.feedbackauthor = feedbackText;
         data.feedbackauthorattachmentsid = attachmentsId;
         data.nodims = form.dimenssionscount;
@@ -551,16 +546,16 @@ export class AddonModWorkshopHelperProvider {
      * @returns Real grade formatted.
      */
     protected realGradeValueHelper(value?: number | string, max = 0, decimals = 0): string | undefined {
-        if (typeof value == 'string') {
+        if (typeof value === 'string') {
             // Already treated.
             return value;
         }
 
-        if (value == null || value === undefined) {
+        if (value === null || value === undefined) {
             return undefined;
         }
 
-        if (max == 0) {
+        if (max === 0) {
             return '0';
         }
 

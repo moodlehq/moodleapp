@@ -61,8 +61,8 @@ export class AddonModResourcePrefetchHandlerService extends CoreCourseResourcePr
     async downloadOrPrefetch(module: CoreCourseModuleData, courseId: number, prefetch?: boolean): Promise<void> {
         let dirPath: string | undefined;
 
-        if (AddonModResourceHelper.isDisplayedInIframe(module)) {
-            dirPath = await CoreFilepool.getPackageDirPathByUrl(CoreSites.getCurrentSiteId(), module.url!);
+        if (AddonModResourceHelper.isDisplayedInIframe(module) && module.url !== undefined) {
+            dirPath = await CoreFilepool.getPackageDirPathByUrl(CoreSites.getCurrentSiteId(), module.url);
         }
 
         const promises: Promise<unknown>[] = [];

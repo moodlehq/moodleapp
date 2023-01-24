@@ -1,8 +1,8 @@
-<ion-list *ngIf="essayQuestion && (essayQuestion.text || essayQuestion.text === '')">
+<ion-list *ngIf="question && (question.text || question.text === '')">
     <!-- Question text. -->
     <ion-item class="ion-text-wrap">
         <ion-label>
-            <core-format-text [component]="component" [componentId]="componentId" [text]="essayQuestion.text" [contextLevel]="contextLevel"
+            <core-format-text [component]="component" [componentId]="componentId" [text]="question.text" [contextLevel]="contextLevel"
                 [contextInstanceId]="contextInstanceId" [courseId]="courseId">
             </core-format-text>
         </ion-label>
@@ -11,27 +11,26 @@
     <!-- Editing the question. -->
     <ng-container *ngIf="!review">
         <!-- Textarea. -->
-        <ion-item *ngIf="essayQuestion.textarea && (!essayQuestion.hasDraftFiles || uploadFilesSupported)">
+        <ion-item *ngIf="question.textarea && (!question.hasDraftFiles || uploadFilesSupported)">
             <ion-label class="sr-only">{{ 'core.question.answer' | translate }}</ion-label>
             <!-- "Format" and draftid hidden inputs -->
-            <input *ngIf="essayQuestion.formatInput" type="hidden" [name]="essayQuestion.formatInput.name"
-                [value]="essayQuestion.formatInput.value">
-            <input *ngIf="essayQuestion.answerDraftIdInput" type="hidden" [name]="essayQuestion.answerDraftIdInput.name"
-                [value]="essayQuestion.answerDraftIdInput.value">
+            <input *ngIf="question.formatInput" type="hidden" [name]="question.formatInput.name" [value]="question.formatInput.value">
+            <input *ngIf="question.answerDraftIdInput" type="hidden" [name]="question.answerDraftIdInput.name"
+                [value]="question.answerDraftIdInput.value">
             <!-- Plain text textarea. -->
-            <ion-textarea *ngIf="essayQuestion.isPlainText" class="core-question-textarea"
-                [ngClass]='{"core-monospaced": essayQuestion.isMonospaced}' placeholder="{{ 'core.question.answer' | translate }}"
-                [attr.name]="essayQuestion.textarea.name" [ngModel]="essayQuestion.textarea.text">
+            <ion-textarea *ngIf="question.isPlainText" class="core-question-textarea" [ngClass]='{"core-monospaced": question.isMonospaced}'
+                placeholder="{{ 'core.question.answer' | translate }}" [attr.name]="question.textarea.name"
+                [ngModel]="question.textarea.text">
             </ion-textarea>
             <!-- Rich text editor. -->
-            <core-rich-text-editor *ngIf="!essayQuestion.isPlainText" placeholder="{{ 'core.question.answer' | translate }}"
-                [control]="formControl" [name]="essayQuestion.textarea.name" [component]="component" [componentId]="componentId"
+            <core-rich-text-editor *ngIf="!question.isPlainText" placeholder="{{ 'core.question.answer' | translate }}"
+                [control]="formControl" [name]="question.textarea.name" [component]="component" [componentId]="componentId"
                 [autoSave]="false">
             </core-rich-text-editor>
         </ion-item>
 
         <!-- Draft files not supported. -->
-        <ng-container *ngIf="essayQuestion.textarea && essayQuestion.hasDraftFiles && !uploadFilesSupported">
+        <ng-container *ngIf="question.textarea && question.hasDraftFiles && !uploadFilesSupported">
             <ion-item class="ion-text-wrap core-danger-item">
                 <ion-label class="core-question-warning">
                     {{ 'core.question.errorembeddedfilesnotsupportedinsite' | translate }}
@@ -39,7 +38,7 @@
             </ion-item>
             <ion-item class="ion-text-wrap">
                 <ion-label>
-                    <core-format-text [component]="component" [componentId]="componentId" [text]="essayQuestion.textarea.text"
+                    <core-format-text [component]="component" [componentId]="componentId" [text]="question.textarea.text"
                         [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">
                     </core-format-text>
                 </ion-label>
@@ -47,15 +46,14 @@
         </ng-container>
 
         <!-- Attachments. -->
-        <ng-container *ngIf="essayQuestion.allowsAttachments">
-            <core-attachments *ngIf="uploadFilesSupported && essayQuestion.attachmentsDraftIdInput" [files]="attachments"
-                [component]="component" [componentId]="componentId" [maxSize]="essayQuestion.attachmentsMaxBytes"
-                [maxSubmissions]="essayQuestion.attachmentsMaxFiles" [allowOffline]="offlineEnabled"
-                [acceptedTypes]="essayQuestion.attachmentsAcceptedTypes" [courseId]="courseId">
+        <ng-container *ngIf="question.allowsAttachments">
+            <core-attachments *ngIf="uploadFilesSupported && question.attachmentsDraftIdInput" [files]="attachments" [component]="component"
+                [componentId]="componentId" [maxSize]="question.attachmentsMaxBytes" [maxSubmissions]="question.attachmentsMaxFiles"
+                [allowOffline]="offlineEnabled" [acceptedTypes]="question.attachmentsAcceptedTypes" [courseId]="courseId">
             </core-attachments>
 
-            <input *ngIf="essayQuestion.attachmentsDraftIdInput" type="hidden" [name]="essayQuestion.attachmentsDraftIdInput.name"
-                [value]="essayQuestion.attachmentsDraftIdInput.value">
+            <input *ngIf="question.attachmentsDraftIdInput" type="hidden" [name]="question.attachmentsDraftIdInput.name"
+                [value]="question.attachmentsDraftIdInput.value">
 
             <!-- Attachments not supported in this site. -->
             <ion-item *ngIf="!uploadFilesSupported" class="ion-text-wrap core-danger-item">
@@ -69,36 +67,35 @@
     <!-- Reviewing the question. -->
     <ng-container *ngIf="review">
         <!-- Answer to the question and attachments (reviewing). -->
-        <ion-item class="ion-text-wrap" *ngIf="essayQuestion.answer || essayQuestion.answer == ''">
+        <ion-item class="ion-text-wrap" *ngIf="question.answer || question.answer == ''">
             <ion-label>
-                <core-format-text [ngClass]='{"core-monospaced": essayQuestion.isMonospaced}' [component]="component"
-                    [componentId]="componentId" [text]="essayQuestion.answer" [contextLevel]="contextLevel"
-                    [contextInstanceId]="contextInstanceId" [courseId]="courseId">
+                <core-format-text [ngClass]='{"core-monospaced": question.isMonospaced}' [component]="component" [componentId]="componentId"
+                    [text]="question.answer" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">
                 </core-format-text>
             </ion-label>
         </ion-item>
 
         <!-- Word count info. -->
-        <ion-item class="ion-text-wrap" *ngIf="essayQuestion.wordCountInfo">
+        <ion-item class="ion-text-wrap" *ngIf="question.wordCountInfo">
             <ion-label>
-                <core-format-text [component]="component" [componentId]="componentId" [text]="essayQuestion.wordCountInfo"
+                <core-format-text [component]="component" [componentId]="componentId" [text]="question.wordCountInfo"
                     [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">
                 </core-format-text>
             </ion-label>
         </ion-item>
 
         <!-- Answer plagiarism. -->
-        <ion-item class="ion-text-wrap" *ngIf="essayQuestion.answerPlagiarism">
+        <ion-item class="ion-text-wrap" *ngIf="question.answerPlagiarism">
             <ion-label>
-                <core-format-text [component]="component" [componentId]="componentId" [text]="essayQuestion.answerPlagiarism"
+                <core-format-text [component]="component" [componentId]="componentId" [text]="question.answerPlagiarism"
                     [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">
                 </core-format-text>
             </ion-label>
         </ion-item>
 
         <!-- List of attachments when reviewing. -->
-        <core-files *ngIf="essayQuestion.attachments" [files]="essayQuestion.attachments" [component]="component"
-            [componentId]="componentId" [extraHtml]="essayQuestion.attachmentsPlagiarisms">
+        <core-files *ngIf="question.attachments" [files]="question.attachments" [component]="component" [componentId]="componentId"
+            [extraHtml]="question.attachmentsPlagiarisms">
         </core-files>
     </ng-container>
 </ion-list>

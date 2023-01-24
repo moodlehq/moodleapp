@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ElementRef } from '@angular/core';
+import { Component, ElementRef } from '@angular/core';
 
 import { AddonModQuizMatchQuestion, CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
 
@@ -24,9 +24,7 @@ import { AddonModQuizMatchQuestion, CoreQuestionBaseComponent } from '@features/
     templateUrl: 'addon-qtype-match.html',
     styleUrls: ['match.scss'],
 })
-export class AddonQtypeMatchComponent extends CoreQuestionBaseComponent implements OnInit {
-
-    matchQuestion?: AddonModQuizMatchQuestion;
+export class AddonQtypeMatchComponent extends CoreQuestionBaseComponent<AddonModQuizMatchQuestion> {
 
     constructor(elementRef: ElementRef) {
         super('AddonQtypeMatchComponent', elementRef);
@@ -35,9 +33,8 @@ export class AddonQtypeMatchComponent extends CoreQuestionBaseComponent implemen
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
+    init(): void {
         this.initMatchComponent();
-        this.matchQuestion = this.question;
     }
 
 }

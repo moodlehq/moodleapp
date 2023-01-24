@@ -76,6 +76,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     @Input() initialSectionNumber?: number; // The section to load first (by number).
     @Input() moduleId?: number; // The module ID to scroll to. Must be inside the initial selected section.
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     @ViewChildren(CoreDynamicComponent) dynamicComponents?: QueryList<CoreDynamicComponent<any>>;
 
     // All the possible component classes.

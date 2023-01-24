@@ -304,14 +304,16 @@ export class CoreQuestionHelperProvider {
             // Search init_question functions for this type.
             const initMatches = scriptCode.match(new RegExp('M.qtype_' + question.type + '.init_question\\(.*?}\\);', 'mg'));
             if (initMatches) {
-                let initMatch = initMatches.pop()!;
+                let initMatch = initMatches.pop();
 
-                // Remove start and end of the match, we only want the object.
-                initMatch = initMatch.replace('M.qtype_' + question.type + '.init_question(', '');
-                initMatch = initMatch.substring(0, initMatch.length - 2);
+                if (initMatch) {
+                    // Remove start and end of the match, we only want the object.
+                    initMatch = initMatch.replace('M.qtype_' + question.type + '.init_question(', '');
+                    initMatch = initMatch.substring(0, initMatch.length - 2);
 
-                // Try to convert it to an object and add it to the question.
-                question.initObjects = CoreTextUtils.parseJSON(initMatch, null);
+                    // Try to convert it to an object and add it to the question.
+                    question.initObjects = CoreTextUtils.parseJSON(initMatch, null);
+                }
             }
 
             const amdRegExp = new RegExp('require\\(\\[["\']qtype_' + question.type + '/question["\']\\],[^f]*' +

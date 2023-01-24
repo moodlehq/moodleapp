@@ -58,10 +58,13 @@ export class CoreSearchHistoryProvider {
         if (items.length > CoreSearchHistoryProvider.HISTORY_LIMIT) {
             // Over the limit. Remove the last.
             const lastItem = items.pop();
+            if (!lastItem) {
+                return;
+            }
 
             const searchItem = {
-                searcharea: lastItem!.searcharea,
-                searchedtext: lastItem!.searchedtext,
+                searcharea: lastItem.searcharea,
+                searchedtext: lastItem.searchedtext,
             };
 
             await db.deleteRecords(SEARCH_HISTORY_TABLE_NAME, searchItem);

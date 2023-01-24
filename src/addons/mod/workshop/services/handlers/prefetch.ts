@@ -71,7 +71,7 @@ export class AddonModWorkshopPrefetchHandlerService extends CoreCourseActivityPr
     ): Promise<{ workshop?: AddonModWorkshopData; groups: CoreGroup[]; files: CoreWSFile[]}> {
         let groups: CoreGroup[] = [];
         let files: CoreWSFile[] = [];
-        let workshop: AddonModWorkshopData | undefined;
+        let workshop: AddonModWorkshopData;
         let access: AddonModWorkshopGetWorkshopAccessInformationWSResponse | undefined;
 
         const modOptions = {
@@ -79,11 +79,25 @@ export class AddonModWorkshopPrefetchHandlerService extends CoreCourseActivityPr
             ...options, // Include all options.
         };
 
-        try {
-            const site = await CoreSites.getSite(options.siteId);
-            const userId = site.getUserId();
-            const workshop = await AddonModWorkshop.getWorkshop(courseId, module.id, options);
+        const site = await CoreSites.getSite(options.siteId);
+        options.siteId = options.siteId ?? site.getId();
+        const userId = site.getUserId();
 
+        try {
+            workshop = await AddonModWorkshop.getWorkshop(courseId, module.id, options);
+        }  catch (error) {
+            if (options.omitFail) {
+                // Any error, return the info we have.
+                return {
+                    groups: [],
+                    files: [],
+                };
+            }
+
+            throw error;
+        }
+
+        try {
             files = this.getIntroFilesFromInstance(module, workshop);
             files = files.concat(workshop.instructauthorsfiles || []).concat(workshop.instructreviewersfiles || []);
 
@@ -124,7 +138,7 @@ export class AddonModWorkshopPrefetchHandlerService extends CoreCourseActivityPr
                     await Promise.all(submissions.map(async (submission) => {
                         files = files.concat(submission.contentfiles || []).concat(submission.attachmentfiles || []);
 
-                        const assessments = await AddonModWorkshop.getSubmissionAssessments(workshop!.id, submission.id, {
+                        const assessments = await AddonModWorkshop.getSubmissionAssessments(workshop.id, submission.id, {
                             cmId: module.id,
                         });
 
@@ -133,9 +147,9 @@ export class AddonModWorkshopPrefetchHandlerService extends CoreCourseActivityPr
                                 .concat(assessment.feedbackcontentfiles);
                         });
 
-                        if (workshop!.phase >= AddonModWorkshopPhase.PHASE_ASSESSMENT && canAssess) {
+                        if (workshop.phase >= AddonModWorkshopPhase.PHASE_ASSESSMENT && canAssess) {
                             await Promise.all(assessments.map((assessment) =>
-                                AddonModWorkshopHelper.getReviewerAssessmentById(workshop!.id, assessment.id)));
+                                AddonModWorkshopHelper.getReviewerAssessmentById(workshop.id, assessment.id)));
                         }
                     }));
 
@@ -267,7 +281,12 @@ export class AddonModWorkshopPrefetchHandlerService extends CoreCourseActivityPr
 
         // Prefetch the workshop data.
         const info = await this.getWorkshopInfoHelper(module, courseId, commonOptions);
-        const workshop = info.workshop!;
+        if (!info.workshop) {
+            // It would throw an exception so it would not happen.
+            return;
+        }
+
+        const workshop = info.workshop;
         const promises: Promise<unknown>[] = [];
         const assessmentIds: number[] = [];
 

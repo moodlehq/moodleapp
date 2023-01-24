@@ -39,7 +39,7 @@ export class CoreGradesReportLinkHandlerService extends CoreContentLinksHandlerB
         courseId?: number,
         data?: { cmid?: string },
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
-        courseId = courseId || Number(params.id);
+        const courseIdentifier = courseId || Number(params.id);
         data = data || {};
 
         return [{
@@ -47,7 +47,7 @@ export class CoreGradesReportLinkHandlerService extends CoreContentLinksHandlerB
                 const userId = params.userid ? parseInt(params.userid, 10) : undefined;
                 const moduleId = data?.cmid && parseInt(data.cmid, 10) || undefined;
 
-                CoreGradesHelper.goToGrades(courseId!, userId, moduleId, siteId);
+                CoreGradesHelper.goToGrades(courseIdentifier, userId, moduleId, siteId);
             },
         }];
     }
