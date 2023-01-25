@@ -9,6 +9,8 @@ This is the primary repository of source code for the official mobile app for Mo
 * [Bug Tracker](https://tracker.moodle.org/browse/MOBILE)
 * [Release Notes](https://docs.moodle.org/dev/Moodle_App_Release_Notes)
 
+This project is tested with BrowserStack.
+
 License
 -------
 
