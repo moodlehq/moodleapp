@@ -37,4 +37,4 @@ import { AddonModQuizAccessTimeLimitModule } from './timelimit/timelimit.module'
         AddonModQuizAccessTimeLimitModule,
     ],
 })
-export class AddonModQuizAccessRulesModule { }
+export class AddonModQuizAccessRulesModule {}

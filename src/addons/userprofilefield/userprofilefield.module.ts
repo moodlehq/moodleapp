@@ -28,4 +28,4 @@ import { AddonUserProfileFieldTextModule } from './text/text.module';
         AddonUserProfileFieldTextModule,
     ],
 })
-export class AddonUserProfileFieldModule { }
+export class AddonUserProfileFieldModule {}

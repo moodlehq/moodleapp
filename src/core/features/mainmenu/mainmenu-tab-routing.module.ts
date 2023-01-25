@@ -17,8 +17,14 @@ import { Route, Routes } from '@angular/router';
 
 import { ModuleRoutesConfig, resolveModuleRoutes } from '@/app/app-routing.module';
 
-export const MAIN_MENU_TAB_ROUTES = new InjectionToken('MAIN_MENU_TAB_ROUTES');
+const MAIN_MENU_TAB_ROUTES = new InjectionToken('MAIN_MENU_TAB_ROUTES');
 
+/**
+ * Build module routes.
+ *
+ * @param injector Injector.
+ * @returns Routes.
+ */
 export function buildTabMainRoutes(injector: Injector, mainRoute: Route): Routes {
     const routes = resolveModuleRoutes(injector, MAIN_MENU_TAB_ROUTES);
 

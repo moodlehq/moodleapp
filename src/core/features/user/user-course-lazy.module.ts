@@ -18,7 +18,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSearchComponentsModule } from '@features/search/components/components.module';
 
-import { CoreUserParticipantsPage } from './pages/participants/participants.page';
+import { CoreUserParticipantsPage } from './pages/participants/participants';
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { CoreScreen } from '@services/screen';
 
@@ -29,7 +29,7 @@ const routes: Routes = [
         children: conditionalRoutes([
             {
                 path: ':userId',
-                loadChildren: () => import('@features/user/pages/profile/profile.module').then(m => m.CoreUserProfilePageModule),
+                loadChildren: () => import('@features/user/user-profile-lazy.module').then(m => m.CoreUserProfileLazyModule),
             },
         ], () => CoreScreen.isTablet),
     },

@@ -12,32 +12,62 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { conditionalRoutes } from '@/app/app-routing.module';
+import { CoreSharedModule } from '@/core/shared.module';
 import { Injector, NgModule } from '@angular/core';
 import { Route, RouterModule, ROUTES, Routes } from '@angular/router';
+import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
+import { CoreSearchComponentsModule } from '@features/search/components/components.module';
+import { CoreTagIndexAreaPage } from '@features/tag/pages/index-area/index-area';
+import { CoreTagIndexPage } from '@features/tag/pages/index/index';
+import { CoreTagSearchPage } from '@features/tag/pages/search/search';
+import { CoreScreen } from '@services/screen';
 import { CoreTagMainMenuHandlerService } from './services/handlers/mainmenu';
 
-export const CoreTagIndexAreaRoute: Route = {
+const indexAreaRoute: Route = {
     path: 'index-area',
-    loadChildren: () =>
-        import('@features/tag/pages/index-area/index-area.page.module').then(m => m.CoreTagIndexAreaPageModule),
+    component: CoreTagIndexAreaPage,
 };
 
+/**
+ * Build module routes.
+ *
+ * @param injector Injector.
+ * @returns Routes.
+ */
 function buildRoutes(injector: Injector): Routes {
-    return [
+    const mobileRoutes: Routes = [
         {
             path: 'index',
-            loadChildren: () => import('@features/tag/pages/index/index.page.module').then(m => m.CoreTagIndexPageModule),
+            component: CoreTagIndexPage,
         },
         {
-            path: 'search',
-            data: {
-                mainMenuTabRoot: CoreTagMainMenuHandlerService.PAGE_NAME,
-            },
-            loadChildren: () => import('@features/tag/pages/search/search.page.module').then(m => m.CoreTagSearchPageModule),
+            ...indexAreaRoute,
+            path: `${indexAreaRoute.path}/index`,
         },
-        CoreTagIndexAreaRoute,
+    ];
+
+    const tabletRoutes: Routes = [
+        {
+            path: 'index',
+            component: CoreTagIndexPage,
+            children: [
+                indexAreaRoute,
+            ],
+        },
+    ];
+
+    return [
+        ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
+        ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
+        {
+            path: 'search',
+            data: { mainMenuTabRoot: CoreTagMainMenuHandlerService.PAGE_NAME },
+            component: CoreTagSearchPage,
+        },
+        indexAreaRoute,
         ...buildTabMainRoutes(injector, {
             redirectTo: 'search',
             pathMatch: 'full',
@@ -46,6 +76,16 @@ function buildRoutes(injector: Injector): Routes {
 }
 
 @NgModule({
+    imports: [
+        CoreSharedModule,
+        CoreSearchComponentsModule,
+        CoreMainMenuComponentsModule,
+    ],
+    declarations: [
+        CoreTagIndexPage,
+        CoreTagSearchPage,
+        CoreTagIndexAreaPage,
+    ],
     exports: [RouterModule],
     providers: [
         {
@@ -56,4 +96,4 @@ function buildRoutes(injector: Injector): Routes {
         },
     ],
 })
-export class CoreTagLazyModule { }
+export class CoreTagLazyModule {}

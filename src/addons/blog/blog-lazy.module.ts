@@ -24,6 +24,12 @@ import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.modu
 import { AddonBlogMainMenuHandlerService } from './services/handlers/mainmenu';
 import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 
+/**
+ * Build module routes.
+ *
+ * @param injector Injector.
+ * @returns Routes.
+ */
 function buildRoutes(injector: Injector): Routes {
     return [
         ...buildTabMainRoutes(injector, {

@@ -19,6 +19,9 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CanLeaveGuard } from '@guards/can-leave';
 import { AddonModH5PActivityComponentsModule } from './components/components.module';
 import { AddonModH5PActivityIndexPage } from './pages/index/index';
+import { AddonModH5PActivityUserAttemptsPage } from '@addons/mod/h5pactivity/pages/user-attempts/user-attempts';
+import { AddonModH5PActivityAttemptResultsPage } from '@addons/mod/h5pactivity/pages/attempt-results/attempt-results';
+import { AddonModH5PActivityUsersAttemptsPage } from '@addons/mod/h5pactivity/pages/users-attempts/users-attempts';
 
 const routes: Routes = [
     {
@@ -28,18 +31,15 @@ const routes: Routes = [
     },
     {
         path: ':courseId/:cmId/userattempts/:userId',
-        loadChildren: () => import('./pages/user-attempts/user-attempts.module')
-            .then( m => m.AddonModH5PActivityUserAttemptsPageModule),
+        component: AddonModH5PActivityUserAttemptsPage,
     },
     {
         path: ':courseId/:cmId/attemptresults/:attemptId',
-        loadChildren: () => import('./pages/attempt-results/attempt-results.module')
-            .then( m => m.AddonModH5PActivityAttemptResultsPageModule),
+        component: AddonModH5PActivityAttemptResultsPage,
     },
     {
         path: ':courseId/:cmId/users',
-        loadChildren: () => import('./pages/users-attempts/users-attempts.module')
-            .then( m => m.AddonModH5PActivityUsersAttemptsPageModule),
+        component: AddonModH5PActivityUsersAttemptsPage,
     },
 ];
 
@@ -51,6 +51,9 @@ const routes: Routes = [
     ],
     declarations: [
         AddonModH5PActivityIndexPage,
+        AddonModH5PActivityUserAttemptsPage,
+        AddonModH5PActivityAttemptResultsPage,
+        AddonModH5PActivityUsersAttemptsPage,
     ],
 })
 export class AddonModH5PActivityLazyModule {}

@@ -17,7 +17,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { CoreCommentsComponentsModule } from '@features/comments/components/components.module';
 import { CoreTagComponentsModule } from '@features/tag/components/components.module';
-import { AddonNotesListPage } from './pages/list/list.page';
+import { AddonNotesListPage } from './pages/list/list';
 
 const routes: Routes = [
     {

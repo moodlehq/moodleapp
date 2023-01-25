@@ -18,7 +18,12 @@ import { RouterModule, Routes } from '@angular/router';
 import { CoreSharedModule } from '@/core/shared.module';
 import { AddonModQuizComponentsModule } from './components/components.module';
 
-import { AddonModQuizIndexPage } from './pages/index/index.page';
+import { AddonModQuizIndexPage } from './pages/index';
+import { AddonModQuizAttemptPage } from '@addons/mod/quiz/pages/attempt/attempt';
+import { CoreQuestionComponentsModule } from '@features/question/components/components.module';
+import { AddonModQuizPlayerPage } from '@addons/mod/quiz/pages/player/player';
+import { CanLeaveGuard } from '@guards/can-leave';
+import { AddonModQuizReviewPage } from '@addons/mod/quiz/pages/review/review';
 
 const routes: Routes = [
     {
@@ -27,15 +32,16 @@ const routes: Routes = [
     },
     {
         path: ':courseId/:cmId/player',
-        loadChildren: () => import('./pages/player/player.module').then( m => m.AddonModQuizPlayerPageModule),
+        component: AddonModQuizPlayerPage,
+        canDeactivate: [CanLeaveGuard],
     },
     {
         path: ':courseId/:cmId/attempt/:attemptId',
-        loadChildren: () => import('./pages/attempt/attempt.module').then( m => m.AddonModQuizAttemptPageModule),
+        component: AddonModQuizAttemptPage,
     },
     {
         path: ':courseId/:cmId/review/:attemptId',
-        loadChildren: () => import('./pages/review/review.module').then( m => m.AddonModQuizReviewPageModule),
+        component: AddonModQuizReviewPage,
     },
 ];
 
@@ -44,9 +50,13 @@ const routes: Routes = [
         RouterModule.forChild(routes),
         CoreSharedModule,
         AddonModQuizComponentsModule,
+        CoreQuestionComponentsModule,
     ],
     declarations: [
         AddonModQuizIndexPage,
+        AddonModQuizAttemptPage,
+        AddonModQuizPlayerPage,
+        AddonModQuizReviewPage,
     ],
 })
 export class AddonModQuizLazyModule {}

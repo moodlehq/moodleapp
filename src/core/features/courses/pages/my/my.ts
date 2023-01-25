@@ -42,7 +42,7 @@ import { CoreCourses } from '../../services/courses';
         useClass: PageLoadsManager,
     }],
 })
-export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy, AsyncComponent {
+export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncComponent {
 
     @ViewChild(CoreBlockComponent) block!: CoreBlockComponent;
 

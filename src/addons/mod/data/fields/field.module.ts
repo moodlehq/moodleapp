@@ -42,4 +42,4 @@ import { AddonModDataFieldUrlModule } from './url/url.module';
         AddonModDataFieldUrlModule,
     ],
 })
-export class AddonModDataFieldModule { }
+export class AddonModDataFieldModule {}

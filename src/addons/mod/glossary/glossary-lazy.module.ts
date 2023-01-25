@@ -28,11 +28,11 @@ const mobileRoutes: Routes = [
     },
     {
         path: ':courseId/:cmId/entry/:entryId',
-        loadChildren: () => import('./pages/entry/entry.module').then(m => m.AddonModGlossaryEntryPageModule),
+        loadChildren: () => import('./glossary-entry-lazy.module').then(m => m.AddonModGlossaryEntryLazyModule),
     },
     {
         path: ':courseId/:cmId/edit/:timecreated',
-        loadChildren: () => import('./pages/edit/edit.module').then(m => m.AddonModGlossaryEditPageModule),
+        loadChildren: () => import('./glossary-edit-lazy.module').then(m => m.AddonModGlossaryEditLazyModule),
     },
 ];
 
@@ -43,11 +43,11 @@ const tabletRoutes: Routes = [
         children: [
             {
                 path: 'entry/:entryId',
-                loadChildren: () => import('./pages/entry/entry.module').then(m => m.AddonModGlossaryEntryPageModule),
+                loadChildren: () => import('./glossary-entry-lazy.module').then(m => m.AddonModGlossaryEntryLazyModule),
             },
             {
                 path: 'edit/:timecreated',
-                loadChildren: () => import('./pages/edit/edit.module').then(m => m.AddonModGlossaryEditPageModule),
+                loadChildren: () => import('./glossary-edit-lazy.module').then(m => m.AddonModGlossaryEditLazyModule),
             },
         ],
     },
