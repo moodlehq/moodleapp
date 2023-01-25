@@ -20,7 +20,7 @@ import { CoreScreen } from '@services/screen';
 import { CoreSharedModule } from '@/core/shared.module';
 
 import { AddonModForumComponentsModule } from './components/components.module';
-import { AddonModForumIndexPage } from './pages/index/index.page';
+import { AddonModForumIndexPage } from './pages/index';
 
 const mobileRoutes: Routes = [
     {
@@ -29,15 +29,15 @@ const mobileRoutes: Routes = [
     },
     {
         path: ':courseId/:cmId/new/:timeCreated',
-        loadChildren: () => import('./pages/new-discussion/new-discussion.module').then(m => m.AddonForumNewDiscussionPageModule),
+        loadChildren: () => import('./forum-new-discussion-lazy.module').then(m => m.AddonForumNewDiscussionLazyModule),
     },
     {
         path: ':courseId/:cmId/:discussionId',
-        loadChildren: () => import('./pages/discussion/discussion.module').then(m => m.AddonForumDiscussionPageModule),
+        loadChildren: () => import('./forum-discussion-lazy.module').then(m => m.AddonForumDiscussionLazyModule),
     },
     {
         path: 'discussion/:discussionId', // Only for discussion link handling.
-        loadChildren: () => import('./pages/discussion/discussion.module').then(m => m.AddonForumDiscussionPageModule),
+        loadChildren: () => import('./forum-discussion-lazy.module').then(m => m.AddonForumDiscussionLazyModule),
     },
 ];
 
@@ -48,13 +48,11 @@ const tabletRoutes: Routes = [
         children: [
             {
                 path: 'new/:timeCreated',
-                loadChildren: () => import('./pages/new-discussion/new-discussion.module')
-                    .then(m => m.AddonForumNewDiscussionPageModule),
+                loadChildren: () => import('./forum-new-discussion-lazy.module').then(m => m.AddonForumNewDiscussionLazyModule),
             },
             {
                 path: ':discussionId',
-                loadChildren: () => import('./pages/discussion/discussion.module').then(m => m.AddonForumDiscussionPageModule),
-
+                loadChildren: () => import('./forum-discussion-lazy.module').then(m => m.AddonForumDiscussionLazyModule),
             },
         ],
     },

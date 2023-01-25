@@ -27,4 +27,4 @@ import { CoreCourseFormatWeeksModule } from './weeks/weeks.module';
         CoreCourseFormatWeeksModule,
     ],
 })
-export class CoreCourseFormatModule { }
+export class CoreCourseFormatModule {}

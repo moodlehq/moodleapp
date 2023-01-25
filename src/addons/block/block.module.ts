@@ -73,4 +73,4 @@ import { AddonBlockTimelineModule } from './timeline/timeline.module';
         AddonBlockTimelineModule,
     ],
 })
-export class AddonBlockModule { }
+export class AddonBlockModule {}

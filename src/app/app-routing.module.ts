@@ -97,6 +97,12 @@ function buildConditionalUrlMatcher(pathOrMatcher: string | UrlMatcher, conditio
     };
 }
 
+/**
+ * Build url matcher using a regular expression.
+ *
+ * @param regexp Regular expression.
+ * @returns Url matcher.
+ */
 export function buildRegExpUrlMatcher(regexp: RegExp): UrlMatcher {
     return (segments: UrlSegment[]): UrlMatchResult | null => {
         // Ignore empty paths.
@@ -142,10 +148,15 @@ export function conditionalRoutes(routes: Routes, condition: () => boolean): Rou
     return routes.map(route => {
         // We need to remove the path from the route because Angular doesn't call the matcher for empty paths.
         const { path, matcher, ...newRoute } = route;
+        const matcherOrPath = matcher ?? path;
+
+        if (matcherOrPath === undefined) {
+            throw new Error('Route defined without matcher nor path');
+        }
 
         return {
             ...newRoute,
-            matcher: buildConditionalUrlMatcher(matcher || path || '', condition),
+            matcher: buildConditionalUrlMatcher(matcherOrPath, condition),
         };
     });
 }

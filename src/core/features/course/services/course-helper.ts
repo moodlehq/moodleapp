@@ -71,7 +71,7 @@ import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CoreSiteHomeHomeHandlerService } from '@features/sitehome/services/handlers/sitehome-home';
 import { CoreStatusWithWarningsWSResponse } from '@services/ws';
 import { CoreCourseWithImageAndColor } from '@features/courses/services/courses-helper';
-import { CoreCourseSummaryPage } from '../pages/course-summary/course-summary';
+import { CoreCourseSummaryPage } from '../pages/course-summary/course-summary.page';
 import { CoreRemindersPushNotificationData } from '@features/reminders/services/reminders';
 import { CoreLocalNotifications } from '@services/local-notifications';
 
@@ -2043,7 +2043,7 @@ export class CoreCourseHelperProvider {
      * @returns Course summary page module.
      */
     async getCourseSummaryRouteModule(): Promise<unknown> {
-        return import('../pages/course-summary/course-summary.module').then(m => m.CoreCourseSummaryPageModule);
+        return import('../course-summary-lazy.module').then(m => m.CoreCourseSummaryLazyModule);
     }
 
     /**

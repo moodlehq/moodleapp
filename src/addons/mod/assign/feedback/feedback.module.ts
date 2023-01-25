@@ -24,4 +24,4 @@ import { AddonModAssignFeedbackFileModule } from './file/file.module';
         AddonModAssignFeedbackFileModule,
     ],
 })
-export class AddonModAssignFeedbackModule { }
+export class AddonModAssignFeedbackModule {}

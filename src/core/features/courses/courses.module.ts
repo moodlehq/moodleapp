@@ -19,7 +19,7 @@ import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 
-import { CoreMainMenuHomeRoutingModule } from '@features/mainmenu/pages/home/home-routing.module';
+import { CoreMainMenuHomeRoutingModule } from '@features/mainmenu/mainmenu-home-routing.module';
 import { CoreMainMenuHomeDelegate } from '@features/mainmenu/services/home-delegate';
 import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
@@ -50,7 +50,7 @@ export const CORE_COURSES_SERVICES: Type<unknown>[] = [
 const mainMenuHomeChildrenRoutes: Routes = [
     {
         path: CoreDashboardHomeHandlerService.PAGE_NAME,
-        loadChildren: () => import('./pages/dashboard/dashboard.module').then(m => m.CoreCoursesDashboardPageModule),
+        loadChildren: () => import('./courses-dashboard-lazy.module').then(m => m.CoreCoursesDashboardLazyModule),
     },
 ];
 

@@ -415,7 +415,7 @@ export class CoreCoursesHelperProvider {
      * @returns My courses page module.
      */
     async getMyRouteModule(): Promise<unknown> {
-        return import('../pages/my/my.module').then(m => m.CoreCoursesMyCoursesPageModule);
+        return import('../courses-my-lazy.module').then(m => m.CoreCoursesMyLazyModule);
     }
 
 }

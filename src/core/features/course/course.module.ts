@@ -17,13 +17,10 @@ import { Routes } from '@angular/router';
 
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { CoreCourseComponentsModule } from './components/components.module';
-import { CoreCourseDirectivesModule } from './directives/directives.module';
-import { CoreCourseFormatModule } from './format/formats.module';
+import { CoreCourseFormatModule } from '@features/course/format/formats.module';
 import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/database/course';
 import { SITE_SCHEMA as LOG_SITE_SCHEMA } from './services/database/log';
 import { SITE_SCHEMA as PREFETCH_SITE_SCHEMA } from './services/database/module-prefetch';
-import { CoreCourseIndexRoutingModule } from './pages/index/index-routing.module';
 import { CoreCourseModulePrefetchDelegate, CoreCourseModulePrefetchDelegateService } from './services/module-prefetch-delegate';
 import { CoreCronDelegate } from '@services/cron';
 import { CoreCourseLogCronHandler } from './services/handlers/log-cron';
@@ -41,6 +38,7 @@ import { CoreCourseOfflineProvider } from './services/course-offline';
 import { CoreCourseSyncProvider } from './services/sync';
 import { COURSE_INDEX_PATH } from '@features/course/course-lazy.module';
 import { buildRegExpUrlMatcher } from '@/app/app-routing.module';
+import { CoreCourseIndexRoutingModule } from '@features/course/course-routing.module';
 
 export const CORE_COURSE_SERVICES: Type<unknown>[] = [
     CoreCourseProvider,
@@ -68,7 +66,7 @@ const routes: Routes = [
 const courseIndexRoutes: Routes = [
     {
         path: CONTENTS_PAGE_NAME,
-        loadChildren: () => import('./pages/contents/contents.module').then(m => m.CoreCourseContentsPageModule),
+        loadChildren: () => import('@features/course/course-contents-lazy.module').then(m => m.CoreCourseContentsLazyModule),
     },
 ];
 
@@ -77,8 +75,6 @@ const courseIndexRoutes: Routes = [
         CoreCourseIndexRoutingModule.forChild({ children: courseIndexRoutes }),
         CoreMainMenuTabRoutingModule.forChild(routes),
         CoreCourseFormatModule,
-        CoreCourseComponentsModule,
-        CoreCourseDirectivesModule,
     ],
     exports: [CoreCourseIndexRoutingModule],
     providers: [

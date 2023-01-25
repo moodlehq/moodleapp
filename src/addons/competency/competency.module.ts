@@ -29,7 +29,7 @@ import { AddonCompetencyUserHandler } from './services/handlers/user';
 import { Routes } from '@angular/router';
 import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { CoreCourseIndexRoutingModule } from '@features/course/pages/index/index-routing.module';
+import { CoreCourseIndexRoutingModule } from '@features/course/course-routing.module';
 import { COURSE_PAGE_NAME } from '@features/course/course.module';
 import { PARTICIPANTS_PAGE_NAME } from '@features/user/user.module';
 

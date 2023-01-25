@@ -12,17 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreSharedModule } from '@/core/shared.module';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { CoreViewerIframePage } from '@features/viewer/pages/iframe/iframe';
 
 const routes: Routes = [
     {
         path: 'iframe',
-        loadChildren: () => import('./pages/iframe/iframe.module').then( m => m.CoreViewerIframePageModule),
+        component: CoreViewerIframePage,
     },
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(routes)],
+    imports: [
+        RouterModule.forChild(routes),
+        CoreSharedModule,
+    ],
+    declarations: [
+        CoreViewerIframePage,
+    ],
 })
 export class CoreViewerLazyModule {}

@@ -19,8 +19,8 @@ import { conditionalRoutes } from '@/app/app-routing.module';
 import { CoreScreen } from '@services/screen';
 import { CoreSharedModule } from '@/core/shared.module';
 
-import { AddonBadgesIssuedBadgePage } from './pages/issued-badge/issued-badge.page';
-import { AddonBadgesUserBadgesPage } from './pages/user-badges/user-badges.page';
+import { AddonBadgesIssuedBadgePage } from './pages/issued-badge/issued-badge';
+import { AddonBadgesUserBadgesPage } from './pages/user-badges/user-badges';
 
 const mobileRoutes: Routes = [
     {

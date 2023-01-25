@@ -20,4 +20,4 @@ import { AddonReportInsightsModule } from './insights/insights.module';
         AddonReportInsightsModule,
     ],
 })
-export class AddonReportModule { }
+export class AddonReportModule {}

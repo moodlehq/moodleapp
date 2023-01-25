@@ -12,20 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreSharedModule } from '@/core/shared.module';
+import { AddonPrivateFilesIndexPage } from '@addons/privatefiles/pages/index';
 import { Injector, NgModule } from '@angular/core';
 import { RouterModule, ROUTES, Routes } from '@angular/router';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
 
+/**
+ * Build module routes.
+ *
+ * @param injector Injector.
+ * @returns Routes.
+ */
 function buildRoutes(injector: Injector): Routes {
     return [
         {
             path: 'root',
-            loadChildren: () => import('./pages/index/index.module').then(m => m.AddonPrivateFilesIndexPageModule),
+            component: AddonPrivateFilesIndexPage,
         },
         {
             path: ':hash',
-            loadChildren: () => import('./pages/index/index.module').then(m => m.AddonPrivateFilesIndexPageModule),
+            component: AddonPrivateFilesIndexPage,
         },
         ...buildTabMainRoutes(injector, {
             redirectTo: 'root',
@@ -35,6 +43,12 @@ function buildRoutes(injector: Injector): Routes {
 }
 
 @NgModule({
+    imports: [
+        CoreSharedModule,
+    ],
+    declarations: [
+        AddonPrivateFilesIndexPage,
+    ],
     exports: [RouterModule],
     providers: [
         {

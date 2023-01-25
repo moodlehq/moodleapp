@@ -51,4 +51,4 @@ import { AddonQtypeTrueFalseModule } from './truefalse/truefalse.module';
         AddonQtypeTrueFalseModule,
     ],
 })
-export class AddonQtypeModule { }
+export class AddonQtypeModule {}

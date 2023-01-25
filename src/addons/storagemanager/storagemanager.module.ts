@@ -16,7 +16,7 @@ import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { CoreSitePreferencesRoutingModule } from '@features/settings/pages/site/site-routing';
+import { CoreSitePreferencesRoutingModule } from '@features/settings/settings-site-routing.module';
 import { CoreSettingsDelegate } from '@features/settings/services/settings-delegate';
 import { AddonStorageManagerSettingsHandler } from './services/handlers/settings';
 

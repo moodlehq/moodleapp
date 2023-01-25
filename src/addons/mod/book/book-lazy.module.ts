@@ -16,7 +16,9 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CoreSharedModule } from '@/core/shared.module';
 import { AddonModBookComponentsModule } from './components/components.module';
-import { AddonModBookIndexPage } from './pages/index/index.page';
+import { AddonModBookIndexPage } from './pages/index';
+import { CoreTagComponentsModule } from '@features/tag/components/components.module';
+import { AddonModBookContentsPage } from '@addons/mod/book/pages/contents/contents';
 
 const routes: Routes = [
     {
@@ -25,7 +27,7 @@ const routes: Routes = [
     },
     {
         path: ':courseId/:cmId/contents',
-        loadChildren: () => import('./pages/contents/contents.module').then(m => m.AddonModBookContentsPageModule),
+        component: AddonModBookContentsPage,
     },
 ];
 
@@ -34,9 +36,11 @@ const routes: Routes = [
         RouterModule.forChild(routes),
         CoreSharedModule,
         AddonModBookComponentsModule,
+        CoreTagComponentsModule,
     ],
     declarations: [
         AddonModBookIndexPage,
+        AddonModBookContentsPage,
     ],
 })
 export class AddonModBookLazyModule {}

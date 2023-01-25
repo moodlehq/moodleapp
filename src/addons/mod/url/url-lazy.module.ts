@@ -16,7 +16,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AddonModUrlComponentsModule } from './components/components.module';
-import { AddonModUrlIndexPage } from './pages/index/index.page';
+import { AddonModUrlIndexPage } from './pages/index';
 
 const routes: Routes = [
     {

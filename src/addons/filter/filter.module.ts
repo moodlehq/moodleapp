@@ -47,4 +47,4 @@ import { AddonFilterUrlToLinkModule } from './urltolink/urltolink.module';
         AddonFilterUrlToLinkModule,
     ],
 })
-export class AddonFilterModule { }
+export class AddonFilterModule {}

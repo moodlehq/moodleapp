@@ -17,7 +17,8 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { AddonModImscpComponentsModule } from './components/components.module';
-import { AddonModImscpIndexPage } from './pages/index/index.page';
+import { AddonModImscpIndexPage } from './pages/index/index';
+import { AddonModImscpViewPage } from '@addons/mod/imscp/pages/view/view';
 
 const routes: Routes = [
     {
@@ -26,7 +27,7 @@ const routes: Routes = [
     },
     {
         path: ':courseId/:cmId/view',
-        loadChildren: () => import('./pages/view/view.module').then(m => m.AddonModImscpViewPageModule),
+        component: AddonModImscpViewPage,
     },
 ];
 
@@ -38,6 +39,7 @@ const routes: Routes = [
     ],
     declarations: [
         AddonModImscpIndexPage,
+        AddonModImscpViewPage,
     ],
 })
 export class AddonModImscpLazyModule {}
