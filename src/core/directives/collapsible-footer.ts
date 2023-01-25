@@ -17,7 +17,7 @@ import { ScrollDetail } from '@ionic/core';
 import { IonContent } from '@ionic/angular';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreMath } from '@singletons/math';
-import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreFormatTextDirective } from './format-text';
 import { CoreEventObserver } from '@singletons/events';
 import { CoreLoadingComponent } from '@components/loading/loading';
@@ -203,7 +203,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
      * Wait until all <core-format-text> children inside the element are done rendering.
      */
     protected async waitFormatTextsRendered(): Promise<void> {
-        await CoreComponentsRegistry.waitComponentsReady(this.element, 'core-format-text', CoreFormatTextDirective);
+        await CoreDirectivesRegistry.waitDirectivesReady(this.element, 'core-format-text', CoreFormatTextDirective);
     }
 
     /**
@@ -249,8 +249,8 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
         const scrollElement = await this.ionContent.getScrollElement();
 
         await Promise.all([
-            await CoreComponentsRegistry.waitComponentsReady(scrollElement, 'core-loading', CoreLoadingComponent),
-            await CoreComponentsRegistry.waitComponentsReady(this.element, 'core-loading', CoreLoadingComponent),
+            await CoreDirectivesRegistry.waitDirectivesReady(scrollElement, 'core-loading', CoreLoadingComponent),
+            await CoreDirectivesRegistry.waitDirectivesReady(this.element, 'core-loading', CoreLoadingComponent),
         ]);
     }
 

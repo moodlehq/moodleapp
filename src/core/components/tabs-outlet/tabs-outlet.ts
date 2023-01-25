@@ -31,7 +31,7 @@ import { CoreNavBarButtonsComponent } from '../navbar-buttons/navbar-buttons';
 import { StackEvent } from '@ionic/angular/directives/navigation/stack-utils';
 import { CoreNavigator } from '@services/navigator';
 import { CoreTabBase, CoreTabsBaseComponent } from '@classes/tabs';
-import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 
 /**
  * This component displays some top scrollable tabs that will autohide on vertical scroll.
@@ -207,7 +207,7 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
     protected showHideNavBarButtons(activatedPageName: string): void {
         const elements = this.ionTabs.outlet.nativeEl.querySelectorAll('core-navbar-buttons');
         elements.forEach((element) => {
-            const instance = CoreComponentsRegistry.resolve(element, CoreNavBarButtonsComponent);
+            const instance = CoreDirectivesRegistry.resolve(element, CoreNavBarButtonsComponent);
 
             if (instance) {
                 const pagetagName = element.closest('.ion-page')?.tagName;

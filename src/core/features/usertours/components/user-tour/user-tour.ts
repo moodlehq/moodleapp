@@ -30,7 +30,7 @@ import { CoreUserToursPopoverLayout } from '@features/usertours/classes/popover-
 import { CoreUserTours, CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/services/user-tours';
 import { CoreDomUtils } from '@services/utils/dom';
 import { AngularFrameworkDelegate } from '@singletons';
-import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreDom } from '@singletons/dom';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreMainMenuProvider } from '@features/mainmenu/services/mainmenu';
@@ -84,7 +84,7 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
     constructor({ nativeElement: element }: ElementRef<HTMLElement>) {
         this.element = element;
 
-        CoreComponentsRegistry.register(element, this);
+        CoreDirectivesRegistry.register(element, this);
 
         this.element.addEventListener('click', (event) =>
             this.dismissOnBackOrBackdrop(event.target as HTMLElement));

@@ -14,7 +14,7 @@
 
 import { AddonBlockMyOverviewComponent } from '@addons/block/myoverview/components/myoverview/myoverview';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { AsyncComponent } from '@classes/async-component';
+import { AsyncDirective } from '@classes/async-directive';
 import { PageLoadsManager } from '@classes/page-loads-manager';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreBlockComponent } from '@features/block/components/block/block';
@@ -42,7 +42,7 @@ import { CoreCourses } from '../../services/courses';
         useClass: PageLoadsManager,
     }],
 })
-export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy, AsyncComponent {
+export class CoreCoursesMyCoursesPage implements OnInit, OnDestroy, AsyncDirective {
 
     @ViewChild(CoreBlockComponent) block!: CoreBlockComponent;
 

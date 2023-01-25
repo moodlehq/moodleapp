@@ -21,7 +21,7 @@ import { CoreCourseBlock } from '../../course/services/course';
 import { Params } from '@angular/router';
 import { ContextLevel } from '@/core/constants';
 import { CoreNavigationOptions } from '@services/navigator';
-import { AsyncComponent } from '@classes/async-component';
+import { AsyncDirective } from '@classes/async-directive';
 import { CorePromisedValue } from '@classes/promised-value';
 
 /**
@@ -30,7 +30,7 @@ import { CorePromisedValue } from '@classes/promised-value';
 @Component({
     template: '',
 })
-export abstract class CoreBlockBaseComponent implements OnInit, ICoreBlockComponent, AsyncComponent {
+export abstract class CoreBlockBaseComponent implements OnInit, ICoreBlockComponent, AsyncDirective {
 
     @Input() title!: string; // The block title.
     @Input() block!: CoreCourseBlock; // The block to render.

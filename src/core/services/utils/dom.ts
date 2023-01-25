@@ -51,7 +51,7 @@ import { CoreSites } from '@services/sites';
 import { NavigationStart } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
-import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreDom } from '@singletons/dom';
 import { CoreNetwork } from '@services/network';
 import { CoreSiteError } from '@classes/errors/siteerror';
@@ -665,10 +665,10 @@ export class CoreDomUtilsProvider {
      *
      * @param element The root element of the component/directive.
      * @returns The instance, undefined if not found.
-     * @deprecated since 4.0.0. Use CoreComponentsRegistry instead.
+     * @deprecated since 4.0.0. Use CoreDirectivesRegistry instead.
      */
     getInstanceByElement<T = unknown>(element: Element): T | undefined {
-        return CoreComponentsRegistry.resolve<T>(element) ?? undefined;
+        return CoreDirectivesRegistry.resolve<T>(element) ?? undefined;
     }
 
     /**
@@ -1718,10 +1718,10 @@ export class CoreDomUtilsProvider {
      *
      * @param element The root element of the component/directive.
      * @param instance The instance to store.
-     * @deprecated since 4.0.0. Use CoreComponentsRegistry instead.
+     * @deprecated since 4.0.0. Use CoreDirectivesRegistry instead.
      */
     storeInstanceByElement(element: Element, instance: unknown): void {
-        CoreComponentsRegistry.register(element, instance);
+        CoreDirectivesRegistry.register(element, instance);
     }
 
     /**

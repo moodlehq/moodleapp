@@ -37,8 +37,8 @@ import { CoreDom } from '@singletons/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreError } from './errors/error';
 import { CorePromisedValue } from './promised-value';
-import { AsyncComponent } from './async-component';
-import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { AsyncDirective } from './async-directive';
+import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CorePlatform } from '@services/platform';
 
 /**
@@ -47,7 +47,7 @@ import { CorePlatform } from '@services/platform';
 @Component({
     template: '',
 })
-export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, AfterViewInit, OnChanges, OnDestroy, AsyncComponent {
+export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, AfterViewInit, OnChanges, OnDestroy, AsyncDirective {
 
     // Minimum tab's width.
     protected static readonly MIN_TAB_WIDTH = 107;
@@ -99,7 +99,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements OnInit, Aft
 
         this.tabAction = new CoreTabsRoleTab(this);
 
-        CoreComponentsRegistry.register(element.nativeElement, this);
+        CoreDirectivesRegistry.register(element.nativeElement, this);
     }
 
     /**
