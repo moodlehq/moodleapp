@@ -4,10 +4,12 @@ Moodle App
 This is the primary repository of source code for the official mobile app for Moodle.
 
 * [User documentation](https://docs.moodle.org/en/Moodle_app)
-* [Developer documentation](http://docs.moodle.org/dev/Moodle_App)
-* [Development environment setup](https://docs.moodle.org/dev/Setting_up_your_development_environment_for_the_Moodle_App)
+* [Developer documentation](https://moodledev.io/general/app)
+* [Development environment setup](https://moodledev.io/general/app/development/setup)
 * [Bug Tracker](https://tracker.moodle.org/browse/MOBILE)
-* [Release Notes](https://docs.moodle.org/dev/Moodle_App_Release_Notes)
+* [Release Notes](https://moodledev.io/general/app_releases)
+
+This project is tested with BrowserStack.
 
 License
 -------
