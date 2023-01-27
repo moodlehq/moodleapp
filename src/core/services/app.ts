@@ -267,6 +267,24 @@ export class CoreAppProvider {
     }
 
     /**
+     * Checks if the app is running in an iPad device.
+     *
+     * @returns Whether the app is running in an iPad device.
+     */
+    isIPad(): boolean {
+        return CoreApp.isIOS() && CorePlatform.is('ipad');
+    }
+
+    /**
+     * Checks if the app is running in an iPhone device.
+     *
+     * @returns Whether the app is running in an iPhone device.
+     */
+    isIPhone(): boolean {
+        return CoreApp.isIOS() && CorePlatform.is('iphone');
+    }
+
+    /**
      * Check if the keyboard is closing.
      *
      * @returns Whether keyboard is closing (animating).

@@ -13,11 +13,17 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreExternalContentDirective } from '@directives/external-content';
 
 import { CoreFilterDefaultHandler } from '@features/filter/services/handlers/default-filter';
+import { CoreLang } from '@services/lang';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlUtils } from '@services/utils/url';
 import { makeSingleton } from '@singletons';
+import { CoreDirectivesRegistry } from '@singletons/directives-registry';
+import { CoreDom } from '@singletons/dom';
+import videojs from 'video.js';
+import { VideoJSOptions } from '../../classes/videojs-ogvjs';
 
 /**
  * Handler to support the Multimedia filter.
@@ -48,6 +54,53 @@ export class AddonFilterMediaPluginHandlerService extends CoreFilterDefaultHandl
     }
 
     /**
+     * @inheritdoc
+     */
+    handleHtml(container: HTMLElement): void {
+        const mediaElements = Array.from(container.querySelectorAll<HTMLVideoElement | HTMLAudioElement>('video, audio'));
+
+        mediaElements.forEach((mediaElement) => {
+            if (CoreDom.mediaUsesJavascriptPlayer(mediaElement)) {
+                this.useVideoJS(mediaElement);
+            } else {
+                // Remove the VideoJS classes and data if present.
+                mediaElement.classList.remove('video-js');
+                mediaElement.removeAttribute('data-setup');
+                mediaElement.removeAttribute('data-setup-lazy');
+            }
+        });
+    }
+
+    /**
+     * Use video JS in a certain video or audio.
+     *
+     * @param mediaElement Media element.
+     */
+    protected async useVideoJS(mediaElement: HTMLVideoElement | HTMLAudioElement): Promise<void> {
+        const lang = await CoreLang.getCurrentLanguage();
+
+        // Wait for external-content to finish in the element and its sources.
+        await Promise.all([
+            CoreDirectivesRegistry.waitDirectivesReady(mediaElement, undefined, CoreExternalContentDirective),
+            CoreDirectivesRegistry.waitDirectivesReady(mediaElement, 'source', CoreExternalContentDirective),
+        ]);
+
+        const dataSetupString = mediaElement.getAttribute('data-setup') || mediaElement.getAttribute('data-setup-lazy') || '{}';
+        const data = CoreTextUtils.parseJSON<VideoJSOptions>(dataSetupString, {});
+
+        videojs(mediaElement, {
+            controls: true,
+            techOrder: ['OgvJS'],
+            language: lang,
+            fluid: true,
+            controlBar: {
+                fullscreenToggle: false,
+            },
+            aspectRatio: data.aspectRatio,
+        });
+    }
+
+    /**
      * Treat video filters. Currently only treating youtube video using video JS.
      *
      * @param video Video element.
@@ -59,7 +112,7 @@ export class AddonFilterMediaPluginHandlerService extends CoreFilterDefaultHandl
         }
 
         const dataSetupString = video.getAttribute('data-setup') || video.getAttribute('data-setup-lazy') || '{}';
-        const data = <VideoDataSetup> CoreTextUtils.parseJSON(dataSetupString, {});
+        const data = CoreTextUtils.parseJSON<VideoJSOptions>(dataSetupString, {});
         const youtubeUrl = data.techOrder?.[0] == 'youtube' && CoreUrlUtils.getYoutubeEmbedUrl(data.sources?.[0]?.src);
 
         if (!youtubeUrl) {
@@ -81,10 +134,3 @@ export class AddonFilterMediaPluginHandlerService extends CoreFilterDefaultHandl
 }
 
 export const AddonFilterMediaPluginHandler = makeSingleton(AddonFilterMediaPluginHandlerService);
-
-type VideoDataSetup = {
-    techOrder?: string[];
-    sources?: {
-        src?: string;
-    }[];
-};

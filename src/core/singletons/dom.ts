@@ -13,7 +13,9 @@
 // limitations under the License.
 
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
+import { CoreApp } from '@services/app';
 import { CoreDomUtils } from '@services/utils/dom';
+import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver } from '@singletons/events';
 
@@ -567,6 +569,74 @@ export class CoreDom {
         }
     }
 
+    /**
+     * Get all source URLs and types for a video or audio.
+     *
+     * @param mediaElement Audio or video element.
+     * @returns List of sources.
+     */
+    static getMediaSources(mediaElement: HTMLVideoElement | HTMLAudioElement): CoreMediaSource[] {
+        const sources = Array.from(mediaElement.querySelectorAll('source')).map(source => ({
+            src: source.src || source.getAttribute('target-src') || '',
+            type: source.type,
+        }));
+
+        if (mediaElement.src) {
+            sources.push({
+                src: mediaElement.src,
+                type: '',
+            });
+        }
+
+        return sources;
+    }
+
+    /**
+     * Check if a source needs to be converted to be able to reproduce it.
+     *
+     * @param source Source.
+     * @returns Whether needs conversion.
+     */
+    static sourceNeedsConversion(source: CoreMediaSource): boolean {
+        if (!CoreApp.isIOS()) {
+            return false;
+        }
+
+        let extension = source.type ? CoreMimetypeUtils.getExtension(source.type) : undefined;
+        if (!extension) {
+            extension = CoreMimetypeUtils.guessExtensionFromUrl(source.src);
+        }
+
+        return !!extension && ['ogv', 'webm', 'oga', 'ogg'].includes(extension);
+    }
+
+    /**
+     * Check if JS player should be used for a certain source.
+     *
+     * @param source Source.
+     * @returns Whether JS player should be used.
+     */
+    static sourceUsesJavascriptPlayer(source: CoreMediaSource): boolean {
+        // For now, only use JS player if the source needs to be converted.
+        return CoreDom.sourceNeedsConversion(source);
+    }
+
+    /**
+     * Check if JS player should be used for a certain audio or video.
+     *
+     * @param mediaElement Media element.
+     * @returns Whether JS player should be used.
+     */
+    static mediaUsesJavascriptPlayer(mediaElement: HTMLVideoElement | HTMLAudioElement): boolean {
+        if (!CoreApp.isIOS()) {
+            return false;
+        }
+
+        const sources = CoreDom.getMediaSources(mediaElement);
+
+        return sources.some(source => CoreDom.sourceUsesJavascriptPlayer(source));
+    }
+
 }
 
 /**
@@ -584,4 +654,12 @@ export type CoreScrollOptions = {
     duration?: number;
     addYAxis?: number;
     addXAxis?: number;
+};
+
+/**
+ * Source of a media element.
+ */
+export type CoreMediaSource = {
+    src: string;
+    type?: string;
 };

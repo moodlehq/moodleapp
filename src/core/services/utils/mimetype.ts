@@ -25,6 +25,7 @@ import { CoreUtils } from '@services/utils/utils';
 import extToMime from '@/assets/exttomime.json';
 import mimeToExt from '@/assets/mimetoext.json';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
+import { CoreUrl } from '@singletons/url';
 
 interface MimeTypeInfo {
     type: string;
@@ -302,18 +303,13 @@ export class CoreMimetypeUtilsProvider {
      * @returns The lowercased extension without the dot, or undefined.
      */
     guessExtensionFromUrl(fileUrl: string): string | undefined {
-        const split = fileUrl.split('.');
+        const split = CoreUrl.removeUrlAnchor(fileUrl).split('.');
         let extension: string | undefined;
 
         if (split.length > 1) {
             let candidate = split[split.length - 1].toLowerCase();
             // Remove params if any.
-            let position = candidate.indexOf('?');
-            if (position > -1) {
-                candidate = candidate.substring(0, position);
-            }
-            // Remove anchor if any.
-            position = candidate.indexOf('#');
+            const position = candidate.indexOf('?');
             if (position > -1) {
                 candidate = candidate.substring(0, position);
             }
