@@ -22,6 +22,7 @@ import { CoreUrlUtils } from '@services/utils/url';
 import { makeSingleton } from '@singletons';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreDom } from '@singletons/dom';
+import { CoreEvents } from '@singletons/events';
 import videojs from 'video.js';
 import { VideoJSOptions } from '../../classes/videojs-ogvjs';
 
@@ -88,7 +89,7 @@ export class AddonFilterMediaPluginHandlerService extends CoreFilterDefaultHandl
         const dataSetupString = mediaElement.getAttribute('data-setup') || mediaElement.getAttribute('data-setup-lazy') || '{}';
         const data = CoreTextUtils.parseJSON<VideoJSOptions>(dataSetupString, {});
 
-        videojs(mediaElement, {
+        const player = videojs(mediaElement, {
             controls: true,
             techOrder: ['OgvJS'],
             language: lang,
@@ -98,6 +99,13 @@ export class AddonFilterMediaPluginHandlerService extends CoreFilterDefaultHandl
             },
             aspectRatio: data.aspectRatio,
         });
+
+        CoreEvents.trigger(CoreEvents.JS_PLAYER_CREATED, {
+            id: mediaElement.id,
+            element: mediaElement,
+            player,
+        });
+
     }
 
     /**

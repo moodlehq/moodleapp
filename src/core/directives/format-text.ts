@@ -149,6 +149,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
     ngOnDestroy(): void {
         this.domElementPromise?.cancel();
         this.domPromises.forEach((promise) => { promise.cancel();});
+        this.elementControllers.forEach(controller => controller.destroy());
     }
 
     /**
@@ -365,6 +366,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         // Move the children to the current element to be able to calculate the height.
         CoreDomUtils.moveChildren(result.div, this.element);
 
+        this.elementControllers.forEach(controller => controller.destroy());
         this.elementControllers = result.elementControllers;
 
         await CoreUtils.nextTick();

@@ -18,6 +18,7 @@
 export abstract class ElementController {
 
     protected enabled: boolean;
+    protected destroyed = false;
 
     constructor(enabled: boolean) {
         this.enabled = enabled;
@@ -50,6 +51,19 @@ export abstract class ElementController {
     }
 
     /**
+     * Destroy the element.
+     */
+    destroy(): void {
+        if (this.destroyed) {
+            return;
+        }
+
+        this.destroyed = true;
+
+        this.onDestroy();
+    }
+
+    /**
      * Update underlying element to enable interactivity.
      */
     abstract onEnabled(): void;
@@ -58,5 +72,12 @@ export abstract class ElementController {
      * Update underlying element to disable interactivity.
      */
     abstract onDisabled(): void;
+
+    /**
+     * Destroy/dispose pertinent data.
+     */
+    onDestroy(): void {
+        // By default, nothing to destroy.
+    }
 
 }
