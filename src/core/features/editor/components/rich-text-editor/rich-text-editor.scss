@@ -149,8 +149,9 @@
                     background-color: var(--toobar-background);
                 }
 
-                &.toolbar-arrow-hidden {
-                    opacity: 0;
+                &[disabled],
+                &:disabled {
+                    opacity: .5;
                 }
             }
         }
