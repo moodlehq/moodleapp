@@ -519,7 +519,7 @@ export class CoreDom {
         element.addEventListener('click', (event) => callback(event));
 
         element.addEventListener('keydown', (event) => {
-            if ((event.key == ' ' || event.key == 'Enter')) {
+            if (event.key === ' ' || event.key === 'Enter') {
                 event.preventDefault();
                 event.stopPropagation();
             }
