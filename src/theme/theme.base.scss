@@ -1581,7 +1581,7 @@ ion-item.item {
     outline: none;
 }
 
-textarea, button, select, input, a {
+textarea, button, select, input, a, .clickable {
     &:focus {
         @include core-focus-style();
         outline: none;
