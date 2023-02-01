@@ -897,12 +897,16 @@ img[core-external-content]:not([src]) {
 }
 
 ion-card {
+    box-shadow: var(--box-shadow);
+    margin: var(--ion-card-vertical-margin) var(--ion-card-horizontal-margin);
     border-width: var(--border-width);
     border-style: var(--border-style);
     border-color: var(--border-color);
-    box-shadow: var(--box-shadow);
     border-radius: var(--border-radius);
-    margin: var(--ion-card-vertical-margin) var(--ion-card-horizontal-margin);
+
+    &::part(native) {
+        --border-width: 0;
+    }
 
     ion-item:only-child {
         --inner-border-width: 0px;
@@ -1521,7 +1525,8 @@ ion-input.has-focus,
 .ion-focused ion-toggle:focus-within,
 .ion-focused ion-select:focus-within,
 .ion-focused ion-checkbox:focus-within,
-.ion-focused ion-radio:focus-within {
+.ion-focused ion-radio:focus-within,
+ion-card:focus {
     @include core-focus();
 }
 
