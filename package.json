@@ -118,7 +118,7 @@
     "core-js": "3.9.1",
     "es6-promise-plugin": "4.2.2",
     "hammerjs": "2.0.8",
-    "jszip": "3.7.1",
+    "jszip": "3.8.0",
     "mathjax": "2.7.9",
     "moment": "2.29.4",
     "moment-timezone": "0.5.38",
