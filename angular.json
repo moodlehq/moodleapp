@@ -50,6 +50,10 @@
                 {
                   "replace": "src/testing/testing.module.ts",
                   "with": "src/testing/testing.module.prod.ts"
+                },
+                {
+                  "replace": "src/core/features/emulator/emulator.module.ts",
+                  "with": "src/core/features/emulator/emulator.module.prod.ts"
                 }
               ],
               "optimization": {
