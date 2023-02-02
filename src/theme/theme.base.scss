@@ -1518,20 +1518,24 @@ ion-item.item-input.item-multiple-inputs {
 }
 
 // Focus highlight for accessibility.
-ion-item.item-input.ion-focused:not(:focus),
-.ion-focused,
-ion-item.ion-activatable.ion-focused:not(:focus),
+.ion-focused:not(.item-multiple-inputs):not(:focus),
 ion-input.has-focus,
-.ion-focused ion-toggle:focus-within,
-.ion-focused ion-select:focus-within,
-.ion-focused ion-checkbox:focus-within,
-.ion-focused ion-radio:focus-within,
 ion-card:focus {
     @include core-focus();
 }
+.ion-focused.item-multiple-inputs,
+.ion-focused.ion-activatable {
+    ion-toggle:focus-within,
+    ion-select:focus-within,
+    ion-checkbox:focus-within,
+    ion-radio:focus-within {
+        @include core-focus();
+    }
+}
 
 // Treat cases where there's a focusable element inside an item, like a button.
-ion-item.ion-focused:not(:focus),
+ion-item.item-input:not(.item-multiple-inputs):not(:focus),
+ion-item.item-has-focus:not(.item-multiple-inputs):not(:focus),
 ion-item.item-input ion-input.has-focus {
     position: relative;
     &::after {
@@ -1586,6 +1590,10 @@ textarea, button, select, input, a, .clickable {
         @include core-focus-style();
         outline: none;
     }
+}
+
+.ion-focused:not(.item-multiple-inputs):not(:focus) .clickable:focus {
+    box-shadow: none;
 }
 
 ion-loading:focus-visible,
