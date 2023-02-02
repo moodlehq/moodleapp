@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import {
     MediaCapture,
-    CaptureAudioOptions,
     CaptureImageOptions,
     CaptureVideoOptions,
     MediaFile,
@@ -28,16 +27,6 @@ import { CoreEmulatorCaptureHelper } from './capture-helper';
  */
 @Injectable()
 export class MediaCaptureMock extends MediaCapture {
-
-    /**
-     * Start the audio recorder application and return information about captured audio clip files.
-     *
-     * @param options Options.
-     * @returns Promise resolved when captured.
-     */
-    captureAudio(options: CaptureAudioOptions): Promise<MediaFile[]> {
-        return CoreEmulatorCaptureHelper.captureMedia('audio', options);
-    }
 
     /**
      * Start the camera application and return information about captured image files.

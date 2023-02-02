@@ -13,23 +13,20 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef, Input } from '@angular/core';
-import { MediaObject } from '@ionic-native/media/ngx';
-import { FileEntry } from '@ionic-native/file/ngx';
 import { MediaFile } from '@ionic-native/media-capture/ngx';
 
 import { CoreFile, CoreFileProvider } from '@services/file';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTimeUtils } from '@services/utils/time';
-import { ModalController, Media, Translate } from '@singletons';
+import { ModalController, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { CoreCaptureError } from '@classes/errors/captureerror';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CorePath } from '@singletons/path';
-import { CorePlatform } from '@services/platform';
 
 /**
- * Page to capture media in browser, or to capture audio in mobile devices.
+ * Page to capture media in browser.
  */
 @Component({
     selector: 'core-emulator-capture-media',
@@ -38,7 +35,7 @@ import { CorePlatform } from '@services/platform';
 })
 export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
 
-    @Input() type?: 'audio' | 'video' | 'image' | 'captureimage';
+    @Input() type?: 'video' | 'image' | 'captureimage';
     @Input() maxTime?: number; // Max time to capture.
     @Input() facingMode?: string; // Camera facing mode.
     @Input() mimetype?: string;
@@ -50,30 +47,20 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
     @ViewChild('previewVideo') previewVideo?: ElementRef;
     @ViewChild('imgCanvas') imgCanvas?: ElementRef;
     @ViewChild('previewImage') previewImage?: ElementRef;
-    @ViewChild('streamAudio') streamAudio?: ElementRef;
-    @ViewChild('previewAudio') previewAudio?: ElementRef;
 
     title?: string; // The title of the page.
-    isAudio?: boolean; // Whether it should capture audio.
     isVideo?: boolean; // Whether it should capture video.
     isImage?: boolean; // Whether it should capture image.
     readyToCapture?: boolean; // Whether it's ready to capture.
     hasCaptured?: boolean; // Whether it has captured something.
     isCapturing?: boolean; // Whether it's capturing.
     resetChrono?: boolean; // Boolean to reset the chrono.
-    isCordovaAudioCapture?: boolean; // Whether it's capturing audio using Cordova plugin.
 
     protected isCaptureImage?: boolean; // To identify if it's capturing an image using media capture plugin (instead of camera).
-    protected mediaRecorder?: MediaRecorder; // To record video/audio.
-    protected previewMedia?: HTMLAudioElement | HTMLVideoElement; // The element to preview the audio/video captured.
+    protected mediaRecorder?: MediaRecorder; // To record video.
+    protected previewMedia?: HTMLVideoElement; // The element to preview the video captured.
     protected mediaBlob?: Blob; // A Blob where the captured data is stored.
     protected localMediaStream?: MediaStream;
-    protected audioDrawer?: {start: () => void; stop: () => void }; // To start/stop the display of audio sound.
-
-    // Variables for Cordova Media capture.
-    protected mediaFile?: MediaObject;
-    protected filePath?: string;
-    protected fileEntry?: FileEntry;
 
     constructor(
         protected changeDetectorRef: ChangeDetectorRef,
@@ -84,12 +71,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         this.initVariables();
-
-        if (this.isCordovaAudioCapture) {
-            this.initCordovaMediaPlugin();
-        } else {
-            this.initHtmlCapture();
-        }
+        this.initHtmlCapture();
     }
 
     /**
@@ -108,71 +90,10 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
         if (this.type == 'video') {
             this.isVideo = true;
             this.title = 'core.capturevideo';
-        } else if (this.type == 'audio') {
-            this.isAudio = true;
-            this.title = 'core.captureaudio';
         } else if (this.type == 'image') {
             this.isImage = true;
             this.title = 'core.captureimage';
         }
-
-        this.isCordovaAudioCapture = CorePlatform.isMobile() && this.isAudio;
-
-        if (this.isCordovaAudioCapture) {
-            this.extension = CorePlatform.is('ios') ? 'wav' : 'aac';
-            this.returnDataUrl = false;
-        }
-    }
-
-    /**
-     * Init recording with Cordova media plugin.
-     *
-     * @returns Promise resolved when ready.
-     */
-    protected async initCordovaMediaPlugin(): Promise<void> {
-
-        try {
-            await this.createFileAndMediaInstance();
-
-            this.readyToCapture = true;
-            this.previewMedia = this.previewAudio?.nativeElement;
-        } catch (error) {
-            this.dismissWithError(-1, error.message || error);
-        }
-    }
-
-    /**
-     * Create a file entry and the cordova media instance.
-     */
-    protected async createFileAndMediaInstance(): Promise<void> {
-        this.filePath = this.getFilePath();
-
-        // First create the file.
-        this.fileEntry = await CoreFile.createFile(this.filePath);
-
-        // Now create the media instance.
-        let absolutePath = CorePath.concatenatePaths(CoreFile.getBasePathInstant(), this.filePath);
-
-        if (CorePlatform.is('ios')) {
-            // In iOS we need to remove the file:// part.
-            absolutePath = absolutePath.replace(/^file:\/\//, '');
-        }
-
-        this.mediaFile = Media.create(absolutePath);
-    }
-
-    /**
-     * Reset the file and the cordova media instance.
-     */
-    protected async resetCordovaMediaCapture(): Promise<void> {
-        if (this.filePath) {
-            // Remove old file, don't block the user for this.
-            CoreFile.removeFile(this.filePath);
-        }
-
-        this.mediaFile?.release();
-
-        await this.createFileAndMediaInstance();
     }
 
     /**
@@ -183,8 +104,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
      */
     protected async initHtmlCapture(): Promise<void> {
         const constraints = {
-            video: this.isAudio ? false : { facingMode: this.facingMode },
-            audio: !this.isImage,
+            video: { facingMode: this.facingMode },
         };
 
         try {
@@ -196,22 +116,18 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
             if (!this.isImage) {
                 if (this.isVideo) {
                     this.previewMedia = this.previewVideo?.nativeElement;
-                } else {
-                    this.previewMedia = this.previewAudio?.nativeElement;
-                    this.initAudioDrawer(this.localMediaStream);
-                    this.audioDrawer?.start();
                 }
 
                 this.mediaRecorder = new MediaRecorder(this.localMediaStream, { mimeType: this.mimetype });
 
-                // When video or audio is recorded, add it to the list of chunks.
+                // When video is recorded, add it to the list of chunks.
                 this.mediaRecorder.ondataavailable = (e): void => {
                     if (e.data.size > 0) {
                         chunks.push(e.data);
                     }
                 };
 
-                // When recording stops, create a Blob element with the recording and set it to the video or audio.
+                // When recording stops, create a Blob element with the recording and set it to the video.
                 this.mediaRecorder.onstop = (): void => {
                     this.mediaBlob = new Blob(chunks);
                     chunks = [];
@@ -268,91 +184,6 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Initialize the audio drawer. This code has been extracted from MDN's example on MediaStream Recording:
-     * https://github.com/mdn/web-dictaphone
-     *
-     * @param stream Stream returned by getUserMedia.
-     */
-    protected initAudioDrawer(stream: MediaStream): void {
-        if (!this.streamAudio) {
-            return;
-        }
-
-        let skip = true;
-        let running = false;
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const audioCtx = new (window.AudioContext || (<any> window).webkitAudioContext)();
-        const canvasCtx = this.streamAudio.nativeElement.getContext('2d');
-        const source = audioCtx.createMediaStreamSource(stream);
-        const analyser = audioCtx.createAnalyser();
-        const bufferLength = analyser.frequencyBinCount;
-        const dataArray = new Uint8Array(bufferLength);
-        const width = this.streamAudio.nativeElement.width;
-        const height = this.streamAudio.nativeElement.height;
-        const drawAudio = (): void => {
-            if (!running) {
-                return;
-            }
-
-            // Update the draw every animation frame.
-            requestAnimationFrame(drawAudio);
-
-            // Skip half of the frames to improve performance, shouldn't affect the smoothness.
-            skip = !skip;
-            if (skip) {
-                return;
-            }
-
-            const sliceWidth = width / bufferLength;
-            let x = 0;
-
-            analyser.getByteTimeDomainData(dataArray);
-
-            canvasCtx.fillStyle = 'rgb(200, 200, 200)';
-            canvasCtx.fillRect(0, 0, width, height);
-
-            canvasCtx.lineWidth = 1;
-            canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
-
-            canvasCtx.beginPath();
-
-            for (let i = 0; i < bufferLength; i++) {
-                const v = dataArray[i] / 128.0;
-                const y = v * height / 2;
-
-                if (i === 0) {
-                    canvasCtx.moveTo(x, y);
-                } else {
-                    canvasCtx.lineTo(x, y);
-                }
-
-                x += sliceWidth;
-            }
-
-            canvasCtx.lineTo(width, height / 2);
-            canvasCtx.stroke();
-        };
-
-        analyser.fftSize = 2048;
-        source.connect(analyser);
-
-        this.audioDrawer = {
-            start: (): void => {
-                if (running) {
-                    return;
-                }
-
-                running = true;
-                drawAudio();
-            },
-            stop: (): void => {
-                running = false;
-            },
-        };
-    }
-
-    /**
      * Main action clicked: record or stop recording.
      */
     async actionClicked(): Promise<void> {
@@ -369,15 +200,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
             this.isCapturing = true;
             this.resetChrono = false;
 
-            if (this.isCordovaAudioCapture) {
-                this.mediaFile?.startRecord();
-                if (this.previewMedia) {
-                    this.previewMedia.src = '';
-                }
-            } else {
-                this.mediaRecorder?.start();
-            }
-
+            this.mediaRecorder?.start();
             this.changeDetectorRef.detectChanges();
         } else {
             if (!this.imgCanvas) {
@@ -419,11 +242,6 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
 
         // Send a "cancelled" error like the Cordova plugin does.
         this.dismissWithCanceledError('Canceled.', 'Camera cancelled');
-
-        if (this.isCordovaAudioCapture && this.filePath) {
-            // Delete the tmp file.
-            CoreFile.removeFile(this.filePath);
-        }
     }
 
     /**
@@ -432,11 +250,6 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
     async discard(): Promise<void> {
         this.previewMedia?.pause();
         this.streamVideo?.nativeElement.play();
-        this.audioDrawer?.start();
-
-        if (this.isCordovaAudioCapture) {
-            await this.resetCordovaMediaCapture();
-        }
 
         this.hasCaptured = false;
         this.isCapturing = false;
@@ -492,30 +305,23 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
             return;
         }
 
-        if (!this.mediaBlob && !this.isCordovaAudioCapture) {
+        if (!this.mediaBlob) {
             // Shouldn't happen.
             CoreDomUtils.showErrorModal('Please capture the media first.');
 
             return;
         }
 
-        let fileEntry = this.fileEntry;
         const loadingModal = await CoreDomUtils.showModalLoading();
 
         try {
-            if (!this.isCordovaAudioCapture) {
-                // Capturing in browser. Write the blob in a file.
-                if (!this.mediaBlob) {
-                    // Shouldn't happen.
-                    throw new Error('Please capture the media first.');
-                }
-
-                fileEntry = await CoreFile.writeFile(this.getFilePath(), this.mediaBlob);
+            // Capturing in browser. Write the blob in a file.
+            if (!this.mediaBlob) {
+                // Shouldn't happen.
+                throw new Error('Please capture the media first.');
             }
 
-            if (!fileEntry) {
-                throw new CoreError('File not found.');
-            }
+            const fileEntry = await CoreFile.writeFile(this.getFilePath(), this.mediaBlob);
 
             if (this.isImage && !this.isCaptureImage) {
                 this.dismissWithData(fileEntry.toURL());
@@ -560,30 +366,20 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Stop capturing. Only for video and audio.
+     * Stop capturing. Only for video.
      */
     stopCapturing(): void {
         this.isCapturing = false;
         this.hasCaptured = true;
 
-        if (this.isCordovaAudioCapture) {
-            this.mediaFile?.stopRecord();
-            if (this.previewMedia && this.fileEntry) {
-                this.previewMedia.src = CoreFile.convertFileSrc(this.fileEntry.toURL());
-            }
-        } else {
-            this.streamVideo && this.streamVideo.nativeElement.pause();
-            this.audioDrawer && this.audioDrawer.stop();
-            this.mediaRecorder && this.mediaRecorder.stop();
-        }
+        this.streamVideo && this.streamVideo.nativeElement.pause();
+        this.mediaRecorder && this.mediaRecorder.stop();
     }
 
     /**
      * Page destroyed.
      */
     ngOnDestroy(): void {
-        this.mediaFile?.release();
-
         if (this.localMediaStream) {
             const tracks = this.localMediaStream.getTracks();
             tracks.forEach((track) => {
@@ -592,14 +388,13 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
         }
         this.streamVideo?.nativeElement.pause();
         this.previewMedia?.pause();
-        this.audioDrawer?.stop();
         delete this.mediaBlob;
     }
 
 }
 
 export type CaptureMediaComponentInputs = {
-    type: 'audio' | 'video' | 'image' | 'captureimage';
+    type: 'video' | 'image' | 'captureimage';
     maxTime?: number; // Max time to capture.
     facingMode?: string; // Camera facing mode.
     mimetype?: string;
