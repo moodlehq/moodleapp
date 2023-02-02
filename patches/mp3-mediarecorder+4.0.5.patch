@@ -1,0 +1,91 @@
+diff --git a/node_modules/mp3-mediarecorder/dist/index.es.js b/node_modules/mp3-mediarecorder/dist/index.es.js
+index 7a96961..82ec4e8 100644
+--- a/node_modules/mp3-mediarecorder/dist/index.es.js
++++ b/node_modules/mp3-mediarecorder/dist/index.es.js
+@@ -357,8 +357,7 @@ class Event$1 {
+             InitEventWasCalledWhileDispatching.warn();
+             return;
+         }
+-        internalDataMap.set(this, {
+-            ...data,
++        internalDataMap.set(this, Object.assign({}, data, {
+             type: String(type),
+             bubbles: Boolean(bubbles),
+             cancelable: Boolean(cancelable),
+@@ -366,8 +365,8 @@ class Event$1 {
+             currentTarget: null,
+             stopPropagationFlag: false,
+             stopImmediatePropagationFlag: false,
+-            canceledFlag: false,
+-        });
++            canceledFlag: false
++        }));
+     }
+ }
+ //------------------------------------------------------------------------------
+diff --git a/node_modules/mp3-mediarecorder/dist/index.es5.js b/node_modules/mp3-mediarecorder/dist/index.es5.js
+index 0caa82d..aa46cc2 100644
+--- a/node_modules/mp3-mediarecorder/dist/index.es5.js
++++ b/node_modules/mp3-mediarecorder/dist/index.es5.js
+@@ -418,7 +418,7 @@ class Event$1 {
+       return;
+     }
+ 
+-    internalDataMap.set(this, { ...data,
++    internalDataMap.set(this, Object.assign({}, data, {
+       type: String(type),
+       bubbles: Boolean(bubbles),
+       cancelable: Boolean(cancelable),
+@@ -427,7 +427,7 @@ class Event$1 {
+       stopPropagationFlag: false,
+       stopImmediatePropagationFlag: false,
+       canceledFlag: false
+-    });
++    }));
+   }
+ 
+ } //------------------------------------------------------------------------------
+diff --git a/node_modules/mp3-mediarecorder/dist/index.js b/node_modules/mp3-mediarecorder/dist/index.js
+index f7a517e..5f7f415 100644
+--- a/node_modules/mp3-mediarecorder/dist/index.js
++++ b/node_modules/mp3-mediarecorder/dist/index.js
+@@ -418,7 +418,7 @@ class Event$1 {
+       return;
+     }
+ 
+-    internalDataMap.set(this, { ...data,
++    internalDataMap.set(this, Object.assign({}, data, {
+       type: String(type),
+       bubbles: Boolean(bubbles),
+       cancelable: Boolean(cancelable),
+@@ -427,7 +427,7 @@ class Event$1 {
+       stopPropagationFlag: false,
+       stopImmediatePropagationFlag: false,
+       canceledFlag: false
+-    });
++    }));
+   }
+ 
+ } //------------------------------------------------------------------------------
+diff --git a/node_modules/mp3-mediarecorder/dist/index.umd.js b/node_modules/mp3-mediarecorder/dist/index.umd.js
+index 3f5f2a2..dd7783d 100644
+--- a/node_modules/mp3-mediarecorder/dist/index.umd.js
++++ b/node_modules/mp3-mediarecorder/dist/index.umd.js
+@@ -418,7 +418,7 @@ class Event$1 {
+       return;
+     }
+ 
+-    internalDataMap.set(this, { ...data,
++    internalDataMap.set(this, Object.assign({}, data, {
+       type: String(type),
+       bubbles: Boolean(bubbles),
+       cancelable: Boolean(cancelable),
+@@ -427,7 +427,7 @@ class Event$1 {
+       stopPropagationFlag: false,
+       stopImmediatePropagationFlag: false,
+       canceledFlag: false
+-    });
++    }));
+   }
+ 
+ } //------------------------------------------------------------------------------
