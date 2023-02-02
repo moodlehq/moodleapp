@@ -137,7 +137,7 @@
     "@angular-eslint/eslint-plugin-template": "4.2.0",
     "@angular-eslint/schematics": "4.2.0",
     "@angular-eslint/template-parser": "4.2.0",
-    "@angular/cli": "10.0.8",
+    "@angular/cli": "15.1.4",
     "@angular/compiler": "10.0.14",
     "@angular/compiler-cli": "10.0.14",
     "@angular/language-service": "10.0.14",
