@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 
 import { CoreApp } from '@services/app';
@@ -46,6 +46,7 @@ import { CoreUserSupportConfig } from '@features/user/classes/support/support-co
 import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
 import { CoreLoginError } from '@classes/errors/loginerror';
 import { CorePlatform } from '@services/platform';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
 
 /**
  * Site (url) chooser when adding a new site.
@@ -55,11 +56,11 @@ import { CorePlatform } from '@services/platform';
     templateUrl: 'site.html',
     styleUrls: ['site.scss', '../../login.scss'],
 })
-export class CoreLoginSitePage implements OnInit {
+export class CoreLoginSitePage implements OnInit, OnDestroy {
 
     @ViewChild('siteFormEl') formElement?: ElementRef;
 
-    siteForm: FormGroup;
+    siteForm!: FormGroup;
     fixedSites?: CoreLoginSiteInfoExtended[];
     filteredSites?: CoreLoginSiteInfoExtended[];
     siteSelector: CoreLoginSiteSelectorListMethod = 'sitefinder';
@@ -68,14 +69,13 @@ export class CoreLoginSitePage implements OnInit {
     sites: CoreLoginSiteInfoExtended[] = [];
     hasSites = false;
     loadingSites = false;
-    searchFunction: (search: string) => void;
-    showScanQR: boolean;
+    searchFunction!: (search: string) => void;
+    showScanQR!: boolean;
     enteredSiteUrl?: CoreLoginSiteInfoExtended;
-    siteFinderSettings: CoreLoginSiteFinderSettings;
+    siteFinderSettings!: CoreLoginSiteFinderSettings;
+    stagingSitesChangeListener: CoreEventObserver;
 
-    constructor(
-        protected formBuilder: FormBuilder,
-    ) {
+    constructor(protected formBuilder: FormBuilder) {
 
         let url = '';
         this.siteSelector = CoreConstants.CONFIG.multisitesdisplay;
@@ -122,13 +122,36 @@ export class CoreLoginSitePage implements OnInit {
 
             this.loadingSites = false;
         }, 1000);
+
+        this.stagingSitesChangeListener = CoreEvents.on(
+            CoreEvents.STAGING_SITES_CHANGE,
+            async ({ enabled }: { enabled: boolean }) => {
+                if (enabled) {
+                    await this.loadStagingSites();
+
+                    return;
+                }
+
+                if (CoreLoginHelper.hasSeveralFixedSites()) {
+                    this.siteForm = this.formBuilder.group({
+                        siteUrl: [this.initSiteSelector(), this.moodleUrlValidator()],
+                    });
+
+                    return;
+                }
+
+                this.filteredSites = undefined;
+                this.fixedSites = undefined;
+            },
+        );
     }
 
     /**
      * Initialize the component.
      */
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         this.showKeyboard = !!CoreNavigator.getRouteBooleanParam('showKeyboard');
+        await this.loadStagingSites();
     }
 
     /**
@@ -148,6 +171,35 @@ export class CoreLoginSitePage implements OnInit {
         this.filteredSites = this.fixedSites;
 
         return this.fixedSites[0].url;
+    }
+
+    /**
+     * Load staging sites list if they are enabled.
+     */
+    protected async loadStagingSites(): Promise<void> {
+        const stagingSites = await CoreLoginHelper.getStagingSites();
+
+        if (!stagingSites.length) {
+            return;
+        }
+
+        const sites = this.extendCoreLoginSiteInfo(<CoreLoginSiteInfoExtended[]> stagingSites);
+        this.siteSelector = 'list';
+
+        if (!this.fixedSites) {
+            this.fixedSites = [];
+        }
+
+        for (const site of sites) {
+            if (this.fixedSites.some(item => item.url === site.url)) {
+                continue;
+            }
+
+            this.fixedSites.push(site);
+        }
+
+        this.siteFinderSettings.displayimage = false;
+        this.filteredSites = this.fixedSites;
     }
 
     /**
@@ -610,6 +662,13 @@ export class CoreLoginSitePage implements OnInit {
      */
     openSettings(): void {
         CoreNavigator.navigate('/settings');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.stagingSitesChangeListener.off();
     }
 
 }

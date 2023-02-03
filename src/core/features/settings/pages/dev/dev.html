@@ -30,6 +30,12 @@
             </ion-label>
             <ion-toggle [(ngModel)]="forceSafeAreaMargins" (ionChange)="safeAreaChanged()"></ion-toggle>
         </ion-item>
+        <ion-item class="ion-text-wrap" *ngIf="stagingSites.length">
+            <ion-label>
+                <h2>Enable staging sites</h2>
+            </ion-label>
+            <ion-toggle [(ngModel)]="enableStagingSites" (ionChange)="setEnabledStagingSites()"></ion-toggle>
+        </ion-item>
         <ng-container *ngIf="siteId">
             <ion-item class="ion-text-wrap">
                 <ion-label>

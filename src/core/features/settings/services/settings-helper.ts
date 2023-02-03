@@ -477,6 +477,17 @@ export class CoreSettingsHelperProvider {
         return this.darkModeObservable;
     }
 
+    async hasEnabledStagingSites(): Promise<boolean> {
+        const staging = await CoreConfig.get<string>('staging_sites', 'false');
+
+        return CoreUtils.isTrueOrOne(staging);
+    }
+
+    async setEnabledStagingSites(enabled: boolean): Promise<void> {
+        await CoreConfig.set('staging_sites', `${enabled}`);
+        CoreEvents.trigger(CoreEvents.STAGING_SITES_CHANGE, { enabled });
+    }
+
 }
 
 export const CoreSettingsHelper = makeSingleton(CoreSettingsHelperProvider);

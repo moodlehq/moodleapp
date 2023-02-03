@@ -12,13 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreConstants } from '@/core/constants';
 import { Component, OnInit } from '@angular/core';
 import { CoreLoginHelperProvider } from '@features/login/services/login-helper';
+import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CoreUserTours } from '@features/usertours/services/user-tours';
 import { CoreConfig } from '@services/config';
 import { CorePlatform } from '@services/platform';
-import { CoreSites } from '@services/sites';
+import { CoreLoginSiteInfo, CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 
@@ -41,6 +43,8 @@ export class CoreSettingsDevPage implements OnInit {
     pluginStylesCount = 0;
     sitePlugins: CoreSitePluginsBasicInfo[] = [];
     userToursEnabled = true;
+    stagingSites: CoreLoginSiteInfo[] = [];
+    enableStagingSites = false;
 
     disabledFeatures: string[] = [];
 
@@ -54,6 +58,12 @@ export class CoreSettingsDevPage implements OnInit {
         this.safeAreaChanged();
 
         this.siteId = CoreSites.getCurrentSite()?.getId();
+
+        this.stagingSites = CoreConstants.CONFIG.stagingsites;
+
+        if (this.stagingSites.length) {
+            this.enableStagingSites = await CoreSettingsHelper.hasEnabledStagingSites();
+        }
 
         if (!this.siteId) {
             return;
@@ -155,6 +165,10 @@ export class CoreSettingsDevPage implements OnInit {
         await CoreConfig.delete(CoreLoginHelperProvider.ONBOARDING_DONE);
 
         CoreDomUtils.showToast('User tours have been reseted');
+    }
+
+    async setEnabledStagingSites(): Promise<void> {
+        await CoreSettingsHelper.setEnabledStagingSites(this.enableStagingSites);
     }
 
 }

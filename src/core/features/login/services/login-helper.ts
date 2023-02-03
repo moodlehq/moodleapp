@@ -40,6 +40,7 @@ import { CorePath } from '@singletons/path';
 import { CorePromisedValue } from '@classes/promised-value';
 import { SafeHtml } from '@angular/platform-browser';
 import { CoreLoginError } from '@classes/errors/loginerror';
+import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 
 const PASSWORD_RESETS_CONFIG_KEY = 'password-resets';
 
@@ -383,6 +384,21 @@ export class CoreLoginHelperProvider {
      */
     getFixedSites(): string | CoreLoginSiteInfo[] {
         return CoreLoginHelper.isUniqueFixedSite() ? CoreConstants.CONFIG.sites[0].url : CoreConstants.CONFIG.sites;
+    }
+
+    /**
+     * Get staging sites.
+     *
+     * @returns Staging sites.
+     */
+    async getStagingSites(): Promise<CoreLoginSiteInfo[]> {
+        const hasEnabledStagingSites = await CoreSettingsHelper.hasEnabledStagingSites();
+
+        if (!hasEnabledStagingSites) {
+            return [];
+        }
+
+        return CoreConstants.CONFIG.stagingsites;
     }
 
     /**
