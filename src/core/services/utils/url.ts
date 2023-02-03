@@ -22,7 +22,7 @@ import { CoreUrl } from '@singletons/url';
 import { CoreSites } from '@services/sites';
 import { CorePath } from '@singletons/path';
 import { CorePlatform } from '@services/platform';
-import { CoreDom } from '@singletons/dom';
+import { CoreMedia } from '@singletons/media';
 
 /*
  * "Utils" service with helper functions for URLs.
@@ -122,7 +122,7 @@ export class CoreUrlUtilsProvider {
         return !CoreConstants.CONFIG.disableTokenFile && !!accessKey && !url.match(/[&?]file=/) && (
             url.indexOf(CorePath.concatenatePaths(siteUrl, 'pluginfile.php')) === 0 ||
             url.indexOf(CorePath.concatenatePaths(siteUrl, 'webservice/pluginfile.php')) === 0) &&
-            !CoreDom.sourceUsesJavascriptPlayer({ src: url });
+            !CoreMedia.sourceUsesJavascriptPlayer({ src: url });
     }
 
     /**

@@ -21,10 +21,9 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlUtils } from '@services/utils/url';
 import { makeSingleton } from '@singletons';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
-import { CoreDom } from '@singletons/dom';
 import { CoreEvents } from '@singletons/events';
-import videojs from 'video.js';
-import { VideoJSOptions } from '../../classes/videojs-ogvjs';
+import { CoreMedia } from '@singletons/media';
+import videojs, { VideoJSOptions, VideoJSPlayer } from 'video.js';
 
 /**
  * Handler to support the Multimedia filter.
@@ -48,7 +47,7 @@ export class AddonFilterMediaPluginHandlerService extends CoreFilterDefaultHandl
         const videos = Array.from(this.template.content.querySelectorAll('video'));
 
         videos.forEach((video) => {
-            this.treatVideoFilters(video);
+            this.treatYoutubeVideos(video);
         });
 
         return this.template.innerHTML;
@@ -61,7 +60,7 @@ export class AddonFilterMediaPluginHandlerService extends CoreFilterDefaultHandl
         const mediaElements = Array.from(container.querySelectorAll<HTMLVideoElement | HTMLAudioElement>('video, audio'));
 
         mediaElements.forEach((mediaElement) => {
-            if (CoreDom.mediaUsesJavascriptPlayer(mediaElement)) {
+            if (CoreMedia.mediaUsesJavascriptPlayer(mediaElement)) {
                 this.useVideoJS(mediaElement);
             } else {
                 // Remove the VideoJS classes and data if present.
@@ -93,11 +92,14 @@ export class AddonFilterMediaPluginHandlerService extends CoreFilterDefaultHandl
             controls: true,
             techOrder: ['OgvJS'],
             language: lang,
-            fluid: true,
             controlBar: {
-                fullscreenToggle: false,
+                pictureInPictureToggle: false,
             },
             aspectRatio: data.aspectRatio,
+        }, () => {
+            if (mediaElement.tagName === 'VIDEO') {
+                this.fixVideoJSPlayerSize(player);
+            }
         });
 
         CoreEvents.trigger(CoreEvents.JS_PLAYER_CREATED, {
@@ -105,16 +107,34 @@ export class AddonFilterMediaPluginHandlerService extends CoreFilterDefaultHandl
             element: mediaElement,
             player,
         });
-
     }
 
     /**
-     * Treat video filters. Currently only treating youtube video using video JS.
+     * Fix VideoJS player size.
+     * If video width is wider than available width, video is cut off. Fix the dimensions in this case.
+     *
+     * @param player Player instance.
+     */
+    protected fixVideoJSPlayerSize(player: VideoJSPlayer): void {
+        const videoWidth = player.videoWidth();
+        const videoHeight = player.videoHeight();
+        const playerDimensions = player.currentDimensions();
+        if (!videoWidth || !videoHeight || !playerDimensions.width || videoWidth === playerDimensions.width) {
+            return;
+        }
+
+        const candidateHeight = playerDimensions.width * videoHeight / videoWidth;
+        if (!playerDimensions.height || Math.abs(candidateHeight - playerDimensions.height) > 1) {
+            player.dimension('height', candidateHeight);
+        }
+    }
+
+    /**
+     * Treat Video JS Youtube video links and translate them to iframes.
      *
      * @param video Video element.
      */
-    protected treatVideoFilters(video: HTMLElement): void {
-        // Treat Video JS Youtube video links and translate them to iframes.
+    protected treatYoutubeVideos(video: HTMLElement): void {
         if (!video.classList.contains('video-js')) {
             return;
         }

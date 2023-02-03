@@ -20,6 +20,7 @@ import { CoreFilepoolComponentFileEventData } from '@services/filepool';
 import { CoreRedirectPayload } from '@services/navigator';
 import { CoreCourseModuleCompletionData } from '@features/course/services/course-helper';
 import { CoreScreenOrientation } from '@services/screen';
+import { VideoJSPlayer } from 'video.js';
 
 /**
  * Observer instance to stop listening to an event.
@@ -499,5 +500,5 @@ export type CoreEventCompleteRequiredProfileDataFinished = {
 export type CoreEventJSVideoPlayerCreated = {
     id: string;
     element: HTMLAudioElement | HTMLVideoElement;
-    player: unknown;
+    player: VideoJSPlayer;
 };

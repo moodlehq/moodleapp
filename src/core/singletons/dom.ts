@@ -15,7 +15,6 @@
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreApp } from '@services/app';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver } from '@singletons/events';
 
@@ -569,6 +568,7 @@ export class CoreDom {
         }
     }
 
+<<<<<<< HEAD
     /**
      * Get all source URLs and types for a video or audio.
      *
@@ -637,6 +637,8 @@ export class CoreDom {
         return sources.some(source => CoreDom.sourceUsesJavascriptPlayer(source));
     }
 
+=======
+>>>>>>> f42ea632ca (a)
 }
 
 /**

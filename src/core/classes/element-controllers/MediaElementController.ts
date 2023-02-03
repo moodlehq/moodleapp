@@ -14,10 +14,10 @@
 
 import { CoreUtils } from '@services/utils/utils';
 import { ElementController } from './ElementController';
-import videojs from 'video.js';
-import { CoreDom } from '@singletons/dom';
+import videojs, { VideoJSPlayer } from 'video.js';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreMedia } from '@singletons/media';
 
 /**
  * Wrapper class to control the interactivity of a media element.
@@ -42,7 +42,7 @@ export class MediaElementController extends ElementController {
 
         media.autoplay = false;
 
-        if (CoreDom.mediaUsesJavascriptPlayer(media)) {
+        if (CoreMedia.mediaUsesJavascriptPlayer(media)) {
             const player = this.searchJSPlayer();
             if (player) {
                 this.jsPlayer.resolve(player);
@@ -50,7 +50,7 @@ export class MediaElementController extends ElementController {
                 this.jsPlayerListener = CoreEvents.on(CoreEvents.JS_PLAYER_CREATED, data => {
                     if (data.element === media) {
                         this.jsPlayerListener?.off();
-                        this.jsPlayer.resolve(data.player as VideoJSPlayer);
+                        this.jsPlayer.resolve(data.player);
                     }
                 });
             }
@@ -153,16 +153,8 @@ export class MediaElementController extends ElementController {
      *
      * @returns Player instance if found.
      */
-    private searchJSPlayer(): VideoJSPlayer | undefined {
+    private searchJSPlayer(): VideoJSPlayer | null {
         return videojs.getPlayer(this.media.id) || videojs.getPlayer(this.media.id.replace('_html5_api', ''));
     }
 
 }
-
-type VideoJSPlayer = {
-    play: () => Promise<void>;
-    pause: () => Promise<void>;
-    on: (name: string, callback: (ev: Event) => void) => void;
-    off: (name: string, callback: (ev: Event) => void) => void;
-    dispose: () => void;
-};

@@ -14,7 +14,7 @@
 
 import { CorePlatform } from '@services/platform';
 import { OGVPlayer, OGVCompat, OGVLoader } from 'ogv';
-import videojs from 'video.js';
+import videojs, { PreloadOption, TechSourceObject, VideoJSOptions } from 'video.js';
 
 export const Tech = videojs.getComponent('Tech');
 
@@ -95,6 +95,10 @@ export class VideoJSOgvJS extends Tech {
         'volumechange',
     ];
 
+    protected playerId?: string;
+    protected parentElement: HTMLElement | null = null;
+    protected placeholderElement = document.createElement('div');
+
     // Variables/functions defined in parent classes.
     protected el_!: OGVPlayerEl; // eslint-disable-line @typescript-eslint/naming-convention
     protected options_!: VideoJSOptions; // eslint-disable-line @typescript-eslint/naming-convention
@@ -108,7 +112,7 @@ export class VideoJSOgvJS extends Tech {
      * @param options The key/value store of player options.
      * @param ready Callback function to call when the `OgvJS` Tech is ready.
      */
-    constructor(options: VideoJSOptions, ready: () => void) {
+    constructor(options: VideoJSTechOptions, ready: () => void) {
         super(options, ready);
 
         this.el_.src = options.src || options.source?.src || options.sources?.[0]?.src || this.el_.src;
@@ -116,6 +120,7 @@ export class VideoJSOgvJS extends Tech {
         VideoJSOgvJS.setIfAvailable(this.el_, 'loop', options.loop);
         VideoJSOgvJS.setIfAvailable(this.el_, 'poster', options.poster);
         VideoJSOgvJS.setIfAvailable(this.el_, 'preload', options.preload);
+        this.playerId = options.playerId;
 
         this.on('loadedmetadata', () => {
             if (CoreApp.isIPhone()) {
@@ -654,8 +659,7 @@ export class VideoJSOgvJS extends Tech {
      * @returns Whether it supports full screen.
      */
     supportsFullScreen(): boolean {
-        // iOS devices have some problem with HTML5 fullscreen api so we need to fallback to fullWindow mode.
-        return !CoreApp.isIOS();
+        return !!this.playerId;
     }
 
     /**
@@ -665,6 +669,50 @@ export class VideoJSOgvJS extends Tech {
      */
     error(): MediaError | null {
         return this.el_.error;
+    }
+
+    /**
+     * Enter full screen mode.
+     */
+    enterFullScreen(): void {
+        // Use a "fake" full screen mode, moving the player to a different place in DOM to be able to use full screen size.
+        const player = videojs.getPlayer(this.playerId ?? '');
+        if (!player) {
+            return;
+        }
+
+        const container = player.el();
+        this.parentElement = container.parentElement;
+        if (!this.parentElement) {
+            // Shouldn't happen, it means the element is not in DOM. Do not support full screen in this case.
+            return;
+        }
+
+        this.parentElement.replaceChild(this.placeholderElement, container);
+        document.body.appendChild(container);
+        container.classList.add('vjs-ios-moodleapp-fs');
+
+        player.isFullscreen(true);
+    }
+
+    /**
+     * Exit full screen mode.
+     */
+    exitFullScreen(): void {
+        if (!this.parentElement) {
+            return;
+        }
+
+        const player = videojs.getPlayer(this.playerId ?? '');
+        if (!player) {
+            return;
+        }
+
+        const container = player.el();
+        this.parentElement.replaceChild(container, this.placeholderElement);
+        container.classList.remove('vjs-ios-moodleapp-fs');
+
+        player.isFullscreen(false);
     }
 
 }
@@ -688,75 +736,13 @@ export const initializeVideoJSOgvJS = (): void => {
     Tech.registerTech('OgvJS', VideoJSOgvJS);
 };
 
-export type VideoJSOptions = {
-    aspectRatio?: string;
-    audioOnlyMode?: boolean;
-    audioPosterMode?: boolean;
-    autoplay?: boolean | string;
-    autoSetup?: boolean;
-    base?: string;
-    breakpoints?: Record<string, number>;
-    children?: string[] | Record<string, Record<string, unknown>>;
-    controlBar?: {
-        remainingTimeDisplay?: {
-            displayNegative?: boolean;
-        };
-    };
-    controls?: boolean;
-    fluid?: boolean;
-    fullscreen?: {
-        options?: Record<string, unknown>;
-    };
-    height?: string | number;
-    id?: string;
-    inactivityTimeout?: number;
-    language?: string;
-    languages?: Record<string, Record<string, string>>;
-    liveui?: boolean;
-    liveTracker?: {
-        trackingThreshold?: number;
-        liveTolerance?: number;
-    };
-    loop?: boolean;
-    muted?: boolean;
-    nativeControlsForTouch?: boolean;
-    normalizeAutoplay?: boolean;
-    notSupportedMessage?: string;
-    noUITitleAttributes?: boolean;
-    playbackRates?: number[];
-    plugins?: Record<string, Record<string, unknown>>;
-    poster?: string;
-    preferFullWindow?: boolean;
-    preload?: PreloadOption;
-    responsive?: boolean;
-    restoreEl?: boolean | HTMLElement;
-    source?: TechSourceObject;
-    sources?: TechSourceObject[];
-    src?: string;
-    suppressNotSupportedError?: boolean;
-    tag?: HTMLElement;
-    techCanOverridePoster?: boolean;
-    techOrder?: string[];
-    userActions?: {
-        click?: boolean | ((ev: MouseEvent) => void);
-        doubleClick?: boolean | ((ev: MouseEvent) => void);
-        hotkeys?: boolean | ((ev: KeyboardEvent) => void) | {
-            fullscreenKey?: (ev: KeyboardEvent) => void;
-            muteKey?: (ev: KeyboardEvent) => void;
-            playPauseKey?: (ev: KeyboardEvent) => void;
-        };
-    };
-    'vtt.js'?: string;
-    width?: string | number;
-};
-
-type TechSourceObject = {
-    src: string; // Source URL.
-    type: string; // Mimetype.
-};
-
-type PreloadOption = '' | 'none' | 'metadata' | 'auto';
-
 type OGVPlayerEl = (HTMLAudioElement | HTMLVideoElement) & {
     stop: () => void;
+};
+
+/**
+ * VideoJS Tech options. It includes some options added by VideoJS internally.
+ */
+type VideoJSTechOptions = VideoJSOptions & {
+    playerId?: string;
 };
