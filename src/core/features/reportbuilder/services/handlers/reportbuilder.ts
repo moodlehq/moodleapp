@@ -45,11 +45,11 @@ export class CoreReportBuilderHandlerService implements CoreUserProfileHandler {
         return {
             class: 'core-report-builder',
             icon: 'fa-list-alt',
-            title: 'core.reportbuilder.reportstab',
+            title: 'core.reportbuilder.reports',
             action: async (event): Promise<void> => {
                 event.preventDefault();
                 event.stopPropagation();
-                await CoreNavigator.navigate(`/${CoreReportBuilderHandlerService.PAGE_NAME}`);
+                await CoreNavigator.navigateToSitePath(CoreReportBuilderHandlerService.PAGE_NAME);
             },
         };
     }
