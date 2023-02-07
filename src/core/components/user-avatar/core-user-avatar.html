@@ -1,10 +1,14 @@
-<img *ngIf="avatarUrl" [src]="avatarUrl" [alt]="'core.pictureof' | translate:{$a: fullname}" core-external-content
-    onError="this.src='assets/img/user-avatar.png'" (ariaButtonClick)="gotoProfile($event)" [attr.aria-hidden]="!linkProfile"
-    [attr.role]="linkProfile ? 'button' : null" [attr.tabindex]="linkProfile ? 0 : null" [class.clickable]="linkProfile">
+<img *ngIf="avatarUrl && linkProfile" [src]="avatarUrl" [alt]="'core.pictureof' | translate:{$a: fullname}" core-external-content
+    onError="this.src='assets/img/user-avatar.png'" (ariaButtonClick)="gotoProfile($event)">
 
-<img *ngIf="!avatarUrl" src="assets/img/user-avatar.png" [alt]="'core.pictureof' | translate:{$a: fullname}"
-    (ariaButtonClick)="gotoProfile($event)" [attr.aria-hidden]="!linkProfile" [attr.role]="linkProfile ? 'button' : null"
-    [attr.tabindex]="linkProfile ? 0 : null">
+<img *ngIf="avatarUrl && !linkProfile" [src]="avatarUrl" [alt]="'core.pictureof' | translate:{$a: fullname}" core-external-content
+    onError="this.src='assets/img/user-avatar.png'" aria-hidden="true">
+
+<img *ngIf="!avatarUrl && linkProfile" src="assets/img/user-avatar.png" [alt]="'core.pictureof' | translate:{$a: fullname}"
+    (ariaButtonClick)="gotoProfile($event)">
+
+<img *ngIf="!avatarUrl && !linkProfile" src="assets/img/user-avatar.png" [alt]="'core.pictureof' | translate:{$a: fullname}"
+    aria-hidden="true">
 
 <span *ngIf="checkOnline && isOnline()" class="contact-status online" role="status" [attr.aria-label]="'core.online' | translate">
 </span>

@@ -610,12 +610,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
                 return;
             }
 
-            if (element.tagName !== 'BUTTON' && element.tagName !== 'A') {
-                element.setAttribute('tabindex', '0');
-                element.setAttribute('role', 'button');
-            }
-
-            CoreDom.onActivate(element, async (event) => {
+            CoreDom.initializeClickableElementA11y(element, async (event) => {
                 event.preventDefault();
                 event.stopPropagation();
 
