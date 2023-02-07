@@ -22,10 +22,6 @@
                     </core-format-text>
                 </h1>
             </ion-label>
-            <ion-button fill="clear" [href]="reportUrl" core-link [showBrowserWarning]="false"
-                [attr.aria-label]="'core.openinbrowser' | translate" slot="end">
-                <ion-icon name="fas-external-link-alt" slot="icon-only" aria-hidden="true"></ion-icon>
-            </ion-button>
         </ion-item>
 
         <ion-item class="ion-text-wrap" [detail]="false" *ngFor="let item of reportDetailToDisplay">
@@ -37,3 +33,16 @@
         </ion-item>
     </div>
 </ion-content>
+
+<ion-footer class="ion-no-border">
+    <ion-item class="ion-text-wrap filters-info">
+        <ion-label>
+            <p>
+                <ion-icon name="fas-info-circle" aria-hidden="true"></ion-icon>
+                <core-format-text [text]="'core.reportbuilder.filtersapplied' | translate: { $a: reportUrl }" contextLevel="report"
+                    [contextInstanceId]="reportDetail.id">
+                </core-format-text>
+            </p>
+        </ion-label>
+    </ion-item>
+</ion-footer>

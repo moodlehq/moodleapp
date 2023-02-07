@@ -41,7 +41,7 @@ export class CoreReportBuilderReportsSource extends CoreRoutedItemsManagerSource
      */
     protected setItems(reports: CoreReportBuilderReport[], hasMoreItems: boolean): void {
         const sortedReports = reports.slice(0);
-        reports.sort((a, b) => a.timecreated < b.timecreated ? 1 : -1);
+        sortedReports.sort((a, b) => a.timemodified < b.timemodified ? 1 : -1);
         super.setItems(sortedReports, hasMoreItems);
     }
 
