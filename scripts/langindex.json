@@ -1656,6 +1656,7 @@
   "core.reportbuilder.reports": "moodle",
   "core.reportbuilder.reportsource": "moodle",
   "core.reportbuilder.timecreated": "moodle",
+  "core.reportbuilder.filtersapplied": "local_moodlemobileapp",
   "core.reportbuilder.showcolumns": "local_moodlemobileapp",
   "core.reportbuilder.hidecolumns": "local_moodlemobileapp",
   "core.datastoredoffline": "local_moodlemobileapp",

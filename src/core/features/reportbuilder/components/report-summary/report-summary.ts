@@ -21,6 +21,7 @@ import { ModalController } from '@singletons';
 @Component({
     selector: 'core-report-builder-report-summary',
     templateUrl: './report-summary.html',
+    styleUrls: ['./report-summary.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CoreReportBuilderReportSummaryComponent implements OnInit {
