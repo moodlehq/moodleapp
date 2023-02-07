@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, OnInit, Output, EventEmitter } from '@angular/core';
+import { Directive, ElementRef, OnInit, Output, EventEmitter, OnChanges, SimpleChanges, Input } from '@angular/core';
 import { CoreDom } from '@singletons/dom';
 
 /**
@@ -21,10 +21,11 @@ import { CoreDom } from '@singletons/dom';
 @Directive({
     selector: '[ariaButtonClick]',
 })
-export class CoreAriaButtonClickDirective implements OnInit {
+export class CoreAriaButtonClickDirective implements OnInit, OnChanges {
 
     protected element: HTMLElement;
 
+    @Input() disabled = false;
     @Output() ariaButtonClick = new EventEmitter();
 
     constructor(
@@ -34,10 +35,27 @@ export class CoreAriaButtonClickDirective implements OnInit {
     }
 
     /**
-     * Initialize actions.
+     * @inheritdoc
      */
     ngOnInit(): void {
-        CoreDom.onActivate(this.element, (event) => this.ariaButtonClick.emit(event));
+        CoreDom.initializeClickableElementA11y(this.element, (event) => this.ariaButtonClick.emit(event));
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnChanges(changes: SimpleChanges): void {
+        if (!changes.disabled) {
+            return;
+        }
+
+        if (this.element.getAttribute('tabindex') === '0' && this.disabled) {
+            this.element.setAttribute('tabindex', '-1');
+        }
+
+        if (this.element.getAttribute('tabindex') === '-1' && !this.disabled) {
+            this.element.setAttribute('tabindex', '0');
+        }
     }
 
 }

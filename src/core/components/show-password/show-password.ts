@@ -132,7 +132,7 @@ export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
      * @param event The mouse event.
      */
     doNotBlur(event: Event): void {
-        if (event.type == 'keydown' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
+        if (event.type === 'keydown' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
             return;
         }
 
@@ -147,7 +147,7 @@ export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
      * @returns Wether space or enter have been pressed.
      */
     protected isValidKeyboardKey(event: KeyboardEvent): boolean {
-        return event.key == ' ' || event.key == 'Enter';
+        return event.key === ' ' || event.key === 'Enter';
     }
 
 }

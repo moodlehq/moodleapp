@@ -391,7 +391,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
 
         this.stopBubble(event);
 
-        const move = event.key == 'ArrowLeft' ? -1 : +1;
+        const move = event.key === 'ArrowLeft' ? -1 : +1;
         const cursor = this.getCurrentCursorPosition(this.editorElement);
 
         this.setCurrentCursorPosition(this.editorElement, cursor + move);
@@ -754,7 +754,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      * @returns Wether space or enter have been pressed.
      */
     protected isValidKeyboardKey(event: KeyboardEvent): boolean {
-        return event.key == ' ' || event.key == 'Enter';
+        return event.key === ' ' || event.key === 'Enter';
     }
 
     /**

@@ -57,12 +57,7 @@ export class CoreLinkDirective implements OnInit {
      * Function executed when the component is initialized.
      */
     ngOnInit(): void {
-        if (this.element.tagName != 'BUTTON' && this.element.tagName != 'A') {
-            this.element.setAttribute('tabindex', '0');
-            this.element.setAttribute('role', 'button');
-        }
-
-        CoreDom.onActivate(this.element, (event) => this.performAction(event));
+        CoreDom.initializeClickableElementA11y(this.element, (event) => this.performAction(event));
     }
 
     /**

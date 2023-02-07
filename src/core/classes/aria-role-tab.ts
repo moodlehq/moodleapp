@@ -29,19 +29,19 @@ export class CoreAriaRoleTab<T = unknown> {
      * @param e Event.
      */
     keyDown(tabFindIndex: string, e: KeyboardEvent): void {
-        if (e.key == ' ' ||
-            e.key == 'Enter' ||
-            e.key == 'Home' ||
-            e.key == 'End' ||
-            (this.isHorizontal() && (e.key == 'ArrowRight' || e.key == 'ArrowLeft')) ||
-            (!this.isHorizontal() && (e.key == 'ArrowUp' ||e.key == 'ArrowDown'))
+        if (e.key === ' ' ||
+            e.key === 'Enter' ||
+            e.key === 'Home' ||
+            e.key === 'End' ||
+            (this.isHorizontal() && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) ||
+            (!this.isHorizontal() && (e.key === 'ArrowUp' ||e.key === 'ArrowDown'))
         ) {
             e.preventDefault();
             e.stopPropagation();
             e.stopImmediatePropagation();
         }
 
-        if (e.key == ' ' || e.key == 'Enter') {
+        if (e.key === ' ' || e.key === 'Enter') {
             this.selectTabCandidate = tabFindIndex;
         }
     }
@@ -64,7 +64,7 @@ export class CoreAriaRoleTab<T = unknown> {
         e.stopPropagation();
         e.stopImmediatePropagation();
 
-        if (e.key == ' ' || e.key == 'Enter') {
+        if (e.key === ' ' || e.key === 'Enter') {
             if (this.selectTabCandidate === tabFindIndex) {
                 this.selectTab(tabFindIndex, e);
             }
