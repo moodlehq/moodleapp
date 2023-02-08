@@ -291,7 +291,9 @@ export class AddonModBookProvider {
                 });
             }
 
-            chapterNumber++;
+            if (!parseInt(chapter.hidden, 10)) {
+                chapterNumber++;
+            }
         });
 
         return chapters;

@@ -237,13 +237,21 @@ class behat_app extends behat_app_helper {
     /**
      * Trigger swipe gesture.
      *
-     * @When /^I swipe to the (left|right) in the app$/
+     * @When /^I swipe to the (left|right) (in (".+") )?in the app$/
      * @param string $direction Swipe direction
+     * @param bool $hasLocator Whether a reference locator is used.
+     * @param string $locator Reference locator.
      */
-    public function i_swipe_in_the_app(string $direction) {
-        $method = 'swipe' . ucwords($direction);
+    public function i_swipe_in_the_app(string $direction, bool $hasLocator = false, string $locator = '') {
+        if ($hasLocator) {
+            $locator = $this->parse_element_locator($locator);
+        }
 
-        $this->zone_js("getAngularInstance('ion-content', 'CoreSwipeNavigationDirective').$method()");
+        $result = $this->zone_js("swipe('$direction'" . ($hasLocator ? ", $locator" : '') . ')');
+
+        if ($result !== 'OK') {
+            throw new DriverException('Error when swiping - ' . $result);
+        }
 
         $this->wait_for_pending_js();
 

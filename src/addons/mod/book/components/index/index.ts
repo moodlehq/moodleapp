@@ -61,6 +61,13 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
     }
 
     /**
+     * @inheritdoc
+     */
+    protected async invalidateContent(): Promise<void> {
+        await AddonModBook.invalidateContent(this.module.id, this.courseId);
+    }
+
+    /**
      * Load book data.
      *
      * @returns Promise resolved when done.
