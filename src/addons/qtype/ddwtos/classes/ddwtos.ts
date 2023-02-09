@@ -15,7 +15,7 @@
 import { CoreFormatTextDirective } from '@directives/format-text';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreCoordinates, CoreDom } from '@singletons/dom';
 import { CoreEventObserver } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
@@ -427,7 +427,7 @@ export class AddonQtypeDdwtosQuestion {
     protected async waitForReady(): Promise<void> {
         await CoreDom.waitToBeInDOM(this.container);
 
-        await CoreComponentsRegistry.waitComponentsReady(this.container, 'core-format-text', CoreFormatTextDirective);
+        await CoreDirectivesRegistry.waitDirectivesReady(this.container, 'core-format-text', CoreFormatTextDirective);
 
         const drag = Array.from(this.container.querySelectorAll<HTMLElement>(this.selectors.dragHomes()))[0];
 

@@ -20,13 +20,13 @@ import { CoreLang } from '@services/lang';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { CoreSettingsHelper, CoreColorScheme, CoreZoomLevel } from '../../services/settings-helper';
-import { CoreApp } from '@services/app';
 import { CoreIframeUtils } from '@services/utils/iframe';
 import { Diagnostic, Translate } from '@singletons';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { AlertButton } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Page that displays the general settings.
@@ -81,7 +81,7 @@ export class CoreSettingsGeneralPage {
                 this.colorSchemes.push(CoreColorScheme.LIGHT);
                 this.selectedScheme = this.colorSchemes[0];
             } else {
-                this.isAndroid = CoreApp.isAndroid();
+                this.isAndroid = CorePlatform.isAndroid();
                 this.colorSchemes = CoreSettingsHelper.getAllowedColorSchemes();
                 this.selectedScheme = await CoreConfig.get(CoreConstants.SETTINGS_COLOR_SCHEME, CoreColorScheme.LIGHT);
             }

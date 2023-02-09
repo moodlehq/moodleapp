@@ -18,10 +18,10 @@ import { CoreEventLoadingChangedData, CoreEvents } from '@singletons/events';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreAnimations } from '@components/animations';
 import { Translate } from '@singletons';
-import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CorePromisedValue } from '@classes/promised-value';
-import { AsyncComponent } from '@classes/async-component';
-import { CoreApp } from '@services/app';
+import { AsyncDirective } from '@classes/async-directive';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Component to show a loading spinner and message while data is being loaded.
@@ -49,7 +49,7 @@ import { CoreApp } from '@services/app';
     styleUrls: ['loading.scss'],
     animations: [CoreAnimations.SHOW_HIDE],
 })
-export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, AsyncComponent, OnDestroy {
+export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, AsyncDirective, OnDestroy {
 
     @Input() hideUntil: unknown = false; // Determine when should the contents be shown.
     @Input() message?: string; // Message to show while loading.
@@ -65,7 +65,7 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
 
     constructor(element: ElementRef) {
         this.element = element.nativeElement;
-        CoreComponentsRegistry.register(this.element, this);
+        CoreDirectivesRegistry.register(this.element, this);
 
         // Calculate the unique ID.
         this.uniqueId = 'core-loading-content-' + CoreUtils.getUniqueId('CoreLoadingComponent');
@@ -146,7 +146,7 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
         if (loaded) {
             this.onReadyPromise.resolve();
             this.restoreScrollPosition();
-            if (CoreApp.isIOS()) {
+            if (CorePlatform.isIOS()) {
                 this.mutationObserver.observe(this.element, { childList: true });
             }
         } else {

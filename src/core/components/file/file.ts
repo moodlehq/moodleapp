@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, Input, Output, OnInit, OnDestroy, EventEmitter } from '@angular/core';
-import { CoreApp } from '@services/app';
 import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreFileHelper } from '@services/file-helper';
@@ -27,6 +26,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreConstants } from '@/core/constants';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreWSFile } from '@services/ws';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Component to handle a remote file. Shows the file name, icon (depending on mimetype) and a button
@@ -87,7 +87,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
         this.fileSize = this.file.filesize;
         this.fileName = this.file.filename || '';
 
-        this.isIOS = CoreApp.isIOS();
+        this.isIOS = CorePlatform.isIOS();
         this.defaultIsOpenWithPicker = CoreFileHelper.defaultIsOpenWithPicker();
         this.openButtonIcon = this.defaultIsOpenWithPicker ? 'fas-file' : 'fas-share-square';
         this.openButtonLabel = this.defaultIsOpenWithPicker ? 'core.openfile' : 'core.openwith';

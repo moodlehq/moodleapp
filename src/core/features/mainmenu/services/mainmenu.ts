@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreApp } from '@services/app';
 import { CoreLang, CoreLangLanguage } from '@services/lang';
 import { CoreSites } from '@services/sites';
 import { CoreConstants } from '@/core/constants';
@@ -23,6 +22,7 @@ import { Device, makeSingleton } from '@singletons';
 import { CoreArray } from '@singletons/array';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreScreen } from '@services/screen';
+import { CorePlatform } from '@services/platform';
 
 declare module '@singletons/events' {
 
@@ -196,9 +196,9 @@ export class CoreMainMenuProvider {
             osversion: Device.version,
         };
 
-        if (CoreApp.isAndroid()) {
+        if (CorePlatform.isAndroid()) {
             replacements.devicetype = 'Android';
-        } else if (CoreApp.isIOS()) {
+        } else if (CorePlatform.isIOS()) {
             replacements.devicetype = 'iPhone or iPad';
         } else {
             replacements.devicetype = 'Other';

@@ -13,11 +13,17 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreExternalContentDirective } from '@directives/external-content';
 
 import { CoreFilterDefaultHandler } from '@features/filter/services/handlers/default-filter';
+import { CoreLang } from '@services/lang';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlUtils } from '@services/utils/url';
 import { makeSingleton } from '@singletons';
+import { CoreDirectivesRegistry } from '@singletons/directives-registry';
+import { CoreEvents } from '@singletons/events';
+import { CoreMedia } from '@singletons/media';
+import videojs, { VideoJSOptions, VideoJSPlayer } from 'video.js';
 
 /**
  * Handler to support the Multimedia filter.
@@ -41,25 +47,100 @@ export class AddonFilterMediaPluginHandlerService extends CoreFilterDefaultHandl
         const videos = Array.from(this.template.content.querySelectorAll('video'));
 
         videos.forEach((video) => {
-            this.treatVideoFilters(video);
+            this.treatYoutubeVideos(video);
         });
 
         return this.template.innerHTML;
     }
 
     /**
-     * Treat video filters. Currently only treating youtube video using video JS.
+     * @inheritdoc
+     */
+    handleHtml(container: HTMLElement): void {
+        const mediaElements = Array.from(container.querySelectorAll<HTMLVideoElement | HTMLAudioElement>('video, audio'));
+
+        mediaElements.forEach((mediaElement) => {
+            if (CoreMedia.mediaUsesJavascriptPlayer(mediaElement)) {
+                this.useVideoJS(mediaElement);
+            } else {
+                // Remove the VideoJS classes and data if present.
+                mediaElement.classList.remove('video-js');
+                mediaElement.removeAttribute('data-setup');
+                mediaElement.removeAttribute('data-setup-lazy');
+            }
+        });
+    }
+
+    /**
+     * Use video JS in a certain video or audio.
+     *
+     * @param mediaElement Media element.
+     */
+    protected async useVideoJS(mediaElement: HTMLVideoElement | HTMLAudioElement): Promise<void> {
+        const lang = await CoreLang.getCurrentLanguage();
+
+        // Wait for external-content to finish in the element and its sources.
+        await Promise.all([
+            CoreDirectivesRegistry.waitDirectivesReady(mediaElement, undefined, CoreExternalContentDirective),
+            CoreDirectivesRegistry.waitDirectivesReady(mediaElement, 'source', CoreExternalContentDirective),
+        ]);
+
+        const dataSetupString = mediaElement.getAttribute('data-setup') || mediaElement.getAttribute('data-setup-lazy') || '{}';
+        const data = CoreTextUtils.parseJSON<VideoJSOptions>(dataSetupString, {});
+
+        const player = videojs(mediaElement, {
+            controls: true,
+            techOrder: ['OgvJS'],
+            language: lang,
+            controlBar: {
+                pictureInPictureToggle: false,
+            },
+            aspectRatio: data.aspectRatio,
+        }, () => {
+            if (mediaElement.tagName === 'VIDEO') {
+                this.fixVideoJSPlayerSize(player);
+            }
+        });
+
+        CoreEvents.trigger(CoreEvents.JS_PLAYER_CREATED, {
+            id: mediaElement.id,
+            element: mediaElement,
+            player,
+        });
+    }
+
+    /**
+     * Fix VideoJS player size.
+     * If video width is wider than available width, video is cut off. Fix the dimensions in this case.
+     *
+     * @param player Player instance.
+     */
+    protected fixVideoJSPlayerSize(player: VideoJSPlayer): void {
+        const videoWidth = player.videoWidth();
+        const videoHeight = player.videoHeight();
+        const playerDimensions = player.currentDimensions();
+        if (!videoWidth || !videoHeight || !playerDimensions.width || videoWidth === playerDimensions.width) {
+            return;
+        }
+
+        const candidateHeight = playerDimensions.width * videoHeight / videoWidth;
+        if (!playerDimensions.height || Math.abs(candidateHeight - playerDimensions.height) > 1) {
+            player.dimension('height', candidateHeight);
+        }
+    }
+
+    /**
+     * Treat Video JS Youtube video links and translate them to iframes.
      *
      * @param video Video element.
      */
-    protected treatVideoFilters(video: HTMLElement): void {
-        // Treat Video JS Youtube video links and translate them to iframes.
+    protected treatYoutubeVideos(video: HTMLElement): void {
         if (!video.classList.contains('video-js')) {
             return;
         }
 
         const dataSetupString = video.getAttribute('data-setup') || video.getAttribute('data-setup-lazy') || '{}';
-        const data = <VideoDataSetup> CoreTextUtils.parseJSON(dataSetupString, {});
+        const data = CoreTextUtils.parseJSON<VideoJSOptions>(dataSetupString, {});
         const youtubeUrl = data.techOrder?.[0] == 'youtube' && CoreUrlUtils.getYoutubeEmbedUrl(data.sources?.[0]?.src);
 
         if (!youtubeUrl) {
@@ -81,10 +162,3 @@ export class AddonFilterMediaPluginHandlerService extends CoreFilterDefaultHandl
 }
 
 export const AddonFilterMediaPluginHandler = makeSingleton(AddonFilterMediaPluginHandlerService);
-
-type VideoDataSetup = {
-    techOrder?: string[];
-    sources?: {
-        src?: string;
-    }[];
-};

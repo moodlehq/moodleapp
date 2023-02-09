@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 import { WKUserScriptWindow } from 'cordova-plugin-wkuserscript';
 import { WKWebViewCookiesWindow } from 'cordova-plugin-wkwebview-cookies';
 
-import { CoreApp } from '@services/app';
 import { CoreNetwork } from '@services/network';
 import { CoreFile } from '@services/file';
 import { CoreFileHelper } from '@services/file-helper';
@@ -32,6 +31,7 @@ import { CoreWindow } from '@singletons/window';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CorePath } from '@singletons/path';
 import { CorePromisedValue } from '@classes/promised-value';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Possible types of frame elements.
@@ -531,7 +531,7 @@ export class CoreIframeUtilsProvider {
             } catch (error) {
                 CoreDomUtils.showErrorModal(error);
             }
-        } else if (CoreApp.isIOS() && (!link.target || link.target == '_self') && element) {
+        } else if (CorePlatform.isIOS() && (!link.target || link.target == '_self') && element) {
             // In cordova ios 4.1.0 links inside iframes stopped working. We'll manually treat them.
             event && event.preventDefault();
             if (element.tagName.toLowerCase() == 'object') {
@@ -564,7 +564,7 @@ export class CoreIframeUtilsProvider {
      * @returns Promise resolved when done.
      */
     async fixIframeCookies(url: string): Promise<void> {
-        if (!CoreApp.isIOS() || !url || CoreUrlUtils.isLocalFileUrl(url)) {
+        if (!CorePlatform.isIOS() || !url || CoreUrlUtils.isLocalFileUrl(url)) {
             // No need to fix cookies.
             return;
         }
@@ -593,7 +593,7 @@ export class CoreIframeUtilsProvider {
      * @returns Boolean.
      */
     shouldDisplayHelp(): boolean {
-        return CoreApp.isIOS() && CoreApp.getPlatformMajorVersion() >= 14;
+        return CorePlatform.isIOS() && CorePlatform.getPlatformMajorVersion() >= 14;
     }
 
     /**

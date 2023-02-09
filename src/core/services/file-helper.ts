@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { FileEntry } from '@ionic-native/file/ngx';
 
-import { CoreApp } from '@services/app';
 import { CoreNetwork } from '@services/network';
 import { CoreFile } from '@services/file';
 import { CoreFilepool } from '@services/filepool';
@@ -31,6 +30,7 @@ import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreConfig } from './config';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CorePlatform } from './platform';
 
 /**
  * Provider to provide some helper functions regarding files and packages.
@@ -44,7 +44,7 @@ export class CoreFileHelperProvider {
      * @returns Boolean.
      */
     defaultIsOpenWithPicker(): boolean {
-        return CoreApp.isIOS() && CoreConstants.CONFIG.iOSDefaultOpenFileAction === OpenFileAction.OPEN_WITH;
+        return CorePlatform.isIOS() && CoreConstants.CONFIG.iOSDefaultOpenFileAction === OpenFileAction.OPEN_WITH;
     }
 
     /**

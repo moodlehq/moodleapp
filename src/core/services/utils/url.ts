@@ -22,6 +22,7 @@ import { CoreUrl } from '@singletons/url';
 import { CoreSites } from '@services/sites';
 import { CorePath } from '@singletons/path';
 import { CorePlatform } from '@services/platform';
+import { CoreMedia } from '@singletons/media';
 
 /*
  * "Utils" service with helper functions for URLs.
@@ -120,7 +121,8 @@ export class CoreUrlUtilsProvider {
         // Also, only use it for "core" pluginfile endpoints. Some plugins can implement their own endpoint (like customcert).
         return !CoreConstants.CONFIG.disableTokenFile && !!accessKey && !url.match(/[&?]file=/) && (
             url.indexOf(CorePath.concatenatePaths(siteUrl, 'pluginfile.php')) === 0 ||
-            url.indexOf(CorePath.concatenatePaths(siteUrl, 'webservice/pluginfile.php')) === 0);
+            url.indexOf(CorePath.concatenatePaths(siteUrl, 'webservice/pluginfile.php')) === 0) &&
+            !CoreMedia.sourceUsesJavascriptPlayer({ src: url });
     }
 
     /**

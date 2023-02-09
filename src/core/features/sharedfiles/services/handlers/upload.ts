@@ -19,7 +19,7 @@ import {
     CoreFileUploaderHandlerData,
     CoreFileUploaderHandlerResult,
 } from '@features/fileuploader/services/fileuploader-delegate';
-import { CoreApp } from '@services/app';
+import { CorePlatform } from '@services/platform';
 import { makeSingleton } from '@singletons';
 import { CoreSharedFilesHelper } from '../sharedfiles-helper';
 /**
@@ -37,7 +37,7 @@ export class CoreSharedFilesUploadHandlerService implements CoreFileUploaderHand
      * @returns True or promise resolved with true if enabled.
      */
     async isEnabled(): Promise<boolean> {
-        return CoreApp.isIOS();
+        return CorePlatform.isIOS();
     }
 
     /**

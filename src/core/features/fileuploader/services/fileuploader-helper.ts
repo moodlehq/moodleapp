@@ -19,7 +19,6 @@ import { ChooserResult } from '@ionic-native/chooser/ngx';
 import { FileEntry, IFile } from '@ionic-native/file/ngx';
 import { MediaFile } from '@ionic-native/media-capture/ngx';
 
-import { CoreApp } from '@services/app';
 import { CoreNetwork } from '@services/network';
 import { CoreFile, CoreFileProvider, CoreFileProgressEvent } from '@services/file';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -652,7 +651,7 @@ export class CoreFileUploaderHelperProvider {
                 options.mediaType = Camera.MediaType.PICTURE;
             } else if (!imageSupported && videoSupported) {
                 options.mediaType = Camera.MediaType.VIDEO;
-            } else if (CoreApp.isIOS()) {
+            } else if (CorePlatform.isIOS()) {
                 // Only get all media in iOS because in Android using this option allows uploading any kind of file.
                 options.mediaType = Camera.MediaType.ALLMEDIA;
             }

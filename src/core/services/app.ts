@@ -18,7 +18,7 @@ import { CoreDB } from '@services/db';
 import { CoreEvents } from '@singletons/events';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 
-import { makeSingleton, Keyboard, StatusBar, Device } from '@singletons';
+import { makeSingleton, Keyboard, StatusBar } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreColors } from '@singletons/colors';
 import { DBNAME, SCHEMA_VERSIONS_TABLE_NAME, SCHEMA_VERSIONS_TABLE_SCHEMA, SchemaVersionsDBEntry } from '@services/database/app';
@@ -204,7 +204,7 @@ export class CoreAppProvider {
             return 'itms-apps://itunes.apple.com/app/' + storesConfig.ios;
         }
 
-        if (this.isAndroid() && storesConfig.android) {
+        if (CorePlatform.isAndroid() && storesConfig.android) {
             return 'market://details?id=' + storesConfig.android;
         }
 
@@ -219,13 +219,10 @@ export class CoreAppProvider {
      * Get platform major version number.
      *
      * @returns The platform major number.
+     * @deprecated since 4.1.1. Use CorePlatform.getPlatformMajorVersion instead.
      */
     getPlatformMajorVersion(): number {
-        if (!CorePlatform.isMobile()) {
-            return 0;
-        }
-
-        return Number(Device.version?.split('.')[0]);
+        return CorePlatform.getPlatformMajorVersion();
     }
 
     /**
@@ -242,9 +239,10 @@ export class CoreAppProvider {
      * Checks if the app is running in an Android mobile or tablet device.
      *
      * @returns Whether the app is running in an Android mobile or tablet device.
+     * @deprecated since 4.1.1. Use CorePlatform.isAndroid instead.
      */
     isAndroid(): boolean {
-        return CorePlatform.isMobile() && CorePlatform.is('android');
+        return CorePlatform.isAndroid();
     }
 
     /**
@@ -261,9 +259,10 @@ export class CoreAppProvider {
      * Checks if the app is running in an iOS mobile or tablet device.
      *
      * @returns Whether the app is running in an iOS mobile or tablet device.
+     * @deprecated since 4.1.1. Use CorePlatform.isIOS instead.
      */
     isIOS(): boolean {
-        return CorePlatform.isMobile() && !CorePlatform.is('android');
+        return CorePlatform.isIOS();
     }
 
     /**
@@ -387,7 +386,7 @@ export class CoreAppProvider {
      */
     openKeyboard(): void {
         // Open keyboard is not supported in desktop and in iOS.
-        if (this.isAndroid()) {
+        if (CorePlatform.isAndroid()) {
             Keyboard.show();
         }
     }

@@ -74,7 +74,7 @@ export class CoreGeolocationProvider {
             return;
         }
 
-        if (!CoreApp.isIOS()) {
+        if (!CorePlatform.isIOS()) {
             Diagnostic.switchToLocationSettings();
             await CoreApp.waitForResume(30000);
 
@@ -142,7 +142,7 @@ export class CoreGeolocationProvider {
      * Request and return the location authorization status for the application.
      */
     protected async requestLocationAuthorization(): Promise<void> {
-        if (!CoreApp.isIOS()) {
+        if (!CorePlatform.isIOS()) {
             await Diagnostic.requestLocationAuthorization();
 
             return;

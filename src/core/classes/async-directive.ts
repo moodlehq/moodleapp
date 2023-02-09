@@ -13,12 +13,12 @@
 // limitations under the License.
 
 /**
- * Component that is not rendered immediately after being mounted.
+ * Directive that is not rendered immediately after being mounted.
  */
-export interface AsyncComponent {
+export interface AsyncDirective {
 
     /**
-     * Wait until the component is fully rendered and ready.
+     * Wait until the directive is fully rendered and ready.
      */
     ready(): Promise<void>;
 }

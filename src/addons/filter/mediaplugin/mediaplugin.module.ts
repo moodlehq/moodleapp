@@ -15,6 +15,7 @@
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 
 import { CoreFilterDelegate } from '@features/filter/services/filter-delegate';
+import { initializeVideoJSOgvJS } from './classes/videojs-ogvjs';
 import { AddonFilterMediaPluginHandler } from './services/handlers/mediaplugin';
 
 @NgModule({
@@ -26,7 +27,11 @@ import { AddonFilterMediaPluginHandler } from './services/handlers/mediaplugin';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            useValue: () => CoreFilterDelegate.registerHandler(AddonFilterMediaPluginHandler.instance),
+            useValue: () => {
+                CoreFilterDelegate.registerHandler(AddonFilterMediaPluginHandler.instance);
+
+                initializeVideoJSOgvJS();
+            },
         },
     ],
 })

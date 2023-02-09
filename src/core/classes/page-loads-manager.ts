@@ -16,7 +16,7 @@ import { CoreRefreshButtonModalComponent } from '@components/refresh-button-moda
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { Subject } from 'rxjs';
-import { AsyncComponent } from './async-component';
+import { AsyncDirective } from './async-directive';
 import { PageLoadWatcher } from './page-load-watcher';
 
 /**
@@ -37,7 +37,7 @@ export class PageLoadsManager {
      * @param staleWhileRevalidate Whether to use stale while revalidate strategy.
      * @returns Load watcher to use.
      */
-    startPageLoad(page: AsyncComponent, staleWhileRevalidate: boolean): PageLoadWatcher {
+    startPageLoad(page: AsyncDirective, staleWhileRevalidate: boolean): PageLoadWatcher {
         this.initialPath = this.initialPath ?? CoreNavigator.getCurrentPath();
         this.currentLoadWatcher = new PageLoadWatcher(this, staleWhileRevalidate);
         this.ongoingLoadWatchers.add(this.currentLoadWatcher);
@@ -53,7 +53,7 @@ export class PageLoadsManager {
      * @param component Component instance.
      * @returns Load watcher to use.
      */
-    startComponentLoad(component: AsyncComponent): PageLoadWatcher {
+    startComponentLoad(component: AsyncDirective): PageLoadWatcher {
         // If a component is loading data without the page loading data, probably the component is reloading/refreshing.
         // In that case, create a load watcher instance but don't store it in currentLoadWatcher because it's not a page load.
         const loadWatcher = this.currentLoadWatcher ?? new PageLoadWatcher(this, false);

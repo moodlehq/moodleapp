@@ -585,3 +585,11 @@ export type CoreScrollOptions = {
     addYAxis?: number;
     addXAxis?: number;
 };
+
+/**
+ * Source of a media element.
+ */
+export type CoreMediaSource = {
+    src: string;
+    type?: string;
+};

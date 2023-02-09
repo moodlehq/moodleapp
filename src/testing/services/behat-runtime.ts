@@ -23,7 +23,7 @@ import { CoreNetwork, CoreNetworkService } from '@services/network';
 import { CorePushNotifications, CorePushNotificationsProvider } from '@features/pushnotifications/services/pushnotifications';
 import { CoreCronDelegate, CoreCronDelegateService } from '@services/cron';
 import { CoreLoadingComponent } from '@components/loading/loading';
-import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreDom } from '@singletons/dom';
 import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesProvider } from '@services/sites';
@@ -127,7 +127,7 @@ export class TestingBehatRuntimeService {
                 .filter((element) => CoreDom.isElementVisible(element));
 
             await Promise.all(elements.map(element =>
-                CoreComponentsRegistry.waitComponentReady(element, CoreLoadingComponent)));
+                CoreDirectivesRegistry.waitDirectiveReady(element, CoreLoadingComponent)));
         });
     }
 

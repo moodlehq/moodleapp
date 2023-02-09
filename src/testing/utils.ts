@@ -62,6 +62,8 @@ const DEFAULT_SERVICE_SINGLETON_MOCKS: [CoreSingletonProxy, unknown][] = [
     [CorePlatform, mock({
         is: () => false,
         isMobile: () => false,
+        isAndroid: () => false,
+        isIOS: () => false,
         ready: () => Promise.resolve(),
         resume: new Subject<void>(),
     })],

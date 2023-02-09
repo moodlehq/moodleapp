@@ -20,6 +20,7 @@ import { CoreFilepoolComponentFileEventData } from '@services/filepool';
 import { CoreRedirectPayload } from '@services/navigator';
 import { CoreCourseModuleCompletionData } from '@features/course/services/course-helper';
 import { CoreScreenOrientation } from '@services/screen';
+import { VideoJSPlayer } from 'video.js';
 
 /**
  * Observer instance to stop listening to an event.
@@ -64,6 +65,7 @@ export interface CoreEventsData {
     [CoreEvents.ORIENTATION_CHANGE]: CoreEventOrientationData;
     [CoreEvents.COURSE_MODULE_VIEWED]: CoreEventCourseModuleViewed;
     [CoreEvents.COMPLETE_REQUIRED_PROFILE_DATA_FINISHED]: CoreEventCompleteRequiredProfileDataFinished;
+    [CoreEvents.JS_PLAYER_CREATED]: CoreEventJSVideoPlayerCreated;
 }
 
 /*
@@ -108,7 +110,7 @@ export class CoreEvents {
     static readonly FILE_SHARED = 'file_shared';
     static readonly KEYBOARD_CHANGE = 'keyboard_change';
     /**
-     * @deprecated since app 4.0. Use CoreComponentsRegistry promises instead.
+     * @deprecated since app 4.0. Use CoreDirectivesRegistry promises instead.
      */
     static readonly CORE_LOADING_CHANGED = 'core_loading_changed';
     static readonly ORIENTATION_CHANGE = 'orientation_change';
@@ -123,6 +125,7 @@ export class CoreEvents {
     static readonly COMPLETE_REQUIRED_PROFILE_DATA_FINISHED = 'complete_required_profile_data_finished';
     static readonly MAIN_HOME_LOADED = 'main_home_loaded';
     static readonly FULL_SCREEN_CHANGED = 'full_screen_changed';
+    static readonly JS_PLAYER_CREATED = 'js_player_created';
 
     protected static logger = CoreLogger.getInstance('CoreEvents');
     protected static observables: { [eventName: string]: Subject<unknown> } = {};
@@ -489,4 +492,13 @@ export type CoreEventCourseModuleViewed = {
  */
 export type CoreEventCompleteRequiredProfileDataFinished = {
     path: string;
+};
+
+/**
+ * Data passed to JS_PLAYER_CREATED event.
+ */
+export type CoreEventJSVideoPlayerCreated = {
+    id: string;
+    element: HTMLAudioElement | HTMLVideoElement;
+    player: VideoJSPlayer;
 };

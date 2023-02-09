@@ -186,7 +186,7 @@ export class CoreLocalNotificationsProvider {
      */
     canDisableSound(): boolean {
         // Only allow disabling sound in Android 7 or lower. In iOS and Android 8+ it can easily be done with system settings.
-        return this.isAvailable() && CoreApp.isAndroid() && CoreApp.getPlatformMajorVersion() < 8;
+        return CorePlatform.isAndroid() && CorePlatform.getPlatformMajorVersion() < 8;
     }
 
     /**
@@ -195,7 +195,7 @@ export class CoreLocalNotificationsProvider {
      * @returns Promise resolved when done.
      */
     protected async createDefaultChannel(): Promise<void> {
-        if (!CoreApp.isAndroid()) {
+        if (!CorePlatform.isAndroid()) {
             return;
         }
 
@@ -583,7 +583,7 @@ export class CoreLocalNotificationsProvider {
         notification.data.component = component;
         notification.data.siteId = siteId;
 
-        if (CoreApp.isAndroid()) {
+        if (CorePlatform.isAndroid()) {
             notification.icon = notification.icon || 'res://icon';
             notification.smallIcon = notification.smallIcon || 'res://smallicon';
             notification.color = notification.color || CoreConstants.CONFIG.notificoncolor;

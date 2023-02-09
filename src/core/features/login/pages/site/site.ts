@@ -45,6 +45,7 @@ import { CoreErrorInfoComponent } from '@components/error-info/error-info';
 import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
 import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
 import { CoreLoginError } from '@classes/errors/loginerror';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Site (url) chooser when adding a new site.
@@ -93,7 +94,7 @@ export class CoreLoginSitePage implements OnInit {
         // Load fixed sites if they're set.
         if (CoreLoginHelper.hasSeveralFixedSites()) {
             url = this.initSiteSelector();
-        } else if (CoreConstants.CONFIG.enableonboarding && !CoreApp.isIOS()) {
+        } else if (CoreConstants.CONFIG.enableonboarding && !CorePlatform.isIOS()) {
             this.initOnboarding();
         }
 

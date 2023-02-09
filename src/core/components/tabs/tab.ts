@@ -16,7 +16,7 @@ import { Component, Input, Output, OnInit, OnDestroy, ElementRef, EventEmitter, 
 import { CoreTabBase } from '@classes/tabs';
 
 import { CoreUtils } from '@services/utils/utils';
-import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreNavBarButtonsComponent } from '../navbar-buttons/navbar-buttons';
 import { CoreTabsComponent } from './tabs';
 
@@ -140,7 +140,7 @@ export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
     protected showHideNavBarButtons(show: boolean): void {
         const elements = this.element.querySelectorAll('core-navbar-buttons');
         elements.forEach((element) => {
-            const instance = CoreComponentsRegistry.resolve(element, CoreNavBarButtonsComponent);
+            const instance = CoreDirectivesRegistry.resolve(element, CoreNavBarButtonsComponent);
 
             if (instance) {
                 instance.forceHide(!show);

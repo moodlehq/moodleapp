@@ -13,12 +13,14 @@
 // limitations under the License.
 
 import { Component } from '@angular/core';
-import { AsyncComponent } from '@classes/async-component';
+import { AsyncDirective } from '@classes/async-directive';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreLogger } from './logger';
 
 /**
  * Registry to keep track of component instances.
+ *
+ * @deprecated since 4.1.1. Use CoreDirectivesRegistry instead.
  */
 export class CoreComponentsRegistry {
 
@@ -74,7 +76,7 @@ export class CoreComponentsRegistry {
      * @param componentClass Component class.
      * @returns Promise resolved when done.
      */
-    static async waitComponentReady<T extends AsyncComponent>(
+    static async waitComponentReady<T extends AsyncDirective>(
         element: Element | null,
         componentClass?: ComponentConstructor<T>,
     ): Promise<void> {
@@ -96,7 +98,7 @@ export class CoreComponentsRegistry {
      * @param componentClass Component class.
      * @returns Promise resolved when done.
      */
-    static async waitComponentsReady<T extends AsyncComponent>(
+    static async waitComponentsReady<T extends AsyncDirective>(
         element: Element,
         selector: string,
         componentClass?: ComponentConstructor<T>,

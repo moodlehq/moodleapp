@@ -21,7 +21,7 @@ import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/da
 import { CoreApp } from '@services/app';
 import { CoreUtils } from '@services/utils/utils';
 import { AngularFrameworkDelegate, makeSingleton } from '@singletons';
-import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreDom } from '@singletons/dom';
 import { CoreSubscriptions } from '@singletons/subscriptions';
 import { CoreUserToursUserTourComponent } from '../components/user-tour/user-tour';
@@ -120,7 +120,7 @@ export class CoreUserToursService {
             CoreUserToursUserTourComponent,
             { ...componentOptions, container },
         );
-        const tour = CoreComponentsRegistry.require(element, CoreUserToursUserTourComponent);
+        const tour = CoreDirectivesRegistry.require(element, CoreUserToursUserTourComponent);
 
         return this.startTour(tour, options.watch ?? (options as CoreUserToursFocusedOptions).focus);
     }
