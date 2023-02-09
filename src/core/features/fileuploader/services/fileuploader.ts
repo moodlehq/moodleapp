@@ -18,7 +18,6 @@ import { FileEntry } from '@ionic-native/file/ngx';
 import { MediaFile, CaptureError, CaptureAudioOptions, CaptureVideoOptions } from '@ionic-native/media-capture/ngx';
 import { Subject } from 'rxjs';
 
-import { CoreApp } from '@services/app';
 import { CoreFile, CoreFileProvider } from '@services/file';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
@@ -33,6 +32,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreSite } from '@classes/site';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CorePath } from '@singletons/path';
+import { CorePlatform } from '@services/platform';
 
 /**
  * File upload options.
@@ -236,7 +236,7 @@ export class CoreFileUploaderProvider {
     getCameraUploadOptions(uri: string, isFromAlbum?: boolean): CoreFileUploaderOptions {
         const extension = CoreMimetypeUtils.guessExtensionFromUrl(uri);
         const mimetype = CoreMimetypeUtils.getMimeType(extension);
-        const isIOS = CoreApp.isIOS();
+        const isIOS = CorePlatform.isIOS();
         const options: CoreFileUploaderOptions = {
             deleteAfterUpload: !isFromAlbum,
             mimeType: mimetype,
@@ -259,7 +259,7 @@ export class CoreFileUploaderProvider {
             // If the file was picked from the album, delete it only if it was copied to the app's folder.
             options.deleteAfterUpload = CoreFile.isFileInAppFolder(uri);
 
-            if (CoreApp.isAndroid()) {
+            if (CorePlatform.isAndroid()) {
                 // Picking an image from album in Android adds a timestamp at the end of the file. Delete it.
                 options.fileName = options.fileName.replace(/(\.[^.]*)\?[^.]*$/, '$1');
             }

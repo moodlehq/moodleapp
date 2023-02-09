@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreApp } from '@services/app';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreFileUploaderHandler, CoreFileUploaderHandlerData, CoreFileUploaderHandlerResult } from '../fileuploader-delegate';
 import { CoreFileUploaderHelper } from '../fileuploader-helper';
@@ -94,7 +93,7 @@ export class CoreFileUploaderFileHandlerService implements CoreFileUploaderHandl
                 const input = document.createElement('input');
                 input.setAttribute('type', 'file');
                 input.classList.add('core-fileuploader-file-handler-input');
-                if (mimetypes && mimetypes.length && (!CoreApp.isAndroid() || mimetypes.length == 1)) {
+                if (mimetypes && mimetypes.length && (!CorePlatform.isAndroid() || mimetypes.length == 1)) {
                     // Don't use accept attribute in Android with several mimetypes, it's not supported.
                     input.setAttribute('accept', mimetypes.join(', '));
                 }
@@ -134,7 +133,7 @@ export class CoreFileUploaderFileHandlerService implements CoreFileUploaderHandl
                     }
                 });
 
-                if (CoreApp.isIOS()) {
+                if (CorePlatform.isIOS()) {
                     // In iOS, the click on the input stopped working for some reason. We need to put it 1 level higher.
                     element.parentElement?.appendChild(input);
 

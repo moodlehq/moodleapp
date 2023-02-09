@@ -15,7 +15,7 @@
 import { Component, OnInit, AfterViewInit, Input, ElementRef, ContentChild } from '@angular/core';
 import { IonInput } from '@ionic/angular';
 
-import { CoreApp } from '@services/app';
+import { CorePlatform } from '@services/platform';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 
@@ -121,7 +121,7 @@ export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
 
         this.setData(this.input);
         // In Android, the keyboard is closed when the input type changes. Focus it again.
-        if (isFocused && CoreApp.isAndroid()) {
+        if (isFocused && CorePlatform.isAndroid()) {
             CoreDomUtils.focusElement(this.input);
         }
     }

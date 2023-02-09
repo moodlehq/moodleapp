@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 
 import { FileEntry, DirectoryEntry, Entry, Metadata, IFile } from '@ionic-native/file/ngx';
 
-import { CoreApp } from '@services/app';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
@@ -140,9 +139,9 @@ export class CoreFileProvider {
 
         await CorePlatform.ready();
 
-        if (CoreApp.isAndroid()) {
+        if (CorePlatform.isAndroid()) {
             this.basePath = File.externalApplicationStorageDirectory || this.basePath;
-        } else if (CoreApp.isIOS()) {
+        } else if (CorePlatform.isIOS()) {
             this.basePath = File.documentsDirectory || this.basePath;
         } else if (!this.isAvailable() || this.basePath === '') {
             this.logger.error('Error getting device OS.');
@@ -441,7 +440,7 @@ export class CoreFileProvider {
      */
     calculateFreeSpace(): Promise<number> {
         return File.getFreeDiskSpace().then((size) => {
-            if (CoreApp.isIOS()) {
+            if (CorePlatform.isIOS()) {
                 // In iOS the size is in bytes.
                 return Number(size);
             }
@@ -717,7 +716,7 @@ export class CoreFileProvider {
     async getBasePathToDownload(): Promise<string> {
         await this.init();
 
-        if (CoreApp.isIOS()) {
+        if (CorePlatform.isIOS()) {
             // In iOS we want the internal URL (cdvfile://localhost/persistent/...).
             const dirEntry = await File.resolveDirectoryUrl(this.basePath);
 
@@ -1263,7 +1262,7 @@ export class CoreFileProvider {
             return src;
         }
 
-        if (CoreApp.isIOS()) {
+        if (CorePlatform.isIOS()) {
             return src.replace(CoreConstants.CONFIG.ioswebviewscheme + '://localhost/_app_file_', 'file://');
         }
 

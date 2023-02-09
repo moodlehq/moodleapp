@@ -17,7 +17,6 @@ import { IonTabs } from '@ionic/angular';
 import { BackButtonEvent } from '@ionic/core';
 import { Subscription } from 'rxjs';
 
-import { CoreApp } from '@services/app';
 import { CoreEvents, CoreEventObserver } from '@singletons/events';
 import { CoreMainMenu, CoreMainMenuProvider } from '../../services/mainmenu';
 import { CoreMainMenuDelegate, CoreMainMenuHandlerToDisplay } from '../../services/mainmenu-delegate';
@@ -31,6 +30,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 import { CoreSites } from '@services/sites';
 import { CoreDom } from '@singletons/dom';
 import { CoreLogger } from '@singletons/logger';
+import { CorePlatform } from '@services/platform';
 
 const ANIMATION_DURATION = 500;
 
@@ -135,7 +135,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
         });
         document.addEventListener('ionBackButton', this.backButtonFunction);
 
-        if (CoreApp.isIOS()) {
+        if (CorePlatform.isIOS()) {
             // In iOS, the resize event is triggered before the keyboard is opened/closed and not triggered again once done.
             // Init handlers again once keyboard is closed since the resize event doesn't have the updated height.
             this.keyboardObserver = CoreEvents.on(CoreEvents.KEYBOARD_CHANGE, (kbHeight: number) => {

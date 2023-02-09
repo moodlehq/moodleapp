@@ -23,7 +23,6 @@ import {
     EventEmitter,
     OnDestroy,
 } from '@angular/core';
-import { CoreApp } from '@services/app';
 import { CoreFile } from '@services/file';
 import { CoreFilepool, CoreFilepoolFileActions, CoreFilepoolFileEventData } from '@services/filepool';
 import { CoreSites } from '@services/sites';
@@ -39,6 +38,7 @@ import { Translate } from '@singletons';
 import { AsyncDirective } from '@classes/async-directive';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CorePromisedValue } from '@classes/promised-value';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Directive to handle external content.
@@ -117,7 +117,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
         newSource.setAttribute('src', url);
 
         if (type) {
-            if (CoreApp.isAndroid() && type == 'video/quicktime') {
+            if (CorePlatform.isAndroid() && type == 'video/quicktime') {
                 // Fix for VideoJS/Chrome bug https://github.com/videojs/video.js/issues/423 .
                 newSource.setAttribute('type', 'video/mp4');
             } else {

@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
 import { ModalOptions } from '@ionic/core';
 
-import { CoreApp } from '@services/app';
 import { CoreAnyError, CoreError } from '@classes/errors/error';
 import { DomSanitizer, makeSingleton, Translate } from '@singletons';
 import { CoreWSFile } from '@services/ws';
@@ -28,6 +27,7 @@ import { CoreText } from '@singletons/text';
 import { CoreUrl } from '@singletons/url';
 import { AlertButton } from '@ionic/angular';
 import { CorePath } from '@singletons/path';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Different type of errors the app can treat.
@@ -187,7 +187,7 @@ export class CoreTextUtilsProvider {
             return DomSanitizer.bypassSecurityTrustUrl(address);
         }
 
-        return DomSanitizer.bypassSecurityTrustUrl((CoreApp.isAndroid() ? 'geo:0,0?q=' : 'http://maps.google.com?q=') +
+        return DomSanitizer.bypassSecurityTrustUrl((CorePlatform.isAndroid() ? 'geo:0,0?q=' : 'http://maps.google.com?q=') +
                 encodeURIComponent(address));
     }
 

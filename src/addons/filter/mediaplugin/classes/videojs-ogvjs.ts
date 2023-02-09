@@ -123,7 +123,7 @@ export class VideoJSOgvJS extends Tech {
         this.playerId = options.playerId;
 
         this.on('loadedmetadata', () => {
-            if (CoreApp.isIPhone()) {
+            if (CorePlatform.isIPhone()) {
                 // iPhoneOS add some inline styles to the canvas, we need to remove it.
                 const canvas = this.el_.getElementsByTagName('canvas')[0];
 
@@ -186,7 +186,7 @@ export class VideoJSOgvJS extends Tech {
      * @returns True if volume can be controlled.
      */
     static canControlVolume(): boolean {
-        if (CoreApp.isIPhone()) {
+        if (CorePlatform.isIPhone()) {
             return false;
         }
 
@@ -393,7 +393,7 @@ export class VideoJSOgvJS extends Tech {
      */
     setVolume(percentAsDecimal: number): void {
         // eslint-disable-next-line no-prototype-builtins
-        if (!CoreApp.isIPhone() && this.el_.hasOwnProperty('volume')) {
+        if (!CorePlatform.isIPhone() && this.el_.hasOwnProperty('volume')) {
             this.el_.volume = percentAsDecimal;
         }
     }

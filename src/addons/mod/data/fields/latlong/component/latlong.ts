@@ -18,8 +18,8 @@ import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { SafeUrl } from '@angular/platform-browser';
 import { CoreAnyError } from '@classes/errors/error';
-import { CoreApp } from '@services/app';
 import { CoreGeolocation, CoreGeolocationError, CoreGeolocationErrorReason } from '@services/geolocation';
+import { CorePlatform } from '@services/platform';
 import { CoreDomUtils } from '@services/utils/dom';
 import { DomSanitizer } from '@singletons';
 
@@ -73,7 +73,7 @@ export class AddonModDataFieldLatlongComponent extends AddonModDataFieldPluginBa
             const northFixed = north ? north.toFixed(4) : '0.0000';
             const eastFixed = east ? east.toFixed(4) : '0.0000';
 
-            if (CoreApp.isIOS()) {
+            if (CorePlatform.isIOS()) {
                 url = 'http://maps.apple.com/?ll=' + northFixed + ',' + eastFixed + '&near=' + northFixed + ',' + eastFixed;
             } else {
                 url = 'geo:' + northFixed + ',' + eastFixed;

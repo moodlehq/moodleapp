@@ -21,7 +21,7 @@ import { Translate } from '@singletons';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CorePromisedValue } from '@classes/promised-value';
 import { AsyncDirective } from '@classes/async-directive';
-import { CoreApp } from '@services/app';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Component to show a loading spinner and message while data is being loaded.
@@ -146,7 +146,7 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
         if (loaded) {
             this.onReadyPromise.resolve();
             this.restoreScrollPosition();
-            if (CoreApp.isIOS()) {
+            if (CorePlatform.isIOS()) {
                 this.mutationObserver.observe(this.element, { childList: true });
             }
         } else {

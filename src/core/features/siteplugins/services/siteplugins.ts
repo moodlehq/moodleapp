@@ -97,7 +97,7 @@ export class CoreSitePluginsProvider {
         };
 
         if (args.appismobile) {
-            defaultArgs.appplatform = CoreApp.isIOS() ? 'ios' : 'android';
+            defaultArgs.appplatform = CorePlatform.isIOS() ? 'ios' : 'android';
         }
 
         return {

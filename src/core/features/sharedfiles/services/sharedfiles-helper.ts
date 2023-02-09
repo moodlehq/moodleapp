@@ -18,7 +18,6 @@ import { FileEntry } from '@ionic-native/file/ngx';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreFileUploaderHandlerResult } from '@features/fileuploader/services/fileuploader-delegate';
-import { CoreApp } from '@services/app';
 import { CoreFile } from '@services/file';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
@@ -49,7 +48,7 @@ export class CoreSharedFilesHelperProvider {
      * Initialize.
      */
     initialize(): void {
-        if (!CoreApp.isIOS()) {
+        if (!CorePlatform.isIOS()) {
             return;
         }
 
