@@ -24,7 +24,7 @@
     "build": "ionic build",
     "build:prod": "NODE_ENV=production ionic build --prod",
     "build:test": "NODE_ENV=testing ionic build --configuration=testing",
-    "dev:android": "ionic cordova run android --livereload",
+    "dev:android": "ionic cordova run android --livereload --external --ssl",
     "dev:ios": "ionic cordova run ios",
     "prod:android": "NODE_ENV=production ionic cordova run android --prod",
     "prod:ios": "NODE_ENV=production ionic cordova run ios --prod",
