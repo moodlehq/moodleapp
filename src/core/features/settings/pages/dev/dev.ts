@@ -13,8 +13,10 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
+import { CoreLoginHelperProvider } from '@features/login/services/login-helper';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CoreUserTours } from '@features/usertours/services/user-tours';
+import { CoreConfig } from '@services/config';
 import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -149,6 +151,9 @@ export class CoreSettingsDevPage implements OnInit {
      */
     async resetUserTours(): Promise<void> {
         await CoreUserTours.resetTours();
+
+        await CoreConfig.delete(CoreLoginHelperProvider.ONBOARDING_DONE);
+
         CoreDomUtils.showToast('User tours have been reseted');
     }
 
