@@ -35,6 +35,7 @@ export class CoreBlockComponent implements OnChanges, OnDestroy {
     @Input() contextLevel!: string; // The context where the block will be used.
     @Input() instanceId!: number; // The instance ID associated with the context level.
     @Input() extraData!: Record<string, unknown>; // Any extra data to be passed to the block.
+    @Input() labelledBy?: string;
 
     componentClass?: Type<ICoreBlockComponent>; // The class of the component to render.
     data: Record<string, unknown> = {}; // Data to pass to the component.
