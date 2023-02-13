@@ -28,11 +28,11 @@
                 </core-rich-text-editor>
             </ion-item>
             <ion-item *ngIf="categories.length > 0">
-                <ion-label position="stacked" id="addon-mod-glossary-categories-label">
+                <ion-label position="stacked">
                     {{ 'addon.mod_glossary.categories' | translate }}
                 </ion-label>
-                <ion-select [(ngModel)]="options.categories" multiple="true" aria-labelledby="addon-mod-glossary-categories-label"
-                    interface="action-sheet" [placeholder]="'addon.mod_glossary.categories' | translate" name="categories"
+                <ion-select [(ngModel)]="options.categories" multiple="true" interface="action-sheet"
+                    [placeholder]="'addon.mod_glossary.categories' | translate" name="categories"
                     [interfaceOptions]="{header: 'addon.mod_glossary.categories' | translate}">
                     <ion-select-option *ngFor="let category of categories" [value]="category.id">
                         {{ category.name }}
@@ -40,11 +40,10 @@
                 </ion-select>
             </ion-item>
             <ion-item>
-                <ion-label position="stacked" id="addon-mod-glossary-aliases-label">
+                <ion-label position="stacked">
                     {{ 'addon.mod_glossary.aliases' | translate }}
                 </ion-label>
-                <ion-textarea [(ngModel)]="options.aliases" rows="1" [core-auto-rows]="options.aliases"
-                    aria-labelledby="addon-mod-glossary-aliases-label" name="aliases">
+                <ion-textarea [(ngModel)]="options.aliases" rows="1" [core-auto-rows]="options.aliases" name="aliases">
                 </ion-textarea>
             </ion-item>
             <ion-item-divider>

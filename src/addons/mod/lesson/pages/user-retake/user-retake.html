@@ -27,9 +27,8 @@
 
             <!-- Retake selector if there is more than one retake. -->
             <ion-item class="ion-text-wrap" *ngIf="student.attempts && student.attempts.length > 1">
-                <ion-label id="addon-mod_lesson-retakeslabel">{{ 'addon.mod_lesson.attemptheader' | translate }}</ion-label>
-                <ion-select [(ngModel)]="selectedRetake" (ionChange)="changeRetake(selectedRetake!)"
-                    aria-labelledby="addon-mod_lesson-retakeslabel" interface="action-sheet"
+                <ion-label>{{ 'addon.mod_lesson.attemptheader' | translate }}</ion-label>
+                <ion-select [(ngModel)]="selectedRetake" (ionChange)="changeRetake(selectedRetake!)" interface="action-sheet"
                     [interfaceOptions]="{header: 'addon.mod_lesson.attemptheader' | translate}">
                     <ion-select-option *ngFor="let retake of student.attempts" [value]="retake.try">
                         {{retake.label}}
