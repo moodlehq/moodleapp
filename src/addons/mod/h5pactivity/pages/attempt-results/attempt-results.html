@@ -23,13 +23,13 @@
                 [attr.aria-label]="user.fullname">
                 <core-user-avatar [user]="user" slot="start" [courseId]="courseId" [linkProfile]="false"></core-user-avatar>
                 <ion-label>
-                    <h2>{{ 'addon.mod_h5pactivity.attempt' | translate }} #{{attempt.attempt}}: {{user.fullname}}</h2>
+                    <p class="item-heading">{{ 'addon.mod_h5pactivity.attempt' | translate }} #{{attempt.attempt}}: {{user.fullname}}</p>
                 </ion-label>
             </ion-item>
             <!-- Attempt number (if user not known). -->
             <ion-item class="ion-text-wrap" *ngIf="!user">
                 <ion-label>
-                    <h2>{{ 'addon.mod_h5pactivity.attempt' | translate }} #{{attempt.attempt}}</h2>
+                    <p class="item-heading">{{ 'addon.mod_h5pactivity.attempt' | translate }} #{{attempt.attempt}}</p>
                 </ion-label>
             </ion-item>
 
@@ -38,13 +38,13 @@
                 <ion-list>
                     <ion-item class="ion-text-wrap">
                         <ion-label>
-                            <h2>{{ 'addon.mod_h5pactivity.startdate' | translate }}</h2>
+                            <p class="item-heading">{{ 'addon.mod_h5pactivity.startdate' | translate }}</p>
                             <p>{{ attempt.timecreated | coreFormatDate:'strftimedatetime' }}</p>
                         </ion-label>
                     </ion-item>
                     <ion-item class="ion-text-wrap">
                         <ion-label>
-                            <h2>{{ 'addon.mod_h5pactivity.completion' | translate }}</h2>
+                            <p class="item-heading">{{ 'addon.mod_h5pactivity.completion' | translate }}</p>
                             <p *ngIf="attempt.completion">
                                 <img src="assets/img/completion/completion-auto-y.svg" role="presentation" alt="">
                                 {{ 'addon.mod_h5pactivity.attempt_completion_yes' | translate }}
@@ -57,13 +57,13 @@
                     </ion-item>
                     <ion-item class="ion-text-wrap">
                         <ion-label>
-                            <h2>{{ 'addon.mod_h5pactivity.duration' | translate }}</h2>
+                            <p class="item-heading">{{ 'addon.mod_h5pactivity.duration' | translate }}</p>
                             <p>{{ attempt.durationReadable }}</p>
                         </ion-label>
                     </ion-item>
                     <ion-item class="ion-text-wrap">
                         <ion-label>
-                            <h2>{{ 'addon.mod_h5pactivity.outcome' | translate }}</h2>
+                            <p class="item-heading">{{ 'addon.mod_h5pactivity.outcome' | translate }}</p>
                             <p *ngIf="attempt.success !== null && attempt.success">
                                 <ion-icon name="fas-check-circle" aria-hidden="true"></ion-icon>
                                 {{ 'addon.mod_h5pactivity.attempt_success_pass' | translate }}
@@ -79,7 +79,7 @@
                     </ion-item>
                     <ion-item *ngIf="attempt.maxscore" class="ion-text-wrap">
                         <ion-label>
-                            <h2>{{ 'addon.mod_h5pactivity.totalscore' | translate }}</h2>
+                            <p class="item-heading">{{ 'addon.mod_h5pactivity.totalscore' | translate }}</p>
                             <p>{{ 'addon.mod_h5pactivity.score_out_of' | translate:{$a: attempt} }}</p>
                         </ion-label>
                     </ion-item>

@@ -20,7 +20,7 @@
     </ion-item-divider>
     <ion-item class="ion-text-wrap" *ngIf="wordLimitEnabled && words >= 0">
         <ion-label>
-            <h2>{{ 'addon.mod_assign.wordlimit' | translate }}</h2>
+            <p class="item-heading">{{ 'addon.mod_assign.wordlimit' | translate }}</p>
             <p>{{ 'core.numwords' | translate: {'$a': words + ' / ' + wordLimit} }}</p>
         </ion-label>
     </ion-item>

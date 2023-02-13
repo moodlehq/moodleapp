@@ -17,7 +17,7 @@
             <ion-item [attr.aria-current]="reports.getItemAriaCurrent(report)" [detail]="true" class="ion-text-wrap" [button]="true"
                 *ngFor="let report of reports.items" (click)="reports.select(report)">
                 <ion-label>
-                    <h3>{{ report.name }}</h3>
+                    <p class="item-heading">{{ report.name }}</p>
                     <p>{{ report.sourcename }}</p>
                 </ion-label>
             </ion-item>

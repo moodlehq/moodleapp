@@ -214,7 +214,7 @@
                 <ion-item class="ion-text-center" *ngIf="downloading">
                     <ion-label>
                         <ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner>
-                        <h2 *ngIf="progressMessage">{{ progressMessage | translate }}</h2>
+                        <p class="item-heading" *ngIf="progressMessage">{{ progressMessage | translate }}</p>
                         <core-progress-bar *ngIf="showPercentage" [progress]="percentage" [a11yText]="progressMessage">
                         </core-progress-bar>
                     </ion-label>

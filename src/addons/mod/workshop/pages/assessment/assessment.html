@@ -57,7 +57,7 @@
         <form [formGroup]="evaluateForm" *ngIf="evaluating" #evaluateFormEl>
             <ion-item class="ion-text-wrap">
                 <ion-label>
-                    <h2>{{ 'addon.mod_workshop.assessmentsettings' | translate }}</h2>
+                    <h3 class="item-heading">{{ 'addon.mod_workshop.assessmentsettings' | translate }}</h3>
                 </ion-label>
             </ion-item>
             <ion-item class="ion-text-wrap" *ngIf="access?.canallocate">
@@ -73,7 +73,7 @@
             </ion-item>
             <ion-item class="ion-text-wrap">
                 <ion-label>
-                    <h2>{{ 'addon.mod_workshop.gradinggradecalculated' | translate }}</h2>
+                    <h3 class="item-heading">{{ 'addon.mod_workshop.gradinggradecalculated' | translate }}</h3>
                     <p>{{ gradingGrade }}</p>
                 </ion-label>
             </ion-item>
@@ -99,9 +99,9 @@
                 <core-user-avatar *ngIf="evaluateByProfile" [user]="evaluateByProfile" slot="start" [courseId]="courseId"
                     [userId]="evaluateByProfile.id"></core-user-avatar>
                 <ion-label>
-                    <h2 *ngIf="evaluateByProfile && evaluateByProfile.fullname">
+                    <h3 class="item-heading" *ngIf="evaluateByProfile && evaluateByProfile.fullname">
                         {{ 'addon.mod_workshop.feedbackby' | translate : {$a: evaluateByProfile.fullname} }}
-                    </h2>
+                    </h3>
                     <core-format-text [text]="evaluate.text" contextLevel="module" [contextInstanceId]="workshop?.coursemodule"
                         [courseId]="courseId">
                     </core-format-text>

@@ -37,7 +37,7 @@
             <ng-container *ngIf="attemptsData.scored">
                 <ion-item-divider>
                     <ion-label>
-                        <h2>{{ attemptsData.scored.title }}</h2>
+                        <h3 class="item-heading">{{ attemptsData.scored.title }}</h3>
                     </ion-label>
                 </ion-item-divider>
                 <ng-container *ngTemplateOutlet="attemptsTemplate; context: {attempts: attemptsData.scored.attempts}">
@@ -48,7 +48,7 @@
             <ng-container *ngIf="attemptsData.attempts && attemptsData.attempts.length">
                 <ion-item-divider>
                     <ion-label>
-                        <h2>{{ 'addon.mod_h5pactivity.all_attempts' | translate }}</h2>
+                        <h3 class="item-heading">{{ 'addon.mod_h5pactivity.all_attempts' | translate }}</h3>
                     </ion-label>
                 </ion-item-divider>
                 <ng-container *ngTemplateOutlet="attemptsTemplate; context: {attempts: attemptsData.attempts}"></ng-container>

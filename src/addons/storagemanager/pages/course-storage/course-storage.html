@@ -108,11 +108,11 @@
                                     [modname]="module.modname" [componentId]="module.instance">
                                 </core-mod-icon>
                                 <ion-label class="ion-text-wrap">
-                                    <h3 class="{{module.handlerData!.class}} addon-storagemanager-module-size">
+                                    <p class="item-heading {{module.handlerData!.class}} addon-storagemanager-module-size">
                                         <core-format-text [text]="module.handlerData.title" [courseId]="module.course" contextLevel="module"
                                             [contextInstanceId]="module.id" [adaptImg]="false">
                                         </core-format-text>
-                                    </h3>
+                                    </p>
                                     <ion-badge [color]="module.downloadStatus == statusDownloaded ? 'success' : 'light'"
                                         *ngIf="!module.calculatingSize && module.totalSize > 0">
                                         <ion-icon name="fam-cloud-done" *ngIf="module.downloadStatus == statusDownloaded"

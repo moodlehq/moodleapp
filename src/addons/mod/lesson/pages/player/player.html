@@ -94,7 +94,7 @@
                             </ion-item>
                             <ion-item class="ion-text-wrap" *ngIf="!question.textarea && question.useranswer">
                                 <ion-label>
-                                    <h3 class="item-heading">{{ 'addon.mod_lesson.youranswer' | translate }}</h3>
+                                    <p class="item-heading">{{ 'addon.mod_lesson.youranswer' | translate }}</p>
                                     <p>
                                         <core-format-text [component]="component" [componentId]="lesson?.coursemodule"
                                             [text]="question.useranswer" contextLevel="module" [contextInstanceId]="lesson?.coursemodule"

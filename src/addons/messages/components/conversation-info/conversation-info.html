@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-title>
-            <h2>{{ 'addon.messages.groupinfo' | translate }}</h2>
+            <h1>{{ 'addon.messages.groupinfo' | translate }}</h1>
         </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
@@ -19,18 +19,18 @@
         <ion-item class="ion-text-center" *ngIf="conversation">
             <ion-label>
                 <div class="large-avatar">
-                    <img class="avatar" [src]="conversation!.imageurl" core-external-content [alt]="conversation!.name"
+                    <img class="avatar" [src]="conversation.imageurl" core-external-content [alt]="conversation.name"
                         onError="this.src='assets/img/group-avatar.svg'">
                 </div>
                 <h2>
-                    <core-format-text [text]="conversation!.name" contextLevel="system" [contextInstanceId]="0"></core-format-text>
+                    <core-format-text [text]="conversation.name" contextLevel="system" [contextInstanceId]="0"></core-format-text>
                 </h2>
                 <p>
-                    <core-format-text *ngIf="conversation!.subname" [text]="conversation!.subname" contextLevel="system"
+                    <core-format-text *ngIf="conversation.subname" [text]="conversation.subname" contextLevel="system"
                         [contextInstanceId]="0">
                     </core-format-text>
                 </p>
-                <p>{{ 'addon.messages.numparticipants' | translate:{$a: conversation!.membercount} }}</p>
+                <p>{{ 'addon.messages.numparticipants' | translate:{$a: conversation.membercount} }}</p>
             </ion-label>
         </ion-item>
 

@@ -132,7 +132,7 @@
             <!-- List of messages explaining why the quiz cannot be submitted. -->
             <ion-item class="ion-text-wrap" *ngIf="preventSubmitMessages.length">
                 <ion-label>
-                    <h3 class="item-heading">{{ 'addon.mod_quiz.cannotsubmitquizdueto' | translate }}</h3>
+                    <p class="item-heading">{{ 'addon.mod_quiz.cannotsubmitquizdueto' | translate }}</p>
                     <p *ngFor="let message of preventSubmitMessages">{{message}}</p>
                 </ion-label>
             </ion-item>

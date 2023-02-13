@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-title>
-            <h2>{{ 'addon.mod_workshop.userplan' | translate }}</h2>
+            <h1>{{ 'addon.mod_workshop.userplan' | translate }}</h1>
         </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
@@ -40,7 +40,7 @@
                 <ion-icon slot="start" name="fas-check-circle" color="success" *ngIf="task.completed == '1'"
                     [attr.aria-label]="'addon.mod_workshop.taskdone' | translate"></ion-icon>
                 <ion-label>
-                    <h2 class="ion-text-wrap">{{task.title}}</h2>
+                    <p class="item-heading ion-text-wrap">{{task.title}}</p>
                     <p *ngIf="task.details" [innerHTML]="task.details"></p>
                 </ion-label>
                 <ion-icon slot="end" *ngIf="task.link && task.code != 'submit'" name="fas-external-link-alt" aria-hidden="true">

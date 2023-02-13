@@ -27,19 +27,22 @@
                 <ion-item class="ion-text-wrap">
                     <core-user-avatar [user]="entry.user" slot="start" [courseId]="entry.courseid"></core-user-avatar>
                     <ion-label>
-                        <p class="item-heading">
-                            <core-format-text [text]="entry.subject" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId">
-                            </core-format-text>
-                            <ion-note class="ion-float-end ion-padding-start ion-text-end">
+                        <div class="flex-row ion-justify-content-between ion-align-items-center">
+                            <h2>
+                                <core-format-text [text]="entry.subject" [contextLevel]="contextLevel"
+                                    [contextInstanceId]="contextInstanceId">
+                                </core-format-text>
+                            </h2>
+                            <ion-note class="ion-text-end">
                                 {{ 'addon.blog.' + entry.publishTranslated! | translate}}
                             </ion-note>
-                        </p>
-                        <p>
-                            <ion-note class="ion-float-end ion-text-end">
+                        </div>
+                        <div class="flex-row ion-justify-content-between ion-align-items-center">
+                            {{entry.user && entry.user.fullname}}
+                            <ion-note class="ion-text-end">
                                 {{entry.created | coreDateDayOrTime}}
                             </ion-note>
-                            {{entry.user && entry.user!.fullname}}
-                        </p>
+                        </div>
                     </ion-label>
                 </ion-item>
                 <ion-card-content>

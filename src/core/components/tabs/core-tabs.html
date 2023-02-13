@@ -14,7 +14,7 @@
                         [attr.aria-selected]="selected == tab.id" [tabindex]="selected == tab.id ? 0 : -1">
                         <ion-icon *ngIf="tab.icon" [name]="tab.icon" aria-hidden="true"></ion-icon>
                         <ion-label>
-                            {{ tab.title | translate}}
+                            <h2>{{ tab.title | translate}}</h2>
                             <ion-badge *ngIf="tab.badge">
                                 <span [attr.aria-hidden]="!!tab.badgeA11yText">{{ tab.badge }}</span>
                                 <span *ngIf="tab.badgeA11yText" class="sr-only">
