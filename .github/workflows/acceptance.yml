@@ -42,6 +42,10 @@ jobs:
         git clone --branch master --depth 1 https://github.com/moodlehq/moodle-docker $GITHUB_WORKSPACE/moodle-docker
     - name: Install npm packages
       run: npm ci --no-audit
+    - name: Create Behat faildumps folder
+      run: |
+        mkdir moodle/behatfaildumps
+        chmod 777 moodle/behatfaildumps
     - name: Install Behat Snapshots plugin
       run: git clone --branch main --depth 1 https://github.com/NoelDeMartin/moodle-local_behatsnapshots $GITHUB_WORKSPACE/moodle/local/behatsnapshots
     - name: Generate Behat tests plugin
@@ -52,6 +56,7 @@ jobs:
       run: |
         export MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle
         cp $GITHUB_WORKSPACE/moodle-docker/config.docker-template.php $GITHUB_WORKSPACE/moodle/config.php
+        sed -i "61c\$CFG->behat_faildump_path = '/var/www/html/behatfaildumps';" $GITHUB_WORKSPACE/moodle/config.php
         sed -i "61i\$CFG->behat_increasetimeout = 2;" $GITHUB_WORKSPACE/moodle/config.php
         sed -i "61i\$CFG->behat_ionic_wwwroot = 'http://moodleapp';" $GITHUB_WORKSPACE/moodle/config.php
         sed -i "61i\$CFG->behat_snapshots_path = '/var/www/html/local/moodleappbehat/tests/behat/snapshots';" $GITHUB_WORKSPACE/moodle/config.php
@@ -86,3 +91,9 @@ jobs:
       with:
         name: snapshot_failures
         path: moodle/local/moodleappbehat/tests/behat/snapshots/failures/*
+    - name: Upload Behat failures
+      uses: actions/upload-artifact@v3
+      if: ${{ failure() }}
+      with:
+        name: behat_failures
+        path: moodle/behatfaildumps
