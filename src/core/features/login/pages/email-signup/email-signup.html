@@ -159,9 +159,8 @@
                         </ion-input>
                     </ion-item>
                     <ion-item class="ion-text-wrap">
-                        <ion-label position="stacked" id="core-login-signup-country">{{ 'core.user.country' | translate }}</ion-label>
-                        <ion-select name="country" formControlName="country" aria-labelledby="core-login-signup-country"
-                            [placeholder]="'core.login.selectacountry' | translate">
+                        <ion-label position="stacked">{{ 'core.user.country' | translate }}</ion-label>
+                        <ion-select name="country" formControlName="country" [placeholder]="'core.login.selectacountry' | translate">
 
                             <ion-select-option value="">{{ 'core.login.selectacountry' | translate }}</ion-select-option>
                             <ion-select-option *ngFor="let country of countries" [value]="country.code">{{country.name}}</ion-select-option>
