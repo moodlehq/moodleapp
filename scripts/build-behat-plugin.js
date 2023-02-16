@@ -76,37 +76,46 @@ async function main() {
     };
     writeFileSync(pluginFilePath, replaceArguments(fileContents, replacements));
 
-    // Copy feature files.
+    // Copy feature and snapshot files.
     if (!excludeFeatures) {
         const behatTempFeaturesPath = `${pluginPath}/behat-tmp`;
-        copySync(projectPath('src'), behatTempFeaturesPath, { filter: isFeatureFileOrDirectory });
+        copySync(projectPath('src'), behatTempFeaturesPath, { filter: shouldCopyFileOrDirectory });
 
         const behatFeaturesPath = `${pluginPath}/tests/behat`;
         if (!existsSync(behatFeaturesPath)) {
             mkdirSync(behatFeaturesPath, {recursive: true});
         }
 
-        for await (const featureFile of getDirectoryFiles(behatTempFeaturesPath)) {
-            const featurePath = dirname(featureFile);
-            if (!featurePath.endsWith('/tests/behat')) {
+        for await (const file of getDirectoryFiles(behatTempFeaturesPath)) {
+            const filePath = dirname(file);
+
+            if (filePath.endsWith('/tests/behat/snapshots')) {
+                renameSync(file, behatFeaturesPath + '/snapshots/' + basename(file));
+
                 continue;
             }
 
-            const newPath = featurePath.substring(0, featurePath.length - ('/tests/behat'.length));
+            if (!filePath.endsWith('/tests/behat')) {
+                continue;
+            }
+
+            const newPath = filePath.substring(0, filePath.length - ('/tests/behat'.length));
             const searchRegExp = /\//g;
             const prefix = relative(behatTempFeaturesPath, newPath).replace(searchRegExp,'-') || 'core';
-            const featureFilename = prefix + '-' + basename(featureFile);
-            renameSync(featureFile, behatFeaturesPath + '/' + featureFilename);
+            const featureFilename = prefix + '-' + basename(file);
+            renameSync(file, behatFeaturesPath + '/' + featureFilename);
         }
 
         rmSync(behatTempFeaturesPath, {recursive: true});
     }
 }
 
-function isFeatureFileOrDirectory(src) {
-    const stats = statSync(src);
+function shouldCopyFileOrDirectory(path) {
+    const stats = statSync(path);
 
-    return stats.isDirectory() || extname(src) === '.feature';
+    return stats.isDirectory()
+        || extname(path) === '.feature'
+        || extname(path) === '.png';
 }
 
 function isExcluded(file, exclusions) {
