@@ -38,6 +38,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
 import { CorePlatform } from '@services/platform';
+import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
 /**
  * Page that displays the list of conversations, including group conversations.
@@ -48,6 +49,8 @@ import { CorePlatform } from '@services/platform';
     styleUrls: ['../../messages-common.scss'],
 })
 export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
+
+    @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
     @ViewChild(IonContent) content?: IonContent;
     @ViewChild('favlist') favListEl?: ElementRef;
@@ -526,7 +529,10 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         const path = CoreNavigator.getRelativePathToParent('/messages/group-conversations') + 'discussion/' +
             (conversationId ? conversationId : `user/${userId}`);
 
-        await CoreNavigator.navigate(path, { params });
+        await CoreNavigator.navigate(path, {
+            params,
+            reset: CoreScreen.isTablet && !!this.splitView && !this.splitView.isNested,
+        });
     }
 
     /**
