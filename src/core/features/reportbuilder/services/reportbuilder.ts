@@ -232,7 +232,7 @@ export interface CoreReportBuilderRetrieveReportMapped extends Omit<CoreReportBu
 export type CoreReportBuilderReportDataWSResponse = {
     headers: string[]; // Headers.
     rows: { // Rows.
-        columns: string[]; // Columns.
+        columns: string | number[]; // Columns.
         isExpanded: boolean;
     }[];
     totalrowcount: number; // Totalrowcount.

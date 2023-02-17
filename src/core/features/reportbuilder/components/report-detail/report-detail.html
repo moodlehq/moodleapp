@@ -2,11 +2,11 @@
 
     <core-loading [hideUntil]="state.loaded">
 
-        <ng-container *ngIf="state.report?.data?.rows && state.report?.data?.headers && state.report?.details; else empty">
+        <ion-refresher slot="fixed" [disabled]="!state.loaded" (ionRefresh)="refreshReport($event.target)">
+            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+        </ion-refresher>
 
-            <ion-refresher slot="fixed" [disabled]="!state.loaded" (ionRefresh)="refreshReport($event.target)">
-                <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
-            </ion-refresher>
+        <ng-container *ngIf="state.report?.data?.rows?.length && state.report?.data?.headers && state.report?.details; else empty">
 
             <ng-container *ngIf="isCardLayout">
                 <ion-card *ngFor="let row of state.report.data.rows; let rowIndex = index">
@@ -46,14 +46,14 @@
         </ng-container>
 
         <ng-template #empty>
-            <core-empty-box *ngIf="!state.report?.data?.rows || !state.report?.data?.headers || !state.report?.details" icon="fa-list-alt"
-                [message]="'core.course.nocontentavailable' | translate"></core-empty-box>
+            <core-empty-box icon="fa-list-alt">
+                <p> {{ 'core.course.nocontentavailable' | translate }} </p>
+            </core-empty-box>
         </ng-template>
 
-        <core-infinite-loading *ngIf="!isBlock && state.report?.data?.rows && state.report?.data?.headers && state.report?.details"
+        <core-infinite-loading *ngIf="!isBlock && state.report?.data?.rows?.length && state.report?.data?.headers && state.report?.details"
             [enabled]="state.canLoadMoreRows" (action)="fetchMoreInfo($event)" [error]="state.errorLoadingRows">
         </core-infinite-loading>
-
 
     </core-loading>
 
