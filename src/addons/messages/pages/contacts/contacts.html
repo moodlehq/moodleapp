@@ -10,6 +10,8 @@
             <ion-button fill="clear" (click)="gotoSearch()" [attr.aria-label]="'addon.messages.searchcombined' | translate">
                 <ion-icon name="fas-search" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
+            <!-- Add an empty context menu so split view pages can add items, otherwise the menu disappears in some cases. -->
+            <core-context-menu></core-context-menu>
         </ion-buttons>
     </ion-toolbar>
 </ion-header>

@@ -164,6 +164,8 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
         } else {
             // There is a context-menu in these buttons, but there is no main context menu in the header.
             // Create one main context menu dynamically.
+            // @todo: Find a better way to handle header buttons. This isn't working as expected in some cases because the menu
+            // is destroyed when the page is destroyed, so click listeners stop working.
             mainContextMenuInstance = this.createMainContextMenu();
         }
 
