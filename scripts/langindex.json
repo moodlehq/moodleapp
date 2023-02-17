@@ -2105,6 +2105,7 @@
   "core.nopasswordchangeforced": "local_moodlemobileapp",
   "core.nopermissionerror": "local_moodlemobileapp",
   "core.nopermissions": "error",
+  "core.nopermissiontoaccesspage": "error",
   "core.noresults": "moodle",
   "core.noselection": "form",
   "core.notapplicable": "local_moodlemobileapp",
