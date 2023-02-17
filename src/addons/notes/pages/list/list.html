@@ -34,7 +34,7 @@
         <ion-item class="ion-text-wrap" *ngIf="user">
             <core-user-avatar [user]="user" [courseId]="courseId" slot="start" [linkProfile]="false"></core-user-avatar>
             <ion-label>
-                <h2>{{user!.fullname}}</h2>
+                <p class="item-heading">{{user!.fullname}}</p>
             </ion-label>
         </ion-item>
 

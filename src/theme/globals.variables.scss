@@ -124,11 +124,17 @@ $activity-icon-colors: (
     interface: #a378ff
 ) !default;
 
+$calendar-event-category-category: #8e24aa !default;
+$calendar-event-category-course: $red !default;
+$calendar-event-category-group: $yellow !default;
+$calendar-event-category-user: $blue !default;
+$calendar-event-category-site: $green !default;
+
 // Calendar event category background colors.
 $calendar-event-category-colors: (
-    category: #8e24aa,
-    course: $red,
-    group: $yellow,
-    user: $blue,
-    site: $green
+    category: $calendar-event-category-category,
+    course: $calendar-event-category-course,
+    group: $calendar-event-category-group,
+    user: $calendar-event-category-user,
+    site: $calendar-event-category-site,
 ) !default;

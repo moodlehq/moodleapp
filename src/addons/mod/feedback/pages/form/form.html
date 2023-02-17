@@ -17,7 +17,7 @@
             <ion-list class="ion-no-margin has-spacer">
                 <ion-item class="ion-text-wrap">
                     <ion-label>
-                        <h2>{{ 'addon.mod_feedback.mode' | translate }}</h2>
+                        <p class="item-heading">{{ 'addon.mod_feedback.mode' | translate }}</p>
                         <p *ngIf="access!.isanonymous">{{ 'addon.mod_feedback.anonymous' | translate }}</p>
                         <p *ngIf="!access!.isanonymous">{{ 'addon.mod_feedback.non_anonymous' | translate }}</p>
                     </ion-label>

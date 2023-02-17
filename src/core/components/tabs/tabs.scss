@@ -59,14 +59,16 @@
                 ion-tab-button {
                     max-width: 100%;
                     ion-label {
-                        font-size: 14px;
-                        font-weight: 400;
                         text-overflow: ellipsis;
                         white-space: nowrap;
                         overflow: hidden;
                         word-wrap: break-word;
                         max-width: 100%;
                         line-height: 1.2em;
+                        h2 {
+                            font-size: 14px;
+                            font-weight: 400;
+                        }
                     }
                 }
 

@@ -16,20 +16,20 @@
         <ion-item class="ion-text-wrap" *ngIf="user">
             <core-user-avatar [user]="user" [courseId]="courseId" slot="start" [linkProfile]="false"></core-user-avatar>
             <ion-label>
-                <h2>{{user!.fullname}}</h2>
+                <p class="item-heading">{{user.fullname}}</p>
             </ion-label>
         </ion-item>
 
         <ion-card *ngIf="completion && tracked">
             <ion-item class="ion-text-wrap">
                 <ion-label>
-                    <h2>{{ 'addon.coursecompletion.status' | translate }}</h2>
+                    <p class="item-heading">{{ 'addon.coursecompletion.status' | translate }}</p>
                     <p>{{ statusText! | translate }}</p>
                 </ion-label>
             </ion-item>
             <ion-item class="ion-text-wrap">
                 <ion-label>
-                    <h2>{{ 'addon.coursecompletion.required' | translate }}</h2>
+                    <p class="item-heading">{{ 'addon.coursecompletion.required' | translate }}</p>
                     <p *ngIf="completion.aggregation === 1">{{ 'addon.coursecompletion.criteriarequiredall' | translate }}</p>
                     <p *ngIf="completion.aggregation === 2">{{ 'addon.coursecompletion.criteriarequiredany' | translate }}</p>
                 </ion-label>

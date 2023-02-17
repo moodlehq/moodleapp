@@ -51,10 +51,10 @@
                         detail="true">
                         <ion-icon name="fas-folder" slot="start" [attr.aria-label]="'core.category' | translate"></ion-icon>
                         <ion-label>
-                            <h2>
+                            <p class="item-heading">
                                 <core-format-text [text]="category.name" contextLevel="coursecat" [contextInstanceId]="category.id">
                                 </core-format-text>
-                            </h2>
+                            </p>
                         </ion-label>
                         <ion-badge slot="end" *ngIf="!showOnlyEnrolled && category.coursecount > 0" color="light">
                             <span aria-hidden="true">{{ category.coursecount }}</span>

@@ -4,7 +4,7 @@
     flex-direction: column;
     background: var(--background);
 
-    ion-item-divider {
+    ::ng-deep ion-item-divider {
         min-height: var(--item-divider-min-height);
     }
 
