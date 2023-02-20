@@ -25,7 +25,8 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
     selector: 'core-report-builder-report-detail',
@@ -54,6 +55,19 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
         cardVisibleColumns: 1,
         page: 0,
     });
+
+    source$: Observable<string>;
+
+    constructor() {
+        this.source$ = this.state$.pipe(
+            map(state => {
+                const splittedSource = state.report?.details.source.split('\\');
+                const source = splittedSource?.[splittedSource?.length - 1];
+
+                return source ?? 'system';
+            }),
+        );
+    }
 
     /**
      * @inheritdoc
