@@ -29,6 +29,7 @@ export class CoreReportBuilderReportColumnComponent implements OnInit {
     @Input() column!: string | number;
     @Input() contextId!: number;
     @Input() header!: string;
+    @Input() source!: string;
     @Output() onToggleRow: EventEmitter<number> = new EventEmitter();
 
     ngOnInit(): void {

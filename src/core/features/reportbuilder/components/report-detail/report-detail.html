@@ -14,7 +14,7 @@
                         <core-report-builder-report-column *ngFor="let column of row.columns | slice:0:row.isExpanded ?
                             row.columns.length : state.cardVisibleColumns; let columnIndex = index" [columnIndex]="columnIndex"
                             [rowIndex]="rowIndex" [isExpandable]="columnIndex === 0 && row.columns.length > state.cardVisibleColumns"
-                            [isExpanded]="row.isExpanded" [showFirstTitle]="state.cardviewShowFirstTitle"
+                            [isExpanded]="row.isExpanded" [showFirstTitle]="state.cardviewShowFirstTitle" [source]="source$ | async"
                             [contextId]="state.report.details.contextid" [header]="state.report.data.headers[columnIndex]" [column]="column"
                             (onToggleRow)="toggleRow(rowIndex)">
                         </core-report-builder-report-column>
@@ -34,7 +34,7 @@
                     <tbody>
                         <tr *ngFor="let row of state.report.data.rows">
                             <td *ngFor="let column of row.columns">
-                                <core-format-text [text]="column" [contextLevel]="'site'"
+                                <core-format-text [text]="column" [contextLevel]="source$ | async"
                                     [contextInstanceId]="state.report.details.contextid">
                                 </core-format-text>
                             </td>

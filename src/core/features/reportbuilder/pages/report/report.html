@@ -9,7 +9,9 @@
             </ion-button>
         </ion-buttons>
         <ion-title *ngIf="reportDetail">
-            <h1> {{ reportDetail.name }} </h1>
+            <h1>
+                <core-format-text [clean]="true" [text]="reportDetail.name" [filter]="false"></core-format-text>
+            </h1>
             <p class="subheading"> {{ reportDetail.sourcename }} </p>
         </ion-title>
     </ion-toolbar>
