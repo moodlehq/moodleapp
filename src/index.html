@@ -23,6 +23,12 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 
     <script src="assets/lib/mathjax/MathJax.js?delayStartupUntil=configured"></script>
+    <script type="text/javascript">
+        if (globalThis === undefined) {
+            // Define globalThis in environments where it's not supported to avoid errors with ogv.js.
+            var globalThis = window;
+        }
+    </script>
 </head>
 
 <body>
