@@ -36,8 +36,9 @@
 
     <div collapsible-footer *ngIf="!showLoading" slot="fixed">
         <div class="list-item-limited-width adaptable-buttons-row"
-            *ngIf="access && !access.isempty && (access.canedititems || access.canviewreports)">
-            <ion-button expand="block" fill="outline" (click)="gotoAnswerQuestions(true)" class="ion-margin ion-text-wrap">
+            *ngIf="access && (access.canedititems || access.canviewreports || !access.isempty)">
+            <ion-button *ngIf="access.canedititems || access.canviewreports" expand="block" fill="outline"
+                (click)="gotoAnswerQuestions(true)" class="ion-margin ion-text-wrap">
                 <ion-icon name="fas-search" slot="start" aria-hidden="true"></ion-icon>
                 {{ 'addon.mod_feedback.preview' | translate }}
             </ion-button>
