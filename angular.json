@@ -42,7 +42,8 @@
                 "input": "src/theme/theme.scss"
               }
             ],
-            "scripts": []
+            "scripts": [],
+            "webWorkerTsConfig": "tsconfig.worker.json"
           },
           "configurations": {
             "production": {

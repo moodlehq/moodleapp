@@ -1,0 +1,119 @@
+:host {
+    color: var(--ion-text-color, #000);
+
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        h1 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 24px;
+            letter-spacing: 0.15px;
+        }
+
+        ion-button {
+            --padding-start: 0;
+            --padding-end: 0;
+            --icon-size: 1.8em;
+
+            // Offset padding for visual alignment.
+            margin: calc((var(--icon-size) - var(--a11y-min-target-size)) / 2);
+        }
+
+    }
+
+    hr {
+        background: var(--gray-300);
+        margin: 16px 0;
+    }
+
+    .core-audio-recorder--wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        p {
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 20px;
+            letter-spacing: 0.25px;
+            text-align: center;
+            opacity: 0.6;
+            margin-top: 0;
+            margin-bottom: 16px;
+        }
+
+        ion-button[shape="round"] {
+            --border-radius: 99px;
+            --padding-start: 16px;
+            --padding-end: 16px;
+            --padding-top: 16px;
+            --padding-bottom: 16px;
+
+            height: max-content;
+        }
+
+        core-audio-histogram {
+            width: 100%;
+            height: 35px;
+            display: block;
+        }
+
+        audio {
+            width: 100%;
+            margin-bottom: 16px;
+        }
+
+        .core-audio-recorder--controls {
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+
+            .core-audio-recorder--control {
+                width: 33%;
+                text-align: center;
+
+                &:first-child {
+                    text-align: start;
+                }
+
+                &:last-child {
+                    text-align: end;
+                }
+
+                &.chrono {
+                    padding: 0 16px;
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    justify-content: flex-start;
+                }
+
+                ion-button {
+                    margin: 0;
+                }
+
+                .core-audio-recorder--recording-marker {
+                    width: 8px;
+                    height: 8px;
+                    margin-inline-end: 4px;
+                    border-radius: 4px;
+                    background: var(--danger);
+                }
+
+                core-chrono.recording {
+                    color: var(--danger);
+                }
+
+            }
+
+        }
+
+    }
+
+}

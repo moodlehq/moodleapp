@@ -12,21 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreError } from './error';
-
-export const CAPTURE_ERROR_NO_MEDIA_FILES = 3;
+import { isInitAudioEncoderMessage } from '@features/fileuploader/utils/worker-messages';
+import { initMp3MediaEncoder } from 'mp3-mediarecorder/worker';
 
 /**
- * Capture error.
+ * Handle worker message.
+ *
+ * @param event Worker message event.
  */
-export class CoreCaptureError extends CoreError {
-
-    code: number;
-
-    constructor(code: number, message?: string) {
-        super(message);
-
-        this.code = code;
+function onMessage(event: MessageEvent): void {
+    if (!isInitAudioEncoderMessage(event.data)) {
+        return;
     }
 
+    removeEventListener('message', onMessage);
+    initMp3MediaEncoder(event.data.config);
 }
+
+addEventListener('message', onMessage);

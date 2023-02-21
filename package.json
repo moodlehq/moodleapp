@@ -122,6 +122,7 @@
     "mathjax": "2.7.9",
     "moment": "2.29.4",
     "moment-timezone": "0.5.38",
+    "mp3-mediarecorder": "^4.0.5",
     "nl.kingsquare.cordova.background-audio": "1.0.1",
     "ogv": "1.8.9",
     "rxjs": "6.5.5",

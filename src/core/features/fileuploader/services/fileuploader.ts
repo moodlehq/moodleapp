@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CameraOptions } from '@ionic-native/camera/ngx';
 import { FileEntry } from '@ionic-native/file/ngx';
-import { MediaFile, CaptureError, CaptureAudioOptions, CaptureVideoOptions } from '@ionic-native/media-capture/ngx';
+import { MediaFile, CaptureError, CaptureVideoOptions } from '@ionic-native/media-capture/ngx';
 import { Subject } from 'rxjs';
 
 import { CoreFile, CoreFileProvider } from '@services/file';
@@ -25,14 +25,15 @@ import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile, CoreWSFileUploadOptions, CoreWSUploadFileResult } from '@services/ws';
-import { makeSingleton, Translate, MediaCapture, ModalController, Camera } from '@singletons';
+import { makeSingleton, Translate, MediaCapture, Camera } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
-import { CoreEmulatorCaptureMediaComponent } from '@features/emulator/components/capture-media/capture-media';
 import { CoreError } from '@classes/errors/error';
 import { CoreSite } from '@classes/site';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CorePath } from '@singletons/path';
 import { CorePlatform } from '@services/platform';
+import { CoreFileUploaderAudioRecorderComponent } from '@features/fileuploader/components/audio-recorder/audio-recorder.component';
+import { CoreModals } from '@services/modals';
 
 /**
  * File upload options.
@@ -132,14 +133,21 @@ export class CoreFileUploaderProvider {
     /**
      * Start the audio recorder application and return information about captured audio clip files.
      *
-     * @param options Options.
      * @returns Promise resolved with the result.
      */
-    async captureAudio(options: CaptureAudioOptions): Promise<MediaFile[] | CaptureError> {
+    async captureAudio(): Promise<CoreFileUploaderAudioRecording[] | MediaFile[] | CaptureError> {
         this.onAudioCapture.next(true);
 
         try {
-            return await MediaCapture.captureAudio(options);
+            if (!CorePlatform.supportsMediaCapture() || !CorePlatform.supportsWebAssembly()) {
+                const media = await MediaCapture.captureAudio({ limit: 1 });
+
+                return media;
+            }
+
+            const recording = await this.captureAudioInApp();
+
+            return [recording];
         } finally {
             this.onAudioCapture.next(false);
         }
@@ -150,27 +158,14 @@ export class CoreFileUploaderProvider {
      *
      * @returns Promise resolved with the file.
      */
-    async captureAudioInApp(): Promise<MediaFile> {
-        const params = {
-            type: 'audio',
-        };
+    async captureAudioInApp(): Promise<CoreFileUploaderAudioRecording> {
+        const recording = await CoreModals.openSheet(CoreFileUploaderAudioRecorderComponent);
 
-        const modal = await ModalController.create({
-            component: CoreEmulatorCaptureMediaComponent,
-            cssClass: 'core-modal-fullscreen',
-            componentProps: params,
-            backdropDismiss: false,
-        });
-
-        await modal.present();
-
-        const result = await modal.onWillDismiss();
-
-        if (result.role == 'success') {
-            return result.data[0];
-        } else {
-            throw result.data;
+        if (!recording) {
+            throw new Error('Recording missing from audio capture');
         }
+
+        return recording;
     }
 
     /**
@@ -335,7 +330,7 @@ export class CoreFileUploaderProvider {
      * @param mediaFile File object to upload.
      * @returns Options.
      */
-    getMediaUploadOptions(mediaFile: MediaFile): CoreFileUploaderOptions {
+    getMediaUploadOptions(mediaFile: MediaFile | CoreFileUploaderAudioRecording): CoreFileUploaderOptions {
         const options: CoreFileUploaderOptions = {};
         let filename = mediaFile.name;
 
@@ -780,4 +775,10 @@ export type CoreFileUploaderTypeList = {
 export type CoreFileUploaderTypeListInfoEntry = {
     name?: string;
     extlist: string;
+};
+
+export type CoreFileUploaderAudioRecording = {
+    name: string;
+    fullPath: string;
+    type: string;
 };

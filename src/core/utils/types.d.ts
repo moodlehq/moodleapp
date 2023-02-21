@@ -13,6 +13,12 @@
 // limitations under the License.
 
 /**
+ * Helper type to infer class instance types.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Constructor<T> = { new(...args: any[]): T };
+
+/**
  * Helper type to flatten complex types.
  */
 export type Pretty<T> = T extends infer U ? {[K in keyof U]: U[K]} : never;

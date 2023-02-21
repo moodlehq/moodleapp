@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { CoreFileUploaderComponentsModule } from '@features/fileuploader/components/components.module';
 
 import { CoreFileUploaderProvider } from './services/fileuploader';
 import { CoreFileUploaderDelegate, CoreFileUploaderDelegateService } from './services/fileuploader-delegate';
@@ -30,6 +31,9 @@ export const CORE_FILEUPLOADER_SERVICES: Type<unknown>[] = [
 ];
 
 @NgModule({
+    imports: [
+        CoreFileUploaderComponentsModule,
+    ],
     providers: [
         {
             provide: APP_INITIALIZER,
