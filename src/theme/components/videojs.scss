@@ -11,6 +11,11 @@
     height: 150px !important;
 }
 
+// Hide full screen button for audios.
+.vjs-audio .vjs-fullscreen-control {
+    display: none;
+}
+
 // Fake full screen mode.
 .vjs-ios-moodleapp-fs {
     z-index: 100000 !important;
