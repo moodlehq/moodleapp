@@ -1,0 +1,10 @@
+:host {
+    --background-color: var(--ion-background-color, #fff);
+    --bars-color: var(--ion-text-color, #000);
+
+    canvas {
+        width: 100%;
+        height: 100%;
+    }
+
+}
