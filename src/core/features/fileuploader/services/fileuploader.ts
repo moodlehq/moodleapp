@@ -32,7 +32,6 @@ import { CoreSite } from '@classes/site';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CorePath } from '@singletons/path';
 import { CorePlatform } from '@services/platform';
-import { CoreFileUploaderAudioRecorderComponent } from '@features/fileuploader/components/audio-recorder/audio-recorder.component';
 import { CoreModals } from '@services/modals';
 
 /**
@@ -159,6 +158,9 @@ export class CoreFileUploaderProvider {
      * @returns Promise resolved with the file.
      */
     async captureAudioInApp(): Promise<CoreFileUploaderAudioRecording> {
+        const { CoreFileUploaderAudioRecorderComponent } =
+            await import('@features/fileuploader/components/audio-recorder/audio-recorder.module');
+
         const recording = await CoreModals.openSheet(CoreFileUploaderAudioRecorderComponent);
 
         if (!recording) {

@@ -12,10 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreFileUploaderAudioRecorderComponent } from './audio-recorder/audio-recorder.component';
-import { CoreFileUploaderAudioHistogramComponent } from './audio-histogram/audio-histogram';
+import { NgModule } from '@angular/core';
+import { CoreFileUploaderAudioHistogramComponent } from '@features/fileuploader/components/audio-histogram/audio-histogram';
+
+import { CoreFileUploaderAudioRecorderComponent } from './audio-recorder.component';
+
+export { CoreFileUploaderAudioRecorderComponent };
 
 @NgModule({
     imports: [
@@ -25,9 +28,5 @@ import { CoreFileUploaderAudioHistogramComponent } from './audio-histogram/audio
         CoreFileUploaderAudioRecorderComponent,
         CoreFileUploaderAudioHistogramComponent,
     ],
-    exports: [
-        CoreFileUploaderAudioRecorderComponent,
-        CoreFileUploaderAudioHistogramComponent,
-    ],
 })
-export class CoreFileUploaderComponentsModule {}
+export class CoreFileUploaderAudioRecorderComponentModule {}
