@@ -1261,7 +1261,7 @@ export class CoreSitesProvider {
                     siteUrl: site.siteUrl,
                     siteUrlWithoutProtocol: site.siteUrl.replace(/^https?:\/\//, '').toLowerCase(),
                     fullName: siteInfo?.fullname,
-                    siteName: CoreConstants.CONFIG.sitename == '' ? siteInfo?.sitename: CoreConstants.CONFIG.sitename,
+                    siteName: siteInfo?.sitename,
                     avatar: siteInfo?.userpictureurl,
                     siteHomeId: siteInfo?.siteid || 1,
                     loggedOut: !!site.loggedOut,

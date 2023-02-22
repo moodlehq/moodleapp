@@ -56,7 +56,6 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     identityProviders?: CoreSiteIdentityProvider[];
     pageLoaded = false;
     isBrowserSSO = false;
-    isFixedUrlSet = false;
     showForgottenPassword = true;
     showScanQR = false;
     loginAttempts = 0;
@@ -99,9 +98,8 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
         if (this.siteConfig) {
             this.treatSiteConfig();
         }
-        this.isFixedUrlSet = CoreLoginHelper.isFixedUrlSet();
 
-        if (this.isFixedUrlSet || !this.siteConfig) {
+        if (CoreLoginHelper.isUniqueFixedSite() || !this.siteConfig) {
             // Fixed URL or not siteConfig retrieved from params, we need to check if it uses browser SSO login.
             this.checkSite(this.siteUrl, true);
         } else {
@@ -200,7 +198,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
      */
     protected treatSiteConfig(): void {
         if (this.siteConfig) {
-            this.siteName = CoreConstants.CONFIG.sitename ? CoreConstants.CONFIG.sitename : this.siteConfig.sitename;
+            this.siteName = this.siteConfig.sitename;
             this.logoUrl = CoreLoginHelper.getLogoUrl(this.siteConfig);
             this.authInstructions = this.siteConfig.authinstructions || Translate.instant('core.login.loginsteps');
             this.showScanQR = CoreLoginHelper.displayQRInCredentialsScreen(this.siteConfig.tool_mobile_qrcodetype);

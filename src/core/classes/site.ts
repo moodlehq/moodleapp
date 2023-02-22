@@ -61,6 +61,7 @@ import { finalize, map, mergeMap } from 'rxjs/operators';
 import { firstValueFrom } from '../utils/rxjs';
 import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
+import { CoreLoginHelper } from '@features/login/services/login-helper';
 
 /**
  * QR Code type enumeration.
@@ -290,12 +291,16 @@ export class CoreSite {
      * @returns Site name.
      */
     getSiteName(): string {
-        if (CoreConstants.CONFIG.sitename) {
-            // Overridden by config.
-            return CoreConstants.CONFIG.sitename;
-        } else {
-            return this.infos?.sitename || '';
+        if (this.infos?.sitename) {
+            return this.infos?.sitename;
         }
+
+        // Fallback.
+        if (CoreLoginHelper.isUniqueFixedSite()) {
+            return CoreConstants.CONFIG.sites[0].name ;
+        }
+
+        return '';
     }
 
     /**

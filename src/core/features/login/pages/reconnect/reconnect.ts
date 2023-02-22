@@ -31,6 +31,7 @@ import { CoreUserSupportConfig } from '@features/user/classes/support/support-co
 import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
 import { Translate } from '@singletons';
 import { SafeHtml } from '@angular/platform-browser';
+import { CoreConstants } from '@/core/constants';
 
 /**
  * Page to enter the user password to reconnect to a site.
@@ -53,7 +54,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
     logoUrl?: string;
     identityProviders?: CoreSiteIdentityProvider[];
     showForgottenPassword = true;
-    showSiteAvatar = false;
+    showUserAvatar = false;
     isBrowserSSO = false;
     isOAuth = false;
     isLoggedOut: boolean;
@@ -115,7 +116,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             this.isOAuth = site.isOAuth();
 
             // Show logo instead of avatar if it's a fixed site.
-            this.showSiteAvatar = !!this.userAvatar && !CoreLoginHelper.getFixedSites();
+            this.showUserAvatar = !!this.userAvatar && !CoreConstants.CONFIG.sites.length;
 
             this.checkSiteConfig(site);
 
@@ -187,7 +188,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
 
         // Check logoURL if user avatar is not set.
         if (this.userAvatar?.startsWith(this.siteUrl + '/theme/image.php')) {
-            this.showSiteAvatar = false;
+            this.showUserAvatar = false;
         }
         this.logoUrl = CoreLoginHelper.getLogoUrl(this.siteConfig);
     }

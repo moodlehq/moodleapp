@@ -379,9 +379,10 @@ export class CoreLoginHelperProvider {
      * Get fixed site or sites.
      *
      * @returns Fixed site or list of fixed sites.
+     * @deprecated 4.2.0 use CoreConstants.CONFIG.sites instead.
      */
     getFixedSites(): string | CoreLoginSiteInfo[] {
-        return CoreConstants.CONFIG.siteurl;
+        return CoreLoginHelper.isUniqueFixedSite() ? CoreConstants.CONFIG.sites[0].url : CoreConstants.CONFIG.sites;
     }
 
     /**
@@ -453,12 +454,9 @@ export class CoreLoginHelperProvider {
      * @returns Path and params.
      */
     getAddSiteRouteInfo(showKeyboard?: boolean): [string, Params] {
-        if (this.isFixedUrlSet()) {
+        if (CoreLoginHelper.isUniqueFixedSite()) {
             // Fixed URL is set, go to credentials page.
-            const fixedSites = this.getFixedSites();
-            const url = typeof fixedSites == 'string' ? fixedSites : fixedSites[0].url;
-
-            return ['/login/credentials', { siteUrl: url }];
+            return ['/login/credentials', { siteUrl: CoreConstants.CONFIG.sites[0].url }];
         }
 
         return ['/login/site', { showKeyboard }];
@@ -518,10 +516,10 @@ export class CoreLoginHelperProvider {
      * Check if the app is configured to use several fixed URLs.
      *
      * @returns Whether there are several fixed URLs.
+     * @deprecated 4.2.0 Use CoreConstants.CONFIG.sites.length > 1 instead.
      */
     hasSeveralFixedSites(): boolean {
-        return !!(CoreConstants.CONFIG.siteurl && Array.isArray(CoreConstants.CONFIG.siteurl) &&
-            CoreConstants.CONFIG.siteurl.length > 1);
+        return CoreConstants.CONFIG.sites.length > 1;
     }
 
     /**
@@ -557,13 +555,19 @@ export class CoreLoginHelperProvider {
      * Check if the app is configured to use a fixed URL (only 1).
      *
      * @returns Whether there is 1 fixed URL.
+     * @deprecated 4.2.0 Use isUniqueFixedSite instead.
      */
     isFixedUrlSet(): boolean {
-        if (Array.isArray(CoreConstants.CONFIG.siteurl)) {
-            return CoreConstants.CONFIG.siteurl.length == 1;
-        }
+        return this.isUniqueFixedSite();
+    }
 
-        return !!CoreConstants.CONFIG.siteurl;
+    /**
+     * Check if the app is configured to use a fixed URL (only 1).
+     *
+     * @returns Whether there is 1 fixed URL.
+     */
+    isUniqueFixedSite(): boolean {
+        return CoreConstants.CONFIG.sites.length === 1;
     }
 
     /**
@@ -606,13 +610,8 @@ export class CoreLoginHelperProvider {
      * @returns Promise resolved with boolean: whether is one of the fixed sites.
      */
     async isSiteUrlAllowed(siteUrl: string, checkSiteFinder = true): Promise<boolean> {
-        if (this.isFixedUrlSet()) {
-            // Only 1 site allowed.
-            return CoreUrl.sameDomainAndPath(siteUrl, <string> this.getFixedSites());
-        } else if (this.hasSeveralFixedSites()) {
-            const sites = <CoreLoginSiteInfo[]> this.getFixedSites();
-
-            return sites.some((site) => CoreUrl.sameDomainAndPath(siteUrl, site.url));
+        if (CoreConstants.CONFIG.sites.length) {
+            return CoreConstants.CONFIG.sites.some((site) => CoreUrl.sameDomainAndPath(siteUrl, site.url));
         } else if (CoreConstants.CONFIG.multisitesdisplay == 'sitefinder' && CoreConstants.CONFIG.onlyallowlistedsites &&
                 checkSiteFinder) {
             // Call the sites finder to validate the site.
@@ -1308,7 +1307,7 @@ export class CoreLoginHelperProvider {
             return false;
         }
 
-        if ((CoreConstants.CONFIG.displayqroncredentialscreen === undefined && this.isFixedUrlSet()) ||
+        if ((CoreConstants.CONFIG.displayqroncredentialscreen === undefined && CoreLoginHelper.isUniqueFixedSite()) ||
             (CoreConstants.CONFIG.displayqroncredentialscreen !== undefined &&
                 !!CoreConstants.CONFIG.displayqroncredentialscreen)) {
 

@@ -27,6 +27,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreNavigator } from '@services/navigator';
 import { CorePlatform } from '@services/platform';
 import { CoreNetwork } from '@services/network';
+import { CoreLoginHelper } from '@features/login/services/login-helper';
 
 /**
  * Device Info to be shown and copied to clipboard.
@@ -167,10 +168,10 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
         }
 
         const currentSite = sitesProvider.getCurrentSite();
+        const firstUrl = CoreLoginHelper.isUniqueFixedSite() && CoreConstants.CONFIG.sites[0].url;
 
-        this.deviceInfo.siteUrl = (currentSite?.getURL()) ||
-            (typeof CoreConstants.CONFIG.siteurl == 'string' && CoreConstants.CONFIG.siteurl) || undefined;
-        this.deviceInfo.isPrefixedUrl = !!CoreConstants.CONFIG.siteurl;
+        this.deviceInfo.siteUrl = currentSite?.getURL() || firstUrl || undefined;
+        this.deviceInfo.isPrefixedUrl = !!CoreConstants.CONFIG.sites.length;
         this.deviceInfo.siteId = currentSite?.getId();
         this.deviceInfo.siteVersion = currentSite?.getInfo()?.release;
 

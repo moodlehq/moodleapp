@@ -92,7 +92,7 @@ export class CoreLoginSitePage implements OnInit {
         };
 
         // Load fixed sites if they're set.
-        if (CoreLoginHelper.hasSeveralFixedSites()) {
+        if (CoreConstants.CONFIG.sites.length) {
             url = this.initSiteSelector();
         } else if (CoreConstants.CONFIG.enableonboarding && !CorePlatform.isIOS()) {
             this.initOnboarding();
@@ -137,7 +137,7 @@ export class CoreLoginSitePage implements OnInit {
      * @returns URL of the first site.
      */
     protected initSiteSelector(): string {
-        this.fixedSites = this.extendCoreLoginSiteInfo(<CoreLoginSiteInfoExtended[]> CoreLoginHelper.getFixedSites());
+        this.fixedSites = this.extendCoreLoginSiteInfo(<CoreLoginSiteInfoExtended[]> CoreConstants.CONFIG.sites);
         this.siteSelector = 'list'; // In case it's not defined
 
         // Do not show images if none are set.
