@@ -14,10 +14,11 @@
 
 import { CoreUtils } from '@services/utils/utils';
 import { ElementController } from './ElementController';
-import videojs, { VideoJSPlayer } from 'video.js';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreMedia } from '@singletons/media';
+import { AddonFilterMediaPluginVideoJS, VIDEO_JS_PLAYER_CREATED } from '@addons/filter/mediaplugin/services/videojs';
+import type { VideoJSPlayer } from 'video.js';
 
 /**
  * Wrapper class to control the interactivity of a media element.
@@ -42,21 +43,7 @@ export class MediaElementController extends ElementController {
 
         media.autoplay = false;
 
-        if (CoreMedia.mediaUsesJavascriptPlayer(media)) {
-            const player = this.searchJSPlayer();
-            if (player) {
-                this.jsPlayer.resolve(player);
-            } else {
-                this.jsPlayerListener = CoreEvents.on(CoreEvents.JS_PLAYER_CREATED, data => {
-                    if (data.element === media) {
-                        this.jsPlayerListener?.off();
-                        this.jsPlayer.resolve(data.player);
-                    }
-                });
-            }
-        } else {
-            this.jsPlayer.resolve(null);
-        }
+        this.initJSPlayer(media);
 
         enabled && this.onEnabled();
     }
@@ -116,6 +103,36 @@ export class MediaElementController extends ElementController {
     }
 
     /**
+     * Init JS Player instance.
+     *
+     * @param media Media element.
+     */
+    private async initJSPlayer(media: HTMLMediaElement): Promise<void> {
+        if (!CoreMedia.mediaUsesJavascriptPlayer(media)) {
+            this.jsPlayer.resolve(null);
+
+            return;
+        }
+
+        const player = await this.searchJSPlayer();
+
+        if (!player) {
+            this.jsPlayerListener = CoreEvents.on(VIDEO_JS_PLAYER_CREATED, ({ element, player }) => {
+                if (element !== media) {
+                    return;
+                }
+
+                this.jsPlayerListener?.off();
+                this.jsPlayer.resolve(player);
+            });
+
+            return;
+        }
+
+        this.jsPlayer.resolve(player);
+    }
+
+    /**
      * Start listening playback events.
      *
      * @param jsPlayer Javascript player instance (if any).
@@ -153,8 +170,9 @@ export class MediaElementController extends ElementController {
      *
      * @returns Player instance if found.
      */
-    private searchJSPlayer(): VideoJSPlayer | null {
-        return videojs.getPlayer(this.media.id) || videojs.getPlayer(this.media.id.replace('_html5_api', ''));
+    private async searchJSPlayer(): Promise<VideoJSPlayer | null> {
+        return AddonFilterMediaPluginVideoJS.findPlayer(this.media.id)
+            ?? AddonFilterMediaPluginVideoJS.findPlayer(this.media.id.replace('_html5_api', ''));
     }
 
 }

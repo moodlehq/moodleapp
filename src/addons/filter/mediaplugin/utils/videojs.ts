@@ -12,24 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { VideoJSOgvJS } from '@addons/filter/mediaplugin/classes/videojs-ogvjs';
+import { OGVLoader } from 'ogv';
+import videojs from 'video.js';
 
-import { CoreFilterDelegate } from '@features/filter/services/filter-delegate';
-import { AddonFilterMediaPluginHandler } from './services/handlers/mediaplugin';
+export { videojs };
 
-@NgModule({
-    declarations: [
-    ],
-    imports: [
-    ],
-    providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreFilterDelegate.registerHandler(AddonFilterMediaPluginHandler.instance);
-            },
-        },
-    ],
-})
-export class AddonFilterMediaPluginModule {}
+/**
+ * Initialize the controller.
+ */
+export function initializeVideoJSOgvJS(): void {
+    OGVLoader.base = 'assets/lib/ogv';
+
+    videojs.getComponent('Tech').registerTech('OgvJS', VideoJSOgvJS);
+}
