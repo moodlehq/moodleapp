@@ -80,6 +80,33 @@ export class CorePlatformService extends Platform {
         return this.is('cordova');
     }
 
+    /**
+     * Check whether the device is configured to reduce motion.
+     *
+     * @returns Whether the device is configured to reduce motion.
+     */
+    prefersReducedMotion(): boolean {
+        return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    }
+
+    /**
+     * Checks whether media capture is supported.
+     *
+     * @returns Whether media capture is supported.
+     */
+    supportsMediaCapture(): boolean {
+        return 'mediaDevices' in navigator;
+    }
+
+    /**
+     * Checks whether web assembly is supported.
+     *
+     * @returns Whether web assembly is supported.
+     */
+    supportsWebAssembly(): boolean {
+        return 'WebAssembly' in window;
+    }
+
 }
 
 export const CorePlatform = makeSingleton(CorePlatformService);

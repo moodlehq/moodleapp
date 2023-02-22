@@ -12,21 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreError } from './error';
-
-export const CAPTURE_ERROR_NO_MEDIA_FILES = 3;
+import { NgModule } from '@angular/core';
 
 /**
- * Capture error.
+ * Stub used in production to avoid including emulator code in production bundles.
  */
-export class CoreCaptureError extends CoreError {
-
-    code: number;
-
-    constructor(code: number, message?: string) {
-        super(message);
-
-        this.code = code;
-    }
-
-}
+@NgModule({})
+export class CoreEmulatorModule {}

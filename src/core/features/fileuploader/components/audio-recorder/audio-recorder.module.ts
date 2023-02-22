@@ -12,21 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreSharedModule } from '@/core/shared.module';
 import { NgModule } from '@angular/core';
+import { CoreFileUploaderAudioHistogramComponent } from '@features/fileuploader/components/audio-histogram/audio-histogram';
 
-import { AddonUserProfileFieldCheckboxModule } from './checkbox/checkbox.module';
-import { AddonUserProfileFieldDatetimeModule } from './datetime/datetime.module';
-import { AddonUserProfileFieldMenuModule } from './menu/menu.module';
-import { AddonUserProfileFieldTextareaModule } from './textarea/textarea.module';
-import { AddonUserProfileFieldTextModule } from './text/text.module';
+import { CoreFileUploaderAudioRecorderComponent } from './audio-recorder.component';
+
+export { CoreFileUploaderAudioRecorderComponent };
 
 @NgModule({
     imports: [
-        AddonUserProfileFieldCheckboxModule,
-        AddonUserProfileFieldDatetimeModule,
-        AddonUserProfileFieldMenuModule,
-        AddonUserProfileFieldTextareaModule,
-        AddonUserProfileFieldTextModule,
+        CoreSharedModule,
+    ],
+    declarations: [
+        CoreFileUploaderAudioRecorderComponent,
+        CoreFileUploaderAudioHistogramComponent,
     ],
 })
-export class AddonUserProfileFieldModule { }
+export class CoreFileUploaderAudioRecorderComponentModule {}

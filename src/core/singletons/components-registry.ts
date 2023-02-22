@@ -14,8 +14,7 @@
 
 import { Component } from '@angular/core';
 import { AsyncDirective } from '@classes/async-directive';
-import { CoreUtils } from '@services/utils/utils';
-import { CoreLogger } from './logger';
+import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 
 /**
  * Registry to keep track of component instances.
@@ -24,9 +23,6 @@ import { CoreLogger } from './logger';
  */
 export class CoreComponentsRegistry {
 
-    private static instances: WeakMap<Element, unknown> = new WeakMap();
-    protected static logger = CoreLogger.getInstance('CoreComponentsRegistry');
-
     /**
      * Register a component instance.
      *
@@ -34,7 +30,7 @@ export class CoreComponentsRegistry {
      * @param instance Component instance.
      */
     static register(element: Element, instance: unknown): void {
-        this.instances.set(element, instance);
+        CoreDirectivesRegistry.register(element, instance);
     }
 
     /**
@@ -45,11 +41,7 @@ export class CoreComponentsRegistry {
      * @returns Component instance.
      */
     static resolve<T>(element?: Element | null, componentClass?: ComponentConstructor<T>): T | null {
-        const instance = (element && this.instances.get(element) as T) ?? null;
-
-        return instance && (!componentClass || instance instanceof componentClass)
-            ? instance
-            : null;
+        return CoreDirectivesRegistry.resolve(element, componentClass);
     }
 
     /**
@@ -60,13 +52,7 @@ export class CoreComponentsRegistry {
      * @returns Component instance.
      */
     static require<T>(element: Element, componentClass?: ComponentConstructor<T>): T {
-        const instance = this.resolve(element, componentClass);
-
-        if (!instance) {
-            throw new Error('Couldn\'t resolve component instance');
-        }
-
-        return instance;
+        return CoreDirectivesRegistry.require(element, componentClass);
     }
 
     /**
@@ -80,14 +66,7 @@ export class CoreComponentsRegistry {
         element: Element | null,
         componentClass?: ComponentConstructor<T>,
     ): Promise<void> {
-        const instance = this.resolve(element, componentClass);
-        if (!instance) {
-            this.logger.error('No instance registered for element ' + componentClass, element);
-
-            return;
-        }
-
-        await instance.ready();
+        return CoreDirectivesRegistry.waitDirectiveReady(element, componentClass);
     }
 
     /**
@@ -103,23 +82,7 @@ export class CoreComponentsRegistry {
         selector: string,
         componentClass?: ComponentConstructor<T>,
     ): Promise<void> {
-        let elements: Element[] = [];
-
-        if (element.matches(selector)) {
-            // Element to wait is myself.
-            elements = [element];
-        } else {
-            elements = Array.from(element.querySelectorAll(selector));
-        }
-
-        if (!elements.length) {
-            return;
-        }
-
-        await Promise.all(elements.map(element => CoreComponentsRegistry.waitComponentReady<T>(element, componentClass)));
-
-        // Wait for next tick to ensure components are completely rendered.
-        await CoreUtils.nextTick();
+        return CoreDirectivesRegistry.waitDirectivesReady(element, selector, componentClass);
     }
 
 }

@@ -196,11 +196,6 @@
                 <param name="android-package" value="com.adobe.phonegap.push.PushPlugin" />
             </feature>
         </config-file>
-        <config-file parent="/*" target="res/xml/config.xml">
-            <feature name="Media">
-                <param name="android-package" value="org.apache.cordova.media.AudioHandler" />
-            </feature>
-        </config-file>
         <config-file parent="/*" target="AndroidManifest.xml">
             <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
         </config-file>

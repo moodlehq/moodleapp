@@ -24,7 +24,7 @@
     "build": "ionic build",
     "build:prod": "NODE_ENV=production ionic build --prod",
     "build:test": "NODE_ENV=testing ionic build --configuration=testing",
-    "dev:android": "ionic cordova run android --livereload",
+    "dev:android": "ionic cordova run android --livereload --external --ssl",
     "dev:ios": "ionic cordova run ios",
     "prod:android": "NODE_ENV=production ionic cordova run android --prod",
     "prod:ios": "NODE_ENV=production ionic cordova run ios --prod",
@@ -63,7 +63,6 @@
     "@ionic-native/ionic-webview": "5.36.0",
     "@ionic-native/keyboard": "5.36.0",
     "@ionic-native/local-notifications": "5.36.0",
-    "@ionic-native/media": "5.36.0",
     "@ionic-native/media-capture": "5.36.0",
     "@ionic-native/network": "5.36.0",
     "@ionic-native/push": "5.36.0",
@@ -104,7 +103,6 @@
     "cordova-plugin-file": "6.0.2",
     "cordova-plugin-geolocation": "4.1.0",
     "cordova-plugin-ionic-keyboard": "2.2.0",
-    "cordova-plugin-media": "5.0.4",
     "cordova-plugin-media-capture": "3.0.3",
     "cordova-plugin-network-information": "3.0.0",
     "cordova-plugin-prevent-override": "1.0.1",
@@ -122,6 +120,7 @@
     "mathjax": "2.7.9",
     "moment": "2.29.4",
     "moment-timezone": "0.5.38",
+    "mp3-mediarecorder": "^4.0.5",
     "nl.kingsquare.cordova.background-audio": "1.0.1",
     "ogv": "1.8.9",
     "rxjs": "6.5.5",
@@ -224,9 +223,6 @@
         "ANDROID_SUPPORT_V4_VERSION": "26.+"
       },
       "cordova-plugin-media-capture": {},
-      "cordova-plugin-media": {
-        "KEEP_AVAUDIOSESSION_ALWAYS_ACTIVE": "NO"
-      },
       "cordova-plugin-network-information": {},
       "@moodlehq/cordova-plugin-qrscanner": {},
       "cordova-plugin-splashscreen": {},

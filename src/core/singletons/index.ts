@@ -52,7 +52,6 @@ import { InAppBrowser as InAppBrowserService } from '@ionic-native/in-app-browse
 import { WebView as WebViewService } from '@ionic-native/ionic-webview/ngx';
 import { Keyboard as KeyboardService } from '@ionic-native/keyboard/ngx';
 import { LocalNotifications as LocalNotificationsService } from '@ionic-native/local-notifications/ngx';
-import { Media as MediaService } from '@ionic-native/media/ngx';
 import { MediaCapture as MediaCaptureService } from '@ionic-native/media-capture/ngx';
 import { Push as PushService } from '@ionic-native/push/ngx';
 import { QRScanner as QRScannerService } from '@ionic-native/qr-scanner/ngx';
@@ -184,7 +183,6 @@ export const Geolocation = makeSingleton(GeolocationService);
 export const InAppBrowser = makeSingleton(InAppBrowserService);
 export const Keyboard = makeSingleton(KeyboardService);
 export const LocalNotifications = makeSingleton(LocalNotificationsService);
-export const Media = makeSingleton(MediaService);
 export const MediaCapture = makeSingleton(MediaCaptureService);
 export const NativeHttp = makeSingleton(HTTP);
 export const Push = makeSingleton(PushService);

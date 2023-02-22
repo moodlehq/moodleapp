@@ -6,6 +6,8 @@ WORKDIR /app
 # Prepare node dependencies
 RUN apt-get update && apt-get install libsecret-1-0 -y
 COPY package*.json ./
+COPY patches ./patches
+RUN echo "unsafe-perm=true" > ./.npmrc
 RUN npm ci --no-audit
 
 # Build source
