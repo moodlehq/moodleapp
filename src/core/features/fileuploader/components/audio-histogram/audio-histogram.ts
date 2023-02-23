@@ -48,17 +48,7 @@ export class CoreFileUploaderAudioHistogramComponent implements AfterViewInit, O
         this.context = this.canvas?.getContext('2d');
         this.buffer = new Uint8Array(this.analyser.fftSize);
 
-        if (this.context && this.canvas) {
-            const styles = getComputedStyle(this.element);
-
-            this.canvas.width = this.canvas.clientWidth;
-            this.canvas.height = this.canvas.clientHeight;
-            this.context.fillStyle = styles.getPropertyValue('--background-color');
-            this.context.lineCap = 'round';
-            this.context.lineWidth = CoreFileUploaderAudioHistogramComponent.BARS_WIDTH;
-            this.context.strokeStyle = styles.getPropertyValue('--bars-color');
-        }
-
+        this.updateCanvas(this.element.clientWidth, this.element.clientHeight);
         this.draw();
     }
 
@@ -75,6 +65,10 @@ export class CoreFileUploaderAudioHistogramComponent implements AfterViewInit, O
     private draw(): void {
         if (this.destroyed || !this.canvas || !this.context || !this.buffer) {
             return;
+        }
+
+        if (this.canvas.width !== this.element.clientWidth || this.canvas.height !== this.element.clientHeight) {
+            this.updateCanvas(this.element.clientWidth, this.element.clientHeight);
         }
 
         const width = this.canvas.width;
@@ -155,6 +149,27 @@ export class CoreFileUploaderAudioHistogramComponent implements AfterViewInit, O
 
             x += xStep;
         }
+    }
+
+    /**
+     * Set canvas element dimensions and configure styles.
+     *
+     * @param width Canvas width.
+     * @param height Canvas height.
+     */
+    private updateCanvas(width: number, height: number): void {
+        if (!this.canvas || !this.context) {
+            return;
+        }
+
+        const styles = getComputedStyle(this.element);
+
+        this.canvas.width = width;
+        this.canvas.height = height;
+        this.context.fillStyle = styles.getPropertyValue('--background-color');
+        this.context.lineCap = 'round';
+        this.context.lineWidth = CoreFileUploaderAudioHistogramComponent.BARS_WIDTH;
+        this.context.strokeStyle = styles.getPropertyValue('--bars-color');
     }
 
 }
