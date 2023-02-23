@@ -93,32 +93,48 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
      * Start recording.
      */
     async startRecording(): Promise<void> {
-        const media = await this.createMedia();
+        try {
+            const media = await this.createMedia();
 
-        this.media$.next(media);
+            this.media$.next(media);
 
-        media.recorder.start();
+            media.recorder.start();
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+        }
     }
 
     /**
      * Stop recording.
      */
     stopRecording(): void {
-        this.media$.value?.recorder.stop();
+        try {
+            this.media$.value?.recorder.stop();
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+        }
     }
 
     /**
      * Stop recording.
      */
     pauseRecording(): void {
-        this.media$.value?.recorder.pause();
+        try {
+            this.media$.value?.recorder.pause();
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+        }
     }
 
     /**
      * Stop recording.
      */
     resumeRecording(): void {
-        this.media$.value?.recorder.resume();
+        try {
+            this.media$.value?.recorder.resume();
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+        }
     }
 
     /**
@@ -143,15 +159,19 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
             return;
         }
 
-        const fileName = await CoreFile.getUniqueNameInFolder(CoreFileProvider.TMPFOLDER, 'recording.mp3');
-        const filePath = CorePath.concatenatePaths(CoreFileProvider.TMPFOLDER, fileName);
-        const fileEntry = await CoreFile.writeFile(filePath, this.recording.blob);
+        try {
+            const fileName = await CoreFile.getUniqueNameInFolder(CoreFileProvider.TMPFOLDER, 'recording.mp3');
+            const filePath = CorePath.concatenatePaths(CoreFileProvider.TMPFOLDER, fileName);
+            const fileEntry = await CoreFile.writeFile(filePath, this.recording.blob);
 
-        this.close({
-            name: fileEntry.name,
-            fullPath: fileEntry.toURL(),
-            type: 'audio/mpeg',
-        });
+            this.close({
+                name: fileEntry.name,
+                fullPath: fileEntry.toURL(),
+                type: 'audio/mpeg',
+            });
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+        }
     }
 
     /**
