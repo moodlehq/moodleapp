@@ -58,6 +58,8 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
 
     source$: Observable<string>;
 
+    isString = (value: unknown): boolean => CoreReportBuilder.isString(value);
+
     constructor() {
         this.source$ = this.state$.pipe(
             map(state => {
@@ -81,33 +83,37 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
      * Get report data.
      */
     async getReport(): Promise<void> {
-        if (!this.reportId) {
-            CoreDomUtils.showErrorModal(new CoreError('No report found'));
-            CoreNavigator.back();
+        try {
+            if (!this.reportId) {
+                CoreDomUtils.showErrorModal(new CoreError('No report found'));
+                CoreNavigator.back();
 
-            return;
+                return;
+            }
+
+            const { page } = this.state$.getValue();
+
+            const report = await CoreReportBuilder.loadReport(parseInt(this.reportId), page,this.perPage ?? REPORT_ROWS_LIMIT);
+
+            if (!report) {
+                CoreDomUtils.showErrorModal(new CoreError('No report found'));
+                CoreNavigator.back();
+
+                return;
+            }
+
+            await CoreReportBuilder.viewReport(this.reportId);
+
+            this.updateState({
+                report,
+                cardVisibleColumns: report.details.settingsdata.cardviewVisibleColumns,
+                cardviewShowFirstTitle: report.details.settingsdata.cardviewShowFirstTitle,
+            });
+
+            this.onReportLoaded.emit(report.details);
+        } catch (err) {
+            await CoreDomUtils.showErrorModal(err);
         }
-
-        const { page } = this.state$.getValue();
-
-        const report = await CoreReportBuilder.loadReport(parseInt(this.reportId), page,this.perPage ?? REPORT_ROWS_LIMIT);
-
-        if (!report) {
-            CoreDomUtils.showErrorModal(new CoreError('No report found'));
-            CoreNavigator.back();
-
-            return;
-        }
-
-        await CoreReportBuilder.viewReport(this.reportId);
-
-        this.updateState({
-            report,
-            cardVisibleColumns: report.details.settingsdata.cardviewVisibleColumns,
-            cardviewShowFirstTitle: report.details.settingsdata.cardviewShowFirstTitle,
-        });
-
-        this.onReportLoaded.emit(report.details);
     }
 
     updateState(state: Partial<CoreReportBuilderReportDetailState>): void {

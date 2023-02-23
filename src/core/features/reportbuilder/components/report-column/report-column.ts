@@ -12,14 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { CoreReportBuilder } from '@features/reportbuilder/services/reportbuilder';
 
 @Component({
     selector: 'core-report-builder-report-column',
     templateUrl: './report-column.html',
     styleUrls: ['./report-column.scss'],
 })
-export class CoreReportBuilderReportColumnComponent implements OnInit {
+export class CoreReportBuilderReportColumnComponent {
 
     @Input() isExpanded = false;
     @Input() isExpandable = false;
@@ -32,11 +33,7 @@ export class CoreReportBuilderReportColumnComponent implements OnInit {
     @Input() source!: string;
     @Output() onToggleRow: EventEmitter<number> = new EventEmitter();
 
-    ngOnInit(): void {
-        if (typeof this.column === 'number') {
-            this.column = this.column.toString();
-        }
-    }
+    isString = (value: unknown): boolean => CoreReportBuilder.isString(value);
 
     /**
      * Emits row click
