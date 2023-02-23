@@ -76,8 +76,8 @@ export class CoreModalsService {
 
         modal.result.finally(async () => {
             await sheetModal.hide();
+            await AngularFrameworkDelegate.removeViewFromDom(container, element);
 
-            element.remove();
             viewContainer?.removeAttribute('aria-hidden');
         });
 
