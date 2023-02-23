@@ -52,9 +52,17 @@ Feature: Test basic usage of forum activity in app
 
   Scenario: Reply a post
     Given I entered the forum activity "Test forum name" on course "Course 1" as "student1" in the app
+    When I replace "/.*/" within ".addon-mod-forum-discussion-author p" with "[Publication date]"
+    And I replace "/\d+ seconds ago/" within ".addon-mod-forum-discussion-more-info ion-note" with "[seconds] seconds ago"
+    Then the UI should match the snapshot
+
     When I press "Initial discussion" in the app
     And I press "Reply" in the app
-    And I set the field "Message" to "ReplyMessage" in the app
+    And I scroll to "Post to forum" in the app
+    And I replace "/.*/" within ".addon-mod-forum-post-author p:last-child" with "[Publication date]"
+    Then the UI should match the snapshot
+
+    When I set the field "Message" to "ReplyMessage" in the app
     And I press "Post to forum" in the app
     Then I should find "Initial discussion message" in the app
     And I should find "ReplyMessage" in the app
