@@ -30,6 +30,7 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { Observable, Subject } from 'rxjs';
 import { CoreTextUtils } from '@services/utils/text';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Object with space usage and cache entries that can be erased.
@@ -477,15 +478,32 @@ export class CoreSettingsHelperProvider {
         return this.darkModeObservable;
     }
 
+    /**
+     * Get if user enabled staging sites or not.
+     *
+     * @returns Staging sites.
+     */
     async hasEnabledStagingSites(): Promise<boolean> {
-        const staging = await CoreConfig.get<string>('staging_sites', 'false');
+        const staging = await CoreConfig.get<number>('stagingSites', 0);
 
-        return CoreUtils.isTrueOrOne(staging);
+        return !!staging;
     }
 
+    /**
+     * Persist staging sites enabled status and refresh app to apply changes.
+     *
+     * @param enabled Enabled or disabled staging sites.
+     */
     async setEnabledStagingSites(enabled: boolean): Promise<void> {
-        await CoreConfig.set('staging_sites', `${enabled}`);
-        CoreEvents.trigger(CoreEvents.STAGING_SITES_CHANGE, { enabled });
+        try {
+            await CoreConfig.set('stagingSites', enabled ? 1 : 0);
+            await CoreDomUtils.showConfirm('Are you sure that you want to enable/disable staging sites?');
+        } catch {
+            return;
+        }
+
+        await CoreNavigator.navigate('/');
+        window.location.reload();
     }
 
 }

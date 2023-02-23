@@ -14,13 +14,13 @@
 
 import { CoreConstants } from '@/core/constants';
 import { Component, OnInit } from '@angular/core';
-import { CoreLoginHelperProvider } from '@features/login/services/login-helper';
+import { CoreLoginHelper, CoreLoginHelperProvider } from '@features/login/services/login-helper';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CoreUserTours } from '@features/usertours/services/user-tours';
 import { CoreConfig } from '@services/config';
 import { CorePlatform } from '@services/platform';
-import { CoreLoginSiteInfo, CoreSites } from '@services/sites';
+import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 
@@ -43,8 +43,8 @@ export class CoreSettingsDevPage implements OnInit {
     pluginStylesCount = 0;
     sitePlugins: CoreSitePluginsBasicInfo[] = [];
     userToursEnabled = true;
-    stagingSites: CoreLoginSiteInfo[] = [];
-    enableStagingSites = false;
+    stagingSitesCount = 0;
+    enableStagingSites?: boolean;
 
     disabledFeatures: string[] = [];
 
@@ -59,9 +59,9 @@ export class CoreSettingsDevPage implements OnInit {
 
         this.siteId = CoreSites.getCurrentSite()?.getId();
 
-        this.stagingSites = CoreConstants.CONFIG.stagingsites;
+        this.stagingSitesCount = CoreConstants.CONFIG.sites.filter((site) => site.staging).length;
 
-        if (this.stagingSites.length) {
+        if (this.stagingSitesCount) {
             this.enableStagingSites = await CoreSettingsHelper.hasEnabledStagingSites();
         }
 
@@ -167,8 +167,8 @@ export class CoreSettingsDevPage implements OnInit {
         CoreDomUtils.showToast('User tours have been reseted');
     }
 
-    async setEnabledStagingSites(): Promise<void> {
-        await CoreSettingsHelper.setEnabledStagingSites(this.enableStagingSites);
+    async setEnabledStagingSites(enabled: boolean): Promise<void> {
+        await CoreSettingsHelper.setEnabledStagingSites(enabled);
     }
 
 }
