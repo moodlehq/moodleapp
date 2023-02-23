@@ -2105,6 +2105,16 @@ export type CoreLoginSiteInfo = {
      * Countrycode of the site.
      */
     countrycode?: string;
+
+    /**
+     * Is staging site.
+     */
+    staging?: boolean;
+
+    /**
+     * Class to apply to site item.
+     */
+    className?: string;
 };
 
 /**
