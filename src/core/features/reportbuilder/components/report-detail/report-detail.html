@@ -34,9 +34,10 @@
                     <tbody>
                         <tr *ngFor="let row of state.report.data.rows">
                             <td *ngFor="let column of row.columns">
-                                <core-format-text [text]="column" [contextLevel]="source$ | async"
+                                <core-format-text *ngIf="isString(column); else notText" [text]="column" [contextLevel]="source$ | async"
                                     [contextInstanceId]="state.report.details.contextid">
                                 </core-format-text>
+                                <ng-template #notText> {{ column }} </ng-template>
                             </td>
                         </tr>
                     </tbody>

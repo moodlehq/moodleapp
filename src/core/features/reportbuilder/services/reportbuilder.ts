@@ -160,6 +160,10 @@ export class CoreReportBuilderService {
         return ROOT_CACHE_KEY + 'report';
     }
 
+    isString(value: unknown): boolean {
+        return typeof value === 'string';
+    }
+
 }
 
 export const CoreReportBuilder = makeSingleton(CoreReportBuilderService);
@@ -230,7 +234,7 @@ export interface CoreReportBuilderRetrieveReportMapped extends Omit<CoreReportBu
 export type CoreReportBuilderReportDataWSResponse = {
     headers: string[]; // Headers.
     rows: { // Rows.
-        columns: string | number[]; // Columns.
+        columns: (string | number)[]; // Columns.
         isExpanded: boolean;
     }[];
     totalrowcount: number; // Totalrowcount.
