@@ -86,7 +86,11 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.media$.value?.recorder.stop();
+        const recorder = this.media$.value?.recorder;
+
+        if (recorder && recorder.state !== 'inactive') {
+            recorder.stop();
+        }
     }
 
     /**

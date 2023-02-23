@@ -34,6 +34,7 @@ export class CoreSheetModalComponent<T extends CoreModalComponent> implements Af
 
     private element: HTMLElement;
     private wrapperElement = new CorePromisedValue<HTMLElement>();
+    private content?: HTMLElement;
 
     constructor({ nativeElement: element }: ElementRef<HTMLElement>) {
         this.element = element;
@@ -61,7 +62,7 @@ export class CoreSheetModalComponent<T extends CoreModalComponent> implements Af
      */
     async show(): Promise<T> {
         const wrapper = await this.wrapperElement;
-        const element = await AngularFrameworkDelegate.attachViewToDom(wrapper, this.component, this.componentProps ?? {});
+        this.content = await AngularFrameworkDelegate.attachViewToDom(wrapper, this.component, this.componentProps ?? {});
 
         await CoreUtils.nextTick();
 
@@ -71,7 +72,7 @@ export class CoreSheetModalComponent<T extends CoreModalComponent> implements Af
         await CoreUtils.nextTick();
         await CoreUtils.wait(300);
 
-        const instance = CoreDirectivesRegistry.resolve(element, this.component);
+        const instance = CoreDirectivesRegistry.resolve(this.content, this.component);
 
         if (!instance) {
             throw new Error('Modal not mounted properly');
@@ -84,10 +85,13 @@ export class CoreSheetModalComponent<T extends CoreModalComponent> implements Af
      * Hide modal.
      */
     async hide(): Promise<void> {
+        const wrapper = await this.wrapperElement;
+
         this.element.classList.remove('active');
 
         await CoreUtils.nextTick();
         await CoreUtils.wait(300);
+        await AngularFrameworkDelegate.removeViewFromDom(wrapper, this.content);
     }
 
 }
