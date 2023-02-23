@@ -168,10 +168,6 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
         }
 
         const currentSite = sitesProvider.getCurrentSite();
-        const firstUrl = CoreLoginHelper.isUniqueFixedSite() && CoreConstants.CONFIG.sites[0].url;
-
-        this.deviceInfo.siteUrl = currentSite?.getURL() || firstUrl || undefined;
-        this.deviceInfo.isPrefixedUrl = !!CoreConstants.CONFIG.sites.length;
         this.deviceInfo.siteId = currentSite?.getId();
         this.deviceInfo.siteVersion = currentSite?.getInfo()?.release;
 
@@ -190,11 +186,20 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
      * Async part of the constructor.
      */
     protected async asyncInit(): Promise<void> {
+        const sitesProvider = CoreSites.instance;
         const fileProvider = CoreFile.instance;
 
         const lang = await CoreLang.getCurrentLanguage();
         this.deviceInfo.currentLanguage = lang;
         this.currentLangName = CoreConstants.CONFIG.languages[lang];
+
+        const currentSite = sitesProvider.getCurrentSite();
+        const isSingleFixedSite = await CoreLoginHelper.isSingleFixedSite();
+        const sites = await CoreLoginHelper.getAvailableSites();
+        const firstUrl = isSingleFixedSite && sites[0].url;
+
+        this.deviceInfo.siteUrl = currentSite?.getURL() || firstUrl || undefined;
+        this.deviceInfo.isPrefixedUrl = !!sites.length;
 
         if (fileProvider.isAvailable()) {
             const basepath = await fileProvider.getBasePath();

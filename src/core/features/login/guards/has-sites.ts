@@ -50,7 +50,7 @@ export class CoreLoginHasSitesGuard implements CanActivate, CanLoad {
             return true;
         }
 
-        const [path, params] = CoreLoginHelper.getAddSiteRouteInfo();
+        const [path, params] = await CoreLoginHelper.getAddSiteRouteInfo();
         const route = Router.parseUrl(path);
 
         route.queryParams = params;

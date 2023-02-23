@@ -31,7 +31,6 @@ import { CoreUserSupportConfig } from '@features/user/classes/support/support-co
 import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
 import { Translate } from '@singletons';
 import { SafeHtml } from '@angular/platform-browser';
-import { CoreConstants } from '@/core/constants';
 
 /**
  * Page to enter the user password to reconnect to a site.
@@ -109,14 +108,16 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             this.userFullName = site.infos.fullname;
             this.userAvatar = site.infos.userpictureurl;
             this.siteUrl = site.infos.siteurl;
-            this.siteName = site.getSiteName();
+            this.siteName = await site.getSiteName();
             this.supportConfig = new CoreUserAuthenticatedSupportConfig(site);
 
             // If login was OAuth we should only reach this page if the OAuth method ID has changed.
             this.isOAuth = site.isOAuth();
 
+            const sites = await CoreLoginHelper.getAvailableSites();
+
             // Show logo instead of avatar if it's a fixed site.
-            this.showUserAvatar = !!this.userAvatar && !CoreConstants.CONFIG.sites.length;
+            this.showUserAvatar = !!this.userAvatar && !sites.length;
 
             this.checkSiteConfig(site);
 
@@ -181,8 +182,12 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
         }
 
         this.isBrowserSSO = !this.isOAuth && CoreLoginHelper.isSSOLoginNeeded(this.siteConfig.typeoflogin);
-        this.showScanQR = CoreLoginHelper.displayQRInSiteScreen() ||
-            CoreLoginHelper.displayQRInCredentialsScreen(this.siteConfig.tool_mobile_qrcodetype);
+
+        this.showScanQR = CoreLoginHelper.displayQRInSiteScreen();
+
+        if (!this.showScanQR) {
+            this.showScanQR = await CoreLoginHelper.displayQRInCredentialsScreen(this.siteConfig.tool_mobile_qrcodetype);
+        }
 
         await CoreSites.checkApplication(this.siteConfig);
 

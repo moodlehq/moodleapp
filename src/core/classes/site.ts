@@ -290,14 +290,18 @@ export class CoreSite {
      *
      * @returns Site name.
      */
-    getSiteName(): string {
+    async getSiteName(): Promise<string> {
         if (this.infos?.sitename) {
             return this.infos?.sitename;
         }
 
         // Fallback.
-        if (CoreLoginHelper.isUniqueFixedSite()) {
-            return CoreConstants.CONFIG.sites[0].name ;
+        const isSigleFixedSite = await CoreLoginHelper.isSingleFixedSite();
+
+        if (isSigleFixedSite) {
+            const sites = await CoreLoginHelper.getAvailableSites();
+
+            return sites[0].name;
         }
 
         return '';

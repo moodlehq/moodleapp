@@ -61,9 +61,9 @@ export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
 
     constructor(protected loadsManager: PageLoadsManager) {
         // Refresh the enabled flags if site is updated.
-        this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
+        this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, async () => {
             this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
-            this.loadSiteName();
+            await this.loadSiteName();
 
         }, CoreSites.getCurrentSiteId());
 
@@ -78,13 +78,13 @@ export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
 
         const deepLinkManager = new CoreMainMenuDeepLinkManager();
         deepLinkManager.treatLink();
 
-        this.loadSiteName();
+        await this.loadSiteName();
 
         this.loadContent(true);
     }
@@ -143,8 +143,9 @@ export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
     /**
      * Load the site name.
      */
-    protected loadSiteName(): void {
-        this.siteName = CoreSites.getRequiredCurrentSite().getSiteName() || '';
+    protected async loadSiteName(): Promise<void> {
+        const site = CoreSites.getRequiredCurrentSite();
+        this.siteName = await site.getSiteName() || '';
     }
 
     /**

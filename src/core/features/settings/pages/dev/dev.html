@@ -34,7 +34,7 @@
             <ion-label>
                 <h2>Enable staging sites ({{stagingSitesCount}})</h2>
             </ion-label>
-            <ion-toggle [checked]="enableStagingSites" (ionChange)="setEnabledStagingSites($event.detail.checked)"></ion-toggle>
+            <ion-toggle [(ngModel)]="enableStagingSites" (ionChange)="setEnabledStagingSites($event.detail.checked)"></ion-toggle>
         </ion-item>
         <ng-container *ngIf="siteId">
             <ion-item class="ion-text-wrap">

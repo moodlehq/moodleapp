@@ -14,7 +14,7 @@
 
 import { CoreConstants } from '@/core/constants';
 import { Component, OnInit } from '@angular/core';
-import { CoreLoginHelper, CoreLoginHelperProvider } from '@features/login/services/login-helper';
+import { CoreLoginHelperProvider } from '@features/login/services/login-helper';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CoreUserTours } from '@features/usertours/services/user-tours';
@@ -45,6 +45,7 @@ export class CoreSettingsDevPage implements OnInit {
     userToursEnabled = true;
     stagingSitesCount = 0;
     enableStagingSites?: boolean;
+    listenStagingSitesChanges = false;
 
     disabledFeatures: string[] = [];
 
@@ -63,6 +64,7 @@ export class CoreSettingsDevPage implements OnInit {
 
         if (this.stagingSitesCount) {
             this.enableStagingSites = await CoreSettingsHelper.hasEnabledStagingSites();
+            this.listenStagingSitesChanges = true;
         }
 
         if (!this.siteId) {
@@ -168,7 +170,19 @@ export class CoreSettingsDevPage implements OnInit {
     }
 
     async setEnabledStagingSites(enabled: boolean): Promise<void> {
-        await CoreSettingsHelper.setEnabledStagingSites(enabled);
+        if (!this.listenStagingSitesChanges) {
+            this.listenStagingSitesChanges = true;
+
+            return;
+        }
+
+        try {
+            await CoreSettingsHelper.setEnabledStagingSites(enabled);
+        } catch (error) {
+            this.enableStagingSites = !enabled;
+            this.listenStagingSitesChanges = false;
+            CoreDomUtils.showErrorModal(error);
+        }
     }
 
 }

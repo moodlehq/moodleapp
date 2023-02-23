@@ -495,10 +495,15 @@ export class CoreSettingsHelperProvider {
      * @param enabled Enabled or disabled staging sites.
      */
     async setEnabledStagingSites(enabled: boolean): Promise<void> {
-        try {
-            await CoreConfig.set('stagingSites', enabled ? 1 : 0);
+        const reloadApp = !CoreSites.isLoggedIn();
+
+        if (reloadApp) {
             await CoreDomUtils.showConfirm('Are you sure that you want to enable/disable staging sites?');
-        } catch {
+        }
+
+        await CoreConfig.set('stagingSites', enabled ? 1 : 0);
+
+        if (!reloadApp) {
             return;
         }
 
