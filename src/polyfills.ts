@@ -20,6 +20,7 @@ import 'zone.js/dist/zone';
 
 // Platform polyfills
 import 'core-js/es/array/includes';
+import 'core-js/es/global-this';
 import 'core-js/es/promise/finally';
 import 'core-js/es/string/match-all';
 import 'core-js/es/string/trim-right';

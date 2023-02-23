@@ -16,7 +16,7 @@ import { CorePlatform } from '@services/platform';
 import { OGVPlayer, OGVCompat, OGVLoader } from 'ogv';
 import videojs, { PreloadOption, TechSourceObject, VideoJSOptions } from 'video.js';
 
-export const Tech = videojs.getComponent('Tech');
+const Tech = videojs.getComponent('Tech');
 
 /**
  * Object.defineProperty but "lazy", which means that the value is only set after
@@ -728,13 +728,6 @@ export class VideoJSOgvJS extends Tech {
 ].forEach(([key, fn]) => {
     defineLazyProperty(VideoJSOgvJS.prototype, key, () => VideoJSOgvJS[fn](), true);
 });
-/**
- * Initialize the controller.
- */
-export const initializeVideoJSOgvJS = (): void => {
-    OGVLoader.base = 'assets/lib/ogv';
-    Tech.registerTech('OgvJS', VideoJSOgvJS);
-};
 
 type OGVPlayerEl = (HTMLAudioElement | HTMLVideoElement) & {
     stop: () => void;
