@@ -55,7 +55,7 @@ jobs:
       - npm ci
       - export JAVA_HOME_COPY=$JAVA_HOME
       - export JAVA_HOME=/usr/lib/jvm/java-8-oracle
-      - yes | sdkmanager "build-tools;30.0.3"
+      - yes | sdkmanager "build-tools;32.0.0"
       - export JAVA_HOME=$JAVA_HOME_COPY
     addons:
       apt:
