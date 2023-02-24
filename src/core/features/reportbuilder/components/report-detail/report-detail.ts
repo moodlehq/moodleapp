@@ -23,8 +23,11 @@ import {
 import { IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
+import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
+import { CoreTextErrorObject } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
+import { Translate } from '@singletons';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -111,8 +114,33 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
             });
 
             this.onReportLoaded.emit(report.details);
-        } catch (err) {
-            await CoreDomUtils.showErrorModal(err);
+        } catch {
+            const errorConfig: CoreTextErrorObject = {
+                title: Translate.instant('core.error'),
+                body: `
+                    <p>${Translate.instant('addon.mod_page.errorwhileloadingthepage')}</p>
+                    <p>${Translate.instant('core.course.useactivityonbrowser')}</p>
+                `,
+                buttons: [
+                    {
+                        text: Translate.instant('core.cancel'),
+                        role: 'cancel',
+                        handler: async () => await CoreNavigator.back(),
+                    },
+                    {
+                        text: Translate.instant('core.openinbrowser'),
+                        role: 'confirm',
+                        handler: async () => {
+                            const site = CoreSites.getRequiredCurrentSite();
+                            const href = `${site.getURL()}/reportbuilder/view.php?id=${this.reportId}`;
+                            await CoreUtils.openInBrowser(href, { showBrowserWarning: false });
+                            await CoreNavigator.back();
+                        },
+                    },
+                ],
+            };
+
+            await CoreDomUtils.showErrorModal(errorConfig);
         }
     }
 
