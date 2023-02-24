@@ -1603,6 +1603,10 @@ ion-modal:focus-visible {
     box-shadow: none;
 }
 
+ion-loading:focus-visible {
+    border-radius: 0;
+}
+
 input {
     --placeholder-color: var(--ion-placeholder-color);
     --placeholder-opacity: .85;
