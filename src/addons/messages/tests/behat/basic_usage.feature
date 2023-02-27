@@ -38,11 +38,19 @@ Feature: Test basic usage of messages in app
 
     Given I entered the app as "student1"
     When I press "Messages" in the app
-    And I press "Contacts" in the app
+    And I replace "/.*/" within ".addon-message-last-message-date" with "[Date]"
+    Then I should find "Contacts" in the app
+    And the UI should match the snapshot
+
+    When I press "Contacts" in the app
     And I press "Requests" in the app
     And I press "Teacher teacher" in the app
     And I press "Accept and add to contacts" in the app
     Then I should not find "Teacher teacher would like to contact you" in the app
+
+    When I replace "/.*/" within ".addon-messages-date" with "[Day]"
+    And I replace "/.*/" within ".message-time" with "[Date]"
+    Then the UI should match the snapshot
 
     When I press the back button in the app
     And I press "Contacts" near "No contact requests" in the app
