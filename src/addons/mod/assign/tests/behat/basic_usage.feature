@@ -61,6 +61,11 @@ Feature: Test basic usage of assignment activity in app
   Scenario: Edit/Add submission (online text) & Add new attempt from previous submission & Submit for grading
     # Submit first attempt as a student
     Given I entered the assign activity "assignment1" on course "Course 1" as "student1" in the app
+    Then I should find "assignment1" in the app
+
+    When I replace "/Assignment is overdue by: .*/" within "addon-mod-assign-submission core-tabs ion-item:nth-child(2)" with "Assignment is overdue by: [Overdue date]"
+    Then the UI should match the snapshot
+
     When I press "Add submission" in the app
     Then I set the field "Online text submissions" to "Submission test 1st attempt" in the app
     And I press "Save" in the app
