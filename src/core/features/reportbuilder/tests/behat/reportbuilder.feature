@@ -1,8 +1,9 @@
-@app @javascript @core_reportbuilder
+@app @javascript @core_reportbuilder @lms_from4.1
 Feature: Report builder
 
   Background:
-    Given the following "core_reportbuilder > Reports" exist:
+    Given the Moodle site is compatible with this feature
+    And the following "core_reportbuilder > Reports" exist:
       | name         | source                                   | default |
       | My report 01 | core_user\reportbuilder\datasource\users | 1       |
       | My report 02 | core_user\reportbuilder\datasource\users | 2       |
