@@ -45,9 +45,9 @@
                 [userId]="evaluateByProfile.id"></core-user-avatar>
 
             <ion-label>
-                <h2 *ngIf="evaluateByProfile && evaluateByProfile.fullname">
+                <p class="item-heading" *ngIf="evaluateByProfile && evaluateByProfile.fullname">
                     {{ 'addon.mod_workshop.feedbackby' | translate : {$a: evaluateByProfile.fullname} }}
-                </h2>
+                </p>
                 <core-format-text [text]="submission.feedbackauthor" contextLevel="module" [contextInstanceId]="module.id"
                     [courseId]="courseId">
                 </core-format-text>

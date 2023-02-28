@@ -14,6 +14,11 @@
 
 import { CoreUtils } from '@services/utils/utils';
 import { ElementController } from './ElementController';
+import { CorePromisedValue } from '@classes/promised-value';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreMedia } from '@singletons/media';
+import { AddonFilterMediaPluginVideoJS, VIDEO_JS_PLAYER_CREATED } from '@addons/filter/mediaplugin/services/videojs';
+import type { VideoJSPlayer } from 'video.js';
 
 /**
  * Wrapper class to control the interactivity of a media element.
@@ -25,6 +30,10 @@ export class MediaElementController extends ElementController {
     private playing?: boolean;
     private playListener?: () => void;
     private pauseListener?: () => void;
+    private jsPlayer = new CorePromisedValue<VideoJSPlayer | null>();
+    private jsPlayerListener?: CoreEventObserver;
+    private shouldEnable = false;
+    private shouldDisable = false;
 
     constructor(media: HTMLMediaElement, enabled: boolean) {
         super(enabled);
@@ -34,48 +43,136 @@ export class MediaElementController extends ElementController {
 
         media.autoplay = false;
 
+        this.initJSPlayer(media);
+
         enabled && this.onEnabled();
     }
 
     /**
      * @inheritdoc
      */
-    onEnabled(): void {
+    async onEnabled(): Promise<void> {
+        this.shouldEnable = true;
+        this.shouldDisable = false;
+
+        const jsPlayer = await this.jsPlayer;
+
+        if (!this.shouldEnable || this.destroyed) {
+            return;
+        }
+
         const ready = this.playing ?? this.autoplay
-            ? this.media.play()
+            ? (jsPlayer ?? this.media).play()
             : Promise.resolve();
 
-        ready
-            .then(() => this.addPlaybackEventListeners())
-            .catch(error => CoreUtils.logUnhandledError('Error enabling media element', error));
+        try {
+            await ready;
+
+            this.addPlaybackEventListeners(jsPlayer);
+        } catch (error) {
+            CoreUtils.logUnhandledError('Error enabling media element', error);
+        }
     }
 
     /**
      * @inheritdoc
      */
     async onDisabled(): Promise<void> {
-        this.removePlaybackEventListeners();
+        this.shouldDisable = true;
+        this.shouldEnable = false;
 
-        this.media.pause();
+        const jsPlayer = await this.jsPlayer;
+
+        if (!this.shouldDisable || this.destroyed) {
+            return;
+        }
+
+        this.removePlaybackEventListeners(jsPlayer);
+
+        (jsPlayer ?? this.media).pause();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async onDestroy(): Promise<void> {
+        const jsPlayer = await this.jsPlayer;
+
+        this.removePlaybackEventListeners(jsPlayer);
+        jsPlayer?.dispose();
+    }
+
+    /**
+     * Init JS Player instance.
+     *
+     * @param media Media element.
+     */
+    private async initJSPlayer(media: HTMLMediaElement): Promise<void> {
+        if (!CoreMedia.mediaUsesJavascriptPlayer(media)) {
+            this.jsPlayer.resolve(null);
+
+            return;
+        }
+
+        const player = await this.searchJSPlayer();
+
+        if (!player) {
+            this.jsPlayerListener = CoreEvents.on(VIDEO_JS_PLAYER_CREATED, ({ element, player }) => {
+                if (element !== media) {
+                    return;
+                }
+
+                this.jsPlayerListener?.off();
+                this.jsPlayer.resolve(player);
+            });
+
+            return;
+        }
+
+        this.jsPlayer.resolve(player);
     }
 
     /**
      * Start listening playback events.
+     *
+     * @param jsPlayer Javascript player instance (if any).
      */
-    private addPlaybackEventListeners(): void {
-        this.media.addEventListener('play', this.playListener = () => this.playing = true);
-        this.media.addEventListener('pause', this.pauseListener = () => this.playing = false);
+    private addPlaybackEventListeners(jsPlayer: VideoJSPlayer | null): void {
+        if (jsPlayer) {
+            jsPlayer.on('play', this.playListener = () => this.playing = true);
+            jsPlayer.on('pause', this.pauseListener = () => this.playing = false);
+        } else {
+            this.media.addEventListener('play', this.playListener = () => this.playing = true);
+            this.media.addEventListener('pause', this.pauseListener = () => this.playing = false);
+        }
     }
 
     /**
      * Stop listening playback events.
+     *
+     * @param jsPlayer Javascript player instance (if any).
      */
-    private removePlaybackEventListeners(): void {
-        this.playListener && this.media.removeEventListener('play', this.playListener);
-        this.pauseListener && this.media.removeEventListener('pause', this.pauseListener);
+    private removePlaybackEventListeners(jsPlayer: VideoJSPlayer | null): void {
+        if (jsPlayer) {
+            this.playListener && jsPlayer.off('play', this.playListener);
+            this.pauseListener && jsPlayer.off('pause', this.pauseListener);
+        } else {
+            this.playListener && this.media.removeEventListener('play', this.playListener);
+            this.pauseListener && this.media.removeEventListener('pause', this.pauseListener);
+        }
 
         delete this.playListener;
         delete this.pauseListener;
+    }
+
+    /**
+     * Search JS player instance.
+     *
+     * @returns Player instance if found.
+     */
+    private async searchJSPlayer(): Promise<VideoJSPlayer | null> {
+        return AddonFilterMediaPluginVideoJS.findPlayer(this.media.id)
+            ?? AddonFilterMediaPluginVideoJS.findPlayer(this.media.id.replace('_html5_api', ''));
     }
 
 }

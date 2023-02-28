@@ -1,0 +1,15 @@
+:host {
+    --background-color: var(--ion-background-color, #fff);
+    --bars-color: var(--ion-text-color, #000);
+
+    position: relative;
+
+    canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+}

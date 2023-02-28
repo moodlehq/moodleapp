@@ -27,9 +27,8 @@
 
             <!-- Retake selector if there is more than one retake. -->
             <ion-item class="ion-text-wrap" *ngIf="student.attempts && student.attempts.length > 1">
-                <ion-label id="addon-mod_lesson-retakeslabel">{{ 'addon.mod_lesson.attemptheader' | translate }}</ion-label>
-                <ion-select [(ngModel)]="selectedRetake" (ionChange)="changeRetake(selectedRetake!)"
-                    aria-labelledby="addon-mod_lesson-retakeslabel" interface="action-sheet"
+                <ion-label>{{ 'addon.mod_lesson.attemptheader' | translate }}</ion-label>
+                <ion-select [(ngModel)]="selectedRetake" (ionChange)="changeRetake(selectedRetake!)" interface="action-sheet"
                     [interfaceOptions]="{header: 'addon.mod_lesson.attemptheader' | translate}">
                     <ion-select-option *ngFor="let retake of student.attempts" [value]="retake.try">
                         {{retake.label}}
@@ -44,12 +43,12 @@
                         <ion-grid class="ion-no-padding">
                             <ion-row>
                                 <ion-col>
-                                    <h3 class="item-heading">{{ 'addon.mod_lesson.grade' | translate }}</h3>
+                                    <p class="item-heading">{{ 'addon.mod_lesson.grade' | translate }}</p>
                                     <p>{{ 'core.percentagenumber' | translate:{$a: retake.userstats.grade} }}</p>
                                 </ion-col>
 
                                 <ion-col>
-                                    <h3 class="item-heading">{{ 'addon.mod_lesson.rawgrade' | translate }}</h3>
+                                    <p class="item-heading">{{ 'addon.mod_lesson.rawgrade' | translate }}</p>
                                     <p>{{ retake.userstats.gradeinfo.earned }} / {{ retake.userstats.gradeinfo.total }}</p>
                                 </ion-col>
                             </ion-row>
@@ -58,13 +57,13 @@
                 </ion-item>
                 <ion-item class="ion-text-wrap">
                     <ion-label>
-                        <h3 class="item-heading">{{ 'addon.mod_lesson.timetaken' | translate }}</h3>
+                        <p class="item-heading">{{ 'addon.mod_lesson.timetaken' | translate }}</p>
                         <p>{{ timeTakenReadable }}</p>
                     </ion-label>
                 </ion-item>
                 <ion-item class="ion-text-wrap">
                     <ion-label>
-                        <h3 class="item-heading">{{ 'addon.mod_lesson.completed' | translate }}</h3>
+                        <p class="item-heading">{{ 'addon.mod_lesson.completed' | translate }}</p>
                         <p>{{ retake.userstats.completed * 1000 | coreFormatDate }}</p>
                     </ion-label>
                 </ion-item>
@@ -85,7 +84,7 @@
                     </ion-card-header>
                     <ion-item class="ion-text-wrap">
                         <ion-label>
-                            <h3 class="item-heading">{{ 'addon.mod_lesson.question' | translate }}</h3>
+                            <p class="item-heading">{{ 'addon.mod_lesson.question' | translate }}</p>
                             <p>
                                 <core-format-text [component]="component" [componentId]="lesson?.coursemodule" collapsible-item
                                     [text]="page.contents" contextLevel="module" [contextInstanceId]="lesson?.coursemodule"
@@ -96,7 +95,7 @@
                     </ion-item>
                     <ion-item class="ion-text-wrap">
                         <ion-label>
-                            <h3 class="item-heading">{{ 'addon.mod_lesson.answer' | translate }}</h3>
+                            <p class="item-heading">{{ 'addon.mod_lesson.answer' | translate }}</p>
                         </ion-label>
                     </ion-item>
                     <ion-item class="ion-text-wrap" *ngIf="!page.answerdata || !page.answerdata.answers || !page.answerdata.answers.length">
@@ -227,7 +226,7 @@
 
                         <ion-item class="ion-text-wrap" *ngIf="page.answerdata.response">
                             <ion-label>
-                                <h3 class="item-heading">{{ 'addon.mod_lesson.response' | translate }}</h3>
+                                <p class="item-heading">{{ 'addon.mod_lesson.response' | translate }}</p>
                                 <p>
                                     <core-format-text [component]="component" [componentId]="lesson?.coursemodule"
                                         [text]="page.answerdata.response" contextLevel="module" [contextInstanceId]="lesson?.coursemodule"

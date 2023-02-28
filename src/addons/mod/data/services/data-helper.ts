@@ -590,8 +590,8 @@ export class AddonModDataHelperProvider {
                 // WS wants values in JSON format.
                 entryFieldDataToSend.push({
                     fieldid: fieldSubdata.fieldid,
-                    subfield: fieldSubdata.subfield || '',
-                    value: value ? JSON.stringify(value) : '',
+                    subfield: fieldSubdata.subfield ?? '',
+                    value: (value || value === 0) ? JSON.stringify(value) : '',
                 });
 
                 return;

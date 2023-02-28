@@ -45,10 +45,10 @@ export class CoreFileUploaderAudioHandlerService implements CoreFileUploaderHand
      * @returns Supported mimetypes.
      */
     getSupportedMimetypes(mimetypes: string[]): string[] {
-        if (CoreApp.isIOS()) {
+        if (CorePlatform.isIOS()) {
             // In iOS it's recorded as WAV.
             return CoreUtils.filterByRegexp(mimetypes, /^audio\/wav$/);
-        } else if (CoreApp.isAndroid()) {
+        } else if (CorePlatform.isAndroid()) {
             // In Android we don't know the format the audio will be recorded, so accept any audio mimetype.
             return CoreUtils.filterByRegexp(mimetypes, /^audio\//);
         } else {

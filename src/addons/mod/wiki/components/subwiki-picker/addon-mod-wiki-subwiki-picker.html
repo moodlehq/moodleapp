@@ -2,7 +2,7 @@
     <ng-container *ngFor="let group of subwikis">
         <ion-item-divider *ngIf="group.label">
             <ion-label>
-                <h2>{{ group.label }}</h2>
+                <p class="item-heading">{{ group.label }}</p>
             </ion-label>
         </ion-item-divider>
         <ion-item class="ion-text-wrap" *ngFor="let subwiki of group.subwikis" (click)="openSubwiki(subwiki)" button

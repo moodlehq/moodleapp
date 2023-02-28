@@ -1,0 +1,47 @@
+<ion-header class="no-title">
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+        <ion-title>
+        </ion-title>
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon slot="icon-only" name="fas-times" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <div class="list-item-limited-width">
+        <ion-item class="ion-text-wrap course-name">
+            <ion-label>
+                <h1>
+                    <core-format-text [text]="reportDetail.name" contextLevel="report" [contextInstanceId]="reportDetail.id">
+                    </core-format-text>
+                </h1>
+            </ion-label>
+        </ion-item>
+
+        <ion-item class="ion-text-wrap" [detail]="false" *ngFor="let item of reportDetailToDisplay">
+            <ion-label>
+                <p>{{ item.title | translate }}</p>
+                <core-format-text [text]="item.text" contextLevel="report" [contextInstanceId]="reportDetail.id">
+                </core-format-text>
+            </ion-label>
+        </ion-item>
+    </div>
+</ion-content>
+
+<ion-footer class="ion-no-border">
+    <ion-item class="ion-text-wrap filters-info">
+        <ion-label>
+            <p>
+                <ion-icon name="fas-info-circle" aria-hidden="true"></ion-icon>
+                <core-format-text [text]="'core.reportbuilder.filtersapplied' | translate: { $a: reportUrl }" [filter]="false">
+                </core-format-text>
+            </p>
+        </ion-label>
+    </ion-item>
+</ion-footer>

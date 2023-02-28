@@ -37,7 +37,8 @@
     <div collapsible-footer *ngIf="!showLoading" slot="fixed">
         <div class="list-item-limited-width adaptable-buttons-row"
             *ngIf="access && (access.canedititems || access.canviewreports || !access.isempty)">
-            <ion-button expand="block" fill="outline" (click)="gotoAnswerQuestions(true)" class="ion-margin ion-text-wrap">
+            <ion-button *ngIf="access.canedititems || access.canviewreports" expand="block" fill="outline"
+                (click)="gotoAnswerQuestions(true)" class="ion-margin ion-text-wrap">
                 <ion-icon name="fas-search" slot="start" aria-hidden="true"></ion-icon>
                 {{ 'addon.mod_feedback.preview' | translate }}
             </ion-button>
@@ -64,7 +65,7 @@
         <ion-item class="ion-text-wrap" (click)="openAttempts()" [class.hide-detail]="!(access.canviewreports && completedCount > 0)"
             [detail]="true" [button]="access.canviewreports && completedCount > 0">
             <ion-label>
-                <h2>{{ 'addon.mod_feedback.completed_feedbacks' | translate }}</h2>
+                <p class="item-heading">{{ 'addon.mod_feedback.completed_feedbacks' | translate }}</p>
             </ion-label>
             <ion-badge slot="end">
                 <span aria-hidden="true">{{completedCount}}</span>
@@ -76,12 +77,12 @@
         <ion-item class="ion-text-wrap" *ngIf="!access.isanonymous && access.canviewreports" (click)="openNonRespondents()" detail="true"
             button>
             <ion-label>
-                <h2>{{ 'addon.mod_feedback.show_nonrespondents' | translate }}</h2>
+                <p class="item-heading">{{ 'addon.mod_feedback.show_nonrespondents' | translate }}</p>
             </ion-label>
         </ion-item>
         <ion-item class="ion-text-wrap">
             <ion-label>
-                <h2>{{ 'addon.mod_feedback.questions' | translate }}</h2>
+                <p class="item-heading">{{ 'addon.mod_feedback.questions' | translate }}</p>
             </ion-label>
             <ion-badge slot="end">
                 <span aria-hidden="true">{{itemsCount}}</span>
@@ -115,19 +116,19 @@
         <ion-list *ngIf="access && (access.canedititems || access.canviewreports || !access.isempty)">
             <ion-item class="ion-text-wrap" *ngIf="access.canedititems && overview.timeopen">
                 <ion-label>
-                    <h2>{{ 'addon.mod_feedback.feedbackopen' | translate }}</h2>
+                    <p class="item-heading">{{ 'addon.mod_feedback.feedbackopen' | translate }}</p>
                     <p>{{overview.openTimeReadable}}</p>
                 </ion-label>
             </ion-item>
             <ion-item class="ion-text-wrap" *ngIf="access.canedititems && overview.timeclose">
                 <ion-label>
-                    <h2>{{ 'addon.mod_feedback.feedbackclose' | translate }}</h2>
+                    <p class="item-heading">{{ 'addon.mod_feedback.feedbackclose' | translate }}</p>
                     <p>{{overview.closeTimeReadable}}</p>
                 </ion-label>
             </ion-item>
             <ion-item class="ion-text-wrap" *ngIf="access.canedititems && feedback && feedback.page_after_submit">
                 <ion-label>
-                    <h2>{{ 'addon.mod_feedback.page_after_submit' | translate }}</h2>
+                    <p class="item-heading">{{ 'addon.mod_feedback.page_after_submit' | translate }}</p>
                     <core-format-text [component]="component" [componentId]="componentId" [text]="feedback.page_after_submit"
                         contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
                     </core-format-text>
@@ -136,7 +137,7 @@
             <ng-container *ngIf="!access.isempty">
                 <ion-item class="ion-text-wrap">
                     <ion-label>
-                        <h2>{{ 'addon.mod_feedback.mode' | translate }}</h2>
+                        <p class="item-heading">{{ 'addon.mod_feedback.mode' | translate }}</p>
                         <p *ngIf="access.isanonymous">{{ 'addon.mod_feedback.anonymous' | translate }}</p>
                         <p *ngIf="!access.isanonymous">{{ 'addon.mod_feedback.non_anonymous' | translate }}</p>
                     </ion-label>

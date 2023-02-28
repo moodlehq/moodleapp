@@ -23,11 +23,13 @@ import { CoreNetwork, CoreNetworkService } from '@services/network';
 import { CorePushNotifications, CorePushNotificationsProvider } from '@features/pushnotifications/services/pushnotifications';
 import { CoreCronDelegate, CoreCronDelegateService } from '@services/cron';
 import { CoreLoadingComponent } from '@components/loading/loading';
-import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreDom } from '@singletons/dom';
 import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesProvider } from '@services/sites';
 import { CoreNavigator, CoreNavigatorService } from '@services/navigator';
+import { CoreSwipeNavigationDirective } from '@directives/swipe-navigation';
+import { IonSlides } from '@ionic/angular';
 
 /**
  * Behat runtime servive with public API.
@@ -125,7 +127,7 @@ export class TestingBehatRuntimeService {
                 .filter((element) => CoreDom.isElementVisible(element));
 
             await Promise.all(elements.map(element =>
-                CoreComponentsRegistry.waitComponentReady(element, CoreLoadingComponent)));
+                CoreDirectivesRegistry.waitDirectiveReady(element, CoreLoadingComponent)));
         });
     }
 
@@ -493,13 +495,36 @@ export class TestingBehatRuntimeService {
      *
      * @param selector Element selector
      * @param className Constructor class name
+     * @param referenceLocator The locator to the reference element to start looking for. If not specified, document body.
      * @returns Component instance
      */
-    getAngularInstance<T = unknown>(selector: string, className: string): T | null {
-        this.log('Action - Get Angular instance ' + selector + ', ' + className);
+    getAngularInstance<T = unknown>(
+        selector: string,
+        className: string,
+        referenceLocator?: TestingBehatElementLocator,
+    ): T | null {
+        this.log('Action - Get Angular instance ' + selector + ', ' + className, referenceLocator);
+
+        let startingElement: HTMLElement | undefined = document.body;
+        let queryPrefix = '';
+
+        if (referenceLocator) {
+            startingElement = TestingBehatDomUtils.findElementBasedOnText(referenceLocator, {
+                onlyClickable: false,
+                containerName: '',
+            });
+
+            if (!startingElement) {
+                return null;
+            }
+        } else {
+            // Searching the whole DOM, search only in visible pages.
+            queryPrefix = '.ion-page:not(.ion-page-hidden) ';
+        }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const activeElement = Array.from(document.querySelectorAll<any>(`.ion-page:not(.ion-page-hidden) ${selector}`)).pop();
+        const activeElement = Array.from(startingElement.querySelectorAll<any>(`${queryPrefix}${selector}`)).pop() ??
+            startingElement.closest(selector);
 
         if (!activeElement || !activeElement.__ngContext__) {
             return null;
@@ -561,6 +586,42 @@ export class TestingBehatRuntimeService {
         }
 
         await LocalNotifications.clear(notification.id);
+
+        return 'OK';
+    }
+
+    /**
+     * Swipe in the app.
+     *
+     * @param direction Left or right.
+     * @param locator Element locator to swipe. If not specified, swipe in the first ion-content found.
+     * @returns OK if successful, or ERROR: followed by message
+     */
+    swipe(direction: string, locator?: TestingBehatElementLocator): string {
+        this.log('Action - Swipe', { direction, locator });
+
+        if (locator) {
+            // Locator specified, try to find ion-slides first.
+            const instance = this.getAngularInstance<IonSlides>('ion-slides', 'IonSlides', locator);
+            if (instance) {
+                direction === 'left' ? instance.slideNext() : instance.slidePrev();
+
+                return 'OK';
+            }
+        }
+
+        // No locator specified or ion-slides not found, search swipe navigation now.
+        const instance = this.getAngularInstance<CoreSwipeNavigationDirective>(
+            'ion-content',
+            'CoreSwipeNavigationDirective',
+            locator,
+        );
+
+        if (!instance) {
+            return 'ERROR: Element to swipe not found.';
+        }
+
+        direction === 'left' ? instance.swipeLeft() : instance.swipeRight();
 
         return 'OK';
     }

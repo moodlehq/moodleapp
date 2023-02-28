@@ -1,4 +1,4 @@
-<h3 class="ion-padding">{{ 'addon.mod_workshop.assessmentform' | translate }}</h3>
+<h2 class="ion-padding">{{ 'addon.mod_workshop.assessmentform' | translate }}</h2>
 
 <form name="mma-mod_workshop-assessment-form" #assessmentForm>
     <core-loading [hideUntil]="assessmentStrategyLoaded">
@@ -18,7 +18,7 @@
             (edit || data.assessment?.feedbackauthor || data.assessment?.feedbackattachmentfiles?.length) ">
             <ion-item class="ion-text-wrap">
                 <ion-label>
-                    <h2>{{ 'addon.mod_workshop.overallfeedback' | translate }}</h2>
+                    <h3 class="item-heading">{{ 'addon.mod_workshop.overallfeedback' | translate }}</h3>
                 </ion-label>
             </ion-item>
             <ion-item position="stacked" *ngIf="edit">

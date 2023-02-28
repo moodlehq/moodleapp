@@ -363,7 +363,7 @@ export class CoreSitesProvider {
         if (error instanceof CoreAjaxError || !('errorcode' in error)) {
             // The WS didn't return data, probably cannot connect.
             return new CoreLoginError({
-                title: Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }),
+                title: Translate.instant('core.cannotconnect'),
                 message: Translate.instant('core.siteunavailablehelp', { site: siteUrl }),
                 errorcode: 'publicconfigfailed',
                 errorDetails: error.message || '',
@@ -374,7 +374,7 @@ export class CoreSitesProvider {
         // Service supported but an error happened. Return error.
         const options: CoreLoginErrorOptions = {
             critical: true,
-            title: Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION }),
+            title: Translate.instant('core.cannotconnect'),
             message: Translate.instant('core.siteunavailablehelp', { site: siteUrl }),
             errorcode: error.errorcode,
             supportConfig: error.supportConfig,

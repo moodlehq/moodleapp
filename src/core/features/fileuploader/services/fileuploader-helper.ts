@@ -19,7 +19,6 @@ import { ChooserResult } from '@ionic-native/chooser/ngx';
 import { FileEntry, IFile } from '@ionic-native/file/ngx';
 import { MediaFile } from '@ionic-native/media-capture/ngx';
 
-import { CoreApp } from '@services/app';
 import { CoreNetwork } from '@services/network';
 import { CoreFile, CoreFileProvider, CoreFileProgressEvent } from '@services/file';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -30,9 +29,14 @@ import { makeSingleton, Translate, Camera, Chooser, ActionSheetController } from
 import { CoreLogger } from '@singletons/logger';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreError } from '@classes/errors/error';
-import { CoreFileUploader, CoreFileUploaderProvider, CoreFileUploaderOptions } from './fileuploader';
+import {
+    CoreFileUploader,
+    CoreFileUploaderProvider,
+    CoreFileUploaderOptions,
+    CoreFileUploaderAudioRecording,
+} from './fileuploader';
 import { CoreFileUploaderDelegate } from './fileuploader-delegate';
-import { CoreCaptureError } from '@classes/errors/captureerror';
+import { CAPTURE_ERROR_NO_MEDIA_FILES, CoreCaptureError } from '@classes/errors/captureerror';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreWSUploadFileResult } from '@services/ws';
 import { CoreSites } from '@services/sites';
@@ -467,9 +471,9 @@ export class CoreFileUploaderHelperProvider {
      * @param defaultMessage Key of the default message to show.
      */
     protected treatCaptureError(error: CoreCaptureError, defaultMessage: string): void {
-        // Cancelled or error. If cancelled, error is an object with code = 3.
+        // Cancelled or error. If cancelled, error is an object with code = CAPTURE_EROR_NO_MEDIA_FILES.
         if (error) {
-            if (error.code != 3) {
+            if (error.code !== CAPTURE_ERROR_NO_MEDIA_FILES) {
                 // Error, not cancelled.
                 this.logger.error('Error while recording audio/video', error);
 
@@ -515,7 +519,7 @@ export class CoreFileUploaderHelperProvider {
             }
 
             return new CoreError(error);
-        } else if ('code' in error && error.code == 3) {
+        } else if ('code' in error && error.code === CAPTURE_ERROR_NO_MEDIA_FILES) {
             throw new CoreCanceledError();
         } else {
             throw error;
@@ -540,34 +544,22 @@ export class CoreFileUploaderHelperProvider {
     ): Promise<CoreWSUploadFileResult | FileEntry> {
         this.logger.debug('Trying to record a ' + (isAudio ? 'audio' : 'video') + ' file');
 
-        // The mimetypes param is only for browser, the Cordova plugin doesn't support it.
-        const captureOptions = { limit: 1, mimetypes: mimetypes };
-        let media: MediaFile;
+        let media: MediaFile | CoreFileUploaderAudioRecording;
 
         try {
-            const medias = isAudio ? await CoreFileUploader.captureAudio(captureOptions) :
-                await CoreFileUploader.captureVideo(captureOptions);
+            const medias = isAudio
+                ? await CoreFileUploader.captureAudio()
+                : await CoreFileUploader.captureVideo({ limit: 1 });
 
             media = medias[0]; // We used limit 1, we only want 1 media.
         } catch (error) {
+            const defaultError = isAudio ? 'core.fileuploader.errorcapturingaudio' : 'core.fileuploader.errorcapturingvideo';
 
-            if (isAudio && this.isNoAppError(error) && CorePlatform.isMobile()) {
-                // No app to record audio, fallback to capture it ourselves.
-                try {
-                    media = await CoreFileUploader.captureAudioInApp();
-                } catch (error) {
-                    throw this.treatCaptureError(error, 'core.fileuploader.errorcapturingaudio'); // Throw the right error.
-                }
-
-            } else {
-                const defaultError = isAudio ? 'core.fileuploader.errorcapturingaudio' : 'core.fileuploader.errorcapturingvideo';
-
-                throw this.treatCaptureError(error, defaultError); // Throw the right error.
-            }
+            throw this.treatCaptureError(error, defaultError); // Throw the right error.
         }
 
         let path = media.fullPath;
-        const error = CoreFileUploader.isInvalidMimetype(mimetypes, path); // Verify that the mimetype is supported.
+        const error = CoreFileUploader.isInvalidMimetype(mimetypes, media.fullPath);
 
         if (error) {
             throw new Error(error);
@@ -652,7 +644,7 @@ export class CoreFileUploaderHelperProvider {
                 options.mediaType = Camera.MediaType.PICTURE;
             } else if (!imageSupported && videoSupported) {
                 options.mediaType = Camera.MediaType.VIDEO;
-            } else if (CoreApp.isIOS()) {
+            } else if (CorePlatform.isIOS()) {
                 // Only get all media in iOS because in Android using this option allows uploading any kind of file.
                 options.mediaType = Camera.MediaType.ALLMEDIA;
             }
@@ -774,7 +766,6 @@ export class CoreFileUploaderHelperProvider {
         options: CoreFileUploaderOptions,
         siteId?: string,
     ): Promise<CoreWSUploadFileResult> {
-
         const errorStr = Translate.instant('core.error');
         const retryStr = Translate.instant('core.retry');
         const uploadingStr = Translate.instant('core.fileuploader.uploading');

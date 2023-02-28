@@ -42,10 +42,10 @@ import { CoreFilter, CoreFilterFilter, CoreFilterFormatTextOptions } from '@feat
 import { CoreFilterDelegate } from '@features/filter/services/filter-delegate';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { CoreSubscriptions } from '@singletons/subscriptions';
-import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreCollapsibleItemDirective } from './collapsible-item';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
-import { AsyncComponent } from '@classes/async-component';
+import { AsyncDirective } from '@classes/async-directive';
 import { CorePath } from '@singletons/path';
 import { CoreDom } from '@singletons/dom';
 import { CoreEvents } from '@singletons/events';
@@ -67,7 +67,7 @@ import { FrameElementController } from '@classes/element-controllers/FrameElemen
 @Directive({
     selector: 'core-format-text',
 })
-export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncComponent {
+export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirective {
 
     @ViewChild(CoreCollapsibleItemDirective) collapsible?: CoreCollapsibleItemDirective;
 
@@ -111,7 +111,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
         protected viewContainerRef: ViewContainerRef,
         @Optional() @Inject(CORE_REFRESH_CONTEXT) protected refreshContext?: CoreRefreshContext,
     ) {
-        CoreComponentsRegistry.register(element.nativeElement, this);
+        CoreDirectivesRegistry.register(element.nativeElement, this);
 
         this.element = element.nativeElement;
         this.element.classList.add('core-loading'); // Hide contents until they're treated.
@@ -149,6 +149,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
     ngOnDestroy(): void {
         this.domElementPromise?.cancel();
         this.domPromises.forEach((promise) => { promise.cancel();});
+        this.elementControllers.forEach(controller => controller.destroy());
     }
 
     /**
@@ -365,6 +366,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
         // Move the children to the current element to be able to calculate the height.
         CoreDomUtils.moveChildren(result.div, this.element);
 
+        this.elementControllers.forEach(controller => controller.destroy());
         this.elementControllers = result.elementControllers;
 
         await CoreUtils.nextTick();
@@ -610,12 +612,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncCompo
                 return;
             }
 
-            if (element.tagName !== 'BUTTON' && element.tagName !== 'A') {
-                element.setAttribute('tabindex', '0');
-                element.setAttribute('role', 'button');
-            }
-
-            CoreDom.onActivate(element, async (event) => {
+            CoreDom.initializeClickableElementA11y(element, async (event) => {
                 event.preventDefault();
                 event.stopPropagation();
 

@@ -16,7 +16,7 @@ import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
 import { CoreUserNullSupportConfig } from '@features/user/classes/support/null-support-config';
-import { CoreApp } from '@services/app';
+import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -27,6 +27,9 @@ import { CoreEvents } from '@singletons/events';
 
 let lastInAppUrl: string | null = null;
 
+/**
+ *
+ */
 export default function(): void {
     // Check URLs loaded in any InAppBrowser.
     CoreEvents.on(CoreEvents.IAB_LOAD_START, async (event) => {
@@ -59,7 +62,7 @@ export default function(): void {
             return;
         }
 
-        if (!CoreApp.isAndroid()) {
+        if (!CorePlatform.isAndroid()) {
             return;
         }
 

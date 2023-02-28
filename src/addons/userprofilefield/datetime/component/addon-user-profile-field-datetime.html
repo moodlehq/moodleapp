@@ -1,7 +1,7 @@
 <!-- Render (no edit). -->
 <ion-item *ngIf="!edit && field && field.name">
     <ion-label>
-        <h2>{{ field.name }}</h2>
+        <p class="item-heading">{{ field.name }}</p>
         <p>{{ valueNumber * 1000 | coreFormatDate }}</p>
     </ion-label>
 </ion-item>

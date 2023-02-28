@@ -13,7 +13,7 @@
     <ion-list class="list-item-limited-width">
         <ion-item class="ion-text-wrap" lines="none">
             <ion-label>
-                <h2>{{ 'core.settings.language' | translate }}</h2>
+                <p class="item-heading">{{ 'core.settings.language' | translate }}</p>
             </ion-label>
             <ion-select [(ngModel)]="selectedLanguage" (ionChange)="languageChanged($event)" interface="action-sheet"
                 [interfaceOptions]="{header: 'core.settings.language' | translate}">
@@ -22,7 +22,7 @@
         </ion-item>
         <ion-item class="ion-text-wrap core-settings-general-font-size item-interactive" lines="none">
             <ion-label>
-                <h2>{{ 'core.settings.fontsize' | translate }}</h2>
+                <p class="item-heading">{{ 'core.settings.fontsize' | translate }}</p>
             </ion-label>
             <ion-segment [(ngModel)]="selectedZoomLevel" color="primary">
                 <ion-segment-button *ngFor=" let zoomLevel of zoomLevels" [value]="zoomLevel.value"
@@ -37,7 +37,7 @@
         </ion-item>
         <ion-item class="ion-text-wrap core-settings-general-color-scheme" *ngIf="colorSchemes.length > 0" lines="none">
             <ion-label>
-                <h2>{{ 'core.settings.colorscheme' | translate }}</h2>
+                <p class="item-heading">{{ 'core.settings.colorscheme' | translate }}</p>
                 <p *ngIf="colorSchemeDisabled" class="text-danger">{{ 'core.settings.forcedsetting' | translate }}</p>
             </ion-label>
             <ion-select [(ngModel)]="selectedScheme" (ionChange)="colorSchemeChanged($event)" interface="action-sheet"
@@ -53,14 +53,14 @@
         </ion-item>
         <ion-item class="ion-text-wrap">
             <ion-label>
-                <h2>{{ 'core.settings.enablerichtexteditor' | translate }}</h2>
+                <p class="item-heading">{{ 'core.settings.enablerichtexteditor' | translate }}</p>
                 <p>{{ 'core.settings.enablerichtexteditordescription' | translate }}</p>
             </ion-label>
             <ion-toggle [(ngModel)]="richTextEditor" (ionChange)="richTextEditorChanged($event)"></ion-toggle>
         </ion-item>
         <ion-item class="ion-text-wrap" *ngIf="displayIframeHelp">
             <ion-label>
-                <h2>{{ 'core.settings.ioscookies' | translate }}</h2>
+                <p class="item-heading">{{ 'core.settings.ioscookies' | translate }}</p>
                 <p>{{ 'core.settings.ioscookiesdescription' | translate }}</p>
                 <ion-button expand="block" (click)="openNativeSettings($event)">
                     {{ 'core.opensettings' | translate }}
@@ -69,14 +69,14 @@
         </ion-item>
         <ion-item class="ion-text-wrap">
             <ion-label>
-                <h2>{{ 'core.settings.debugdisplay' | translate }}</h2>
+                <p class="item-heading">{{ 'core.settings.debugdisplay' | translate }}</p>
                 <p>{{ 'core.settings.debugdisplaydescription' | translate }}</p>
             </ion-label>
             <ion-toggle [(ngModel)]="debugDisplay" (ionChange)="debugDisplayChanged($event)"></ion-toggle>
         </ion-item>
         <ion-item class="ion-text-wrap" *ngIf="analyticsSupported">
             <ion-label>
-                <h2>{{ 'core.settings.enablefirebaseanalytics' | translate }}</h2>
+                <p class="item-heading">{{ 'core.settings.enablefirebaseanalytics' | translate }}</p>
                 <p>{{ 'core.settings.enablefirebaseanalyticsdescription' | translate }}</p>
             </ion-label>
             <ion-toggle [(ngModel)]="analyticsEnabled" (ionChange)="analyticsEnabledChanged($event)"></ion-toggle>

@@ -25,7 +25,7 @@ import {
 import { CoreLogger } from '@singletons/logger';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreContextMenuComponent } from '../context-menu/context-menu';
-import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreDom } from '@singletons/dom';
 
 const BUTTON_HIDDEN_CLASS = 'core-navbar-button-hidden';
@@ -82,7 +82,7 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
         this.element = element.nativeElement;
         this.logger = CoreLogger.getInstance('CoreNavBarButtonsComponent');
 
-        CoreComponentsRegistry.register(this.element, this);
+        CoreDirectivesRegistry.register(this.element, this);
     }
 
     /**
@@ -156,14 +156,16 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
         }
 
         const mainContextMenu = buttonsContainer.querySelector('core-context-menu');
-        const secondaryContextMenuInstance = CoreComponentsRegistry.resolve(secondaryContextMenu, CoreContextMenuComponent);
+        const secondaryContextMenuInstance = CoreDirectivesRegistry.resolve(secondaryContextMenu, CoreContextMenuComponent);
         let mainContextMenuInstance: CoreContextMenuComponent | null;
         if (mainContextMenu) {
             // Both containers have a context menu. Merge them to prevent having 2 menus at the same time.
-            mainContextMenuInstance = CoreComponentsRegistry.resolve(mainContextMenu, CoreContextMenuComponent);
+            mainContextMenuInstance = CoreDirectivesRegistry.resolve(mainContextMenu, CoreContextMenuComponent);
         } else {
             // There is a context-menu in these buttons, but there is no main context menu in the header.
             // Create one main context menu dynamically.
+            // @todo: Find a better way to handle header buttons. This isn't working as expected in some cases because the menu
+            // is destroyed when the page is destroyed, so click listeners stop working.
             mainContextMenuInstance = this.createMainContextMenu();
         }
 

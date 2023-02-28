@@ -16,7 +16,7 @@ import { CoreConstants } from '@/core/constants';
 import { Params } from '@angular/router';
 import { CoreRoutedItemsManagerSource } from '@classes/items-management/routed-items-manager-source';
 import { SHAREDFILES_PAGE_NAME } from '@features/sharedfiles/sharedfiles.module';
-import { CoreApp } from '@services/app';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Provides a collection of setting sections.
@@ -45,7 +45,7 @@ export class CoreSettingsSectionsSource extends CoreRoutedItemsManagerSource<Cor
             },
         ];
 
-        if (CoreApp.isIOS()) {
+        if (CorePlatform.isIOS()) {
             sections.push({
                 name: 'core.sharedfiles.sharedfiles',
                 path: SHAREDFILES_PAGE_NAME + '/list/root',

@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreApp } from '@services/app';
 import { Component, OnDestroy } from '@angular/core';
 import { CoreConstants } from '@/core/constants';
 import { CoreLocalNotifications } from '@services/local-notifications';
@@ -111,10 +110,10 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
 
         if (CorePlatform.isMobile()) {
             this.deviceInfo.deviceType = CorePlatform.is('tablet') ? 'tablet' : 'phone';
-            if (CoreApp.isAndroid()) {
+            if (CorePlatform.isAndroid()) {
                 this.deviceInfo.deviceOs = 'android';
                 this.deviceOsTranslated = 'Android';
-            } else if (CoreApp.isIOS()) {
+            } else if (CorePlatform.isIOS()) {
                 this.deviceInfo.deviceOs = 'ios';
                 this.deviceOsTranslated = 'iOS';
             } else {

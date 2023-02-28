@@ -24,6 +24,8 @@ import { TestingBehatElementLocator, TestingBehatFindOptions } from './behat-run
 @Injectable({ providedIn: 'root' })
 export class TestingBehatDomUtilsService {
 
+    protected static readonly MULTI_ELEM_ALLOWED = ['P', 'SPAN', 'ION-LABEL'];
+
     /**
      * Check if an element is clickable.
      *
@@ -44,6 +46,14 @@ export class TestingBehatDomUtilsService {
     isElementVisible(element: HTMLElement, container?: HTMLElement): boolean {
         if (element.getAttribute('aria-hidden') === 'true' || getComputedStyle(element).display === 'none') {
             return false;
+        }
+
+        if (element.tagName === 'ION-SLIDE') {
+            // Check if the slide is visible (in the viewport).
+            const bounding = element.getBoundingClientRect();
+            if (bounding.right <= 0 || bounding.left >= window.innerWidth) {
+                return false;
+            }
         }
 
         if (!container) {
@@ -146,6 +156,7 @@ export class TestingBehatDomUtilsService {
             },
         );
 
+        let fallbackCandidates: ElementsWithExact[] = [];
         let currentNode: Node | null = null;
         // eslint-disable-next-line no-cond-assign
         while (currentNode = treeWalker.nextNode()) {
@@ -194,9 +205,24 @@ export class TestingBehatDomUtilsService {
                     elements.push(...this.findElementsBasedOnTextWithinWithExact(childNode, text, options));
                 }
             }
+
+            // Allow searching text split into different elements in some cases.
+            if (
+                elements.length === 0 &&
+                currentNode instanceof HTMLElement &&
+                TestingBehatDomUtilsService.MULTI_ELEM_ALLOWED.includes(currentNode.tagName) &&
+                currentNode.innerText.includes(text)
+            ) {
+                // Only keep the child elements in the candidates list.
+                fallbackCandidates = fallbackCandidates.filter(entry => !entry.element.contains(currentNode));
+                fallbackCandidates.push({
+                    element: currentNode,
+                    exact: currentNode.innerText.trim() == text,
+                });
+            }
         }
 
-        return elements;
+        return elements.length > 0 ? elements : fallbackCandidates;
     }
 
     /**

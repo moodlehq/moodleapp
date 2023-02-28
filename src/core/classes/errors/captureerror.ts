@@ -14,6 +14,8 @@
 
 import { CoreError } from './error';
 
+export const CAPTURE_ERROR_NO_MEDIA_FILES = 3;
+
 /**
  * Capture error.
  */

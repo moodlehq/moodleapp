@@ -19,7 +19,7 @@
             <ion-item class="ion-text-wrap">
                 <core-user-avatar [user]="user" slot="start"></core-user-avatar>
                 <ion-label>
-                    <h2>{{ user.fullname }}</h2>
+                    <p class="item-heading">{{ user.fullname }}</p>
                 </ion-label>
             </ion-item>
         </ion-card>
@@ -115,7 +115,7 @@
         </ion-card>
 
         <div *ngIf="competency">
-            <h3 class="ion-margin-horizontal">{{ 'addon.competency.evidence' | translate }}</h3>
+            <h2 class="ion-margin-horizontal">{{ 'addon.competency.evidence' | translate }}</h2>
             <p class="ion-margin-horizontal" *ngIf="competency.evidence.length == 0">
                 {{ 'addon.competency.noevidence' | translate }}
             </p>

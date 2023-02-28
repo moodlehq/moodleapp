@@ -51,13 +51,13 @@ import { CoreSites } from '@services/sites';
 import { NavigationStart } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
-import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreDom } from '@singletons/dom';
 import { CoreNetwork } from '@services/network';
 import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreUserSupport } from '@features/user/services/support';
 import { CoreErrorInfoComponent } from '@components/error-info/error-info';
-import { CoreSite } from '@classes/site';
+import { CorePlatform } from '@services/platform';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -134,7 +134,7 @@ export class CoreDomUtilsProvider {
         const getAvailableBytes = async (): Promise<number | null> => {
             const availableBytes = await CoreFile.calculateFreeSpace();
 
-            if (CoreApp.isAndroid()) {
+            if (CorePlatform.isAndroid()) {
                 return availableBytes;
             } else {
                 // Space calculation is not accurate on iOS, but it gets more accurate when space is lower.
@@ -153,7 +153,7 @@ export class CoreDomUtilsProvider {
             } else {
                 const availableSize = CoreTextUtils.bytesToSize(availableBytes, 2);
 
-                if (CoreApp.isAndroid() && size.size > availableBytes - CoreConstants.MINIMUM_FREE_SPACE) {
+                if (CorePlatform.isAndroid() && size.size > availableBytes - CoreConstants.MINIMUM_FREE_SPACE) {
                     throw new CoreError(
                         Translate.instant(
                             'core.course.insufficientavailablespace',
@@ -339,7 +339,7 @@ export class CoreDomUtilsProvider {
 
             if (focusElement === document.activeElement) {
                 await CoreUtils.nextTick();
-                if (CoreApp.isAndroid() && this.supportsInputKeyboard(focusElement)) {
+                if (CorePlatform.isAndroid() && this.supportsInputKeyboard(focusElement)) {
                     // On some Android versions the keyboard doesn't open automatically.
                     CoreApp.openKeyboard();
                 }
@@ -666,10 +666,10 @@ export class CoreDomUtilsProvider {
      *
      * @param element The root element of the component/directive.
      * @returns The instance, undefined if not found.
-     * @deprecated since 4.0.0. Use CoreComponentsRegistry instead.
+     * @deprecated since 4.0.0. Use CoreDirectivesRegistry instead.
      */
     getInstanceByElement<T = unknown>(element: Element): T | undefined {
-        return CoreComponentsRegistry.resolve<T>(element) ?? undefined;
+        return CoreDirectivesRegistry.resolve<T>(element) ?? undefined;
     }
 
     /**
@@ -1373,7 +1373,7 @@ export class CoreDomUtilsProvider {
         } else if (this.isSiteUnavailableError(message)) {
             alertOptions.header = CoreSites.isLoggedIn()
                 ? Translate.instant('core.connectionlost')
-                : Translate.instant('core.cannotconnect', { $a: CoreSite.MINIMUM_MOODLE_VERSION });
+                : Translate.instant('core.cannotconnect');
         } else {
             alertOptions.header = Translate.instant('core.error');
         }
@@ -1530,7 +1530,7 @@ export class CoreDomUtilsProvider {
             buttons: buttons,
         });
 
-        const isDevice = CoreApp.isAndroid() || CoreApp.isIOS();
+        const isDevice = CorePlatform.isAndroid() || CorePlatform.isIOS();
         if (!isDevice) {
             // Treat all anchors so they don't override the app.
             const alertMessageEl: HTMLElement | null = alert.querySelector('.alert-message');
@@ -1719,10 +1719,10 @@ export class CoreDomUtilsProvider {
      *
      * @param element The root element of the component/directive.
      * @param instance The instance to store.
-     * @deprecated since 4.0.0. Use CoreComponentsRegistry instead.
+     * @deprecated since 4.0.0. Use CoreDirectivesRegistry instead.
      */
     storeInstanceByElement(element: Element, instance: unknown): void {
-        CoreComponentsRegistry.register(element, instance);
+        CoreDirectivesRegistry.register(element, instance);
     }
 
     /**
@@ -1990,7 +1990,7 @@ export class CoreDomUtilsProvider {
      * @returns Promise resolved when done.
      */
     async waitForResizeDone(windowWidth?: number, windowHeight?: number, retries = 0): Promise<void> {
-        if (!CoreApp.isIOS()) {
+        if (!CorePlatform.isIOS()) {
             return; // Only wait in iOS.
         }
 

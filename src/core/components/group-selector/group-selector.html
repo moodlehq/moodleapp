@@ -7,12 +7,11 @@
     </ion-card>
 
     <ion-item class="ion-text-wrap core-group-selector">
-        <ion-label id="core-groups-selector-groupslabel-{{id}}">
+        <ion-label>
             <ng-container *ngIf="groupInfo.separateGroups">{{'core.groupsseparate' | translate }}</ng-container>
             <ng-container *ngIf="groupInfo.visibleGroups">{{'core.groupsvisible' | translate }}</ng-container>
         </ion-label>
-        <ion-select [(ngModel)]="selected" (ionChange)="selectedChange.emit(selected)"
-            [attr.aria-labelledby]="'core-groups-selector-groupslabel-' + id" interface="action-sheet"
+        <ion-select [(ngModel)]="selected" (ionChange)="selectedChange.emit(selected)" interface="action-sheet"
             [interfaceOptions]="{header: 'core.group' | translate}">
             <ion-select-option *ngFor="let groupOpt of groupInfo.groups" [value]="groupOpt.id">
                 {{groupOpt.name}}

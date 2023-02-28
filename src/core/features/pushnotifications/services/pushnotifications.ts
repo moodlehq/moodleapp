@@ -228,7 +228,7 @@ export class CorePushNotificationsProvider {
      * @returns Promise resolved when done.
      */
     protected async createDefaultChannel(): Promise<void> {
-        if (!CoreApp.isAndroid()) {
+        if (!CorePlatform.isAndroid()) {
             return;
         }
 
@@ -481,7 +481,7 @@ export class CorePushNotificationsProvider {
             text: notification.message,
             channel: 'PushPluginChannel',
         };
-        const isAndroid = CoreApp.isAndroid();
+        const isAndroid = CorePlatform.isAndroid();
         const extraFeatures = CoreUtils.isTrueOrOne(data.extrafeatures);
 
         if (extraFeatures && isAndroid && CoreUtils.isFalseOrZero(data.notif)) {

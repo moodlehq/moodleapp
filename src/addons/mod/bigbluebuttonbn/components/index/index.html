@@ -19,13 +19,13 @@
     <ng-container *ngIf="meetingInfo && showRoom">
         <ion-item class="ion-text-wrap" *ngIf="meetingInfo.openingtime">
             <ion-label>
-                <h3>{{ 'addon.mod_bigbluebuttonbn.mod_form_field_openingtime' | translate }}</h3>
+                <p class="item-heading">{{ 'addon.mod_bigbluebuttonbn.mod_form_field_openingtime' | translate }}</p>
             </ion-label>
             <p slot="end">{{ meetingInfo.openingtime * 1000 | coreFormatDate }}</p>
         </ion-item>
         <ion-item class="ion-text-wrap" *ngIf="meetingInfo.closingtime">
             <ion-label>
-                <h3>{{ 'addon.mod_bigbluebuttonbn.mod_form_field_closingtime' | translate }}</h3>
+                <p class="item-heading">{{ 'addon.mod_bigbluebuttonbn.mod_form_field_closingtime' | translate }}</p>
             </ion-label>
             <p slot="end">{{ meetingInfo.closingtime * 1000 | coreFormatDate }}</p>
         </ion-item>
@@ -45,31 +45,31 @@
 
             <ion-item class="ion-text-wrap" *ngIf="meetingInfo.startedat">
                 <ion-label>
-                    <h3>{{ 'addon.mod_bigbluebuttonbn.view_message_session_started_at' | translate }}</h3>
+                    <p class="item-heading">{{ 'addon.mod_bigbluebuttonbn.view_message_session_started_at' | translate }}</p>
                 </ion-label>
                 <p slot="end">{{ meetingInfo.startedat * 1000 | coreFormatDate: "strftimetime" }}</p>
             </ion-item>
 
             <ion-item class="ion-text-wrap">
                 <ion-label>
-                    <h3 *ngIf="meetingInfo.moderatorplural">
+                    <p class="item-heading" *ngIf="meetingInfo.moderatorplural">
                         {{ 'addon.mod_bigbluebuttonbn.view_message_moderators' | translate }}
-                    </h3>
-                    <h3 *ngIf="!meetingInfo.moderatorplural">
+                    </p>
+                    <p class="item-heading" *ngIf="!meetingInfo.moderatorplural">
                         {{ 'addon.mod_bigbluebuttonbn.view_message_moderator' | translate }}
-                    </h3>
+                    </p>
                 </ion-label>
                 <p slot="end">{{ meetingInfo.moderatorcount }}</p>
             </ion-item>
 
             <ion-item class="ion-text-wrap">
                 <ion-label>
-                    <h3 *ngIf="meetingInfo.participantplural">
+                    <p class="item-heading" *ngIf="meetingInfo.participantplural">
                         {{ 'addon.mod_bigbluebuttonbn.view_message_viewers' | translate }}
-                    </h3>
-                    <h3 *ngIf="!meetingInfo.participantplural">
+                    </p>
+                    <p class="item-heading" *ngIf="!meetingInfo.participantplural">
                         {{ 'addon.mod_bigbluebuttonbn.view_message_viewer' | translate }}
-                    </h3>
+                    </p>
                 </ion-label>
                 <p slot="end">{{ meetingInfo.participantcount }}</p>
             </ion-item>
@@ -108,7 +108,7 @@
             <div [hidden]="!recording.expanded" class="addon-mod_bbb-recording-details">
                 <ion-item *ngFor="let data of recording.details" class="ion-text-wrap">
                     <ion-label>
-                        <h2>{{ data.label }}</h2>
+                        <p class="item-heading">{{ data.label }}</p>
                         <p *ngIf="data.allowHTML">
                             <core-format-text [text]="data.value" [component]="component" [componentId]="module.id" contextLevel="module"
                                 [contextInstanceId]="module.id" [courseId]="module.course"></core-format-text>

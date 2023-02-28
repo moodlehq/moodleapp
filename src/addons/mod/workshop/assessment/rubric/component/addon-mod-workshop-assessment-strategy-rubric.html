@@ -1,4 +1,4 @@
-<ng-container *ngFor="let field of assessment.form?.fields; let n = index">
+<section *ngFor="let field of assessment.form?.fields; let n = index">
     <ion-card *ngIf="n < assessment.form?.dimenssionscount">
         <ion-item class="ion-text-wrap">
             <ion-label>
@@ -24,4 +24,4 @@
             </ion-radio-group>
         </ion-list>
     </ion-card>
-</ng-container>
+</section>

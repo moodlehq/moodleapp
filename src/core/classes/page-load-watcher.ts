@@ -15,7 +15,7 @@
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { Subscription } from 'rxjs';
-import { AsyncComponent } from './async-component';
+import { AsyncDirective } from './async-directive';
 import { PageLoadsManager } from './page-loads-manager';
 import { CorePromisedValue } from './promised-value';
 import { WSObservable } from './site';
@@ -27,7 +27,7 @@ export class PageLoadWatcher {
 
     protected hasChanges = false;
     protected ongoingRequests = 0;
-    protected components = new Set<AsyncComponent>();
+    protected components = new Set<AsyncDirective>();
     protected loadedTimeout?: number;
     protected hasChangesPromises: Promise<boolean>[] = [];
 
@@ -66,7 +66,7 @@ export class PageLoadWatcher {
      *
      * @param component Component instance.
      */
-    async watchComponent(component: AsyncComponent): Promise<void> {
+    async watchComponent(component: AsyncDirective): Promise<void> {
         this.components.add(component);
         clearTimeout(this.loadedTimeout);
 

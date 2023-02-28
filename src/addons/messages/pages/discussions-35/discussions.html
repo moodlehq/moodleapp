@@ -7,6 +7,8 @@
             <h1>{{ 'addon.messages.messages' | translate }}</h1>
         </ion-title>
         <ion-buttons slot="end">
+            <!-- Add an empty context menu so split view pages can add items, otherwise the menu disappears in some cases. -->
+            <core-context-menu></core-context-menu>
             <core-user-menu-button></core-user-menu-button>
         </ion-buttons>
     </ion-toolbar>
@@ -29,7 +31,7 @@
                     [attr.aria-label]="'addon.messages.contacts' | translate" detail="true" button>
                     <ion-icon name="fas-address-book" slot="start" aria-hidden="true"></ion-icon>
                     <ion-label>
-                        <h2>{{ 'addon.messages.contacts' | translate }}</h2>
+                        <p class="item-heading">{{ 'addon.messages.contacts' | translate }}</p>
                     </ion-label>
                 </ion-item>
 

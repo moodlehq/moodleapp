@@ -22,9 +22,16 @@ import { CoreUtils } from './utils/utils';
 import { CorePlatform } from './platform';
 import { CoreSilentError } from '@classes/errors/silenterror';
 import { CoreSubscriptions } from '@singletons/subscriptions';
+import { CoreLogger } from '@singletons/logger';
 
 @Injectable({ providedIn: 'root' })
 export class CoreGeolocationProvider {
+
+    protected logger: CoreLogger;
+
+    constructor() {
+        this.logger = CoreLogger.getInstance('CoreGeolocationProvider');
+    }
 
     /**
      * Get current user coordinates.
@@ -34,16 +41,21 @@ export class CoreGeolocationProvider {
      */
     async getCoordinates(): Promise<Coordinates> {
         try {
+            this.logger.log('Getting coordinates.');
             await this.authorizeLocation();
             await this.enableLocation();
+            this.logger.log('Getting coordinates: authorized and enabled.');
 
             const result = await Geolocation.getCurrentPosition({
                 enableHighAccuracy: true,
                 timeout: 30000,
             });
+            this.logger.log('Coordinates retrieved');
 
             return result.coords;
         } catch (error) {
+            this.logger.log('Error getting coordinates.', error);
+
             if (this.isCordovaPermissionDeniedError(error)) {
                 throw new CoreGeolocationError(CoreGeolocationErrorReason.PERMISSION_DENIED);
             }
@@ -74,7 +86,7 @@ export class CoreGeolocationProvider {
             return;
         }
 
-        if (!CoreApp.isIOS()) {
+        if (!CorePlatform.isIOS()) {
             Diagnostic.switchToLocationSettings();
             await CoreApp.waitForResume(30000);
 
@@ -94,6 +106,8 @@ export class CoreGeolocationProvider {
      */
     protected async doAuthorizeLocation(failOnDeniedOnce: boolean = false): Promise<void> {
         const authorizationStatus = await Diagnostic.getLocationAuthorizationStatus();
+        this.logger.log(`Authorize location: status ${authorizationStatus}`);
+
         switch (authorizationStatus) {
             case Diagnostic.permissionStatus.DENIED_ONCE:
                 if (failOnDeniedOnce) {
@@ -101,7 +115,9 @@ export class CoreGeolocationProvider {
                 }
             // Fall through.
             case Diagnostic.permissionStatus.NOT_REQUESTED:
+                this.logger.log('Request location authorization.');
                 await this.requestLocationAuthorization();
+                this.logger.log('Location authorization granted.');
                 await CoreApp.waitForResume(500);
                 await this.doAuthorizeLocation(true);
 
@@ -142,7 +158,7 @@ export class CoreGeolocationProvider {
      * Request and return the location authorization status for the application.
      */
     protected async requestLocationAuthorization(): Promise<void> {
-        if (!CoreApp.isIOS()) {
+        if (!CorePlatform.isIOS()) {
             await Diagnostic.requestLocationAuthorization();
 
             return;

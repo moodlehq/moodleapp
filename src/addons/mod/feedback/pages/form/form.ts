@@ -109,6 +109,14 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
 
         await this.fetchData();
 
+        if (!this.access || this.access.isempty && (!this.access.canedititems && !this.access.canviewreports)) {
+            CoreDomUtils.showErrorModal(Translate.instant('core.nopermissiontoaccesspage'));
+
+            CoreNavigator.back();
+
+            return;
+        }
+
         if (!this.feedback) {
             return;
         }

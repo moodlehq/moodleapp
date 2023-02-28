@@ -36,7 +36,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreEventFormActionData, CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreEditorOffline } from '../../services/editor-offline';
-import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreScreen } from '@services/screen';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
@@ -304,7 +304,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
             return;
         }
 
-        await CoreComponentsRegistry.waitComponentsReady(page, 'core-loading', CoreLoadingComponent);
+        await CoreDirectivesRegistry.waitDirectivesReady(page, 'core-loading', CoreLoadingComponent);
     }
 
     /**
@@ -391,7 +391,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
 
         this.stopBubble(event);
 
-        const move = event.key == 'ArrowLeft' ? -1 : +1;
+        const move = event.key === 'ArrowLeft' ? -1 : +1;
         const cursor = this.getCurrentCursorPosition(this.editorElement);
 
         this.setCurrentCursorPosition(this.editorElement, cursor + move);
@@ -754,7 +754,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      * @returns Wether space or enter have been pressed.
      */
     protected isValidKeyboardKey(event: KeyboardEvent): boolean {
-        return event.key == ' ' || event.key == 'Enter';
+        return event.key === ' ' || event.key === 'Enter';
     }
 
     /**

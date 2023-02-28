@@ -514,22 +514,57 @@ export class CoreDom {
      *
      * @param element Element to listen to events.
      * @param callback Callback to call when clicked or the key is pressed.
+     * @deprecated since 4.1.1: Use initializeClickableElementA11y instead.
      */
-    static onActivate(element: HTMLElement, callback: (event: MouseEvent | KeyboardEvent) => void): void {
+    static onActivate(
+        element: HTMLElement & {disabled?: boolean},
+        callback: (event: MouseEvent | KeyboardEvent) => void,
+    ): void {
+        this.initializeClickableElementA11y(element, callback);
+    }
+
+    /**
+     * Initializes a clickable element a11y calling the click action when pressed enter or space
+     * and adding tabindex and role if needed.
+     *
+     * @param element Element to listen to events.
+     * @param callback Callback to call when clicked or the key is pressed.
+     */
+    static initializeClickableElementA11y(
+        element: HTMLElement & {disabled?: boolean},
+        callback: (event: MouseEvent | KeyboardEvent) => void,
+    ): void {
         element.addEventListener('click', (event) => callback(event));
 
         element.addEventListener('keydown', (event) => {
-            if ((event.key == ' ' || event.key == 'Enter')) {
+            if (event.key === ' ' || event.key === 'Enter') {
                 event.preventDefault();
                 event.stopPropagation();
             }
         });
 
         element.addEventListener('keyup', (event) => {
-            if ((event.key == ' ' || event.key == 'Enter')) {
+            if (event.key === ' ' || event.key === 'Enter') {
+                event.preventDefault();
+                event.stopPropagation();
+
                 callback(event);
             }
         });
+
+        if (element.tagName !== 'BUTTON' && element.tagName !== 'A') {
+            // Set tabindex if not previously set.
+            if (element.getAttribute('tabindex') === null) {
+                element.setAttribute('tabindex', element.disabled ? '-1' : '0');
+            }
+
+            // Set role if not previously set.
+            if (!element.getAttribute('role')) {
+                element.setAttribute('role', 'button');
+            }
+
+            element.classList.add('clickable');
+        }
     }
 
 }
@@ -549,4 +584,12 @@ export type CoreScrollOptions = {
     duration?: number;
     addYAxis?: number;
     addXAxis?: number;
+};
+
+/**
+ * Source of a media element.
+ */
+export type CoreMediaSource = {
+    src: string;
+    type?: string;
 };

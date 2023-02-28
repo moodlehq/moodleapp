@@ -21,13 +21,13 @@
                     <ion-label class="ion-text-wrap">{{ 'core.tag.warningareasnotsupported' | translate }}</ion-label>
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngFor="let area of areas" [attr.aria-label]="area.nameKey | translate"
-                    (click)="openArea(area)" [attr.aria-current]="area!.id == selectedAreaId ? 'page' : 'false'" button detail="true">
+                    (click)="openArea(area)" [attr.aria-current]="area.id == selectedAreaId ? 'page' : 'false'" button detail="true">
                     <ion-label>
-                        <h2>{{ area!.nameKey | translate }}</h2>
+                        <p class="item-heading">{{ area.nameKey | translate }}</p>
                     </ion-label>
-                    <ion-badge slot="end" *ngIf="area!.badge">
-                        <span aria-hidden="true">{{ area!.badge }}</span>
-                        <span class="sr-only">{{ 'core.tag.tagareabadgedescription' | translate:{ count: area!.badge } }}</span>
+                    <ion-badge slot="end" *ngIf="area.badge">
+                        <span aria-hidden="true">{{ area.badge }}</span>
+                        <span class="sr-only">{{ 'core.tag.tagareabadgedescription' | translate:{ count: area.badge } }}</span>
                     </ion-badge>
                 </ion-item>
             </ion-list>

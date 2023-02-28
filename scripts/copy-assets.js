@@ -27,7 +27,10 @@ const ASSETS = {
     '/node_modules/mathjax/jax/output/SVG': '/lib/mathjax/jax/output/SVG',
     '/node_modules/mathjax/jax/output/PreviewHTML': '/lib/mathjax/jax/output/PreviewHTML',
     '/node_modules/mathjax/localization': '/lib/mathjax/localization',
+    '/node_modules/mp3-mediarecorder/dist/vmsg.wasm': '/lib/vmsg/vmsg.wasm',
     '/src/core/features/h5p/assets': '/lib/h5p',
+    '/node_modules/ogv/dist': '/lib/ogv',
+    '/node_modules/video.js/dist/video-js.min.css': '/lib/video.js/video-js.min.css',
 };
 
 module.exports = function(ctx) {

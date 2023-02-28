@@ -25,7 +25,6 @@
         @include border-end(1px, solid var(--addon-calendar-border-color));
         overflow: hidden;
         min-height: 60px;
-        cursor: pointer;
 
         &:first-child {
             @include padding-horizontal(10px, null);
@@ -99,7 +98,7 @@
 
     .addon-calendar-period {
         flex-grow: 3;
-        h3 {
+        h2 {
             margin-top: 10px;
             font-size: 1.2rem;
         }

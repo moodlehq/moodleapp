@@ -102,13 +102,12 @@
                     </ion-row>
 
                     <ion-item *ngIf="question.type === 0" class="ion-text-wrap" [class.even]="isEven">
-                        <ion-label position="floating" id="addon-mod_survey-{{question.name}}">
+                        <ion-label position="floating">
                             <span [core-mark-required]="question.required">
                                 <strong>{{question.num}}.</strong> {{ question.text }}
                             </span>
                         </ion-label>
-                        <ion-textarea [(ngModel)]="answers[question.name]" [name]="question.name"
-                            [attr.aria-labelledby]="'addon-mod_survey-'+question.name" [required]="question.required">
+                        <ion-textarea [(ngModel)]="answers[question.name]" [name]="question.name" [required]="question.required">
                         </ion-textarea>
                     </ion-item>
                 </ng-container>

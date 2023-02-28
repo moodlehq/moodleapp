@@ -1,0 +1,98 @@
+/**
+ * VideoJS modifications.
+ **/
+
+/**
+ * App specific modifications.
+ **/
+
+// In case of error reset height to the default (otherwise no aspect ratio is available and height becomes 0).
+.video-js.vjs-error {
+    height: 150px !important;
+}
+
+// Hide full screen button for audios.
+.vjs-audio .vjs-fullscreen-control {
+    display: none;
+}
+
+// Fake full screen mode.
+.vjs-ios-moodleapp-fs {
+    z-index: 100000 !important;
+
+    canvas {
+        max-width: 100%;
+        max-height: 100%;
+        left: 0px;
+        right: 0px;
+        margin-left: auto;
+        margin-right: auto;
+        padding-bottom: var(--ion-safe-area-bottom, 0px);
+    }
+
+    .vjs-control-bar {
+        height: calc(3em + var(--ion-safe-area-bottom, 0px));
+
+        .vjs-progress-control {
+            padding-bottom: var(--ion-safe-area-bottom, 0px);
+        }
+    }
+}
+
+/**
+ * Styles extracted from:
+ * https://github.com/moodle/moodle/blob/3c5423d8c0bae003e6eb20119ca657c0c6760309/media/player/videojs/styles.css#L1773
+ **/
+
+/* Audio: Remove big play button (leave only the button in controls). */
+.video-js.vjs-audio .vjs-big-play-button {
+    display: none;
+}
+/* Audio: Make the controlbar visible by default */
+.video-js.vjs-audio .vjs-control-bar {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+}
+/* Make player height minimum to the controls height so when we hide video/poster area the controls are displayed correctly. */
+.video-js.vjs-audio {
+    min-height: 3em;
+}
+/* In case of error reset height to the default (otherwise no aspect ratio is available and height becomes 0). */
+.video-js.vjs-error {
+    height: 150px;
+}
+/* Minimum height for videos should not be less than the size of play button. */
+.mediaplugin_videojs video {
+    min-height: 32px;
+}
+
+/* MDL-61020: VideoJS timeline progress bar should not be flipped in RTL mode. */
+
+/* Prevent the progress bar from being flipped in RTL. */
+/*rtl:ignore*/
+.video-js .vjs-progress-holder .vjs-play-progress,
+.video-js .vjs-progress-holder .vjs-load-progress,
+.video-js .vjs-progress-holder .vjs-load-progress div {
+    left: 0;
+    right: auto;
+}
+/* Keep the video scrubber button at the end of the progress bar in RTL. */
+/*rtl:ignore*/
+.video-js .vjs-play-progress:before {
+    left: auto;
+    right: -0.5em;
+}
+/* Prevent the volume slider from being flipped in RTL. */
+/*rtl:ignore*/
+.video-js .vjs-volume-level {
+    left: 0;
+    right: auto;
+}
+/* Keep the volume slider handle at the end of the volume slider in RTL. */
+/*rtl:ignore*/
+.vjs-slider-horizontal .vjs-volume-level:before {
+    left: auto;
+    right: -0.5em;
+}

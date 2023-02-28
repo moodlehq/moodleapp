@@ -7,6 +7,8 @@
             <h1>{{ 'addon.messages.searchcombined' | translate }}</h1>
         </ion-title>
         <ion-buttons slot="end">
+            <!-- Add an empty context menu so split view pages can add items, otherwise the menu disappears in some cases. -->
+            <core-context-menu></core-context-menu>
         </ion-buttons>
     </ion-toolbar>
 </ion-header>

@@ -7,7 +7,6 @@
     }
 
     .addon-mod-forum-discussion.item {
-
         ion-label {
             margin-top: 4px;
 
@@ -35,19 +34,28 @@
             @include margin(0, 8px, 0, 0);
         }
 
-        .addon-mod-forum-discussion-title,
         .addon-mod-forum-discussion-info {
             display: flex;
             align-items: center;
         }
 
-        .addon-mod-forum-discussion-title .item-heading,
         .addon-mod-forum-discussion-info .addon-mod-forum-discussion-author {
             flex-grow: 1;
         }
 
+        .addon-mod-forum-discussion-title {
+            @include margin-horizontal(null, 8px);
+            line-height: 18px;
+        }
+
+
         .addon-mod-forum-discussion-more-info.ios {
             font-size: 0.9rem;
+        }
+
+        ion-button {
+            position: absolute;
+            @include position (4px, 8px, null, null);
         }
 
     }

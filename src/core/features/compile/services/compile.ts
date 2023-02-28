@@ -79,6 +79,7 @@ import { Md5 } from 'ts-md5/dist/md5';
 import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { CoreArray } from '@singletons/array';
 import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreDom } from '@singletons/dom';
 import { CoreForms } from '@singletons/form';
 import { CoreText } from '@singletons/text';
@@ -350,6 +351,7 @@ export class CoreCompileProvider {
         instance['CoreSyncBaseProvider'] = CoreSyncBaseProvider;
         instance['CoreArray'] = CoreArray;
         instance['CoreComponentsRegistry'] = CoreComponentsRegistry;
+        instance['CoreDirectivesRegistry'] = CoreDirectivesRegistry;
         instance['CoreNetwork'] = CoreNetwork.instance;
         instance['CorePlatform'] = CorePlatform.instance;
         instance['CoreDom'] = CoreDom;

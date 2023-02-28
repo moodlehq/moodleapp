@@ -1,9 +1,9 @@
 <ion-header>
     <ion-toolbar>
         <ion-title>
-            <h2>
+            <h1>
                 {{'core.user.useraccount' | translate}}
-            </h2>
+            </h1>
         </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="close($event)" [attr.aria-label]="'core.close' | translate">
@@ -32,7 +32,7 @@
                 detail="true" [attr.aria-label]="'core.user.profile' | translate">
                 <core-user-avatar [user]="siteInfo" [userId]="siteInfo.userid" [linkProfile]="false" slot="start"></core-user-avatar>
                 <ion-label>
-                    <h2>{{ siteInfo.fullname }}</h2>
+                    <p class="item-heading">{{ siteInfo.fullname }}</p>
                 </ion-label>
             </ion-item>
 

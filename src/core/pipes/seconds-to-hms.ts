@@ -40,7 +40,7 @@ export class CoreSecondsToHMSPipe implements PipeTransform {
      * @param seconds Number of seconds.
      * @returns Formatted seconds.
      */
-    transform(seconds: string | number): string {
+    transform(seconds: string | number, showHours: boolean = true): string {
         if (!seconds || seconds < 0) {
             seconds = 0;
         } else if (typeof seconds == 'string') {
@@ -62,8 +62,9 @@ export class CoreSecondsToHMSPipe implements PipeTransform {
         const minutes = Math.floor(seconds / CoreConstants.SECONDS_MINUTE);
         seconds -= minutes * CoreConstants.SECONDS_MINUTE;
 
-        return CoreTextUtils.twoDigits(hours) + ':' + CoreTextUtils.twoDigits(minutes) + ':' +
-            CoreTextUtils.twoDigits(seconds);
+        return showHours
+            ? CoreTextUtils.twoDigits(hours) + ':' + CoreTextUtils.twoDigits(minutes) + ':' + CoreTextUtils.twoDigits(seconds)
+            : CoreTextUtils.twoDigits(minutes) + ':' + CoreTextUtils.twoDigits(seconds);
     }
 
 }

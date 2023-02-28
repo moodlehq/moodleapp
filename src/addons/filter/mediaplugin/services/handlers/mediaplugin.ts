@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { AddonFilterMediaPluginVideoJS } from '@addons/filter/mediaplugin/services/videojs';
 import { Injectable } from '@angular/core';
 
 import { CoreFilterDefaultHandler } from '@features/filter/services/handlers/default-filter';
-import { CoreTextUtils } from '@services/utils/text';
-import { CoreUrlUtils } from '@services/utils/url';
 import { makeSingleton } from '@singletons';
+import { CoreMedia } from '@singletons/media';
 
 /**
  * Handler to support the Multimedia filter.
@@ -33,58 +33,38 @@ export class AddonFilterMediaPluginHandlerService extends CoreFilterDefaultHandl
     /**
      * @inheritdoc
      */
-    filter(
-        text: string,
-    ): string | Promise<string> {
+    filter(text: string): string | Promise<string> {
         this.template.innerHTML = text;
 
         const videos = Array.from(this.template.content.querySelectorAll('video'));
 
         videos.forEach((video) => {
-            this.treatVideoFilters(video);
+            AddonFilterMediaPluginVideoJS.treatYoutubeVideos(video);
         });
 
         return this.template.innerHTML;
     }
 
     /**
-     * Treat video filters. Currently only treating youtube video using video JS.
-     *
-     * @param video Video element.
+     * @inheritdoc
      */
-    protected treatVideoFilters(video: HTMLElement): void {
-        // Treat Video JS Youtube video links and translate them to iframes.
-        if (!video.classList.contains('video-js')) {
-            return;
-        }
+    handleHtml(container: HTMLElement): void {
+        const mediaElements = Array.from(container.querySelectorAll<HTMLVideoElement | HTMLAudioElement>('video, audio'));
 
-        const dataSetupString = video.getAttribute('data-setup') || video.getAttribute('data-setup-lazy') || '{}';
-        const data = <VideoDataSetup> CoreTextUtils.parseJSON(dataSetupString, {});
-        const youtubeUrl = data.techOrder?.[0] == 'youtube' && CoreUrlUtils.getYoutubeEmbedUrl(data.sources?.[0]?.src);
+        mediaElements.forEach((mediaElement) => {
+            if (CoreMedia.mediaUsesJavascriptPlayer(mediaElement)) {
+                AddonFilterMediaPluginVideoJS.createPlayer(mediaElement);
 
-        if (!youtubeUrl) {
-            return;
-        }
+                return;
+            }
 
-        const iframe = document.createElement('iframe');
-        iframe.id = video.id;
-        iframe.src = youtubeUrl;
-        iframe.setAttribute('frameborder', '0');
-        iframe.setAttribute('allowfullscreen', '1');
-        iframe.width = '100%';
-        iframe.height = '300';
-
-        // Replace video tag by the iframe.
-        video.parentNode?.replaceChild(iframe, video);
+            // Remove the VideoJS classes and data if present.
+            mediaElement.classList.remove('video-js');
+            mediaElement.removeAttribute('data-setup');
+            mediaElement.removeAttribute('data-setup-lazy');
+        });
     }
 
 }
 
 export const AddonFilterMediaPluginHandler = makeSingleton(AddonFilterMediaPluginHandlerService);
-
-type VideoDataSetup = {
-    techOrder?: string[];
-    sources?: {
-        src?: string;
-    }[];
-};

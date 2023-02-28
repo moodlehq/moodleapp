@@ -6,7 +6,7 @@
         <core-mod-icon *ngIf="item.iconUrl" [modicon]="item.iconUrl" slot="start" [showAlt]="false">
         </core-mod-icon>
         <ion-label>
-            <h2>{{ item.heading }}</h2>
+            <p class="item-heading">{{ item.heading }}</p>
             <p *ngFor="let text of item.details">{{ text }}</p>
         </ion-label>
     </ion-item>

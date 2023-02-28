@@ -33,7 +33,7 @@
         </ion-grid>
 
         <core-swipe-slides [manager]="manager">
-            <ng-template let-month="item">
+            <ng-template let-month="item" let-activeView="active">
                 <!-- Calendar view. -->
                 <ion-grid class="addon-calendar-months" role="table" aria-describedby="addon-calendar-monthname">
                     <div role="rowgroup">
@@ -57,9 +57,9 @@
                                     "today": month.isCurrentMonth && day.istoday,
                                     "weekend": day.isweekend,
                                     "duration_finish": day.haslastdayofevent
-                                }' [class.addon-calendar-event-past-day]="month.isPastMonth || day.ispast" role="cell" tabindex="0"
-                                (ariaButtonClick)="dayClicked(day.mday)">
-                                <p class="addon-calendar-day-number" role="button">
+                                }' [class.addon-calendar-event-past-day]="month.isPastMonth || day.ispast" role="cell"
+                                (ariaButtonClick)="dayClicked(day.mday)" [tabindex]="activeView ? 0 : -1">
+                                <p class="addon-calendar-day-number">
                                     <span aria-hidden="true">{{ day.mday }}</span>
                                     <span class="sr-only">{{ day.periodName | translate }}</span>
                                 </p>
@@ -72,8 +72,8 @@
                                 <div class="ion-hide-md-down addon-calendar-day-events" *ngIf="day.filteredEvents">
                                     <ng-container *ngFor="let event of day.filteredEvents | slice:0:4; let index = index">
                                         <div *ngIf="index < 3 || day.filteredEvents.length == 4" class="addon-calendar-event"
-                                            [class.addon-calendar-event-past]="event.ispast" role="button" tabindex="0"
-                                            (ariaButtonClick)="eventClicked(event, $event)">
+                                            [class.addon-calendar-event-past]="event.ispast" (ariaButtonClick)="eventClicked(event, $event)"
+                                            [tabindex]="activeView ? 0 : -1">
                                             <span class="calendar_event_type calendar_event_{{event.formattedType}}"></span>
                                             <ion-icon *ngIf="event.offline && !event.deleted" name="fas-clock"
                                                 [attr.aria-label]="'core.notsent' | translate"></ion-icon>

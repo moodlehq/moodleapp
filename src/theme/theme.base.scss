@@ -897,12 +897,16 @@ img[core-external-content]:not([src]) {
 }
 
 ion-card {
+    box-shadow: var(--box-shadow);
+    margin: var(--ion-card-vertical-margin) var(--ion-card-horizontal-margin);
     border-width: var(--border-width);
     border-style: var(--border-style);
     border-color: var(--border-color);
-    box-shadow: var(--box-shadow);
     border-radius: var(--border-radius);
-    margin: var(--ion-card-vertical-margin) var(--ion-card-horizontal-margin);
+
+    &::part(native) {
+        --border-width: 0;
+    }
 
     ion-item:only-child {
         --inner-border-width: 0px;
@@ -1514,19 +1518,24 @@ ion-item.item-input.item-multiple-inputs {
 }
 
 // Focus highlight for accessibility.
-ion-item.item-input.ion-focused:not(:focus),
-.ion-focused,
-ion-item.ion-activatable.ion-focused:not(:focus),
+.ion-focused:not(.item-multiple-inputs):not(:focus),
 ion-input.has-focus,
-.ion-focused ion-toggle:focus-within,
-.ion-focused ion-select:focus-within,
-.ion-focused ion-checkbox:focus-within,
-.ion-focused ion-radio:focus-within {
+ion-card:focus {
     @include core-focus();
+}
+.ion-focused.item-multiple-inputs,
+.ion-focused.ion-activatable {
+    ion-toggle:focus-within,
+    ion-select:focus-within,
+    ion-checkbox:focus-within,
+    ion-radio:focus-within {
+        @include core-focus();
+    }
 }
 
 // Treat cases where there's a focusable element inside an item, like a button.
-ion-item.ion-focused:not(:focus),
+ion-item.item-input:not(.item-multiple-inputs):not(:focus),
+ion-item.item-has-focus:not(.item-multiple-inputs):not(:focus),
 ion-item.item-input ion-input.has-focus {
     position: relative;
     &::after {
@@ -1576,11 +1585,15 @@ ion-item.item {
     outline: none;
 }
 
-textarea, button, select, input, a {
+textarea, button, select, input, a, .clickable {
     &:focus {
         @include core-focus-style();
         outline: none;
     }
+}
+
+.ion-focused:not(.item-multiple-inputs):not(:focus) .clickable:focus {
+    box-shadow: none;
 }
 
 ion-loading:focus-visible,
@@ -1588,6 +1601,10 @@ ion-alert:focus-visible,
 ion-popover:focus-visible,
 ion-modal:focus-visible {
     box-shadow: none;
+}
+
+ion-loading:focus-visible {
+    border-radius: 0;
 }
 
 input {

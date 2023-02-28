@@ -47,7 +47,7 @@ import { CanLeave } from '@guards/can-leave';
 import { CoreForms } from '@singletons/form';
 import { CoreDom } from '@singletons/dom';
 import { CoreTime } from '@singletons/time';
-import { CoreComponentsRegistry } from '@singletons/components-registry';
+import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 
 /**
  * Page that allows attempting a quiz.
@@ -690,7 +690,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
      */
     protected async scrollToQuestion(slot: number): Promise<void> {
         await CoreUtils.nextTick();
-        await CoreComponentsRegistry.waitComponentsReady(this.elementRef.nativeElement, 'core-question');
+        await CoreDirectivesRegistry.waitDirectivesReady(this.elementRef.nativeElement, 'core-question');
         await CoreDom.scrollToElement(
             this.elementRef.nativeElement,
             '#addon-mod_quiz-question-' + slot,

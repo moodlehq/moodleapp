@@ -3,6 +3,8 @@
     <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [attr.aria-label]="'core.info' | translate">
         <ion-icon name="fas-info-circle" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
+    <!-- Add an empty context menu so split view pages can add items, otherwise the menu disappears in some cases. -->
+    <core-context-menu></core-context-menu>
 </core-navbar-buttons>
 
 <!-- Content. -->
@@ -74,26 +76,20 @@
                 [lines]="discussion.groupname && 'none'" [attr.aria-current]="discussions?.getItemAriaCurrent(discussion)"
                 (click)="discussions?.select(discussion)" button>
                 <ion-label>
-                    <div class="addon-mod-forum-discussion-title">
-                        <p class="ion-text-wrap item-heading">
-                            <ion-icon name="fas-map-pin" *ngIf="discussion.pinned"
-                                [attr.aria-label]="'addon.mod_forum.discussionpinned' | translate"></ion-icon>
-                            <ion-icon name="fas-star" class="addon-forum-star" *ngIf="!discussion.pinned && discussion.starred"
-                                [attr.aria-label]="'addon.mod_forum.favourites' | translate"></ion-icon>
-                            <core-format-text [text]="discussion.subject" contextLevel="module" [contextInstanceId]="module && module.id"
-                                [courseId]="courseId">
-                            </core-format-text>
-                            <ion-icon name="fas-lock" *ngIf="discussion.locked" class="addon-mod-forum-locked-icon"
-                                [attr.aria-label]="'addon.mod_forum.discussionlocked' | translate"></ion-icon>
-                        </p>
-                        <ion-button *ngIf="canPin || discussion.canlock || discussion.canfavourite" fill="clear"
-                            [attr.aria-label]="('core.displayoptions' | translate)" (click)="showOptionsMenu($event, discussion)">
-                            <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true">
-                            </ion-icon>
-                        </ion-button>
-                    </div>
+                    <p class="addon-mod-forum-discussion-title ion-text-wrap item-heading">
+                        <ion-icon name="fas-map-pin" *ngIf="discussion.pinned"
+                            [attr.aria-label]="'addon.mod_forum.discussionpinned' | translate"></ion-icon>
+                        <ion-icon name="fas-star" class="addon-forum-star" *ngIf="!discussion.pinned && discussion.starred"
+                            [attr.aria-label]="'addon.mod_forum.favourites' | translate"></ion-icon>
+                        <core-format-text [text]="discussion.subject" contextLevel="module" [contextInstanceId]="module && module.id"
+                            [courseId]="courseId">
+                        </core-format-text>
+                        <ion-icon name="fas-lock" *ngIf="discussion.locked" class="addon-mod-forum-locked-icon"
+                            [attr.aria-label]="'addon.mod_forum.discussionlocked' | translate"></ion-icon>
+                    </p>
                     <div class="addon-mod-forum-discussion-info">
-                        <core-user-avatar *ngIf="discussion.userfullname" [user]="discussion" slot="start" [courseId]="courseId">
+                        <core-user-avatar *ngIf="discussion.userfullname" [user]="discussion" slot="start" [courseId]="courseId"
+                            [linkProfile]="false">
                         </core-user-avatar>
                         <div class="addon-mod-forum-discussion-author">
                             <span *ngIf="discussion.userfullname">{{discussion.userfullname}}</span>
@@ -136,6 +132,11 @@
                         </ion-col>
                     </ion-row>
                 </ion-label>
+                <ion-button *ngIf="canPin || discussion.canlock || discussion.canfavourite" fill="clear"
+                    [attr.aria-label]="('core.displayoptions' | translate)" (click)="showOptionsMenu($event, discussion)" slot="end">
+                    <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true">
+                    </ion-icon>
+                </ion-button>
             </ion-item>
 
             <core-infinite-loading [enabled]="discussions && discussions.loaded && !discussions.completed" [error]="fetchFailed"

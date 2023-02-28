@@ -26,7 +26,7 @@ jobs:
     env:
       MOODLE_DOCKER_DB: pgsql
       MOODLE_DOCKER_BROWSER: chrome
-      MOODLE_DOCKER_PHP_VERSION: 7.4
+      MOODLE_DOCKER_PHP_VERSION: '8.0'
       MOODLE_BRANCH: ${{ github.event.inputs.moodle_branch || 'master' }}
       MOODLE_REPOSITORY: ${{ github.event.inputs.moodle_repository || 'https://github.com/moodle/moodle' }}
       BEHAT_TAGS: ${{ github.event.inputs.behat_tags || '~@performance' }}
@@ -42,6 +42,12 @@ jobs:
         git clone --branch master --depth 1 https://github.com/moodlehq/moodle-docker $GITHUB_WORKSPACE/moodle-docker
     - name: Install npm packages
       run: npm ci --no-audit
+    - name: Create Behat faildumps folder
+      run: |
+        mkdir moodle/behatfaildumps
+        chmod 777 moodle/behatfaildumps
+    - name: Install Behat Snapshots plugin
+      run: git clone --branch main --depth 1 https://github.com/NoelDeMartin/moodle-local_behatsnapshots $GITHUB_WORKSPACE/moodle/local/behatsnapshots
     - name: Generate Behat tests plugin
       run: |
         export MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle
@@ -50,12 +56,21 @@ jobs:
       run: |
         export MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle
         cp $GITHUB_WORKSPACE/moodle-docker/config.docker-template.php $GITHUB_WORKSPACE/moodle/config.php
+        sed -i "61c\$CFG->behat_faildump_path = '/var/www/html/behatfaildumps';" $GITHUB_WORKSPACE/moodle/config.php
         sed -i "61i\$CFG->behat_increasetimeout = 2;" $GITHUB_WORKSPACE/moodle/config.php
         sed -i "61i\$CFG->behat_ionic_wwwroot = 'http://moodleapp';" $GITHUB_WORKSPACE/moodle/config.php
+        sed -i "61i\$CFG->behat_snapshots_path = '/var/www/html/local/moodleappbehat/tests/behat/snapshots';" $GITHUB_WORKSPACE/moodle/config.php
         echo "define('TEST_MOD_BIGBLUEBUTTONBN_MOCK_SERVER', 'http://bbbmockserver/hash' . sha1(\$CFG->behat_wwwroot));" >> $GITHUB_WORKSPACE/moodle/config.php
         $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose pull
         $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose up -d
         $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-wait-for-db
+    - name: Install Imagick PHP extension
+      run: |
+        export MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle
+        ./moodle-docker/bin/moodle-docker-compose exec webserver apt-get update
+        ./moodle-docker/bin/moodle-docker-compose exec webserver apt-get install -y libmagickwand-dev --no-install-recommends
+        ./moodle-docker/bin/moodle-docker-compose exec webserver pecl install imagick
+        ./moodle-docker/bin/moodle-docker-compose exec webserver docker-php-ext-enable imagick
     - name: Compile & launch app with Docker
       run: |
         docker build --build-arg build_command="npm run build:test" -t moodlehq/moodleapp:behat .
@@ -65,8 +80,20 @@ jobs:
     - name: Init Behat
       run: |
         export MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle
-         $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose exec -T webserver sh -c "php admin/tool/behat/cli/init.php --parallel=8 --optimize-runs='@app&&$BEHAT_TAGS'"
+         $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose exec -T webserver sh -c "php admin/tool/behat/cli/init.php --parallel=8 --optimize-runs='@app&&~@local&&$BEHAT_TAGS'"
     - name: Run Behat tests
       run: |
         export MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle
-        $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose exec -T webserver sh -c "php admin/tool/behat/cli/run.php --verbose --tags='@app&&$BEHAT_TAGS' --auto-rerun=3"
+        $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose exec -T webserver sh -c "php admin/tool/behat/cli/run.php --verbose --tags='@app&&~@local&&$BEHAT_TAGS' --auto-rerun=3"
+    - name: Upload Snapshot failures
+      uses: actions/upload-artifact@v3
+      if: ${{ failure() }}
+      with:
+        name: snapshot_failures
+        path: moodle/local/moodleappbehat/tests/behat/snapshots/failures/*
+    - name: Upload Behat failures
+      uses: actions/upload-artifact@v3
+      if: ${{ failure() }}
+      with:
+        name: behat_failures
+        path: moodle/behatfaildumps

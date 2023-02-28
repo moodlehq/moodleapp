@@ -214,6 +214,7 @@
     "nopasswordchangeforced": "You cannot proceed without changing your password.",
     "nopermissionerror": "Sorry, but you do not currently have permissions to do that",
     "nopermissions": "Sorry, but you do not currently have permissions to do that ({{$a}}).",
+    "nopermissiontoaccesspage": "You don't have permission to access this page.",
     "noresults": "No results",
     "noselection": "No selection",
     "notapplicable": "n/a",

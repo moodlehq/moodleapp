@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import {
@@ -34,6 +34,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
 import { CorePlatform } from '@services/platform';
+import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
 /**
  * Page that displays the list of discussions.
@@ -44,6 +45,8 @@ import { CorePlatform } from '@services/platform';
     styleUrls: ['../../messages-common.scss'],
 })
 export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
+
+    @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
     protected newMessagesObserver: CoreEventObserver;
     protected readChangedObserver: CoreEventObserver;
@@ -264,7 +267,10 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
 
         const path = CoreNavigator.getRelativePathToParent('/messages/index') + `discussion/user/${discussionUserId}`;
 
-        await CoreNavigator.navigate(path, { params });
+        await CoreNavigator.navigate(path, {
+            params,
+            reset: CoreScreen.isTablet && !!this.splitView && !this.splitView.isNested,
+        });
     }
 
     /**

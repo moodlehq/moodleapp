@@ -1,0 +1,9 @@
+{
+    "modifiedby": "Modified by",
+    "reports": "Reports",
+    "filtersapplied": "There may be filters applied to this view. To edit filters or change the sorting order, <a href=\"{{$a}}\">open this report on your browser.</a>",
+    "reportsource": "Report source",
+    "timecreated": "Time created",
+    "showcolumns": "Show columns",
+    "hidecolumns": "Hide columns"
+}

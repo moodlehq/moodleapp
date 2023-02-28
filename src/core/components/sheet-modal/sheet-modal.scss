@@ -1,0 +1,43 @@
+@import "~theme/globals";
+
+:host {
+    --backdrop-opacity: var(--ion-backdrop-opacity, 0.4);
+
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    isolation: isolate;
+
+    ion-backdrop {
+        opacity: 0;
+        transition: opacity 300ms ease-in;
+    }
+
+    .sheet-modal--wrapper {
+        border-radius: var(--big-radius) var(--big-radius) 0 0;
+        @include padding(24px, 16px, 24px, 16px);
+
+        background-color: var(--ion-overlay-background-color, var(--ion-background-color, #fff));
+        z-index: 3; // ion-backdrop has z-index 2
+        transform: translateY(100%);
+        transition: transform 300ms ease-in;
+        width: 100%;
+        max-width: 500px;
+    }
+
+    &.active {
+
+        ion-backdrop {
+            opacity: var(--backdrop-opacity);
+        }
+
+        .sheet-modal--wrapper {
+            transform: translateY(0%);
+        }
+
+    }
+
+}

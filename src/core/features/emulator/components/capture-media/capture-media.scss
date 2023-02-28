@@ -21,30 +21,6 @@
                 width: 100%;
             }
 
-            .button {
-                position: absolute;
-                top: 0;
-                left: 0;
-                bottom: 0;
-                right: 0;
-                margin: auto;
-                height: 120px;
-                width: 120px;
-
-                .icon {
-                    font-size: 120px;
-                    width: auto;
-                }
-            }
-
-            audio {
-                position: absolute;
-                top: 0;
-                left: 0;
-                bottom: 0;
-                right: 0;
-                margin: auto;
-            }
         }
 
         video, img {

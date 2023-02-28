@@ -33,12 +33,12 @@
                     <core-spacer *ngIf="item.typ == 'pagebreak'"></core-spacer>
                     <ion-item class="ion-text-wrap" *ngIf="item.typ != 'pagebreak'" [color]="item.dependitem > 0 ? 'light' : ''">
                         <ion-label>
-                            <h2 *ngIf="item.name" [core-mark-required]="item.required">
+                            <p class="item-heading" *ngIf="item.name" [core-mark-required]="item.required">
                                 <span *ngIf="feedback!.autonumbering && item.itemnumber">{{item.itemnumber}}. </span>
                                 <core-format-text [component]="component" [componentId]="cmId" [text]="item.name" contextLevel="module"
                                     [contextInstanceId]="cmId" [courseId]="courseId">
                                 </core-format-text>
-                            </h2>
+                            </p>
                             <p *ngIf="item.submittedValue">
                                 <core-format-text [component]="component" [componentId]="cmId" [text]="item.submittedValue"
                                     contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId">

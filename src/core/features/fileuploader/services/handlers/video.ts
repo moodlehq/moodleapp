@@ -45,10 +45,10 @@ export class CoreFileUploaderVideoHandlerService implements CoreFileUploaderHand
      * @returns Supported mimetypes.
      */
     getSupportedMimetypes(mimetypes: string[]): string[] {
-        if (CoreApp.isIOS()) {
+        if (CorePlatform.isIOS()) {
             // In iOS it's recorded as MOV.
             return CoreUtils.filterByRegexp(mimetypes, /^video\/quicktime$/);
-        } else if (CoreApp.isAndroid()) {
+        } else if (CorePlatform.isAndroid()) {
             // In Android we don't know the format the video will be recorded, so accept any video mimetype.
             return CoreUtils.filterByRegexp(mimetypes, /^video\//);
         } else {

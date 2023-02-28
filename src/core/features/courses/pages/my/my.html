@@ -22,7 +22,7 @@
     <core-loading [hideUntil]="loaded">
         <ion-item class="ion-text-wrap divider">
             <ion-label>
-                <h2 class="big">{{ 'core.courses.mycourses' | translate }}</h2>
+                <h2 class="big" id="core-courses-my-title">{{ 'core.courses.mycourses' | translate }}</h2>
             </ion-label>
             <div slot="end" class="flex-row">
                 <!-- Download all courses. -->
@@ -46,7 +46,8 @@
             </div>
         </ion-item>
         <ion-list>
-            <core-block *ngIf="loadedBlock?.visible" [block]="loadedBlock" contextLevel="user" [instanceId]="userId"></core-block>
+            <core-block *ngIf="loadedBlock?.visible" [block]="loadedBlock" contextLevel="user" [instanceId]="userId"
+                labelledBy="core-courses-my-title"></core-block>
         </ion-list>
 
         <core-block-side-blocks-button slot="fixed" *ngIf="hasSideBlocks" contextLevel="user" [instanceId]="userId"

@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-title>
-            <h2 id="addon-mod-forum-sort-order-label">{{ 'core.sort' | translate }}</h2>
+            <h1 id="addon-mod-forum-sort-order-label">{{ 'core.sort' | translate }}</h1>
         </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
@@ -17,7 +17,7 @@
                 [attr.aria-current]="selected == sortOrder.value ? 'page' : 'false'" [attr.aria-label]="sortOrder.label | translate"
                 (click)="selectSortOrder(sortOrder)" button aria-haspopup="dialog">
                 <ion-label>
-                    <h2>{{ sortOrder.label | translate }}</h2>
+                    <p class="item-heading">{{ sortOrder.label | translate }}</p>
                 </ion-label>
             </ion-item>
         </ng-container>

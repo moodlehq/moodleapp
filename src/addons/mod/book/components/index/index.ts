@@ -18,6 +18,7 @@ import { AddonModBook, AddonModBookBookWSData, AddonModBookNumbering, AddonModBo
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
+import { AddonModBookModuleHandlerService } from '../../services/handlers/module';
 
 /**
  * Component that displays a book entry page.
@@ -58,6 +59,13 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
             this.loadBook(),
             this.loadTOC(),
         ]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected async invalidateContent(): Promise<void> {
+        await AddonModBook.invalidateContent(this.module.id, this.courseId);
     }
 
     /**
@@ -102,14 +110,11 @@ export class AddonModBookIndexComponent extends CoreCourseModuleMainResourceComp
      *
      * @param chapterId Chapter to open, undefined for last chapter viewed.
      */
-    openBook(chapterId?: number): void {
-        CoreNavigator.navigate('contents', {
-            params: {
-                cmId: this.module.id,
-                courseId: this.courseId,
-                chapterId,
-            },
-        });
+    async openBook(chapterId?: number): Promise<void> {
+        await CoreNavigator.navigateToSitePath(
+            `${AddonModBookModuleHandlerService.PAGE_NAME}/${this.courseId}/${this.module.id}/contents`,
+            { params: { chapterId } },
+        );
 
         this.hasStartedBook = true;
     }

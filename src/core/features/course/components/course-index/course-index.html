@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-title>
-            <h2 id="core-course-section-selector-label">{{ 'core.course.courseindex' | translate }}</h2>
+            <h1 id="core-course-section-selector-label">{{ 'core.course.courseindex' | translate }}</h1>
         </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
@@ -32,7 +32,7 @@
                             class="expandable-status-icon" (ariaButtonClick)="toggleExpand($event, section)"
                             [attr.aria-label]="(section.expanded ? 'core.collapse' : 'core.expand') | translate"
                             [attr.aria-expanded]="section.expanded" [attr.aria-controls]="'core-course-index-section-' + section.id"
-                            [class.expandable-status-icon-expanded]="section.expanded" tabindex="0">
+                            [class.expandable-status-icon-expanded]="section.expanded">
                         </ion-icon>
                         <ion-icon *ngIf="!section.hasVisibleModules" name="" slot="start" aria-hidden="true" class="expandable-status-icon">
                         </ion-icon>

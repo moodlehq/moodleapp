@@ -12,13 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/**
- * Component that is not rendered immediately after being mounted.
- */
-export interface AsyncComponent {
+import { VideoJSOgvJS } from '@addons/filter/mediaplugin/classes/videojs-ogvjs';
+import { OGVLoader } from 'ogv';
+import videojs from 'video.js';
 
-    /**
-     * Wait until the component is fully rendered and ready.
-     */
-    ready(): Promise<void>;
+export { videojs };
+
+/**
+ * Initialize the controller.
+ */
+export function initializeVideoJSOgvJS(): void {
+    OGVLoader.base = 'assets/lib/ogv';
+
+    videojs.getComponent('Tech').registerTech('OgvJS', VideoJSOgvJS);
 }

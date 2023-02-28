@@ -32,7 +32,7 @@
         <ion-list>
             <ion-item class="ion-text-wrap" *ngIf="type">
                 <ion-label>
-                    <h3>{{ 'core.type' | translate }}</h3>
+                    <p class="item-heading">{{ 'core.type' | translate }}</p>
                     <p>{{ type }}</p>
                 </ion-label>
             </ion-item>
@@ -40,28 +40,28 @@
             <ng-container *ngIf="!isExternalFile">
                 <ion-item class="ion-text-wrap" *ngIf="readableSize">
                     <ion-label>
-                        <h3>{{ 'core.size' | translate }}</h3>
+                        <p class="item-heading">{{ 'core.size' | translate }}</p>
                         <p>{{ readableSize }}</p>
                     </ion-label>
                 </ion-item>
 
                 <ion-item class="ion-text-wrap" *ngIf="timecreated > 0">
                     <ion-label>
-                        <h3>{{ 'core.datecreated' | translate }}</h3>
+                        <p class="item-heading">{{ 'core.datecreated' | translate }}</p>
                         <p>{{ timecreated | coreFormatDate }}</p>
                     </ion-label>
                 </ion-item>
 
                 <ion-item class="ion-text-wrap" *ngIf="timemodified > 0">
                     <ion-label>
-                        <h3>{{ 'core.lastmodified' | translate }}</h3>
+                        <p class="item-heading">{{ 'core.lastmodified' | translate }}</p>
                         <p>{{ timemodified | coreFormatDate }}</p>
                     </ion-label>
                 </ion-item>
 
                 <ion-item class="ion-text-wrap" *ngIf="downloadTimeReadable">
                     <ion-label>
-                        <h3>{{ 'core.lastdownloaded' | translate }}</h3>
+                        <p class="item-heading">{{ 'core.lastdownloaded' | translate }}</p>
                         <p>{{ downloadTimeReadable }}</p>
                         <ion-grid *ngIf="currentStatus === outdatedStatus" class="addon-mod_resource-outdated">
                             <ion-row class="ion-align-items-center">

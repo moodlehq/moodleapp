@@ -70,7 +70,7 @@ export class AddonModDataFieldTextHandlerService implements AddonModDataFieldHan
 
         return [{
             fieldid: field.id,
-            value: inputData[fieldName] || '',
+            value: inputData[fieldName] ?? '',
         }];
     }
 
@@ -83,10 +83,10 @@ export class AddonModDataFieldTextHandlerService implements AddonModDataFieldHan
         originalFieldData: AddonModDataEntryField,
     ): boolean {
         const fieldName = 'f_' + field.id;
-        const input = inputData[fieldName] || '';
-        const content = originalFieldData?.content || '';
+        const input = inputData[fieldName] ?? '';
+        const content = originalFieldData?.content ?? '';
 
-        return input != content;
+        return input !== content;
     }
 
     /**
@@ -102,7 +102,7 @@ export class AddonModDataFieldTextHandlerService implements AddonModDataFieldHan
      * @inheritdoc
      */
     overrideData(originalContent: AddonModDataEntryField, offlineContent: CoreFormFields<string>): AddonModDataEntryField {
-        originalContent.content = offlineContent[''] || '';
+        originalContent.content = offlineContent[''] ?? '';
 
         return originalContent;
     }

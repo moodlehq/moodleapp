@@ -25,11 +25,11 @@ Feature: Timeline block.
       | assign   | C1                   | assign03  | Assignment 03 | ##tomorrow##   |
       | assign   | C2                   | assign04  | Assignment 04 | ##+2 days##    |
       | assign   | C1                   | assign05  | Assignment 05 | ##+5 days##    |
-      | assign   | C2                   | assign06  | Assignment 06 | ##+1 month##   |
-      | assign   | C2                   | assign07  | Assignment 07 | ##+1 month##   |
-      | assign   | C3                   | assign08  | Assignment 08 | ##+1 month##   |
-      | assign   | C2                   | assign09  | Assignment 09 | ##+1 month##   |
-      | assign   | C1                   | assign10  | Assignment 10 | ##+1 month##   |
+      | assign   | C2                   | assign06  | Assignment 06 | ##+31 days##   |
+      | assign   | C2                   | assign07  | Assignment 07 | ##+31 days##   |
+      | assign   | C3                   | assign08  | Assignment 08 | ##+31 days##   |
+      | assign   | C2                   | assign09  | Assignment 09 | ##+31 days##   |
+      | assign   | C1                   | assign10  | Assignment 10 | ##+31 days##   |
       | assign   | C1                   | assign11  | Assignment 11 | ##+6 months##  |
       | assign   | C1                   | assign12  | Assignment 12 | ##+6 months##  |
       | assign   | C1                   | assign13  | Assignment 13 | ##+6 months##  |

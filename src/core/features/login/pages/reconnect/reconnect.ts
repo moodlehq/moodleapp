@@ -353,7 +353,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
      * @param e Event.
      */
     keyDown(e: KeyboardEvent): void {
-        if (e.key == 'Escape') {
+        if (e.key === 'Escape') {
             e.preventDefault();
             e.stopPropagation();
         }
@@ -365,7 +365,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
      * @param e Event.
      */
     keyUp(e: KeyboardEvent): void {
-        if (e.key == 'Escape') {
+        if (e.key === 'Escape') {
             this.cancel(e);
         }
     }

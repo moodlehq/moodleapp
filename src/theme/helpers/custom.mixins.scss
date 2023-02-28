@@ -81,6 +81,7 @@
 
 @mixin core-focus-style() {
     box-shadow: inset 0 0 var(--a11y-focus-width) 1px var(--a11y-focus-color);
+    border-radius: var(--border-radius);
     // Thicker option:
     // border: var(--a11y-focus-width) solid var(--a11y-focus-color);
 }

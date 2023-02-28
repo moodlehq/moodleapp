@@ -32,6 +32,7 @@ import { CoreUserSupport } from '@features/user/services/support';
 import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
 import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
 import { SafeHtml } from '@angular/platform-browser';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Page to enter the user credentials.
@@ -108,7 +109,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             this.pageLoaded = true;
         }
 
-        if (CoreApp.isIOS()) {
+        if (CorePlatform.isIOS()) {
             // Make iOS auto-fill work. The field that isn't focused doesn't get updated, do it manually.
             // Debounce it to prevent triggering this function too often when the user is typing.
             this.valueChangeSubscription = this.credForm.valueChanges.pipe(debounceTime(1000)).subscribe((changes) => {

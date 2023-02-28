@@ -108,7 +108,7 @@ export class CoreEvents {
     static readonly FILE_SHARED = 'file_shared';
     static readonly KEYBOARD_CHANGE = 'keyboard_change';
     /**
-     * @deprecated since app 4.0. Use CoreComponentsRegistry promises instead.
+     * @deprecated since app 4.0. Use CoreDirectivesRegistry promises instead.
      */
     static readonly CORE_LOADING_CHANGED = 'core_loading_changed';
     static readonly ORIENTATION_CHANGE = 'orientation_change';

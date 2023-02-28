@@ -1,0 +1,23 @@
+<ion-item class="ion-text-wrap" lines="inset" [detail]="false" [button]="isExpandable" [attr.aria-expanded]="isExpanded"
+    [attr.aria-controls]="'core-report-builder-column-' + rowIndex"
+    [attr.aria-label]="(isExpanded ? 'core.hidecolumns' : 'core.showcolumns') | translate" (click)="toggleRow()">
+    <ion-label>
+        <p class="item-heading" *ngIf="columnIndex !== 0 || (columnIndex === 0 && showFirstTitle)"> {{ header }} </p>
+        <h2 *ngIf="columnIndex === 0">
+            <core-format-text *ngIf="isString(column); else notText" [text]="column" [contextLevel]="source"
+                [contextInstanceId]="contextId">
+            </core-format-text>
+            <ng-template #notText>{{ column }}</ng-template>
+        </h2>
+
+        <ng-container *ngIf="columnIndex !== 0">
+            <core-format-text *ngIf="isString(column); else notText" [text]="column" [contextLevel]="source"
+                [contextInstanceId]="contextId">
+            </core-format-text>
+            <ng-template #notText>{{ column }}</ng-template>
+        </ng-container>
+    </ion-label>
+    <ion-icon [class.expandable-status-icon-expanded]="!isExpanded" slot="end" aria-hidden="true" name="fas-chevron-up"
+        class="expandable-status-icon" *ngIf="isExpandable" flip-rtl>
+    </ion-icon>
+</ion-item>

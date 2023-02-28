@@ -15,10 +15,9 @@
 import { Injectable } from '@angular/core';
 import { CameraOptions } from '@ionic-native/camera/ngx';
 import { FileEntry } from '@ionic-native/file/ngx';
-import { MediaFile, CaptureError, CaptureAudioOptions, CaptureVideoOptions } from '@ionic-native/media-capture/ngx';
+import { MediaFile, CaptureError, CaptureVideoOptions } from '@ionic-native/media-capture/ngx';
 import { Subject } from 'rxjs';
 
-import { CoreApp } from '@services/app';
 import { CoreFile, CoreFileProvider } from '@services/file';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
@@ -26,13 +25,14 @@ import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile, CoreWSFileUploadOptions, CoreWSUploadFileResult } from '@services/ws';
-import { makeSingleton, Translate, MediaCapture, ModalController, Camera } from '@singletons';
+import { makeSingleton, Translate, MediaCapture, Camera } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
-import { CoreEmulatorCaptureMediaComponent } from '@features/emulator/components/capture-media/capture-media';
 import { CoreError } from '@classes/errors/error';
 import { CoreSite } from '@classes/site';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CorePath } from '@singletons/path';
+import { CorePlatform } from '@services/platform';
+import { CoreModals } from '@services/modals';
 
 /**
  * File upload options.
@@ -132,14 +132,21 @@ export class CoreFileUploaderProvider {
     /**
      * Start the audio recorder application and return information about captured audio clip files.
      *
-     * @param options Options.
      * @returns Promise resolved with the result.
      */
-    async captureAudio(options: CaptureAudioOptions): Promise<MediaFile[] | CaptureError> {
+    async captureAudio(): Promise<CoreFileUploaderAudioRecording[] | MediaFile[] | CaptureError> {
         this.onAudioCapture.next(true);
 
         try {
-            return await MediaCapture.captureAudio(options);
+            if (!CorePlatform.supportsMediaCapture() || !CorePlatform.supportsWebAssembly()) {
+                const media = await MediaCapture.captureAudio({ limit: 1 });
+
+                return media;
+            }
+
+            const recording = await this.captureAudioInApp();
+
+            return [recording];
         } finally {
             this.onAudioCapture.next(false);
         }
@@ -150,27 +157,17 @@ export class CoreFileUploaderProvider {
      *
      * @returns Promise resolved with the file.
      */
-    async captureAudioInApp(): Promise<MediaFile> {
-        const params = {
-            type: 'audio',
-        };
+    async captureAudioInApp(): Promise<CoreFileUploaderAudioRecording> {
+        const { CoreFileUploaderAudioRecorderComponent } =
+            await import('@features/fileuploader/components/audio-recorder/audio-recorder.module');
 
-        const modal = await ModalController.create({
-            component: CoreEmulatorCaptureMediaComponent,
-            cssClass: 'core-modal-fullscreen',
-            componentProps: params,
-            backdropDismiss: false,
-        });
+        const recording = await CoreModals.openSheet(CoreFileUploaderAudioRecorderComponent);
 
-        await modal.present();
-
-        const result = await modal.onWillDismiss();
-
-        if (result.role == 'success') {
-            return result.data[0];
-        } else {
-            throw result.data;
+        if (!recording) {
+            throw new Error('Recording missing from audio capture');
         }
+
+        return recording;
     }
 
     /**
@@ -236,7 +233,7 @@ export class CoreFileUploaderProvider {
     getCameraUploadOptions(uri: string, isFromAlbum?: boolean): CoreFileUploaderOptions {
         const extension = CoreMimetypeUtils.guessExtensionFromUrl(uri);
         const mimetype = CoreMimetypeUtils.getMimeType(extension);
-        const isIOS = CoreApp.isIOS();
+        const isIOS = CorePlatform.isIOS();
         const options: CoreFileUploaderOptions = {
             deleteAfterUpload: !isFromAlbum,
             mimeType: mimetype,
@@ -259,7 +256,7 @@ export class CoreFileUploaderProvider {
             // If the file was picked from the album, delete it only if it was copied to the app's folder.
             options.deleteAfterUpload = CoreFile.isFileInAppFolder(uri);
 
-            if (CoreApp.isAndroid()) {
+            if (CorePlatform.isAndroid()) {
                 // Picking an image from album in Android adds a timestamp at the end of the file. Delete it.
                 options.fileName = options.fileName.replace(/(\.[^.]*)\?[^.]*$/, '$1');
             }
@@ -335,7 +332,7 @@ export class CoreFileUploaderProvider {
      * @param mediaFile File object to upload.
      * @returns Options.
      */
-    getMediaUploadOptions(mediaFile: MediaFile): CoreFileUploaderOptions {
+    getMediaUploadOptions(mediaFile: MediaFile | CoreFileUploaderAudioRecording): CoreFileUploaderOptions {
         const options: CoreFileUploaderOptions = {};
         let filename = mediaFile.name;
 
@@ -780,4 +777,10 @@ export type CoreFileUploaderTypeList = {
 export type CoreFileUploaderTypeListInfoEntry = {
     name?: string;
     extlist: string;
+};
+
+export type CoreFileUploaderAudioRecording = {
+    name: string;
+    fullPath: string;
+    type: string;
 };

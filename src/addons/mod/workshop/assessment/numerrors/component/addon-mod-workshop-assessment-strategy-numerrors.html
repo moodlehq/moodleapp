@@ -1,4 +1,4 @@
-<ng-container *ngFor="let field of assessment.form?.fields; let n = index">
+<section *ngFor="let field of assessment.form?.fields; let n = index">
     <ion-card *ngIf="n < assessment.form?.dimenssionscount">
         <ion-item class="ion-text-wrap">
             <ion-label>
@@ -42,7 +42,8 @@
         </ion-item>
         <ion-item *ngIf="!edit" class="ion-text-wrap">
             <ion-label>
-                <h2>{{ 'addon.mod_workshop_assessment_numerrors.dimensioncommentfor' | translate : {'$a': field.dimtitle } }}</h2>
+                <p class="item-heading">{{ 'addon.mod_workshop_assessment_numerrors.dimensioncommentfor' | translate : {'$a': field.dimtitle
+                    } }}</p>
                 <p>
                     <core-format-text [text]="selectedValues[n].peercomment" contextLevel="module" [contextInstanceId]="moduleId"
                         [courseId]="courseId">
@@ -51,4 +52,4 @@
             </ion-label>
         </ion-item>
     </ion-card>
-</ng-container>
+</section>

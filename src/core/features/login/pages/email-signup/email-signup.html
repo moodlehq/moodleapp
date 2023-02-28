@@ -38,7 +38,7 @@
 
                     <ion-item-divider class="ion-text-wrap">
                         <ion-label>
-                            <h3>{{ 'core.agelocationverification' | translate }}</h3>
+                            <h2>{{ 'core.agelocationverification' | translate }}</h2>
                         </ion-label>
                     </ion-item-divider>
 
@@ -67,7 +67,7 @@
 
                     <ion-item class="ion-text-wrap">
                         <ion-label>
-                            <h3 class="item-heading">{{ 'core.whyisthisrequired' | translate }}</h3>
+                            <p class="item-heading">{{ 'core.whyisthisrequired' | translate }}</p>
                             <p>{{ 'core.explanationdigitalminor' | translate }}</p>
                         </ion-label>
                     </ion-item>
@@ -91,7 +91,7 @@
                     <!-- Username and password. -->
                     <ion-item-divider class="ion-text-wrap">
                         <ion-label>
-                            <h3>{{ 'core.login.createuserandpass' | translate }}</h3>
+                            <h2>{{ 'core.login.createuserandpass' | translate }}</h2>
                         </ion-label>
                     </ion-item-divider>
                     <ion-item class="ion-text-wrap">
@@ -121,7 +121,7 @@
                     <!-- More details. -->
                     <ion-item-divider class="ion-text-wrap">
                         <ion-label>
-                            <h3>{{ 'core.login.supplyinfo' | translate }}</h3>
+                            <h2>{{ 'core.login.supplyinfo' | translate }}</h2>
                         </ion-label>
                     </ion-item-divider>
                     <ion-item class="ion-text-wrap">
@@ -159,9 +159,8 @@
                         </ion-input>
                     </ion-item>
                     <ion-item class="ion-text-wrap">
-                        <ion-label position="stacked" id="core-login-signup-country">{{ 'core.user.country' | translate }}</ion-label>
-                        <ion-select name="country" formControlName="country" aria-labelledby="core-login-signup-country"
-                            [placeholder]="'core.login.selectacountry' | translate">
+                        <ion-label position="stacked">{{ 'core.user.country' | translate }}</ion-label>
+                        <ion-select name="country" formControlName="country" [placeholder]="'core.login.selectacountry' | translate">
 
                             <ion-select-option value="">{{ 'core.login.selectacountry' | translate }}</ion-select-option>
                             <ion-select-option *ngFor="let country of countries" [value]="country.code">{{country.name}}</ion-select-option>
@@ -183,7 +182,7 @@
                     <ng-container *ngIf="settings.recaptchapublickey">
                         <ion-item-divider class="ion-text-wrap">
                             <ion-label>
-                                <h3><span [core-mark-required]="true">{{ 'core.login.security_question' | translate }}</span></h3>
+                                <h2><span [core-mark-required]="true">{{ 'core.login.security_question' | translate }}</span></h2>
                             </ion-label>
                         </ion-item-divider>
                         <core-recaptcha [publicKey]="settings.recaptchapublickey" [model]="captcha" [siteUrl]="siteUrl"></core-recaptcha>
@@ -193,7 +192,7 @@
                     <ng-container *ngIf="settings.sitepolicy">
                         <ion-item-divider class="ion-text-wrap">
                             <ion-label>
-                                <h3>{{ 'core.login.policyagreement' | translate }}</h3>
+                                <h2>{{ 'core.login.policyagreement' | translate }}</h2>
                             </ion-label>
                         </ion-item-divider>
                         <ion-item class="ion-text-wrap">
@@ -226,14 +225,14 @@
         <ion-list *ngIf="allRequiredSupported && isMinor">
             <ion-item-divider class="ion-text-wrap">
                 <ion-label>
-                    <h3 *ngIf="siteName" class="item-heading ion-padding">
+                    <h2 *ngIf="siteName" class="item-heading ion-padding">
                         <core-format-text [text]="siteName" [filter]="false"></core-format-text>
-                    </h3>
+                    </h2>
                 </ion-label>
             </ion-item-divider>
             <ion-item class="ion-text-wrap">
                 <ion-label>
-                    <h3 class="item-heading">{{ 'core.considereddigitalminor' | translate }}</h3>
+                    <p class="item-heading">{{ 'core.considereddigitalminor' | translate }}</p>
                     <p>{{ 'core.digitalminor_desc' | translate }}</p>
                     <p *ngIf="supportName">{{ supportName }}</p>
                     <p *ngIf="supportEmail">{{ supportEmail }}</p>

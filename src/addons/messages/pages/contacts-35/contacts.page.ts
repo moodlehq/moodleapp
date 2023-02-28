@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
 import {
@@ -29,6 +29,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Translate } from '@singletons';
 import { CoreScreen } from '@services/screen';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
 /**
  * Page that displays the list of contacts.
@@ -39,6 +40,8 @@ import { CoreNavigator } from '@services/navigator';
     styleUrls: ['../../messages-common.scss'],
 })
 export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
+
+    @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
     protected searchingMessages: string;
     protected loadingMessages: string;
@@ -244,7 +247,9 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
         const path = CoreNavigator.getRelativePathToParent('/messages/contacts-35') + `discussion/user/${discussionUserId}`;
 
         // @todo Check why this is failing on ngInit.
-        CoreNavigator.navigate(path);
+        CoreNavigator.navigate(path, {
+            reset: CoreScreen.isTablet && !!this.splitView && !this.splitView.isNested,
+        });
     }
 
     /**

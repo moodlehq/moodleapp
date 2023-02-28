@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-title>
-            <h2>{{ 'core.rating.ratings' | translate }}</h2>
+            <h1>{{ 'core.rating.ratings' | translate }}</h1>
         </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
@@ -16,7 +16,7 @@
             <ion-item class="ion-text-wrap" *ngFor="let rating of ratings">
                 <core-user-avatar [user]="rating" [courseId]="courseId" slot="start"></core-user-avatar>
                 <ion-label>
-                    <h2>{{ rating.userfullname }}</h2>
+                    <p class="item-heading">{{ rating.userfullname }}</p>
                     <p>{{ rating.rating }}</p>
                 </ion-label>
                 <ion-note slot="end" *ngIf="rating.timemodified">
