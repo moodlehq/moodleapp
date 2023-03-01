@@ -910,6 +910,12 @@ export class CoreH5PContentValidator {
                 placeholder: 'La Gioconda',
             },
             {
+                name: 'a11yTitle',
+                type: 'text',
+                label: Translate.instant('core.h5p.a11yTitle:label'),
+                optional: true,
+            },
+            {
                 name: 'license',
                 type: 'select',
                 label: Translate.instant('core.h5p.license'),
