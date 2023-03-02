@@ -35,6 +35,7 @@ export class CoreH5PCore {
         'styles/h5p.css',
         'styles/h5p-confirmation-dialog.css',
         'styles/h5p-core-button.css',
+        'styles/h5p-tooltip.css',
     ];
 
     static readonly SCRIPTS = [
@@ -47,6 +48,7 @@ export class CoreH5PCore {
         'js/h5p-confirmation-dialog.js',
         'js/h5p-action-bar.js',
         'js/request-queue.js',
+        'js/h5p-tooltip.js',
     ];
 
     static readonly ADMIN_SCRIPTS = [
@@ -178,13 +180,28 @@ export class CoreH5PCore {
     /**
      * Writes library data as string on the form {machineName} {majorVersion}.{minorVersion}.
      *
-     * @param libraryData Library data.
-     * @param folderName Use hyphen instead of space in returned string.
+     * @param library Library data.
      * @returns String on the form {machineName} {majorVersion}.{minorVersion}.
      */
-    static libraryToString(libraryData: CoreH5PLibraryBasicData | CoreH5PContentMainLibraryData, folderName?: boolean): string {
-        return ('machineName' in libraryData ? libraryData.machineName : libraryData.name) + (folderName ? '-' : ' ') +
-                libraryData.majorVersion + '.' + libraryData.minorVersion;
+    static libraryToString(library: CoreH5PLibraryBasicData | CoreH5PContentMainLibraryData): string {
+        const name = 'machineName' in library ? library.machineName : library.name;
+
+        return `${name} ${library.majorVersion}.${library.minorVersion}`;
+    }
+
+    /**
+     * Get the name of a library's folder name
+     *
+     * @param library Library data.
+     * @returns Folder name.
+     */
+    static libraryToFolderName(library: CoreH5PLibraryBasicData | CoreH5PContentMainLibraryData): string {
+        const name = 'machineName' in library ? library.machineName : library.name;
+
+        // In LMS, a property named patchVersionInFolderName is checked here. This property is only used to retrieve some icons when
+        // using the editor, and it isn't stored in DB. The check wasn't included here because the app will never have that prop.
+
+        return `${name}-${library.majorVersion}.${library.minorVersion}`;
     }
 
     /**
@@ -562,7 +579,7 @@ export class CoreH5PCore {
 
         for (const machineName in dependencies) {
             const dependency = dependencies[machineName];
-            const folderName = CoreH5PCore.libraryToString(dependency, true);
+            const folderName = CoreH5PCore.libraryToFolderName(dependency);
 
             roots[folderName] = this.h5pFS.getLibraryFolderPath(dependency, siteId, folderName);
         }
@@ -793,6 +810,8 @@ export class CoreH5PCore {
             invalidAge: Translate.instant('core.h5p.invalidAge'),
             keywordsExits: Translate.instant('core.h5p.keywordsExits'),
             someKeywordsExits: Translate.instant('core.h5p.someKeywordsExits'),
+            width: Translate.instant('core.h5p.width'),
+            height: Translate.instant('core.h5p.height'),
         };
     }
 
