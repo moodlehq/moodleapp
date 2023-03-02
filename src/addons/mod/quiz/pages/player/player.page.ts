@@ -203,6 +203,10 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
      * @param button Clicked button.
      */
     async behaviourButtonClicked(button: CoreQuestionBehaviourButton): Promise<void> {
+        if (!this.quiz || !this.attempt) {
+            return;
+        }
+
         let modal: CoreIonLoadingElement | undefined;
 
         try {
@@ -212,13 +216,13 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             modal = await CoreDomUtils.showModalLoading('core.sending', true);
 
             // Get the answers.
-            const answers = await this.prepareAnswers();
+            const answers = await this.prepareAnswers(this.quiz.coursemodule);
 
             // Add the clicked button data.
             answers[button.name] = button.value;
 
             // Behaviour checks are always in online.
-            await AddonModQuiz.processAttempt(this.quiz!, this.attempt!, answers, this.preflightData);
+            await AddonModQuiz.processAttempt(this.quiz, this.attempt, answers, this.preflightData);
 
             this.reloadNavigation = true; // Data sent to server, navigation should be reloaded.
 
@@ -230,7 +234,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             this.content?.scrollToTop(); // Scroll top so the spinner is seen.
 
             try {
-                await this.loadPage(this.attempt!.currentpage!);
+                await this.loadPage(this.attempt.currentpage ?? 0);
             } finally {
                 this.loaded = true;
                 if (scrollTop != -1) {
@@ -311,8 +315,8 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             }
         } catch (error) {
             // If the user isn't seeing the summary, start the check again.
-            if (!this.showSummary) {
-                this.autoSave.startCheckChangesProcess(this.quiz!, this.attempt, this.preflightData, this.offline);
+            if (!this.showSummary && this.quiz) {
+                this.autoSave.startCheckChangesProcess(this.quiz, this.attempt, this.preflightData, this.offline);
             }
 
             CoreDomUtils.showErrorModalDefault(error, 'addon.mod_quiz.errorgetquestions', true);
@@ -351,7 +355,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             this.offline = await AddonModQuiz.isLastAttemptOfflineUnfinished(this.quiz);
         }
 
-        if (this.quiz!.timelimit && this.quiz!.timelimit > 0) {
+        if (this.quiz.timelimit && this.quiz.timelimit > 0) {
             this.readableTimeLimit = CoreTime.formatTime(this.quiz.timelimit);
         }
 
@@ -394,11 +398,15 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
      * @returns Promise resolved when done.
      */
     async finishAttempt(userFinish?: boolean, timeUp?: boolean): Promise<void> {
+        if (!this.quiz || !this.attempt) {
+            return;
+        }
+
         let modal: CoreIonLoadingElement | undefined;
 
         try {
             // Show confirm if the user clicked the finish button and the quiz is in progress.
-            if (!timeUp && this.attempt!.state == AddonModQuizProvider.ATTEMPT_IN_PROGRESS) {
+            if (!timeUp && this.attempt.state == AddonModQuizProvider.ATTEMPT_IN_PROGRESS) {
                 await CoreDomUtils.showConfirm(Translate.instant('addon.mod_quiz.confirmclose'));
             }
 
@@ -408,8 +416,8 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
             // Trigger an event to notify the attempt was finished.
             CoreEvents.trigger(AddonModQuizProvider.ATTEMPT_FINISHED_EVENT, {
-                quizId: this.quiz!.id,
-                attemptId: this.attempt!.id,
+                quizId: this.quiz.id,
+                attemptId: this.attempt.id,
                 synced: !this.offline,
             }, CoreSites.getCurrentSiteId());
 
@@ -431,9 +439,13 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
      * @returns Promise resolved when done.
      */
     protected async fixSequenceChecks(): Promise<void> {
+        if (!this.attempt) {
+            return;
+        }
+
         // Get current page data again to get the latest sequencechecks.
-        const data = await AddonModQuiz.getAttemptData(this.attempt!.id, this.attempt!.currentpage!, this.preflightData, {
-            cmId: this.quiz!.coursemodule,
+        const data = await AddonModQuiz.getAttemptData(this.attempt.id, this.attempt.currentpage ?? 0, this.preflightData, {
+            cmId: this.quiz?.coursemodule,
             readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
         });
 
@@ -465,14 +477,14 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
      * Initializes the timer if enabled.
      */
     protected initTimer(): void {
-        if (!this.attemptAccessInfo?.endtime || this.attemptAccessInfo.endtime < 0) {
+        if (!this.quizAccessInfo || !this.attempt || !this.attemptAccessInfo?.endtime || this.attemptAccessInfo.endtime < 0) {
             return;
         }
 
         // Quiz has an end time. Check if time left should be shown.
         const shouldShowTime = AddonModQuiz.shouldShowTimeLeft(
-            this.quizAccessInfo!.activerulenames,
-            this.attempt!,
+            this.quizAccessInfo.activerulenames,
+            this.attempt,
             this.attemptAccessInfo.endtime,
         );
 
@@ -490,8 +502,12 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
      * @returns Promise resolved when done.
      */
     protected async loadPage(page: number): Promise<void> {
-        const data = await AddonModQuiz.getAttemptData(this.attempt!.id, page, this.preflightData, {
-            cmId: this.quiz!.coursemodule,
+        if (!this.quiz || !this.attempt) {
+            return;
+        }
+
+        const data = await AddonModQuiz.getAttemptData(this.attempt.id, page, this.preflightData, {
+            cmId: this.quiz.coursemodule,
             readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
         });
 
@@ -523,7 +539,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
         );
 
         // Start looking for changes.
-        this.autoSave.startCheckChangesProcess(this.quiz!, this.attempt, this.preflightData, this.offline);
+        this.autoSave.startCheckChangesProcess(this.quiz, this.attempt, this.preflightData, this.offline);
     }
 
     /**
@@ -532,23 +548,27 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
      * @returns Promise resolved when done.
      */
     protected async loadSummary(): Promise<void> {
+        if (!this.quiz || !this.attempt) {
+            return;
+        }
+
         this.summaryQuestions = [];
 
-        this.summaryQuestions = await AddonModQuiz.getAttemptSummary(this.attempt!.id, this.preflightData, {
-            cmId: this.quiz!.coursemodule,
+        this.summaryQuestions = await AddonModQuiz.getAttemptSummary(this.attempt.id, this.preflightData, {
+            cmId: this.quiz.coursemodule,
             loadLocal: this.offline,
             readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
         });
 
         this.showSummary = true;
-        this.canReturn = this.attempt!.state == AddonModQuizProvider.ATTEMPT_IN_PROGRESS && !this.attempt!.finishedOffline;
+        this.canReturn = this.attempt.state == AddonModQuizProvider.ATTEMPT_IN_PROGRESS && !this.attempt.finishedOffline;
         this.preventSubmitMessages = AddonModQuiz.getPreventSubmitMessages(this.summaryQuestions);
 
-        this.dueDateWarning = AddonModQuiz.getAttemptDueDateWarning(this.quiz!, this.attempt!);
+        this.dueDateWarning = AddonModQuiz.getAttemptDueDateWarning(this.quiz, this.attempt);
 
         // Log summary as viewed.
         CoreUtils.ignoreErrors(
-            AddonModQuiz.logViewAttemptSummary(this.attempt!.id, this.preflightData, this.quiz!.id, this.quiz!.name),
+            AddonModQuiz.logViewAttemptSummary(this.attempt.id, this.preflightData, this.quiz.id, this.quiz.name),
         );
     }
 
@@ -558,9 +578,13 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
      * @returns Promise resolved when done.
      */
     protected async loadNavigation(): Promise<void> {
+        if (!this.attempt) {
+            return;
+        }
+
         // We use the attempt summary to build the navigation because it contains all the questions.
-        this.navigation = await AddonModQuiz.getAttemptSummary(this.attempt!.id, this.preflightData, {
-            cmId: this.quiz!.coursemodule,
+        this.navigation = await AddonModQuiz.getAttemptSummary(this.attempt.id, this.preflightData, {
+            cmId: this.quiz?.coursemodule,
             loadLocal: this.offline,
             readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
         });
@@ -602,21 +626,22 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             return;
         }
 
-        this.changePage(modalData.page!, true, modalData.slot);
+        this.changePage(modalData.page, true, modalData.slot);
     }
 
     /**
      * Prepare the answers to be sent for the attempt.
      *
+     * @param componentId Component ID.
      * @returns Promise resolved with the answers.
      */
-    protected prepareAnswers(): Promise<CoreQuestionsAnswers> {
+    protected prepareAnswers(componentId: number): Promise<CoreQuestionsAnswers> {
         return CoreQuestionHelper.prepareAnswers(
             this.questions,
             this.getAnswers(),
             this.offline,
             this.component,
-            this.quiz!.coursemodule,
+            componentId,
         );
     }
 
@@ -629,18 +654,22 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
      * @returns Promise resolved when done.
      */
     protected async processAttempt(userFinish?: boolean, timeUp?: boolean, retrying?: boolean): Promise<void> {
+        if (!this.quiz || !this.attempt) {
+            return;
+        }
+
         // Get the answers to send.
         let answers: CoreQuestionsAnswers = {};
 
         if (!this.showSummary) {
-            answers = await this.prepareAnswers();
+            answers = await this.prepareAnswers(this.quiz.coursemodule);
         }
 
         try {
             // Send the answers.
             await AddonModQuiz.processAttempt(
-                this.quiz!,
-                this.attempt!,
+                this.quiz,
+                this.attempt,
                 answers,
                 this.preflightData,
                 userFinish,
@@ -676,7 +705,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             CoreForms.triggerFormSubmittedEvent(this.formElement, !this.offline, CoreSites.getCurrentSiteId());
         }
 
-        return CoreQuestionHelper.clearTmpData(this.questions, this.component, this.quiz!.coursemodule);
+        return CoreQuestionHelper.clearTmpData(this.questions, this.component, this.quiz.coursemodule);
     }
 
     /**
@@ -731,12 +760,16 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
      * @returns Promise resolved when done.
      */
     protected async startOrContinueAttempt(): Promise<void> {
+        if (!this.quiz || !this.quizAccessInfo) {
+            return;
+        }
+
         let attempt = this.newAttempt ? undefined : this.lastAttempt;
 
         // Get the preflight data and start attempt if needed.
         attempt = await AddonModQuizHelper.getAndCheckPreflightData(
-            this.quiz!,
-            this.quizAccessInfo!,
+            this.quiz,
+            this.quizAccessInfo,
             this.preflightData,
             attempt,
             this.offline,
@@ -745,8 +778,8 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
         );
 
         // Re-fetch attempt access information with the right attempt (might have changed because a new attempt was created).
-        this.attemptAccessInfo = await AddonModQuiz.getAttemptAccessInformation(this.quiz!.id, attempt.id, {
-            cmId: this.quiz!.coursemodule,
+        this.attemptAccessInfo = await AddonModQuiz.getAttemptAccessInformation(this.quiz.id, attempt.id, {
+            cmId: this.quiz.coursemodule,
             readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
         });
 
@@ -756,7 +789,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
         if (this.attempt.state != AddonModQuizProvider.ATTEMPT_OVERDUE && !this.attempt.finishedOffline) {
             // Attempt not overdue and not finished in offline, load page.
-            await this.loadPage(this.attempt.currentpage!);
+            await this.loadPage(this.attempt.currentpage ?? 0);
 
             this.initTimer();
         } else {

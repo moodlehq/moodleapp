@@ -241,7 +241,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
 
         const isLastFinished = !attempts.length || AddonModQuiz.isAttemptFinished(attempts[attempts.length - 1].state);
 
-        return quiz.attempts === 0 || quiz.attempts! > attempts.length || !isLastFinished;
+        return quiz.attempts === 0 || (quiz.attempts ?? 0) > attempts.length || !isLastFinished;
     }
 
     /**
@@ -444,7 +444,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
             if (attempt.state == AddonModQuizProvider.ATTEMPT_IN_PROGRESS) {
                 // Get data for each page.
                 promises = promises.concat(pages.map(async (page) => {
-                    if (isSequential && page < attempt.currentpage!) {
+                    if (isSequential && attempt.currentpage && page < attempt.currentpage) {
                         // Sequential quiz, cannot get pages before the current one.
                         return;
                     }

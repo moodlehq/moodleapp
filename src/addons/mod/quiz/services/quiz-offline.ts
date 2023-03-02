@@ -198,11 +198,11 @@ export class AddonModQuizOfflineProvider {
         } else {
             entry = {
                 quizid: quiz.id,
-                userid: attempt.userid!,
+                userid: attempt.userid ?? CoreSites.getCurrentSiteUserId(),
                 id: attempt.id,
                 courseid: quiz.course,
                 timecreated: now,
-                attempt: attempt.attempt!,
+                attempt: attempt.attempt ?? 0,
                 currentpage: attempt.currentpage,
                 timemodified: now,
                 finished: finish ? 1 : 0,
@@ -284,10 +284,12 @@ export class AddonModQuizOfflineProvider {
 
             if (questions[slot]) {
                 if (!questionsWithAnswers[slot]) {
-                    questionsWithAnswers[slot] = questions[slot];
-                    questionsWithAnswers[slot].answers = {};
+                    questionsWithAnswers[slot] = {
+                        ...questions[slot],
+                        answers: {},
+                    };
                 }
-                questionsWithAnswers[slot].answers![nameWithoutPrefix] = answers[name];
+                questionsWithAnswers[slot].answers[nameWithoutPrefix] = answers[name];
             }
         }
 
@@ -295,7 +297,7 @@ export class AddonModQuizOfflineProvider {
         await Promise.all(Object.values(questionsWithAnswers).map(async (question) => {
 
             const state = await CoreQuestionBehaviourDelegate.determineNewState(
-                quiz.preferredbehaviour!,
+                quiz.preferredbehaviour ?? '',
                 AddonModQuizProvider.COMPONENT,
                 attempt.id,
                 question,
@@ -317,7 +319,7 @@ export class AddonModQuizOfflineProvider {
             AddonModQuizProvider.COMPONENT,
             quiz.id,
             attempt.id,
-            attempt.userid!,
+            attempt.userid ?? CoreSites.getCurrentSiteUserId(),
             answers,
             timeMod,
             siteId,
@@ -332,7 +334,7 @@ export class AddonModQuizOfflineProvider {
                     AddonModQuizProvider.COMPONENT,
                     quiz.id,
                     attempt.id,
-                    attempt.userid!,
+                    attempt.userid ?? CoreSites.getCurrentSiteUserId(),
                     question,
                     newStates[slot],
                     siteId,

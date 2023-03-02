@@ -305,8 +305,9 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
 
         // Get all the offline attempts for the quiz. It should always be 0 or 1 attempt
         const offlineAttempts = await AddonModQuizOffline.getQuizAttempts(quiz.id, siteId);
+        const offlineAttempt = offlineAttempts.pop();
 
-        if (!offlineAttempts.length) {
+        if (!offlineAttempt) {
             // Nothing to sync, finish.
             return this.finishSync(siteId, quiz, courseId, warnings);
         }
@@ -315,8 +316,6 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
             // Cannot sync in offline.
             throw new CoreError(Translate.instant('core.cannotconnect'));
         }
-
-        const offlineAttempt = offlineAttempts.pop()!;
 
         // Now get the list of online attempts to make sure this attempt exists and isn't finished.
         const onlineAttempts = await AddonModQuiz.getUserAttempts(quiz.id, modOptions);

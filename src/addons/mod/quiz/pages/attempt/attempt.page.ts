@@ -94,20 +94,20 @@ export class AddonModQuizAttemptPage implements OnInit {
             // Load attempt data.
             const [options, accessInfo, attempt] = await Promise.all([
                 AddonModQuiz.getCombinedReviewOptions(this.quiz.id, { cmId: this.quiz.coursemodule }),
-                this.fetchAccessInfo(),
-                this.fetchAttempt(),
+                this.fetchAccessInfo(this.quiz),
+                this.fetchAttempt(this.quiz.id),
             ]);
 
             // Set calculated data.
             this.showReviewColumn = accessInfo.canreviewmyattempts;
             AddonModQuizHelper.setQuizCalculatedData(this.quiz, options);
 
-            this.attempt = await AddonModQuizHelper.setAttemptCalculatedData(this.quiz!, attempt, false, undefined, true);
+            this.attempt = await AddonModQuizHelper.setAttemptCalculatedData(this.quiz, attempt, false, undefined, true);
 
             // Check if the feedback should be displayed.
-            const grade = Number(this.attempt!.rescaledGrade);
+            const grade = Number(this.attempt.rescaledGrade);
 
-            if (this.quiz.showFeedbackColumn && AddonModQuiz.isAttemptFinished(this.attempt!.state) &&
+            if (this.quiz.showFeedbackColumn && AddonModQuiz.isAttemptFinished(this.attempt.state) &&
                     options.someoptions.overallfeedback && !isNaN(grade)) {
 
                 // Feedback should be displayed, get the feedback for the grade.
@@ -127,11 +127,12 @@ export class AddonModQuizAttemptPage implements OnInit {
     /**
      * Get the attempt.
      *
+     * @param quizId Quiz ID.
      * @returns Promise resolved when done.
      */
-    protected async fetchAttempt(): Promise<AddonModQuizAttemptWSData> {
+    protected async fetchAttempt(quizId: number): Promise<AddonModQuizAttemptWSData> {
         // Get all the attempts and search the one we want.
-        const attempts = await AddonModQuiz.getUserAttempts(this.quiz!.id, { cmId: this.cmId });
+        const attempts = await AddonModQuiz.getUserAttempts(quizId, { cmId: this.cmId });
 
         const attempt = attempts.find(attempt => attempt.id == this.attemptId);
 
@@ -148,10 +149,11 @@ export class AddonModQuizAttemptPage implements OnInit {
     /**
      * Get the access info.
      *
+     * @param quiz Quiz instance.
      * @returns Promise resolved when done.
      */
-    protected async fetchAccessInfo(): Promise<AddonModQuizGetQuizAccessInformationWSResponse> {
-        const accessInfo = await AddonModQuiz.getQuizAccessInformation(this.quiz!.id, { cmId: this.cmId });
+    protected async fetchAccessInfo(quiz: AddonModQuizQuizData): Promise<AddonModQuizGetQuizAccessInformationWSResponse> {
+        const accessInfo = await AddonModQuiz.getQuizAccessInformation(quiz.id, { cmId: this.cmId });
 
         if (!accessInfo.canreviewmyattempts) {
             return accessInfo;
@@ -161,7 +163,7 @@ export class AddonModQuizAttemptPage implements OnInit {
         await CoreUtils.ignoreErrors(AddonModQuiz.invalidateAttemptReviewForPage(this.attemptId, -1));
 
         try {
-            await AddonModQuiz.getAttemptReview(this.attemptId, { page: -1, cmId: this.quiz!.coursemodule });
+            await AddonModQuiz.getAttemptReview(this.attemptId, { page: -1, cmId: quiz.coursemodule });
         } catch {
             // Error getting the review, assume the user cannot review the attempt.
             accessInfo.canreviewmyattempts = false;
@@ -202,7 +204,11 @@ export class AddonModQuizAttemptPage implements OnInit {
      * @returns Promise resolved when done.
      */
     async reviewAttempt(): Promise<void> {
-        CoreNavigator.navigate(`../../review/${this.attempt!.id}`);
+        if (!this.attempt) {
+            return;
+        }
+
+        CoreNavigator.navigate(`../../review/${this.attempt.id}`);
     }
 
 }

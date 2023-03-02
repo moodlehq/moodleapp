@@ -290,7 +290,7 @@ export class AddonModQuizProvider {
                 return dueDate * 1000;
 
             case AddonModQuizProvider.ATTEMPT_OVERDUE:
-                return (dueDate + quiz.graceperiod!) * 1000;
+                return (dueDate + (quiz.graceperiod ?? 0)) * 1000;
 
             default:
                 this.logger.warn('Unexpected state when getting due date: ' + attempt.state);
@@ -356,7 +356,7 @@ export class AddonModQuizProvider {
                     Translate.instant('addon.mod_quiz.statefinished'),
                     Translate.instant(
                         'addon.mod_quiz.statefinisheddetails',
-                        { $a: CoreTimeUtils.userDate(attempt.timefinish! * 1000) },
+                        { $a: CoreTimeUtils.userDate((attempt.timefinish ?? 0) * 1000) },
                     ),
                 ];
 
@@ -625,7 +625,7 @@ export class AddonModQuizProvider {
         }
 
         if (quiz.questiondecimalpoints == -1) {
-            return quiz.decimalpoints!;
+            return quiz.decimalpoints ?? 1;
         }
 
         return quiz.questiondecimalpoints;
@@ -1780,7 +1780,7 @@ export class AddonModQuizProvider {
      * @returns Whether quiz is graded.
      */
     quizHasGrades(quiz: AddonModQuizQuizWSData): boolean {
-        return quiz.grade! >= 0.000005 && quiz.sumgrades! >= 0.000005;
+        return (quiz.grade ?? 0) >= 0.000005 && (quiz.sumgrades ?? 0) >= 0.000005;
     }
 
     /**
@@ -1802,8 +1802,8 @@ export class AddonModQuizProvider {
 
         const rawGradeNum = typeof rawGrade == 'string' ? parseFloat(rawGrade) : rawGrade;
         if (rawGradeNum !== undefined && rawGradeNum !== null && !isNaN(rawGradeNum)) {
-            if (quiz.sumgrades! >= 0.000005) {
-                grade = rawGradeNum * quiz.grade! / quiz.sumgrades!;
+            if (quiz.sumgrades && quiz.sumgrades >= 0.000005) {
+                grade = rawGradeNum * (quiz.grade ?? 0) / quiz.sumgrades;
             } else {
                 grade = 0;
             }
@@ -1816,7 +1816,7 @@ export class AddonModQuizProvider {
         if (format === 'question') {
             return this.formatGrade(grade, this.getGradeDecimals(quiz));
         } else if (format) {
-            return this.formatGrade(grade, quiz.decimalpoints!);
+            return this.formatGrade(grade, quiz.decimalpoints ?? 1);
         }
 
         return String(grade);
