@@ -332,62 +332,58 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
      * @returns Promise resolved when done.
      */
     protected async fetchData(): Promise<void> {
-        try {
-            this.quiz = await AddonModQuiz.getQuiz(this.courseId, this.cmId);
+        this.quiz = await AddonModQuiz.getQuiz(this.courseId, this.cmId);
 
-            // Block the quiz so it cannot be synced.
-            CoreSync.blockOperation(AddonModQuizProvider.COMPONENT, this.quiz.id);
+        // Block the quiz so it cannot be synced.
+        CoreSync.blockOperation(AddonModQuizProvider.COMPONENT, this.quiz.id);
 
-            // Wait for any ongoing sync to finish. We won't sync a quiz while it's being played.
-            await AddonModQuizSync.waitForSync(this.quiz.id);
+        // Wait for any ongoing sync to finish. We won't sync a quiz while it's being played.
+        await AddonModQuizSync.waitForSync(this.quiz.id);
 
-            this.isSequential = AddonModQuiz.isNavigationSequential(this.quiz);
+        this.isSequential = AddonModQuiz.isNavigationSequential(this.quiz);
 
-            if (AddonModQuiz.isQuizOffline(this.quiz)) {
-                // Quiz supports offline.
-                this.offline = true;
-            } else {
-                // Quiz doesn't support offline right now, but maybe it did and then the setting was changed.
-                // If we have an unfinished offline attempt then we'll use offline mode.
-                this.offline = await AddonModQuiz.isLastAttemptOfflineUnfinished(this.quiz);
-            }
-
-            if (this.quiz!.timelimit && this.quiz!.timelimit > 0) {
-                this.readableTimeLimit = CoreTime.formatTime(this.quiz.timelimit);
-            }
-
-            // Get access information for the quiz.
-            this.quizAccessInfo = await AddonModQuiz.getQuizAccessInformation(this.quiz.id, {
-                cmId: this.quiz.coursemodule,
-                readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
-            });
-
-            // Get user attempts to determine last attempt.
-            const attempts = await AddonModQuiz.getUserAttempts(this.quiz.id, {
-                cmId: this.quiz.coursemodule,
-                readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
-            });
-
-            if (!attempts.length) {
-                // There are no attempts, start a new one.
-                this.newAttempt = true;
-
-                return;
-            }
-
-            // Get the last attempt. If it's finished, start a new one.
-            this.lastAttempt = await AddonModQuizHelper.setAttemptCalculatedData(
-                this.quiz,
-                attempts[attempts.length - 1],
-                false,
-                undefined,
-                true,
-            );
-
-            this.newAttempt = AddonModQuiz.isAttemptFinished(this.lastAttempt.state);
-        } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_quiz.errorgetquiz', true);
+        if (AddonModQuiz.isQuizOffline(this.quiz)) {
+            // Quiz supports offline.
+            this.offline = true;
+        } else {
+            // Quiz doesn't support offline right now, but maybe it did and then the setting was changed.
+            // If we have an unfinished offline attempt then we'll use offline mode.
+            this.offline = await AddonModQuiz.isLastAttemptOfflineUnfinished(this.quiz);
         }
+
+        if (this.quiz!.timelimit && this.quiz!.timelimit > 0) {
+            this.readableTimeLimit = CoreTime.formatTime(this.quiz.timelimit);
+        }
+
+        // Get access information for the quiz.
+        this.quizAccessInfo = await AddonModQuiz.getQuizAccessInformation(this.quiz.id, {
+            cmId: this.quiz.coursemodule,
+            readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
+        });
+
+        // Get user attempts to determine last attempt.
+        const attempts = await AddonModQuiz.getUserAttempts(this.quiz.id, {
+            cmId: this.quiz.coursemodule,
+            readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
+        });
+
+        if (!attempts.length) {
+            // There are no attempts, start a new one.
+            this.newAttempt = true;
+
+            return;
+        }
+
+        // Get the last attempt. If it's finished, start a new one.
+        this.lastAttempt = await AddonModQuizHelper.setAttemptCalculatedData(
+            this.quiz,
+            attempts[attempts.length - 1],
+            false,
+            undefined,
+            true,
+        );
+
+        this.newAttempt = AddonModQuiz.isAttemptFinished(this.lastAttempt.state);
     }
 
     /**
@@ -722,6 +718,8 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
             // Quiz data has been loaded, try to start or continue.
             await this.startOrContinueAttempt();
+        } catch (error) {
+            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_quiz.errorgetquiz', true);
         } finally {
             this.loaded = true;
         }
@@ -733,41 +731,37 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
      * @returns Promise resolved when done.
      */
     protected async startOrContinueAttempt(): Promise<void> {
-        try {
-            let attempt = this.newAttempt ? undefined : this.lastAttempt;
+        let attempt = this.newAttempt ? undefined : this.lastAttempt;
 
-            // Get the preflight data and start attempt if needed.
-            attempt = await AddonModQuizHelper.getAndCheckPreflightData(
-                this.quiz!,
-                this.quizAccessInfo!,
-                this.preflightData,
-                attempt,
-                this.offline,
-                false,
-                'addon.mod_quiz.startattempt',
-            );
+        // Get the preflight data and start attempt if needed.
+        attempt = await AddonModQuizHelper.getAndCheckPreflightData(
+            this.quiz!,
+            this.quizAccessInfo!,
+            this.preflightData,
+            attempt,
+            this.offline,
+            false,
+            'addon.mod_quiz.startattempt',
+        );
 
-            // Re-fetch attempt access information with the right attempt (might have changed because a new attempt was created).
-            this.attemptAccessInfo = await AddonModQuiz.getAttemptAccessInformation(this.quiz!.id, attempt.id, {
-                cmId: this.quiz!.coursemodule,
-                readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
-            });
+        // Re-fetch attempt access information with the right attempt (might have changed because a new attempt was created).
+        this.attemptAccessInfo = await AddonModQuiz.getAttemptAccessInformation(this.quiz!.id, attempt.id, {
+            cmId: this.quiz!.coursemodule,
+            readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
+        });
 
-            this.attempt = attempt;
+        this.attempt = attempt;
 
-            await this.loadNavigation();
+        await this.loadNavigation();
 
-            if (this.attempt.state != AddonModQuizProvider.ATTEMPT_OVERDUE && !this.attempt.finishedOffline) {
-                // Attempt not overdue and not finished in offline, load page.
-                await this.loadPage(this.attempt.currentpage!);
+        if (this.attempt.state != AddonModQuizProvider.ATTEMPT_OVERDUE && !this.attempt.finishedOffline) {
+            // Attempt not overdue and not finished in offline, load page.
+            await this.loadPage(this.attempt.currentpage!);
 
-                this.initTimer();
-            } else {
-                // Attempt is overdue or finished in offline, we can only load the summary.
-                await this.loadSummary();
-            }
-        } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_quiz.errorgetquestions', true);
+            this.initTimer();
+        } else {
+            // Attempt is overdue or finished in offline, we can only load the summary.
+            await this.loadSummary();
         }
     }
 
