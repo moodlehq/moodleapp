@@ -59,18 +59,10 @@ jobs:
         sed -i "61c\$CFG->behat_faildump_path = '/var/www/html/behatfaildumps';" $GITHUB_WORKSPACE/moodle/config.php
         sed -i "61i\$CFG->behat_increasetimeout = 2;" $GITHUB_WORKSPACE/moodle/config.php
         sed -i "61i\$CFG->behat_ionic_wwwroot = 'http://moodleapp';" $GITHUB_WORKSPACE/moodle/config.php
-        sed -i "61i\$CFG->behat_snapshots_path = '/var/www/html/local/moodleappbehat/tests/behat/snapshots';" $GITHUB_WORKSPACE/moodle/config.php
         echo "define('TEST_MOD_BIGBLUEBUTTONBN_MOCK_SERVER', 'http://bbbmockserver/hash' . sha1(\$CFG->behat_wwwroot));" >> $GITHUB_WORKSPACE/moodle/config.php
         $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose pull
         $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-compose up -d
         $GITHUB_WORKSPACE/moodle-docker/bin/moodle-docker-wait-for-db
-    - name: Install Imagick PHP extension
-      run: |
-        export MOODLE_DOCKER_WWWROOT=$GITHUB_WORKSPACE/moodle
-        ./moodle-docker/bin/moodle-docker-compose exec webserver apt-get update
-        ./moodle-docker/bin/moodle-docker-compose exec webserver apt-get install -y libmagickwand-dev --no-install-recommends
-        ./moodle-docker/bin/moodle-docker-compose exec webserver pecl install imagick
-        ./moodle-docker/bin/moodle-docker-compose exec webserver docker-php-ext-enable imagick
     - name: Compile & launch app with Docker
       run: |
         docker build --build-arg build_command="npm run build:test" -t moodlehq/moodleapp:behat .
