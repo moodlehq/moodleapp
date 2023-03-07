@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSiteError } from '@classes/errors/siteerror';
+import { CoreSiteError, CoreSiteErrorOptions } from '@classes/errors/siteerror';
 
 /**
  * Error returned by WS.
@@ -29,10 +29,7 @@ export class CoreAjaxWSError extends CoreSiteError {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(error: any, available?: number) {
-        super({
-            message: error.message || error.error,
-            errorcode: error.errorcode,
-        });
+        super(getErrorOptions(error));
 
         this.exception = error.exception;
         this.warningcode = error.warningcode;
@@ -40,15 +37,37 @@ export class CoreAjaxWSError extends CoreSiteError {
         this.moreinfourl = error.moreinfourl;
         this.debuginfo = error.debuginfo;
         this.backtrace = error.backtrace;
-
-        this.available = available;
-        if (this.available === undefined) {
-            if (this.errorcode) {
-                this.available = this.errorcode == 'invalidrecord' ? -1 : 1;
-            } else {
-                this.available = 0;
-            }
-        }
+        this.available = available ?? (
+            this.debug
+                ? (this.debug.code == 'invalidrecord' ? -1 : 1)
+                : 0
+        );
     }
 
+}
+
+/**
+ * Get error options from unknown error instance.
+ *
+ * @param error The error.
+ * @returns Options
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getErrorOptions(error: any): CoreSiteErrorOptions {
+    const options: CoreSiteErrorOptions = {
+        message: error.message || error.error,
+    };
+
+    if ('debug' in error) {
+        options.debug = error.debug;
+    }
+
+    if ('errorcode' in error) {
+        options.debug = {
+            code: error.errorcode,
+            details: error.message || error.error,
+        };
+    }
+
+    return options;
 }

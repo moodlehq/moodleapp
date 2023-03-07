@@ -38,7 +38,7 @@ import { CoreCustomURLSchemes, CoreCustomURLSchemesHandleError } from '@services
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreForms } from '@singletons/form';
 import { AlertButton } from '@ionic/core';
-import { CoreSiteError } from '@classes/errors/siteerror';
+import { CoreSiteError, CoreSiteErrorDebug } from '@classes/errors/siteerror';
 import { CoreUserSupport } from '@features/user/services/support';
 import { CoreErrorInfoComponent } from '@components/error-info/error-info';
 import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
@@ -408,21 +408,19 @@ export class CoreLoginSitePage implements OnInit {
         let siteExists = false;
         let supportConfig: CoreUserSupportConfig | undefined = undefined;
         let errorTitle: string | undefined;
-        let errorDetails: string | undefined;
-        let errorCode: string | undefined;
+        let debug: CoreSiteErrorDebug | undefined;
 
         if (error instanceof CoreSiteError) {
             supportConfig = error.supportConfig;
-            errorDetails = error.errorDetails;
-            errorCode = error.errorcode;
             siteExists = supportConfig instanceof CoreUserGuestSupportConfig;
+            debug = error.debug;
         }
 
         if (error instanceof CoreLoginError) {
             errorTitle = error.title;
         }
 
-        if (errorDetails) {
+        if (debug) {
             errorMessage = `<p>${errorMessage}</p><div class="core-error-info-container"></div>`;
         }
 
@@ -438,7 +436,7 @@ export class CoreLoginSitePage implements OnInit {
                     handler: () => CoreUserSupport.contact({
                         supportConfig: alertSupportConfig,
                         subject: Translate.instant('core.cannotconnect'),
-                        message: `Error: ${errorCode}\n\n${errorDetails}`,
+                        message: `Error: ${debug?.code}\n\n${debug?.details}`,
                     }),
                 }
                 : (
@@ -458,11 +456,10 @@ export class CoreLoginSitePage implements OnInit {
             buttons: buttons as AlertButton[],
         });
 
-        if (errorDetails) {
-            // Avoid sanitizing JS.
+        if (debug) {
             const containerElement = alertElement.querySelector('.core-error-info-container');
             if (containerElement) {
-                containerElement.innerHTML = CoreErrorInfoComponent.render(errorDetails, errorCode);
+                containerElement.innerHTML = CoreErrorInfoComponent.render(debug.details, debug.code);
             }
         }
     }

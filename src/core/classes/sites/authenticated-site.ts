@@ -943,8 +943,10 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
                 throw new CoreSiteError({
                     supportConfig: new CoreUserAuthenticatedSupportConfig(this),
                     message: Translate.instant('core.siteunavailablehelp', { site: this.siteUrl }),
-                    errorcode: 'invalidresponse',
-                    errorDetails: Translate.instant('core.errorinvalidresponse', { method: 'tool_mobile_call_external_functions' }),
+                    debug: {
+                        code: 'invalidresponse',
+                        details: Translate.instant('core.errorinvalidresponse', { method: 'tool_mobile_call_external_functions' }),
+                    },
                 });
             }
 

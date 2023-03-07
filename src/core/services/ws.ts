@@ -497,10 +497,12 @@ export class CoreWSProvider {
                 throw new CoreAjaxError({
                     message,
                     supportConfig: await CoreUserGuestSupportConfig.forSite(preSets.siteUrl),
-                    errorcode: 'invalidresponse',
-                    errorDetails: Translate.instant('core.serverconnection', {
-                        details: Translate.instant('core.errorinvalidresponse', { method }),
-                    }),
+                    debug: {
+                        code: 'invalidresponse',
+                        details: Translate.instant('core.serverconnection', {
+                            details: Translate.instant('core.errorinvalidresponse', { method }),
+                        }),
+                    },
                 });
             } else if (data.error) {
                 throw new CoreAjaxWSError(data);
@@ -527,54 +529,72 @@ export class CoreWSProvider {
             if (CorePlatform.isMobile()) {
                 switch (data.status) {
                     case NativeHttp.ErrorCode.SSL_EXCEPTION:
-                        options.errorcode = 'invalidcertificate';
-                        options.errorDetails = Translate.instant('core.certificaterror', {
-                            details: CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Invalid certificate',
-                        });
+                        options.debug = {
+                            code: 'invalidcertificate',
+                            details: Translate.instant('core.certificaterror', {
+                                details: CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Invalid certificate',
+                            }),
+                        };
                         break;
                     case NativeHttp.ErrorCode.SERVER_NOT_FOUND:
-                        options.errorcode = 'servernotfound';
-                        options.errorDetails = CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Server could not be found';
+                        options.debug = {
+                            code: 'servernotfound',
+                            details: CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Server could not be found',
+                        };
                         break;
                     case NativeHttp.ErrorCode.TIMEOUT:
-                        options.errorcode = 'requesttimeout';
-                        options.errorDetails = CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Request timed out';
+                        options.debug = {
+                            code: 'requesttimeout',
+                            details: CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Request timed out',
+                        };
                         break;
                     case NativeHttp.ErrorCode.UNSUPPORTED_URL:
-                        options.errorcode = 'unsupportedurl';
-                        options.errorDetails = CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Url not supported';
+                        options.debug = {
+                            code: 'unsupportedurl',
+                            details: CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Url not supported',
+                        };
                         break;
                     case NativeHttp.ErrorCode.NOT_CONNECTED:
-                        options.errorcode = 'connectionerror';
-                        options.errorDetails = CoreTextUtils.getErrorMessageFromError(data.error)
-                            ?? 'Connection error, is network available?';
+                        options.debug = {
+                            code: 'connectionerror',
+                            details: CoreTextUtils.getErrorMessageFromError(data.error)
+                                ?? 'Connection error, is network available?',
+                        };
                         break;
                     case NativeHttp.ErrorCode.ABORTED:
-                        options.errorcode = 'requestaborted';
-                        options.errorDetails = CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Request aborted';
+                        options.debug = {
+                            code: 'requestaborted',
+                            details: CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Request aborted',
+                        };
                         break;
                     case NativeHttp.ErrorCode.POST_PROCESSING_FAILED:
-                        options.errorcode = 'requestprocessingfailed';
-                        options.errorDetails = CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Request processing failed';
+                        options.debug = {
+                            code: 'requestprocessingfailed',
+                            details: CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Request processing failed',
+                        };
                         break;
                 }
             }
 
-            if (!options.errorcode) {
+            if (!options.debug) {
                 switch (data.status) {
                     case 404:
-                        options.errorcode = 'endpointnotfound';
-                        options.errorDetails = Translate.instant('core.ajaxendpointnotfound', {
-                            $a: CoreSite.MINIMUM_MOODLE_VERSION,
-                        });
+                        options.debug = {
+                            code: 'endpointnotfound',
+                            details: Translate.instant('core.ajaxendpointnotfound', {
+                                $a: CoreSite.MINIMUM_MOODLE_VERSION,
+                            }),
+                        };
                         break;
                     default: {
                         const details = CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Unknown error';
 
-                        options.errorcode = 'serverconnectionajax';
-                        options.errorDetails = Translate.instant('core.serverconnection', {
-                            details: `[Response status code: ${data.status}] ${details}`,
-                        });
+                        options.debug = {
+                            code: 'serverconnectionajax',
+                            details: Translate.instant('core.serverconnection', {
+                                details: `[Response status code: ${data.status}] ${details}`,
+                            }),
+                        };
                     }
                         break;
                 }
@@ -716,10 +736,12 @@ export class CoreWSProvider {
 
             if (!data) {
                 throw await this.createCannotConnectSiteError(preSets.siteUrl, {
-                    errorcode: 'serverconnectionpost',
-                    errorDetails: Translate.instant('core.serverconnection', {
-                        details: Translate.instant('core.errorinvalidresponse', { method }),
-                    }),
+                    debug: {
+                        code: 'serverconnectionpost',
+                        details: Translate.instant('core.serverconnection', {
+                            details: Translate.instant('core.errorinvalidresponse', { method }),
+                        }),
+                    },
                 });
             } else if (typeof data !== typeExpected) {
                 // If responseType is text an string will be returned, parse before returning.
@@ -730,8 +752,10 @@ export class CoreWSProvider {
                             this.logger.warn(`Response expected type "${typeExpected}" cannot be parsed to number`);
 
                             throw await this.createCannotConnectSiteError(preSets.siteUrl, {
-                                errorcode: 'invalidresponse',
-                                errorDetails: Translate.instant('core.errorinvalidresponse', { method }),
+                                debug: {
+                                    code: 'invalidresponse',
+                                    details: Translate.instant('core.errorinvalidresponse', { method }),
+                                },
                             });
                         }
                     } else if (typeExpected === 'boolean') {
@@ -743,24 +767,30 @@ export class CoreWSProvider {
                             this.logger.warn(`Response expected type "${typeExpected}" is not true or false`);
 
                             throw await this.createCannotConnectSiteError(preSets.siteUrl, {
-                                errorcode: 'invalidresponse',
-                                errorDetails: Translate.instant('core.errorinvalidresponse', { method }),
+                                debug: {
+                                    code: 'invalidresponse',
+                                    details: Translate.instant('core.errorinvalidresponse', { method }),
+                                },
                             });
                         }
                     } else {
                         this.logger.warn('Response of type "' + typeof data + `" received, expecting "${typeExpected}"`);
 
                         throw await this.createCannotConnectSiteError(preSets.siteUrl, {
-                            errorcode: 'invalidresponse',
-                            errorDetails: Translate.instant('core.errorinvalidresponse', { method }),
+                            debug: {
+                                code: 'invalidresponse',
+                                details: Translate.instant('core.errorinvalidresponse', { method }),
+                            },
                         });
                     }
                 } else {
                     this.logger.warn('Response of type "' + typeof data + `" received, expecting "${typeExpected}"`);
 
                     throw await this.createCannotConnectSiteError(preSets.siteUrl, {
-                        errorcode: 'invalidresponse',
-                        errorDetails: Translate.instant('core.errorinvalidresponse', { method }),
+                        debug: {
+                            code: 'invalidresponse',
+                            details: Translate.instant('core.errorinvalidresponse', { method }),
+                        },
                     });
                 }
             }
@@ -803,10 +833,12 @@ export class CoreWSProvider {
                 return retryPromise;
             } else if (error.status === -2) {
                 throw await this.createCannotConnectSiteError(preSets.siteUrl, {
-                    errorcode: 'invalidcertificate',
-                    errorDetails: Translate.instant('core.certificaterror', {
-                        details: CoreTextUtils.getErrorMessageFromError(error) ?? 'Unknown error',
-                    }),
+                    debug: {
+                        code: 'invalidcertificate',
+                        details: Translate.instant('core.certificaterror', {
+                            details: CoreTextUtils.getErrorMessageFromError(error) ?? 'Unknown error',
+                        }),
+                    },
                 });
             } else if (error.status > 0) {
                 throw this.createHttpError(error, error.status);
@@ -1033,24 +1065,30 @@ export class CoreWSProvider {
 
         if (data === null) {
             throw await this.createCannotConnectSiteError(preSets.siteUrl, {
-                errorcode: 'invalidresponse',
-                errorDetails: Translate.instant('core.errorinvalidresponse', { method: 'upload.php' }),
+                debug: {
+                    code: 'invalidresponse',
+                    details: Translate.instant('core.errorinvalidresponse', { method: 'upload.php' }),
+                },
             });
         }
 
         if (!data) {
             throw await this.createCannotConnectSiteError(preSets.siteUrl, {
-                errorcode: 'serverconnectionupload',
-                errorDetails: Translate.instant('core.serverconnection', {
-                    details: Translate.instant('core.errorinvalidresponse', { method: 'upload.php' }),
-                }),
+                debug: {
+                    code: 'serverconnectionupload',
+                    details: Translate.instant('core.serverconnection', {
+                        details: Translate.instant('core.errorinvalidresponse', { method: 'upload.php' }),
+                    }),
+                },
             });
         } else if (typeof data != 'object') {
             this.logger.warn('Upload file: Response of type "' + typeof data + '" received, expecting "object"');
 
             throw await this.createCannotConnectSiteError(preSets.siteUrl, {
-                errorcode: 'invalidresponse',
-                errorDetails: Translate.instant('core.errorinvalidresponse', { method: 'upload.php' }),
+                debug: {
+                    code: 'invalidresponse',
+                    details: Translate.instant('core.errorinvalidresponse', { method: 'upload.php' }),
+                },
             });
         }
 

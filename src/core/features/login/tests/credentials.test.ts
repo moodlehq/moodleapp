@@ -124,7 +124,10 @@ describe('Credentials page', () => {
             getUserToken: () => {
                 throw new CoreLoginError({
                     message: '',
-                    errorcode: 'invalidlogin',
+                    debug: {
+                        code: 'invalidlogin',
+                        details: 'Invalid login',
+                    },
                 });
             },
             checkSite: async () => (siteCheck),
