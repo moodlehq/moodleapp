@@ -56,16 +56,16 @@ export class CoreH5PStorage {
         await Promise.all(Object.keys(librariesJsonData).map(async (libString) => {
             const libraryData: CoreH5PLibraryBeingSaved = librariesJsonData[libString];
 
-            // Find local library identifier.
-            const dbData = await CoreUtils.ignoreErrors(this.h5pFramework.getLibraryByData(libraryData));
+            // Find local library with same major + minor.
+            const existingLibrary = await CoreUtils.ignoreErrors(this.h5pFramework.getLibraryByData(libraryData));
 
-            if (dbData) {
+            if (existingLibrary) {
                 // Library already installed.
-                libraryData.libraryId = dbData.id;
+                libraryData.libraryId = existingLibrary.id;
 
-                const isNewPatch = await this.h5pFramework.isPatchedLibrary(libraryData, dbData);
+                const newerPatchVersion = existingLibrary.patchversion < libraryData.patchVersion;
 
-                if (!isNewPatch) {
+                if (!newerPatchVersion) {
                     // Same or older version, no need to save.
                     libraryData.saveDependencies = false;
 

@@ -35,6 +35,7 @@ export class CoreH5PCore {
         'styles/h5p.css',
         'styles/h5p-confirmation-dialog.css',
         'styles/h5p-core-button.css',
+        'styles/h5p-tooltip.css',
     ];
 
     static readonly SCRIPTS = [
@@ -47,6 +48,7 @@ export class CoreH5PCore {
         'js/h5p-confirmation-dialog.js',
         'js/h5p-action-bar.js',
         'js/request-queue.js',
+        'js/h5p-tooltip.js',
     ];
 
     static readonly ADMIN_SCRIPTS = [
@@ -178,13 +180,28 @@ export class CoreH5PCore {
     /**
      * Writes library data as string on the form {machineName} {majorVersion}.{minorVersion}.
      *
-     * @param libraryData Library data.
-     * @param folderName Use hyphen instead of space in returned string.
+     * @param library Library data.
      * @returns String on the form {machineName} {majorVersion}.{minorVersion}.
      */
-    static libraryToString(libraryData: CoreH5PLibraryBasicData | CoreH5PContentMainLibraryData, folderName?: boolean): string {
-        return ('machineName' in libraryData ? libraryData.machineName : libraryData.name) + (folderName ? '-' : ' ') +
-                libraryData.majorVersion + '.' + libraryData.minorVersion;
+    static libraryToString(library: CoreH5PLibraryBasicData | CoreH5PContentMainLibraryData): string {
+        const name = 'machineName' in library ? library.machineName : library.name;
+
+        return `${name} ${library.majorVersion}.${library.minorVersion}`;
+    }
+
+    /**
+     * Get the name of a library's folder name
+     *
+     * @param library Library data.
+     * @returns Folder name.
+     */
+    static libraryToFolderName(library: CoreH5PLibraryBasicData | CoreH5PContentMainLibraryData): string {
+        const name = 'machineName' in library ? library.machineName : library.name;
+
+        // In LMS, a property named patchVersionInFolderName is checked here. This property is only used to retrieve some icons when
+        // using the editor, and it isn't stored in DB. The check wasn't included here because the app will never have that prop.
+
+        return `${name}-${library.majorVersion}.${library.minorVersion}`;
     }
 
     /**
@@ -505,7 +522,7 @@ export class CoreH5PCore {
             return files;
         }
 
-        let cachedAssetsHash: string;
+        let cachedAssetsHash = '';
 
         if (this.aggregateAssets) {
             // Get aggregated files for assets.
@@ -537,10 +554,10 @@ export class CoreH5PCore {
 
         if (this.aggregateAssets) {
             // Aggregate and store assets.
-            await this.h5pFS.cacheAssets(files, cachedAssetsHash!, folderName, siteId);
+            await this.h5pFS.cacheAssets(files, cachedAssetsHash, folderName, siteId);
 
             // Keep track of which libraries have been cached in case they are updated.
-            await this.h5pFramework.saveCachedAssets(cachedAssetsHash!, dependencies, folderName, siteId);
+            await this.h5pFramework.saveCachedAssets(cachedAssetsHash, dependencies, folderName, siteId);
         }
 
         return files;
@@ -562,7 +579,7 @@ export class CoreH5PCore {
 
         for (const machineName in dependencies) {
             const dependency = dependencies[machineName];
-            const folderName = CoreH5PCore.libraryToString(dependency, true);
+            const folderName = CoreH5PCore.libraryToFolderName(dependency);
 
             roots[folderName] = this.h5pFS.getLibraryFolderPath(dependency, siteId, folderName);
         }
@@ -641,7 +658,8 @@ export class CoreH5PCore {
      *
      * @returns Object with the translations.
      */
-    getLocalization(): {[name: string]: string} {
+    getLocalization(): CoreH5PLocalization {
+        // Some strings weren't included in the app because they were strictly related to the H5P Content Hub.
         return {
             fullscreen: Translate.instant('core.h5p.fullscreen'),
             disableFullscreen: Translate.instant('core.h5p.disablefullscreen'),
@@ -710,6 +728,90 @@ export class CoreH5PCore {
             offlineDialogRetryMessage: Translate.instant('core.h5p.offlineDialogRetryMessage'),
             offlineDialogRetryButtonLabel: Translate.instant('core.h5p.offlineDialogRetryButtonLabel'),
             offlineSuccessfulSubmit: Translate.instant('core.h5p.offlineSuccessfulSubmit'),
+            mainTitle: Translate.instant('core.h5p.mainTitle'),
+            editInfoTitle: Translate.instant('core.h5p.editInfoTitle'),
+            cancel: Translate.instant('core.h5p.cancellabel'),
+            back: Translate.instant('core.h5p.back'),
+            next: Translate.instant('core.h5p.next'),
+            reviewInfo: Translate.instant('core.h5p.reviewInfo'),
+            share: Translate.instant('core.h5p.share'),
+            saveChanges: Translate.instant('core.h5p.saveChanges'),
+            requiredInfo: Translate.instant('core.h5p.requiredInfo'),
+            optionalInfo: Translate.instant('core.h5p.optionalInfo'),
+            reviewAndShare: Translate.instant('core.h5p.reviewAndShare'),
+            reviewAndSave: Translate.instant('core.h5p.reviewAndSave'),
+            shared: Translate.instant('core.h5p.shared'),
+            currentStep: Translate.instant('core.h5p.currentStep'),
+            sharingNote: Translate.instant('core.h5p.sharingNote'),
+            licenseDescription: Translate.instant('core.h5p.licenseDescription'),
+            licenseVersion: Translate.instant('core.h5p.licenseversion'),
+            licenseVersionDescription: Translate.instant('core.h5p.licenseVersionDescription'),
+            disciplineLabel: Translate.instant('core.h5p.disciplineLabel'),
+            disciplineDescription: Translate.instant('core.h5p.disciplineDescription'),
+            disciplineLimitReachedMessage: Translate.instant('core.h5p.disciplineLimitReachedMessage'),
+            discipline: {
+                searchPlaceholder: Translate.instant('core.h5p.discipline:searchPlaceholder'),
+                in: Translate.instant('core.h5p.discipline:in'),
+                dropdownButton: Translate.instant('core.h5p.discipline:dropdownButton'),
+            },
+            removeChip: Translate.instant('core.h5p.removeChip'),
+            keywordsPlaceholder: Translate.instant('core.h5p.keywordsPlaceholder'),
+            keywords: Translate.instant('core.h5p.keywords'),
+            keywordsDescription: Translate.instant('core.h5p.keywordsDescription'),
+            altText: Translate.instant('core.h5p.altText'),
+            reviewMessage: Translate.instant('core.h5p.reviewMessage'),
+            subContentWarning: Translate.instant('core.h5p.subContentWarning'),
+            disciplines: Translate.instant('core.h5p.disciplines'),
+            shortDescription: Translate.instant('core.h5p.shortDescription'),
+            longDescription: Translate.instant('core.h5p.longDescription'),
+            icon: Translate.instant('core.h5p.icon'),
+            screenshots: Translate.instant('core.h5p.screenshots'),
+            helpChoosingLicense: Translate.instant('core.h5p.helpChoosingLicense'),
+            shareFailed: Translate.instant('core.h5p.shareFailed'),
+            editingFailed: Translate.instant('core.h5p.editingFailed'),
+            shareTryAgain: Translate.instant('core.h5p.shareTryAgain'),
+            pleaseWait: Translate.instant('core.h5p.pleaseWait'),
+            language: Translate.instant('core.h5p.language'),
+            level: Translate.instant('core.h5p.level'),
+            shortDescriptionPlaceholder: Translate.instant('core.h5p.shortDescriptionPlaceholder'),
+            longDescriptionPlaceholder: Translate.instant('core.h5p.longDescriptionPlaceholder'),
+            description: Translate.instant('core.h5p.description'),
+            iconDescription: Translate.instant('core.h5p.iconDescription'),
+            screenshotsDescription: Translate.instant('core.h5p.screenshotsDescription'),
+            submitted: Translate.instant('core.h5p.submitted'),
+            contentLicenseTitle: Translate.instant('core.h5p.contentLicenseTitle'),
+            licenseDialogDescription: Translate.instant('core.h5p.licenseDialogDescription'),
+            publisherFieldTitle: Translate.instant('core.h5p.publisherFieldTitle'),
+            publisherFieldDescription: Translate.instant('core.h5p.publisherFieldDescription'),
+            emailAddress: Translate.instant('core.h5p.emailAddress'),
+            publisherDescription: Translate.instant('core.h5p.publisherDescription'),
+            publisherDescriptionText: Translate.instant('core.h5p.publisherDescriptionText'),
+            contactPerson: Translate.instant('core.h5p.contactPerson'),
+            phone: Translate.instant('core.h5p.phone'),
+            address: Translate.instant('core.h5p.address'),
+            city: Translate.instant('core.h5p.city'),
+            zip: Translate.instant('core.h5p.zip'),
+            country: Translate.instant('core.h5p.country'),
+            logoUploadText: Translate.instant('core.h5p.logoUploadText'),
+            acceptTerms: Translate.instant('core.h5p.acceptTerms'),
+            accountDetailsLinkText: Translate.instant('core.h5p.accountDetailsLinkText'),
+            maxLength: Translate.instant('core.h5p.maxLength'),
+            keywordExists: Translate.instant('core.h5p.keywordExists'),
+            licenseDetails: Translate.instant('core.h5p.licenseDetails'),
+            remove: Translate.instant('core.h5p.remove'),
+            removeImage: Translate.instant('core.h5p.removeImage'),
+            cancelPublishConfirmationDialogTitle: Translate.instant('core.h5p.removeImage'),
+            cancelPublishConfirmationDialogDescription: Translate.instant('core.h5p.removeImage'),
+            cancelPublishConfirmationDialogCancelButtonText: Translate.instant('core.h5p.removeImage'),
+            cancelPublishConfirmationDialogConfirmButtonText: Translate.instant('core.h5p.removeImage'),
+            add: Translate.instant('core.h5p.add'),
+            age: Translate.instant('core.h5p.age'),
+            ageDescription: Translate.instant('core.h5p.ageDescription'),
+            invalidAge: Translate.instant('core.h5p.invalidAge'),
+            keywordsExits: Translate.instant('core.h5p.keywordsExits'),
+            someKeywordsExits: Translate.instant('core.h5p.someKeywordsExits'),
+            width: Translate.instant('core.h5p.width'),
+            height: Translate.instant('core.h5p.height'),
         };
     }
 
@@ -1017,3 +1119,5 @@ export type CoreH5PLibraryAddonData = CoreH5PLibraryBasicDataWithPatch & {
     preloadedCss?: string; // Comma separated list of stylesheets to load.
     addTo?: CoreH5PLibraryAddTo | null; // Plugin configuration data.
 };
+
+export type CoreH5PLocalization = Record<string, string | Record<string, string>>;

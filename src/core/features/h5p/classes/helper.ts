@@ -19,7 +19,7 @@ import { CoreSites } from '@services/sites';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreH5P } from '../services/h5p';
-import { CoreH5PCore, CoreH5PDisplayOptions } from './core';
+import { CoreH5PCore, CoreH5PDisplayOptions, CoreH5PLocalization } from './core';
 import { CoreError } from '@classes/errors/error';
 import { CorePath } from '@singletons/path';
 
@@ -246,7 +246,7 @@ export type CoreH5PCoreSettings = {
     saveFreq: boolean;
     siteUrl: string;
     l10n: {
-        H5P: {[name: string]: string}; // eslint-disable-line @typescript-eslint/naming-convention
+        H5P: CoreH5PLocalization; // eslint-disable-line @typescript-eslint/naming-convention
     };
     user: {
         name: string;
