@@ -132,5 +132,5 @@ export const CoreQuestionBehaviourDelegate = makeSingleton(CoreQuestionBehaviour
  * Answers classified by question slot.
  */
 export type CoreQuestionQuestionWithAnswers = CoreQuestionQuestionParsed & {
-    answers?: CoreQuestionsAnswers;
+    answers: CoreQuestionsAnswers;
 };

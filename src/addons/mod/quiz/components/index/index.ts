@@ -333,15 +333,16 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             return;
         }
 
+        const bestGrade = this.bestGrade.grade;
         const formattedGradebookGrade = AddonModQuiz.formatGrade(this.gradebookData.grade, quiz.decimalpoints);
-        const formattedBestGrade = AddonModQuiz.formatGrade(this.bestGrade.grade, quiz.decimalpoints);
+        const formattedBestGrade = AddonModQuiz.formatGrade(bestGrade, quiz.decimalpoints);
         let gradeToShow = formattedGradebookGrade; // By default we show the grade in the gradebook.
 
         this.showResults = true;
         this.gradeOverridden = formattedGradebookGrade != formattedBestGrade;
         this.gradebookFeedback = this.gradebookData.feedback;
 
-        if (this.bestGrade.grade! > this.gradebookData.grade && this.gradebookData.grade == quiz.grade) {
+        if (bestGrade && bestGrade > this.gradebookData.grade && this.gradebookData.grade == quiz.grade) {
             // The best grade is higher than the max grade for the quiz.
             // We'll do like Moodle web and show the best grade instead of the gradebook grade.
             this.gradeOverridden = false;
@@ -556,8 +557,16 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
      *
      * @returns Promise resolved when done.
      */
-    protected sync(): Promise<AddonModQuizSyncResult> {
-        return AddonModQuizSync.syncQuiz(this.candidateQuiz!, true);
+    protected async sync(): Promise<AddonModQuizSyncResult> {
+        if (!this.candidateQuiz) {
+            return {
+                warnings: [],
+                attemptFinished: false,
+                updated: false,
+            };
+        }
+
+        return AddonModQuizSync.syncQuiz(this.candidateQuiz, true);
     }
 
     /**
@@ -579,36 +588,31 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         }
 
         const lastFinished = AddonModQuiz.getLastFinishedAttemptFromList(attempts);
-        const promises: Promise<unknown>[] = [];
+        let openReview = false;
 
         if (this.autoReview && lastFinished && lastFinished.id >= this.autoReview.attemptId) {
             // User just finished an attempt in offline and it seems it's been synced, since it's finished in online.
             // Go to the review of this attempt if the user hasn't left this view.
             if (!this.isDestroyed && this.isCurrentView) {
-                promises.push(this.goToAutoReview());
+                openReview = true;
             }
             this.autoReview = undefined;
         }
 
-        // Get combined review options.
-        promises.push(AddonModQuiz.getCombinedReviewOptions(quiz.id, { cmId: this.module.id }).then((options) => {
-            this.options = options;
+        const [options] = await Promise.all([
+            AddonModQuiz.getCombinedReviewOptions(quiz.id, { cmId: this.module.id }),
+            this.getQuizGrade(),
+            openReview ? this.goToAutoReview() : undefined,
+        ]);
 
-            return;
-        }));
-
-        // Get best grade.
-        promises.push(this.getQuizGrade());
-
-        await Promise.all(promises);
-
+        this.options = options;
         const grade = this.gradebookData?.grade !== undefined ? this.gradebookData.grade : this.bestGrade?.grade;
         const quizGrade = AddonModQuiz.formatGrade(grade, quiz.decimalpoints);
 
         // Calculate data to construct the header of the attempts table.
-        AddonModQuizHelper.setQuizCalculatedData(quiz, this.options!);
+        AddonModQuizHelper.setQuizCalculatedData(quiz, this.options);
 
-        this.overallStats = !!lastFinished && this.options!.alloptions.marks >= AddonModQuizProvider.QUESTION_OPTIONS_MARK_AND_MAX;
+        this.overallStats = !!lastFinished && this.options.alloptions.marks >= AddonModQuizProvider.QUESTION_OPTIONS_MARK_AND_MAX;
 
         // Calculate data to show for each attempt.
         const formattedAttempts = await Promise.all(attempts.map((attempt, index) => {

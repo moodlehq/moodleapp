@@ -112,7 +112,7 @@ export class AddonModQuizReviewPage implements OnInit {
      * @param slot Slot of the question to scroll to.
      */
     async changePage(page: number, slot?: number): Promise<void> {
-        if (slot !== undefined && (this.attempt!.currentpage == -1 || page == this.currentPage)) {
+        if (slot !== undefined && (this.attempt?.currentpage == -1 || page == this.currentPage)) {
             // Scrol to a certain question in the current page.
             this.scrollToQuestion(slot);
 
@@ -174,7 +174,7 @@ export class AddonModQuizReviewPage implements OnInit {
      * @returns Promise resolved when done.
      */
     protected async loadPage(page: number): Promise<void> {
-        const data = await AddonModQuiz.getAttemptReview(this.attemptId, { page, cmId: this.quiz!.coursemodule });
+        const data = await AddonModQuiz.getAttemptReview(this.attemptId, { page, cmId: this.quiz?.coursemodule });
 
         this.attempt = data.attempt;
         this.attempt.currentpage = page;
@@ -203,7 +203,7 @@ export class AddonModQuizReviewPage implements OnInit {
      */
     protected async loadNavigation(): Promise<void> {
         // Get all questions in single page to retrieve all the questions.
-        const data = await AddonModQuiz.getAttemptReview(this.attemptId, { page: -1, cmId: this.quiz!.coursemodule });
+        const data = await AddonModQuiz.getAttemptReview(this.attemptId, { page: -1, cmId: this.quiz?.coursemodule });
 
         this.navigation = data.questions;
 
@@ -260,7 +260,7 @@ export class AddonModQuizReviewPage implements OnInit {
             return;
         }
 
-        this.readableState = AddonModQuiz.getAttemptReadableStateName(this.attempt!.state || '');
+        this.readableState = AddonModQuiz.getAttemptReadableStateName(this.attempt.state ?? '');
 
         if (this.attempt.state != AddonModQuizProvider.ATTEMPT_FINISHED) {
             return;
@@ -283,7 +283,7 @@ export class AddonModQuizReviewPage implements OnInit {
         }
 
         // Treat grade.
-        if (this.options!.someoptions.marks >= AddonModQuizProvider.QUESTION_OPTIONS_MARK_AND_MAX &&
+        if (this.options && this.options.someoptions.marks >= AddonModQuizProvider.QUESTION_OPTIONS_MARK_AND_MAX &&
                 AddonModQuiz.quizHasGrades(this.quiz)) {
 
             if (data.grade === null || data.grade === undefined) {
@@ -348,7 +348,7 @@ export class AddonModQuizReviewPage implements OnInit {
             return;
         }
 
-        this.changePage(modalData.page!, modalData.slot);
+        this.changePage(modalData.page, modalData.slot);
     }
 
 }

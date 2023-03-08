@@ -358,7 +358,7 @@ export class AddonModQuizHelperProvider {
             if (attempt) {
                 if (attempt.state != AddonModQuizProvider.ATTEMPT_OVERDUE && !attempt.finishedOffline) {
                     // We're continuing an attempt. Call getAttemptData to validate the preflight data.
-                    await AddonModQuiz.getAttemptData(attempt.id, attempt.currentpage!, preflightData, modOptions);
+                    await AddonModQuiz.getAttemptData(attempt.id, attempt.currentpage ?? 0, preflightData, modOptions);
 
                     if (offline) {
                         // Get current page stored in local.

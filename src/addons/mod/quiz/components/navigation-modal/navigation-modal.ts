@@ -61,6 +61,6 @@ export type AddonModQuizNavigationQuestion = CoreQuestionQuestionParsed & {
 };
 
 export type AddonModQuizNavigationModalReturn = {
-    page?: number;
+    page: number;
     slot?: number;
 };
