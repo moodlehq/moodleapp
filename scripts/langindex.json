@@ -2452,6 +2452,7 @@
   "core.thisdirection": "langconfig",
   "core.time": "moodle",
   "core.timesup": "quiz",
+  "core.timezone": "moodle",
   "core.today": "moodle",
   "core.toggledelete": "local_moodlemobileapp",
   "core.tryagain": "local_moodlemobileapp",
