@@ -110,7 +110,7 @@
                 <ion-button [fill]="'outline'" *ngFor="let provider of identityProviders"
                     class="ion-text-wrap ion-margin core-oauth-provider" (click)="oauthClicked(provider)" [attr.aria-label]="provider.name"
                     expand="block">
-                    <img [src]="provider.iconurl" alt="" width="32" height="32" slot="start">
+                    <img *ngIf="provider.iconurl" [src]="provider.iconurl" alt="" width="32" height="32" slot="start" aria-hidden="true">
                     <ion-label>{{ provider.name }}</ion-label>
                 </ion-button>
             </ion-list>
