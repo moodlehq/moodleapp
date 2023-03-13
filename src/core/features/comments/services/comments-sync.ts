@@ -23,6 +23,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreCommentsDBRecord, CoreCommentsDeletedDBRecord } from './database/comments';
+import { CoreSyncResult } from '@services/sync';
 
 /**
  * Service to sync omments.
@@ -318,10 +319,7 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
 }
 export const CoreCommentsSync = makeSingleton(CoreCommentsSyncProvider);
 
-export type CoreCommentsSyncResult = {
-    warnings: string[]; // List of warnings.
-    updated: boolean; // Whether some data was sent to the server or offline data was updated.
-};
+export type CoreCommentsSyncResult = CoreSyncResult;
 
 /**
  * Data passed to AUTO_SYNCED event.

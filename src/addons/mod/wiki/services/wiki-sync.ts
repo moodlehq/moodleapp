@@ -19,7 +19,7 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreGroups } from '@services/groups';
 import { CoreSites } from '@services/sites';
-import { CoreSync } from '@services/sync';
+import { CoreSync, CoreSyncResult } from '@services/sync';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -345,9 +345,7 @@ export const AddonModWikiSync = makeSingleton(AddonModWikiSyncProvider);
 /**
  * Data returned by a subwiki sync.
  */
-export type AddonModWikiSyncSubwikiResult = {
-    warnings: string[]; // List of warnings.
-    updated: boolean; // Whether data was updated in the site.
+export type AddonModWikiSyncSubwikiResult = CoreSyncResult & {
     created: AddonModWikiCreatedPage[]; // List of created pages.
     discarded: AddonModWikiDiscardedPage[]; // List of discarded pages.
 };
@@ -355,9 +353,7 @@ export type AddonModWikiSyncSubwikiResult = {
 /**
  * Data returned by a wiki sync.
  */
-export type AddonModWikiSyncWikiResult = {
-    warnings: string[]; // List of warnings.
-    updated: boolean; // Whether data was updated in the site.
+export type AddonModWikiSyncWikiResult = CoreSyncResult & {
     subwikis: {
         [subwikiId: number]: { // List of subwikis.
             created: AddonModWikiCreatedPage[];

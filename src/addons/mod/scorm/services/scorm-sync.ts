@@ -18,7 +18,7 @@ import { CoreCourseActivitySyncBaseProvider } from '@features/course/classes/act
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreSync } from '@services/sync';
+import { CoreSync, CoreSyncResult } from '@services/sync';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -841,18 +841,14 @@ export const AddonModScormSync = makeSingleton(AddonModScormSyncProvider);
 /**
  * Data returned by a SCORM sync.
  */
-export type AddonModScormSyncResult = {
-    warnings: string[]; // List of warnings.
+export type AddonModScormSyncResult = CoreSyncResult & {
     attemptFinished: boolean; // Whether an attempt was finished in the site due to the sync,
-    updated: boolean; // Whether some data was sent to the site.
 };
 
 /**
  * Auto sync event data.
  */
-export type AddonModScormAutoSyncEventData = {
+export type AddonModScormAutoSyncEventData = CoreSyncResult & {
     scormId: number;
     attemptFinished: boolean;
-    warnings: string[];
-    updated: boolean;
 };

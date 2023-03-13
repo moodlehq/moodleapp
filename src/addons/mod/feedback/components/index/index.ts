@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Component, Input, Optional, ViewChild, OnInit, OnDestroy } from '@angular/core';
+import { CoreError } from '@classes/errors/error';
 import { CoreTabsComponent } from '@components/tabs/tabs';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
@@ -477,14 +478,11 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
      * @inheritdoc
      */
     protected sync(): Promise<AddonModFeedbackSyncResult> {
-        return AddonModFeedbackSync.syncFeedback(this.feedback!.id);
-    }
+        if (!this.feedback) {
+            throw new CoreError('Cannot sync without a feedback.');
+        }
 
-    /**
-     * @inheritdoc
-     */
-    protected hasSyncSucceed(result: AddonModFeedbackSyncResult): boolean {
-        return result.updated;
+        return AddonModFeedbackSync.syncFeedback(this.feedback.id);
     }
 
     /**

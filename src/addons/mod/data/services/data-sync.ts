@@ -24,7 +24,7 @@ import { CoreRatingSync } from '@features/rating/services/rating-sync';
 import { CoreNetwork } from '@services/network';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreSync } from '@services/sync';
+import { CoreSync, CoreSyncResult } from '@services/sync';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate, makeSingleton } from '@singletons';
@@ -477,10 +477,7 @@ export type AddonModDataSyncEntryResult = {
 /**
  * Data returned by a database sync.
  */
-export type AddonModDataSyncResult = {
-    warnings: string[]; // List of warnings.
-    updated: boolean; // Whether some data was sent to the server or offline data was updated.
-};
+export type AddonModDataSyncResult = CoreSyncResult;
 
 export type AddonModDataAutoSyncData = {
     dataId: number;

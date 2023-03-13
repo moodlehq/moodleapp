@@ -215,22 +215,10 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     }
 
     /**
-     * Performs the sync of the activity.
-     *
-     * @returns Promise resolved when done.
+     * @inheritdoc
      */
     protected sync(): Promise<AddonModGlossarySyncResult> {
         return AddonModGlossaryPrefetchHandler.sync(this.module, this.courseId);
-    }
-
-    /**
-     * Checks if sync has succeed from result sync data.
-     *
-     * @param result Data returned on the sync function.
-     * @returns Whether it succeed or not.
-     */
-    protected hasSyncSucceed(result: AddonModGlossarySyncResult): boolean {
-        return result.updated;
     }
 
     /**

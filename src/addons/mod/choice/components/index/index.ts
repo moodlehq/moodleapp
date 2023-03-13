@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Component, Optional, OnInit } from '@angular/core';
+import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { IonContent } from '@ionic/angular';
@@ -454,22 +455,14 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     }
 
     /**
-     * Performs the sync of the activity.
-     *
-     * @returns Promise resolved when done.
+     * @inheritdoc
      */
     protected sync(): Promise<AddonModChoiceSyncResult> {
-        return AddonModChoiceSync.syncChoice(this.choice!.id, this.userId);
-    }
+        if (!this.choice) {
+            throw new CoreError('Cannot sync without a choice.');
+        }
 
-    /**
-     * Checks if sync has succeed from result sync data.
-     *
-     * @param result Data returned on the sync function.
-     * @returns Whether it succeed or not.
-     */
-    protected hasSyncSucceed(result: AddonModChoiceSyncResult): boolean {
-        return result.updated;
+        return AddonModChoiceSync.syncChoice(this.choice.id, this.userId);
     }
 
 }

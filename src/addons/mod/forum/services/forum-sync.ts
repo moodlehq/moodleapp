@@ -21,7 +21,7 @@ import { CoreRatingSync } from '@features/rating/services/rating-sync';
 import { CoreNetwork } from '@services/network';
 import { CoreGroups } from '@services/groups';
 import { CoreSites } from '@services/sites';
-import { CoreSync } from '@services/sync';
+import { CoreSync, CoreSyncResult } from '@services/sync';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -221,7 +221,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
         };
 
         // Sync offline logs.
-        const syncDiscussions = async (): Promise<{ warnings: string[]; updated: boolean }> => {
+        const syncDiscussions = async (): Promise<AddonModForumSyncResult> => {
             await CoreUtils.ignoreErrors(
                 CoreCourseLogHelper.syncActivity(AddonModForumProvider.COMPONENT, forumId, siteId),
             );
@@ -643,10 +643,7 @@ export const AddonModForumSync = makeSingleton(AddonModForumSyncProvider);
 /**
  * Result of forum sync.
  */
-export type AddonModForumSyncResult = {
-    updated: boolean;
-    warnings: string[];
-};
+export type AddonModForumSyncResult = CoreSyncResult;
 
 /**
  * Data passed to AUTO_SYNCED event.

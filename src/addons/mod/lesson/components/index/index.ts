@@ -47,6 +47,7 @@ import {
 } from '../../services/lesson-sync';
 import { AddonModLessonModuleHandlerService } from '../../services/handlers/module';
 import { CoreTime } from '@singletons/time';
+import { CoreError } from '@classes/errors/error';
 
 /**
  * Component that displays a lesson entry page.
@@ -270,10 +271,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     }
 
     /**
-     * Checks if sync has succeed from result sync data.
-     *
-     * @param result Data returned on the sync function.
-     * @returns If suceed or not.
+     * @inheritdoc
      */
     protected hasSyncSucceed(result: AddonModLessonSyncResult): boolean {
         if (result.updated || this.dataSent) {
@@ -637,12 +635,14 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     }
 
     /**
-     * Performs the sync of the activity.
-     *
-     * @returns Promise resolved when done.
+     * @inheritdoc
      */
     protected async sync(): Promise<AddonModLessonSyncResult> {
-        const result = await AddonModLessonSync.syncLesson(this.lesson!.id, true);
+        if (!this.lesson) {
+            throw new CoreError('Cannot sync without a lesson.');
+        }
+
+        const result = await AddonModLessonSync.syncLesson(this.lesson.id, true);
 
         if (!result.updated && this.dataSent && this.isPrefetched()) {
             // The user sent data to server, but not in the sync process. Check if we need to fetch data.

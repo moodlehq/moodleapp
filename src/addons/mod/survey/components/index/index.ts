@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, Optional } from '@angular/core';
+import { CoreError } from '@classes/errors/error';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
@@ -117,8 +118,8 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
 
         if (sync) {
             // Try to synchronize the survey.
-            const answersSent = await this.syncActivity(showErrors);
-            if (answersSent) {
+            const updated = await this.syncActivity(showErrors);
+            if (updated) {
                 // Answers were sent, update the survey.
                 this.survey = await AddonModSurvey.getSurvey(this.courseId, this.module.id);
             }
@@ -236,26 +237,14 @@ export class AddonModSurveyIndexComponent extends CoreCourseModuleMainActivityCo
     }
 
     /**
-     * Performs the sync of the activity.
-     *
-     * @returns Promise resolved when done.
+     * @inheritdoc
      */
-    protected async sync(): Promise<AddonModSurveySyncResult | void> {
+    protected async sync(): Promise<AddonModSurveySyncResult> {
         if (!this.survey) {
-            return;
+            throw new CoreError('Cannot sync without a survey.');
         }
 
         return AddonModSurveySync.syncSurvey(this.survey.id, this.currentUserId);
-    }
-
-    /**
-     * Checks if sync has succeed from result sync data.
-     *
-     * @param result Data returned on the sync function.
-     * @returns If suceed or not.
-     */
-    protected hasSyncSucceed(result: AddonModSurveySyncResult): boolean {
-        return result.answersSent;
     }
 
 }

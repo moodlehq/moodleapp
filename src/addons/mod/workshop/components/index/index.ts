@@ -528,9 +528,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
     }
 
     /**
-     * Performs the sync of the activity.
-     *
-     * @returns Promise resolved when done.
+     * @inheritdoc
      */
     protected sync(): Promise<AddonModWorkshopSyncResult> {
         if (!this.workshop) {
@@ -538,16 +536,6 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
         }
 
         return AddonModWorkshopSync.syncWorkshop(this.workshop.id);
-    }
-
-    /**
-     * Checks if sync has succeed from result sync data.
-     *
-     * @param result Data returned on the sync function.
-     * @returns If suceed or not.
-     */
-    protected hasSyncSucceed(result: AddonModWorkshopSyncResult): boolean {
-        return result.updated;
     }
 
     /**

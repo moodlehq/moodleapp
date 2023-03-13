@@ -500,22 +500,10 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     }
 
     /**
-     * Performs the sync of the activity.
-     *
-     * @returns Promise resolved when done.
+     * @inheritdoc
      */
     protected sync(): Promise<AddonModForumSyncResult> {
         return AddonModForumPrefetchHandler.sync(this.module, this.courseId);
-    }
-
-    /**
-     * Checks if sync has succeed from result sync data.
-     *
-     * @param result Data returned on the sync function.
-     * @returns Whether it succeed or not.
-     */
-    protected hasSyncSucceed(result: AddonModForumSyncResult): boolean {
-        return result.updated;
     }
 
     /**

@@ -32,7 +32,7 @@ import {
     AddonModAssignSubmissionsDBRecordFormatted,
     AddonModAssignSubmissionsGradingDBRecordFormatted,
 } from './assign-offline';
-import { CoreSync } from '@services/sync';
+import { CoreSync, CoreSyncResult } from '@services/sync';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreNetwork } from '@services/network';
@@ -530,9 +530,7 @@ export const AddonModAssignSync = makeSingleton(AddonModAssignSyncProvider);
 /**
  * Data returned by a assign sync.
  */
-export type AddonModAssignSyncResult = {
-    warnings: string[]; // List of warnings.
-    updated: boolean; // Whether some data was sent to the server or offline data was updated.
+export type AddonModAssignSyncResult = CoreSyncResult & {
     courseId?: number; // Course the assign belongs to (if known).
     gradesBlocked: number[]; // Whether some grade couldn't be synced because it was blocked. UserId fields of the blocked grade.
 };

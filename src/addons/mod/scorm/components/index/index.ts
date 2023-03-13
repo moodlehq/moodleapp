@@ -14,6 +14,7 @@
 
 import { CoreConstants } from '@/core/constants';
 import { Component, Input, OnInit, Optional } from '@angular/core';
+import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreCourse } from '@features/course/services/course';
@@ -364,10 +365,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
     }
 
     /**
-     * Checks if sync has succeed from result sync data.
-     *
-     * @param result Data returned on the sync function.
-     * @returns If suceed or not.
+     * @inheritdoc
      */
     protected hasSyncSucceed(result: AddonModScormSyncResult): boolean {
         if (result.updated || this.dataSent) {
@@ -377,7 +375,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
 
         this.dataSent = false;
 
-        return true;
+        return result.updated;
     }
 
     /**
@@ -608,9 +606,9 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
      * @param retries Number of retries done.
      * @returns Promise resolved when done.
      */
-    protected async sync(retries = 0): Promise<AddonModScormSyncResult | undefined> {
+    protected async sync(retries = 0): Promise<AddonModScormSyncResult> {
         if (!this.scorm) {
-            return;
+            throw new CoreError('Cannot sync without a scorm.');
         }
 
         if (CoreSync.isBlocked(AddonModScormProvider.COMPONENT, this.scorm.id) && retries < 5) {

@@ -519,22 +519,10 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     }
 
     /**
-     * Performs the sync of the activity.
-     *
-     * @returns Promise resolved when done.
+     * @inheritdoc
      */
     protected sync(): Promise<AddonModDataSyncResult> {
         return AddonModDataPrefetchHandler.sync(this.module, this.courseId);
-    }
-
-    /**
-     * Checks if sync has succeed from result sync data.
-     *
-     * @param result Data returned on the sync function.
-     * @returns If suceed or not.
-     */
-    protected hasSyncSucceed(result: AddonModDataSyncResult): boolean {
-        return result.updated;
     }
 
     /**
