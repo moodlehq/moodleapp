@@ -81,7 +81,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
     // All the possible component classes.
     courseFormatComponent?: Type<unknown>;
-    courseSummaryComponent?: Type<unknown>;
     singleSectionComponent?: Type<unknown>;
     allSectionsComponent?: Type<unknown>;
 
@@ -230,7 +229,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
         await Promise.all([
             this.loadCourseFormatComponent(),
-            this.loadCourseSummaryComponent(),
             this.loadSingleSectionComponent(),
             this.loadAllSectionsComponent(),
         ]);
@@ -244,15 +242,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      */
     protected async loadCourseFormatComponent(): Promise<void> {
         this.courseFormatComponent = await CoreCourseFormatDelegate.getCourseFormatComponent(this.course);
-    }
-
-    /**
-     * Load course summary component.
-     *
-     * @returns Promise resolved when done.
-     */
-    protected async loadCourseSummaryComponent(): Promise<void> {
-        this.courseSummaryComponent = await CoreCourseFormatDelegate.getCourseSummaryComponent(this.course);
     }
 
     /**

@@ -137,15 +137,6 @@ export interface CoreCourseFormatHandler extends CoreDelegateHandler {
     getCourseFormatComponent?(course: CoreCourseAnyCourseData): Promise<Type<unknown> | undefined>;
 
     /**
-     * Return the Component to use to display the course summary inside the default course format.
-     * It's recommended to return the class of the component, but you can also return an instance of the component.
-     *
-     * @param course The course to render.
-     * @returns Promise resolved with component to use, undefined if not found.
-     */
-    getCourseSummaryComponent?(course: CoreCourseAnyCourseData): Promise<Type<unknown> | undefined>;
-
-    /**
      * Return the Component to use to display a single section. This component will only be used if the user is viewing a
      * single section. If all the sections are displayed at once then it won't be used.
      * It's recommended to return the class of the component, but you can also return an instance of the component.
@@ -270,20 +261,6 @@ export class CoreCourseFormatDelegateService extends CoreDelegate<CoreCourseForm
             return await this.executeFunctionOnEnabled<Type<unknown>>(course.format || '', 'getCourseFormatComponent', [course]);
         } catch (error) {
             this.logger.error('Error getting course format component', error);
-        }
-    }
-
-    /**
-     * Get the component to use to display the course summary in the default course format.
-     *
-     * @param course The course to render.
-     * @returns Promise resolved with component to use, undefined if not found.
-     */
-    async getCourseSummaryComponent(course: CoreCourseAnyCourseData): Promise<Type<unknown> | undefined> {
-        try {
-            return await this.executeFunctionOnEnabled<Type<unknown>>(course.format || '', 'getCourseSummaryComponent', [course]);
-        } catch (error) {
-            this.logger.error('Error getting course summary component', error);
         }
     }
 
