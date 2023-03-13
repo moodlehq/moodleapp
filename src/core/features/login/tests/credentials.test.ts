@@ -18,17 +18,26 @@ import { CoreLoginError } from '@classes/errors/loginerror';
 import { CoreLoginComponentsModule } from '@features/login/components/components.module';
 import { CoreLoginCredentialsPage } from '@features/login/pages/credentials/credentials';
 import { CoreSites } from '@services/sites';
+import { Http } from '@singletons';
+import { of } from 'rxjs';
+import { CoreLoginHelper } from '../services/login-helper';
 
 describe('Credentials page', () => {
 
+    const siteUrl = 'https://campus.example.edu';
+
+    beforeEach(() => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        mockSingleton(Http, { get: () => of(null as any) });
+    });
+
     it('renders', async () => {
         // Arrange.
-        const siteUrl = 'https://campus.example.edu';
 
         mockSingleton(CoreSites, {
             getPublicSiteConfigByUrl: async () => ({
-                wwwroot: 'https://campus.example.edu',
-                httpswwwroot: 'https://campus.example.edu',
+                wwwroot: siteUrl,
+                httpswwwroot: siteUrl,
                 sitename: 'Example Campus',
                 guestlogin: 0,
                 rememberusername: 0,
@@ -45,6 +54,8 @@ describe('Credentials page', () => {
             }),
         });
 
+        mockSingleton(CoreLoginHelper, { getAvailableSites: async () => [{ url: siteUrl, name: 'Example Campus' }] });
+
         // Act.
         const fixture = await renderPageComponent(CoreLoginCredentialsPage, {
             routeParams: { siteUrl },
@@ -58,7 +69,7 @@ describe('Credentials page', () => {
         expect(findElement(fixture, '.core-siteurl', siteUrl)).not.toBeNull();
     });
 
-    it('suggests contacting support after multiple failed attempts', async () => {
+    it('suggests contacting support after multiple failed attempts', async (done) => {
         // Arrange.
         mockSingleton(CoreSites, {
             getUserToken: () => {
@@ -69,16 +80,14 @@ describe('Credentials page', () => {
             },
         });
 
+        mockSingleton(CoreLoginHelper, { getAvailableSites: async () => [] });
+
         const fixture = await renderPageComponent(CoreLoginCredentialsPage, {
-            routeParams: {
-                siteUrl: 'https://campus.example.edu',
-                siteConfig: { supportpage: '' },
-            },
-            imports: [
-                CoreSharedModule,
-                CoreLoginComponentsModule,
-            ],
+            routeParams: { siteUrl, siteConfig: { supportpage: '' } },
+            imports: [CoreSharedModule, CoreLoginComponentsModule],
         });
+
+        done();
 
         // Act.
         const form = requireElement<HTMLFormElement>(fixture, 'form');
