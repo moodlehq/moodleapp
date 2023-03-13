@@ -7,7 +7,11 @@
                     [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">
                 </core-format-text>
             </p>
-            <p *ngIf="multiQuestion.prompt">{{ multiQuestion.prompt }}</p>
+            <p *ngIf="multiQuestion.prompt">
+                <core-format-text [component]="component" [componentId]="componentId" [text]="multiQuestion.prompt"
+                    [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">
+                </core-format-text>
+            </p>
         </ion-label>
     </ion-item>
 
