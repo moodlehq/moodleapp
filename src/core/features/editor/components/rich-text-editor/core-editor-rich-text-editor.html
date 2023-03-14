@@ -9,7 +9,7 @@
     </ion-textarea>
 
     <div class="core-rte-info-message" *ngIf="infoMessage">
-        <ion-icon name="fas-info-circle" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-circle-info" aria-hidden="true"></ion-icon>
         {{ infoMessage | translate }}
     </div>
 </div>
@@ -113,7 +113,7 @@
         <ion-slide *ngIf="isPhone">
             <button [title]="'core.editor.hidetoolbar' | translate" (click)="hideToolbar($event, true)" (keyup)="hideToolbar($event, true)"
                 (mousedown)="downAction($event)" (keydown)="downAction($event)" tabindex="0">
-                <ion-icon name="fas-times" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-xmark" aria-hidden="true"></ion-icon>
             </button>
         </ion-slide>
     </ion-slides>

@@ -1,7 +1,7 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [attr.aria-label]="'core.info' | translate">
-        <ion-icon name="fas-info-circle" slot="icon-only" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
 </core-navbar-buttons>
 
@@ -16,7 +16,7 @@
     <!-- Warning message. -->
     <ion-card class="core-info-card" *ngIf="scorm && scorm.warningMessage">
         <ion-item>
-            <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
+            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>{{ scorm.warningMessage }}</ion-label>
         </ion-item>
     </ion-card>
@@ -168,7 +168,7 @@
                 </ion-item>
                 <ion-button class="ion-margin ion-text-wrap" expand="block" [href]="module.url" core-link [showBrowserWarning]="false">
                     {{ 'core.openinbrowser' | translate }}
-                    <ion-icon name="fas-external-link-alt" slot="end" aria-hidden="true"></ion-icon>
+                    <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true"></ion-icon>
                 </ion-button>
             </ng-container>
 
@@ -201,7 +201,7 @@
                         <!-- Open mode (Preview or Normal) -->
                         <ion-button *ngIf="!scorm.hidebrowse" expand="block" fill="outline" (click)="open($event, true)"
                             class="ion-text-wrap ion-margin">
-                            <ion-icon name="fas-search" slot="start" aria-hidden="true"></ion-icon>
+                            <ion-icon name="fas-magnifying-glass" slot="start" aria-hidden="true"></ion-icon>
                             {{ 'addon.mod_scorm.browse' | translate }}
                         </ion-button>
                         <ion-button expand="block" (click)="open($event)" class="ion-text-wrap ion-margin">

@@ -89,7 +89,7 @@
             <core-empty-box *ngIf="(!discussions || discussions.length <= 0) && !search.showResults" icon="far-comments"
                 [message]="'addon.messages.nomessagesfound' | translate"></core-empty-box>
 
-            <core-empty-box *ngIf="(!search.results || search.results.length <= 0) && search.showResults" icon="fas-search"
+            <core-empty-box *ngIf="(!search.results || search.results.length <= 0) && search.showResults" icon="fas-magnifying-glass"
                 [message]="'core.noresults' | translate"></core-empty-box>
         </core-loading>
     </core-split-view>

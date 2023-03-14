@@ -1,7 +1,7 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [attr.aria-label]="'core.info' | translate">
-        <ion-icon name="fas-info-circle" slot="icon-only" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
 </core-navbar-buttons>
 
@@ -15,7 +15,7 @@
 
     <ion-card class="core-warning-card" *ngIf="warning">
         <ion-item>
-            <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+            <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true"></ion-icon>
             <ion-label><span [innerHTML]="warning"></span></ion-label>
         </ion-item>
     </ion-card>
@@ -66,7 +66,7 @@
                         <ion-grid *ngIf="currentStatus === outdatedStatus" class="addon-mod_resource-outdated">
                             <ion-row class="ion-align-items-center">
                                 <ion-col size="auto">
-                                    <ion-icon color="warning" name="fas-exclamation-triangle" aria-hidden="true"></ion-icon>
+                                    <ion-icon color="warning" name="fas-triangle-exclamation" aria-hidden="true"></ion-icon>
                                 </ion-col>
                                 <ion-col>
                                     <p><strong>{{ 'addon.mod_resource.resourcestatusoutdated' | translate }}</strong></p>
@@ -83,7 +83,7 @@
         <div class="list-item-limited-width" *ngIf="mode == 'external'">
             <ion-button *ngIf="isIOS && (!shouldOpenInBrowser || !isOnline)" expand="block" fill="outline"
                 (click)="open(openFileAction.OPEN_WITH)" class="ion-margin ion-text-wrap">
-                <ion-icon name="far-share-square" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="far-share-from-square" slot="start" aria-hidden="true"></ion-icon>
                 {{ 'core.openwith' | translate }}
             </ion-button>
 

@@ -159,7 +159,7 @@ export class CoreGradesHelperProvider {
                     row.gradeIconAlt = Translate.instant('core.grades.pass');
                     content = CoreTextUtils.cleanTags(content);
                 } else if (content.includes('fa-times')) {
-                    row.gradeIcon = 'fas-times';
+                    row.gradeIcon = 'fas-xmark';
                     row.gradeIconAlt = Translate.instant('core.grades.fail');
                     content = CoreTextUtils.cleanTags(content);
                 }
@@ -668,7 +668,7 @@ export class CoreGradesHelperProvider {
             row.iconAlt = Translate.instant('core.grades.aggregatesum');
         } else if (text.indexOf('/outcomes') > -1 || text.indexOf('fa-tasks') > -1) {
             row.itemtype = 'outcome';
-            row.icon = 'fas-tasks';
+            row.icon = 'fas-list-check';
             row.iconAlt = Translate.instant('core.grades.outcome');
         } else if (text.indexOf('i/folder') > -1 || text.indexOf('fa-folder') > -1 || text.indexOf('category-content') > -1) {
             row.itemtype = 'category';

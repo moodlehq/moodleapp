@@ -1,7 +1,7 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [attr.aria-label]="'core.info' | translate">
-        <ion-icon name="fas-info-circle" slot="icon-only" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
 </core-navbar-buttons>
 
@@ -15,7 +15,7 @@
     <!-- Activity availability messages -->
     <ion-card class="core-info-card" *ngIf="choiceNotOpenYet">
         <ion-item>
-            <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
+            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
                 <p *ngIf="options.length">{{ 'addon.mod_choice.previewonly' | translate:{$a: openTimeReadable} }}</p>
                 <p *ngIf="!options.length">{{ 'addon.mod_choice.notopenyet' | translate:{$a: openTimeReadable} }}</p>
@@ -25,7 +25,7 @@
 
     <ion-card class="core-info-card" *ngIf="choiceClosed">
         <ion-item>
-            <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
+            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
                 <p *ngIf="options.length">
                     {{ 'addon.mod_choice.yourselection' | translate }}
@@ -40,7 +40,7 @@
     <!-- Inform what will happen with the choices. -->
     <ion-card class="core-info-card" *ngIf="canEdit && publishInfo && options.length">
         <ion-item>
-            <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
+            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>{{ publishInfo | translate }}</ion-label>
         </ion-item>
     </ion-card>
@@ -75,7 +75,7 @@
             <ion-row>
                 <ion-col size="12" size-lg="5">
                     <ion-item class="ion-text-wrap core-warning-item" *ngIf="hasOffline">
-                        <ion-icon slot="start" name="fas-exclamation-triangle" color="warning" aria-hidden="true"></ion-icon>
+                        <ion-icon slot="start" name="fas-triangle-exclamation" color="warning" aria-hidden="true"></ion-icon>
                         <ion-label>{{ 'addon.mod_choice.resultsnotsynced' | translate }}</ion-label>
                     </ion-item>
                     <ion-item>
@@ -125,7 +125,7 @@
 
     <ion-card class="core-info-card" *ngIf="!canSeeResults && !choiceNotOpenYet">
         <ion-item>
-            <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
+            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
                 <p>{{ 'addon.mod_choice.noresultsviewable' | translate }}</p>
             </ion-label>

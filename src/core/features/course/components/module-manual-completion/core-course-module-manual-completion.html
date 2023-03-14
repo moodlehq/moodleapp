@@ -4,14 +4,14 @@
             class="ion-text-wrap" [class.chip]="mode == 'basic'">
             <ion-icon name="fas-check" slot="start" aria-hidden="true"></ion-icon>
             {{ 'core.course.completion_manual:done' | translate }}
-            <ion-icon *ngIf="completion?.offline" name="fas-sync" [attr.aria-label]="'core.course.manualcompletionnotsynced' | translate"
-                slot="end"></ion-icon>
+            <ion-icon *ngIf="completion?.offline" name="fas-arrows-rotate"
+                [attr.aria-label]="'core.course.manualcompletionnotsynced' | translate" slot="end"></ion-icon>
         </ion-button>
         <ion-button *ngIf="!completion.state" fill="outline" [attr.aria-label]="accessibleDescription" (click)="completionClicked($event)"
             class="ion-text-wrap" [class.chip]="mode == 'basic'">
             {{ 'core.course.completion_manual:markdone' | translate }}
-            <ion-icon *ngIf="completion?.offline" name="fas-sync" [attr.aria-label]="'core.course.manualcompletionnotsynced' | translate"
-                slot="end"></ion-icon>
+            <ion-icon *ngIf="completion?.offline" name="fas-arrows-rotate"
+                [attr.aria-label]="'core.course.manualcompletionnotsynced' | translate" slot="end"></ion-icon>
         </ion-button>
     </ng-container>
 

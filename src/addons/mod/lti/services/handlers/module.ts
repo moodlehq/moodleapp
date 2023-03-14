@@ -60,7 +60,7 @@ export class AddonModLtiModuleHandlerService extends CoreModuleHandlerBase imple
         const data = await super.getData(module, courseId, sectionId, forCoursePage);
         data.showDownloadButton = false;
         data.buttons = [{
-            icon: 'fas-external-link-alt',
+            icon: 'fas-up-right-from-square',
             label: 'addon.mod_lti.launchactivity',
             action: (event: Event, module: CoreCourseModuleData, courseId: number): void => {
                 // Launch the LTI.

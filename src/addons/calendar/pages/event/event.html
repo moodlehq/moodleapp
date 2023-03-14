@@ -16,12 +16,12 @@
                     [iconAction]="syncIcon" [closeOnClick]="false">
                 </core-context-menu-item>
                 <core-context-menu-item [hidden]="!event || !event.canedit || event.deleted || (!canEdit && event.id > 0)" [priority]="300"
-                    [content]="'core.edit' | translate" (action)="openEdit()" iconAction="fas-edit">
+                    [content]="'core.edit' | translate" (action)="openEdit()" iconAction="fas-pen-to-square">
                 </core-context-menu-item>
                 <core-context-menu-item [hidden]="!event || !event.candelete || event.deleted" [priority]="200"
                     [content]="'core.delete' | translate" (action)="deleteEvent()" iconAction="fas-trash"></core-context-menu-item>
                 <core-context-menu-item [hidden]="!event || !event.deleted" [priority]="200" [content]="'core.restore' | translate"
-                    (action)="undoDelete()" iconAction="fas-undo-alt"></core-context-menu-item>
+                    (action)="undoDelete()" iconAction="fas-rotate-left"></core-context-menu-item>
             </core-context-menu>
         </ion-buttons>
     </ion-toolbar>
@@ -34,7 +34,7 @@
         <!-- There is data to be synchronized -->
         <ion-card class="core-warning-card" *ngIf="hasOffline || (event && event.deleted)">
             <ion-item>
-                <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>{{ 'core.hasdatatosync' | translate:{$a: 'addon.calendar.calendarevent' | translate} }}</ion-label>
             </ion-item>
         </ion-card>

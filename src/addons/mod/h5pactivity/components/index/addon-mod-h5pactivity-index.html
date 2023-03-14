@@ -11,7 +11,7 @@
     </core-context-menu>
 
     <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [attr.aria-label]="'core.info' | translate">
-        <ion-icon name="fas-info-circle" slot="icon-only" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
 </core-navbar-buttons>
 
@@ -26,7 +26,7 @@
     <!-- Offline disabled. -->
     <ion-card class="core-warning-card" *ngIf="!siteCanDownload && playing">
         <ion-item>
-            <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+            <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
                 {{ 'core.h5p.offlinedisabled' | translate }} {{ 'addon.mod_h5pactivity.offlinedisabledwarning' | translate }}
             </ion-label>
@@ -36,7 +36,7 @@
     <!-- Preview mode. -->
     <ion-card class="core-warning-card" *ngIf="accessInfo && !trackComponent">
         <ion-item>
-            <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+            <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
                 {{ 'addon.mod_h5pactivity.previewmode' | translate }}
             </ion-label>

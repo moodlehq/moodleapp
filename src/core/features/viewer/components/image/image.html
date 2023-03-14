@@ -11,18 +11,18 @@
     <ion-row class="ion-justify-content-between ion-align-items-center ion-no-padding">
         <ion-col size="auto">
             <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
-                <ion-icon name="fas-times" slot="icon-only" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-xmark" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-col>
         <ion-col></ion-col>
         <ion-col size="auto" *ngIf="slidesSwiper">
             <ion-button fill="clear" [attr.aria-label]="'core.zoomout' | translate" (click)="zoom(false)">
-                <ion-icon name="fas-search-minus" slot="icon-only" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-magnifying-glass-minus" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-col>
         <ion-col size="auto" *ngIf="slidesSwiper">
             <ion-button fill="clear" [attr.aria-label]="'core.zoomin' | translate" (click)="zoom(true)">
-                <ion-icon name="fas-search-plus" slot="icon-only" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-magnifying-glass-plus" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-col>
     </ion-row>

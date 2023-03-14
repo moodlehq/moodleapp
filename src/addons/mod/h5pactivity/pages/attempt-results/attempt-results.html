@@ -65,7 +65,7 @@
                         <ion-label>
                             <p class="item-heading">{{ 'addon.mod_h5pactivity.outcome' | translate }}</p>
                             <p *ngIf="attempt.success !== null && attempt.success">
-                                <ion-icon name="fas-check-circle" aria-hidden="true"></ion-icon>
+                                <ion-icon name="fas-circle-check" aria-hidden="true"></ion-icon>
                                 {{ 'addon.mod_h5pactivity.attempt_success_pass' | translate }}
                             </p>
                             <p *ngIf="attempt.success !== null && !attempt.success">
@@ -152,7 +152,7 @@
 
                     <!-- Result doesn't support tracking. -->
                     <ion-item class="ion-text-wrap core-warning-item" *ngIf="!result.track">
-                        <ion-icon slot="start" name="fas-exclamation-triangle" color="warning" aria-hidden="true"></ion-icon>
+                        <ion-icon slot="start" name="fas-triangle-exclamation" color="warning" aria-hidden="true"></ion-icon>
                         <ion-label>
                             {{ 'addon.mod_h5pactivity.no_compatible_track' | translate:{$a: result.interactiontype} }}
                         </ion-label>
@@ -171,7 +171,7 @@
         {{ answer.answer }}
     </p>
     <p *ngIf="answer.incorrect">
-        <ion-icon name="fas-times" [attr.aria-label]="'addon.mod_h5pactivity.answer_incorrect' | translate" color="danger">
+        <ion-icon name="fas-xmark" [attr.aria-label]="'addon.mod_h5pactivity.answer_incorrect' | translate" color="danger">
         </ion-icon>
         {{ answer.answer }}
     </p>
@@ -179,7 +179,7 @@
         {{ answer.answer }}
     </p>
     <p *ngIf="answer.checked">
-        <ion-icon name="fas-check-circle" [attr.aria-label]="'addon.mod_h5pactivity.answer_checked' | translate">
+        <ion-icon name="fas-circle-check" [attr.aria-label]="'addon.mod_h5pactivity.answer_checked' | translate">
         </ion-icon>
     </p>
     <p *ngIf="answer.pass">
@@ -187,7 +187,7 @@
         </ion-icon>
     </p>
     <p *ngIf="answer.fail">
-        <ion-icon name="fas-times" [attr.aria-label]="'addon.mod_h5pactivity.answer_fail' | translate" color="danger">
+        <ion-icon name="fas-xmark" [attr.aria-label]="'addon.mod_h5pactivity.answer_fail' | translate" color="danger">
         </ion-icon>
     </p>
 </ng-template>

@@ -37,7 +37,7 @@
         </ion-button>
         <ion-button *ngIf="showDelete && message.deleted" fill="clear" color="danger" (click)="undoDelete($event)"
             [attr.aria-label]="'core.restore' | translate" class="delete-button">
-            <ion-icon name="fas-undo-alt" slot="icon-only" aria-hidden="true"></ion-icon>
+            <ion-icon name="fas-rotate-left" slot="icon-only" aria-hidden="true"></ion-icon>
         </ion-button>
     </div>
 

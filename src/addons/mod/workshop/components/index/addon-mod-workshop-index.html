@@ -1,7 +1,7 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [attr.aria-label]="'core.info' | translate">
-        <ion-icon name="fas-info-circle" slot="icon-only" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
 </core-navbar-buttons>
 
@@ -24,17 +24,17 @@
             <ion-item button class="ion-text-wrap" *ngFor="let task of phases[workshop!.phase].tasks"
                 [class.item-dimmed]="task.code == 'submit' && !showSubmit" (click)="runTask(task)" detail="false">
                 <ion-icon slot="start" name="far-circle" *ngIf="task.completed == null" aria-hidden="true"></ion-icon>
-                <ion-icon slot="start" name="fas-times-circle" color="danger" *ngIf="task.completed == ''" aria-hidden="true">
+                <ion-icon slot="start" name="fas-circle-xmark" color="danger" *ngIf="task.completed == ''" aria-hidden="true">
                 </ion-icon>
-                <ion-icon slot="start" name="fas-info-circle" color="info" *ngIf="task.completed == 'info'" aria-hidden="true">
+                <ion-icon slot="start" name="fas-circle-info" color="info" *ngIf="task.completed == 'info'" aria-hidden="true">
                 </ion-icon>
-                <ion-icon slot="start" name="fas-check-circle" color="success" *ngIf="task.completed == '1'" aria-hidden="true">
+                <ion-icon slot="start" name="fas-circle-check" color="success" *ngIf="task.completed == '1'" aria-hidden="true">
                 </ion-icon>
                 <ion-label>
                     <p class="item-heading">{{task.title}}</p>
                     <p *ngIf="task.details" [innerHTML]="task.details"></p>
                 </ion-label>
-                <ion-icon slot="end" *ngIf="task.link && task.code != 'submit'" name="fas-external-link-alt" aria-hidden="true">
+                <ion-icon slot="end" *ngIf="task.link && task.code != 'submit'" name="fas-up-right-from-square" aria-hidden="true">
                 </ion-icon>
             </ion-item>
         </ng-container>
@@ -220,7 +220,7 @@
             </ion-button>
             <ion-button expand="block" *ngIf="access.modifyingsubmissionallowed && submission" (click)="gotoSubmit()"
                 class="ion-text-wrap ion-margin">
-                <ion-icon slot="start" name="fas-edit" aria-hidden="true"></ion-icon>
+                <ion-icon slot="start" name="fas-pen-to-square" aria-hidden="true"></ion-icon>
                 {{ 'addon.mod_workshop.editsubmission' | translate }}
             </ion-button>
         </div>

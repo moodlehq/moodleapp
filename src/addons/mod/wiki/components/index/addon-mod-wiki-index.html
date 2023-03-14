@@ -14,7 +14,7 @@
 
     <core-context-menu>
         <core-context-menu-item *ngIf="canEdit && (isOnline || pageIsOffline)" [priority]="590" [content]="'core.edit' | translate"
-            iconAction="fas-edit" (action)="goToEditPage()">
+            iconAction="fas-pen-to-square" (action)="goToEditPage()">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="canEdit" [priority]="580" [content]="'addon.mod_wiki.createpage' | translate" iconAction="fas-plus"
             (action)="goToNewPage()">
@@ -22,7 +22,7 @@
     </core-context-menu>
 
     <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [attr.aria-label]="'core.info' | translate">
-        <ion-icon name="fas-info-circle" slot="icon-only" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
 </core-navbar-buttons>
 
@@ -38,7 +38,7 @@
         <!-- Wiki has something offline. -->
         <ion-card class="core-warning-card" *ngIf="pageIsOffline || hasOffline">
             <ion-item class="ion-text-wrap">
-                <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
                     <span *ngIf="pageIsOffline">{{ 'core.hasdatatosync' | translate:{$a: pageStr} }}</span>
                     <span *ngIf="!pageIsOffline">{{ 'core.hasdatatosync' | translate:{$a: moduleName} }}</span>
@@ -49,7 +49,7 @@
         <!-- Page warning. -->
         <ion-card class="core-warning-card" *ngIf="pageWarning">
             <ion-item>
-                <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>{{ pageWarning }}</ion-label>
             </ion-item>
         </ion-card>
@@ -60,7 +60,7 @@
             <core-format-text *ngIf="pageContent" [component]="component" [componentId]="componentId" [text]="pageContent"
                 contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
             </core-format-text>
-            <core-empty-box *ngIf="!pageContent" icon="fas-file-alt" [message]="'addon.mod_wiki.nocontent' | translate">
+            <core-empty-box *ngIf="!pageContent" icon="fas-file-lines" [message]="'addon.mod_wiki.nocontent' | translate">
             </core-empty-box>
         </article>
 

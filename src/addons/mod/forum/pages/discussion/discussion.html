@@ -31,7 +31,7 @@
             [content]="'addon.mod_forum.modeflatnewestfirst' | translate" iconAction="fas-arrow-up" (action)="changeSort('flat-newest')">
         </core-context-menu-item>
         <core-context-menu-item [hidden]="sort == 'nested'" [priority]="400" [content]="'addon.mod_forum.modenested' | translate"
-            iconAction="fas-exchange-alt" (action)="changeSort('nested')">
+            iconAction="fas-right-left" (action)="changeSort('nested')">
         </core-context-menu-item>
         <core-context-menu-item [hidden]="!discussion || !discussion.canlock || discussion.locked" [priority]="300"
             [content]="'addon.mod_forum.lockdiscussion' | translate" iconAction="fas-lock" (action)="setLockState(true)">
@@ -54,7 +54,7 @@
             (action)="toggleFavouriteState(false)">
         </core-context-menu-item>
         <core-context-menu-item [hidden]="!externalUrl" [priority]="100" [content]="'core.openinbrowser' | translate" [href]="externalUrl"
-            iconAction="fas-external-link-alt" [showBrowserWarning]="false"></core-context-menu-item>
+            iconAction="fas-up-right-from-square" [showBrowserWarning]="false"></core-context-menu-item>
     </core-context-menu>
 </core-navbar-buttons>
 <ion-content [core-swipe-navigation]="discussions" class="limited-width">
@@ -66,7 +66,7 @@
         <!-- Discussion replies found to be synchronized -->
         <ion-card class="core-warning-card" *ngIf="postHasOffline || hasOfflineRatings">
             <ion-item>
-                <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>{{ 'core.hasdatatosync' | translate:{$a: discussionStr} }}</ion-label>
             </ion-item>
         </ion-card>
@@ -74,7 +74,7 @@
         <!-- Cut-off date or due date message -->
         <ion-card class="core-info-card" *ngIf="availabilityMessage">
             <ion-item>
-                <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-circle-info" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>{{ availabilityMessage }}</ion-label>
             </ion-item>
         </ion-card>
@@ -89,7 +89,7 @@
         <!-- Q&A message. -->
         <ion-card class="core-info-card" *ngIf="showQAMessage">
             <ion-item>
-                <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-circle-info" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>{{ 'addon.mod_forum.qandanotify' | translate }}</ion-label>
             </ion-item>
         </ion-card>

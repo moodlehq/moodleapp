@@ -46,7 +46,8 @@
         </core-infinite-loading>
 
 
-        <core-empty-box *ngIf="searchMode && !courses.length" icon="fas-search" [message]="'core.courses.nosearchresults' | translate">
+        <core-empty-box *ngIf="searchMode && !courses.length" icon="fas-magnifying-glass"
+            [message]="'core.courses.nosearchresults' | translate">
         </core-empty-box>
 
         <core-empty-box *ngIf="!searchMode && !courses.length" icon="fas-graduation-cap" [message]="'core.courses.nocourses' | translate">

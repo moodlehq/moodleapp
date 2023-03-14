@@ -7,7 +7,7 @@
         </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="close($event)" [attr.aria-label]="'core.close' | translate">
-                <ion-icon name="fas-times" slot="icon-only" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-xmark" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -79,7 +79,7 @@
 </ion-content>
 <ion-footer>
     <ion-item *ngIf="displaySwitchAccount" button lines="full" (click)="switchAccounts($event)" detail="true" class="ion-text-wrap">
-        <ion-icon name="fas-exchange-alt" slot="start" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-right-left" slot="start" aria-hidden="true"></ion-icon>
         <ion-label>
             <p class="item-heading">{{ 'core.mainmenu.switchaccount' | translate }}</p>
         </ion-label>
@@ -88,7 +88,7 @@
         <ion-button (click)="logout($event)" expand="block" color="danger" [attr.aria-label]="'core.mainmenu.logout' | translate"
             class="ion-text-wrap">
             <ng-container *ngIf="!removeAccountOnLogout">
-                <ion-icon name="fas-sign-out-alt" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-right-from-bracket" slot="start" aria-hidden="true"></ion-icon>
                 {{ 'core.mainmenu.logout' | translate }}
             </ng-container>
             <ng-container *ngIf="removeAccountOnLogout">

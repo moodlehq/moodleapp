@@ -5,7 +5,7 @@
         </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
-                <ion-icon slot="icon-only" name="fas-times" aria-hidden="true"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-xmark" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -15,7 +15,7 @@
         <ion-list>
             <!-- Go to "home". -->
             <ion-item class="ion-text-wrap" *ngIf="homeView" (click)="goToWikiHome()" button detail="true">
-                <ion-icon name="fas-home" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-house" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>{{ 'addon.mod_wiki.gowikihome' | translate }}</ion-label>
             </ion-item>
             <ng-container *ngFor="let letter of map">
@@ -26,7 +26,7 @@
                 </ion-item-divider>
                 <ion-item class="ion-text-wrap" *ngFor="let page of letter.pages" (click)="goToPage(page)"
                     [attr.aria-current]="selectedTitle == page.title ? 'page' : 'false'" button detail="false">
-                    <ion-icon name="fas-home" slot="start" *ngIf="page.firstpage" aria-hidden="true"></ion-icon>
+                    <ion-icon name="fas-house" slot="start" *ngIf="page.firstpage" aria-hidden="true"></ion-icon>
                     <ion-label>
                         <core-format-text [text]="page.title" contextLevel="module" [contextInstanceId]="moduleId" [courseId]="courseId">
                         </core-format-text>

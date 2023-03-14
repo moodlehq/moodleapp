@@ -20,7 +20,7 @@
                 <ion-label>
                     <h2>{{ user.fullname }}</h2>
                     <p *ngIf="user.address">
-                        <ion-icon name="fas-map-marker-alt" [attr.aria-hidden]="true"></ion-icon> {{ user.address }}
+                        <ion-icon name="fas-location-dot" [attr.aria-hidden]="true"></ion-icon> {{ user.address }}
                     </p>
                     <p *ngIf="rolesFormatted">
                         <strong>{{ 'core.user.roles' | translate}}</strong>{{'core.labelsep' | translate}}

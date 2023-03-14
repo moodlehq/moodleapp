@@ -5,7 +5,7 @@
         </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
-                <ion-icon slot="icon-only" name="fas-times" aria-hidden="true"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-xmark" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -22,18 +22,18 @@
                     <span *ngIf="!question.number">{{ 'core.question.information' | translate }}</span>
                 </ion-label>
 
-                <ion-icon *ngIf="!question.number" name="fas-info-circle" slot="end" aria-hidden="true"></ion-icon>
-                <ion-icon *ngIf="question.stateClass == 'core-question-requiresgrading'" name="fas-question-circle"
+                <ion-icon *ngIf="!question.number" name="fas-circle-info" slot="end" aria-hidden="true"></ion-icon>
+                <ion-icon *ngIf="question.stateClass == 'core-question-requiresgrading'" name="fas-circle-question"
                     [attr.aria-label]="question.status" slot="end">
                 </ion-icon>
                 <ion-icon *ngIf="question.stateClass == 'core-question-correct'" name="fas-check" color="success"
                     [attr.aria-label]="question.status" slot="end">
                 </ion-icon>
-                <ion-icon *ngIf="question.stateClass == 'core-question-partiallycorrect'" name="fas-check-square" color="warning"
+                <ion-icon *ngIf="question.stateClass == 'core-question-partiallycorrect'" name="fas-square-check" color="warning"
                     [attr.aria-label]="question.status" slot="end">
                 </ion-icon>
                 <ion-icon *ngIf="question.stateClass == 'core-question-incorrect' ||
-                    question.stateClass == 'core-question-notanswered'" name="fas-times" color="danger" [attr.aria-label]="question.status"
+                    question.stateClass == 'core-question-notanswered'" name="fas-xmark" color="danger" [attr.aria-label]="question.status"
                     slot="end">
                 </ion-icon>
             </ion-item>

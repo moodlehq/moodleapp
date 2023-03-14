@@ -1,6 +1,6 @@
 <core-navbar-buttons slot="end" prepend>
     <ion-button fill="clear" (click)="gotoCourseDownloads()" [attr.aria-label]="'addon.storagemanager.coursedownloads' | translate">
-        <ion-icon name="fas-cloud-download-alt" slot="icon-only" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-cloud-arrow-down" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
 </core-navbar-buttons>
 <core-dynamic-component [component]="courseFormatComponent" [data]="data">
@@ -11,7 +11,7 @@
         <div *ngIf="selectedSection && selectedSection.id != allSectionsId">
             <core-dynamic-component [component]="singleSectionComponent" [data]="data">
                 <ng-container *ngTemplateOutlet="sectionTemplate; context: {section: selectedSection}"></ng-container>
-                <core-empty-box *ngIf="!selectedSection.hasContent" icon="fas-th-large"
+                <core-empty-box *ngIf="!selectedSection.hasContent" icon="fas-table-cells-large"
                     [message]="'core.course.nocontentavailable' | translate">
                 </core-empty-box>
             </core-dynamic-component>

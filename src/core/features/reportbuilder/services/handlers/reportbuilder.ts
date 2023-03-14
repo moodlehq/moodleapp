@@ -44,7 +44,7 @@ export class CoreReportBuilderHandlerService implements CoreUserProfileHandler {
     getDisplayData(): CoreUserProfileHandlerData {
         return {
             class: 'core-report-builder',
-            icon: 'fa-list-alt',
+            icon: 'fas-rectangle-list',
             title: 'core.reportbuilder.reports',
             action: async (event): Promise<void> => {
                 event.preventDefault();

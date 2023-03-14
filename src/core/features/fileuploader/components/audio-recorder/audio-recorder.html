@@ -33,7 +33,7 @@
             <div class="core-audio-recorder--control">
                 <ion-button *ngIf="status === 'recording-ongoing'" shape="round" fill="clear"
                     [attr.aria-label]="'core.fileuploader.pauserecording' | translate" (click)="pauseRecording()">
-                    <ion-icon slot="icon-only" name="fas-pause-circle"></ion-icon>
+                    <ion-icon slot="icon-only" name="fas-circle-pause"></ion-icon>
                 </ion-button>
 
                 <ion-button *ngIf="status === 'recording-paused'" [attr.aria-label]="'core.fileuploader.resumerecording' | translate"

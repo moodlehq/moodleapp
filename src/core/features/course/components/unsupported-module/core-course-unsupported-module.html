@@ -1,7 +1,7 @@
 <div class="has-spacer">
     <ion-card class="core-danger-card">
         <ion-item>
-            <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+            <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
                 <p><strong>{{ 'core.uhoh' | translate }} </strong>
                     <ng-container *ngIf="isDisabledInSite">{{ 'core.course.activitydisabled' | translate }}</ng-container>
@@ -18,7 +18,7 @@
             <p>{{ 'core.course.useactivityonbrowser' | translate }}</p>
             <ion-button expand="block" [href]="module?.url" core-link [showBrowserWarning]="false">
                 {{ 'core.openinbrowser' | translate }}
-                <ion-icon name="fas-external-link-alt" slot="end" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-label>
     </ion-item>

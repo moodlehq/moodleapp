@@ -7,7 +7,7 @@
         </ion-title>
         <ion-buttons slot="end" *ngIf="isModal">
             <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
-                <ion-icon slot="icon-only" name="fas-times" aria-hidden="true"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-xmark" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -47,7 +47,7 @@
                     </ion-label>
                     <ion-button fill="clear" [href]="courseUrl" core-link [showBrowserWarning]="false"
                         [attr.aria-label]="'core.openinbrowser' | translate" slot="end">
-                        <ion-icon name="fas-external-link-alt" slot="icon-only" aria-hidden="true"></ion-icon>
+                        <ion-icon name="fas-up-right-from-square" slot="icon-only" aria-hidden="true"></ion-icon>
                     </ion-button>
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngIf="progress !== undefined || course.startdate || course.enddate">
@@ -146,7 +146,7 @@
 
         <ion-card class="core-info-card ion-text-wrap" *ngIf="!isEnrolled && !selfEnrolInstances.length && !otherEnrolments">
             <ion-item>
-                <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-circle-info" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>{{ 'core.courses.notenrollable' | translate }}</ion-label>
             </ion-item>
         </ion-card>

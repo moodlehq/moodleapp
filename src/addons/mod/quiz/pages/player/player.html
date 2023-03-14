@@ -15,7 +15,7 @@
             <ion-button fill="clear" id="addon-mod_quiz-connection-error-button" [hidden]="!autoSaveError"
                 (click)="showConnectionError($event)" [attr.aria-label]="'addon.mod_quiz.connectionerror' | translate"
                 aria-haspopup="dialog">
-                <ion-icon name="fas-exclamation-circle" slot="icon-only" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-circle-exclamation" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
             <ion-button *ngIf="navigation.length" [attr.aria-label]="'addon.mod_quiz.opentoc' | translate" (click)="openNavigation()">
                 <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true"></ion-icon>
@@ -154,7 +154,7 @@
                 <ion-button *ngIf="preventSubmitMessages.length" expand="block" class="ion-margin ion-text-wrap" [href]="moduleUrl"
                     core-link [showBrowserWarning]="false">
                     {{ 'core.openinbrowser' | translate }}
-                    <ion-icon name="fas-external-link-alt" slot="end" aria-hidden="true"></ion-icon>
+                    <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true"></ion-icon>
                 </ion-button>
 
                 <!-- Button to submit the quiz. -->

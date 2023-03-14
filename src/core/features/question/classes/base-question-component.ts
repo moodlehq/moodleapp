@@ -489,7 +489,7 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
         // Check if question is marked as correct.
         if (input.classList.contains('incorrect')) {
             question.input.correctClass = 'core-question-incorrect';
-            question.input.correctIcon = 'fas-times';
+            question.input.correctIcon = 'fas-xmark';
             question.input.correctIconColor = CoreIonicColorNames.DANGER;
         } else if (input.classList.contains('correct')) {
             question.input.correctClass = 'core-question-correct';
@@ -497,7 +497,7 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
             question.input.correctIconColor = CoreIonicColorNames.SUCCESS;
         } else if (input.classList.contains('partiallycorrect')) {
             question.input.correctClass = 'core-question-partiallycorrect';
-            question.input.correctIcon = 'fas-check-square';
+            question.input.correctIcon = 'fas-square-check';
             question.input.correctIconColor = CoreIonicColorNames.WARNING;
         } else {
             question.input.correctClass = '';

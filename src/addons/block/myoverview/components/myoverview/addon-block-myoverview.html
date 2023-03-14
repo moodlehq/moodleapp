@@ -75,7 +75,7 @@
         </ion-col>
         <ion-col size="auto" *ngIf="sort.enabled">
             <core-combobox [label]="'core.sortby' | translate" [selection]="sort.selected" (onChange)="sortCourses($event)"
-                icon="fas-sort-amount-down-alt">
+                icon="fas-arrow-down-short-wide">
                 <ion-select-option class="ion-text-wrap" value="fullname">
                     {{'addon.block_myoverview.title' | translate}}
                 </ion-select-option>
@@ -94,7 +94,7 @@
             </ion-button>
             <ion-button *ngIf="layout == 'list'" fill="outline" (click)="toggleLayout('card')"
                 [attr.aria-label]="'addon.block_myoverview.aria:card' | translate">
-                <ion-icon slot="icon-only" name="fas-th" aria-hidden="true"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-table-cells-large" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-col>
     </ion-row>
@@ -114,7 +114,7 @@
                 {{'addon.block_myoverview.nocoursesenrolleddescription' | translate}}
             </p>
             <ion-button (click)="openSearch()" fill="outline">
-                <ion-icon name="fas-search" slot="start" aria-hidden="true">
+                <ion-icon name="fas-magnifying-glass" slot="start" aria-hidden="true">
                 </ion-icon>
                 {{'addon.block_myoverview.browseallcourses' | translate}}
             </ion-button>

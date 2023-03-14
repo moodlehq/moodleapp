@@ -12,11 +12,11 @@
             </ion-button>
             <core-context-menu>
                 <core-context-menu-item *ngIf="showCalendar" [priority]="800" [content]="'addon.calendar.upcomingevents' | translate"
-                    iconAction="fas-th-list" (action)="toggleDisplay()"></core-context-menu-item>
+                    iconAction="fas-table-list" (action)="toggleDisplay()"></core-context-menu-item>
                 <core-context-menu-item *ngIf="!showCalendar" [priority]="800" [content]="'addon.calendar.monthlyview' | translate"
-                    iconAction="fas-calendar-alt" (action)="toggleDisplay()"></core-context-menu-item>
+                    iconAction="fas-calendar-days" (action)="toggleDisplay()"></core-context-menu-item>
                 <core-context-menu-item [priority]="600" [content]="'core.settings.settings' | translate" (action)="openSettings()"
-                    iconAction="fas-cogs">
+                    iconAction="fas-gears">
                 </core-context-menu-item>
                 <core-context-menu-item [hidden]="!loaded || !hasOffline || !isOnline" [priority]="400"
                     [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(undefined, $event, true)"
@@ -34,7 +34,7 @@
     <!-- There is data to be synchronized -->
     <ion-card class="core-warning-card" *ngIf="hasOffline">
         <ion-item>
-            <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+            <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>{{ 'core.hasdatatosync' | translate:{$a: 'addon.calendar.calendar' | translate} }}</ion-label>
         </ion-item>
     </ion-card>

@@ -22,7 +22,7 @@
         <!-- Info messages. Only show the first one. -->
         <ion-card class="core-info-card" *ngIf="lesson && messages?.length">
             <ion-item class="ion-text-wrap">
-                <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-circle-info" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>{{ messages[0].message }}</ion-label>
             </ion-item>
         </ion-card>
@@ -183,7 +183,7 @@
                 </ion-item>
                 <ion-card class="core-info-card" *ngIf="lesson?.progressbar && canManage">
                     <ion-item class="ion-text-wrap">
-                        <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
+                        <ion-icon name="fas-circle-info" slot="start" aria-hidden="true"></ion-icon>
                         <ion-label>{{ 'addon.mod_lesson.progressbarteacherwarning2' | translate }}</ion-label>
                     </ion-item>
                 </ion-card>
@@ -192,7 +192,7 @@
             <!-- End of lesson reached. -->
             <ion-card class="core-warning-card" *ngIf="eolData && !processData && eolData.offline?.value">
                 <ion-item>
-                    <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true"></ion-icon>
                     <ion-label>{{ 'addon.mod_lesson.finishretakeoffline' | translate }}</ion-label>
                 </ion-item>
             </ion-card>

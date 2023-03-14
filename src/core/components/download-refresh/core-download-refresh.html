@@ -2,7 +2,7 @@
     <!-- Download button. -->
     <ion-button *ngIf="status == statusNotDownloaded" fill="clear" (click)="download($event, false)" @coreShowHideAnimation
         [attr.aria-label]="(statusTranslatable || 'core.download') | translate">
-        <ion-icon slot="icon-only" name="fas-cloud-download-alt" aria-hidden="true"></ion-icon>
+        <ion-icon slot="icon-only" name="fas-cloud-arrow-down" aria-hidden="true"></ion-icon>
     </ion-button>
 
     <!-- Refresh button. -->

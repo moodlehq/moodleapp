@@ -96,14 +96,14 @@ export class CoreConstants {
     // Download / prefetch status icon.
     static readonly ICON_DOWNLOADED = 'fam-cloud-done';
     static readonly ICON_DOWNLOADING = 'spinner';
-    static readonly ICON_NOT_DOWNLOADED = 'fas-cloud-download-alt';
+    static readonly ICON_NOT_DOWNLOADED = 'fas-cloud-arrow-down';
     static readonly ICON_OUTDATED = 'fam-cloud-refresh';
     static readonly ICON_NOT_DOWNLOADABLE = '';
 
     // General download and sync icons.
     static readonly ICON_LOADING = 'spinner';
-    static readonly ICON_REFRESH = 'fas-redo-alt';
-    static readonly ICON_SYNC = 'fas-sync-alt';
+    static readonly ICON_REFRESH = 'fas-rotate-right';
+    static readonly ICON_SYNC = 'fas-rotate';
 
     // Constants from Moodle's resourcelib.
     static readonly RESOURCELIB_DISPLAY_AUTO = 0; // Try the best way.
