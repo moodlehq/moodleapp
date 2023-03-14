@@ -61,24 +61,24 @@ Feature: Attempt a quiz in app
     Then I should find "Text of the first question" in the app
     But I should not find "Text of the second question" in the app
 
-    When I press "Next" near "Question 1" in the app
+    When I press "Next" in the app
     Then I should find "Text of the second question" in the app
     But I should not find "Text of the first question" in the app
 
-    When I press "Previous" near "Question 2" in the app
+    When I press "Previous" in the app
     Then I should find "Text of the first question" in the app
     But I should not find "Text of the second question" in the app
 
-    When I press "Next" near "Quiz 1" in the app
+    When I press "Next" in the app
     Then I should find "Text of the second question" in the app
     But I should not find "Text of the first question" in the app
 
-    When I press "Previous" near "Quiz 1" in the app
+    When I press "Previous" in the app
     Then I should find "Text of the first question" in the app
     But I should not find "Text of the second question" in the app
 
-    When I press "Next" near "Question 1" in the app
-    And I press "Submit" near "Quiz 1" in the app
+    When I press "Next" in the app
+    And I press "Submit" in the app
     Then I should find "Summary of attempt" in the app
 
     When I press "Not yet answered" within "2" "ion-item" in the app
@@ -109,29 +109,29 @@ Feature: Attempt a quiz in app
     When I press "Attempt quiz now" in the app
     And I press "Four" in the app
     And I press "Three" in the app
-    And I press "Next" near "Quiz 2" in the app
+    And I press "Next" in the app
     And I set the field "Answer" to "testing" in the app
-    And I press "Next" near "Question 2" in the app
+    And I press "Next" in the app
     And I set the field "Answer" to "5" in the app
-    And I press "Next" near "Question 3" in the app
+    And I press "Next" in the app
     And I set the field "Answer" to "Testing an essay" in the app
-    And I press "Next" "ion-button" near "Question 4" in the app
+    And I press "Next" "ion-button" in the app
     And I press "quick" ".drag" in the app
     And I press "" ".place1.drop" in the app
     And I press "fox" ".drag" in the app
     And I press "" ".place2.drop" in the app
     And I press "lazy" ".drag" in the app
     And I press "" ".place3.drop" in the app
-    And I press "Next" near "Question 5" in the app
+    And I press "Next" in the app
     And I press "True" in the app
-    And I press "Next" near "Question 6" in the app
+    And I press "Next" in the app
     And I press "Choose... , frog" in the app
     And I press "amphibian" in the app
     And I press "Choose... , newt" in the app
     And I press "insect" in the app
     And I press "Choose... , cat" in the app
     And I press "mammal" in the app
-    And I press "Submit" near "Question 7" in the app
+    And I press "Submit" in the app
     Then I should not find "Not yet answered" in the app
 
     When I press "Submit all and finish" in the app
@@ -144,9 +144,9 @@ Feature: Attempt a quiz in app
     Given I entered the quiz activity "Quiz 1" on course "Course 1" as "student1" in the app
     When I press "Attempt quiz now" in the app
     And I press "True" in the app
-    And I press "Next" near "Question 1" in the app
+    And I press "Next" in the app
     And I press "False" in the app
-    And I press "Submit" near "Question 2" in the app
+    And I press "Submit" in the app
     And I press "Submit all and finish" in the app
     And I press "OK" in the app
     Then I should find "Review" in the app

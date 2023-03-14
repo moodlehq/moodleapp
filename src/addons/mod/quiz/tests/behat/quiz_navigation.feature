@@ -35,23 +35,23 @@ Feature: Attempt a quiz in app
     Then I should find "Text of the first question" in the app
     But I should not find "Text of the second question" in the app
 
-    When I press "Next" near "Question 1" in the app
+    When I press "Next" in the app
     Then I should find "Text of the second question" in the app
     But I should not find "Text of the first question" in the app
 
-    When I press "Previous" near "Question 2" in the app
+    When I press "Previous" in the app
     Then I should find "Text of the first question" in the app
     But I should not find "Text of the second question" in the app
 
-    When I press "Next" near "Quiz 1" in the app
+    When I press "Next" in the app
     Then I should find "Text of the second question" in the app
     But I should not find "Text of the first question" in the app
 
-    When I press "Previous" near "Quiz 1" in the app
+    When I press "Previous" in the app
     Then I should find "Text of the first question" in the app
     But I should not find "Text of the second question" in the app
 
-    When I press "Next" near "Question 1" in the app
+    When I press "Next" in the app
     And I press "Submit" in the app
     Then I should find "Summary of attempt" in the app
 
