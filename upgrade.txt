@@ -5,6 +5,7 @@ information provided here is intended especially for developers.
 
 - CoreIconComponent has been removed after deprecation period: Use CoreFaIconDirective instead.
 - The courseSummaryComponent property has been removed from the CoreCourseFormatComponent component, and the getCourseSummaryComponent method from the CoreCourseFormatHandler interface.
+- Font Awesome icon library has been updated to 6.3.0.
 
 === 4.1.0 ===
 
