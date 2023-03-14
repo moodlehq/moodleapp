@@ -197,7 +197,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
             // Get the event data.
             if (this.eventId >= 0) {
                 const event = await AddonCalendar.getEventById(this.eventId);
-                this.event = AddonCalendarHelper.formatEventData(event);
+                this.event = await AddonCalendarHelper.formatEventData(event);
             }
 
             try {

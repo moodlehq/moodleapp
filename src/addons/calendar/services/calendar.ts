@@ -1809,6 +1809,7 @@ export type AddonCalendarEventBase = {
         key: string; // Key.
         component: string; // Component.
         alttext: string; // Alttext.
+        iconurl?: string; // @since 4.2. Icon image url.
     };
     category?: {
         id: number; // Id.

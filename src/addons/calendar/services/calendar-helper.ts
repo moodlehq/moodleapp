@@ -37,6 +37,7 @@ import { AddonCalendarOfflineEventDBRecord } from './database/calendar-offline';
 import { CoreCategoryData } from '@features/courses/services/courses';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreReminders, CoreRemindersService } from '@features/reminders/services/reminders';
+import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 
 /**
  * Context levels enumeration.
@@ -164,9 +165,9 @@ export class AddonCalendarHelperProvider {
      * @param event Event to format.
      * @returns The formatted event to display.
      */
-    formatEventData(
+    async formatEventData(
         event: AddonCalendarEvent | AddonCalendarEventBase | AddonCalendarGetEventsEvent,
-    ): AddonCalendarEventToDisplay {
+    ): Promise<AddonCalendarEventToDisplay> {
 
         const eventFormatted: AddonCalendarEventToDisplay = {
             ...event,
@@ -182,7 +183,10 @@ export class AddonCalendarHelperProvider {
         };
 
         if (event.modulename) {
-            eventFormatted.eventIcon = CoreCourse.getModuleIconSrc(event.modulename);
+            eventFormatted.eventIcon = await CoreCourseModuleDelegate.getModuleIconSrc(
+                event.modulename,
+                'icon' in event ? event.icon.iconurl : undefined,
+            );
             eventFormatted.moduleIcon = eventFormatted.eventIcon;
             eventFormatted.iconTitle = CoreCourse.translateModuleName(event.modulename);
         }

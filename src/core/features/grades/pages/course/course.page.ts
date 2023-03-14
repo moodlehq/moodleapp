@@ -206,7 +206,7 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
      */
     private async fetchGrades(): Promise<void> {
         const table = await CoreGrades.getCourseGradesTable(this.courseId, this.userId);
-        const formattedTable = CoreGradesHelper.formatGradesTable(table);
+        const formattedTable = await CoreGradesHelper.formatGradesTable(table);
 
         this.title = formattedTable.rows[0]?.gradeitem ?? Translate.instant('core.grades.grades');
         this.columns = formattedTable.columns;

@@ -37,6 +37,7 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreAppProvider } from '@services/app';
+import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 
 export const GRADES_PAGE_NAME = 'grades';
 
@@ -73,7 +74,7 @@ export class CoreGradesHelperProvider {
             let content = String(column.content);
 
             if (name == 'itemname') {
-                this.setRowIconAndType(row, content);
+                await this.setRowIconAndType(row, content);
 
                 row.link = this.getModuleLink(content);
                 row.rowclass += column.class.indexOf('hidden') >= 0 ? ' hidden' : '';
@@ -102,7 +103,10 @@ export class CoreGradesHelperProvider {
      * @param useLegacyLayout Whether to use the layout before 4.1.
      * @returns Formatted row object.
      */
-    protected formatGradeRowForTable(tableRow: CoreGradesTableRow, useLegacyLayout: boolean): CoreGradesFormattedTableRow {
+    protected async formatGradeRowForTable(
+        tableRow: CoreGradesTableRow,
+        useLegacyLayout: boolean,
+    ): Promise<CoreGradesFormattedTableRow> {
         const row: CoreGradesFormattedTableRow = {};
 
         if (!useLegacyLayout && 'leader' in tableRow) {
@@ -132,7 +136,7 @@ export class CoreGradesHelperProvider {
                 row.colspan = itemNameColumn.colspan;
                 row.rowspan = tableRow.leader?.rowspan || 1;
 
-                this.setRowIconAndType(row, content);
+                await this.setRowIconAndType(row, content);
                 this.setRowStyleClasses(row, itemNameColumn.class);
                 row.rowclass += itemNameColumn.class.indexOf('hidden') >= 0 ? ' hidden' : '';
                 row.rowclass += itemNameColumn.class.indexOf('dimmed_text') >= 0 ? ' dimmed_text' : '';
@@ -203,7 +207,7 @@ export class CoreGradesHelperProvider {
      * @param table JSON object representing a table with data.
      * @returns Formatted HTML table.
      */
-    formatGradesTable(table: CoreGradesTable): CoreGradesFormattedTable {
+    async formatGradesTable(table: CoreGradesTable): Promise<CoreGradesFormattedTable> {
         const maxDepth = table.maxdepth;
         const formatted: CoreGradesFormattedTable = {
             columns: [],
@@ -223,7 +227,7 @@ export class CoreGradesHelperProvider {
             feedback: false,
             contributiontocoursetotal: false,
         };
-        formatted.rows = this.formatGradesTableRows(table.tabledata);
+        formatted.rows = await this.formatGradesTableRows(table.tabledata);
 
         // Get a row with some info.
         let normalRow = formatted.rows.find(
@@ -261,9 +265,9 @@ export class CoreGradesHelperProvider {
      * @param rows Unformatted rows.
      * @returns Formatted rows.
      */
-    protected formatGradesTableRows(rows: CoreGradesTableRow[]): CoreGradesFormattedTableRow[] {
+    protected async formatGradesTableRows(rows: CoreGradesTableRow[]): Promise<CoreGradesFormattedTableRow[]> {
         const useLegacyLayout = !CoreSites.getRequiredCurrentSite().isVersionGreaterEqualThan('4.1');
-        const formattedRows = rows.map(row => this.formatGradeRowForTable(row, useLegacyLayout));
+        const formattedRows = await Promise.all(rows.map(row => this.formatGradeRowForTable(row, useLegacyLayout)));
 
         if (!useLegacyLayout) {
             for (let index = 0; index < formattedRows.length - 1; index++) {
@@ -652,7 +656,7 @@ export class CoreGradesHelperProvider {
      * @param row Row.
      * @param text Row content.
      */
-    protected setRowIconAndType(row: CoreGradesFormattedRowCommonData, text: string): void {
+    protected async setRowIconAndType(row: CoreGradesFormattedRowCommonData, text: string): Promise<void> {
         text = text.replace('%2F', '/').replace('%2f', '/');
         if (text.indexOf('/agg_mean') > -1) {
             row.itemtype = 'agg_mean';
@@ -684,7 +688,7 @@ export class CoreGradesHelperProvider {
                 row.itemtype = 'mod';
                 row.itemmodule = module[1];
                 row.iconAlt = CoreCourse.translateModuleName(row.itemmodule) || '';
-                row.image = CoreCourse.getModuleIconSrc(
+                row.image = await CoreCourseModuleDelegate.getModuleIconSrc(
                     module[1],
                     CoreDomUtils.convertToElement(text).querySelector('img')?.getAttribute('src') ?? undefined,
                 );
