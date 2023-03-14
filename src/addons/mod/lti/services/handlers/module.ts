@@ -22,6 +22,7 @@ import { AddonModLtiHelper } from '../lti-helper';
 import { AddonModLtiIndexComponent } from '../../components/index';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourse } from '@features/course/services/course';
+import { CoreSites } from '@services/sites';
 
 /**
  * Handler to support LTI modules.
@@ -84,6 +85,19 @@ export class AddonModLtiModuleHandlerService extends CoreModuleHandlerBase imple
      */
     getIconSrc(module?: CoreCourseModuleData | undefined, modicon?: string | undefined): string | undefined {
         return module?.modicon ?? modicon ?? CoreCourse.getModuleIconSrc(this.modName);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    iconIsShape(module?: CoreCourseModuleData | undefined, modicon?: string | undefined): boolean | undefined {
+        const iconUrl = module?.modicon ?? modicon;
+
+        if (!iconUrl) {
+            return true;
+        }
+
+        return iconUrl.startsWith(CoreSites.getRequiredCurrentSite().siteUrl);
     }
 
 }

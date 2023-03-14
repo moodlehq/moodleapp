@@ -684,14 +684,16 @@ export class CoreGradesHelperProvider {
             row.iconAlt = Translate.instant('core.grades.calculatedgrade');
         } else if (text.indexOf('/mod/') > -1) {
             const module = text.match(/mod\/([^/]*)\//);
-            if (module?.[1] !== undefined) {
+            const modname = module?.[1];
+
+            if (modname !== undefined) {
+                const modicon = CoreDomUtils.convertToElement(text).querySelector('img')?.getAttribute('src') ?? undefined;
+
                 row.itemtype = 'mod';
-                row.itemmodule = module[1];
+                row.itemmodule = modname;
                 row.iconAlt = CoreCourse.translateModuleName(row.itemmodule) || '';
-                row.image = await CoreCourseModuleDelegate.getModuleIconSrc(
-                    module[1],
-                    CoreDomUtils.convertToElement(text).querySelector('img')?.getAttribute('src') ?? undefined,
-                );
+                row.image = await CoreCourseModuleDelegate.getModuleIconSrc(modname, modicon);
+                row.imageIsShape = await CoreCourseModuleDelegate.moduleIconIsShape(modname, modicon);
             }
         } else {
             if (row.rowspan && row.rowspan > 1) {
@@ -804,6 +806,7 @@ export type CoreGradesFormattedRowCommonData = {
     rowclass?: string;
     itemtype?: string;
     image?: string;
+    imageIsShape?: boolean;
     itemmodule?: string;
     iconAlt?: string;
     rowspan?: number;
