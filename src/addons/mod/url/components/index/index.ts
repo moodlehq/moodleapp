@@ -189,7 +189,11 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
      */
     go(): void {
         this.logView();
-        AddonModUrlHelper.open(this.url!);
+        if (!this.url) {
+            return;
+        }
+
+        AddonModUrlHelper.open(this.url);
     }
 
 }

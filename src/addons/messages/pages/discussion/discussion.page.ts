@@ -270,9 +270,10 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                 }
 
                 if (this.userId) {
+                    const userId = this.userId;
                     // Get the member info. Invalidate first to make sure we get the latest status.
                     promises.push(AddonMessages.invalidateMemberInfo(this.userId).then(async () => {
-                        this.otherMember = await AddonMessages.getMemberInfo(this.userId!);
+                        this.otherMember = await AddonMessages.getMemberInfo(userId);
 
                         if (!exists && this.otherMember) {
                             this.conversationImage = this.otherMember.profileimageurl;
@@ -288,6 +289,8 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
             } else {
                 if (this.userId) {
+                    const userId = this.userId;
+
                     // Fake the user member info.
                     promises.push(CoreUser.getProfile(this.userId).then(async (user) => {
                         this.otherMember = {
@@ -305,8 +308,8 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
                             canmessage: true,
                             requirescontact: false,
                         };
-                        this.otherMember.isblocked = await AddonMessages.isBlocked(this.userId!);
-                        this.otherMember.iscontact = await AddonMessages.isContact(this.userId!);
+                        this.otherMember.isblocked = await AddonMessages.isBlocked(userId);
+                        this.otherMember.iscontact = await AddonMessages.isContact(userId);
                         this.blockIcon = this.otherMember.isblocked ? 'fas-user-check' : 'fas-user-lock';
 
                         return;

@@ -36,19 +36,23 @@ export class CoreBlockOnlyTitleComponent extends CoreBlockBaseComponent implemen
     async ngOnInit(): Promise<void> {
         await super.ngOnInit();
 
-        this.fetchContentDefaultError = 'Error getting ' + this.block.contents?.title + ' data.';
+        this.fetchContentDefaultError = `Error getting ${this.block.contents?.title} data.`;
     }
 
     /**
      * Go to the block page.
      */
     gotoBlock(): void {
+        if (!this.link) {
+            return;
+        }
+
         const navOptions = this.navOptions || {};
         if (this.linkParams) {
             navOptions.params = this.linkParams;
         }
 
-        CoreNavigator.navigateToSitePath(this.link!, navOptions);
+        CoreNavigator.navigateToSitePath(this.link, navOptions);
     }
 
 }

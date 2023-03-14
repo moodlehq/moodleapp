@@ -62,7 +62,7 @@ export class AddonModResourceHelperProvider {
      * @returns Promise resolved with the iframe src.
      */
     async getIframeSrc(module: CoreCourseModuleData): Promise<string> {
-        if (!module.contents?.length) {
+        if (!module.contents?.length || module.url === undefined) {
             throw new CoreError('No contents available in module');
         }
 
@@ -74,7 +74,7 @@ export class AddonModResourceHelperProvider {
         }
 
         try {
-            const dirPath = await CoreFilepool.getPackageDirUrlByUrl(CoreSites.getCurrentSiteId(), module.url!);
+            const dirPath = await CoreFilepool.getPackageDirUrlByUrl(CoreSites.getCurrentSiteId(), module.url);
 
             // This URL is going to be injected in an iframe, we need trustAsResourceUrl to make it work in a browser.
             return CorePath.concatenatePaths(dirPath, mainFilePath);

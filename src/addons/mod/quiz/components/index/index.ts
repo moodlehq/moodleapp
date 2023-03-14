@@ -418,10 +418,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     }
 
     /**
-     * Checks if sync has succeed from result sync data.
-     *
-     * @param result Data returned on the sync function.
-     * @returns If suceed or not.
+     * @inheritdoc
      */
     protected hasSyncSucceed(result: AddonModQuizSyncResult): boolean {
         if (result.attemptFinished) {
@@ -553,9 +550,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     }
 
     /**
-     * Performs the sync of the activity.
-     *
-     * @returns Promise resolved when done.
+     * @inheritdoc
      */
     protected async sync(): Promise<AddonModQuizSyncResult> {
         if (!this.candidateQuiz) {

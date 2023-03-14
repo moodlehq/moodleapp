@@ -27,7 +27,7 @@ import {
 import { AddonCalendarOffline } from './calendar-offline';
 import { AddonCalendarHelper } from './calendar-helper';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreSync } from '@services/sync';
+import { CoreSync, CoreSyncResult } from '@services/sync';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import moment from 'moment-timezone';
 
@@ -301,13 +301,11 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
 
 export const AddonCalendarSync = makeSingleton(AddonCalendarSyncProvider);
 
-export type AddonCalendarSyncEvents = {
-    warnings: string[];
+export type AddonCalendarSyncEvents = CoreSyncResult & {
     events: AddonCalendarEvent[];
     offlineIdMap: Record<number, number>; // Map offline ID with online ID for created events.
     deleted: number[];
     toinvalidate: AddonCalendarSyncInvalidateEvent[];
-    updated: boolean;
     source?: string; // Added on pages.
     moment?: moment.Moment; // Added on day page.
 };

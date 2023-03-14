@@ -14,6 +14,7 @@
 
 import { Component, Optional, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Params } from '@angular/router';
+import { CoreError } from '@classes/errors/error';
 import { CoreSite } from '@classes/site';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
@@ -314,11 +315,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * @inheritdoc
      */
-    protected hasSyncSucceed(result?: AddonModAssignSyncResult): boolean {
-        if (!result) {
-            return false;
-        }
-
+    protected hasSyncSucceed(result: AddonModAssignSyncResult): boolean {
         if (result.updated) {
             this.submissionComponent?.invalidateAndRefresh(false);
         }
@@ -384,9 +381,9 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * @inheritdoc
      */
-    protected async sync(): Promise<AddonModAssignSyncResult | void> {
+    protected async sync(): Promise<AddonModAssignSyncResult> {
         if (!this.assign) {
-            return;
+            throw new CoreError('Cannot sync without a assign.');
         }
 
         return AddonModAssignSync.syncAssign(this.assign.id);

@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreCourseActivitySyncBaseProvider } from '@features/course/classes/activity-sync';
+import { CoreSyncResult } from '@services/sync';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreXAPIOffline } from '@features/xapi/services/offline';
 import { CoreXAPI } from '@features/xapi/services/xapi';
@@ -197,10 +198,7 @@ export const AddonModH5PActivitySync = makeSingleton(AddonModH5PActivitySyncProv
 /**
  * Sync result.
  */
-export type AddonModH5PActivitySyncResult = {
-    updated: boolean;
-    warnings: string[];
-};
+export type AddonModH5PActivitySyncResult = CoreSyncResult;
 
 /**
  * Data passed to AUTO_SYNC event.

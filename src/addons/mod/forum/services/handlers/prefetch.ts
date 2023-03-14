@@ -22,7 +22,7 @@ import { CoreCourse, CoreCourseAnyModuleData, CoreCourseCommonModWSOptions } fro
 import { CoreUser } from '@features/user/services/user';
 import { CoreGroups, CoreGroupsProvider } from '@services/groups';
 import { CoreUtils } from '@services/utils/utils';
-import { AddonModForumSync } from '../forum-sync';
+import { AddonModForumSync, AddonModForumSyncResult } from '../forum-sync';
 import { makeSingleton } from '@singletons';
 import { CoreCourses } from '@features/courses/services/courses';
 
@@ -341,11 +341,3 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
 }
 
 export const AddonModForumPrefetchHandler = makeSingleton(AddonModForumPrefetchHandlerService);
-
-/**
- * Data returned by a forum sync.
- */
-export type AddonModForumSyncResult = {
-    warnings: string[]; // List of warnings.
-    updated: boolean; // Whether some data was sent to the server or offline data was updated.
-};

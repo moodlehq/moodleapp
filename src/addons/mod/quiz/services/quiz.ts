@@ -99,7 +99,7 @@ export class AddonModQuizProvider {
      * @returns Grade to display.
      */
     formatGrade(grade?: number | null, decimals?: number): string {
-        if (grade === undefined || grade == -1 || grade === null || isNaN(grade)) {
+        if (grade === undefined || grade === -1 || grade === null || isNaN(grade)) {
             return Translate.instant('addon.mod_quiz.notyetgraded');
         }
 
@@ -1800,7 +1800,7 @@ export class AddonModQuizProvider {
     ): string | undefined {
         let grade: number | undefined;
 
-        const rawGradeNum = typeof rawGrade == 'string' ? parseFloat(rawGrade) : rawGrade;
+        const rawGradeNum = typeof rawGrade === 'string' ? parseFloat(rawGrade) : rawGrade;
         if (rawGradeNum !== undefined && rawGradeNum !== null && !isNaN(rawGradeNum)) {
             if (quiz.sumgrades && quiz.sumgrades >= 0.000005) {
                 grade = rawGradeNum * (quiz.grade ?? 0) / quiz.sumgrades;

@@ -21,7 +21,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreSync } from '@services/sync';
+import { CoreSync, CoreSyncResult } from '@services/sync';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
@@ -495,9 +495,7 @@ export const AddonModLessonSync = makeSingleton(AddonModLessonSyncProvider);
 /**
  * Data returned by a lesson sync.
  */
-export type AddonModLessonSyncResult = {
-    warnings: string[]; // List of warnings.
-    updated: boolean; // Whether some data was sent to the server or offline data was updated.
+export type AddonModLessonSyncResult = CoreSyncResult & {
     courseId?: number; // Course the lesson belongs to (if known).
 };
 

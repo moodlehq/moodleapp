@@ -217,12 +217,13 @@ export class CoreLoginEmailSignupPage implements OnInit {
             this.countryControl.setValue(this.settings.country || '');
         }
 
-        this.namefieldsErrors = {};
+        const namefieldsErrors = {};
         if (this.settings.namefields) {
             this.settings.namefields.forEach((field) => {
-                this.namefieldsErrors![field] = CoreLoginHelper.getErrorMessages('core.login.missing' + field);
+                namefieldsErrors[field] = CoreLoginHelper.getErrorMessages('core.login.missing' + field);
             });
         }
+        this.namefieldsErrors = namefieldsErrors;
 
         this.countries = await CoreUtils.getCountryListSorted();
     }

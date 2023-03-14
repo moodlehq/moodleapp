@@ -1443,7 +1443,7 @@ export class CoreDomUtilsProvider {
         }
 
         return this.showErrorModal(
-            typeof errorMessage == 'string' && errorMessage ? error! : defaultError,
+            typeof errorMessage == 'string' && errorMessage && error ? error : defaultError,
             needsTranslate,
             autocloseTime,
         );

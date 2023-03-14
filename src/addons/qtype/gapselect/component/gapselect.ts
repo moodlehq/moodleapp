@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ElementRef } from '@angular/core';
+import { Component,  ElementRef } from '@angular/core';
 
 import { CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
@@ -25,7 +25,7 @@ import { CoreQuestionHelper } from '@features/question/services/question-helper'
     templateUrl: 'addon-qtype-gapselect.html',
     styleUrls: ['gapselect.scss'],
 })
-export class AddonQtypeGapSelectComponent extends CoreQuestionBaseComponent implements OnInit {
+export class AddonQtypeGapSelectComponent extends CoreQuestionBaseComponent {
 
     constructor(elementRef: ElementRef) {
         super('AddonQtypeGapSelectComponent', elementRef);
@@ -34,7 +34,7 @@ export class AddonQtypeGapSelectComponent extends CoreQuestionBaseComponent impl
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
+    init(): void {
         this.initOriginalTextComponent('.qtext');
     }
 

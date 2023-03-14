@@ -23,7 +23,7 @@ import { CoreQuestion, CoreQuestionQuestionParsed } from '@features/question/ser
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreSync } from '@services/sync';
+import { CoreSync, CoreSyncResult } from '@services/sync';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -482,10 +482,8 @@ export const AddonModQuizSync = makeSingleton(AddonModQuizSyncProvider);
 /**
  * Data returned by a quiz sync.
  */
-export type AddonModQuizSyncResult = {
-    warnings: string[]; // List of warnings.
+export type AddonModQuizSyncResult = CoreSyncResult & {
     attemptFinished: boolean; // Whether an attempt was finished in the site due to the sync.
-    updated: boolean;
 };
 
 /**

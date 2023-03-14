@@ -1274,9 +1274,9 @@ export class CoreCourseProvider {
         if (!result.status) {
             if (result.warnings && result.warnings.length) {
                 throw new CoreWSError(result.warnings[0]);
-            } else {
-                throw new CoreError('Cannot change completion.');
             }
+
+            throw new CoreError('Cannot change completion.');
         }
 
         return result;

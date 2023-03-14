@@ -707,12 +707,9 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     }
 
     /**
-     * Checks if sync has succeed from result sync data.
-     *
-     * @param result Data returned on the sync function.
-     * @returns If suceed or not.
+     * @inheritdoc
      */
-    protected hasSyncSucceed(result: AddonModWikiSyncWikiResult | undefined): boolean {
+    protected hasSyncSucceed(result: AddonModWikiSyncWikiResult): boolean {
         if (!result) {
             return false;
         }
@@ -843,13 +840,11 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     }
 
     /**
-     * Performs the sync of the activity.
-     *
-     * @returns Promise resolved when done.
+     * @inheritdoc
      */
-    protected async sync(): Promise<AddonModWikiSyncWikiResult | undefined> {
+    protected async sync(): Promise<AddonModWikiSyncWikiResult> {
         if (!this.wiki) {
-            return;
+            throw new CoreError('Cannot sync without a wiki.');
         }
 
         return AddonModWikiSync.syncWiki(this.wiki.id, this.courseId, this.wiki.coursemodule);

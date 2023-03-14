@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreCourseActivitySyncBaseProvider } from '@features/course/classes/activity-sync';
+import { CoreSyncResult } from '@services/sync';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreNetwork } from '@services/network';
@@ -217,10 +218,7 @@ export const AddonModChoiceSync = makeSingleton(AddonModChoiceSyncProvider);
 /**
  * Data returned by a choice sync.
  */
-export type AddonModChoiceSyncResult = {
-    warnings: string[]; // List of warnings.
-    updated: boolean; // Whether some data was sent to the server or offline data was updated.
-};
+export type AddonModChoiceSyncResult = CoreSyncResult;
 
 /**
  * Data passed to AUTO_SYNCED event.

@@ -183,3 +183,8 @@ export class CoreSyncProvider {
 }
 
 export const CoreSync = makeSingleton(CoreSyncProvider);
+
+export type CoreSyncResult = {
+    warnings: string[]; // List of warnings.
+    updated: boolean; // Whether some data was sent to the server or offline data was updated.
+};

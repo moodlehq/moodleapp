@@ -20,7 +20,7 @@ import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/c
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreSync } from '@services/sync';
+import { CoreSync, CoreSyncResult } from '@services/sync';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
@@ -292,10 +292,7 @@ export const AddonModFeedbackSync = makeSingleton(AddonModFeedbackSyncProvider);
 /**
  * Data returned by a feedback sync.
  */
-export type AddonModFeedbackSyncResult = {
-    warnings: string[]; // List of warnings.
-    updated: boolean; // Whether some data was sent to the server or offline data was updated.
-};
+export type AddonModFeedbackSyncResult = CoreSyncResult;
 
 /**
  * Data passed to AUTO_SYNCED event.
