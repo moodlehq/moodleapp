@@ -792,7 +792,7 @@ export class CoreQuestionHelperProvider {
                 const classList = icon.classList.toString();
                 if (classList.indexOf('fa-check') >= 0) {
                     correct = true;
-                } else if (classList.indexOf('fa-remove') < 0) {
+                } else if (classList.indexOf('fa-xmark') < 0 || classList.indexOf('fa-remove') < 0) {
                     return;
                 }
             }
