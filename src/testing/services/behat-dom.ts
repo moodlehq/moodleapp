@@ -385,6 +385,34 @@ export class TestingBehatDomUtilsService {
     }
 
     /**
+     * Find a field.
+     *
+     * @param field Field name.
+     * @returns Field element.
+     */
+    findField(field: string): HTMLElement | HTMLInputElement | undefined {
+        const input = this.findElementBasedOnText(
+            { text: field, selector: 'input, textarea, [contenteditable="true"], ion-select, ion-datetime' },
+            { onlyClickable: false, containerName: '' },
+        );
+
+        if (input) {
+            return input;
+        }
+
+        const label = this.findElementBasedOnText(
+            { text: field, selector: 'label' },
+            { onlyClickable: false, containerName: '' },
+        );
+
+        if (label) {
+            const inputId = label.getAttribute('for');
+
+            return (inputId && document.getElementById(inputId)) || undefined;
+        }
+    }
+
+    /**
      * Function to find element based on their text or Aria label.
      *
      * @param locator Element locator.

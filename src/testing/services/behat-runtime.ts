@@ -422,7 +422,7 @@ export class TestingBehatRuntimeService {
     async setField(field: string, value: string): Promise<string> {
         this.log('Action - Set field ' + field + ' to: ' + value);
 
-        const found = this.findField(field);
+        const found = TestingBehatDomUtils.findField(field);
 
         if (!found) {
             return 'ERROR: No element matches field to set.';
@@ -445,7 +445,7 @@ export class TestingBehatRuntimeService {
     async fieldMatches(field: string, value: string): Promise<string> {
         this.log('Action - Field ' + field + ' matches value: ' + value);
 
-        const found = this.findField(field);
+        const found = TestingBehatDomUtils.findField(field);
 
         if (!found) {
             return 'ERROR: No element matches field to set.';
@@ -457,19 +457,6 @@ export class TestingBehatRuntimeService {
         }
 
         return 'OK';
-    }
-
-    /**
-     * Find a field.
-     *
-     * @param field Field name.
-     * @returns Field element.
-     */
-    protected findField(field: string): HTMLElement | HTMLInputElement | undefined {
-        return TestingBehatDomUtils.findElementBasedOnText(
-            { text: field, selector: 'input, textarea, [contenteditable="true"], ion-select, ion-datetime' },
-            { onlyClickable: false, containerName: '' },
-        );
     }
 
     /**
