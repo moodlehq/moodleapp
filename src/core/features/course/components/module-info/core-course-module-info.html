@@ -2,7 +2,6 @@
     <core-mod-icon slot="start" [modicon]="modicon" [modname]="module.modname" [componentId]="module.instance">
     </core-mod-icon>
     <ion-label>
-        <div class="core-modulename" *ngIf="moduleNameTranslated">{{moduleNameTranslated}}</div>
         <h1>
             <core-format-text [text]="module.name" contextLevel="module" [component]="component" [componentId]="componentId"
                 [contextInstanceId]="module.id" [courseId]="courseId">
