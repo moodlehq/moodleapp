@@ -50,7 +50,7 @@ import { AddonModForumPostOptionsMenuComponent } from '../post-options-menu/post
 import { CoreRatingInfo } from '@features/rating/services/rating';
 import { CoreForms } from '@singletons/form';
 import { CoreFileEntry } from '@services/file-helper';
-import { AddonModForumSharedPostFormData } from '../../pages/discussion/discussion.page';
+import { AddonModForumSharedPostFormData } from '../../pages/discussion/discussion';
 import { CoreDom } from '@singletons/dom';
 
 /**

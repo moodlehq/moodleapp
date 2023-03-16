@@ -39,4 +39,4 @@ import { AddonQbehaviourManualGradedModule } from './manualgraded/manualgraded.m
         AddonQbehaviourManualGradedModule,
     ],
 })
-export class AddonQbehaviourModule { }
+export class AddonQbehaviourModule {}

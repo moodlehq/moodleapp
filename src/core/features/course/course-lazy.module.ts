@@ -12,33 +12,77 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { CoreSharedModule } from '@/core/shared.module';
+import { Injector, NgModule } from '@angular/core';
+import { RouterModule, ROUTES, Routes } from '@angular/router';
+import { CoreCourseComponentsModule } from '@features/course/components/components.module';
+import { resolveIndexRoutes } from '@features/course/course-routing.module';
+import { CoreCourseSummaryPageModule } from '@features/course/pages/course-summary/course-summary.module';
+import { CoreCourseIndexPage } from '@features/course/pages/index';
+import { CoreCourseListModTypePage } from '@features/course/pages/list-mod-type/list-mod-type';
+import { CoreCourseModulePreviewPage } from '@features/course/pages/module-preview/module-preview';
 import { CoreCourseHelper } from './services/course-helper';
 
 export const COURSE_INDEX_PATH = ':courseId';
 
-const routes: Routes = [
-    {
-        path: COURSE_INDEX_PATH,
-        loadChildren: () => import('./pages/index/index.module').then( m => m.CoreCourseIndexPageModule),
-    },
-    {
-        path: ':courseId/:cmId/module-preview',
-        loadChildren: () => import('./pages/module-preview/module-preview.module')
-            .then( m => m.CoreCourseModulePreviewPageModule),
-    },
-    {
-        path: ':courseId/list-mod-type',
-        loadChildren: () => import('./pages/list-mod-type/list-mod-type.module').then(m => m.CoreCourseListModTypePageModule),
-    },
-    {
-        path: ':courseId/summary',
-        loadChildren: () => CoreCourseHelper.getCourseSummaryRouteModule(),
-    },
-];
+/**
+ * Build module routes.
+ *
+ * @param injector Injector.
+ * @returns Routes.
+ */
+function buildRoutes(injector: Injector): Routes {
+    const indexRoutes = resolveIndexRoutes(injector);
+
+    return [
+        {
+            path: COURSE_INDEX_PATH,
+            children: [
+                {
+                    path: '',
+                    component: CoreCourseIndexPage,
+                    data: {
+                        isCourseIndex: true,
+                    },
+                    children: indexRoutes.children,
+                },
+                ...indexRoutes.siblings,
+            ],
+        },
+        {
+            path: ':courseId/:cmId/module-preview',
+            component: CoreCourseModulePreviewPage,
+        },
+        {
+            path: ':courseId/list-mod-type',
+            component: CoreCourseListModTypePage,
+        },
+        {
+            path: ':courseId/summary',
+            loadChildren: () => CoreCourseHelper.getCourseSummaryRouteModule(),
+        },
+    ];
+}
 
 @NgModule({
-    imports: [RouterModule.forChild(routes)],
+    declarations: [
+        CoreCourseListModTypePage,
+        CoreCourseIndexPage,
+        CoreCourseModulePreviewPage,
+    ],
+    imports: [
+        CoreSharedModule,
+        CoreCourseComponentsModule,
+        CoreCourseSummaryPageModule,
+    ],
+    exports: [RouterModule],
+    providers: [
+        {
+            provide: ROUTES,
+            multi: true,
+            deps: [Injector],
+            useFactory: buildRoutes,
+        },
+    ],
 })
 export class CoreCourseLazyModule {}

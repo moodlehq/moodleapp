@@ -15,39 +15,47 @@
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 
-import { CoreCourseIndexRoutingModule } from '@features/course/pages/index/index-routing.module';
+import { CoreCourseIndexRoutingModule } from '@features/course/course-routing.module';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { CoreMainMenuHomeRoutingModule } from '@features/mainmenu/pages/home/home-routing.module';
-import { CoreSitePreferencesRoutingModule } from '@features/settings/pages/site/site-routing';
+import { CoreMainMenuHomeRoutingModule } from '@features/mainmenu/mainmenu-home-routing.module';
+import { CoreSitePreferencesRoutingModule } from '@features/settings/settings-site-routing.module';
 import { CoreSitePluginsComponentsModule } from './components/components.module';
 import { CoreSitePluginsHelper } from './services/siteplugins-helper';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreSitePluginsPluginPage } from '@features/siteplugins/pages/plugin/plugin';
+import { CanLeaveGuard } from '@guards/can-leave';
+import { CoreSitePluginsCourseOptionPage } from '@features/siteplugins/pages/course-option/course-option';
+import { CoreSitePluginsModuleIndexPage } from '@features/siteplugins/pages/module-index/module-index';
 
 const routes: Routes = [
     {
         path: 'siteplugins/content/:component/:method/:hash',
-        loadChildren: () => import('./pages/plugin-page/plugin-page.module').then( m => m.CoreSitePluginsPluginPageModule),
+        component: CoreSitePluginsPluginPage,
+        canDeactivate: [CanLeaveGuard],
     },
 ];
 
 const homeRoutes: Routes = [
     {
         path: 'siteplugins/homecontent/:component/:method',
-        loadChildren: () => import('./pages/plugin-page/plugin-page.module').then( m => m.CoreSitePluginsPluginPageModule),
+        component: CoreSitePluginsPluginPage,
+        canDeactivate: [CanLeaveGuard],
     },
 ];
 
 const courseIndexRoutes: Routes = [
     {
         path: 'siteplugins/:handlerUniqueName',
-        loadChildren: () => import('@features/siteplugins/pages/course-option/course-option.module')
-            .then(m => m.CoreSitePluginsCourseOptionModule),
+        component: CoreSitePluginsCourseOptionPage,
+        canDeactivate: [CanLeaveGuard],
     },
 ];
 
 const moduleRoutes: Routes = [
     {
         path: 'siteplugins/module/:courseId/:cmId',
-        loadChildren: () => import('./pages/module-index/module-index.module').then( m => m.CoreSitePluginsModuleIndexPageModule),
+        component: CoreSitePluginsModuleIndexPage,
+        canDeactivate: [CanLeaveGuard],
     },
 ];
 
@@ -58,6 +66,12 @@ const moduleRoutes: Routes = [
         CoreMainMenuHomeRoutingModule.forChild({ children: homeRoutes }),
         CoreSitePreferencesRoutingModule.forChild(routes),
         CoreSitePluginsComponentsModule,
+        CoreSharedModule,
+    ],
+    declarations: [
+        CoreSitePluginsPluginPage,
+        CoreSitePluginsCourseOptionPage,
+        CoreSitePluginsModuleIndexPage,
     ],
     providers: [
         {

@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreSharedModule } from '@/core/shared.module';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { CoreUserComponentsModule } from '@features/user/components/components.module';
+import { CoreUserAboutPage } from '@features/user/pages/about/about';
 
 const routes: Routes = [
     {
@@ -23,15 +26,22 @@ const routes: Routes = [
     },
     {
         path: 'profile',
-        loadChildren: () => import('./pages/profile/profile.module').then( m => m.CoreUserProfilePageModule),
+        loadChildren: () => import('./user-profile-lazy.module').then( m => m.CoreUserProfileLazyModule),
     },
     {
         path: 'about',
-        loadChildren: () => import('./pages/about/about.module').then( m => m.CoreUserAboutPageModule),
+        component: CoreUserAboutPage,
     },
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(routes)],
+    imports: [
+        RouterModule.forChild(routes),
+        CoreSharedModule,
+        CoreUserComponentsModule,
+    ],
+    declarations: [
+        CoreUserAboutPage,
+    ],
 })
 export class CoreUserLazyModule {}

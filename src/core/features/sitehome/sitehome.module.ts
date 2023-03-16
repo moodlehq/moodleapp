@@ -19,7 +19,7 @@ import { CoreSiteHomeIndexLinkHandler } from './services/handlers/index-link';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreSiteHomeHomeHandler, CoreSiteHomeHomeHandlerService } from './services/handlers/sitehome-home';
 import { CoreMainMenuHomeDelegate } from '@features/mainmenu/services/home-delegate';
-import { CoreMainMenuHomeRoutingModule } from '@features/mainmenu/pages/home/home-routing.module';
+import { CoreMainMenuHomeRoutingModule } from '@features/mainmenu/mainmenu-home-routing.module';
 import { CoreSiteHomeProvider } from './services/sitehome';
 
 export const CORE_SITEHOME_SERVICES: Type<unknown>[] = [
@@ -29,7 +29,7 @@ export const CORE_SITEHOME_SERVICES: Type<unknown>[] = [
 const mainMenuHomeRoutes: Routes = [
     {
         path: CoreSiteHomeHomeHandlerService.PAGE_NAME,
-        loadChildren: () => import('./pages/index/index.module').then(m => m.CoreSiteHomeIndexPageModule),
+        loadChildren: () => import('./sitehome-lazy.module').then(m => m.CoreSiteHomeLazyModule),
     },
 ];
 

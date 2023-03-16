@@ -12,17 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreSharedModule } from '@/core/shared.module';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { CoreCommentsViewerPage } from '@features/comments/pages/viewer/viewer';
 
 const routes: Routes = [
     {
         path: ':contextLevel/:instanceId/:componentName/:itemId',
-        loadChildren: () => import('./pages/viewer/viewer.module').then( m => m.CoreCommentsViewerPageModule),
+        component: CoreCommentsViewerPage,
     },
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(routes)],
+    imports: [
+        RouterModule.forChild(routes),
+        CoreSharedModule,
+    ],
+    declarations: [
+        CoreCommentsViewerPage,
+    ],
 })
 export class CoreCommentsLazyModule {}

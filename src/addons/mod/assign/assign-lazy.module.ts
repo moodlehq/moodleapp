@@ -20,8 +20,8 @@ import { CanLeaveGuard } from '@guards/can-leave';
 import { CoreScreen } from '@services/screen';
 import { AddonModAssignComponentsModule } from './components/components.module';
 import { AddonModAssignEditPage } from './pages/edit/edit';
-import { AddonModAssignIndexPage } from './pages/index/index.page';
-import { AddonModAssignSubmissionListPage } from './pages/submission-list/submission-list.page';
+import { AddonModAssignIndexPage } from './pages/index';
+import { AddonModAssignSubmissionListPage } from './pages/submission-list/submission-list';
 import { AddonModAssignSubmissionReviewPage } from './pages/submission-review/submission-review';
 
 const commonRoutes: Routes = [

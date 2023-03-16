@@ -18,7 +18,7 @@ import { Routes } from '@angular/router';
 
 import { CoreFileUploaderDelegate } from '@features/fileuploader/services/fileuploader-delegate';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { CoreSitePreferencesRoutingModule } from '@features/settings/pages/site/site-routing';
+import { CoreSitePreferencesRoutingModule } from '@features/settings/settings-site-routing.module';
 import { CoreSettingsDelegate } from '@features/settings/services/settings-delegate';
 import { CoreSharedFilesComponentsModule } from './components/components.module';
 import { CoreSharedFilesSettingsHandler } from './services/handlers/settings';

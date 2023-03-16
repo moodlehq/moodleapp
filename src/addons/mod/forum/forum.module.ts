@@ -17,7 +17,7 @@ import { Routes } from '@angular/router';
 
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { CoreCourseContentsRoutingModule } from '@features/course/pages/contents/contents-routing.module';
+import { CoreCourseContentsRoutingModule } from '@features/course/course-contents-routing.module';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreScreen } from '@services/screen';
@@ -55,7 +55,7 @@ export const ADDON_MOD_FORUM_SERVICES: Type<unknown>[] = [
 const mainMenuRoutes: Routes = [
     {
         path: `${AddonModForumModuleHandlerService.PAGE_NAME}/discussion/:discussionId`,
-        loadChildren: () => import('./pages/discussion/discussion.module').then(m => m.AddonForumDiscussionPageModule),
+        loadChildren: () => import('./forum-discussion-lazy.module').then(m => m.AddonForumDiscussionLazyModule),
         data: { swipeEnabled: false },
     },
     {
@@ -66,13 +66,12 @@ const mainMenuRoutes: Routes = [
         [
             {
                 path: `${COURSE_CONTENTS_PATH}/${AddonModForumModuleHandlerService.PAGE_NAME}/new/:timeCreated`,
-                loadChildren: () => import('./pages/new-discussion/new-discussion.module')
-                    .then(m => m.AddonForumNewDiscussionPageModule),
+                loadChildren: () => import('./forum-new-discussion-lazy.module').then(m => m.AddonForumNewDiscussionLazyModule),
                 data: { discussionsPathPrefix: `${AddonModForumModuleHandlerService.PAGE_NAME}/` },
             },
             {
                 path: `${COURSE_CONTENTS_PATH}/${AddonModForumModuleHandlerService.PAGE_NAME}/:discussionId`,
-                loadChildren: () => import('./pages/discussion/discussion.module').then(m => m.AddonForumDiscussionPageModule),
+                loadChildren: () => import('./forum-discussion-lazy.module').then(m => m.AddonForumDiscussionLazyModule),
                 data: { discussionsPathPrefix: `${AddonModForumModuleHandlerService.PAGE_NAME}/` },
             },
         ],
@@ -84,13 +83,12 @@ const courseContentsRoutes: Routes = conditionalRoutes(
     [
         {
             path: `${AddonModForumModuleHandlerService.PAGE_NAME}/new/:timeCreated`,
-            loadChildren: () => import('./pages/new-discussion/new-discussion.module')
-                .then(m => m.AddonForumNewDiscussionPageModule),
+            loadChildren: () => import('./forum-new-discussion-lazy.module').then(m => m.AddonForumNewDiscussionLazyModule),
             data: { discussionsPathPrefix: `${AddonModForumModuleHandlerService.PAGE_NAME}/` },
         },
         {
             path: `${AddonModForumModuleHandlerService.PAGE_NAME}/:discussionId`,
-            loadChildren: () => import('./pages/discussion/discussion.module').then(m => m.AddonForumDiscussionPageModule),
+            loadChildren: () => import('./forum-discussion-lazy.module').then(m => m.AddonForumDiscussionLazyModule),
             data: { discussionsPathPrefix: `${AddonModForumModuleHandlerService.PAGE_NAME}/` },
         },
     ],

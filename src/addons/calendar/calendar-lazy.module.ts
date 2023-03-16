@@ -12,39 +12,49 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreSharedModule } from '@/core/shared.module';
+import { AddonCalendarComponentsModule } from '@addons/calendar/components/components.module';
+import { AddonCalendarDayPage } from '@addons/calendar/pages/day/day';
+import { AddonCalendarEditEventPage } from '@addons/calendar/pages/edit-event/edit-event';
+import { AddonCalendarEventPage } from '@addons/calendar/pages/event/event';
+import { AddonCalendarIndexPage } from '@addons/calendar/pages/index';
+import { AddonCalendarSettingsPage } from '@addons/calendar/pages/settings/settings';
 import { Injector, NgModule } from '@angular/core';
 import { RouterModule, ROUTES, Routes } from '@angular/router';
+import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
+import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { AddonCalendarMainMenuHandlerService } from './services/handlers/mainmenu';
 
+/**
+ * Build module routes.
+ *
+ * @param injector Injector.
+ * @returns Routes.
+ */
 function buildRoutes(injector: Injector): Routes {
     return [
         {
             path: 'index',
-            data: {
-                mainMenuTabRoot: AddonCalendarMainMenuHandlerService.PAGE_NAME,
-            },
-            loadChildren: () => import('@addons/calendar/pages/index/index.module').then(m => m.AddonCalendarIndexPageModule),
+            data: { mainMenuTabRoot: AddonCalendarMainMenuHandlerService.PAGE_NAME },
+            component: AddonCalendarIndexPage,
         },
         {
             path: 'calendar-settings',
-            loadChildren: () =>
-                import('@addons/calendar/pages/settings/settings.module').then(m => m.AddonCalendarSettingsPageModule),
+            component: AddonCalendarSettingsPage,
         },
         {
             path: 'day',
-            loadChildren: () =>
-                import('@addons/calendar/pages/day/day.module').then(m => m.AddonCalendarDayPageModule),
+            component: AddonCalendarDayPage,
         },
         {
             path: 'event/:id',
-            loadChildren: () => import('@addons/calendar/pages/event/event.module').then(m => m.AddonCalendarEventPageModule),
+            component: AddonCalendarEventPage,
         },
         {
             path: 'edit/:eventId',
-            loadChildren: () =>
-                import('@addons/calendar/pages/edit-event/edit-event.module').then(m => m.AddonCalendarEditEventPageModule),
+            component: AddonCalendarEditEventPage,
         },
         ...buildTabMainRoutes(injector, {
             redirectTo: 'index',
@@ -54,7 +64,20 @@ function buildRoutes(injector: Injector): Routes {
 }
 
 @NgModule({
+    imports: [
+        CoreSharedModule,
+        AddonCalendarComponentsModule,
+        CoreMainMenuComponentsModule,
+        CoreEditorComponentsModule,
+    ],
     exports: [RouterModule],
+    declarations: [
+        AddonCalendarDayPage,
+        AddonCalendarEditEventPage,
+        AddonCalendarEventPage,
+        AddonCalendarIndexPage,
+        AddonCalendarSettingsPage,
+    ],
     providers: [
         {
             provide: ROUTES,
@@ -64,4 +87,4 @@ function buildRoutes(injector: Injector): Routes {
         },
     ],
 })
-export class AddonCalendarLazyModule { }
+export class AddonCalendarLazyModule {}

@@ -15,7 +15,7 @@
 import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
-import { CoreCourseIndexRoutingModule } from '@features/course/pages/index/index-routing.module';
+import { CoreCourseIndexRoutingModule } from '@features/course/course-routing.module';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';

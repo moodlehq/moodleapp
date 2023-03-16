@@ -25,7 +25,7 @@ import { AddonNotificationsMainMenuHandler, AddonNotificationsMainMenuHandlerSer
 import { AddonNotificationsCronHandler } from './services/handlers/cron';
 import { AddonNotificationsPushClickHandler } from './services/handlers/push-click';
 import { AddonNotificationsSettingsHandler, AddonNotificationsSettingsHandlerService } from './services/handlers/settings';
-import { CoreSitePreferencesRoutingModule } from '@features/settings/pages/site/site-routing';
+import { CoreSitePreferencesRoutingModule } from '@features/settings/settings-site-routing.module';
 import { AddonNotificationsProvider } from './services/notifications';
 import { AddonNotificationsHelperProvider } from './services/notifications-helper';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
@@ -40,13 +40,13 @@ export const ADDON_NOTIFICATIONS_SERVICES: Type<unknown>[] = [
 const routes: Routes = [
     {
         path: AddonNotificationsMainMenuHandlerService.PAGE_NAME,
-        loadChildren: () => import('@addons/notifications/notifications-lazy.module').then(m => m.AddonNotificationsLazyModule),
+        loadChildren: () => import('./notifications-lazy.module').then(m => m.AddonNotificationsLazyModule),
     },
 ];
 const preferencesRoutes: Routes = [
     {
         path: AddonNotificationsSettingsHandlerService.PAGE_NAME,
-        loadChildren: () => import('./pages/settings/settings.module').then(m => m.AddonNotificationsSettingsPageModule),
+        loadChildren: () => import('./notifications-settings-lazy.module').then(m => m.AddonNotificationsSettingsLazyModule),
     },
 ];
 

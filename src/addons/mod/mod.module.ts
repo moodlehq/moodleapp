@@ -65,4 +65,4 @@ import { AddonModWorkshopModule } from './workshop/workshop.module';
         AddonModWorkshopModule,
     ],
 })
-export class AddonModModule { }
+export class AddonModModule {}

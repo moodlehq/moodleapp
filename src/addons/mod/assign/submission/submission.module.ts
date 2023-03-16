@@ -24,4 +24,4 @@ import { AddonModAssignSubmissionOnlineTextModule } from './onlinetext/onlinetex
         AddonModAssignSubmissionOnlineTextModule,
     ],
 })
-export class AddonModAssignSubmissionModule { }
+export class AddonModAssignSubmissionModule {}

@@ -16,16 +16,20 @@ import { Injector, NgModule } from '@angular/core';
 import { ROUTES, Routes } from '@angular/router';
 import { CoreSharedModule } from '@/core/shared.module';
 
-import { resolveModuleRoutes } from '@/app/app-routing.module';
-
-import { MAIN_MENU_ROUTES } from './mainmenu-routing.module';
+import { resolveMainMenuRoutes } from './mainmenu-routing.module';
 import { CoreMainMenuPage } from './pages/menu/menu';
 import { CoreMainMenuHomeHandlerService } from './services/handlers/mainmenu';
 import { CoreMainMenuProvider } from './services/mainmenu';
 import { CoreMainMenuComponentsModule } from './components/components.module';
 
+/**
+ * Build module routes.
+ *
+ * @param injector Injector.
+ * @returns Routes.
+ */
 function buildRoutes(injector: Injector): Routes {
-    const routes = resolveModuleRoutes(injector, MAIN_MENU_ROUTES);
+    const mainMenuRoutes = resolveMainMenuRoutes(injector);
 
     return [
         {
@@ -38,16 +42,16 @@ function buildRoutes(injector: Injector): Routes {
                 },
                 {
                     path: CoreMainMenuHomeHandlerService.PAGE_NAME,
-                    loadChildren: () => import('./pages/home/home.module').then(m => m.CoreMainMenuHomePageModule),
+                    loadChildren: () => import('./mainmenu-home-lazy.module').then(m => m.CoreMainMenuHomeLazyModule),
                 },
                 {
                     path: CoreMainMenuProvider.MORE_PAGE_NAME,
-                    loadChildren: () => import('./pages/more/more.module').then(m => m.CoreMainMenuMorePageModule),
+                    loadChildren: () => import('./mainmenu-more-lazy.module').then(m => m.CoreMainMenuMoreLazyModule),
                 },
-                ...routes.children,
+                ...mainMenuRoutes.children,
             ],
         },
-        ...routes.siblings,
+        ...mainMenuRoutes.siblings,
     ];
 }
 

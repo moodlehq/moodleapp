@@ -27,7 +27,7 @@ import { CoreCronDelegate } from '@services/cron';
 import { CoreUserSyncCronHandler } from './services/handlers/sync-cron';
 import { CoreUserTagAreaHandler } from './services/handlers/tag-area';
 import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
-import { CoreCourseIndexRoutingModule } from '@features/course/pages/index/index-routing.module';
+import { CoreCourseIndexRoutingModule } from '@features/course/course-routing.module';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { CoreUserCourseOptionHandler } from './services/handlers/course-option';
 import { CoreUserProfileFieldDelegateService } from './services/user-profile-field-delegate';
@@ -67,7 +67,7 @@ const routes: Routes = [
     ...conditionalRoutes([
         {
             path: `${COURSE_PAGE_NAME}/${COURSE_INDEX_PATH}/${PARTICIPANTS_PAGE_NAME}/:userId`,
-            loadChildren: () => import('@features/user/pages/profile/profile.module').then(m => m.CoreUserProfilePageModule),
+            loadChildren: () => import('@features/user/user-profile-lazy.module').then(m => m.CoreUserProfileLazyModule),
             data: {
                 swipeManagerSource: 'participants',
             },
