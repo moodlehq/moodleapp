@@ -82,9 +82,19 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * Get the icon src for the module.
      *
      * @param module Module to get the icon from.
+     * @param modicon The mod icon string.
      * @returns The icon src.
      */
-    getIconSrc?(module?: CoreCourseModuleData): Promise<string | undefined> | string | undefined;
+    getIconSrc?(module?: CoreCourseModuleData, modicon?: string): Promise<string | undefined> | string | undefined;
+
+    /**
+     * Check whether the icon should be treated as a shape or a rich image.
+     *
+     * @param module Module to get the icon from.
+     * @param modicon The mod icon string.
+     * @returns Whether the icon should be treated as a shape.
+     */
+    iconIsShape?(module?: CoreCourseModuleData, modicon?: string): Promise<boolean | undefined> | boolean | undefined;
 
     /**
      * Check if this type of module supports a certain feature.
@@ -390,9 +400,21 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
      * @returns Promise resolved with the icon src.
      */
     async getModuleIconSrc(modname: string, modicon?: string, module?: CoreCourseModuleData): Promise<string> {
-        const icon = await this.executeFunctionOnEnabled<Promise<string>>(modname, 'getIconSrc', [module]);
+        const icon = await this.executeFunctionOnEnabled<Promise<string>>(modname, 'getIconSrc', [module, modicon]);
 
-        return icon || CoreCourse.getModuleIconSrc(modname, modicon) || '';
+        return icon ?? CoreCourse.getModuleIconSrc(modname, modicon) ?? '';
+    }
+
+    /**
+     * Get whether the icon for the given module should be treated as a shape or a rich image.
+     *
+     * @param modname The name of the module type.
+     * @param modicon The mod icon string.
+     * @param module The module to use.
+     * @returns Whether the icon should be treated as a shape.
+     */
+    async moduleIconIsShape(modname: string, modicon?: string, module?: CoreCourseModuleData): Promise<boolean | undefined> {
+        return await this.executeFunctionOnEnabled<Promise<boolean>>(modname, 'iconIsShape', [module, modicon]);
     }
 
     /**

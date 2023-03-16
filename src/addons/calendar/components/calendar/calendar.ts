@@ -551,7 +551,9 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
                 day.eventsFormated = day.eventsFormated || [];
                 day.filteredEvents = day.filteredEvents || [];
                 // Format online events.
-                const onlineEventsFormatted = day.events.map((event) => AddonCalendarHelper.formatEventData(event));
+                const onlineEventsFormatted = await Promise.all(
+                    day.events.map((event) => AddonCalendarHelper.formatEventData(event)),
+                );
 
                 day.eventsFormated = day.eventsFormated.concat(onlineEventsFormatted);
 

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreConstants, ModPurpose } from '@/core/constants';
-import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChange } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange } from '@angular/core';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreSites } from '@services/sites';
@@ -34,8 +34,11 @@ export class CoreModIconComponent implements OnInit, OnChanges {
     @Input() modname?: string; // The module name. Used also as component if set.
     @Input() componentId?: number; // Component Id for external icons.
     @Input() modicon?: string; // Module icon url or local url.
+    @Input() noFilter?: boolean; // Whether to disable filters.
     @Input() showAlt = true; // Show alt otherwise it's only presentation icon.
     @Input() purpose: ModPurpose = ModPurpose.MOD_PURPOSE_OTHER; // Purpose of the module.
+
+    @Output() failedLoading = new EventEmitter<void>();
 
     icon = '';
     modNameTranslated = '';
@@ -122,6 +125,8 @@ export class CoreModIconComponent implements OnInit, OnChanges {
         }
 
         this.icon = path + moduleName + '.svg';
+
+        this.failedLoading.emit();
     }
 
 }

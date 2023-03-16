@@ -18,6 +18,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreSiteWSPreSets } from '@classes/site';
 import { makeSingleton } from '@singletons';
+import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 
 const ROOT_CACHE_KEY = 'AddonBlockRecentlyAccessedItems:';
 
@@ -54,15 +55,15 @@ export class AddonBlockRecentlyAccessedItemsProvider {
 
         const cmIds: number[] = [];
 
-        items = items.map((item) => {
+        items = await Promise.all(items.map(async (item) => {
             const modicon = item.icon && CoreDomUtils.getHTMLElementAttribute(item.icon, 'src');
 
-            item.iconUrl = CoreCourse.getModuleIconSrc(item.modname, modicon || undefined);
+            item.iconUrl = await CoreCourseModuleDelegate.getModuleIconSrc(item.modname, modicon || undefined);
             item.iconTitle = item.icon && CoreDomUtils.getHTMLElementAttribute(item.icon, 'title');
             cmIds.push(item.cmid);
 
             return item;
-        });
+        }));
 
         // Check if the viewed module should be updated for each activity.
         const lastViewedMap = await CoreCourse.getCertainModulesViewed(cmIds, site.getId());

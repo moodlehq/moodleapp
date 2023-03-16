@@ -41,7 +41,7 @@ export class CoreModuleHandlerBase implements Partial<CoreCourseModuleHandler> {
         forCoursePage?: boolean, // eslint-disable-line @typescript-eslint/no-unused-vars
     ): Promise<CoreCourseModuleHandlerData> | CoreCourseModuleHandlerData {
         return {
-            icon: CoreCourse.getModuleIconSrc(module.modname, module.modicon),
+            icon: this.getIconSrc(module, module.modicon),
             title: module.name,
             class: 'addon-mod_' + module.modname + '-handler',
             showDownloadButton: true,
@@ -76,6 +76,17 @@ export class CoreModuleHandlerBase implements Partial<CoreCourseModuleHandler> {
         const routeParams = '/' + courseId + '/' + module.id;
 
         await CoreNavigator.navigateToSitePath(this.pageName + routeParams, options);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getIconSrc(module?: CoreCourseModuleData, modicon?: string): Promise<string | undefined> | string | undefined {
+        if (!module) {
+            return modicon;
+        }
+
+        return CoreCourse.getModuleIconSrc(module.name, modicon);
     }
 
 }

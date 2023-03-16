@@ -22,6 +22,7 @@ import { AddonModLtiHelper } from '../lti-helper';
 import { AddonModLtiIndexComponent } from '../../components/index';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourse } from '@features/course/services/course';
+import { CoreSites } from '@services/sites';
 
 /**
  * Handler to support LTI modules.
@@ -58,10 +59,6 @@ export class AddonModLtiModuleHandlerService extends CoreModuleHandlerBase imple
     ): Promise<CoreCourseModuleHandlerData> {
         const data = await super.getData(module, courseId, sectionId, forCoursePage);
         data.showDownloadButton = false;
-
-        // Handle custom icons.
-        data.icon =  module.modicon;
-
         data.buttons = [{
             icon: 'fas-external-link-alt',
             label: 'addon.mod_lti.launchactivity',
@@ -81,6 +78,26 @@ export class AddonModLtiModuleHandlerService extends CoreModuleHandlerBase imple
      */
     async getMainComponent(): Promise<Type<unknown>> {
         return AddonModLtiIndexComponent;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getIconSrc(module?: CoreCourseModuleData | undefined, modicon?: string | undefined): string | undefined {
+        return module?.modicon ?? modicon ?? CoreCourse.getModuleIconSrc(this.modName);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    iconIsShape(module?: CoreCourseModuleData | undefined, modicon?: string | undefined): boolean | undefined {
+        const iconUrl = module?.modicon ?? modicon;
+
+        if (!iconUrl) {
+            return true;
+        }
+
+        return iconUrl.startsWith(CoreSites.getRequiredCurrentSite().siteUrl);
     }
 
 }

@@ -22,7 +22,7 @@ import { CoreCoursesHelper, CoreEnrolledCourseDataWithOptions } from '@features/
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { BehaviorSubject, combineLatest, Observable, of, Subject } from 'rxjs';
-import { catchError, distinctUntilChanged, map, share, tap } from 'rxjs/operators';
+import { catchError, distinctUntilChanged, map, share, tap, mergeAll } from 'rxjs/operators';
 import { AddonBlockTimelineDateRange, AddonBlockTimelineSection } from '@addons/block/timeline/classes/section';
 import { FormControl } from '@angular/forms';
 import { formControlValue, resolved } from '@/core/utils/rxjs';
@@ -198,6 +198,7 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
                 }
             }),
             resolved(),
+            mergeAll(),
             catchError(error => {
                 // An error ocurred in the function, log the error and just resolve the observable so the workflow continues.
                 this.logger.error(error);
@@ -205,7 +206,7 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
                 // Error getting data, fail.
                 CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError, true);
 
-                return of([]);
+                return of([] as AddonBlockTimelineSection[]);
             }),
             share(),
             tap(() => (this.loaded = true)),
@@ -224,12 +225,12 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
         search: string | null,
         overdue: boolean,
         dateRange: AddonBlockTimelineDateRange,
-    ): Promise<AddonBlockTimelineSection[]> {
+    ): Promise<Observable<AddonBlockTimelineSection[]>> {
         const section = new AddonBlockTimelineSection(search, overdue, dateRange);
 
         await section.loadMore();
 
-        return section.data$.value.events.length > 0 ? [section] : [];
+        return section.data$.pipe(map(({ events }) => events.length > 0 ? [section] : []));
     }
 
     /**
@@ -246,29 +247,38 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
         overdue: boolean,
         dateRange: AddonBlockTimelineDateRange,
         courses: CoreEnrolledCourseDataWithOptions[],
-    ): Promise<AddonBlockTimelineSection[]> {
+    ): Promise<Observable<AddonBlockTimelineSection[]>> {
         // Do not filter courses by date because they can contain activities due.
         const courseIds = courses.map(course => course.id);
         const gracePeriod = await this.getCoursesGracePeriod();
         const courseEvents = await AddonBlockTimeline.getActionEventsByCourses(courseIds, search ?? '');
 
-        return courses
-            .filter(
-                course =>
-                    !course.hidden &&
-                    !CoreCoursesHelper.isPastCourse(course, gracePeriod.after) &&
-                    !CoreCoursesHelper.isFutureCourse(course, gracePeriod.after, gracePeriod.before) &&
-                    courseEvents[course.id].events.length > 0,
-            )
-            .map(course => new AddonBlockTimelineSection(
-                search,
-                overdue,
-                dateRange,
-                course,
-                courseEvents[course.id].events,
-                courseEvents[course.id].canLoadMore,
-            ))
-            .filter(section => section.data$.value.events.length > 0);
+        return combineLatest(
+            courses
+                .filter(
+                    course =>
+                        !course.hidden &&
+                        !CoreCoursesHelper.isPastCourse(course, gracePeriod.after) &&
+                        !CoreCoursesHelper.isFutureCourse(course, gracePeriod.after, gracePeriod.before) &&
+                        courseEvents[course.id].events.length > 0,
+                )
+                .map(course => {
+                    const section = new AddonBlockTimelineSection(
+                        search,
+                        overdue,
+                        dateRange,
+                        course,
+                        courseEvents[course.id].events,
+                        courseEvents[course.id].canLoadMore,
+                    );
+
+                    return section.data$.pipe(map(({ events }) => events.length > 0 ? section : null));
+                }),
+        ).pipe(
+            map(sections => sections.filter(
+                (section: AddonBlockTimelineSection | null): section is AddonBlockTimelineSection => !!section,
+            )),
+        );
     }
 
     /**
