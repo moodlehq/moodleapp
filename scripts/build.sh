@@ -7,7 +7,6 @@ if [ -z $GIT_TOKEN ]; then
 fi
 
 print_title "Run scripts"
-# TODO Change branch name.
 git clone --depth 1 --single-branch --branch ionic5 https://$GIT_TOKEN@github.com/moodlemobile/apps-scripts.git ../scripts
 cp ../scripts/*.sh scripts/
 
