@@ -22,12 +22,16 @@ import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-ro
 import { CoreUserDelegate } from '@features/user/services/user-delegate';
 import { PARTICIPANTS_PAGE_NAME } from '@features/user/user.module';
 import { CoreGradesProvider } from './services/grades';
-import { CoreGradesHelperProvider, GRADES_PAGE_NAME } from './services/grades-helper';
+import { CoreGradesHelperProvider, GRADES_PAGE_NAME, GRADES_PARTICIPANTS_PAGE_NAME } from './services/grades-helper';
 import { CoreGradesCourseOptionHandler } from './services/handlers/course-option';
 import { CoreGradesOverviewLinkHandler } from './services/handlers/overview-link';
 import { CoreGradesUserHandler } from './services/handlers/user';
 import { CoreGradesReportLinkHandler } from './services/handlers/report-link';
 import { CoreGradesUserLinkHandler } from './services/handlers/user-link';
+import { CoreGradesCourseParticipantsOptionHandler } from '@features/grades/services/handlers/course-participants-option';
+import { conditionalRoutes } from '@/app/app-routing.module';
+import { COURSE_INDEX_PATH } from '@features/course/course-lazy.module';
+import { CoreScreen } from '@services/screen';
 
 export const CORE_GRADES_SERVICES: Type<unknown>[] = [
     CoreGradesProvider,
@@ -38,17 +42,29 @@ const mainMenuChildrenRoutes: Routes = [
     {
         path: GRADES_PAGE_NAME,
         loadChildren: () => import('./grades-courses-lazy.module').then(m => m.CoreGradesCoursesLazyModule),
+        data: { swipeManagerSource: 'courses' },
     },
     {
         path: `${COURSE_PAGE_NAME}/:courseId/${PARTICIPANTS_PAGE_NAME}/:userId/${GRADES_PAGE_NAME}`,
         loadChildren: () => import('./grades-course-lazy.module').then(m => m.CoreGradesCourseLazyModule),
     },
+    ...conditionalRoutes([
+        {
+            path: `${COURSE_PAGE_NAME}/${COURSE_INDEX_PATH}/${GRADES_PARTICIPANTS_PAGE_NAME}/:userId`,
+            loadChildren: () => import('./grades-course-lazy.module').then(m => m.CoreGradesCourseLazyModule),
+            data: { swipeManagerSource: 'participants' },
+        },
+    ], () => CoreScreen.isMobile),
 ];
 
 const courseIndexRoutes: Routes = [
     {
         path: GRADES_PAGE_NAME,
         loadChildren: () => import('./grades-course-lazy.module').then(m => m.CoreGradesCourseLazyModule),
+    },
+    {
+        path: GRADES_PARTICIPANTS_PAGE_NAME,
+        loadChildren: () => import('./grades-course-participants-lazy.module').then(m => m.CoreGradesCourseParticipantsLazyModule),
     },
 ];
 
@@ -67,6 +83,7 @@ const courseIndexRoutes: Routes = [
                 CoreContentLinksDelegate.registerHandler(CoreGradesUserLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(CoreGradesOverviewLinkHandler.instance);
                 CoreCourseOptionsDelegate.registerHandler(CoreGradesCourseOptionHandler.instance);
+                CoreCourseOptionsDelegate.registerHandler(CoreGradesCourseParticipantsOptionHandler.instance);
             },
         },
     ],

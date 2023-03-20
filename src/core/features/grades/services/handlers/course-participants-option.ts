@@ -18,18 +18,18 @@ import {
     CoreCourseOptionsHandler,
     CoreCourseOptionsHandlerData,
 } from '@features/course/services/course-options-delegate';
-import { CoreCourseAnyCourseData, CoreCourses, CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/services/courses';
-import { CoreGradesHelper, GRADES_PAGE_NAME } from '@features/grades/services/grades-helper';
+import { CoreCourses, CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/services/courses';
+import { CoreGrades } from '@features/grades/services/grades';
+import { CoreGradesHelper, GRADES_PARTICIPANTS_PAGE_NAME } from '@features/grades/services/grades-helper';
 import { makeSingleton } from '@singletons';
-import { CoreGrades } from '../grades';
 
 /**
  * Course nav handler.
  */
 @Injectable({ providedIn: 'root' })
-export class CoreGradesCourseOptionHandlerService implements CoreCourseOptionsHandler {
+export class CoreGradesCourseParticipantsOptionHandlerService implements CoreCourseOptionsHandler {
 
-    name = 'CoreGrades';
+    name = 'CoreGradesParticipants';
     priority = 400;
 
     /**
@@ -69,7 +69,7 @@ export class CoreGradesCourseOptionHandlerService implements CoreCourseOptionsHa
 
         const canViewAllGrades = await CoreGrades.canViewAllGrades(courseId);
 
-        return !canViewAllGrades;
+        return canViewAllGrades;
     }
 
     /**
@@ -78,27 +78,11 @@ export class CoreGradesCourseOptionHandlerService implements CoreCourseOptionsHa
     getDisplayData(): CoreCourseOptionsHandlerData | Promise<CoreCourseOptionsHandlerData> {
         return {
             title: 'core.grades.grades',
-            class: 'core-grades-course-handler',
-            page: GRADES_PAGE_NAME,
+            class: 'core-grades-course-participants-handler',
+            page: GRADES_PARTICIPANTS_PAGE_NAME,
         };
-    }
-
-    /**
-     * @inheritdoc
-     */
-    async prefetch(course: CoreCourseAnyCourseData): Promise<void> {
-        try {
-            await CoreGrades.getCourseGradesTable(course.id, undefined, undefined, true);
-        } catch (error) {
-            if (error.errorcode === 'notingroup') {
-                // Don't fail the download because of this error.
-                return;
-            }
-
-            throw error;
-        }
     }
 
 }
 
-export const CoreGradesCourseOptionHandler = makeSingleton(CoreGradesCourseOptionHandlerService);
+export const CoreGradesCourseParticipantsOptionHandler = makeSingleton(CoreGradesCourseParticipantsOptionHandlerService);

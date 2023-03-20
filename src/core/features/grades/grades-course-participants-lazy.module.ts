@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { conditionalRoutes } from '@/app/app-routing.module';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CoreUserParticipantsPage } from './pages/participants/participants.page';
-import { conditionalRoutes } from '@/app/app-routing.module';
-import { CoreScreen } from '@services/screen';
 import { CoreUserParticipantsPageModule } from '@features/user/pages/participants/participants.module';
+import { CoreUserParticipantsPage } from '@features/user/pages/participants/participants.page';
+import { CoreScreen } from '@services/screen';
 
 const routes: Routes = [
     {
@@ -27,7 +27,8 @@ const routes: Routes = [
         children: conditionalRoutes([
             {
                 path: ':userId',
-                loadChildren: () => import('@features/user/user-profile-lazy.module').then(m => m.CoreUserProfileLazyModule),
+                loadChildren: () => import('./grades-course-lazy.module').then(m => m.CoreGradesCourseLazyModule),
+                data: { swipeManagerSource: 'participants' },
             },
         ], () => CoreScreen.isTablet),
     },
@@ -39,4 +40,4 @@ const routes: Routes = [
         CoreUserParticipantsPageModule,
     ],
 })
-export class CoreUserCourseLazyModule {}
+export class CoreGradesCourseParticipantsLazyModule {}
