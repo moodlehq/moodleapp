@@ -1509,17 +1509,17 @@ export class CoreCourseProvider {
      * Translate a module name to current language.
      *
      * @param moduleName The module name.
+     * @param fallback Fallback text to use if not translated. Will use moduleName otherwise.
+     *
      * @returns Translated name.
      */
-    translateModuleName(moduleName: string): string {
-        if (this.CORE_MODULES.indexOf(moduleName) < 0) {
-            moduleName = 'external-tool';
-        }
-
+    translateModuleName(moduleName: string, fallback?: string): string {
         const langKey = 'core.mod_' + moduleName;
         const translated = Translate.instant(langKey);
 
-        return translated !== langKey ? translated : moduleName;
+        return translated !== langKey ?
+            translated :
+            (fallback || moduleName);
     }
 
     /**

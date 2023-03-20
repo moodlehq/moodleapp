@@ -14,7 +14,8 @@
         <ion-item class="ion-text-wrap" *ngIf="module" lines="full">
             <ion-label>
                 <p *ngIf="moduleNameTranslated" class="core-modulename">
-                    <core-mod-icon slot="start" [modicon]="modicon" [modname]="module.modname" [componentId]="module.instance">
+                    <core-mod-icon slot="start" [modicon]="modicon" [modname]="module.modname" [componentId]="module.instance"
+                        [fallbackTranslation]="module.modplural">
                     </core-mod-icon>
                     {{moduleNameTranslated}}
                 </p>

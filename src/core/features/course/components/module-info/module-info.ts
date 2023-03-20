@@ -61,7 +61,7 @@ export class CoreCourseModuleInfoComponent implements OnInit {
     async ngOnInit(): Promise<void> {
         this.modicon = await CoreCourseModuleDelegate.getModuleIconSrc(this.module.modname, this.module.modicon, this.module);
 
-        this.moduleNameTranslated = CoreCourse.translateModuleName(this.module.modname || '');
+        this.moduleNameTranslated = CoreCourse.translateModuleName(this.module.modname, this.module.modplural);
         this.showCompletion = CoreSites.getRequiredCurrentSite().isVersionGreaterEqualThan('3.11');
     }
 

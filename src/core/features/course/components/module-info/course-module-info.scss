@@ -8,10 +8,6 @@
 
     @include padding-horizontal(var(--ion-safe-area-left), var(--ion-safe-area-right));
 
-    .core-modulename {
-        text-transform: uppercase;
-    }
-
     core-mod-icon {
         align-self: flex-start;
     }
