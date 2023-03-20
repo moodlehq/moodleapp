@@ -174,7 +174,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
         this.componentId = this.module.id;
         this.externalUrl = this.module.url;
         this.courseId = this.courseId || this.module.course;
-        this.moduleNameTranslated = CoreCourse.translateModuleName(this.module.modname || '');
+        this.moduleNameTranslated = CoreCourse.translateModuleName(this.module.modname, this.module.modplural);
 
         this.blog = await AddonBlog.isPluginEnabled();
 

@@ -8,7 +8,7 @@
             }">
 
             <core-mod-icon slot="start" *ngIf="module.handlerData.icon" [modicon]="module.handlerData.icon" [modname]="module.modname"
-                [componentId]="module.instance">
+                [componentId]="module.instance" [fallbackTranslation]="module.modplural">
             </core-mod-icon>
 
             <ion-label class="core-module-title">

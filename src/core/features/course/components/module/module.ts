@@ -69,7 +69,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.modNameTranslated = CoreCourse.translateModuleName(this.module.modname) || '';
+        this.modNameTranslated = CoreCourse.translateModuleName(this.module.modname, this.module.modplural);
         this.showLegacyCompletion = this.showLegacyCompletion ??
             CoreConstants.CONFIG.uselegacycompletion ??
             !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.11');

@@ -31,7 +31,8 @@ const fallbackModName = 'external-tool';
 })
 export class CoreModIconComponent implements OnInit, OnChanges {
 
-    @Input() modname?: string; // The module name. Used also as component if set.
+    @Input() modname = ''; // The module name. Used also as component if set.
+    @Input() fallbackTranslation = ''; // Fallback translation string if cannot auto translate.
     @Input() componentId?: number; // Component Id for external icons.
     @Input() modicon?: string; // Module icon url or local url.
     @Input() noFilter?: boolean; // Whether to disable filters.
@@ -63,7 +64,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
             }
         }
 
-        this.modNameTranslated = this.modname ? CoreCourse.translateModuleName(this.modname) || '' : '';
+        this.modNameTranslated = CoreCourse.translateModuleName(this.modname, this.fallbackTranslation);
         if (CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.0')) {
             this.legacyIcon = false;
 
