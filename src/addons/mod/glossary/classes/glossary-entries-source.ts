@@ -164,21 +164,8 @@ export class AddonModGlossaryEntriesSource extends CoreRoutedItemsManagerSource<
 
         const glossaryId = this.glossary.id;
 
-        this.fetchFunction = (options) => AddonModGlossary.getEntriesBySearch(
-            glossaryId,
-            query,
-            true,
-            'CONCEPT',
-            'ASC',
-            options,
-        );
-        this.fetchInvalidate = () => AddonModGlossary.invalidateEntriesBySearch(
-            glossaryId,
-            query,
-            true,
-            'CONCEPT',
-            'ASC',
-        );
+        this.fetchFunction = (options) => AddonModGlossary.getEntriesBySearch(glossaryId, query, true, options);
+        this.fetchInvalidate = () => AddonModGlossary.invalidateEntriesBySearch(glossaryId, query, true);
         this.hasSearched = true;
         this.setDirty(true);
     }
@@ -220,65 +207,29 @@ export class AddonModGlossaryEntriesSource extends CoreRoutedItemsManagerSource<
             case 'author_all':
                 // Browse by author.
                 this.viewMode = 'author';
-                this.fetchFunction = (options) => AddonModGlossary.getEntriesByAuthor(
-                    glossaryId,
-                    'ALL',
-                    'LASTNAME',
-                    'ASC',
-                    options,
-                );
-                this.fetchInvalidate = () => AddonModGlossary.invalidateEntriesByAuthor(
-                    glossaryId,
-                    'ALL',
-                    'LASTNAME',
-                    'ASC',
-                );
+                this.fetchFunction = (options) => AddonModGlossary.getEntriesByAuthor(glossaryId, options);
+                this.fetchInvalidate = () => AddonModGlossary.invalidateEntriesByAuthor(glossaryId);
                 break;
 
             case 'cat_all':
                 // Browse by category.
                 this.viewMode = 'cat';
-                this.fetchFunction = (options) => AddonModGlossary.getEntriesByCategory(
-                    glossaryId,
-                    AddonModGlossaryProvider.SHOW_ALL_CATEGORIES,
-                    options,
-                );
-                this.fetchInvalidate = () => AddonModGlossary.invalidateEntriesByCategory(
-                    glossaryId,
-                    AddonModGlossaryProvider.SHOW_ALL_CATEGORIES,
-                );
+                this.fetchFunction = (options) => AddonModGlossary.getEntriesByCategory(glossaryId, options);
+                this.fetchInvalidate = () => AddonModGlossary.invalidateEntriesByCategory(glossaryId);
                 break;
 
             case 'newest_first':
                 // Newest first.
                 this.viewMode = 'date';
-                this.fetchFunction = (options) => AddonModGlossary.getEntriesByDate(
-                    glossaryId,
-                    'CREATION',
-                    'DESC',
-                    options,
-                );
-                this.fetchInvalidate = () => AddonModGlossary.invalidateEntriesByDate(
-                    glossaryId,
-                    'CREATION',
-                    'DESC',
-                );
+                this.fetchFunction = (options) => AddonModGlossary.getEntriesByDate(glossaryId, 'CREATION', options);
+                this.fetchInvalidate = () => AddonModGlossary.invalidateEntriesByDate(glossaryId, 'CREATION');
                 break;
 
             case 'recently_updated':
                 // Recently updated.
                 this.viewMode = 'date';
-                this.fetchFunction = (options) => AddonModGlossary.getEntriesByDate(
-                    glossaryId,
-                    'UPDATE',
-                    'DESC',
-                    options,
-                );
-                this.fetchInvalidate = () => AddonModGlossary.invalidateEntriesByDate(
-                    glossaryId,
-                    'UPDATE',
-                    'DESC',
-                );
+                this.fetchFunction = (options) => AddonModGlossary.getEntriesByDate(glossaryId, 'UPDATE', options);
+                this.fetchInvalidate = () => AddonModGlossary.invalidateEntriesByDate(glossaryId, 'UPDATE');
                 break;
 
             case 'letter_all':
@@ -286,15 +237,8 @@ export class AddonModGlossaryEntriesSource extends CoreRoutedItemsManagerSource<
                 // Consider it is 'letter_all'.
                 this.viewMode = 'letter';
                 this.fetchMode = 'letter_all';
-                this.fetchFunction = (options) => AddonModGlossary.getEntriesByLetter(
-                    glossaryId,
-                    'ALL',
-                    options,
-                );
-                this.fetchInvalidate = () => AddonModGlossary.invalidateEntriesByLetter(
-                    glossaryId,
-                    'ALL',
-                );
+                this.fetchFunction = (options) => AddonModGlossary.getEntriesByLetter(glossaryId, options);
+                this.fetchInvalidate = () => AddonModGlossary.invalidateEntriesByLetter(glossaryId);
                 break;
         }
     }
