@@ -51,3 +51,11 @@ Feature: Test basic usage of user features
 
     When I press "Reconnect" in the app
     Then I should find "Acceptance test site" in the app
+
+  Scenario: View profile
+    Given I entered the app as "student1"
+    When I press the user menu button in the app
+    And I press "Student" in the app
+    Then I should find "student1@example.com" in the app
+    And I should find "Student Student" in the app
+    And the UI should match the snapshot

@@ -83,6 +83,7 @@ Feature: Test basic usage of book activity in app
     When I press "Chapt 1" in the app
     Then I should find "Chapt 1" in the app
     And I should find "This is the first chapter" in the app
+    And the UI should match the snapshot
     But I should not find "This is the second chapter" in the app
 
     When I press the back button in the app

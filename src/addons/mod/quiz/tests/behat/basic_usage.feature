@@ -143,13 +143,20 @@ Feature: Attempt a quiz in app
   Scenario: Submit a quiz & Review a quiz attempt
     Given I entered the quiz activity "Quiz 1" on course "Course 1" as "student1" in the app
     When I press "Attempt quiz now" in the app
-    And I press "True" in the app
+    Then I should find "Text of the first question" in the app
+    And the UI should match the snapshot
+
+    When I press "True" in the app
     And I press "Next" in the app
     And I press "False" in the app
     And I press "Submit" in the app
     And I press "Submit all and finish" in the app
     And I press "OK" in the app
     Then I should find "Review" in the app
+
+    When I replace "/.*/" within "page-addon-mod-quiz-review core-loading > ion-card ion-item:nth-child(1) p:nth-child(2)" with "[Started on date]"
+    And I replace "/.*/" within "page-addon-mod-quiz-review core-loading > ion-card ion-item:nth-child(3) p:nth-child(2)" with "[Completed on date]"
+    Then the UI should match the snapshot
 
     Given I entered the quiz activity "Quiz 1" on course "Course 1" as "teacher1" in the app
     When I press "Information" in the app
