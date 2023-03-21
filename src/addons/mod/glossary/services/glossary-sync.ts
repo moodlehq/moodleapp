@@ -31,13 +31,13 @@ import { AddonModGlossaryOffline, AddonModGlossaryOfflineEntry } from './glossar
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreFileEntry } from '@services/file-helper';
 
+export const GLOSSARY_AUTO_SYNCED = 'addon_mod_glossary_auto_synced';
+
 /**
  * Service to sync glossaries.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProvider<AddonModGlossarySyncResult> {
-
-    static readonly AUTO_SYNCED = 'addon_mod_glossary_autom_synced';
 
     protected componentTranslatableString = 'glossary';
 
@@ -98,7 +98,7 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
 
             if (result?.updated) {
                 // Sync successful, send event.
-                CoreEvents.trigger(AddonModGlossarySyncProvider.AUTO_SYNCED, {
+                CoreEvents.trigger(GLOSSARY_AUTO_SYNCED, {
                     glossaryId: entry.glossaryid,
                     userId: entry.userid,
                     warnings: result.warnings,
@@ -341,15 +341,28 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
 
 export const AddonModGlossarySync = makeSingleton(AddonModGlossarySyncProvider);
 
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [GLOSSARY_AUTO_SYNCED]: AddonModGlossaryAutoSyncedData;
+    }
+
+}
+
 /**
  * Data returned by a glossary sync.
  */
 export type AddonModGlossarySyncResult = CoreSyncResult;
 
 /**
- * Data passed to AUTO_SYNCED event.
+ * Data passed to GLOSSARY_AUTO_SYNCED event.
  */
-export type AddonModGlossaryAutoSyncData = {
+export type AddonModGlossaryAutoSyncedData = {
     glossaryId: number;
     userId: number;
     warnings: string[];

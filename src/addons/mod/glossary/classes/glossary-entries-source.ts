@@ -179,12 +179,14 @@ export class AddonModGlossaryEntriesSource extends CoreRoutedItemsManagerSource<
 
     /**
      * Invalidate glossary cache.
+     *
+     * @param invalidateGlossary Whether to invalidate the entire glossary or not
      */
-    async invalidateCache(): Promise<void> {
-        await Promise.all([
-            AddonModGlossary.invalidateCourseGlossaries(this.COURSE_ID),
+    async invalidateCache(invalidateGlossary: boolean = true): Promise<void> {
+        await Promise.all<unknown>([
             this.fetchInvalidate && this.fetchInvalidate(),
-            this.glossary && AddonModGlossary.invalidateCategories(this.glossary.id),
+            invalidateGlossary && AddonModGlossary.invalidateCourseGlossaries(this.COURSE_ID),
+            invalidateGlossary && this.glossary && AddonModGlossary.invalidateCategories(this.glossary.id),
         ]);
     }
 

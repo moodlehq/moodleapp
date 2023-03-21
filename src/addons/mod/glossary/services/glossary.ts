@@ -25,10 +25,13 @@ import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
+import { CoreEvents } from '@singletons/events';
 import { AddonModGlossaryEntryDBRecord, ENTRIES_TABLE_NAME } from './database/glossary';
 import { AddonModGlossaryOffline } from './glossary-offline';
-import { AddonModGlossaryAutoSyncData, AddonModGlossarySyncProvider } from './glossary-sync';
 import { CoreFileEntry } from '@services/file-helper';
+
+export const GLOSSARY_ENTRY_ADDED = 'addon_mod_glossary_entry_added';
+export const GLOSSARY_ENTRY_DELETED = 'addon_mod_glossary_entry_deleted';
 
 /**
  * Service that provides some features for glossaries.
@@ -39,8 +42,6 @@ export class AddonModGlossaryProvider {
     static readonly COMPONENT = 'mmaModGlossary';
     static readonly LIMIT_ENTRIES = 25;
     static readonly LIMIT_CATEGORIES = 10;
-
-    static readonly ADD_ENTRY_EVENT = 'addon_mod_glossary_add_entry';
 
     private static readonly SHOW_ALL_CATEGORIES = 0;
     private static readonly ROOT_CACHE_KEY = 'mmaModGlossary:';
@@ -607,6 +608,18 @@ export class AddonModGlossaryProvider {
     }
 
     /**
+     * Check whether the site can delete glossary entries.
+     *
+     * @param siteId Site id.
+     * @returns Whether the site can delete entries.
+     */
+    async canDeleteEntries(siteId?: string): Promise<boolean> {
+        const site = await CoreSites.getSite(siteId);
+
+        return site.wsAvailable('mod_glossary_delete_entry');
+    }
+
+    /**
      * Performs the whole fetch of the entries using the proper function and arguments.
      *
      * @param fetchFunction Function to fetch.
@@ -847,7 +860,7 @@ export class AddonModGlossaryProvider {
 
         try {
             // Try to add it in online.
-            return await this.addEntryOnline(
+            const entryId = await this.addEntryOnline(
                 glossaryId,
                 concept,
                 definition,
@@ -855,6 +868,8 @@ export class AddonModGlossaryProvider {
                 <number> attachments,
                 otherOptions.siteId,
             );
+
+            return entryId;
         } catch (error) {
             if (otherOptions.allowOffline && !CoreUtils.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
@@ -904,7 +919,23 @@ export class AddonModGlossaryProvider {
 
         const response = await site.write<AddonModGlossaryAddEntryWSResponse>('mod_glossary_add_entry', params);
 
+        CoreEvents.trigger(GLOSSARY_ENTRY_ADDED, { glossaryId, entryId: response.entryid }, siteId);
+
         return response.entryid;
+    }
+
+    /**
+     * Delete entry.
+     *
+     * @param glossaryId Glossary id.
+     * @param entryId Entry id.
+     */
+    async deleteEntry(glossaryId: number, entryId: number): Promise<void> {
+        const site = CoreSites.getRequiredCurrentSite();
+
+        await site.write('mod_glossary_delete_entry', { entryid: entryId });
+
+        CoreEvents.trigger(GLOSSARY_ENTRY_DELETED, { glossaryId, entryId });
     }
 
     /**
@@ -1040,18 +1071,27 @@ declare module '@singletons/events' {
      * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
      */
     export interface CoreEventsData {
-        [AddonModGlossaryProvider.ADD_ENTRY_EVENT]: AddonModGlossaryAddEntryEventData;
-        [AddonModGlossarySyncProvider.AUTO_SYNCED]: AddonModGlossaryAutoSyncData;
+        [GLOSSARY_ENTRY_ADDED]: AddonModGlossaryEntryAddedEventData;
+        [GLOSSARY_ENTRY_DELETED]: AddonModGlossaryEntryDeletedEventData;
     }
 
 }
 
 /**
- * Data passed to ADD_ENTRY_EVENT.
+ * GLOSSARY_ENTRY_ADDED event payload.
  */
-export type AddonModGlossaryAddEntryEventData = {
+export type AddonModGlossaryEntryAddedEventData = {
     glossaryId: number;
     entryId?: number;
+    timecreated?: number;
+};
+
+/**
+ * GLOSSARY_ENTRY_DELETED event payload.
+ */
+export type AddonModGlossaryEntryDeletedEventData = {
+    glossaryId: number;
+    entryId: number;
 };
 
 /**

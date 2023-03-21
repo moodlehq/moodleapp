@@ -12,17 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, Optional, ViewChild } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
+import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreCommentsCommentsComponent } from '@features/comments/components/comments/comments';
 import { CoreComments } from '@features/comments/services/comments';
 import { CoreRatingInfo } from '@features/rating/services/rating';
 import { CoreTag } from '@features/tag/services/tag';
 import { IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreNetwork } from '@services/network';
+import { CoreDomUtils, ToastDuration } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
+import { Translate } from '@singletons';
 import { AddonModGlossaryEntriesSource } from '../../classes/glossary-entries-source';
 import { AddonModGlossaryEntriesSwipeManager } from '../../classes/glossary-entries-swipe-manager';
 import {
@@ -53,13 +56,14 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
     showDate = false;
     ratingInfo?: CoreRatingInfo;
     tagsEnabled = false;
+    canDelete = false;
     commentsEnabled = false;
     courseId!: number;
     cmId?: number;
 
     protected entryId!: number;
 
-    constructor(protected route: ActivatedRoute) {}
+    constructor(@Optional() protected splitView: CoreSplitViewComponent, protected route: ActivatedRoute) {}
 
     /**
      * @inheritdoc
@@ -114,6 +118,46 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
     }
 
     /**
+     * Delete entry.
+     */
+    async deleteEntry(): Promise<void> {
+        const entryId = this.entry?.id;
+        const glossaryId = this.glossary?.id;
+        const cancelled = await CoreUtils.promiseFails(
+            CoreDomUtils.showConfirm(Translate.instant('addon.mod_glossary.areyousuredelete')),
+        );
+
+        if (!entryId || !glossaryId || cancelled) {
+            return;
+        }
+
+        const modal = await CoreDomUtils.showModalLoading();
+
+        try {
+            await AddonModGlossary.deleteEntry(glossaryId, entryId);
+            await CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntry(entryId));
+            await CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByLetter(glossaryId));
+            await CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByAuthor(glossaryId));
+            await CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByCategory(glossaryId));
+            await CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByDate(glossaryId, 'CREATION'));
+            await CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByDate(glossaryId, 'UPDATE'));
+            await CoreUtils.ignoreErrors(this.entries?.getSource().invalidateCache(false));
+
+            CoreDomUtils.showToast('addon.mod_glossary.entrydeleted', true, ToastDuration.LONG);
+
+            if (this.splitView?.outletActivated) {
+                await CoreNavigator.navigate('../');
+            } else {
+                await CoreNavigator.back();
+            }
+        } catch (error) {
+            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_glossary.errordeleting', true);
+        } finally {
+            modal.dismiss();
+        }
+    }
+
+    /**
      * Refresh the data.
      *
      * @param refresher Refresher.
@@ -142,9 +186,11 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
     protected async fetchEntry(): Promise<void> {
         try {
             const result = await AddonModGlossary.getEntry(this.entryId);
+            const canDeleteEntries = CoreNetwork.isOnline() && await AddonModGlossary.canDeleteEntries();
 
             this.entry = result.entry;
             this.ratingInfo = result.ratinginfo;
+            this.canDelete = canDeleteEntries && !!result.permissions?.candelete;
 
             if (this.glossary) {
                 // Glossary already loaded, nothing else to load.

@@ -154,6 +154,54 @@ Feature: Test basic usage of glossary in app
     Then I should find "Garlic" in the app
     And I should find "Allium sativum" in the app
 
+  @noeldebug
+  Scenario: Edit entries (basic info)
+    Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
+
+    # TODO online
+
+    # Offline
+    When I press "Add a new entry" in the app
+    And I switch network connection to offline
+    And I set the following fields to these values in the app:
+      | Concept | Broccoli |
+      | Definition | Brassica oleracea var. italica |
+    And I press "Save" in the app
+    Then I should find "Potato" in the app
+    And I should find "Broccoli" in the app
+
+    When I press "Broccoli" in the app
+    Then I should find "Brassica oleracea var. italica" in the app
+
+    When I press "Edit entry" in the app
+    Then the field "Concept" matches value "Broccoli" in the app
+    And the field "Definition" matches value "Brassica oleracea var. italica" in the app
+
+    When I set the following fields to these values in the app:
+      | Concept | Pickle |
+      | Definition | Pickle Rick |
+    And I press "Save" in the app
+    Then I should find "Pickle Rick" in the app
+    But I should not find "Brassica oleracea var. italica" in the app
+
+    When I press the back button in the app
+    Then I should find "Pickle" in the app
+    And I should find "Potato" in the app
+    But I should not find "Broccoli" in the app
+
+  # TODO test attachments? (yes, in all scenarios!!)
+  # TODO And I upload "stub.txt" to "File" ".action-sheet-button" in the app
+
+  Scenario: Delete entries
+    Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
+
+    When I press "Cucumber" in the app
+    And I press "Delete entry" in the app
+    And I press "OK" near "Are you sure you want to delete this entry?" in the app
+    Then I should find "Entry deleted" in the app
+    And I should find "Potato" in the app
+    But I should not find "Cucumber" in the app
+
   Scenario: Sync
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
     And I press "Add a new entry" in the app

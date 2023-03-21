@@ -19,9 +19,10 @@ import { CoreSites } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
+import { CoreEvents } from '@singletons/events';
 import { CorePath } from '@singletons/path';
 import { AddonModGlossaryOfflineEntryDBRecord, OFFLINE_ENTRIES_TABLE_NAME } from './database/glossary';
-import { AddonModGlossaryDiscardedEntry, AddonModGlossaryEntryOption } from './glossary';
+import { AddonModGlossaryEntryOption, GLOSSARY_ENTRY_ADDED } from './glossary';
 
 /**
  * Service to handle offline glossary.
@@ -159,7 +160,7 @@ export class AddonModGlossaryOfflineProvider {
      * @param courseId Course ID of the glossary.
      * @param options Options for the entry.
      * @param attachments Result of CoreFileUploaderProvider#storeFilesToUpload for attachments.
-     * @param timeCreated The time the entry was created. If not defined, current time.
+     * @param timecreated The time the entry was created. If not defined, current time.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User the entry belong to. If not defined, current user in site.
      * @param discardEntry The entry provided will be discarded if found.
@@ -172,12 +173,13 @@ export class AddonModGlossaryOfflineProvider {
         courseId: number,
         options?: Record<string, AddonModGlossaryEntryOption>,
         attachments?: CoreFileUploaderStoreFilesResult,
-        timeCreated?: number,
+        timecreated?: number,
         siteId?: string,
         userId?: number,
         discardEntry?: AddonModGlossaryDiscardedEntry,
     ): Promise<false> {
         const site = await CoreSites.getSite(siteId);
+        timecreated = timecreated || Date.now();
 
         const entry: AddonModGlossaryOfflineEntryDBRecord = {
             glossaryid: glossaryId,
@@ -188,7 +190,7 @@ export class AddonModGlossaryOfflineProvider {
             options: JSON.stringify(options || {}),
             attachments: JSON.stringify(attachments),
             userid: userId || site.getUserId(),
-            timecreated: timeCreated || Date.now(),
+            timecreated,
         };
 
         // If editing an offline entry, delete previous first.
@@ -197,6 +199,8 @@ export class AddonModGlossaryOfflineProvider {
         }
 
         await site.getDb().insertRecord(OFFLINE_ENTRIES_TABLE_NAME, entry);
+
+        CoreEvents.trigger(GLOSSARY_ENTRY_ADDED, { glossaryId, timecreated }, siteId);
 
         return false;
     }

@@ -1772,9 +1772,9 @@ export class CoreUtilsProvider {
      * @param fallback Value to return if the promise is rejected.
      * @returns Promise with ignored errors, resolving to the fallback result if provided.
      */
-    async ignoreErrors<Result>(promise: Promise<Result>): Promise<Result | undefined>;
+    async ignoreErrors<Result>(promise?: Promise<Result>): Promise<Result | undefined>;
     async ignoreErrors<Result, Fallback>(promise: Promise<Result>, fallback: Fallback): Promise<Result | Fallback>;
-    async ignoreErrors<Result, Fallback>(promise: Promise<Result>, fallback?: Fallback): Promise<Result | Fallback | undefined> {
+    async ignoreErrors<Result, Fallback>(promise?: Promise<Result>, fallback?: Fallback): Promise<Result | Fallback | undefined> {
         try {
             const result = await promise;
 
