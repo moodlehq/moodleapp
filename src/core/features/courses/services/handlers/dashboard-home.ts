@@ -92,7 +92,7 @@ export class CoreDashboardHomeHandlerService implements CoreMainMenuHomeHandler 
             title: 'core.courses.mymoodle',
             page: CoreDashboardHomeHandlerService.PAGE_NAME,
             class: 'core-courses-dashboard-handler',
-            icon: 'fas-tachometer-alt',
+            icon: 'fas-gauge-high',
         };
     }
 

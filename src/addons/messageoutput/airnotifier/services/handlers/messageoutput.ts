@@ -48,7 +48,7 @@ export class AddonMessageOutputAirnotifierHandlerService implements AddonMessage
         return {
             priority: 600,
             label: 'addon.messageoutput_airnotifier.processorsettingsdesc',
-            icon: 'fas-cog',
+            icon: 'fas-gear',
             page: AddonMessageOutputAirnotifierHandlerService.PAGE_NAME,
         };
     }

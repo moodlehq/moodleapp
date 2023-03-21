@@ -1,7 +1,7 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [attr.aria-label]="'core.info' | translate">
-        <ion-icon name="fas-info-circle" slot="icon-only" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
 </core-navbar-buttons>
 
@@ -39,7 +39,7 @@
             *ngIf="access && (access.canedititems || access.canviewreports || !access.isempty)">
             <ion-button *ngIf="access.canedititems || access.canviewreports" expand="block" fill="outline"
                 (click)="gotoAnswerQuestions(true)" class="ion-margin ion-text-wrap">
-                <ion-icon name="fas-search" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-magnifying-glass" slot="start" aria-hidden="true"></ion-icon>
                 {{ 'addon.mod_feedback.preview' | translate }}
             </ion-button>
             <ion-button *ngIf="access.cancomplete && access.cansubmit && access.isopen" expand="block" (click)="gotoAnswerQuestions()"
@@ -101,7 +101,7 @@
 
         <ion-card class="core-info-card" *ngIf="access && access.cancomplete && !access.isopen">
             <ion-item>
-                <ion-icon name="fas-question-circle" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-circle-question" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>{{ 'addon.mod_feedback.feedback_is_not_open' | translate }}</ion-label>
             </ion-item>
         </ion-card>
@@ -155,7 +155,7 @@
         <ng-container *ngIf="access && (access.canedititems || !access.isempty)">
             <ion-card class="core-info-card" *ngIf="warning">
                 <ion-item>
-                    <ion-icon name="fas-question-circle" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-icon name="fas-circle-question" slot="start" aria-hidden="true"></ion-icon>
                     <ion-label>{{ warning }}</ion-label>
                 </ion-item>
             </ion-card>

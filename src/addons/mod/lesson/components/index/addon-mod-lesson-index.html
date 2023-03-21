@@ -1,7 +1,7 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [attr.aria-label]="'core.info' | translate">
-        <ion-icon name="fas-info-circle" slot="icon-only" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
 </core-navbar-buttons>
 
@@ -20,7 +20,7 @@
                 <!-- Prevent access messages. Only show the first one. -->
                 <ion-card class="core-info-card" *ngIf="lesson && preventReasons.length">
                     <ion-item>
-                        <ion-icon name="fas-info-circle" slot="start" aria-hidden="true"></ion-icon>
+                        <ion-icon name="fas-circle-info" slot="start" aria-hidden="true"></ion-icon>
                         <ion-label [innerHTML]="preventReasons[0].message"></ion-label>
                     </ion-item>
                 </ion-card>
@@ -263,7 +263,7 @@
                 {{ 'core.start' | translate }}
             </ion-button>
             <ion-button class="ion-text-wrap ion-margin" expand="block" fill="outline" *ngIf="canManage" (click)="start(false)">
-                <ion-icon name="fas-search" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-magnifying-glass" slot="start" aria-hidden="true"></ion-icon>
                 {{ 'addon.mod_lesson.preview' | translate }}
             </ion-button>
         </ng-container>

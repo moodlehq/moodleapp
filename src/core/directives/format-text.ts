@@ -279,7 +279,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
             button.classList.add('hidden');
             button.setAttribute('aria-label', label);
             // Add an ion-icon item to apply the right styles, but the ion-icon component won't be executed.
-            button.innerHTML = '<ion-icon name="fas-expand-alt" aria-hidden="true" \
+            button.innerHTML = '<ion-icon name="fas-up-right-and-down-left-from-center" aria-hidden="true" \
                 src="assets/fonts/font-awesome/solid/expand-alt.svg">\
             </ion-icon>';
 

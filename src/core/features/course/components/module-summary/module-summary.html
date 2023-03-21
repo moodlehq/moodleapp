@@ -2,7 +2,7 @@
     <ion-toolbar>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
-                <ion-icon slot="icon-only" name="fas-times" aria-hidden="true"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-xmark" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -27,7 +27,7 @@
             </ion-label>
             <ion-button fill="clear" *ngIf="displayOptions.displayOpenInBrowser && externalUrl" [href]="externalUrl" core-link
                 [showBrowserWarning]="false" [attr.aria-label]="'core.openinbrowser' | translate" slot="end">
-                <ion-icon name="fas-external-link-alt" slot="icon-only" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-up-right-from-square" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-item>
 
@@ -160,7 +160,7 @@
             <ion-item lines="full" class="ion-text-wrap card-header">
                 <ion-label>
                     <h2>
-                        <ion-icon name="fas-cloud-download-alt" aria-hidden="true"></ion-icon>
+                        <ion-icon name="fas-cloud-arrow-down" aria-hidden="true"></ion-icon>
                         {{ 'addon.storagemanager.downloads' | translate }}
                     </h2>
                 </ion-label>
@@ -183,7 +183,7 @@
             </ion-item>
             <ion-button fill="outline" expand="block" *ngIf="canPrefetch && displayOptions.displayPrefetch" class="ion-text-wrap"
                 (click)="prefetch()" [disabled]="prefetchDisabled">
-                <ion-icon *ngIf="!prefetchLoading" name="fas-cloud-download-alt" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon *ngIf="!prefetchLoading" name="fas-cloud-arrow-down" slot="start" aria-hidden="true"></ion-icon>
                 <ion-spinner *ngIf="prefetchLoading" slot="start" aria-hidden="true"></ion-spinner>
                 <ion-label>
                     {{ 'core.download' | translate }}
@@ -201,14 +201,14 @@
 </ion-content>
 <ion-footer *ngIf="loaded && isOnline && displayOptions.displayRefresh">
     <ion-button class="ion-margin" *ngIf="!hasOffline" (click)="refresh()" expand="block" fill="outline">
-        <ion-icon name="fas-redo-alt" slot="start" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-rotate-right" slot="start" aria-hidden="true"></ion-icon>
         <ion-label>
             {{ 'core.refresh' | translate }}
         </ion-label>
     </ion-button>
 
     <ion-button class="ion-margin" *ngIf="hasOffline" (click)="sync()" expand="block" fill="outline">
-        <ion-icon name="fas-sync-alt" slot="start" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-rotate" slot="start" aria-hidden="true"></ion-icon>
         <ion-label>
             {{ 'core.settings.synchronizenow' | translate }}
         </ion-label>

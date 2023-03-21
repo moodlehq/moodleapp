@@ -3,7 +3,7 @@
         <!-- Time limit is over. -->
         <ion-card *ngIf="timeLimitFinished" class="core-danger-card">
             <ion-item class="ion-text-wrap">
-                <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
                     <p>{{ 'addon.mod_assign.caneditsubmission' | translate }}</p>
                 </ion-label>
@@ -264,7 +264,7 @@
                         </ion-label>
                         <ion-button slot="end" *ngIf="feedback!.advancedgrade" (click)="showAdvancedGrade()"
                             [attr.aria-label]="'core.showadvanced' |translate">
-                            <ion-icon name="fas-search" slot="icon-only" aria-hidden="true"></ion-icon>
+                            <ion-icon name="fas-magnifying-glass" slot="icon-only" aria-hidden="true"></ion-icon>
                         </ion-button>
                     </ion-item>
 
@@ -393,12 +393,12 @@
                     <!-- Warning message if cannot save grades. -->
                     <ion-card *ngIf="isGrading && !canSaveGrades" class="core-warning-card">
                         <ion-item>
-                            <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+                            <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true"></ion-icon>
                             <ion-label>
                                 <p>{{ 'addon.mod_assign.cannotgradefromapp' | translate }}</p>
                                 <ion-button expand="block" *ngIf="gradeUrl" [href]="gradeUrl" core-link [showBrowserWarning]="false">
                                     {{ 'core.openinbrowser' | translate }}
-                                    <ion-icon name="fas-external-link-alt" slot="end" aria-hidden="true"></ion-icon>
+                                    <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true"></ion-icon>
                                 </ion-button>
                             </ion-label>
                         </ion-item>

@@ -2,7 +2,7 @@
     <ion-toolbar>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
-                <ion-icon name="fas-times" slot="icon-only" aria-hidden=true></ion-icon>
+                <ion-icon name="fas-xmark" slot="icon-only" aria-hidden=true></ion-icon>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -18,7 +18,7 @@
             </ng-container>
         </ion-list>
 
-        <core-empty-box *ngIf="blocks.length == 0" icon="fas-th-large" [message]="'core.block.noblocks' | translate">
+        <core-empty-box *ngIf="blocks.length == 0" icon="fas-table-cells-large" [message]="'core.block.noblocks' | translate">
         </core-empty-box>
     </core-loading>
 </ion-content>

@@ -35,7 +35,7 @@
         </ion-col>
         <ion-col size="auto">
             <core-combobox [label]="'core.sortby' | translate" [formControl]="sort" (onChange)="sortChanged($event)"
-                icon="fas-sort-amount-down-alt">
+                icon="fas-arrow-down-short-wide">
                 <ion-select-option *ngFor="let option of sortOptions" class="ion-text-wrap" [value]="option.value">
                     {{ option.name | translate }}
                 </ion-select-option>

@@ -24,9 +24,9 @@
     <core-navbar-buttons slot="end">
         <core-context-menu [attr.aria-label]="'addon.messages.conversationactions' | translate">
             <core-context-menu-item [hidden]="isSelf || !showInfo || isGroup" [priority]="1000"
-                [content]="'addon.messages.info' | translate" (action)="viewInfo()" iconAction="fas-info-circle"></core-context-menu-item>
+                [content]="'addon.messages.info' | translate" (action)="viewInfo()" iconAction="fas-circle-info"></core-context-menu-item>
             <core-context-menu-item [hidden]="isSelf || !showInfo || !isGroup" [priority]="1000"
-                [content]="'addon.messages.groupinfo' | translate" (action)="viewInfo()" iconAction="fas-info-circle">
+                [content]="'addon.messages.groupinfo' | translate" (action)="viewInfo()" iconAction="fas-circle-info">
             </core-context-menu-item>
             <core-context-menu-item [hidden]="!groupMessagingEnabled || !conversation" [priority]="800" (action)="changeFavourite($event)"
                 [closeOnClick]="false" [content]="(conversation && conversation.isfavourite ? 'addon.messages.removefromfavourites' :

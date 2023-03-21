@@ -1,7 +1,7 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [attr.aria-label]="'core.info' | translate">
-        <ion-icon name="fas-info-circle" slot="icon-only" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
 </core-navbar-buttons>
 
@@ -113,7 +113,7 @@
         <!-- Ungrouped users. -->
         <ion-card *ngIf="assign.teamsubmission && summary && summary.warnofungroupedusers" class="core-info-card">
             <ion-item>
-                <ion-icon name="fas-question-circle" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-circle-question" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>{{ 'addon.mod_assign.'+summary.warnofungroupedusers | translate }}</ion-label>
             </ion-item>
         </ion-card>

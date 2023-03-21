@@ -63,7 +63,7 @@ export class CoreSiteHomeHomeHandlerService implements CoreMainMenuHomeHandler {
             title: 'core.sitehome.sitehome',
             page: CoreSiteHomeHomeHandlerService.PAGE_NAME,
             class: 'core-sitehome-dashboard-handler',
-            icon: 'fas-home',
+            icon: 'fas-house',
             priority: displaySiteHome ? this.priority + 200 : this.priority,
         };
     }

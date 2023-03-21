@@ -792,7 +792,7 @@ export class CoreQuestionHelperProvider {
                 const classList = icon.classList.toString();
                 if (classList.indexOf('fa-check') >= 0) {
                     correct = true;
-                } else if (classList.indexOf('fa-remove') < 0) {
+                } else if (classList.indexOf('fa-xmark') < 0 || classList.indexOf('fa-remove') < 0) {
                     return;
                 }
             }
@@ -805,7 +805,7 @@ export class CoreQuestionHelperProvider {
                 newIcon.setAttribute('src', 'assets/fonts/font-awesome/solid/check.svg');
                 newIcon.className = 'core-correct-icon ion-color ion-color-success questioncorrectnessicon';
             } else {
-                newIcon.setAttribute('name', 'fas-times');
+                newIcon.setAttribute('name', 'fas-xmark');
                 newIcon.setAttribute('src', 'assets/fonts/font-awesome/solid/times.svg');
                 newIcon.className = 'core-correct-icon ion-color ion-color-danger questioncorrectnessicon';
             }

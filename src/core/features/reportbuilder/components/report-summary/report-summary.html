@@ -7,7 +7,7 @@
         </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
-                <ion-icon slot="icon-only" name="fas-times" aria-hidden="true"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-xmark" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -38,7 +38,7 @@
     <ion-item class="ion-text-wrap filters-info">
         <ion-label>
             <p>
-                <ion-icon name="fas-info-circle" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-circle-info" aria-hidden="true"></ion-icon>
                 <core-format-text [text]="'core.reportbuilder.filtersapplied' | translate: { $a: reportUrl }" [filter]="false">
                 </core-format-text>
             </p>

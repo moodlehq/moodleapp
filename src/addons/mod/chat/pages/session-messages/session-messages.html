@@ -23,7 +23,7 @@
                 <div class="ion-text-center addon-mod_chat-notice" *ngIf="message.special">
                     <ion-badge class="ion-text-wrap" color="success" *ngIf="message.issystem && message.message == 'enter'">
                         <span>
-                            <ion-icon name="fas-sign-in-alt" aria-hidden="true"></ion-icon>
+                            <ion-icon name="fas-right-to-bracket" aria-hidden="true"></ion-icon>
                             {{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }}
                             {{ 'addon.mod_chat.messageenter' | translate:{$a: message.userfullname} }}
                         </span>
@@ -31,7 +31,7 @@
 
                     <ion-badge class="ion-text-wrap" color="danger" *ngIf="message.issystem && message.message == 'exit'">
                         <span>
-                            <ion-icon name="fas-sign-out-alt" aria-hidden="true"></ion-icon>
+                            <ion-icon name="fas-right-from-bracket" aria-hidden="true"></ion-icon>
                             {{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }}
                             {{ 'addon.mod_chat.messageexit' | translate:{$a: message.userfullname} }}
                         </span>

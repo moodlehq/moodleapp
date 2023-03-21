@@ -47,7 +47,7 @@ export class CoreMainMenuHomeHandlerService implements CoreMainMenuHandler {
      */
     getDisplayData(): CoreMainMenuHandlerData {
         return {
-            icon: 'fas-tachometer-alt',
+            icon: 'fas-gauge-high',
             title: 'core.mainmenu.home',
             page: CoreMainMenuHomeHandlerService.PAGE_NAME,
             class: 'core-home-handler',

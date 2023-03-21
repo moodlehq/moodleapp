@@ -5,7 +5,7 @@
         </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
-                <ion-icon slot="icon-only" name="fas-times" aria-hidden="true"></ion-icon>
+                <ion-icon slot="icon-only" name="fas-xmark" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
@@ -24,7 +24,7 @@
                 </ion-note>
             </ion-item>
         </ion-list>
-        <core-empty-box *ngIf="ratings.length == 0" icon="fas-star-half-alt" [message]="'core.rating.noratings' | translate">
+        <core-empty-box *ngIf="ratings.length == 0" icon="fas-star-half-stroke" [message]="'core.rating.noratings' | translate">
         </core-empty-box>
     </core-loading>
 </ion-content>

@@ -42,12 +42,12 @@
                     <core-button-with-spinner [loading]="isSynchronizing()" slot="end">
                         <ion-button fill="clear" (click)="synchronize()" [attr.aria-label]="'core.settings.synchronizenow' | translate"
                             [disabled]="!isOnline || (dataSaver && limitedConnection)">
-                            <ion-icon name="fas-sync-alt" slot="icon-only" aria-hidden="true"></ion-icon>
+                            <ion-icon name="fas-rotate" slot="icon-only" aria-hidden="true"></ion-icon>
                         </ion-button>
                     </core-button-with-spinner>
                 </ion-item>
                 <ion-item class="core-warning-item ion-text-wrap" *ngIf="!isOnline || (dataSaver && limitedConnection)">
-                    <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true"></ion-icon>
                     <ion-label>
                         <ng-container *ngIf="isOnline && dataSaver && limitedConnection">
                             {{ 'core.settings.connectwifitosync' | translate }}</ng-container>

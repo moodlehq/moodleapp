@@ -6,12 +6,12 @@
     </ion-button>
 
     <ion-button *ngIf="!showLoading && glossary" (click)="toggleSearch()" [attr.aria-label]="'addon.mod_glossary.bysearch' | translate">
-        <ion-icon name="fas-search" slot="icon-only" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-magnifying-glass" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
 
     <ion-button *ngIf="!showLoading" fill="clear" (click)="openModuleSummary()" aria-haspopup="true"
         [attr.aria-label]="'core.info' | translate">
-        <ion-icon name="fas-info-circle" slot="icon-only" aria-hidden="true"></ion-icon>
+        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
 </core-navbar-buttons>
 

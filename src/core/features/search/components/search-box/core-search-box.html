@@ -6,17 +6,17 @@
         </ion-input>
         <ion-button slot="end" fill="clear" type="submit" [attr.aria-label]="searchLabel"
             [disabled]="disabled || !searchText || (searchText.length < lengthCheck)">
-            <ion-icon name="fas-search" slot="icon-only" aria-hidden="true"></ion-icon>
+            <ion-icon name="fas-magnifying-glass" slot="icon-only" aria-hidden="true"></ion-icon>
         </ion-button>
         <ion-button *ngIf="showClear" slot="end" fill="clear" [attr.aria-label]="'core.clearsearch' | translate"
             [disabled]="searched == '' || disabled" (click)="clearForm()">
-            <ion-icon name="fas-backspace" slot="icon-only" aria-hidden="true" flip-rtl></ion-icon>
+            <ion-icon name="fas-delete-left" slot="icon-only" aria-hidden="true" flip-rtl></ion-icon>
         </ion-button>
     </ion-item>
     <ion-list class="core-search-history" [hidden]="!historyShown">
         <ion-item button class="ion-text-wrap" *ngFor="let item of history" (click)="historyClicked($event, item.searchedtext)" tabindex="0"
             detail="true">
-            <ion-icon name="fas-history" slot="start" aria-hidden="true">
+            <ion-icon name="fas-clock-rotate-left" slot="start" aria-hidden="true">
             </ion-icon>
             <ion-label>{{item.searchedtext}}</ion-label>
         </ion-item>

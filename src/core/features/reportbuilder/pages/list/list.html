@@ -26,7 +26,8 @@
         </ion-list>
 
         <ng-template #empty>
-            <core-empty-box *ngIf="!reports.items?.length" icon="fa-list-alt" [message]="'core.course.nocontentavailable' | translate">
+            <core-empty-box *ngIf="!reports.items?.length" icon="fas-rectangle-list"
+                [message]="'core.course.nocontentavailable' | translate">
             </core-empty-box>
         </ng-template>
 

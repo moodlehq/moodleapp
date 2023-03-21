@@ -52,7 +52,7 @@
 
         <ion-card class="core-warning-card" *ngIf="hasOffline">
             <ion-item>
-                <ion-icon name="fas-exclamation-triangle" slot="start" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
                     {{ 'core.thereisdatatosync' | translate:{$a: 'addon.notes.notes' | translate | lowercase } }}
                 </ion-label>
@@ -84,7 +84,7 @@
                     </p>
                     <ion-button *ngIf="note.deleted" slot="end" fill="clear" color="danger" (click)="undoDeleteNote($event, note)"
                         [attr.aria-label]="'core.restore' | translate">
-                        <ion-icon name="fas-undo-alt" slot="icon-only" aria-hidden="true"></ion-icon>
+                        <ion-icon name="fas-rotate-left" slot="icon-only" aria-hidden="true"></ion-icon>
                     </ion-button>
                     <ion-button *ngIf="showDelete && !note.deleted && (type != 'personal' || note.usermodified == currentUserId)" slot="end"
                         fill="clear" [@coreSlideInOut]="'fromRight'" color="danger" (click)="deleteNote($event, note)"

@@ -40,7 +40,7 @@ export class AddonStorageManagerSettingsHandlerService implements CoreSettingsHa
      */
     getDisplayData(): CoreSettingsHandlerData {
         return {
-            icon: 'fas-archive',
+            icon: 'fas-box-archive',
             title: 'addon.storagemanager.managedownloads',
             page: AddonStorageManagerSettingsHandlerService.PAGE_NAME,
             class: 'addon-storagemanager-settings-handler',

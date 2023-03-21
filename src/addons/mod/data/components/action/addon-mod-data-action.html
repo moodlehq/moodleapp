@@ -1,9 +1,9 @@
 <ion-button size="small" *ngIf="action == 'more'" fill="clear" (click)="viewEntry()" [attr.aria-label]="'addon.mod_data.more' | translate">
-    <ion-icon name="fas-search-plus" slot="icon-only" aria-hidden="true"></ion-icon>
+    <ion-icon name="fas-magnifying-glass-plus" slot="icon-only" aria-hidden="true"></ion-icon>
 </ion-button>
 
 <ion-button size="small" *ngIf="action == 'edit'" fill="clear" (click)="editEntry()" [attr.aria-label]="'core.edit' | translate">
-    <ion-icon name="fas-cog" slot="icon-only" aria-hidden="true"></ion-icon>
+    <ion-icon name="fas-gear" slot="icon-only" aria-hidden="true"></ion-icon>
 </ion-button>
 
 <ion-button size="small" *ngIf="action == 'delete' && !entry.deleted" fill="clear" color="danger" (click)="deleteEntry()"
@@ -13,7 +13,7 @@
 
 <ion-button size="small" *ngIf="action == 'delete' && entry.deleted" fill="clear" color="danger" (click)="undoDelete()"
     [attr.aria-label]="'core.restore' | translate">
-    <ion-icon name="fas-undo-alt" slot="icon-only" aria-hidden="true"></ion-icon>
+    <ion-icon name="fas-rotate-left" slot="icon-only" aria-hidden="true"></ion-icon>
 </ion-button>
 
 <ion-button size="small" *ngIf="action == 'approve'" fill="clear" (click)="approveEntry()"

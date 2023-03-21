@@ -114,7 +114,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
                 } else if (instance === 'paypal') {
                     this.enrolmentIcons.push({
                         label: 'core.courses.otherenrolments',
-                        icon: 'fas-external-link-alt',
+                        icon: 'fas-up-right-from-square',
                     });
                 }
             });

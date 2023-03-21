@@ -8,10 +8,10 @@
         </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="gotoSearch()" [attr.aria-label]="'addon.messages.searchcombined' | translate">
-                <ion-icon name="fas-search" slot="icon-only" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-magnifying-glass" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
             <ion-button (click)="gotoSettings()" [attr.aria-label]="'addon.messages.messagepreferences' | translate">
-                <ion-icon name="fas-cog" slot="icon-only" aria-hidden="true"></ion-icon>
+                <ion-icon name="fas-gear" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
             <!-- Add an empty context menu so split view pages can add items, otherwise the menu disappears in some cases. -->
             <core-context-menu></core-context-menu>
@@ -169,7 +169,7 @@
                     <core-format-text [text]="conversation.name" contextLevel="system" [contextInstanceId]="0"></core-format-text>
                     <ion-icon name="fas-user-slash" *ngIf="conversation.isblocked" [title]="'addon.messages.contactblocked' | translate">
                     </ion-icon>
-                    <ion-icon *ngIf="conversation.ismuted" name="fas-volume-mute" [title]="'addon.messages.mutedconversation' | translate">
+                    <ion-icon *ngIf="conversation.ismuted" name="fas-volume-xmark" [title]="'addon.messages.mutedconversation' | translate">
                     </ion-icon>
                 </p>
                 <ion-note *ngIf="conversation.lastmessagedate > 0 || conversation.unreadcount">
