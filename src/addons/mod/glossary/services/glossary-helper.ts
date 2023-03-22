@@ -18,7 +18,6 @@ import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fi
 import { CoreFile } from '@services/file';
 import { CoreUtils } from '@services/utils/utils';
 import { AddonModGlossaryOffline } from './glossary-offline';
-import { AddonModGlossaryNewEntry, AddonModGlossaryNewEntryWithFiles } from './glossary';
 import { makeSingleton } from '@singletons';
 import { CoreFileEntry } from '@services/file-helper';
 
@@ -56,31 +55,6 @@ export class AddonModGlossaryHelperProvider {
         const folderPath = await AddonModGlossaryOffline.getEntryFolder(glossaryId, entryName, timeCreated, siteId);
 
         return CoreFileUploader.getStoredFiles(folderPath);
-    }
-
-    /**
-     * Check if the data of an entry has changed.
-     *
-     * @param entry Current data.
-     * @param files Files attached.
-     * @param original Original content.
-     * @returns True if data has changed, false otherwise.
-     */
-    hasEntryDataChanged(
-        entry: AddonModGlossaryNewEntry,
-        files: CoreFileEntry[],
-        original?: AddonModGlossaryNewEntryWithFiles,
-    ): boolean {
-        if (!original || original.concept === undefined) {
-            // There is no original data.
-            return !!(entry.definition || entry.concept || files.length > 0);
-        }
-
-        if (original.definition != entry.definition || original.concept != entry.concept) {
-            return true;
-        }
-
-        return CoreFileUploader.areFileListDifferent(files, original.files);
     }
 
     /**

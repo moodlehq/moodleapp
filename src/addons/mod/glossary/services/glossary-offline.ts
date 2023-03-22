@@ -31,7 +31,7 @@ import { AddonModGlossaryEntryOption, GLOSSARY_ENTRY_ADDED } from './glossary';
 export class AddonModGlossaryOfflineProvider {
 
     /**
-     * Delete a new entry.
+     * Delete an offline entry.
      *
      * @param glossaryId Glossary ID.
      * @param concept Glossary entry concept.
@@ -39,7 +39,7 @@ export class AddonModGlossaryOfflineProvider {
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved if deleted, rejected if failure.
      */
-    async deleteNewEntry(glossaryId: number, concept: string, timeCreated: number, siteId?: string): Promise<void> {
+    async deleteOfflineEntry(glossaryId: number, concept: string, timeCreated: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
         const conditions: Partial<AddonModGlossaryOfflineEntryDBRecord> = {
@@ -52,12 +52,12 @@ export class AddonModGlossaryOfflineProvider {
     }
 
     /**
-     * Get all the stored new entries from all the glossaries.
+     * Get all the stored offline entries from all the glossaries.
      *
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved with entries.
      */
-    async getAllNewEntries(siteId?: string): Promise<AddonModGlossaryOfflineEntry[]> {
+    async getAllOfflineEntries(siteId?: string): Promise<AddonModGlossaryOfflineEntry[]> {
         const site = await CoreSites.getSite(siteId);
 
         const records = await site.getDb().getRecords<AddonModGlossaryOfflineEntryDBRecord>(OFFLINE_ENTRIES_TABLE_NAME);
@@ -66,7 +66,7 @@ export class AddonModGlossaryOfflineProvider {
     }
 
     /**
-     * Get a stored new entry.
+     * Get a stored offline entry.
      *
      * @param glossaryId Glossary ID.
      * @param concept Glossary entry concept.
@@ -74,7 +74,7 @@ export class AddonModGlossaryOfflineProvider {
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved with entry.
      */
-    async getNewEntry(
+    async getOfflineEntry(
         glossaryId: number,
         concept: string,
         timeCreated: number,
@@ -101,7 +101,7 @@ export class AddonModGlossaryOfflineProvider {
      * @param userId User the entries belong to. If not defined, current user in site.
      * @returns Promise resolved with entries.
      */
-    async getGlossaryNewEntries(glossaryId: number, siteId?: string, userId?: number): Promise<AddonModGlossaryOfflineEntry[]> {
+    async getGlossaryOfflineEntries(glossaryId: number, siteId?: string, userId?: number): Promise<AddonModGlossaryOfflineEntry[]> {
         const site = await CoreSites.getSite(siteId);
 
         const conditions: Partial<AddonModGlossaryOfflineEntryDBRecord> = {
@@ -144,7 +144,7 @@ export class AddonModGlossaryOfflineProvider {
             }
 
             // If there's only one entry, check that is not the one we are editing.
-            return CoreUtils.promiseFails(this.getNewEntry(glossaryId, concept, timeCreated, siteId));
+            return CoreUtils.promiseFails(this.getOfflineEntry(glossaryId, concept, timeCreated, siteId));
         } catch {
             // No offline data found, return false.
             return false;
@@ -152,7 +152,7 @@ export class AddonModGlossaryOfflineProvider {
     }
 
     /**
-     * Save a new entry to be sent later.
+     * Save an offline entry to be sent later.
      *
      * @param glossaryId Glossary ID.
      * @param concept Glossary entry concept.
@@ -166,7 +166,7 @@ export class AddonModGlossaryOfflineProvider {
      * @param discardEntry The entry provided will be discarded if found.
      * @returns Promise resolved if stored, rejected if failure.
      */
-    async addNewEntry(
+    async addOfflineEntry(
         glossaryId: number,
         concept: string,
         definition: string,
@@ -195,7 +195,7 @@ export class AddonModGlossaryOfflineProvider {
 
         // If editing an offline entry, delete previous first.
         if (discardEntry) {
-            await this.deleteNewEntry(glossaryId, discardEntry.concept, discardEntry.timecreated, site.getId());
+            await this.deleteOfflineEntry(glossaryId, discardEntry.concept, discardEntry.timecreated, site.getId());
         }
 
         await site.getDb().insertRecord(OFFLINE_ENTRIES_TABLE_NAME, entry);
@@ -222,7 +222,7 @@ export class AddonModGlossaryOfflineProvider {
     }
 
     /**
-     * Get the path to the folder where to store files for a new offline entry.
+     * Get the path to the folder where to store files for an offline entry.
      *
      * @param glossaryId Glossary ID.
      * @param concept The name of the entry.

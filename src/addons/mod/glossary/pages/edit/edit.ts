@@ -20,7 +20,7 @@ import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CanLeave } from '@guards/can-leave';
-import { FileEntry } from '@ionic-native/file/ngx';
+import { CoreFileEntry } from '@services/file-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -36,8 +36,6 @@ import {
     AddonModGlossaryCategory,
     AddonModGlossaryEntryOption,
     AddonModGlossaryGlossary,
-    AddonModGlossaryNewEntry,
-    AddonModGlossaryNewEntryWithFiles,
     AddonModGlossaryProvider,
 } from '../../services/glossary';
 import { AddonModGlossaryHelper } from '../../services/glossary-helper';
@@ -59,32 +57,29 @@ export class AddonModGlossaryEditPage implements OnInit, OnDestroy, CanLeave {
     courseId!: number;
     loaded = false;
     glossary?: AddonModGlossaryGlossary;
-    attachments: FileEntry[] = [];
     definitionControl = new FormControl();
     categories: AddonModGlossaryCategory[] = [];
     editorExtraParams: Record<string, unknown> = {};
-    entry: AddonModGlossaryNewEntry = {
+    data: AddonModGlossaryFormData = {
         concept: '',
         definition: '',
         timecreated: 0,
-    };
-
-    entries?: AddonModGlossaryEditEntriesSwipeManager;
-
-    options = {
-        categories: <string[]> [],
+        attachments: [],
+        categories: [],
         aliases: '',
         usedynalink: false,
         casesensitive: false,
         fullmatch: false,
     };
 
+    entries?: AddonModGlossaryEditEntriesSwipeManager;
+
     protected timecreated!: number;
     protected concept = '';
     protected syncId?: string;
     protected syncObserver?: CoreEventObserver;
     protected isDestroyed = false;
-    protected originalData?: AddonModGlossaryNewEntryWithFiles;
+    protected originalData?: AddonModGlossaryFormData;
     protected saved = false;
 
     constructor(protected route: ActivatedRoute, @Optional() protected splitView: CoreSplitViewComponent) {}
@@ -164,54 +159,64 @@ export class AddonModGlossaryEditPage implements OnInit, OnDestroy, CanLeave {
             return;
         }
 
-        const entry = await AddonModGlossaryOffline.getNewEntry(this.glossary.id, this.concept, this.timecreated);
+        const entry = await AddonModGlossaryOffline.getOfflineEntry(this.glossary.id, this.concept, this.timecreated);
 
-        this.entry.concept = entry.concept || '';
-        this.entry.definition = entry.definition || '';
-        this.entry.timecreated = entry.timecreated;
+        this.data.concept = entry.concept || '';
+        this.data.definition = entry.definition || '';
+        this.data.timecreated = entry.timecreated;
 
         this.originalData = {
-            concept: this.entry.concept,
-            definition: this.entry.definition,
-            files: [],
+            concept: this.data.concept,
+            definition: this.data.definition,
+            attachments: this.data.attachments.slice(),
             timecreated: entry.timecreated,
+            categories: this.data.categories.slice(),
+            aliases: this.data.aliases,
+            usedynalink: this.data.usedynalink,
+            casesensitive: this.data.casesensitive,
+            fullmatch: this.data.fullmatch,
         };
 
         if (entry.options) {
-            this.options.categories = (entry.options.categories && (<string> entry.options.categories).split(',')) || [];
-            this.options.aliases = <string> entry.options.aliases || '';
-            this.options.usedynalink = !!entry.options.usedynalink;
-            if (this.options.usedynalink) {
-                this.options.casesensitive = !!entry.options.casesensitive;
-                this.options.fullmatch = !!entry.options.fullmatch;
+            this.data.categories = (entry.options.categories && (<string> entry.options.categories).split(',')) || [];
+            this.data.aliases = <string> entry.options.aliases || '';
+            this.data.usedynalink = !!entry.options.usedynalink;
+
+            if (this.data.usedynalink) {
+                this.data.casesensitive = !!entry.options.casesensitive;
+                this.data.fullmatch = !!entry.options.fullmatch;
             }
         }
 
         // Treat offline attachments if any.
         if (entry.attachments?.offline) {
-            this.attachments = await AddonModGlossaryHelper.getStoredFiles(this.glossary.id, entry.concept, entry.timecreated);
+            this.data.attachments = await AddonModGlossaryHelper.getStoredFiles(
+                this.glossary.id,
+                entry.concept,
+                entry.timecreated,
+            );
 
-            this.originalData.files = this.attachments.slice();
+            this.originalData.attachments = this.data.attachments.slice();
         }
 
-        this.definitionControl.setValue(this.entry.definition);
+        this.definitionControl.setValue(this.data.definition);
     }
 
     /**
      * Reset the form data.
      */
     protected resetForm(): void {
-        this.entry.concept = '';
-        this.entry.definition = '';
-        this.entry.timecreated = 0;
         this.originalData = undefined;
 
-        this.options.categories = [];
-        this.options.aliases = '';
-        this.options.usedynalink = false;
-        this.options.casesensitive = false;
-        this.options.fullmatch = false;
-        this.attachments.length = 0; // Empty the array.
+        this.data.concept = '';
+        this.data.definition = '';
+        this.data.timecreated = 0;
+        this.data.categories = [];
+        this.data.aliases = '';
+        this.data.usedynalink = false;
+        this.data.casesensitive = false;
+        this.data.fullmatch = false;
+        this.data.attachments.length = 0; // Empty the array.
 
         this.definitionControl.setValue('');
     }
@@ -222,7 +227,7 @@ export class AddonModGlossaryEditPage implements OnInit, OnDestroy, CanLeave {
      * @param text The new text.
      */
     onDefinitionChange(text: string): void {
-        this.entry.definition = text;
+        this.data.definition = text;
     }
 
     /**
@@ -235,13 +240,13 @@ export class AddonModGlossaryEditPage implements OnInit, OnDestroy, CanLeave {
             return true;
         }
 
-        if (AddonModGlossaryHelper.hasEntryDataChanged(this.entry, this.attachments, this.originalData)) {
+        if (this.hasDataChanged()) {
             // Show confirmation if some data has been modified.
             await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
         }
 
         // Delete the local files from the tmp folder.
-        CoreFileUploader.clearTmpFiles(this.attachments);
+        CoreFileUploader.clearTmpFiles(this.data.attachments);
 
         CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
 
@@ -252,11 +257,11 @@ export class AddonModGlossaryEditPage implements OnInit, OnDestroy, CanLeave {
      * Save the entry.
      */
     async save(): Promise<void> {
-        let definition = this.entry.definition;
+        let definition = this.data.definition;
         let entryId: number | undefined;
-        const timecreated = this.entry.timecreated || Date.now();
+        const timecreated = this.data.timecreated || Date.now();
 
-        if (!this.entry.concept || !definition) {
+        if (!this.data.concept || !definition) {
             CoreDomUtils.showErrorModal('addon.mod_glossary.fillfields', true);
 
             return;
@@ -274,23 +279,23 @@ export class AddonModGlossaryEditPage implements OnInit, OnDestroy, CanLeave {
             const { saveOffline, attachmentsResult } = await this.uploadAttachments(timecreated);
 
             const options: Record<string, AddonModGlossaryEntryOption> = {
-                aliases: this.options.aliases,
-                categories: this.options.categories.join(','),
+                aliases: this.data.aliases,
+                categories: this.data.categories.join(','),
             };
 
             if (this.glossary.usedynalink) {
-                options.usedynalink = this.options.usedynalink ? 1 : 0;
-                if (this.options.usedynalink) {
-                    options.casesensitive = this.options.casesensitive ? 1 : 0;
-                    options.fullmatch = this.options.fullmatch ? 1 : 0;
+                options.usedynalink = this.data.usedynalink ? 1 : 0;
+                if (this.data.usedynalink) {
+                    options.casesensitive = this.data.casesensitive ? 1 : 0;
+                    options.fullmatch = this.data.fullmatch ? 1 : 0;
                 }
             }
 
             if (saveOffline) {
-                if (this.entry && !this.glossary.allowduplicatedentries) {
+                if (this.data && !this.glossary.allowduplicatedentries) {
                     // Check if the entry is duplicated in online or offline mode.
-                    const isUsed = await AddonModGlossary.isConceptUsed(this.glossary.id, this.entry.concept, {
-                        timeCreated: this.entry.timecreated,
+                    const isUsed = await AddonModGlossary.isConceptUsed(this.glossary.id, this.data.concept, {
+                        timeCreated: this.data.timecreated,
                         cmId: this.cmId,
                     });
 
@@ -301,9 +306,9 @@ export class AddonModGlossaryEditPage implements OnInit, OnDestroy, CanLeave {
                 }
 
                 // Save entry in offline.
-                await AddonModGlossaryOffline.addNewEntry(
+                await AddonModGlossaryOffline.addOfflineEntry(
                     this.glossary.id,
-                    this.entry.concept,
+                    this.data.concept,
                     definition,
                     this.courseId,
                     options,
@@ -311,33 +316,33 @@ export class AddonModGlossaryEditPage implements OnInit, OnDestroy, CanLeave {
                     timecreated,
                     undefined,
                     undefined,
-                    this.entry,
+                    this.data,
                 );
             } else {
                 // Try to send it to server.
                 // Don't allow offline if there are attachments since they were uploaded fine.
                 await AddonModGlossary.addEntry(
                     this.glossary.id,
-                    this.entry.concept,
+                    this.data.concept,
                     definition,
                     this.courseId,
                     options,
                     attachmentsResult,
                     {
                         timeCreated: timecreated,
-                        discardEntry: this.entry,
-                        allowOffline: !this.attachments.length,
+                        discardEntry: this.data,
+                        allowOffline: !this.data.attachments.length,
                         checkDuplicates: !this.glossary.allowduplicatedentries,
                     },
                 );
             }
 
             // Delete the local files from the tmp folder.
-            CoreFileUploader.clearTmpFiles(this.attachments);
+            CoreFileUploader.clearTmpFiles(this.data.attachments);
 
             if (entryId) {
                 // Data sent to server, delete stored files (if any).
-                AddonModGlossaryHelper.deleteStoredFiles(this.glossary.id, this.entry.concept, timecreated);
+                AddonModGlossaryHelper.deleteStoredFiles(this.glossary.id, this.data.concept, timecreated);
                 CoreEvents.trigger(CoreEvents.ACTIVITY_DATA_SENT, { module: 'glossary' });
             }
 
@@ -368,6 +373,24 @@ export class AddonModGlossaryEditPage implements OnInit, OnDestroy, CanLeave {
     }
 
     /**
+     * Check if the form data has changed.
+     *
+     * @returns True if data has changed, false otherwise.
+     */
+    protected hasDataChanged(): boolean {
+        if (!this.originalData || this.originalData.concept === undefined) {
+            // There is no original data.
+            return !!(this.data.definition || this.data.concept || this.data.attachments.length > 0);
+        }
+
+        if (this.originalData.definition != this.data.definition || this.originalData.concept != this.data.concept) {
+            return true;
+        }
+
+        return CoreFileUploader.areFileListDifferent(this.data.attachments, this.originalData.attachments);
+    }
+
+    /**
      * Upload entry attachments if any.
      *
      * @param timecreated Entry's timecreated.
@@ -376,7 +399,7 @@ export class AddonModGlossaryEditPage implements OnInit, OnDestroy, CanLeave {
     protected async uploadAttachments(
         timecreated: number,
     ): Promise<{saveOffline: boolean; attachmentsResult?: number | CoreFileUploaderStoreFilesResult}> {
-        if (!this.attachments.length || !this.glossary) {
+        if (!this.data.attachments.length || !this.glossary) {
             return {
                 saveOffline: false,
             };
@@ -384,7 +407,7 @@ export class AddonModGlossaryEditPage implements OnInit, OnDestroy, CanLeave {
 
         try {
             const attachmentsResult = await CoreFileUploader.uploadOrReuploadFiles(
-                this.attachments,
+                this.data.attachments,
                 AddonModGlossaryProvider.COMPONENT,
                 this.glossary.id,
             );
@@ -401,9 +424,9 @@ export class AddonModGlossaryEditPage implements OnInit, OnDestroy, CanLeave {
             // Cannot upload them in online, save them in offline.
             const attachmentsResult = await AddonModGlossaryHelper.storeFiles(
                 this.glossary.id,
-                this.entry.concept,
+                this.data.concept,
                 timecreated,
-                this.attachments,
+                this.data.attachments,
             );
 
             return {
@@ -439,3 +462,18 @@ class AddonModGlossaryEditEntriesSwipeManager extends AddonModGlossaryEntriesSwi
     }
 
 }
+
+/**
+ * Form data.
+ */
+type AddonModGlossaryFormData = {
+    concept: string;
+    definition: string;
+    timecreated: number;
+    attachments: CoreFileEntry[];
+    categories: string[];
+    aliases: string;
+    usedynalink: boolean;
+    casesensitive: boolean;
+    fullmatch: boolean;
+};

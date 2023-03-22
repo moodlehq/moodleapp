@@ -50,10 +50,9 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
      *
      * @param siteId Site ID to sync. If not defined, sync all sites.
      * @param force Wether to force sync not depending on last execution.
-     * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
-    syncAllGlossaries(siteId?: string, force?: boolean): Promise<void> {
-        return this.syncOnSites('all glossaries', (siteId) => this.syncAllGlossariesFunc(!!force, siteId), siteId);
+    async syncAllGlossaries(siteId?: string, force?: boolean): Promise<void> {
+        await this.syncOnSites('all glossaries', (siteId) => this.syncAllGlossariesFunc(!!force, siteId), siteId);
     }
 
     /**
@@ -61,7 +60,6 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
      *
      * @param force Wether to force sync not depending on last execution.
      * @param siteId Site ID to sync.
-     * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     protected async syncAllGlossariesFunc(force: boolean, siteId: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -73,14 +71,13 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
     }
 
     /**
-     * Sync entried of all glossaries on a site.
+     * Sync entries of all glossaries on a site.
      *
      * @param force Wether to force sync not depending on last execution.
      * @param siteId Site ID to sync.
-     * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     protected async syncAllGlossariesEntries(force: boolean, siteId: string): Promise<void> {
-        const entries = await AddonModGlossaryOffline.getAllNewEntries(siteId);
+        const entries = await AddonModGlossaryOffline.getAllOfflineEntries(siteId);
 
         // Do not sync same glossary twice.
         const treated: Record<number, boolean> = {};
@@ -180,7 +177,7 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
 
         // Get offline responses to be sent.
         const entries = await CoreUtils.ignoreErrors(
-            AddonModGlossaryOffline.getGlossaryNewEntries(glossaryId, siteId, userId),
+            AddonModGlossaryOffline.getGlossaryOfflineEntries(glossaryId, siteId, userId),
             <AddonModGlossaryOfflineEntry[]> [],
         );
 
@@ -285,11 +282,10 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
      * @param concept Glossary entry concept.
      * @param timeCreated Time to allow duplicated entries.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when deleted.
      */
     protected async deleteAddEntry(glossaryId: number, concept: string, timeCreated: number, siteId?: string): Promise<void> {
         await Promise.all([
-            AddonModGlossaryOffline.deleteNewEntry(glossaryId, concept, timeCreated, siteId),
+            AddonModGlossaryOffline.deleteOfflineEntry(glossaryId, concept, timeCreated, siteId),
             AddonModGlossaryHelper.deleteStoredFiles(glossaryId, concept, timeCreated, siteId),
         ]);
     }

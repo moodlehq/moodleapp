@@ -28,7 +28,6 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModGlossaryEntryDBRecord, ENTRIES_TABLE_NAME } from './database/glossary';
 import { AddonModGlossaryOffline } from './glossary-offline';
-import { CoreFileEntry } from '@services/file-helper';
 
 export const GLOSSARY_ENTRY_ADDED = 'addon_mod_glossary_entry_added';
 export const GLOSSARY_ENTRY_DELETED = 'addon_mod_glossary_entry_deleted';
@@ -827,7 +826,7 @@ export class AddonModGlossaryProvider {
                 throw new CoreError('Error adding entry.');
             }
 
-            await AddonModGlossaryOffline.addNewEntry(
+            await AddonModGlossaryOffline.addOfflineEntry(
                 glossaryId,
                 concept,
                 definition,
@@ -850,7 +849,7 @@ export class AddonModGlossaryProvider {
 
         // If we are editing an offline entry, discard previous first.
         if (otherOptions.discardEntry) {
-            await AddonModGlossaryOffline.deleteNewEntry(
+            await AddonModGlossaryOffline.deleteOfflineEntry(
                 glossaryId,
                 otherOptions.discardEntry.concept,
                 otherOptions.discardEntry.timecreated,
@@ -1375,22 +1374,6 @@ export type AddonModGlossaryAddEntryOptions = {
 export type AddonModGlossaryDiscardedEntry = {
     concept: string;
     timecreated: number;
-};
-
-/**
- * Entry to be added.
- */
-export type AddonModGlossaryNewEntry = {
-    concept: string;
-    definition: string;
-    timecreated: number;
-};
-
-/**
- * Entry to be added, including attachments.
- */
-export type AddonModGlossaryNewEntryWithFiles = AddonModGlossaryNewEntry & {
-    files: CoreFileEntry[];
 };
 
 /**

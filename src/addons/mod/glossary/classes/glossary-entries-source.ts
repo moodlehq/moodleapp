@@ -259,7 +259,7 @@ export class AddonModGlossaryEntriesSource extends CoreRoutedItemsManagerSource<
         const entries: AddonModGlossaryEntryItem[] = [];
 
         if (page === 0) {
-            const offlineEntries = await AddonModGlossaryOffline.getGlossaryNewEntries(glossary.id);
+            const offlineEntries = await AddonModGlossaryOffline.getGlossaryOfflineEntries(glossary.id);
 
             offlineEntries.sort((a, b) => a.concept.localeCompare(b.concept));
 
