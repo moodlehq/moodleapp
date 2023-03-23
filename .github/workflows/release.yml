@@ -1,0 +1,18 @@
+name: Prepare
+
+on: workflow_dispatch
+
+jobs:
+  prepare:
+    if: github.repository == 'moodlehq/moodleapp'
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        persist-credentials: false
+        fetch-depth: 0
+    - name: Create release tags
+      env:
+        GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+      run: ./.github/scripts/release.sh

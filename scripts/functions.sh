@@ -27,34 +27,34 @@ function print_success {
 }
 
 function print_error {
-    [[ -n "$TERM" ]] && tput setaf 1
+    [[ -t 1 ]] && tput setaf 1
     echo "  ERROR:  $1"
-    [[ -n "$TERM" ]] && tput sgr0
+    [[ -t 1 ]] && tput sgr0
 }
 
 function print_ok {
-    [[ -n "$TERM" ]] && tput setaf 2
+    [[ -t 1 ]] && tput setaf 2
     echo "     OK:  $1"
-    [[ -n "$TERM" ]] && tput sgr0
+    [[ -t 1 ]] && tput sgr0
     echo
 }
 
 function print_message {
-    [[ -n "$TERM" ]] && tput setaf 3
+    [[ -t 1 ]] && tput setaf 3
     echo "--------  $1"
-    [[ -n "$TERM" ]] && tput sgr0
+    [[ -t 1 ]] && tput sgr0
     echo
 }
 
 function print_title {
     stepnumber=$(($stepnumber + 1))
     echo
-    [[ -n "$TERM" ]] && tput setaf 5
+    [[ -t 1 ]] && tput setaf 5
     echo "$stepnumber $1"
-    [[ -n "$TERM" ]] && tput sgr0
-    [[ -n "$TERM" ]] && tput setaf 5
+    [[ -t 1 ]] && tput sgr0
+    [[ -t 1 ]] && tput setaf 5
     echo '=================='
-    [[ -n "$TERM" ]] && tput sgr0
+    [[ -t 1 ]] && tput sgr0
 }
 
 function telegram_notify {
