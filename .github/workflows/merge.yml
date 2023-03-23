@@ -5,7 +5,7 @@ on:
     branches: [ main, v*.x ]
 
 jobs:
-  prepare:
+  merge:
     if: github.repository == 'moodlemobile/moodleapp'
     runs-on: ubuntu-latest
 

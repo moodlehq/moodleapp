@@ -3,7 +3,7 @@ name: Prepare
 on: workflow_dispatch
 
 jobs:
-  prepare:
+  release:
     if: github.repository == 'moodlehq/moodleapp'
     runs-on: ubuntu-latest
 
