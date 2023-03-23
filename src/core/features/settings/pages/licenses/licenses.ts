@@ -52,7 +52,7 @@ export class CoreSettingsLicensesPage implements OnInit {
 
     constructor() {
         this.appLicenseVersion = CoreConstants.CONFIG.versionname.indexOf('-') > 0
-            ? 'integration'
+            ? 'main'
             : 'v' + CoreConstants.CONFIG.versionname;
 
         this.licensesUrl = 'https://raw.githubusercontent.com/moodlehq/moodleapp/' + this.appLicenseVersion + '/licenses.json';

@@ -14,7 +14,7 @@ print_title 'Generating language from code...'
 npx gulp lang
 
 print_title 'Getting local mobile langs'
-git clone --branch master --depth 1 https://github.com/moodlehq/moodle-local_moodlemobileapp.git ../../moodle-local_moodlemobileapp
+git clone --depth 1 https://github.com/moodlehq/moodle-local_moodlemobileapp.git ../../moodle-local_moodlemobileapp
 
 if [ -z $forceLang ]; then
     get_languages

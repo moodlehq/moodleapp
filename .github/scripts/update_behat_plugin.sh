@@ -14,7 +14,7 @@ fi
 # Clone plugin repository.
 print_title "Cloning Behat plugin repository..."
 
-git clone https://$GIT_TOKEN@github.com/$BEHAT_PLUGIN_GITHUB_REPOSITORY.git tmp/local_moodleappbehat -b integration
+git clone https://$GIT_TOKEN@github.com/$BEHAT_PLUGIN_GITHUB_REPOSITORY.git tmp/local_moodleappbehat -b $GITHUB_REF_NAME
 pluginversion=$(cat tmp/local_moodleappbehat/version.php | grep "\$plugin->version" | grep -o -E "[0-9]+")
 
 # Auto-generate plugin.
