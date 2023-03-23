@@ -55,6 +55,11 @@ export const USER_PROFILE_REFRESHED = 'CoreUserProfileRefreshed';
 export const USER_PROFILE_PICTURE_UPDATED = 'CoreUserProfilePictureUpdated';
 
 /**
+ * Value set in timezone when using the server's timezone.
+ */
+export const USER_PROFILE_SERVER_TIMEZONE = '99';
+
+/**
  * Service to provide user functionalities.
  */
 @Injectable({ providedIn: 'root' })

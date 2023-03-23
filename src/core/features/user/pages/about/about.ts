@@ -21,7 +21,13 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreUser, CoreUserProfile, USER_PROFILE_PICTURE_UPDATED, USER_PROFILE_REFRESHED } from '@features/user/services/user';
+import {
+    CoreUser,
+    CoreUserProfile,
+    USER_PROFILE_PICTURE_UPDATED,
+    USER_PROFILE_REFRESHED,
+    USER_PROFILE_SERVER_TIMEZONE,
+} from '@features/user/services/user';
 import { CoreUserHelper } from '@features/user/services/user-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
@@ -50,6 +56,7 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
     encodedAddress?: SafeUrl;
     canChangeProfilePicture = false;
     interests?: string[];
+    displayTimezone = false;
 
     protected userId!: number;
     protected site!: CoreSite;
@@ -119,6 +126,12 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
             this.title = user.fullname;
 
             this.user.address = CoreUserHelper.formatAddress('', user.city, user.country);
+
+            const serverTimezone = CoreSites.getCurrentSite()?.getStoredConfig('timezone');
+            this.displayTimezone = !!serverTimezone;
+            if (this.displayTimezone && this.user.timezone === USER_PROFILE_SERVER_TIMEZONE) {
+                this.user.timezone = serverTimezone;
+            }
 
             await this.checkUserImageUpdated();
         } catch (error) {
