@@ -91,7 +91,7 @@ function get_language_folders {
         fi
     done
 
-    if [ -z "${LANGVERSION}" ]; then
+    if [ -z "${langs}" ]; then
         # Get language list from the installed ones (will not discover new translations).
         echo "Fallback language list will only get current installation languages"
         langs=`jq -r '.languages | keys[]' ../moodle.config.json`

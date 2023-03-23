@@ -1,10 +1,10 @@
-name: Prepare
+name: Release
 
 on: workflow_dispatch
 
 jobs:
   release:
-    if: github.repository == 'moodlehq/moodleapp'
+    if: github.repository == 'moodlemobile/moodleapp'
     runs-on: ubuntu-latest
 
     steps:

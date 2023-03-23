@@ -1,4 +1,4 @@
-name: Prepare
+name: Merge
 
 on:
   push:
