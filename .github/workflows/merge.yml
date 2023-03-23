@@ -2,7 +2,7 @@ name: Prepare
 
 on:
   push:
-    branches: [ main, freemium-main, v*.x, freemium-v*.x ]
+    branches: [ main, v*.x ]
 
 jobs:
   prepare:
@@ -17,4 +17,4 @@ jobs:
     - name: Prepare builds
       env:
         GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
-      run: ./.github/scripts/prepare.sh
+      run: ./.github/scripts/merge.sh
