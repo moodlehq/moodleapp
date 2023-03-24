@@ -44,6 +44,10 @@ if (window.H5PIntegration && window.H5PIntegration.contents && location.search) 
             }
         } else if (nameAndValue[0] == 'trackingUrl' && contentData) {
             contentData.url = nameAndValue[1];
+        } else if (nameAndValue[0] == 'saveFreq' && nameAndValue[1] !== undefined) {
+            window.H5PIntegration.saveFreq = nameAndValue[1];
+        } else if (nameAndValue[0] == 'state' && nameAndValue[1] !== undefined && contentData) {
+            contentData.contentUserData = [{ state: decodeURIComponent(nameAndValue[1]) }];
         }
     });
 }

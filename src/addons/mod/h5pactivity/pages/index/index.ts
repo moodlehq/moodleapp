@@ -39,7 +39,7 @@ export class AddonModH5PActivityIndexPage extends CoreCourseModuleMainActivityPa
      * @inheritdoc
      */
     async canLeave(): Promise<boolean> {
-        if (!this.activityComponent || !this.activityComponent.playing || this.activityComponent.isOpeningPage) {
+        if (!this.activityComponent?.playing || this.activityComponent.isOpeningPage || this.activityComponent.saveStateEnabled) {
             return true;
         }
 

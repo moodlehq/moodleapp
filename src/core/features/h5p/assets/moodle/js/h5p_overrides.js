@@ -94,3 +94,72 @@ H5P.getMoodleComponent = function () {
         };
     }
 };
+
+/**
+ * Get the actor.
+ *
+ * @returns {Object} The Actor object.
+ */
+H5P.getxAPIActor = function() {
+    var actor = null;
+    if (H5PIntegration.user !== undefined) {
+        actor = {
+            'name': H5PIntegration.user.name,
+            'objectType': 'Agent'
+        };
+        if (H5PIntegration.user.id !== undefined) {
+            actor.account = {
+                'name': H5PIntegration.user.id,
+                'homePage': H5PIntegration.siteUrl
+            };
+        } else if (H5PIntegration.user.mail !== undefined) {
+            actor.mbox = 'mailto:' + H5PIntegration.user.mail;
+        }
+    } else {
+        var uuid;
+        try {
+            if (localStorage.H5PUserUUID) {
+                uuid = localStorage.H5PUserUUID;
+            } else {
+                uuid = H5P.createUUID();
+                localStorage.H5PUserUUID = uuid;
+            }
+        } catch (err) {
+            // LocalStorage and Cookies are probably disabled. Do not track the user.
+            uuid = 'not-trackable-' + H5P.createUUID();
+        }
+        actor = {
+            'account': {
+                'name': uuid,
+                'homePage': H5PIntegration.siteUrl
+            },
+            'objectType': 'Agent'
+        };
+    }
+    return actor;
+};
+
+/**
+ * Creates requests for inserting, updating and deleting content user data.
+ * It overrides the contentUserDataAjax private method in h5p.js.
+ *
+ * @param {number} contentId What content to store the data for.
+ * @param {string} dataType Identifies the set of data for this content.
+ * @param {string} subContentId Identifies sub content
+ * @param {function} [done] Callback when ajax is done.
+ * @param {object} [data] To be stored for future use.
+ * @param {boolean} [preload=false] Data is loaded when content is loaded.
+ * @param {boolean} [invalidate=false] Data is invalidated when content changes.
+ * @param {boolean} [async=true]
+ */
+H5P.contentUserDataAjax = function(contentId, dataType, subContentId, done, data, preload, invalidate, async) {
+    var instance = H5P.findInstanceFromId(contentId);
+    if (instance !== undefined) {
+        var xAPIState = {
+            activityId: H5P.XAPIEvent.prototype.getContentXAPIId(instance),
+            stateId: dataType,
+            state: data
+        };
+        H5P.externalDispatcher.trigger('xAPIState', xAPIState);
+    }
+};

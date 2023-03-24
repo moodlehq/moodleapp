@@ -64,7 +64,8 @@
     </ion-list>
 
     <core-h5p-iframe *ngIf="playing" [fileUrl]="fileUrl" [displayOptions]="displayOptions" [onlinePlayerUrl]="onlinePlayerUrl"
-        [trackComponent]="trackComponent" [contextId]="h5pActivity?.context" [enableInAppFullscreen]="true">
+        [trackComponent]="trackComponent" [contextId]="h5pActivity?.context" [enableInAppFullscreen]="true" [saveFreq]="saveFreq"
+        [state]="contentState">
     </core-h5p-iframe>
 </core-loading>
 

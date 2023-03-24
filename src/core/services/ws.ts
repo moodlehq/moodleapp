@@ -647,11 +647,12 @@ export class CoreWSProvider {
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return promise.then(async (data: any) => {
-            // Some moodle web services return null.
-            // If the responseExpected value is set to false, we create a blank object if the response is null.
-            if (!data && !preSets.responseExpected) {
-                data = {};
+            // Some moodle web services always return null, and some others can return a primitive type or null.
+            if (data === null && (!preSets.responseExpected || preSets.typeExpected !== 'object')) {
+                return null;
             }
+
+            const typeExpected = preSets.typeExpected === 'jsonstring' ? 'string' : preSets.typeExpected;
 
             if (!data) {
                 throw await this.createCannotConnectSiteError(preSets.siteUrl, {
@@ -660,26 +661,26 @@ export class CoreWSProvider {
                         details: Translate.instant('core.errorinvalidresponse', { method }),
                     }),
                 });
-            } else if (typeof data != preSets.typeExpected) {
+            } else if (typeof data !== typeExpected) {
                 // If responseType is text an string will be returned, parse before returning.
                 if (typeof data == 'string') {
-                    if (preSets.typeExpected == 'number') {
+                    if (typeExpected === 'number') {
                         data = Number(data);
                         if (isNaN(data)) {
-                            this.logger.warn(`Response expected type "${preSets.typeExpected}" cannot be parsed to number`);
+                            this.logger.warn(`Response expected type "${typeExpected}" cannot be parsed to number`);
 
                             throw await this.createCannotConnectSiteError(preSets.siteUrl, {
                                 errorcode: 'invalidresponse',
                                 errorDetails: Translate.instant('core.errorinvalidresponse', { method }),
                             });
                         }
-                    } else if (preSets.typeExpected == 'boolean') {
+                    } else if (typeExpected === 'boolean') {
                         if (data === 'true') {
                             data = true;
                         } else if (data === 'false') {
                             data = false;
                         } else {
-                            this.logger.warn(`Response expected type "${preSets.typeExpected}" is not true or false`);
+                            this.logger.warn(`Response expected type "${typeExpected}" is not true or false`);
 
                             throw await this.createCannotConnectSiteError(preSets.siteUrl, {
                                 errorcode: 'invalidresponse',
@@ -687,7 +688,7 @@ export class CoreWSProvider {
                             });
                         }
                     } else {
-                        this.logger.warn('Response of type "' + typeof data + `" received, expecting "${preSets.typeExpected}"`);
+                        this.logger.warn('Response of type "' + typeof data + `" received, expecting "${typeExpected}"`);
 
                         throw await this.createCannotConnectSiteError(preSets.siteUrl, {
                             errorcode: 'invalidresponse',
@@ -695,7 +696,7 @@ export class CoreWSProvider {
                         });
                     }
                 } else {
-                    this.logger.warn('Response of type "' + typeof data + `" received, expecting "${preSets.typeExpected}"`);
+                    this.logger.warn('Response of type "' + typeof data + `" received, expecting "${typeExpected}"`);
 
                     throw await this.createCannotConnectSiteError(preSets.siteUrl, {
                         errorcode: 'invalidresponse',
@@ -1296,7 +1297,7 @@ export type CoreWSPreSets = {
     /**
      * Defaults to 'object'. Use it when you expect a type that's not an object|array.
      */
-    typeExpected?: string;
+    typeExpected?: CoreWSTypeExpected;
 
     /**
      * Defaults to false. Clean multibyte Unicode chars from data.
@@ -1309,6 +1310,8 @@ export type CoreWSPreSets = {
      */
     splitRequest?: CoreWSPreSetsSplitRequest;
 };
+
+export type CoreWSTypeExpected = 'boolean'|'number'|'string'|'jsonstring'|'object';
 
 /**
  * Options to split a request.

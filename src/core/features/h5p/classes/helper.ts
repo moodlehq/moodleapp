@@ -122,9 +122,10 @@ export class CoreH5PHelper {
             throw new CoreError('Site info could not be fetched.');
         }
 
+        // H5P doesn't currently support xAPI State. It implements a mechanism in contentUserDataAjax() in h5p.js to update user
+        // data. However, in our case, we're overriding this method to call the xAPI State web services.
         const basePath = CoreFile.getBasePathInstant();
         const ajaxPaths = {
-            xAPIResult: '',
             contentUserData: '',
         };
 
@@ -144,7 +145,7 @@ export class CoreH5PHelper {
             ),
             postUserStatistics: false,
             ajax: ajaxPaths,
-            saveFreq: false,
+            saveFreq: false, // saveFreq will be overridden in params.js.
             siteUrl: site.getURL(),
             l10n: {
                 H5P: CoreH5P.h5pCore.getLocalization(), // eslint-disable-line @typescript-eslint/naming-convention
@@ -240,7 +241,7 @@ export type CoreH5PCoreSettings = {
     urlLibraries: string;
     postUserStatistics: boolean;
     ajax: {
-        xAPIResult: string;
+        xAPIResult?: string;
         contentUserData: string;
     };
     saveFreq: boolean;
