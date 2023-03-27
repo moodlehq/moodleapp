@@ -14,7 +14,7 @@
 
     <core-context-menu>
         <core-context-menu-item *ngIf="canEdit && (isOnline || pageIsOffline)" [priority]="590" [content]="'core.edit' | translate"
-            iconAction="fas-pen-to-square" (action)="goToEditPage()">
+            iconAction="fas-pen" (action)="goToEditPage()">
         </core-context-menu-item>
         <core-context-menu-item *ngIf="canEdit" [priority]="580" [content]="'addon.mod_wiki.createpage' | translate" iconAction="fas-plus"
             (action)="goToNewPage()">

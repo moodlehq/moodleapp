@@ -3,7 +3,7 @@
 </ion-button>
 
 <ion-button size="small" *ngIf="action == 'edit'" fill="clear" (click)="editEntry()" [attr.aria-label]="'core.edit' | translate">
-    <ion-icon name="fas-gear" slot="icon-only" aria-hidden="true"></ion-icon>
+    <ion-icon name="fas-pen" slot="icon-only" aria-hidden="true"></ion-icon>
 </ion-button>
 
 <ion-button size="small" *ngIf="action == 'delete' && !entry.deleted" fill="clear" color="danger" (click)="deleteEntry()"
