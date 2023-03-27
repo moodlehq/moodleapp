@@ -69,7 +69,7 @@ describe('Credentials page', () => {
         expect(findElement(fixture, '.core-siteurl', siteUrl)).not.toBeNull();
     });
 
-    it('suggests contacting support after multiple failed attempts', async (done) => {
+    it('suggests contacting support after multiple failed attempts', async () => {
         // Arrange.
         mockSingleton(CoreSites, {
             getUserToken: () => {
@@ -87,8 +87,6 @@ describe('Credentials page', () => {
             imports: [CoreSharedModule, CoreLoginComponentsModule],
         });
 
-        done();
-
         // Act.
         const form = requireElement<HTMLFormElement>(fixture, 'form');
         const formControls = fixture.componentInstance.credForm.controls;
@@ -98,8 +96,6 @@ describe('Credentials page', () => {
 
         for (let i = 0; i < 3; i++) {
             form.submit();
-
-            await fixture.whenRenderingDone();
             await fixture.whenStable();
         }
 
