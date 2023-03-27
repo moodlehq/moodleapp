@@ -65,9 +65,14 @@ export class CoreShowPasswordComponent implements OnInit, AfterViewInit {
      */
     async ngAfterViewInit(): Promise<void> {
         if (this.ionInput) {
-            // It's an ion-input, use it to get the native element.
-            this.input = await this.ionInput.getInputElement();
-            this.setData(this.input);
+            try {
+                // It's an ion-input, use it to get the native element.
+                this.input = await this.ionInput.getInputElement();
+                this.setData(this.input);
+            } catch (error) {
+                // This should never fail, but it does in some testing environment because Ionic elements are not
+                // rendered properly. So in case this fails, we'll just ignore the error.
+            }
 
             return;
         }

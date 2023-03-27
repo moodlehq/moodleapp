@@ -40,6 +40,7 @@ import { CorePath } from '@singletons/path';
 import { CorePromisedValue } from '@classes/promised-value';
 import { SafeHtml } from '@angular/platform-browser';
 import { CoreLoginError } from '@classes/errors/loginerror';
+import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 
 const PASSWORD_RESETS_CONFIG_KEY = 'password-resets';
 
@@ -379,9 +380,23 @@ export class CoreLoginHelperProvider {
      * Get fixed site or sites.
      *
      * @returns Fixed site or list of fixed sites.
+     * @deprecated since 4.2.0. Use CoreConstants.CONFIG.sites or getAvailableSites() instead.
      */
     getFixedSites(): string | CoreLoginSiteInfo[] {
-        return CoreConstants.CONFIG.siteurl;
+        const notStagingSites = CoreConstants.CONFIG.sites.filter(site => !site.staging);
+
+        return notStagingSites.length === 1 ? notStagingSites[0].url : notStagingSites;
+    }
+
+    /**
+     * Get Available sites (includes staging sites if are enabled).
+     *
+     * @returns Available sites.
+     */
+    async getAvailableSites(): Promise<CoreLoginSiteInfo[]> {
+        const hasEnabledStagingSites = await CoreSettingsHelper.hasEnabledStagingSites();
+
+        return hasEnabledStagingSites ? CoreConstants.CONFIG.sites : CoreConstants.CONFIG.sites.filter(site => !site.staging);
     }
 
     /**
@@ -440,7 +455,7 @@ export class CoreLoginHelperProvider {
                 return;
             }
         } else {
-            [path, params] = this.getAddSiteRouteInfo(showKeyboard);
+            [path, params] = await this.getAddSiteRouteInfo(showKeyboard);
         }
 
         await CoreNavigator.navigate(path, { params, reset: setRoot });
@@ -452,13 +467,12 @@ export class CoreLoginHelperProvider {
      * @param showKeyboard Whether to show keyboard in the new page. Only if no fixed URL set.
      * @returns Path and params.
      */
-    getAddSiteRouteInfo(showKeyboard?: boolean): [string, Params] {
-        if (this.isFixedUrlSet()) {
-            // Fixed URL is set, go to credentials page.
-            const fixedSites = this.getFixedSites();
-            const url = typeof fixedSites == 'string' ? fixedSites : fixedSites[0].url;
+    async getAddSiteRouteInfo(showKeyboard?: boolean): Promise<[string, Params]> {
+        const sites = await this.getAvailableSites();
 
-            return ['/login/credentials', { siteUrl: url }];
+        if (sites.length === 1) {
+            // Fixed URL is set, go to credentials page.
+            return ['/login/credentials', { siteUrl: sites[0].url }];
         }
 
         return ['/login/site', { showKeyboard }];
@@ -518,10 +532,12 @@ export class CoreLoginHelperProvider {
      * Check if the app is configured to use several fixed URLs.
      *
      * @returns Whether there are several fixed URLs.
+     * @deprecated 4.2.0 Use CoreConstants.CONFIG.sites.length > 1 instead.
      */
-    hasSeveralFixedSites(): boolean {
-        return !!(CoreConstants.CONFIG.siteurl && Array.isArray(CoreConstants.CONFIG.siteurl) &&
-            CoreConstants.CONFIG.siteurl.length > 1);
+    async hasSeveralFixedSites(): Promise<boolean> {
+        const sites = await this.getAvailableSites();
+
+        return sites.length > 1;
     }
 
     /**
@@ -557,13 +573,21 @@ export class CoreLoginHelperProvider {
      * Check if the app is configured to use a fixed URL (only 1).
      *
      * @returns Whether there is 1 fixed URL.
+     * @deprecated 4.2.0 Use isSingleFixedSite instead.
      */
     isFixedUrlSet(): boolean {
-        if (Array.isArray(CoreConstants.CONFIG.siteurl)) {
-            return CoreConstants.CONFIG.siteurl.length == 1;
-        }
+        return CoreConstants.CONFIG.sites.filter(site => !site.staging).length === 1;
+    }
 
-        return !!CoreConstants.CONFIG.siteurl;
+    /**
+     * Check if the app is configured to use a fixed URL (only 1).
+     *
+     * @returns Whether there is 1 fixed URL.
+     */
+    async isSingleFixedSite(): Promise<boolean> {
+        const sites = await this.getAvailableSites();
+
+        return sites.length === 1;
     }
 
     /**
@@ -606,12 +630,9 @@ export class CoreLoginHelperProvider {
      * @returns Promise resolved with boolean: whether is one of the fixed sites.
      */
     async isSiteUrlAllowed(siteUrl: string, checkSiteFinder = true): Promise<boolean> {
-        if (this.isFixedUrlSet()) {
-            // Only 1 site allowed.
-            return CoreUrl.sameDomainAndPath(siteUrl, <string> this.getFixedSites());
-        } else if (this.hasSeveralFixedSites()) {
-            const sites = <CoreLoginSiteInfo[]> this.getFixedSites();
+        const sites = await this.getAvailableSites();
 
+        if (sites.length) {
             return sites.some((site) => CoreUrl.sameDomainAndPath(siteUrl, site.url));
         } else if (CoreConstants.CONFIG.multisitesdisplay == 'sitefinder' && CoreConstants.CONFIG.onlyallowlistedsites &&
                 checkSiteFinder) {
@@ -1303,12 +1324,14 @@ export class CoreLoginHelperProvider {
      * @param qrCodeType QR Code type from public config, assuming enabled if undefined.
      * @returns Whether the QR reader should be displayed in credentials screen.
      */
-    displayQRInCredentialsScreen(qrCodeType = CoreSiteQRCodeType.QR_CODE_LOGIN): boolean {
+    async displayQRInCredentialsScreen(qrCodeType = CoreSiteQRCodeType.QR_CODE_LOGIN): Promise<boolean> {
         if (!CoreUtils.canScanQR()) {
             return false;
         }
 
-        if ((CoreConstants.CONFIG.displayqroncredentialscreen === undefined && this.isFixedUrlSet()) ||
+        const isSingleFixedSite = await this.isSingleFixedSite();
+
+        if ((CoreConstants.CONFIG.displayqroncredentialscreen === undefined && isSingleFixedSite) ||
             (CoreConstants.CONFIG.displayqroncredentialscreen !== undefined &&
                 !!CoreConstants.CONFIG.displayqroncredentialscreen)) {
 

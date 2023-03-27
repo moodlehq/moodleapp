@@ -80,7 +80,7 @@ export class CoreSettingsSynchronizationPage implements OnInit, OnDestroy {
 
             const siteInfo = site.getInfo();
 
-            siteEntry.siteName = site.getSiteName();
+            siteEntry.siteName = await site.getSiteName();
 
             if (siteInfo) {
                 siteEntry.siteUrl = siteInfo.siteurl;

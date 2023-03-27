@@ -20,7 +20,7 @@
         <div class="ion-text-center ion-padding ion-margin-bottom core-login-site-logo" [class.hidden]="hasSites || enteredSiteUrl">
             <img src="assets/img/login_logo.png" class="avatar-full login-logo" role="presentation" alt="">
         </div>
-        <form [formGroup]="siteForm" (ngSubmit)="connect($event, siteForm.value.siteUrl)" *ngIf="!fixedSites" #siteFormEl>
+        <form [formGroup]="siteForm" (ngSubmit)="connect($event, siteForm.value.siteUrl)" *ngIf="!fixedSites && siteForm" #siteFormEl>
             <!-- Form to input the site URL if there are no fixed sites. -->
             <ng-container *ngIf=" siteSelector=='url'">
                 <ion-item>
@@ -101,7 +101,8 @@
         </ng-container>
 
         <ng-container *ngIf="showScanQR && !hasSites && !enteredSiteUrl">
-            <div class="ion-text-center ion-padding ion-margin-top core-login-site-qrcode-separator">{{ 'core.login.or' | translate }}</div>
+            <div class="ion-text-center ion-padding ion-margin-top core-login-site-qrcode-separator">{{ 'core.login.or' | translate }}
+            </div>
             <ion-button expand="block" fill="outline" class="ion-margin core-login-site-qrcode" (click)="showInstructionsAndScanQR()"
                 aria-haspopup="dialog">
                 <ion-icon slot="start" name="fas-qrcode" aria-hidden="true"></ion-icon>
@@ -119,7 +120,7 @@
 
 <!-- Template site selector. -->
 <ng-template #sitelisting let-site="site">
-    <ion-item button (click)="connect($event, site.url, site)" [attr.aria-label]="site.name" detail="true">
+    <ion-item button (click)="connect($event, site.url, site)" [ngClass]="site.className" [attr.aria-label]="site.name" detail="true">
         <ion-thumbnail *ngIf="siteFinderSettings.displayimage" slot="start">
             <img [src]="site.imageurl" *ngIf="site.imageurl" onError="this.src='assets/icon/icon.png'" alt="" role="presentation">
             <img src="assets/icon/icon.png" *ngIf="!site.imageurl" class="core-login-default-icon" alt="" role="presentation">

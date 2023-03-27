@@ -42,8 +42,7 @@ export interface EnvironmentConfig {
     zoomlevels: Record<CoreZoomLevel, number>;
     defaultZoomLevel?: CoreZoomLevel; // Set the default zoom level of the app.
     customurlscheme: string;
-    siteurl: string | CoreLoginSiteInfo[];
-    sitename: string;
+    sites: CoreLoginSiteInfo[];
     multisitesdisplay: CoreLoginSiteSelectorListMethod;
     sitefindersettings: Partial<CoreLoginSiteFinderSettings>;
     onlyallowlistedsites: boolean;
