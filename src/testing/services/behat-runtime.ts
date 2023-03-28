@@ -422,13 +422,22 @@ export class TestingBehatRuntimeService {
     async setField(field: string, value: string): Promise<string> {
         this.log('Action - Set field ' + field + ' to: ' + value);
 
-        const found = this.findField(field);
+        const input = TestingBehatDomUtils.findField(field);
 
-        if (!found) {
+        if (!input) {
             return 'ERROR: No element matches field to set.';
         }
 
-        await TestingBehatDomUtils.setElementValue(found, value);
+        if (input instanceof HTMLSelectElement) {
+            const options = Array.from(input.querySelectorAll('option'));
+
+            value = options.find(option => option.value === value)?.value
+                ?? options.find(option => option.text === value)?.value
+                ?? options.find(option => option.text.includes(value))?.value
+                ?? value;
+        }
+
+        await TestingBehatDomUtils.setElementValue(input, value);
 
         return 'OK';
     }
@@ -445,7 +454,7 @@ export class TestingBehatRuntimeService {
     async fieldMatches(field: string, value: string): Promise<string> {
         this.log('Action - Field ' + field + ' matches value: ' + value);
 
-        const found = this.findField(field);
+        const found = TestingBehatDomUtils.findField(field);
 
         if (!found) {
             return 'ERROR: No element matches field to set.';
@@ -457,19 +466,6 @@ export class TestingBehatRuntimeService {
         }
 
         return 'OK';
-    }
-
-    /**
-     * Find a field.
-     *
-     * @param field Field name.
-     * @returns Field element.
-     */
-    protected findField(field: string): HTMLElement | HTMLInputElement | undefined {
-        return TestingBehatDomUtils.findElementBasedOnText(
-            { text: field, selector: 'input, textarea, [contenteditable="true"], ion-select, ion-datetime' },
-            { onlyClickable: false, containerName: '' },
-        );
     }
 
     /**

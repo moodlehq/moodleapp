@@ -34,17 +34,28 @@ Feature: Attempt a quiz in app
       | activity   | name   | intro              | course | idnumber |
       | quiz       | Quiz 2 | Quiz 2 description | C1     | quiz2    |
     And the following "question categories" exist:
-      | contextlevel | reference | name            |
-      | Course       | C1        | Test questions 2|
+      | contextlevel | reference | name             |
+      | Course       | C1        | Test questions 2 |
     And the following "questions" exist:
-      | questioncategory | qtype            | name  | questiontext                |
-      | Test questions   | multichoice      | TF3   | Text of the first question  |
-      | Test questions   | shortanswer      | TF4   | Text of the second question |
-      | Test questions   | numerical        | TF5   | Text of the third question  |
-      | Test questions   | essay            | TF6   | Text of the fourth question |
+      | questioncategory | qtype            | name  | questiontext                                     |
+      | Test questions   | multichoice      | TF3   | Text of the first question                       |
+      | Test questions   | shortanswer      | TF4   | Text of the second question                      |
+      | Test questions   | numerical        | TF5   | Text of the third question                       |
+      | Test questions   | essay            | TF6   | Text of the fourth question                      |
       | Test questions   | ddwtos           | TF7   | The [[1]] brown [[2]] jumped over the [[3]] dog. |
-      | Test questions   | truefalse        | TF8   | Text of the sixth question  |
-      | Test questions   | match            | TF9   | Text of the seventh question  |
+      | Test questions   | truefalse        | TF8   | Text of the sixth question                       |
+      | Test questions   | match            | TF9   | Text of the seventh question                     |
+      | Test questions   | description      | TF10  | Text of the eighth question                      |
+      # TODO test calculated question type.
+      # TODO test multianswer question type.
+      # The calculatedsimple type is implemented using the calculated type.
+      # The calculatedmulti type is implemented using the multichoice type.
+      # The randomsamatch type is implemented using the match type.
+    And the following "questions" exist:
+      | questioncategory | qtype         | name | template        |
+      | Test questions   | gapselect     | TF11 | missingchoiceno |
+      | Test questions   | ddimageortext | TF12 | xsection        |
+      | Test questions   | ddmarker      | TF13 | mkmap           |
     And quiz "Quiz 2" contains the following questions:
       | question | page |
       | TF3      | 1    |
@@ -54,6 +65,10 @@ Feature: Attempt a quiz in app
       | TF7      | 5    |
       | TF8      | 6    |
       | TF9      | 7    |
+      | TF10     | 8    |
+      | TF11     | 9    |
+      | TF12     | 10   |
+      | TF13     | 11   |
 
   Scenario: View a quiz entry page (attempts, status, etc.)
     Given I entered the quiz activity "Quiz 1" on course "Course 1" as "student1" in the app
@@ -117,11 +132,11 @@ Feature: Attempt a quiz in app
     And I set the field "Answer" to "Testing an essay" in the app
     And I press "Next" "ion-button" in the app
     And I press "quick" ".drag" in the app
-    And I press "" ".place1.drop" in the app
+    And I click on ".place1.drop" "css"
     And I press "fox" ".drag" in the app
-    And I press "" ".place2.drop" in the app
+    And I click on ".place2.drop" "css"
     And I press "lazy" ".drag" in the app
-    And I press "" ".place3.drop" in the app
+    And I click on ".place3.drop" "css"
     And I press "Next" in the app
     And I press "True" in the app
     And I press "Next" in the app
@@ -131,8 +146,24 @@ Feature: Attempt a quiz in app
     And I press "insect" in the app
     And I press "Choose... , cat" in the app
     And I press "mammal" in the app
+    And I press "Next" in the app
+    Then I should find "Text of the eighth question" in the app
+
+    When I press "Next" in the app
+    And I set the field "Blank 1" to "cat" in the app
+    And I set the field "Blank 2" to "mat" in the app
+    And I press "Next" in the app
+    And I press "abyssal" ".drag" in the app
+    And I click on ".place6.dropzone" "css"
+    And I press "trench" ".drag" in the app
+    And I click on ".place3.dropzone" "css"
+    And I press "Next" in the app
+    And I press "Railway station" ".marker" in the app
+    And I click on "img.dropbackground" "css"
     And I press "Submit" in the app
-    Then I should not find "Not yet answered" in the app
+    Then I should find "Answer saved" in the app
+    And I should find "Incomplete answer" within "9" "ion-item" in the app
+    But I should not find "Not yet answered" in the app
 
     When I press "Submit all and finish" in the app
     And I press "OK" in the app
