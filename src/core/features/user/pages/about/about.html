@@ -79,7 +79,7 @@
                         <p>{{ user.country }}</p>
                     </ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="user.timezone">
+                <ion-item class="ion-text-wrap" *ngIf="displayTimezone && user.timezone">
                     <ion-label>
                         <p class="item-heading">{{ 'core.timezone' | translate}}</p>
                         <p>{{ user.timezone }}</p>
