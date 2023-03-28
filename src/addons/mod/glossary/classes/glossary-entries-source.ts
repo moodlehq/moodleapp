@@ -29,8 +29,6 @@ import { AddonModGlossaryOffline, AddonModGlossaryOfflineEntry } from '../servic
  */
 export class AddonModGlossaryEntriesSource extends CoreRoutedItemsManagerSource<AddonModGlossaryEntryItem> {
 
-    static readonly NEW_ENTRY: AddonModGlossaryNewEntryForm = { newEntry: true };
-
     readonly COURSE_ID: number;
     readonly CM_ID: number;
     readonly GLOSSARY_PATH_PREFIX: string;
@@ -55,16 +53,6 @@ export class AddonModGlossaryEntriesSource extends CoreRoutedItemsManagerSource<
     }
 
     /**
-     * Type guard to infer NewEntryForm objects.
-     *
-     * @param entry Item to check.
-     * @returns Whether the item is a new entry form.
-     */
-    isNewEntryForm(entry: AddonModGlossaryEntryItem): entry is AddonModGlossaryNewEntryForm {
-        return 'newEntry' in entry;
-    }
-
-    /**
      * Type guard to infer entry objects.
      *
      * @param entry Item to check.
@@ -81,22 +69,18 @@ export class AddonModGlossaryEntriesSource extends CoreRoutedItemsManagerSource<
      * @returns Whether the item is an offline entry.
      */
     isOfflineEntry(entry: AddonModGlossaryEntryItem): entry is AddonModGlossaryOfflineEntry {
-        return !this.isNewEntryForm(entry) && !this.isOnlineEntry(entry);
+        return !this.isOnlineEntry(entry);
     }
 
     /**
      * @inheritdoc
      */
     getItemPath(entry: AddonModGlossaryEntryItem): string {
-        if (this.isOnlineEntry(entry)) {
-            return `${this.GLOSSARY_PATH_PREFIX}entry/${entry.id}`;
-        }
-
         if (this.isOfflineEntry(entry)) {
-            return `${this.GLOSSARY_PATH_PREFIX}edit/${entry.timecreated}`;
+            return `${this.GLOSSARY_PATH_PREFIX}entry/new-${entry.timecreated}`;
         }
 
-        return `${this.GLOSSARY_PATH_PREFIX}edit/0`;
+        return `${this.GLOSSARY_PATH_PREFIX}entry/${entry.id}`;
     }
 
     /**
@@ -263,7 +247,6 @@ export class AddonModGlossaryEntriesSource extends CoreRoutedItemsManagerSource<
 
             offlineEntries.sort((a, b) => a.concept.localeCompare(b.concept));
 
-            entries.push(AddonModGlossaryEntriesSource.NEW_ENTRY);
             entries.push(...offlineEntries);
         }
 
@@ -315,12 +298,7 @@ export class AddonModGlossaryEntriesSource extends CoreRoutedItemsManagerSource<
 /**
  * Type of items that can be held by the entries manager.
  */
-export type AddonModGlossaryEntryItem = AddonModGlossaryEntry | AddonModGlossaryOfflineEntry | AddonModGlossaryNewEntryForm;
-
-/**
- * Type to select the new entry form.
- */
-export type AddonModGlossaryNewEntryForm = { newEntry: true };
+export type AddonModGlossaryEntryItem = AddonModGlossaryEntry | AddonModGlossaryOfflineEntry;
 
 /**
  * Fetch mode to sort entries.

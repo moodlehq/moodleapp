@@ -31,7 +31,7 @@
             [componentId]="componentId" [courseId]="courseId" [hasDataToSync]="hasOffline" (completionChanged)="onCompletionChange()">
         </core-course-module-info>
 
-        <ion-list *ngIf="!isSearch && entries && entries.offlineEntries.length > 0">
+        <ion-list *ngIf="!isSearch && entries && entries.offlineEntries.length > 0" class="addon-mod-glossary-index--offline-entries">
             <ion-item-divider>
                 <ion-label>
                     <h2 class="big">{{ 'addon.mod_glossary.entriestobesynced' | translate }}</h2>
@@ -40,9 +40,12 @@
             <ion-item *ngFor="let entry of entries.offlineEntries" (click)="entries.select(entry)" detail="false" button
                 [attr.aria-current]="entries.getItemAriaCurrent(entry)">
                 <ion-label>
-                    <core-format-text [text]="entry.concept" contextLevel="module" [contextInstanceId]="glossary!.coursemodule"
-                        [courseId]="courseId">
-                    </core-format-text>
+                    <div class="addon-mod-glossary-index--offline-entry">
+                        <core-format-text [text]="entry.concept" contextLevel="module" [contextInstanceId]="glossary!.coursemodule"
+                            [courseId]="courseId">
+                        </core-format-text>
+                        <ion-icon name="fas-rotate" class="ion-margin-start" aria-hidden="true"></ion-icon>
+                    </div>
                 </ion-label>
             </ion-item>
         </ion-list>

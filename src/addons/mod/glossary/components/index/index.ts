@@ -26,6 +26,7 @@ import { CoreRatingProvider } from '@features/rating/services/rating';
 import { CoreRatingOffline } from '@features/rating/services/rating-offline';
 import { CoreRatingSyncProvider } from '@features/rating/services/rating-sync';
 import { IonContent } from '@ionic/angular';
+import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
@@ -61,6 +62,7 @@ import { AddonModGlossaryModePickerPopoverComponent } from '../mode-picker/mode-
 @Component({
     selector: 'addon-mod-glossary-index',
     templateUrl: 'addon-mod-glossary-index.html',
+    styleUrls: ['index.scss'],
 })
 export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivityComponent
     implements OnInit, AfterViewInit, OnDestroy {
@@ -399,7 +401,11 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
      * Opens new entry editor.
      */
     openNewEntry(): void {
-        this.entries?.select(AddonModGlossaryEntriesSource.NEW_ENTRY);
+        CoreNavigator.navigate(
+            this.splitView.outletActivated
+                ? '../new'
+                : './entry/new',
+        );
     }
 
     /**

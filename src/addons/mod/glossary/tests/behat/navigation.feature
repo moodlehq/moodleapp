@@ -280,6 +280,7 @@ Feature: Test glossary navigation
       | Concept | Tomato |
       | Definition | Tomato is a fruit |
     And I press "Save" in the app
+    And I press "Add a new entry" in the app
     And I set the following fields to these values in the app:
       | Concept | Cashew |
       | Definition | Cashew is a fruit |

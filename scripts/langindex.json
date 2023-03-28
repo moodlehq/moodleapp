@@ -697,6 +697,7 @@
   "addon.mod_glossary.definition": "glossary",
   "addon.mod_glossary.deleteentry": "glossary",
   "addon.mod_glossary.entriestobesynced": "local_moodlemobileapp",
+  "addon.mod_glossary.entry": "glossary",
   "addon.mod_glossary.entrydeleted": "glossary",
   "addon.mod_glossary.entrypendingapproval": "local_moodlemobileapp",
   "addon.mod_glossary.entryusedynalink": "glossary",

@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { AddonModGlossaryOffline, AddonModGlossaryOfflineEntry } from '@addons/mod/glossary/services/glossary-offline';
 import { Component, OnDestroy, OnInit, Optional, ViewChild } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
+import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreCommentsCommentsComponent } from '@features/comments/components/comments/comments';
 import { CoreComments } from '@features/comments/services/comments';
@@ -26,8 +28,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreDomUtils, ToastDuration } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
-import { AddonModGlossaryEntriesSource } from '../../classes/glossary-entries-source';
-import { AddonModGlossaryEntriesSwipeManager } from '../../classes/glossary-entries-swipe-manager';
+import { AddonModGlossaryEntriesSource, AddonModGlossaryEntryItem } from '../../classes/glossary-entries-source';
 import {
     AddonModGlossary,
     AddonModGlossaryEntry,
@@ -48,8 +49,9 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
 
     component = AddonModGlossaryProvider.COMPONENT;
     componentId?: number;
-    entry?: AddonModGlossaryEntry;
-    entries?: AddonModGlossaryEntryEntriesSwipeManager;
+    onlineEntry?: AddonModGlossaryEntry;
+    offlineEntry?: AddonModGlossaryOfflineEntry;
+    entries!: AddonModGlossaryEntryEntriesSwipeManager;
     glossary?: AddonModGlossaryGlossary;
     loaded = false;
     showAuthor = false;
@@ -59,52 +61,67 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
     canDelete = false;
     commentsEnabled = false;
     courseId!: number;
-    cmId?: number;
-
-    protected entryId!: number;
+    cmId!: number;
 
     constructor(@Optional() protected splitView: CoreSplitViewComponent, protected route: ActivatedRoute) {}
+
+    get entry(): AddonModGlossaryEntry | AddonModGlossaryOfflineEntry | undefined {
+        return this.onlineEntry ?? this.offlineEntry;
+    }
 
     /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
+        let onlineEntryId: number | null = null;
+        let offlineEntry: {
+            concept: string;
+            timecreated: number;
+        } | null = null;
         try {
-            const routeData = this.route.snapshot.data;
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
-            this.entryId = CoreNavigator.getRequiredRouteNumberParam('entryId');
             this.tagsEnabled = CoreTag.areTagsAvailableInSite();
             this.commentsEnabled = !CoreComments.areCommentsDisabledInSite();
+            this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
 
-            if (routeData.swipeEnabled ?? true) {
-                this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
-                const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
-                    AddonModGlossaryEntriesSource,
-                    [this.courseId, this.cmId, routeData.glossaryPathPrefix ?? ''],
-                );
+            const entrySlug = CoreNavigator.getRequiredRouteParam<string>('entrySlug');
+            const routeData = this.route.snapshot.data;
+            const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
+                AddonModGlossaryEntriesSource,
+                [this.courseId, this.cmId, routeData.glossaryPathPrefix ?? ''],
+            );
 
-                this.entries = new AddonModGlossaryEntryEntriesSwipeManager(source);
+            this.entries = new AddonModGlossaryEntryEntriesSwipeManager(source);
 
-                await this.entries.start();
+            await this.entries.start();
+
+            if (entrySlug.startsWith('new-')) {
+                offlineEntry = {
+                    concept : CoreNavigator.getRequiredRouteParam<string>('concept'),
+                    timecreated: Number(entrySlug.slice(4)),
+                };
             } else {
-                this.cmId = CoreNavigator.getRouteNumberParam('cmId');
+                onlineEntryId = Number(entrySlug);
             }
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
-
             CoreNavigator.back();
 
             return;
         }
 
         try {
-            await this.fetchEntry();
+            if (onlineEntryId) {
+                await this.loadOnlineEntry(onlineEntryId);
 
-            if (!this.glossary || !this.componentId) {
-                return;
+                if (!this.glossary || !this.componentId) {
+                    return;
+                }
+
+                await CoreUtils.ignoreErrors(AddonModGlossary.logEntryView(onlineEntryId, this.componentId, this.glossary?.name));
+            } else if (offlineEntry) {
+                await this.loadOfflineEntry(offlineEntry.concept, offlineEntry.timecreated);
             }
-
-            await CoreUtils.ignoreErrors(AddonModGlossary.logEntryView(this.entryId, this.componentId, this.glossary.name));
         } finally {
             this.loaded = true;
         }
@@ -114,14 +131,18 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.entries?.destroy();
+        this.entries.destroy();
     }
 
     /**
      * Delete entry.
      */
     async deleteEntry(): Promise<void> {
-        const entryId = this.entry?.id;
+        if (!this.onlineEntry) {
+            return;
+        }
+
+        const entryId = this.onlineEntry.id;
         const glossaryId = this.glossary?.id;
         const cancelled = await CoreUtils.promiseFails(
             CoreDomUtils.showConfirm(Translate.instant('addon.mod_glossary.areyousuredelete')),
@@ -141,7 +162,7 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
             await CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByCategory(glossaryId));
             await CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByDate(glossaryId, 'CREATION'));
             await CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByDate(glossaryId, 'UPDATE'));
-            await CoreUtils.ignoreErrors(this.entries?.getSource().invalidateCache(false));
+            await CoreUtils.ignoreErrors(this.entries.getSource().invalidateCache(false));
 
             CoreDomUtils.showToast('addon.mod_glossary.entrydeleted', true, ToastDuration.LONG);
 
@@ -164,67 +185,100 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
      * @returns Promise resolved when done.
      */
     async doRefresh(refresher?: IonRefresher): Promise<void> {
-        if (this.glossary?.allowcomments && this.entry && this.entry.id > 0 && this.commentsEnabled && this.comments) {
-            // Refresh comments. Don't add it to promises because we don't want the comments fetch to block the entry fetch.
+        if (this.onlineEntry && this.glossary?.allowcomments && this.onlineEntry.id > 0 && this.commentsEnabled && this.comments) {
+            // Refresh comments asynchronously (without blocking the current promise).
             CoreUtils.ignoreErrors(this.comments.doRefresh());
         }
 
         try {
-            await CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntry(this.entryId));
+            if (this.onlineEntry) {
+                await CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntry(this.onlineEntry.id));
+                await this.loadOnlineEntry(this.onlineEntry.id);
+            } else if (this.offlineEntry) {
+                const entrySlug = CoreNavigator.getRequiredRouteParam<string>('entrySlug');
+                const timecreated = Number(entrySlug.slice(4));
 
-            await this.fetchEntry();
+                await this.loadOfflineEntry(timecreated);
+            }
         } finally {
             refresher?.complete();
         }
     }
 
     /**
-     * Convenience function to get the glossary entry.
-     *
-     * @returns Promise resolved when done.
+     * Load online entry data.
      */
-    protected async fetchEntry(): Promise<void> {
+    protected async loadOnlineEntry(entryId: number): Promise<void> {
         try {
-            const result = await AddonModGlossary.getEntry(this.entryId);
+            const result = await AddonModGlossary.getEntry(entryId);
             const canDeleteEntries = CoreNetwork.isOnline() && await AddonModGlossary.canDeleteEntries();
 
-            this.entry = result.entry;
+            this.onlineEntry = result.entry;
             this.ratingInfo = result.ratinginfo;
             this.canDelete = canDeleteEntries && !!result.permissions?.candelete;
 
-            if (this.glossary) {
-                // Glossary already loaded, nothing else to load.
-                return;
-            }
-
-            // Load the glossary.
-            this.glossary = await AddonModGlossary.getGlossaryById(this.courseId, this.entry.glossaryid);
-            this.componentId = this.glossary.coursemodule;
-
-            switch (this.glossary.displayformat) {
-                case 'fullwithauthor':
-                case 'encyclopedia':
-                    this.showAuthor = true;
-                    this.showDate = true;
-                    break;
-                case 'fullwithoutauthor':
-                    this.showAuthor = false;
-                    this.showDate = true;
-                    break;
-                default: // Default, and faq, simple, entrylist, continuous.
-                    this.showAuthor = false;
-                    this.showDate = false;
-            }
+            await this.loadGlossary();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.mod_glossary.errorloadingentry', true);
         }
     }
 
     /**
+     * Load offline entry data.
+     *
+     * @param concept Entry concept.
+     * @param timecreated Entry Timecreated.
+     */
+    protected async loadOfflineEntry(concept: string, timecreated: number): Promise<void> {
+        try {
+            const glossary = await this.loadGlossary();
+
+            this.offlineEntry = await AddonModGlossaryOffline.getOfflineEntry(glossary.id, concept, timecreated);
+        } catch (error) {
+            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_glossary.errorloadingentry', true);
+        }
+    }
+
+    /**
+     * Load glossary data.
+     *
+     * @returns Glossary.
+     */
+    protected async loadGlossary(): Promise<AddonModGlossaryGlossary> {
+        if (this.glossary) {
+            return this.glossary;
+        }
+
+        this.glossary = await AddonModGlossary.getGlossary(this.courseId, this.cmId);
+        this.componentId = this.glossary.coursemodule;
+
+        switch (this.glossary.displayformat) {
+            case 'fullwithauthor':
+            case 'encyclopedia':
+                this.showAuthor = true;
+                this.showDate = true;
+                break;
+            case 'fullwithoutauthor':
+                this.showAuthor = false;
+                this.showDate = true;
+                break;
+            default: // Default, and faq, simple, entrylist, continuous.
+                this.showAuthor = false;
+                this.showDate = false;
+        }
+
+        return this.glossary;
+    }
+
+    /**
      * Function called when rating is updated online.
      */
     ratingUpdated(): void {
-        AddonModGlossary.invalidateEntry(this.entryId);
+        if (!this.onlineEntry) {
+            return;
+        }
+
+        AddonModGlossary.invalidateEntry(this.onlineEntry.id);
     }
 
 }
@@ -232,13 +286,14 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
 /**
  * Helper to manage swiping within a collection of glossary entries.
  */
-class AddonModGlossaryEntryEntriesSwipeManager extends AddonModGlossaryEntriesSwipeManager {
+class AddonModGlossaryEntryEntriesSwipeManager
+    extends CoreSwipeNavigationItemsManager<AddonModGlossaryEntryItem, AddonModGlossaryEntriesSource> {
 
     /**
      * @inheritdoc
      */
     protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot): string | null {
-        return `${this.getSource().GLOSSARY_PATH_PREFIX}entry/${route.params.entryId}`;
+        return `${this.getSource().GLOSSARY_PATH_PREFIX}entry/${route.params.entrySlug}`;
     }
 
 }
