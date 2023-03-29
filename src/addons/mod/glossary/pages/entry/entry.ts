@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { AddonModGlossaryHelper } from '@addons/mod/glossary/services/glossary-helper';
 import { AddonModGlossaryOffline, AddonModGlossaryOfflineEntry } from '@addons/mod/glossary/services/glossary-offline';
 import { Component, OnDestroy, OnInit, Optional, ViewChild } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
@@ -138,31 +139,38 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
      * Delete entry.
      */
     async deleteEntry(): Promise<void> {
-        if (!this.onlineEntry) {
-            return;
-        }
-
-        const entryId = this.onlineEntry.id;
         const glossaryId = this.glossary?.id;
         const cancelled = await CoreUtils.promiseFails(
             CoreDomUtils.showConfirm(Translate.instant('addon.mod_glossary.areyousuredelete')),
         );
 
-        if (!entryId || !glossaryId || cancelled) {
+        if (!glossaryId || cancelled) {
             return;
         }
 
         const modal = await CoreDomUtils.showModalLoading();
 
         try {
-            await AddonModGlossary.deleteEntry(glossaryId, entryId);
-            await CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntry(entryId));
-            await CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByLetter(glossaryId));
-            await CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByAuthor(glossaryId));
-            await CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByCategory(glossaryId));
-            await CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByDate(glossaryId, 'CREATION'));
-            await CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByDate(glossaryId, 'UPDATE'));
-            await CoreUtils.ignoreErrors(this.entries.getSource().invalidateCache(false));
+            if (this.onlineEntry) {
+                const entryId = this.onlineEntry.id;
+
+                await AddonModGlossary.deleteEntry(glossaryId, entryId);
+                await Promise.all([
+                    CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntry(entryId)),
+                    CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByLetter(glossaryId)),
+                    CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByAuthor(glossaryId)),
+                    CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByCategory(glossaryId)),
+                    CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByDate(glossaryId, 'CREATION')),
+                    CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByDate(glossaryId, 'UPDATE')),
+                    CoreUtils.ignoreErrors(this.entries.getSource().invalidateCache(false)),
+                ]);
+            } else if (this.offlineEntry) {
+                const concept = this.offlineEntry.concept;
+                const timecreated = this.offlineEntry.timecreated;
+
+                await AddonModGlossaryOffline.deleteOfflineEntry(glossaryId, concept, timecreated);
+                await AddonModGlossaryHelper.deleteStoredFiles(glossaryId, concept, timecreated);
+            }
 
             CoreDomUtils.showToast('addon.mod_glossary.entrydeleted', true, ToastDuration.LONG);
 
@@ -234,6 +242,7 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
             const glossary = await this.loadGlossary();
 
             this.offlineEntry = await AddonModGlossaryOffline.getOfflineEntry(glossary.id, concept, timecreated);
+            this.canDelete = true;
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.mod_glossary.errorloadingentry', true);
         }

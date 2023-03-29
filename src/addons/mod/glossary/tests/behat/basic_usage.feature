@@ -195,12 +195,32 @@ Feature: Test basic usage of glossary in app
   Scenario: Delete entries
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
 
+    # Online
     When I press "Cucumber" in the app
     And I press "Delete entry" in the app
     And I press "OK" near "Are you sure you want to delete this entry?" in the app
     Then I should find "Entry deleted" in the app
     And I should find "Potato" in the app
     But I should not find "Cucumber" in the app
+
+    # Offline
+    When I press "Add a new entry" in the app
+    And I switch network connection to offline
+    And I set the following fields to these values in the app:
+      | Concept | Broccoli |
+      | Definition | Brassica oleracea var. italica |
+    And I press "Save" in the app
+    Then I should find "Potato" in the app
+    And I should find "Broccoli" in the app
+
+    When I press "Broccoli" in the app
+    Then I should find "Brassica oleracea var. italica" in the app
+
+    When I press "Delete entry" in the app
+    And I press "OK" near "Are you sure you want to delete this entry?" in the app
+    Then I should find "Entry deleted" in the app
+    And I should find "Potato" in the app
+    But I should not find "Broccoli" in the app
 
   Scenario: Sync
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
@@ -240,8 +260,8 @@ Feature: Test basic usage of glossary in app
     And I should find "Broccoli" in the app
     And I should find "Cabbage" in the app
     And I should find "Garlic" in the app
-    But I should not see "Entries to be synced"
-    And I should not see "This Glossary has offline data to be synchronised."
+    But I should not find "Entries to be synced" in the app
+    And I should not find "This Glossary has offline data to be synchronised." in the app
 
     When I press "Garlic" in the app
     Then I should find "Garlic" in the app

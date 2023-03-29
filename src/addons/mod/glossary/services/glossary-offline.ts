@@ -17,12 +17,11 @@ import { CoreFileUploaderStoreFilesResult } from '@features/fileuploader/service
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CorePath } from '@singletons/path';
 import { AddonModGlossaryOfflineEntryDBRecord, OFFLINE_ENTRIES_TABLE_NAME } from './database/glossary';
-import { AddonModGlossaryEntryOption, GLOSSARY_ENTRY_ADDED } from './glossary';
+import { AddonModGlossaryEntryOption, GLOSSARY_ENTRY_ADDED, GLOSSARY_ENTRY_DELETED } from './glossary';
 
 /**
  * Service to handle offline glossary.
@@ -35,20 +34,22 @@ export class AddonModGlossaryOfflineProvider {
      *
      * @param glossaryId Glossary ID.
      * @param concept Glossary entry concept.
-     * @param timeCreated The time the entry was created.
+     * @param timecreated The time the entry was created.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved if deleted, rejected if failure.
      */
-    async deleteOfflineEntry(glossaryId: number, concept: string, timeCreated: number, siteId?: string): Promise<void> {
+    async deleteOfflineEntry(glossaryId: number, concept: string, timecreated: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
         const conditions: Partial<AddonModGlossaryOfflineEntryDBRecord> = {
             glossaryid: glossaryId,
             concept: concept,
-            timecreated: timeCreated,
+            timecreated,
         };
 
         await site.getDb().deleteRecords(OFFLINE_ENTRIES_TABLE_NAME, conditions);
+
+        CoreEvents.trigger(GLOSSARY_ENTRY_DELETED, { glossaryId, timecreated });
     }
 
     /**
