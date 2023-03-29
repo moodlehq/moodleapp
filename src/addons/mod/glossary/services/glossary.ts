@@ -620,6 +620,18 @@ export class AddonModGlossaryProvider {
     }
 
     /**
+     * Check whether the site can update glossary entries.
+     *
+     * @param siteId Site id.
+     * @returns Whether the site can update entries.
+     */
+    async canUpdateEntries(siteId?: string): Promise<boolean> {
+        const site = await CoreSites.getSite(siteId);
+
+        return site.wsAvailable('mod_glossary_update_entry');
+    }
+
+    /**
      * Performs the whole fetch of the entries using the proper function and arguments.
      *
      * @param fetchFunction Function to fetch.
@@ -908,6 +920,43 @@ export class AddonModGlossaryProvider {
         CoreEvents.trigger(GLOSSARY_ENTRY_ADDED, { glossaryId, entryId: response.entryid }, siteId);
 
         return response.entryid;
+    }
+
+    /**
+     * Update an existing entry on a glossary.
+     *
+     * @param glossaryId Glossary ID.
+     * @param entryId Entry ID.
+     * @param concept Glossary entry concept.
+     * @param definition Glossary entry concept definition.
+     * @param options Options for the entry.
+     * @param siteId Site ID. If not defined, current site.
+     */
+    async updateEntry(
+        glossaryId: number,
+        entryId: number,
+        concept: string,
+        definition: string,
+        options?: Record<string, AddonModGlossaryEntryOption>,
+        siteId?: string,
+    ): Promise<void> {
+        const site = await CoreSites.getSite(siteId);
+
+        const params: AddonModGlossaryUpdateEntryWSParams = {
+            entryid: entryId,
+            concept: concept,
+            definition: definition,
+            definitionformat: 1,
+            options: CoreUtils.objectToArrayOfObjects(options || {}, 'name', 'value'),
+        };
+
+        const response = await site.write<AddonModGlossaryUpdateEntryWSResponse>('mod_glossary_update_entry', params);
+
+        if (!response.result) {
+            throw new CoreError(response.warnings?.[0].message ?? 'Error updating entry');
+        }
+
+        CoreEvents.trigger(GLOSSARY_ENTRY_UPDATED, { glossaryId, entryId }, siteId);
     }
 
     /**
@@ -1336,6 +1385,35 @@ export type AddonModGlossaryAddEntryWSParams = {
  */
 export type AddonModGlossaryAddEntryWSResponse = {
     entryid: number; // New glossary entry ID.
+    warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Params of mod_glossary_update_entry WS.
+ */
+export type AddonModGlossaryUpdateEntryWSParams = {
+    entryid: number; // Glossary entry id to update.
+    concept: string; // Glossary concept.
+    definition: string; // Glossary concept definition.
+    definitionformat: number; // Definition format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    options?: { // Optional settings.
+        name: string; // The allowed keys (value format) are:
+        // inlineattachmentsid (int); the draft file area id for inline attachments
+        // attachmentsid (int); the draft file area id for attachments
+        // categories (comma separated int); comma separated category ids
+        // aliases (comma separated str); comma separated aliases
+        // usedynalink (bool); whether the entry should be automatically linked.
+        // casesensitive (bool); whether the entry is case sensitive.
+        // fullmatch (bool); whether to match whole words only.
+        value: string | number; // The value of the option (validated inside the function).
+    }[];
+};
+
+/**
+ * Data returned by mod_glossary_update_entry WS.
+ */
+export type AddonModGlossaryUpdateEntryWSResponse = {
+    result: boolean; // The update result.
     warnings?: CoreWSExternalWarning[];
 };
 

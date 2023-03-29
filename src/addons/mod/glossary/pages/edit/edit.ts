@@ -16,11 +16,13 @@ import { Component, OnInit, ViewChild, ElementRef, Optional } from '@angular/cor
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { CoreError } from '@classes/errors/error';
+import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CanLeave } from '@guards/can-leave';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreNavigator } from '@services/navigator';
+import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
@@ -31,6 +33,7 @@ import { CoreForms } from '@singletons/form';
 import {
     AddonModGlossary,
     AddonModGlossaryCategory,
+    AddonModGlossaryEntry,
     AddonModGlossaryEntryOption,
     AddonModGlossaryGlossary,
     AddonModGlossaryProvider,
@@ -92,6 +95,11 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
                 const timecreated = Number(entrySlug.slice(4));
                 this.editorExtraParams.timecreated = timecreated;
                 this.handler = new AddonModGlossaryOfflineFormHandler(this, timecreated);
+            } else if (entrySlug) {
+                const { entry } = await AddonModGlossary.getEntry(Number(entrySlug));
+
+                this.editorExtraParams.timecreated = entry.timecreated;
+                this.handler = new AddonModGlossaryOnlineFormHandler(this, entry);
             } else {
                 this.handler = new AddonModGlossaryNewFormHandler(this);
             }
@@ -580,6 +588,77 @@ class AddonModGlossaryNewFormHandler extends AddonModGlossaryFormHandler {
         );
 
         return entryId;
+    }
+
+}
+
+/**
+ * Helper to manage the form data for an online entry.
+ */
+class AddonModGlossaryOnlineFormHandler extends AddonModGlossaryFormHandler {
+
+    private entry: AddonModGlossaryEntry;
+
+    constructor(page: AddonModGlossaryEditPage, entry: AddonModGlossaryEntry) {
+        super(page);
+
+        this.entry = entry;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async loadData(): Promise<void> {
+        const data = this.page.data;
+
+        data.concept = this.entry.concept;
+        data.definition = this.entry.definition || '';
+        data.timecreated = this.entry.timecreated;
+        data.usedynalink = this.entry.usedynalink;
+
+        if (data.usedynalink) {
+            data.casesensitive = this.entry.casesensitive;
+            data.fullmatch = this.entry.fullmatch;
+        }
+
+        // Treat offline attachments if any.
+        if (this.entry.attachments) {
+            data.attachments = this.entry.attachments;
+        }
+
+        this.page.originalData = {
+            concept: data.concept,
+            definition: data.definition,
+            attachments: data.attachments.slice(),
+            timecreated: data.timecreated,
+            categories: data.categories.slice(),
+            aliases: data.aliases,
+            usedynalink: data.usedynalink,
+            casesensitive: data.casesensitive,
+            fullmatch: data.fullmatch,
+        };
+
+        this.page.definitionControl.setValue(data.definition);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async save(glossary: AddonModGlossaryGlossary): Promise<boolean> {
+        if (!CoreNetwork.isOnline()) {
+            throw new CoreNetworkError();
+        }
+
+        const data = this.page.data;
+        const options = this.getSaveOptions(glossary);
+        const definition = CoreTextUtils.formatHtmlLines(data.definition);
+
+        // Save entry data.
+        await AddonModGlossary.updateEntry(glossary.id, this.entry.id, data.concept, definition, options);
+
+        CoreEvents.trigger(CoreEvents.ACTIVITY_DATA_SENT, { module: 'glossary' });
+
+        return true;
     }
 
 }

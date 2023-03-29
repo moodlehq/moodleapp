@@ -157,7 +157,39 @@ Feature: Test basic usage of glossary in app
   Scenario: Edit entries (basic info)
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
 
-    # TODO online
+    # Online
+    When I press "Add a new entry" in the app
+    And I set the following fields to these values in the app:
+      | Concept | Cashew |
+      | Definition | Cashew is a fruit |
+    And I press "Save" in the app
+    Then I should find "Cashew" in the app
+
+    When I press "Cashew" in the app
+    And I press "Edit entry" in the app
+    Then the field "Concept" matches value "Cashew" in the app
+    And the field "Definition" matches value "Cashew is a fruit" in the app
+
+    When I set the following fields to these values in the app:
+      | Concept | Coconut |
+      | Definition | Coconut is a fruit |
+    And I press "This entry should be automatically linked" "ion-toggle" in the app
+    And I press "This entry is case sensitive" "ion-toggle" in the app
+    And I press "Match whole words only" "ion-toggle" in the app
+    And I press "Save" in the app
+    Then I should find "Coconut is a fruit" in the app
+    But I should not find "Cashew is a fruit" in the app
+
+    When I press "Edit entry" in the app
+    Then "This entry should be automatically linked" "ion-toggle" should be selected in the app
+    And "This entry is case sensitive" "ion-toggle" should be selected in the app
+    And "Match whole words only" "ion-toggle" should be selected in the app
+
+    When I press "Save" in the app
+    And I press the back button in the app
+    Then I should find "Coconut" in the app
+    And I should find "Potato" in the app
+    But I should not find "Cashew" in the app
 
     # Offline
     When I press "Add a new entry" in the app

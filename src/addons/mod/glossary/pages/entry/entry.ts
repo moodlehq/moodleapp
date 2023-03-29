@@ -240,10 +240,12 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
         try {
             const result = await AddonModGlossary.getEntry(entryId);
             const canDeleteEntries = CoreNetwork.isOnline() && await AddonModGlossary.canDeleteEntries();
+            const canUpdateEntries = CoreNetwork.isOnline() && await AddonModGlossary.canUpdateEntries();
 
             this.onlineEntry = result.entry;
             this.ratingInfo = result.ratinginfo;
             this.canDelete = canDeleteEntries && !!result.permissions?.candelete;
+            this.canEdit = canUpdateEntries && !!result.permissions?.canupdate;
 
             await this.loadGlossary();
         } catch (error) {
