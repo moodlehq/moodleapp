@@ -45,6 +45,7 @@ import {
     AddonModGlossaryProvider,
     GLOSSARY_ENTRY_ADDED,
     GLOSSARY_ENTRY_DELETED,
+    GLOSSARY_ENTRY_UPDATED,
 } from '../../services/glossary';
 import { AddonModGlossaryOfflineEntry } from '../../services/glossary-offline';
 import {
@@ -146,6 +147,13 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
 
                 // Check completion since it could be configured to complete once the user adds a new entry.
                 this.checkCompletion();
+
+                this.showLoadingAndRefresh(false);
+            }),
+            CoreEvents.on(GLOSSARY_ENTRY_UPDATED, ({ glossaryId }) => {
+                if (this.glossary?.id !== glossaryId) {
+                    return;
+                }
 
                 this.showLoadingAndRefresh(false);
             }),

@@ -200,6 +200,17 @@ Feature: Test glossary navigation
     When I swipe to the left in the app
     Then I should find "Acerola is a fruit" in the app
 
+    # Edit
+    When I swipe to the right in the app
+    And I press "Edit entry" in the app
+    And I press "Save" in the app
+    Then I should find "Tomato is a fruit" in the app
+
+    When I press the back button in the app
+    Then I should find "Tomato" in the app
+    And I should find "Cashew" in the app
+    And I should find "Acerola" in the app
+
   @ci_jenkins_skip
   Scenario: Tablet navigation on glossary
     Given I entered the course "Course 1" as "student1" in the app
@@ -301,3 +312,12 @@ Feature: Test glossary navigation
     When I press "Acerola" in the app
     Then "Acerola" near "Tomato" should be selected in the app
     And I should find "Acerola is a fruit" inside the split-view content in the app
+
+    # Edit
+    When I press "Tomato" in the app
+    And I press "Edit entry" in the app
+    And I press "Save" in the app
+    Then I should find "Tomato is a fruit" inside the split-view content in the app
+    And I should find "Tomato" in the app
+    And I should find "Cashew" in the app
+    And I should find "Acerola" in the app

@@ -154,7 +154,6 @@ Feature: Test basic usage of glossary in app
     Then I should find "Garlic" in the app
     And I should find "Allium sativum" in the app
 
-  @noeldebug
   Scenario: Edit entries (basic info)
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
 
@@ -166,6 +165,9 @@ Feature: Test basic usage of glossary in app
     And I set the following fields to these values in the app:
       | Concept | Broccoli |
       | Definition | Brassica oleracea var. italica |
+    And I press "This entry should be automatically linked" "ion-toggle" in the app
+    And I press "This entry is case sensitive" "ion-toggle" in the app
+    And I press "Match whole words only" "ion-toggle" in the app
     And I press "Save" in the app
     Then I should find "Potato" in the app
     And I should find "Broccoli" in the app
@@ -176,6 +178,9 @@ Feature: Test basic usage of glossary in app
     When I press "Edit entry" in the app
     Then the field "Concept" matches value "Broccoli" in the app
     And the field "Definition" matches value "Brassica oleracea var. italica" in the app
+    And "This entry should be automatically linked" "ion-toggle" should be selected in the app
+    And "This entry is case sensitive" "ion-toggle" should be selected in the app
+    And "Match whole words only" "ion-toggle" should be selected in the app
 
     When I set the following fields to these values in the app:
       | Concept | Pickle |
@@ -188,9 +193,6 @@ Feature: Test basic usage of glossary in app
     Then I should find "Pickle" in the app
     And I should find "Potato" in the app
     But I should not find "Broccoli" in the app
-
-  # TODO test attachments? (yes, in all scenarios!!)
-  # TODO And I upload "stub.txt" to "File" ".action-sheet-button" in the app
 
   Scenario: Delete entries
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app

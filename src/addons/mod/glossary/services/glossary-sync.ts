@@ -285,7 +285,7 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
      */
     protected async deleteAddEntry(glossaryId: number, concept: string, timeCreated: number, siteId?: string): Promise<void> {
         await Promise.all([
-            AddonModGlossaryOffline.deleteOfflineEntry(glossaryId, concept, timeCreated, siteId),
+            AddonModGlossaryOffline.deleteOfflineEntry(glossaryId, timeCreated, siteId),
             AddonModGlossaryHelper.deleteStoredFiles(glossaryId, concept, timeCreated, siteId),
         ]);
     }

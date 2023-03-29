@@ -50,6 +50,10 @@ const routes: Routes = [
         path: ':courseId/:cmId/entry/new',
         loadChildren: () => import('./glossary-edit-lazy.module').then(m => m.AddonModGlossaryEditLazyModule),
     },
+    {
+        path: ':courseId/:cmId/entry/:entrySlug/edit',
+        loadChildren: () => import('./glossary-edit-lazy.module').then(m => m.AddonModGlossaryEditLazyModule),
+    },
     ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
     ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
 ];

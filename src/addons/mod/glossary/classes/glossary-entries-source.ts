@@ -86,17 +86,11 @@ export class AddonModGlossaryEntriesSource extends CoreRoutedItemsManagerSource<
     /**
      * @inheritdoc
      */
-    getItemQueryParams(entry: AddonModGlossaryEntryItem): Params {
-        const params: Params = {
+    getItemQueryParams(): Params {
+        return {
             cmId: this.CM_ID,
             courseId: this.COURSE_ID,
         };
-
-        if (this.isOfflineEntry(entry)) {
-            params.concept = entry.concept;
-        }
-
-        return params;
     }
 
     /**

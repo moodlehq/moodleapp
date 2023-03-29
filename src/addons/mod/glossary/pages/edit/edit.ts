@@ -84,10 +84,17 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
      */
     async ngOnInit(): Promise<void> {
         try {
+            const entrySlug = CoreNavigator.getRouteParam<string>('entrySlug');
             this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
 
-            this.handler = new AddonModGlossaryNewFormHandler(this);
+            if (entrySlug?.startsWith('new-')) {
+                const timecreated = Number(entrySlug.slice(4));
+                this.editorExtraParams.timecreated = timecreated;
+                this.handler = new AddonModGlossaryOfflineFormHandler(this, timecreated);
+            } else {
+                this.handler = new AddonModGlossaryNewFormHandler(this);
+            }
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
 
@@ -297,82 +304,25 @@ abstract class AddonModGlossaryFormHandler {
     }
 
     /**
-     * Create an offline entry.
+     * Make sure that the new entry won't create any duplicates.
      *
      * @param glossary Glossary.
-     * @param timecreated Time created.
-     * @param uploadedAttachments Uploaded attachments.
      */
-    protected async createOfflineEntry(
-        glossary: AddonModGlossaryGlossary,
-        timecreated: number,
-        uploadedAttachments?: CoreFileUploaderStoreFilesResult,
-    ): Promise<void> {
-        const data = this.page.data;
-        const options = this.getSaveOptions(glossary);
-        const definition = CoreTextUtils.formatHtmlLines(data.definition);
-
-        if (!glossary.allowduplicatedentries) {
-            // Check if the entry is duplicated in online or offline mode.
-            const isUsed = await AddonModGlossary.isConceptUsed(glossary.id, data.concept, {
-                timeCreated: data.timecreated,
-                cmId: this.page.cmId,
-            });
-
-            if (isUsed) {
-                // There's a entry with same name, reject with error message.
-                throw new CoreError(Translate.instant('addon.mod_glossary.errconceptalreadyexists'));
-            }
+    protected async checkDuplicates(glossary: AddonModGlossaryGlossary): Promise<void> {
+        if (glossary.allowduplicatedentries) {
+            return;
         }
 
-        await AddonModGlossaryOffline.addOfflineEntry(
-            glossary.id,
-            data.concept,
-            definition,
-            this.page.courseId,
-            options,
-            uploadedAttachments,
-            timecreated,
-            undefined,
-            undefined,
-            data,
-        );
-    }
-
-    /**
-     * Create an online entry.
-     *
-     * @param glossary Glossary.
-     * @param timecreated Time created.
-     * @param uploadedAttachmentsId Id of the uploaded attachments.
-     * @param allowOffline Allow falling back to creating the entry offline.
-     * @returns Entry id.
-     */
-    protected async createOnlineEntry(
-        glossary: AddonModGlossaryGlossary,
-        timecreated: number,
-        uploadedAttachmentsId?: number,
-        allowOffline?: boolean,
-    ): Promise<number | false> {
         const data = this.page.data;
-        const options = this.getSaveOptions(glossary);
-        const definition = CoreTextUtils.formatHtmlLines(data.definition);
-        const entryId = await AddonModGlossary.addEntry(
-            glossary.id,
-            data.concept,
-            definition,
-            this.page.courseId,
-            options,
-            uploadedAttachmentsId,
-            {
-                timeCreated: timecreated,
-                discardEntry: data,
-                allowOffline: allowOffline,
-                checkDuplicates: !glossary.allowduplicatedentries,
-            },
-        );
+        const isUsed = await AddonModGlossary.isConceptUsed(glossary.id, data.concept, {
+            timeCreated: data.timecreated,
+            cmId: this.page.cmId,
+        });
 
-        return entryId;
+        if (isUsed) {
+            // There's a entry with same name, reject with error message.
+            throw new CoreError(Translate.instant('addon.mod_glossary.errconceptalreadyexists'));
+        }
     }
 
     /**
@@ -398,6 +348,119 @@ abstract class AddonModGlossaryFormHandler {
         }
 
         return options;
+    }
+
+}
+
+/**
+ * Helper to manage the form data for an offline entry.
+ */
+class AddonModGlossaryOfflineFormHandler extends AddonModGlossaryFormHandler {
+
+    private timecreated: number;
+
+    constructor(page: AddonModGlossaryEditPage, timecreated: number) {
+        super(page);
+
+        this.timecreated = timecreated;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async loadData(glossary: AddonModGlossaryGlossary): Promise<void> {
+        const data = this.page.data;
+        const entry = await AddonModGlossaryOffline.getOfflineEntry(glossary.id, this.timecreated);
+
+        data.concept = entry.concept || '';
+        data.definition = entry.definition || '';
+        data.timecreated = entry.timecreated;
+
+        if (entry.options) {
+            data.categories = (entry.options.categories && (<string> entry.options.categories).split(',')) || [];
+            data.aliases = <string> entry.options.aliases || '';
+            data.usedynalink = !!entry.options.usedynalink;
+
+            if (data.usedynalink) {
+                data.casesensitive = !!entry.options.casesensitive;
+                data.fullmatch = !!entry.options.fullmatch;
+            }
+        }
+
+        // Treat offline attachments if any.
+        if (entry.attachments?.offline) {
+            data.attachments = await AddonModGlossaryHelper.getStoredFiles(glossary.id, entry.concept, entry.timecreated);
+        }
+
+        this.page.originalData = {
+            concept: data.concept,
+            definition: data.definition,
+            attachments: data.attachments.slice(),
+            timecreated: data.timecreated,
+            categories: data.categories.slice(),
+            aliases: data.aliases,
+            usedynalink: data.usedynalink,
+            casesensitive: data.casesensitive,
+            fullmatch: data.fullmatch,
+        };
+
+        this.page.definitionControl.setValue(data.definition);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async save(glossary: AddonModGlossaryGlossary): Promise<boolean> {
+        const data = this.page.data;
+
+        // Upload attachments first if any.
+        let offlineAttachments: CoreFileUploaderStoreFilesResult | undefined = undefined;
+
+        if (data.attachments.length) {
+            offlineAttachments = await this.storeAttachments(glossary, data.timecreated);
+        }
+
+        // Save entry data.
+        await this.updateOfflineEntry(glossary, offlineAttachments);
+
+        // Delete the local files from the tmp folder.
+        CoreFileUploader.clearTmpFiles(data.attachments);
+
+        return false;
+    }
+
+    /**
+     * Update an offline entry.
+     *
+     * @param glossary Glossary.
+     * @param uploadedAttachments Uploaded attachments.
+     */
+    protected async updateOfflineEntry(
+        glossary: AddonModGlossaryGlossary,
+        uploadedAttachments?: CoreFileUploaderStoreFilesResult,
+    ): Promise<void> {
+        const originalData = this.page.originalData;
+        const data = this.page.data;
+        const options = this.getSaveOptions(glossary);
+        const definition = CoreTextUtils.formatHtmlLines(data.definition);
+
+        if (!originalData) {
+            return;
+        }
+
+        await this.checkDuplicates(glossary);
+        await AddonModGlossaryOffline.updateOfflineEntry(
+            {
+                glossaryid: glossary.id,
+                courseid: this.page.courseId,
+                concept: originalData.concept,
+                timecreated: originalData.timecreated,
+            },
+            data.concept,
+            definition,
+            options,
+            uploadedAttachments,
+        );
     }
 
 }
@@ -451,12 +514,72 @@ class AddonModGlossaryNewFormHandler extends AddonModGlossaryFormHandler {
             CoreEvents.trigger(CoreEvents.ACTIVITY_DATA_SENT, { module: 'glossary' });
         }
 
-        CoreEvents.trigger(AddonModGlossaryProvider.ADD_ENTRY_EVENT, {
-            glossaryId: glossary.id,
-            entryId: entryId || undefined,
-        }, CoreSites.getCurrentSiteId());
-
         return !!entryId;
+    }
+
+    /**
+     * Create an offline entry.
+     *
+     * @param glossary Glossary.
+     * @param timecreated Time created.
+     * @param uploadedAttachments Uploaded attachments.
+     */
+    protected async createOfflineEntry(
+        glossary: AddonModGlossaryGlossary,
+        timecreated: number,
+        uploadedAttachments?: CoreFileUploaderStoreFilesResult,
+    ): Promise<void> {
+        const data = this.page.data;
+        const options = this.getSaveOptions(glossary);
+        const definition = CoreTextUtils.formatHtmlLines(data.definition);
+
+        await this.checkDuplicates(glossary);
+        await AddonModGlossaryOffline.addOfflineEntry(
+            glossary.id,
+            data.concept,
+            definition,
+            this.page.courseId,
+            timecreated,
+            options,
+            uploadedAttachments,
+            undefined,
+            undefined,
+        );
+    }
+
+    /**
+     * Create an online entry.
+     *
+     * @param glossary Glossary.
+     * @param timecreated Time created.
+     * @param uploadedAttachmentsId Id of the uploaded attachments.
+     * @param allowOffline Allow falling back to creating the entry offline.
+     * @returns Entry id.
+     */
+    protected async createOnlineEntry(
+        glossary: AddonModGlossaryGlossary,
+        timecreated: number,
+        uploadedAttachmentsId?: number,
+        allowOffline?: boolean,
+    ): Promise<number | false> {
+        const data = this.page.data;
+        const options = this.getSaveOptions(glossary);
+        const definition = CoreTextUtils.formatHtmlLines(data.definition);
+        const entryId = await AddonModGlossary.addEntry(
+            glossary.id,
+            data.concept,
+            definition,
+            this.page.courseId,
+            options,
+            uploadedAttachmentsId,
+            {
+                timeCreated: timecreated,
+                allowOffline: allowOffline,
+                checkDuplicates: !glossary.allowduplicatedentries,
+            },
+        );
+
+        return entryId;
     }
 
 }

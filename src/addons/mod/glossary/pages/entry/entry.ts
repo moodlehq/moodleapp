@@ -29,12 +29,14 @@ import { CoreNetwork } from '@services/network';
 import { CoreDomUtils, ToastDuration } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { AddonModGlossaryEntriesSource, AddonModGlossaryEntryItem } from '../../classes/glossary-entries-source';
 import {
     AddonModGlossary,
     AddonModGlossaryEntry,
     AddonModGlossaryGlossary,
     AddonModGlossaryProvider,
+    GLOSSARY_ENTRY_UPDATED,
 } from '../../services/glossary';
 
 /**
@@ -54,11 +56,13 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
     offlineEntry?: AddonModGlossaryOfflineEntry;
     entries!: AddonModGlossaryEntryEntriesSwipeManager;
     glossary?: AddonModGlossaryGlossary;
+    entryUpdatedObserver?: CoreEventObserver;
     loaded = false;
     showAuthor = false;
     showDate = false;
     ratingInfo?: CoreRatingInfo;
     tagsEnabled = false;
+    canEdit = false;
     canDelete = false;
     commentsEnabled = false;
     courseId!: number;
@@ -75,10 +79,8 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
      */
     async ngOnInit(): Promise<void> {
         let onlineEntryId: number | null = null;
-        let offlineEntry: {
-            concept: string;
-            timecreated: number;
-        } | null = null;
+        let offlineEntryTimeCreated: number | null = null;
+
         try {
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
             this.tagsEnabled = CoreTag.areTagsAvailableInSite();
@@ -97,10 +99,7 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
             await this.entries.start();
 
             if (entrySlug.startsWith('new-')) {
-                offlineEntry = {
-                    concept : CoreNavigator.getRequiredRouteParam<string>('concept'),
-                    timecreated: Number(entrySlug.slice(4)),
-                };
+                offlineEntryTimeCreated = Number(entrySlug.slice(4));
             } else {
                 onlineEntryId = Number(entrySlug);
             }
@@ -111,6 +110,19 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
             return;
         }
 
+        this.entryUpdatedObserver = CoreEvents.on(GLOSSARY_ENTRY_UPDATED, data => {
+            if (data.glossaryId !== this.glossary?.id) {
+                return;
+            }
+
+            if (
+                (this.onlineEntry && this.onlineEntry.id === data.entryId) ||
+                (this.offlineEntry && this.offlineEntry.timecreated === data.timecreated)
+            ) {
+                this.doRefresh();
+            }
+        });
+
         try {
             if (onlineEntryId) {
                 await this.loadOnlineEntry(onlineEntryId);
@@ -120,8 +132,8 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
                 }
 
                 await CoreUtils.ignoreErrors(AddonModGlossary.logEntryView(onlineEntryId, this.componentId, this.glossary?.name));
-            } else if (offlineEntry) {
-                await this.loadOfflineEntry(offlineEntry.concept, offlineEntry.timecreated);
+            } else if (offlineEntryTimeCreated) {
+                await this.loadOfflineEntry(offlineEntryTimeCreated);
             }
         } finally {
             this.loaded = true;
@@ -133,6 +145,14 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.entries.destroy();
+        this.entryUpdatedObserver?.off();
+    }
+
+    /**
+     * Edit entry.
+     */
+    async editEntry(): Promise<void> {
+        await CoreNavigator.navigate('./edit');
     }
 
     /**
@@ -168,7 +188,7 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
                 const concept = this.offlineEntry.concept;
                 const timecreated = this.offlineEntry.timecreated;
 
-                await AddonModGlossaryOffline.deleteOfflineEntry(glossaryId, concept, timecreated);
+                await AddonModGlossaryOffline.deleteOfflineEntry(glossaryId, timecreated);
                 await AddonModGlossaryHelper.deleteStoredFiles(glossaryId, concept, timecreated);
             }
 
@@ -234,14 +254,14 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
     /**
      * Load offline entry data.
      *
-     * @param concept Entry concept.
      * @param timecreated Entry Timecreated.
      */
-    protected async loadOfflineEntry(concept: string, timecreated: number): Promise<void> {
+    protected async loadOfflineEntry(timecreated: number): Promise<void> {
         try {
             const glossary = await this.loadGlossary();
 
-            this.offlineEntry = await AddonModGlossaryOffline.getOfflineEntry(glossary.id, concept, timecreated);
+            this.offlineEntry = await AddonModGlossaryOffline.getOfflineEntry(glossary.id, timecreated);
+            this.canEdit = true;
             this.canDelete = true;
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.mod_glossary.errorloadingentry', true);

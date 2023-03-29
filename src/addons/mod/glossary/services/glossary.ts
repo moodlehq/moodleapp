@@ -30,6 +30,7 @@ import { AddonModGlossaryEntryDBRecord, ENTRIES_TABLE_NAME } from './database/gl
 import { AddonModGlossaryOffline } from './glossary-offline';
 
 export const GLOSSARY_ENTRY_ADDED = 'addon_mod_glossary_entry_added';
+export const GLOSSARY_ENTRY_UPDATED = 'addon_mod_glossary_entry_updated';
 export const GLOSSARY_ENTRY_DELETED = 'addon_mod_glossary_entry_deleted';
 
 /**
@@ -806,13 +807,10 @@ export class AddonModGlossaryProvider {
 
         // Convenience function to store a new entry to be synchronized later.
         const storeOffline = async (): Promise<false> => {
-            const discardTime = otherOptions.discardEntry?.timecreated;
-
             if (otherOptions.checkDuplicates) {
                 // Check if the entry is duplicated in online or offline mode.
                 const conceptUsed = await this.isConceptUsed(glossaryId, concept, {
                     cmId: otherOptions.cmId,
-                    timeCreated: discardTime,
                     siteId: otherOptions.siteId,
                 });
 
@@ -831,12 +829,11 @@ export class AddonModGlossaryProvider {
                 concept,
                 definition,
                 courseId,
+                otherOptions.timeCreated ?? Date.now(),
                 entryOptions,
                 attachments,
-                otherOptions.timeCreated,
                 otherOptions.siteId,
                 undefined,
-                otherOptions.discardEntry,
             );
 
             return false;
@@ -845,16 +842,6 @@ export class AddonModGlossaryProvider {
         if (!CoreNetwork.isOnline() && otherOptions.allowOffline) {
             // App is offline, store the action.
             return storeOffline();
-        }
-
-        // If we are editing an offline entry, discard previous first.
-        if (otherOptions.discardEntry) {
-            await AddonModGlossaryOffline.deleteOfflineEntry(
-                glossaryId,
-                otherOptions.discardEntry.concept,
-                otherOptions.discardEntry.timecreated,
-                otherOptions.siteId,
-            );
         }
 
         try {
@@ -1071,6 +1058,7 @@ declare module '@singletons/events' {
      */
     export interface CoreEventsData {
         [GLOSSARY_ENTRY_ADDED]: AddonModGlossaryEntryAddedEventData;
+        [GLOSSARY_ENTRY_UPDATED]: AddonModGlossaryEntryUpdatedEventData;
         [GLOSSARY_ENTRY_DELETED]: AddonModGlossaryEntryDeletedEventData;
     }
 
@@ -1086,11 +1074,21 @@ export type AddonModGlossaryEntryAddedEventData = {
 };
 
 /**
+ * GLOSSARY_ENTRY_UPDATED event payload.
+ */
+export type AddonModGlossaryEntryUpdatedEventData = {
+    glossaryId: number;
+    entryId?: number;
+    timecreated?: number;
+};
+
+/**
  * GLOSSARY_ENTRY_DELETED event payload.
  */
 export type AddonModGlossaryEntryDeletedEventData = {
     glossaryId: number;
-    entryId: number;
+    entryId?: number;
+    timecreated?: number;
 };
 
 /**
@@ -1361,19 +1359,10 @@ export type AddonModGlossaryViewEntryWSParams = {
  */
 export type AddonModGlossaryAddEntryOptions = {
     timeCreated?: number; // The time the entry was created. If not defined, current time.
-    discardEntry?: AddonModGlossaryDiscardedEntry; // The entry provided will be discarded if found.
     allowOffline?: boolean; // True if it can be stored in offline, false otherwise.
     checkDuplicates?: boolean; // Check for duplicates before storing offline. Only used if allowOffline is true.
     cmId?: number; // Module ID.
     siteId?: string; // Site ID. If not defined, current site.
-};
-
-/**
- * Entry to discard.
- */
-export type AddonModGlossaryDiscardedEntry = {
-    concept: string;
-    timecreated: number;
 };
 
 /**

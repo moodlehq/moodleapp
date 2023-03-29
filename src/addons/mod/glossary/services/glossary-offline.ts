@@ -21,7 +21,7 @@ import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CorePath } from '@singletons/path';
 import { AddonModGlossaryOfflineEntryDBRecord, OFFLINE_ENTRIES_TABLE_NAME } from './database/glossary';
-import { AddonModGlossaryEntryOption, GLOSSARY_ENTRY_ADDED, GLOSSARY_ENTRY_DELETED } from './glossary';
+import { AddonModGlossaryEntryOption, GLOSSARY_ENTRY_ADDED, GLOSSARY_ENTRY_DELETED, GLOSSARY_ENTRY_UPDATED } from './glossary';
 
 /**
  * Service to handle offline glossary.
@@ -33,18 +33,16 @@ export class AddonModGlossaryOfflineProvider {
      * Delete an offline entry.
      *
      * @param glossaryId Glossary ID.
-     * @param concept Glossary entry concept.
      * @param timecreated The time the entry was created.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved if deleted, rejected if failure.
      */
-    async deleteOfflineEntry(glossaryId: number, concept: string, timecreated: number, siteId?: string): Promise<void> {
+    async deleteOfflineEntry(glossaryId: number, timecreated: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
         const conditions: Partial<AddonModGlossaryOfflineEntryDBRecord> = {
             glossaryid: glossaryId,
-            concept: concept,
-            timecreated,
+            timecreated: timecreated,
         };
 
         await site.getDb().deleteRecords(OFFLINE_ENTRIES_TABLE_NAME, conditions);
@@ -70,14 +68,12 @@ export class AddonModGlossaryOfflineProvider {
      * Get a stored offline entry.
      *
      * @param glossaryId Glossary ID.
-     * @param concept Glossary entry concept.
      * @param timeCreated The time the entry was created.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved with entry.
      */
     async getOfflineEntry(
         glossaryId: number,
-        concept: string,
         timeCreated: number,
         siteId?: string,
     ): Promise<AddonModGlossaryOfflineEntry> {
@@ -85,7 +81,6 @@ export class AddonModGlossaryOfflineProvider {
 
         const conditions: Partial<AddonModGlossaryOfflineEntryDBRecord> = {
             glossaryid: glossaryId,
-            concept: concept,
             timecreated: timeCreated,
         };
 
@@ -145,7 +140,7 @@ export class AddonModGlossaryOfflineProvider {
             }
 
             // If there's only one entry, check that is not the one we are editing.
-            return CoreUtils.promiseFails(this.getOfflineEntry(glossaryId, concept, timeCreated, siteId));
+            return entries[0].timecreated !== timeCreated;
         } catch {
             // No offline data found, return false.
             return false;
@@ -159,12 +154,11 @@ export class AddonModGlossaryOfflineProvider {
      * @param concept Glossary entry concept.
      * @param definition Glossary entry concept definition.
      * @param courseId Course ID of the glossary.
+     * @param timecreated The time the entry was created. If not defined, current time.
      * @param options Options for the entry.
      * @param attachments Result of CoreFileUploaderProvider#storeFilesToUpload for attachments.
-     * @param timecreated The time the entry was created. If not defined, current time.
      * @param siteId Site ID. If not defined, current site.
      * @param userId User the entry belong to. If not defined, current user in site.
-     * @param discardEntry The entry provided will be discarded if found.
      * @returns Promise resolved if stored, rejected if failure.
      */
     async addOfflineEntry(
@@ -172,15 +166,13 @@ export class AddonModGlossaryOfflineProvider {
         concept: string,
         definition: string,
         courseId: number,
+        timecreated: number,
         options?: Record<string, AddonModGlossaryEntryOption>,
         attachments?: CoreFileUploaderStoreFilesResult,
-        timecreated?: number,
         siteId?: string,
         userId?: number,
-        discardEntry?: AddonModGlossaryDiscardedEntry,
     ): Promise<false> {
         const site = await CoreSites.getSite(siteId);
-        timecreated = timecreated || Date.now();
 
         const entry: AddonModGlossaryOfflineEntryDBRecord = {
             glossaryid: glossaryId,
@@ -194,16 +186,47 @@ export class AddonModGlossaryOfflineProvider {
             timecreated,
         };
 
-        // If editing an offline entry, delete previous first.
-        if (discardEntry) {
-            await this.deleteOfflineEntry(glossaryId, discardEntry.concept, discardEntry.timecreated, site.getId());
-        }
-
         await site.getDb().insertRecord(OFFLINE_ENTRIES_TABLE_NAME, entry);
 
         CoreEvents.trigger(GLOSSARY_ENTRY_ADDED, { glossaryId, timecreated }, siteId);
 
         return false;
+    }
+
+    /**
+     * Update an offline entry to be sent later.
+     *
+     * @param originalEntry Original entry data.
+     * @param concept Glossary entry concept.
+     * @param definition Glossary entry concept definition.
+     * @param options Options for the entry.
+     * @param attachments Result of CoreFileUploaderProvider#storeFilesToUpload for attachments.
+     */
+    async updateOfflineEntry(
+        originalEntry: Pick< AddonModGlossaryOfflineEntryDBRecord, 'glossaryid'|'courseid'|'concept'|'timecreated'>,
+        concept: string,
+        definition: string,
+        options?: Record<string, AddonModGlossaryEntryOption>,
+        attachments?: CoreFileUploaderStoreFilesResult,
+    ): Promise<void> {
+        const site = await CoreSites.getSite();
+        const entry: Omit<AddonModGlossaryOfflineEntryDBRecord, 'courseid'|'glossaryid'|'userid'|'timecreated'> = {
+            concept: concept,
+            definition: definition,
+            definitionformat: 'html',
+            options: JSON.stringify(options || {}),
+            attachments: JSON.stringify(attachments),
+        };
+
+        await site.getDb().updateRecords(OFFLINE_ENTRIES_TABLE_NAME, entry, {
+            ...originalEntry,
+            userid: site.getUserId(),
+        });
+
+        CoreEvents.trigger(GLOSSARY_ENTRY_UPDATED, {
+            glossaryId: originalEntry.glossaryid,
+            timecreated: originalEntry.timecreated,
+        });
     }
 
     /**
