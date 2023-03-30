@@ -39,7 +39,7 @@
                     </ion-select-option>
                 </ion-select>
             </ion-item>
-            <ion-item>
+            <ion-item *ngIf="showAliases">
                 <ion-label position="stacked">
                     {{ 'addon.mod_glossary.aliases' | translate }}
                 </ion-label>

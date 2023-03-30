@@ -59,6 +59,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
     glossary?: AddonModGlossaryGlossary;
     definitionControl = new FormControl();
     categories: AddonModGlossaryCategory[] = [];
+    showAliases = true;
     editorExtraParams: Record<string, unknown> = {};
     handler!: AddonModGlossaryFormHandler;
     data: AddonModGlossaryFormData = {
@@ -124,10 +125,6 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
             this.glossary = await AddonModGlossary.getGlossary(this.courseId, this.cmId);
 
             await this.handler.loadData(this.glossary);
-
-            this.categories = await AddonModGlossary.getAllCategories(this.glossary.id, {
-                cmId: this.cmId,
-            });
 
             this.loaded = true;
         } catch (error) {
@@ -273,6 +270,17 @@ abstract class AddonModGlossaryFormHandler {
     abstract save(glossary: AddonModGlossaryGlossary): Promise<boolean>;
 
     /**
+     * Load form categories.
+     *
+     * @param glossary Glossary.
+     */
+    protected async loadCategories(glossary: AddonModGlossaryGlossary): Promise<void> {
+        this.page.categories = await AddonModGlossary.getAllCategories(glossary.id, {
+            cmId: this.page.cmId,
+        });
+    }
+
+    /**
      * Upload attachments online.
      *
      * @param glossary Glossary.
@@ -341,10 +349,15 @@ abstract class AddonModGlossaryFormHandler {
      */
     protected getSaveOptions(glossary: AddonModGlossaryGlossary): Record<string, AddonModGlossaryEntryOption> {
         const data = this.page.data;
-        const options: Record<string, AddonModGlossaryEntryOption> = {
-            aliases: data.aliases,
-            categories: data.categories.join(','),
-        };
+        const options: Record<string, AddonModGlossaryEntryOption> = {};
+
+        if (this.page.showAliases) {
+            options.aliases = data.aliases;
+        }
+
+        if (this.page.categories.length > 0) {
+            options.categories = data.categories.join(',');
+        }
 
         if (glossary.usedynalink) {
             options.usedynalink = data.usedynalink ? 1 : 0;
@@ -385,8 +398,8 @@ class AddonModGlossaryOfflineFormHandler extends AddonModGlossaryFormHandler {
         data.timecreated = entry.timecreated;
 
         if (entry.options) {
-            data.categories = (entry.options.categories && (<string> entry.options.categories).split(',')) || [];
-            data.aliases = <string> entry.options.aliases || '';
+            data.categories = ((entry.options.categories as string)?.split(',') ?? []).map(id => Number(id));
+            data.aliases = entry.options.aliases as string ?? '';
             data.usedynalink = !!entry.options.usedynalink;
 
             if (data.usedynalink) {
@@ -413,6 +426,8 @@ class AddonModGlossaryOfflineFormHandler extends AddonModGlossaryFormHandler {
         };
 
         this.page.definitionControl.setValue(data.definition);
+
+        await this.loadCategories(glossary);
     }
 
     /**
@@ -486,8 +501,8 @@ class AddonModGlossaryNewFormHandler extends AddonModGlossaryFormHandler {
     /**
      * @inheritdoc
      */
-    async loadData(): Promise<void> {
-        // There is no data to load, given that this is a new entry.
+    async loadData(glossary: AddonModGlossaryGlossary): Promise<void> {
+        await this.loadCategories(glossary);
     }
 
     /**
@@ -644,6 +659,7 @@ class AddonModGlossaryOnlineFormHandler extends AddonModGlossaryFormHandler {
         };
 
         this.page.definitionControl.setValue(data.definition);
+        this.page.showAliases = false;
     }
 
     /**
@@ -686,7 +702,7 @@ type AddonModGlossaryFormData = {
     definition: string;
     timecreated: number;
     attachments: CoreFileEntry[];
-    categories: string[];
+    categories: number[];
     aliases: string;
     usedynalink: boolean;
     casesensitive: boolean;

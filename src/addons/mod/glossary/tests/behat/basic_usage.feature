@@ -162,6 +162,8 @@ Feature: Test basic usage of glossary in app
     And I press "Edit entry" in the app
     Then the field "Concept" matches value "Cucumber" in the app
     And the field "Definition" matches value "Sweet cucumber" in the app
+    But I should not find "Keyword(s)" in the app
+    And I should not find "Categories" in the app
 
     When I set the following fields to these values in the app:
       | Concept | Coconut |
@@ -206,6 +208,10 @@ Feature: Test basic usage of glossary in app
     And I set the following fields to these values in the app:
       | Concept | Broccoli |
       | Definition | Brassica oleracea var. italica |
+      | Keyword(s) | vegetable, healthy |
+    And I press "Categories" in the app
+    And I press "The ones I like" in the app
+    And I press "OK" in the app
     And I press "Add file" in the app
     And I upload "stub1.txt" to "File" ".action-sheet-button" in the app
     And I press "Add file" in the app
@@ -225,6 +231,8 @@ Feature: Test basic usage of glossary in app
     When I press "Edit entry" in the app
     Then the field "Concept" matches value "Broccoli" in the app
     And the field "Definition" matches value "Brassica oleracea var. italica" in the app
+    And the field "Keyword(s)" matches value "vegetable, healthy" in the app
+    And I should find "The ones I like" in the app
     And I should find "stub1.txt" in the app
     And I should find "stub2.txt" in the app
     And "This entry should be automatically linked" "ion-toggle" should be selected in the app
