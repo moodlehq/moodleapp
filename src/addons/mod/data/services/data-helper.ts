@@ -714,7 +714,9 @@ export class AddonModDataHelperProvider {
                     courseId = await this.getActivityCourseIdIfNotSet(dataId, courseId, siteId);
                 }
 
-                AddonModData.deleteEntry(dataId, entryId, courseId!, siteId);
+                if (courseId) {
+                    await AddonModData.deleteEntry(dataId, entryId, courseId, siteId);
+                }
             } catch (message) {
                 CoreDomUtils.showErrorModalDefault(message, 'addon.mod_data.errordeleting', true);
 
