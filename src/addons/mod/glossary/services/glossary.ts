@@ -930,6 +930,7 @@ export class AddonModGlossaryProvider {
      * @param concept Glossary entry concept.
      * @param definition Glossary entry concept definition.
      * @param options Options for the entry.
+     * @param attachId Attachments ID (if any attachment).
      * @param siteId Site ID. If not defined, current site.
      */
     async updateEntry(
@@ -938,6 +939,7 @@ export class AddonModGlossaryProvider {
         concept: string,
         definition: string,
         options?: Record<string, AddonModGlossaryEntryOption>,
+        attachId?: number,
         siteId?: string,
     ): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -949,6 +951,13 @@ export class AddonModGlossaryProvider {
             definitionformat: 1,
             options: CoreUtils.objectToArrayOfObjects(options || {}, 'name', 'value'),
         };
+
+        if (attachId) {
+            params.options?.push({
+                name: 'attachmentsid',
+                value: String(attachId),
+            });
+        }
 
         const response = await site.write<AddonModGlossaryUpdateEntryWSResponse>('mod_glossary_update_entry', params);
 

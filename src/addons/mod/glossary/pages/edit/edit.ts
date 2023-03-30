@@ -419,6 +419,7 @@ class AddonModGlossaryOfflineFormHandler extends AddonModGlossaryFormHandler {
      * @inheritdoc
      */
     async save(glossary: AddonModGlossaryGlossary): Promise<boolean> {
+        const originalData = this.page.data;
         const data = this.page.data;
 
         // Upload attachments first if any.
@@ -426,6 +427,10 @@ class AddonModGlossaryOfflineFormHandler extends AddonModGlossaryFormHandler {
 
         if (data.attachments.length) {
             offlineAttachments = await this.storeAttachments(glossary, data.timecreated);
+        }
+
+        if (originalData.concept !== data.concept) {
+            await AddonModGlossaryHelper.deleteStoredFiles(glossary.id, originalData.concept, data.timecreated);
         }
 
         // Save entry data.
@@ -653,8 +658,18 @@ class AddonModGlossaryOnlineFormHandler extends AddonModGlossaryFormHandler {
         const options = this.getSaveOptions(glossary);
         const definition = CoreTextUtils.formatHtmlLines(data.definition);
 
+        // Upload attachments, if any.
+        let attachmentsId: number | undefined = undefined;
+
+        if (data.attachments.length) {
+            attachmentsId = await this.uploadAttachments(glossary);
+        }
+
         // Save entry data.
-        await AddonModGlossary.updateEntry(glossary.id, this.entry.id, data.concept, definition, options);
+        await AddonModGlossary.updateEntry(glossary.id, this.entry.id, data.concept, definition, options, attachmentsId);
+
+        // Delete the local files from the tmp folder.
+        CoreFileUploader.clearTmpFiles(data.attachments);
 
         CoreEvents.trigger(CoreEvents.ACTIVITY_DATA_SENT, { module: 'glossary' });
 

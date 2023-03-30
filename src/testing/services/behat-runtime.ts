@@ -362,6 +362,40 @@ export class TestingBehatRuntimeService {
     }
 
     /**
+     * Get a file input id, adding it if necessary.
+     *
+     * @param locator Input locator.
+     * @returns Input id if successful, or ERROR: followed by message
+     */
+    async getFileInputId(locator: TestingBehatElementLocator): Promise<string> {
+        this.log('Action - Upload File', { locator });
+
+        try {
+            const inputOrContainer = TestingBehatDomUtils.findElementBasedOnText(locator);
+
+            if (!inputOrContainer) {
+                return 'ERROR: No element matches input locator.';
+            }
+
+            const input = inputOrContainer.matches('input[type="file"]')
+                ? inputOrContainer
+                : inputOrContainer.querySelector('input[type="file"]');
+
+            if (!input) {
+                return 'ERROR: Input element does not contain a file input.';
+            }
+
+            if (!input.hasAttribute('id')) {
+                input.setAttribute('id', `file-${Date.now()}`);
+            }
+
+            return input.getAttribute('id') ?? '';
+        } catch (error) {
+            return 'ERROR: ' + error.message;
+        }
+    }
+
+    /**
      * Trigger a pull to refresh gesture in the current page.
      *
      * @returns OK if successful, or ERROR: followed by message
@@ -635,8 +669,8 @@ export type BehatTestsWindow = Window & {
 };
 
 export type TestingBehatFindOptions = {
-    containerName: string;
-    onlyClickable: boolean;
+    containerName?: string;
+    onlyClickable?: boolean;
 };
 
 export type TestingBehatElementLocator = {

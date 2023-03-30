@@ -23,6 +23,7 @@ import { CoreCommentsCommentsComponent } from '@features/comments/components/com
 import { CoreComments } from '@features/comments/services/comments';
 import { CoreRatingInfo } from '@features/rating/services/rating';
 import { CoreTag } from '@features/tag/services/tag';
+import { FileEntry } from '@ionic-native/file/ngx';
 import { IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreNetwork } from '@services/network';
@@ -54,6 +55,7 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
     componentId?: number;
     onlineEntry?: AddonModGlossaryEntry;
     offlineEntry?: AddonModGlossaryOfflineEntry;
+    offlineEntryFiles?: FileEntry[];
     entries!: AddonModGlossaryEntryEntriesSwipeManager;
     glossary?: AddonModGlossaryGlossary;
     entryUpdatedObserver?: CoreEventObserver;
@@ -263,6 +265,13 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
             const glossary = await this.loadGlossary();
 
             this.offlineEntry = await AddonModGlossaryOffline.getOfflineEntry(glossary.id, timecreated);
+            this.offlineEntryFiles = this.offlineEntry.attachments && this.offlineEntry.attachments.offline > 0
+                ? await AddonModGlossaryHelper.getStoredFiles(
+                    glossary.id,
+                    this.offlineEntry.concept,
+                    timecreated,
+                )
+                : undefined;
             this.canEdit = true;
             this.canDelete = true;
         } catch (error) {

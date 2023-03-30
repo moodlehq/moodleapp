@@ -73,6 +73,10 @@
                     [componentId]="componentId">
                 </core-file>
             </div>
+            <div *ngIf="offlineEntry && offlineEntryFiles">
+                <core-local-file *ngFor="let file of offlineEntryFiles" [file]="file">
+                </core-local-file>
+            </div>
             <ion-item class="ion-text-wrap" *ngIf="onlineEntry && tagsEnabled && entry && onlineEntry.tags && onlineEntry.tags.length > 0">
                 <ion-label>
                     <div slot="start">{{ 'core.tag.tags' | translate }}:</div>
