@@ -2521,6 +2521,7 @@
   "core.viewprofile": "moodle",
   "core.wanttochangesite": "local_moodlemobileapp",
   "core.warningofflinedatadeleted": "local_moodlemobileapp",
+  "core.warningofflinedatadeletedreason": "local_moodlemobileapp",
   "core.warnopeninbrowser": "local_moodlemobileapp",
   "core.week": "moodle",
   "core.weeks": "moodle",

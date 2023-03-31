@@ -28,6 +28,8 @@ import { CoreError } from '@classes/errors/error';
 import { AddonModH5PActivityAutoSyncData, AddonModH5PActivitySyncProvider } from './h5pactivity-sync';
 import { CoreTime } from '@singletons/time';
 
+export const MOD_H5PACTIVITY_STATE_ID = 'state';
+
 const ROOT_CACHE_KEY = 'mmaModH5PActivity:';
 
 /**
@@ -760,6 +762,17 @@ export class AddonModH5PActivityProvider {
     }
 
     /**
+     * Check if save state is enabled for a certain activity.
+     *
+     * @param h5pActivity Activity.
+     * @param accessInfo Access info.
+     * @returns Whether save state is enabled.
+     */
+    isSaveStateEnabled(h5pActivity: AddonModH5PActivityData, accessInfo?: AddonModH5PActivityAccessInfo): boolean {
+        return !!(h5pActivity.enabletracking && h5pActivity.enablesavestate && (!accessInfo || accessInfo.cansubmit));
+    }
+
+    /**
      * Report an H5P activity as being viewed.
      *
      * @param id H5P activity ID.
@@ -1210,4 +1223,5 @@ export type AddonModH5PActivityStatement = {
         id: string;
         display: Record<string, string>;
     };
+    timestamp?: string;
 };

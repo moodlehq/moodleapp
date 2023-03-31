@@ -109,6 +109,10 @@ export class CoreH5PFramework {
 
         const db = await CoreSites.getSiteDb(siteId);
 
+        // The user content should be reset (instead of removed), because this method is called when H5P content needs
+        // to be updated too (and the previous states must be kept, but reset).
+        await this.resetContentUserData(id, siteId);
+
         await Promise.all([
             // Delete the content data.
             db.deleteRecords(CONTENT_TABLE_NAME, { id }),
@@ -645,7 +649,8 @@ export class CoreH5PFramework {
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async resetContentUserData(contentId: number, siteId?: string): Promise<void> {
-        // Currently, we do not store user data for a content.
+        // In LMS, all the states of the component are deleted here.
+        // This isn't possible in the app because we lack the course ID, which is needed for example by h5pactivity.
     }
 
     /**

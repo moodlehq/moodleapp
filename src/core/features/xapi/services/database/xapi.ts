@@ -18,9 +18,10 @@ import { CoreSiteSchema } from '@services/sites';
  * Database variables for CoreXAPIOfflineProvider service.
  */
 export const STATEMENTS_TABLE_NAME = 'core_xapi_statements';
+export const STATES_TABLE_NAME = 'core_xapi_states';
 export const SITE_SCHEMA: CoreSiteSchema = {
     name: 'CoreXAPIOfflineProvider',
-    version: 1,
+    version: 2,
     tables: [
         {
             name: STATEMENTS_TABLE_NAME,
@@ -57,6 +58,58 @@ export const SITE_SCHEMA: CoreSiteSchema = {
                 },
             ],
         },
+        {
+            name: STATES_TABLE_NAME,
+            columns: [
+                {
+                    name: 'id',
+                    type: 'INTEGER',
+                    primaryKey: true,
+                    autoIncrement: true,
+                },
+                {
+                    name: 'component',
+                    type: 'TEXT',
+                    notNull: true,
+                },
+                {
+                    name: 'itemid',
+                    type: 'INTEGER',
+                    notNull: true,
+                },
+                {
+                    name: 'stateid',
+                    type: 'TEXT',
+                    notNull: true,
+                },
+                {
+                    name: 'statedata',
+                    type: 'TEXT',
+                },
+                {
+                    name: 'registration',
+                    type: 'TEXT',
+                },
+                {
+                    name: 'timecreated',
+                    type: 'INTEGER',
+                    notNull: true,
+                },
+                {
+                    name: 'timemodified',
+                    type: 'INTEGER',
+                    notNull: true,
+                },
+                {
+                    name: 'courseid',
+                    type: 'INTEGER',
+                },
+                {
+                    name: 'extra',
+                    type: 'TEXT',
+                },
+            ],
+        },
     ],
 };
 
@@ -70,5 +123,21 @@ export type CoreXAPIStatementDBRecord = {
     statements: string; // Statements (JSON-encoded).
     timecreated: number; // When were the statements created.
     courseid?: number; // Course ID if the context is inside a course.
+    extra?: string; // Extra data.
+};
+
+/**
+ * Structure of state data stored in DB.
+ */
+export type CoreXAPIStateDBRecord = {
+    id: number; // ID.
+    component: string; // Component name.
+    itemid: number; // The Agent Id (usually the plugin instance).
+    stateid: string; // Component identified for the state data.
+    statedata?: string; // JSON state data.
+    registration?: string; // Optional registration identifier.
+    timecreated: number; // When was the state modified.
+    timemodified: number; // When was the state modified.
+    courseid?: number; // Course ID if the activity is inside a course.
     extra?: string; // Extra data.
 };

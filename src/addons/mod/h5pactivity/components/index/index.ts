@@ -39,6 +39,7 @@ import {
     AddonModH5PActivityXAPIPostStateData,
     AddonModH5PActivityXAPIStateData,
     AddonModH5PActivityXAPIStatementsData,
+    MOD_H5PACTIVITY_STATE_ID,
 } from '../../services/h5pactivity';
 import {
     AddonModH5PActivitySync,
@@ -48,6 +49,7 @@ import {
 import { CoreFileHelper } from '@services/file-helper';
 import { AddonModH5PActivityModuleHandlerService } from '../../services/handlers/module';
 import { CoreTextUtils } from '@services/utils/text';
+import { CoreUtils } from '@services/utils/utils';
 
 /**
  * Component that displays an H5P activity entry page.
@@ -114,13 +116,17 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     async ngOnInit(): Promise<void> {
         super.ngOnInit();
 
-        this.loadContent();
+        this.loadContent(false, true);
     }
 
     /**
      * @inheritdoc
      */
     protected async fetchContent(refresh?: boolean, sync = false, showErrors = false): Promise<void> {
+        // Always show loading and stop playing, the package needs to be reloaded with the latest data.
+        this.showLoading = true;
+        this.playing = false;
+
         this.h5pActivity = await AddonModH5PActivity.getH5PActivity(this.courseId, this.module.id, {
             siteId: this.siteId,
         });
@@ -176,7 +182,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
             return;
         }
 
-        this.hasOffline = await CoreXAPIOffline.contextHasStatements(this.h5pActivity.context, this.siteId);
+        this.hasOffline = await CoreXAPIOffline.contextHasData(this.h5pActivity.context, this.siteId);
     }
 
     /**
@@ -229,7 +235,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
      * Load the content's state (if enabled and there's any).
      */
     protected async loadContentState(): Promise<void> {
-        if (!this.h5pActivity?.enabletracking || !this.h5pActivity.enablesavestate || !this.accessInfo?.cansubmit) {
+        if (!this.h5pActivity || !this.accessInfo || !AddonModH5PActivity.isSaveStateEnabled(this.h5pActivity, this.accessInfo)) {
             this.saveStateEnabled = false;
 
             return;
@@ -238,10 +244,10 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         this.saveStateEnabled = true;
         this.saveFreq = this.h5pActivity.savestatefreq;
 
-        const contentState = await CoreXAPI.getStateOnline(
+        const contentState = await CoreXAPI.getState(
             AddonModH5PActivityProvider.TRACK_COMPONENT,
             this.h5pActivity.context,
-            'state',
+            MOD_H5PACTIVITY_STATE_ID,
             {
                 appComponent: AddonModH5PActivityProvider.COMPONENT,
                 appComponentId: this.h5pActivity.coursemodule,
@@ -256,7 +262,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         const contentStateObj = CoreTextUtils.parseJSON<{h5p: string}>(contentState, { h5p: '{}' });
 
         // The H5P state doesn't always use JSON, so an h5p property was added to jsonize it.
-        this.contentState = contentStateObj.h5p;
+        this.contentState = contentStateObj.h5p ?? '{}';
     }
 
     /**
@@ -380,6 +386,9 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         const deployedFile = this.deployedFile;
         this.downloading = true;
         this.progressMessage = 'core.downloading';
+
+        // Delete offline states when downloading the package because it means the package has changed or user deleted it.
+        this.deleteOfflineStates();
 
         try {
             await CoreFilepool.downloadUrl(
@@ -567,6 +576,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
             );
 
             this.hasOffline = !sent;
+            this.deleteOfflineStates(); // Posting statements means attempt has finished, delete any offline state.
 
             if (sent) {
                 try {
@@ -626,16 +636,23 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
      */
     protected async postState(data: AddonModH5PActivityXAPIPostStateData): Promise<void> {
         try {
-            await CoreXAPI.postStateOnline(
+            const options = {
+                offline: this.hasOffline,
+                courseId: this.courseId,
+                extra: this.h5pActivity?.name,
+                siteId: this.site.getId(),
+            };
+
+            const sent = await CoreXAPI.postState(
                 data.component,
                 data.activityId,
-                JSON.stringify(data.agent),
+                data.agent,
                 data.stateId,
                 data.stateData,
-                {
-                    siteId: this.site.getId(),
-                },
+                options,
             );
+
+            this.hasOffline = !sent;
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error sending tracking data.');
         }
@@ -648,10 +665,10 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
      */
     protected async deleteState(data: AddonModH5PActivityXAPIStateData): Promise<void> {
         try {
-            await CoreXAPI.deleteStateOnline(
+            await CoreXAPI.deleteState(
                 data.component,
                 data.activityId,
-                JSON.stringify(data.agent),
+                data.agent,
                 data.stateId,
                 {
                     siteId: this.site.getId(),
@@ -660,6 +677,19 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error sending tracking data.');
         }
+    }
+
+    /**
+     * Delete offline states for current activity.
+     */
+    protected async deleteOfflineStates(): Promise<void> {
+        if (!this.h5pActivity) {
+            return;
+        }
+
+        await CoreUtils.ignoreErrors(CoreXAPIOffline.deleteStates(AddonModH5PActivityProvider.TRACK_COMPONENT, {
+            itemId: this.h5pActivity.context,
+        }));
     }
 
     /**

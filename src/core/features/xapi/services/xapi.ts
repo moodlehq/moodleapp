@@ -22,6 +22,10 @@ import { CoreXAPIOffline, CoreXAPIOfflineSaveStatementsOptions } from './offline
 import { makeSingleton } from '@singletons';
 import { CoreXAPIItemAgent } from '../classes/item-agent';
 import { CoreXAPIIRI } from '../classes/iri';
+import { CoreError } from '@classes/errors/error';
+import { CoreLogger } from '@singletons/logger';
+
+export const XAPI_STATE_DELETED = 'STATE_DELETED';
 
 /**
  * Service to provide XAPI functionalities.
@@ -30,6 +34,8 @@ import { CoreXAPIIRI } from '../classes/iri';
 export class CoreXAPIProvider {
 
     static readonly ROOT_CACHE_KEY = 'CoreXAPI:';
+
+    protected logger = CoreLogger.getInstance('CoreXAPIProvider');
 
     /**
      * Returns whether or not WS to post XAPI statement is available.
@@ -55,6 +61,78 @@ export class CoreXAPIProvider {
         site = site || CoreSites.getCurrentSite();
 
         return !!(site && site.wsAvailable('core_xapi_statement_post'));
+    }
+
+    /**
+     * Delete a state both online and offline.
+     *
+     * @param component Component.
+     * @param activityIRI XAPI activity ID IRI.
+     * @param agent The xAPI agent data.
+     * @param stateId The xAPI state ID.
+     * @param options Options.
+     * @returns Promise resolved when done.
+     */
+    async deleteState(
+        component: string,
+        activityIRI: string,
+        agent: Record<string, unknown>,
+        stateId: string,
+        options: CoreXAPIStateSendDataOptions = {},
+    ): Promise<boolean> {
+        options.siteId = options.siteId || CoreSites.getCurrentSiteId();
+
+        const storeOffline = async (): Promise<boolean> => {
+            const itemIdString = await CoreXAPIIRI.extract(activityIRI, 'activity', options.siteId);
+            const itemId = Number(itemIdString);
+
+            if (isNaN(itemId)) {
+                throw new CoreError('Invalid activity ID sent to xAPI delete state.');
+            }
+
+            // Save an offline state as deleted.
+            await CoreXAPIOffline.saveState(component, itemId, stateId, XAPI_STATE_DELETED, options);
+
+            return false;
+        };
+
+        if (!CoreNetwork.isOnline() || options.offline) {
+            // App is offline, store the action.
+            return storeOffline();
+        }
+
+        try {
+            await this.deleteStateOnline(component, activityIRI, JSON.stringify(agent), stateId, options);
+
+            const itemIdString = await CoreXAPIIRI.extract(activityIRI, 'activity', options.siteId);
+            const itemId = Number(itemIdString);
+
+            if (!isNaN(itemId)) {
+                // Delete offline state if it exists.
+                await CoreUtils.ignoreErrors(CoreXAPIOffline.deleteStates(component, {
+                    itemId,
+                    stateId,
+                    registration: options.registration,
+                    siteId: options.siteId,
+                }));
+            }
+
+            return true;
+        } catch (error) {
+            if (CoreUtils.isWebServiceError(error)) {
+                // The WebService has thrown an error, this means that the state cannot be deleted.
+                throw error;
+            }
+
+            // Couldn't connect to server, store it offline.
+            try {
+                return await storeOffline();
+            } catch (offlineError) {
+                this.logger.error('Error storing a DELETED xAPI state in offline storage.', offlineError);
+
+                throw error;
+            }
+        }
     }
 
     /**
@@ -88,7 +166,33 @@ export class CoreXAPIProvider {
     }
 
     /**
-     * Get cache key for H5P activity data WS calls.
+     * Get state from WS.
+     *
+     * @param component Component.
+     * @param activityId Activity ID.
+     * @param stateId The xAPI state ID.
+     * @param options Options.
+     * @returns Promise resolved when done.
+     */
+    async getState(
+        component: string,
+        activityId: number,
+        stateId: string,
+        options: CoreXAPIGetStateOptions = {},
+    ): Promise<string | null> {
+        try {
+            const offlineState = await CoreXAPIOffline.getState(component, activityId, stateId, options);
+
+            return offlineState.statedata !== XAPI_STATE_DELETED ? (offlineState.statedata ?? null) : null;
+        } catch {
+            // No offline state.
+        }
+
+        return this.getStateFromServer(component, activityId, stateId, options);
+    }
+
+    /**
+     * Get cache key for H5P get state WS calls.
      *
      * @param siteUrl Site URL.
      * @param component Component.
@@ -116,7 +220,7 @@ export class CoreXAPIProvider {
      * @param options Options.
      * @returns Promise resolved when done.
      */
-    async getStateOnline(
+    async getStateFromServer(
         component: string,
         activityId: number,
         stateId: string,
@@ -149,6 +253,37 @@ export class CoreXAPIProvider {
         };
 
         return site.read('core_xapi_get_state', data, preSets);
+    }
+
+    /**
+     * Get states after a certain timestamp. It will fail if offline or cannot connect.
+     *
+     * @param component Component.
+     * @param activityId Activity ID.
+     * @param options Options.
+     * @returns Promise resolved when done.
+     */
+    async getStatesSince(
+        component: string,
+        activityId: number,
+        options: CoreXAPIGetStatesOptions = {},
+    ): Promise<string[]> {
+        const [site, activityIRI] = await Promise.all([
+            CoreSites.getSite(options.siteId),
+            CoreXAPIIRI.generate(activityId, 'activity'),
+        ]);
+
+        const data: CoreXAPIGetStatesWSParams = {
+            component,
+            activityId: activityIRI,
+            agent: JSON.stringify(CoreXAPIItemAgent.createFromSite(site).getData()),
+            registration: options.registration,
+        };
+        if (options.since) {
+            data.since = String(Math.floor(options.since / 1000));
+        }
+
+        return site.write<string[]>('core_xapi_get_states', data);
     }
 
     /**
@@ -203,13 +338,10 @@ export class CoreXAPIProvider {
         contextId: number,
         component: string,
         json: string,
-        options?: CoreXAPIPostStatementsOptions,
+        options: CoreXAPIPostStatementsOptions = {},
     ): Promise<boolean> {
-
-        options = options || {};
         options.siteId = options.siteId || CoreSites.getCurrentSiteId();
 
-        // Convenience function to store a message to be synchronized later.
         const storeOffline = async (): Promise<boolean> => {
             await CoreXAPIOffline.saveStatements(contextId, component, json, options);
 
@@ -227,7 +359,7 @@ export class CoreXAPIProvider {
             return true;
         } catch (error) {
             if (CoreUtils.isWebServiceError(error)) {
-                // The WebService has thrown an error, this means that responses cannot be submitted.
+                // The WebService has thrown an error, this means that statements cannot be submitted.
                 throw error;
             } else {
                 // Couldn't connect to server, store it offline.
@@ -261,6 +393,66 @@ export class CoreXAPIProvider {
      *
      * @param component Component.
      * @param activityIRI XAPI activity ID IRI.
+     * @param agent The xAPI agent data.
+     * @param stateId The xAPI state ID.
+     * @param stateData JSON object with the state data.
+     * @param options Options.
+     * @returns Promise resolved when done.
+     */
+    async postState(
+        component: string,
+        activityIRI: string,
+        agent: Record<string, unknown>,
+        stateId: string,
+        stateData: string,
+        options: CoreXAPIStateSendDataOptions = {},
+    ): Promise<boolean> {
+        options.siteId = options.siteId || CoreSites.getCurrentSiteId();
+
+        const storeOffline = async (): Promise<boolean> => {
+            const itemIdString = await CoreXAPIIRI.extract(activityIRI, 'activity', options.siteId);
+            const itemId = Number(itemIdString);
+
+            if (isNaN(itemId)) {
+                throw new CoreError('Invalid activity ID sent to xAPI post state.');
+            }
+
+            await CoreXAPIOffline.saveState(component, itemId, stateId, stateData, options);
+
+            return false;
+        };
+
+        if (!CoreNetwork.isOnline() || options.offline) {
+            // App is offline, store the action.
+            return storeOffline();
+        }
+
+        try {
+            await this.postStateOnline(component, activityIRI, JSON.stringify(agent), stateId, stateData, options);
+
+            return true;
+        } catch (error) {
+            if (CoreUtils.isWebServiceError(error)) {
+                // The WebService has thrown an error, this means that state cannot be submitted.
+                throw error;
+            }
+
+            // Couldn't connect to server, store it offline.
+            try {
+                return await storeOffline();
+            } catch (offlineError) {
+                this.logger.error('Error storing xAPI state in offline storage.', offlineError);
+
+                throw error;
+            }
+        }
+    }
+
+    /**
+     * Post state. It will fail if offline or cannot connect.
+     *
+     * @param component Component.
+     * @param activityIRI XAPI activity ID IRI.
      * @param agent The xAPI agent json.
      * @param stateId The xAPI state ID.
      * @param stateData JSON object with the state data.
@@ -273,7 +465,7 @@ export class CoreXAPIProvider {
         agent: string,
         stateId: string,
         stateData: string,
-        options: CoreXAPIPostStateOptions = {},
+        options: CoreXAPIStateOptions = {},
     ): Promise<boolean> {
         const site = await CoreSites.getSite(options.siteId);
 
@@ -325,9 +517,16 @@ export type CoreXAPIGetStateOptions = CoreXAPIStateOptions & CoreSitesCommonWSOp
 };
 
 /**
- * Options to pass to postState function.
+ * Options to pass to getStatesSince function.
  */
-export type CoreXAPIPostStateOptions = CoreXAPIStateOptions & {
+export type CoreXAPIGetStatesOptions = CoreXAPIStateOptions & {
+    since?: number; // Timestamp (in milliseconds) to filter the states.
+};
+
+/**
+ * Options to pass to postState and deleteState functions.
+ */
+export type CoreXAPIStateSendDataOptions = CoreXAPIStateOptions & {
     offline?: boolean; // Whether to force storing it in offline.
 };
 
@@ -363,4 +562,15 @@ export type CoreXAPIGetStateWSParams = {
     agent: string; // The xAPI agent json.
     stateId: string; // The xAPI state ID.
     registration?: string; // The xAPI registration UUID.
+};
+
+/**
+ * Params of core_xapi_get_states WS.
+ */
+export type CoreXAPIGetStatesWSParams = {
+    component: string; // Component name.
+    activityId: string; // XAPI activity ID IRI.
+    agent: string; // The xAPI agent json.
+    registration?: string; // The xAPI registration UUID.
+    since?: string; // Filter ids stored since the timestamp (exclusive).
 };
