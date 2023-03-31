@@ -2148,6 +2148,7 @@
   "core.minutes": "moodle",
   "core.misc": "admin",
   "core.mod_assign": "assign/pluginname",
+  "core.mod_bigbluebuttonbn": "bigbluebuttonbn/pluginname",
   "core.mod_book": "book/pluginname",
   "core.mod_chat": "chat/pluginname",
   "core.mod_choice": "choice/pluginname",
