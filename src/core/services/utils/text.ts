@@ -339,7 +339,7 @@ export class CoreTextUtilsProvider {
 
         // Before stripping tags, add a space after the close tag of anything that is not obviously inline.
         // Also, br is a special case because it definitely delimits a word, but has no close tag.
-        text = text.replace(/(<\/(?!a>|b>|del>|em>|i>|ins>|s>|small>|strong>|sub>|sup>|u>)\w+>|<br>|<br\s*\/>)/ig, '$1 ');
+        text = text.replace(/(<\/(?!a>|b>|del>|em>|i>|ins>|s>|small>|span>|strong>|sub>|sup>|u>)\w+>|<br>|<br\s*\/>)/ig, '$1 ');
 
         // Now remove HTML tags.
         text = text.replace(/(<([^>]+)>)/ig, '');
