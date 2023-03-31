@@ -58,6 +58,7 @@ import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreUserSupport } from '@features/user/services/support';
 import { CoreErrorInfoComponent } from '@components/error-info/error-info';
 import { CorePlatform } from '@services/platform';
+import { AddonFilterMultilang2Handler } from '@addons/filter/multilang2/services/handlers/multilang2';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -1170,6 +1171,7 @@ export class CoreDomUtilsProvider {
         if (hasHTMLTags && !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.7')) {
             // Treat multilang.
             options.message = await AddonFilterMultilangHandler.filter(<string> options.message);
+            options.message = await AddonFilterMultilang2Handler.filter(<string> options.message);
         }
 
         const alertId = <string> Md5.hashAsciiStr((options.header || '') + '#' + (options.message || ''));
