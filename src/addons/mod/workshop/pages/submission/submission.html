@@ -33,7 +33,7 @@
             <ion-item class="ion-text-wrap" *ngIf="canEdit || canDelete">
                 <ion-label>
                     <ion-button expand="block" *ngIf="canEdit" (click)="editSubmission()">
-                        <ion-icon name="fas-pen-to-square" slot="start" aria-hidden="true"></ion-icon>
+                        <ion-icon name="fas-pen" slot="start" aria-hidden="true"></ion-icon>
                         {{ 'addon.mod_workshop.editsubmission' | translate }}
                     </ion-button>
                     <ion-button expand="block" *ngIf="!submission.deleted && canDelete" color="danger" (click)="deleteSubmission()">
