@@ -231,6 +231,12 @@ export class CoreIframeUtilsProvider {
      * @returns Window and Document.
      */
     getContentWindowAndDocument(element: CoreFrameElement): { window: Window | null; document: Document | null } {
+        const src = 'src' in element ? element.src : element.data;
+        if (!CoreUrlUtils.isLocalFileUrl(src)) {
+            // No permissions to access the iframe.
+            return { window: null, document: null };
+        }
+
         let contentWindow: Window | null = 'contentWindow' in element ? element.contentWindow : null;
         let contentDocument: Document | null = null;
 
