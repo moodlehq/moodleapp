@@ -131,11 +131,8 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
                     CoreH5PCore.DISPLAY_OPTION_DOWNLOAD + '=0',
                 );
 
-                // Get auto-login URL so the user is automatically authenticated if needed.
-                const url = await this.site.getAutoLoginUrl(src, false);
-
                 // Add the preventredirect param so the user can authenticate.
-                this.iframeSrc = CoreUrlUtils.addParamsToUrl(url, { preventredirect: false });
+                this.iframeSrc = CoreUrlUtils.addParamsToUrl(src, { preventredirect: false });
             }
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error loading H5P package.', true);
