@@ -216,7 +216,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
             const result = await this.sync();
 
             if (result.warnings.length) {
-                CoreDomUtils.showErrorModal(result.warnings[0]);
+                CoreDomUtils.showAlert(undefined, result.warnings[0]);
             }
 
             return this.hasSyncSucceed(result);

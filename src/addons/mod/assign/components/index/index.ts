@@ -372,7 +372,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
 
         if (syncEventData.warnings && syncEventData.warnings.length) {
             // Show warnings.
-            CoreDomUtils.showErrorModal(syncEventData.warnings[0]);
+            CoreDomUtils.showAlert(undefined, syncEventData.warnings[0]);
         }
 
         return true;

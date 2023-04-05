@@ -267,7 +267,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
     private showSyncWarnings(warnings: string[]): void {
         const message = CoreTextUtils.buildMessage(warnings);
         if (message) {
-            CoreDomUtils.showErrorModal(message);
+            CoreDomUtils.showAlert(undefined, message);
         }
     }
 
