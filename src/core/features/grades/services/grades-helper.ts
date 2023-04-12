@@ -693,7 +693,6 @@ export class CoreGradesHelperProvider {
                 row.itemmodule = modname;
                 row.iconAlt = CoreCourse.translateModuleName(row.itemmodule) || '';
                 row.image = await CoreCourseModuleDelegate.getModuleIconSrc(modname, modicon);
-                row.imageIsShape = await CoreCourseModuleDelegate.moduleIconIsShape(modname, modicon);
             }
         } else {
             if (row.rowspan && row.rowspan > 1) {
@@ -806,7 +805,6 @@ export type CoreGradesFormattedRowCommonData = {
     rowclass?: string;
     itemtype?: string;
     image?: string;
-    imageIsShape?: boolean;
     itemmodule?: string;
     iconAlt?: string;
     rowspan?: number;

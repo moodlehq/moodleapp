@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreConstants, ModPurpose } from '@/core/constants';
-import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChange } from '@angular/core';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreSites } from '@services/sites';
@@ -35,13 +35,11 @@ export class CoreModIconComponent implements OnInit, OnChanges {
     @Input() fallbackTranslation = ''; // Fallback translation string if cannot auto translate.
     @Input() componentId?: number; // Component Id for external icons.
     @Input() modicon?: string; // Module icon url or local url.
-    @Input() noFilter?: boolean; // Whether to disable filters.
     @Input() showAlt = true; // Show alt otherwise it's only presentation icon.
     @Input() purpose: ModPurpose = ModPurpose.MOD_PURPOSE_OTHER; // Purpose of the module.
 
-    @Output() failedLoading = new EventEmitter<void>();
-
     icon = '';
+    noFilter = false;
     modNameTranslated = '';
     isLocalUrl = true;
     linkIconWithComponent = false;
@@ -81,22 +79,22 @@ export class CoreModIconComponent implements OnInit, OnChanges {
             }
         }
 
-        this.setIcon();
+        await this.setIcon();
     }
 
     /**
      * @inheritdoc
      */
-    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
+    async ngOnChanges(changes: { [name: string]: SimpleChange }): Promise<void> {
         if (changes && changes.modicon && changes.modicon.previousValue !== undefined) {
-            this.setIcon();
+            await this.setIcon();
         }
     }
 
     /**
      * Set icon.
      */
-    setIcon(): void {
+    async setIcon(): Promise<void> {
         this.icon = this.modicon || this.icon;
         this.isLocalUrl = this.icon.startsWith(assetsPath);
 
@@ -108,6 +106,9 @@ export class CoreModIconComponent implements OnInit, OnChanges {
             !!this.componentId &&
             !this.isLocalUrl &&
             !this.icon.match('/theme/image.php/[^/]+/' + this.modname + '/[-0-9]*/');
+
+        const iconIsShape = await CoreCourseModuleDelegate.moduleIconIsShape(this.modname, this.icon);
+        this.noFilter = iconIsShape === false;
     }
 
     /**
@@ -126,8 +127,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
         }
 
         this.icon = path + moduleName + '.svg';
-
-        this.failedLoading.emit();
+        this.noFilter = false;
     }
 
 }

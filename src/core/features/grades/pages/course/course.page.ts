@@ -239,13 +239,4 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
         infiniteComplete && infiniteComplete();
     }
 
-    /**
-     * Handle row image failed loading.
-     *
-     * @param row Row data.
-     */
-    failedLoadingRowImage(row: CoreGradesFormattedTableRow): void {
-        delete row.imageIsShape;
-    }
-
 }
