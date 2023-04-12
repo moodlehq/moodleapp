@@ -45,7 +45,7 @@ Feature: Test basic usage of login in app
     When I launch the app
     And I set the field "Your site" to "wrongsiteaddress" in the app
     And I press "Connect to your site" in the app
-    Then I should find "Site not found" in the app
+    Then I should find "Can't connect to site" in the app
 
   Scenario: Add a non existing account from accounts switcher
     When I enter the app
@@ -56,7 +56,7 @@ Feature: Test basic usage of login in app
     And I wait the app to restart
     And I set the field "Your site" to "wrongsiteaddress" in the app
     And I press "Connect to your site" in the app
-    Then I should find "Site not found" in the app
+    Then I should find "Can't connect to site" in the app
 
   Scenario: Log out from the app
     Given I entered the app as "student1"
