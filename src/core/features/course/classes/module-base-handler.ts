@@ -86,7 +86,7 @@ export class CoreModuleHandlerBase implements Partial<CoreCourseModuleHandler> {
             return modicon;
         }
 
-        return CoreCourse.getModuleIconSrc(module.name, modicon);
+        return CoreCourse.getModuleIconSrc(module.modname, modicon);
     }
 
 }
