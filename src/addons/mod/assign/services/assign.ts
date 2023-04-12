@@ -1559,6 +1559,7 @@ export type AddonModAssignParticipant = {
     customfields?: { // User custom fields (also known as user profile fields).
         type: string; // The type of the custom field - text field, checkbox...
         value: string; // The value of the custom field.
+        displayvalue: string; // @since 4.2.Formatted value of the custom field.
         name: string; // The name of the custom field.
         shortname: string; // The shortname of the custom field - to be able to build the field class in the code.
     }[];

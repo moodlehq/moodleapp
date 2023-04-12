@@ -69,7 +69,7 @@ export abstract class CoreUserProfileFieldBaseComponent implements OnInit {
      * @param field Field to render.
      */
     protected initForNonEdit(field: CoreUserProfileField): void {
-        this.value = field.value;
+        this.value = field.displayvalue ?? field.value;
     }
 
     /**
