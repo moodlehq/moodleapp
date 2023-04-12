@@ -402,7 +402,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
                 }
 
                 // Retake hasn't changed, show the warning and finish the retake in offline.
-                CoreDomUtils.showErrorModal(result.warnings[0]);
+                CoreDomUtils.showAlert(undefined, result.warnings[0]);
             }
 
             this.offline = false;

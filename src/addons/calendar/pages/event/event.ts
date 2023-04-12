@@ -328,7 +328,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         try {
             const result = await AddonCalendarSync.syncEvents();
             if (result.warnings && result.warnings.length) {
-                CoreDomUtils.showErrorModal(result.warnings[0]);
+                CoreDomUtils.showAlert(undefined, result.warnings[0]);
             }
 
             if (result.deleted && result.deleted.indexOf(this.eventId) != -1) {

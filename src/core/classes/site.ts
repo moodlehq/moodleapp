@@ -28,6 +28,7 @@ import {
     CoreWSExternalWarning,
     CoreWSUploadFileResult,
     CoreWSPreSetsSplitRequest,
+    CoreWSTypeExpected,
 } from '@services/ws';
 import { CoreDomUtils, ToastDuration } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
@@ -2571,7 +2572,7 @@ export type CoreSiteWSPreSets = {
     /**
      * Defaults to 'object'. Use it when you expect a type that's not an object|array.
      */
-    typeExpected?: string;
+    typeExpected?: CoreWSTypeExpected;
 
     /**
      * Wehther a pending request in the queue matching the same function and arguments can be reused instead of adding

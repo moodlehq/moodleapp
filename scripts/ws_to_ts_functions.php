@@ -18,6 +18,14 @@
  * Helper functions for converting a Moodle WS structure to a TS type.
  */
 
+use core_external\external_api;
+use core_external\external_function_parameters;
+use core_external\external_value;
+use core_external\external_warnings;
+use core_external\external_files;
+use core_external\external_single_structure;
+use core_external\external_multiple_structure;
+
 /**
  * Get the structure of a WS params or returns.
  */

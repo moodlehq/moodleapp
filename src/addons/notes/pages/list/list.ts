@@ -290,7 +290,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
         const message = CoreTextUtils.buildMessage(warnings);
 
         if (message) {
-            CoreDomUtils.showErrorModal(message);
+            CoreDomUtils.showAlert(undefined, message);
         }
     }
 

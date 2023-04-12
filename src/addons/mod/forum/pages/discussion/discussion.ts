@@ -611,7 +611,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
                 .syncDiscussionReplies(this.discussionId)
                 .then((result) => {
                     if (result.warnings && result.warnings.length) {
-                        CoreDomUtils.showErrorModal(result.warnings[0]);
+                        CoreDomUtils.showAlert(undefined, result.warnings[0]);
                     }
 
                     if (result && result.updated && this.forumId) {
@@ -632,7 +632,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
                 .syncRatings(this.cmId, this.discussionId)
                 .then((result) => {
                     if (result.warnings && result.warnings.length) {
-                        CoreDomUtils.showErrorModal(result.warnings[0]);
+                        CoreDomUtils.showAlert(undefined, result.warnings[0]);
                     }
 
                     return;

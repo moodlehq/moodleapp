@@ -200,7 +200,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
             try {
                 const result = await AddonCalendarSync.syncEvents();
                 if (result.warnings && result.warnings.length) {
-                    CoreDomUtils.showErrorModal(result.warnings[0]);
+                    CoreDomUtils.showAlert(undefined, result.warnings[0]);
                 }
 
                 if (result.updated) {

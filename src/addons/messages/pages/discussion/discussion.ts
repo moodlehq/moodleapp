@@ -131,7 +131,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
                 // Show first warning if any.
                 if (data.warnings && data.warnings[0]) {
-                    CoreDomUtils.showErrorModal(data.warnings[0]);
+                    CoreDomUtils.showAlert(undefined, data.warnings[0]);
                 }
             }
         }, this.siteId);
@@ -252,7 +252,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
         try {
             const syncResult = await AddonMessagesSync.syncDiscussion(this.conversationId, this.userId);
             if (syncResult.warnings && syncResult.warnings[0]) {
-                CoreDomUtils.showErrorModal(syncResult.warnings[0]);
+                CoreDomUtils.showAlert(undefined, syncResult.warnings[0]);
             }
         } catch {
             // Ignore errors;

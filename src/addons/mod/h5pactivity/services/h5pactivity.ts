@@ -28,6 +28,8 @@ import { CoreError } from '@classes/errors/error';
 import { AddonModH5PActivityAutoSyncData, AddonModH5PActivitySyncProvider } from './h5pactivity-sync';
 import { CoreTime } from '@singletons/time';
 
+export const MOD_H5PACTIVITY_STATE_ID = 'state';
+
 const ROOT_CACHE_KEY = 'mmaModH5PActivity:';
 
 /**
@@ -528,7 +530,10 @@ export class AddonModH5PActivityProvider {
         const currentActivity = response.h5pactivities.find((h5pActivity) => h5pActivity[key] == value);
 
         if (currentActivity) {
-            return currentActivity;
+            return {
+                ...currentActivity,
+                ...response.h5pglobalsettings,
+            };
         }
 
         throw new CoreError(Translate.instant('core.course.modulenotfound'));
@@ -757,6 +762,17 @@ export class AddonModH5PActivityProvider {
     }
 
     /**
+     * Check if save state is enabled for a certain activity.
+     *
+     * @param h5pActivity Activity.
+     * @param accessInfo Access info.
+     * @returns Whether save state is enabled.
+     */
+    isSaveStateEnabled(h5pActivity: AddonModH5PActivityData, accessInfo?: AddonModH5PActivityAccessInfo): boolean {
+        return !!(h5pActivity.enabletracking && h5pActivity.enablesavestate && (!accessInfo || accessInfo.cansubmit));
+    }
+
+    /**
      * Report an H5P activity as being viewed.
      *
      * @param id H5P activity ID.
@@ -822,7 +838,7 @@ export const AddonModH5PActivity = makeSingleton(AddonModH5PActivityProvider);
 /**
  * Basic data for an H5P activity, exported by Moodle class h5pactivity_summary_exporter.
  */
-export type AddonModH5PActivityData = {
+export type AddonModH5PActivityWSData = {
     id: number; // The primary key of the record.
     course: number; // Course id this h5p activity is part of.
     name: string; // The name of the activity module instance.
@@ -850,6 +866,19 @@ export type AddonModH5PActivityData = {
 };
 
 /**
+ * Basic data for an H5P activity, with some calculated data.
+ */
+export type AddonModH5PActivityData = AddonModH5PActivityWSData & Partial<AddonModH5pactivityGlobalSettings>;
+
+/**
+ * Global settings for H5P activities.
+ */
+export type AddonModH5pactivityGlobalSettings = {
+    enablesavestate: boolean; // Whether saving state is enabled.
+    savestatefreq?: number; // How often (in seconds) the state is saved.
+};
+
+/**
  * Params of mod_h5pactivity_get_h5pactivities_by_courses WS.
  */
 export type AddonModH5pactivityGetByCoursesWSParams = {
@@ -860,7 +889,8 @@ export type AddonModH5pactivityGetByCoursesWSParams = {
  * Data returned by mod_h5pactivity_get_h5pactivities_by_courses WS.
  */
 export type AddonModH5pactivityGetByCoursesWSResponse = {
-    h5pactivities: AddonModH5PActivityData[];
+    h5pactivities: AddonModH5PActivityWSData[];
+    h5pglobalsettings?: AddonModH5pactivityGlobalSettings;
     warnings?: CoreWSExternalWarning[];
 };
 
@@ -1136,12 +1166,34 @@ declare module '@singletons/events' {
 /**
  * Data to be sent using xAPI.
  */
-export type AddonModH5PActivityXAPIData = {
+export type AddonModH5PActivityXAPIBasicData = {
     action: string;
     component: string;
     context: string;
     environment: string;
+};
+
+/**
+ * Statements data to be sent using xAPI.
+ */
+export type AddonModH5PActivityXAPIStatementsData = AddonModH5PActivityXAPIBasicData & {
     statements: AddonModH5PActivityStatement[];
+};
+
+/**
+ * States data to be sent using xAPI.
+ */
+export type AddonModH5PActivityXAPIStateData = AddonModH5PActivityXAPIBasicData & {
+    activityId: string;
+    agent: Record<string, unknown>;
+    stateId: string;
+};
+
+/**
+ * Post state data to be sent using xAPI.
+ */
+export type AddonModH5PActivityXAPIPostStateData = AddonModH5PActivityXAPIStateData & {
+    stateData: string;
 };
 
 /**
@@ -1171,4 +1223,5 @@ export type AddonModH5PActivityStatement = {
         id: string;
         display: Record<string, string>;
     };
+    timestamp?: string;
 };
