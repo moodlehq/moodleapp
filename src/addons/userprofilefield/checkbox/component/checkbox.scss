@@ -1,0 +1,9 @@
+:host {
+    --text-overflow: initial;
+    --white-space: normal;
+
+    .label-text {
+        text-overflow: var(--text-overflow);
+        white-space: var(--white-space);
+    }
+}
