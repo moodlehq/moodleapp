@@ -32,7 +32,9 @@ import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreDom } from '@singletons/dom';
 import { CorePlatform } from '@services/platform';
+import { CoreUrl } from '@singletons/url';
 
+const MOODLE_SITE_URL_PREFIX = 'url-';
 const MOODLE_VERSION_PREFIX = 'version-';
 const MOODLEAPP_VERSION_PREFIX = 'moodleapp-';
 
@@ -58,7 +60,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             CoreLang.clearCustomStrings();
 
             // Remove version classes from body.
-            this.removeVersionClass(MOODLE_VERSION_PREFIX);
+            this.removeModeClasses([MOODLE_VERSION_PREFIX, MOODLE_SITE_URL_PREFIX]);
 
             // Go to sites page when user is logged out.
             await CoreNavigator.navigate('/login/sites', { reset: true });
@@ -113,31 +115,42 @@ export class AppComponent implements OnInit, AfterViewInit {
                 const info = site.getInfo();
                 if (info) {
                     // Add version classes to body.
-                    this.removeVersionClass(MOODLE_VERSION_PREFIX);
+                    this.removeModeClasses([MOODLE_VERSION_PREFIX, MOODLE_SITE_URL_PREFIX]);
+
                     this.addVersionClass(MOODLE_VERSION_PREFIX, CoreSites.getReleaseNumber(info.release || ''));
+                    this.addSiteUrlClass(info.siteurl);
                 }
             }
 
             this.loadCustomStrings();
         });
 
-        CoreEvents.on(CoreEvents.SITE_UPDATED, (data) => {
-            if (data.siteId == CoreSites.getCurrentSiteId()) {
+        // Site config is checked in login.
+        CoreEvents.on(CoreEvents.LOGIN_SITE_CHECKED, (data) => {
+            this.addSiteUrlClass(data.config.httpswwwroot);
+        });
+
+        CoreEvents.on(CoreEvents.SITE_UPDATED, async (data) => {
+            if (data.siteId === CoreSites.getCurrentSiteId()) {
                 this.loadCustomStrings();
 
                 // Add version classes to body.
-                this.removeVersionClass(MOODLE_VERSION_PREFIX);
+                this.removeModeClasses([MOODLE_VERSION_PREFIX, MOODLE_SITE_URL_PREFIX]);
+
                 this.addVersionClass(MOODLE_VERSION_PREFIX, CoreSites.getReleaseNumber(data.release || ''));
+                this.addSiteUrlClass(data.siteurl);
             }
         });
 
         CoreEvents.on(CoreEvents.SITE_ADDED, (data) => {
-            if (data.siteId == CoreSites.getCurrentSiteId()) {
+            if (data.siteId === CoreSites.getCurrentSiteId()) {
                 this.loadCustomStrings();
 
                 // Add version classes to body.
-                this.removeVersionClass(MOODLE_VERSION_PREFIX);
+                this.removeModeClasses([MOODLE_VERSION_PREFIX, MOODLE_SITE_URL_PREFIX]);
+
                 this.addVersionClass(MOODLE_VERSION_PREFIX, CoreSites.getReleaseNumber(data.release || ''));
+                this.addSiteUrlClass(data.siteurl);
             }
         });
 
@@ -232,7 +245,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     /**
-     * Convenience function to add version to body classes.
+     * Convenience function to add version to html classes.
      *
      * @param prefix Prefix to add to the class.
      * @param release Current release number of the site.
@@ -249,18 +262,59 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
 
     /**
-     * Convenience function to remove all version classes form body.
+     * Convenience function to remove all mode classes form body.
      *
-     * @param prefix Prefix of to the class.
+     * @param prefixes Prefixes of the class mode to be removed.
      */
-    protected removeVersionClass(prefix: string): void {
-        for (const versionClass of CoreDomUtils.getModeClasses()) {
-            if (!versionClass.startsWith(prefix)) {
+    protected removeModeClasses(prefixes: string[]): void {
+        for (const modeClass of CoreDomUtils.getModeClasses()) {
+            if (!prefixes.some((prefix) => modeClass.startsWith(prefix))) {
                 continue;
             }
 
-            CoreDomUtils.toggleModeClass(versionClass, false);
+            CoreDomUtils.toggleModeClass(modeClass, false);
         }
+    }
+
+    /**
+     * Converts the provided URL into a CSS class that be used within the page.
+     * This is primarily used to add the siteurl to the body tag as a CSS class.
+     * Extracted from LMS url_to_class_name function.
+     *
+     * @param url Url.
+     * @returns Class name
+     */
+    protected urlToClassName(url: string): string {
+        const parsedUrl = CoreUrl.parse(url);
+
+        if (!parsedUrl) {
+            return '';
+        }
+
+        let className = parsedUrl.domain?.replace('.', '-') || '';
+
+        if (parsedUrl.port) {
+            className += `--${parsedUrl.port}`;
+        }
+        if (parsedUrl.path) {
+            const leading = new RegExp('^/+');
+            const trailing = new RegExp('/+$');
+            const path = parsedUrl.path.replace(leading, '').replace(trailing, '');
+            if (path) {
+                className += '--' + path.replace('/', '-');
+            }
+        }
+
+        return className;
+    }
+
+    /**
+     * Convenience function to add site url to html classes.
+     */
+    protected addSiteUrlClass(siteUrl: string): void {
+        const className = this.urlToClassName(siteUrl);
+
+        CoreDomUtils.toggleModeClass(MOODLE_SITE_URL_PREFIX + className, true);
     }
 
 }
