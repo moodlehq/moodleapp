@@ -752,7 +752,9 @@ export class CoreWSProvider {
                 throw this.createHttpError(error, error.status);
             }
 
-            throw new CoreError(Translate.instant('core.serverconnection'));
+            throw new CoreError(Translate.instant('core.serverconnection', {
+                details: CoreTextUtils.getErrorMessageFromError(error) ?? 'Unknown error',
+            }));
         });
     }
 
