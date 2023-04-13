@@ -436,11 +436,7 @@ export class CoreLoginSitePage implements OnInit {
         ].filter(button => !!button);
 
         const alertElement = await CoreDomUtils.showAlertWithOptions({
-            header: errorTitle ?? (
-                siteExists
-                    ? Translate.instant('core.cannotconnect')
-                    : Translate.instant('core.sitenotfound')
-            ),
+            header: errorTitle ?? Translate.instant('core.cannotconnect'),
             message: errorMessage ?? Translate.instant('core.sitenotfoundhelp'),
             buttons: buttons as AlertButton[],
         });

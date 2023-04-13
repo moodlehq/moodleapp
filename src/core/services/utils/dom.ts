@@ -1371,7 +1371,7 @@ export class CoreDomUtilsProvider {
         if (typeof error !== 'string' && 'title' in error && error.title) {
             alertOptions.header = error.title || undefined;
         } else if (message === Translate.instant('core.sitenotfoundhelp')) {
-            alertOptions.header = Translate.instant('core.sitenotfound');
+            alertOptions.header = Translate.instant('core.cannotconnect');
         } else if (this.isSiteUnavailableError(message)) {
             alertOptions.header = CoreSites.isLoggedIn()
                 ? Translate.instant('core.connectionlost')
