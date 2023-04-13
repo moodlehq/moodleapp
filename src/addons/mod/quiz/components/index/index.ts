@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { CoreConstants } from '@/core/constants';
+import { safeNumber, SafeNumber } from '@/core/utils/types';
 import { Component, OnDestroy, OnInit, Optional } from '@angular/core';
 
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
@@ -88,7 +89,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     protected attemptAccessInfo?: AddonModQuizGetAttemptAccessInformationWSResponse; // Last attempt access info.
     protected moreAttempts = false; // Whether user can create/continue attempts.
     protected options?: AddonModQuizCombinedReviewOptions; // Combined review options.
-    protected gradebookData?: { grade?: number; feedback?: string }; // The gradebook grade and feedback.
+    protected gradebookData?: { grade?: SafeNumber; feedback?: string }; // The gradebook grade and feedback.
     protected overallStats = false; // Equivalent to overallstats in mod_quiz_view_object in Moodle.
     protected finishedObserver?: CoreEventObserver; // It will observe attempt finished events.
     protected hasPlayed = false; // Whether the user has gone to the quiz player (attempted).
@@ -633,8 +634,10 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             const data = await AddonModQuiz.getGradeFromGradebook(this.courseId, this.module.id);
 
             if (data) {
+                const grade = data.graderaw ?? (data.grade !== undefined && data.grade !== null ? Number(data.grade) : undefined);
+
                 this.gradebookData = {
-                    grade: data.graderaw ?? (data.grade !== undefined && data.grade !== null ? Number(data.grade) : undefined),
+                    grade: safeNumber(grade),
                     feedback: data.feedback,
                 };
             }
