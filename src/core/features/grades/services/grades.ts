@@ -21,6 +21,7 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreSiteWSPreSets } from '@classes/site';
 import { CoreError } from '@classes/errors/error';
+import { SafeNumber } from '@/core/utils/types';
 
 /**
  * Service to provide grade functionalities.
@@ -475,7 +476,7 @@ export type CoreGradesGradeItem = {
     weightraw?: number; // Weight raw.
     weightformatted?: string; // Weight.
     status?: string; // Status.
-    graderaw?: number; // Grade raw.
+    graderaw?: SafeNumber; // Grade raw.
     gradedatesubmitted?: number; // Grade submit date.
     gradedategraded?: number; // Grade graded date.
     gradehiddenbydate?: boolean; // Grade hidden by date?.

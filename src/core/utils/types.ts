@@ -51,3 +51,43 @@ export type Pretty<T> = T extends infer U ? {[K in keyof U]: U[K]} : never;
  * @see https://www.typescriptlang.org/docs/handbook/2/conditional-types.html#distributive-conditional-types
  */
 export type OmitUnion<T, A extends keyof T> = T extends '' ? never : Omit<T, A>;
+
+/**
+ * Helper to create branded types.
+ *
+ * A branded type can be used to mark other types as having passed some validations.
+ *
+ * @see https://twitter.com/mattpocockuk/status/1625173884885401600
+ */
+export type Brand<T, TBrand extends string> = T & { [brand]: TBrand };
+
+declare const brand: unique symbol;
+
+/**
+ * Number type excluding NaN values.
+ */
+export type SafeNumber = Brand<number, 'SafeNumber'>;
+
+/**
+ * Check whether a given number is safe to use (does not equal undefined nor NaN).
+ *
+ * @param value Number value.
+ * @returns Whether the number is safe.
+ */
+export function isSafeNumber(value?: unknown): value is SafeNumber {
+    return typeof value === 'number' && !isNaN(value);
+}
+
+/**
+ * Make sure that a given number is safe to use, and convert it to undefined otherwise.
+ *
+ * @param value Number value.
+ * @returns Branded number value if safe, undefined otherwise.
+ */
+export function safeNumber(value?: unknown): SafeNumber | undefined {
+    if (!isSafeNumber(value)) {
+        return undefined;
+    }
+
+    return value;
+}
