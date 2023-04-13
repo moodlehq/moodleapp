@@ -25,6 +25,7 @@ import { AddonFilterGlossaryModule } from './glossary/glossary.module';
 import { AddonFilterMathJaxLoaderModule } from './mathjaxloader/mathjaxloader.module';
 import { AddonFilterMediaPluginModule } from './mediaplugin/mediaplugin.module';
 import { AddonFilterMultilangModule } from './multilang/multilang.module';
+import { AddonFilterMultilang2Module } from './multilang2/multilang2.module';
 import { AddonFilterTexModule } from './tex/tex.module';
 import { AddonFilterTidyModule } from './tidy/tidy.module';
 import { AddonFilterUrlToLinkModule } from './urltolink/urltolink.module';
@@ -42,6 +43,7 @@ import { AddonFilterUrlToLinkModule } from './urltolink/urltolink.module';
         AddonFilterMathJaxLoaderModule,
         AddonFilterMediaPluginModule,
         AddonFilterMultilangModule,
+        AddonFilterMultilang2Module,
         AddonFilterTexModule,
         AddonFilterTidyModule,
         AddonFilterUrlToLinkModule,
