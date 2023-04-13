@@ -1,9 +1,19 @@
+@import "~theme/globals";
+
 :host {
     --text-overflow: initial;
     --white-space: normal;
 
-    .label-text {
-        text-overflow: var(--text-overflow);
-        white-space: var(--white-space);
+    .item-heading {
+        white-space: normal;
+    }
+
+    ion-label {
+        @include padding-horizontal(null, .5rem);
+
+        .label-text {
+            text-overflow: var(--text-overflow);
+            white-space: var(--white-space);
+        }
     }
 }
