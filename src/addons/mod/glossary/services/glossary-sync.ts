@@ -31,13 +31,13 @@ import { AddonModGlossaryOffline, AddonModGlossaryOfflineEntry } from './glossar
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreFileEntry } from '@services/file-helper';
 
+export const GLOSSARY_AUTO_SYNCED = 'addon_mod_glossary_auto_synced';
+
 /**
  * Service to sync glossaries.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProvider<AddonModGlossarySyncResult> {
-
-    static readonly AUTO_SYNCED = 'addon_mod_glossary_autom_synced';
 
     protected componentTranslatableString = 'glossary';
 
@@ -50,10 +50,9 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
      *
      * @param siteId Site ID to sync. If not defined, sync all sites.
      * @param force Wether to force sync not depending on last execution.
-     * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
-    syncAllGlossaries(siteId?: string, force?: boolean): Promise<void> {
-        return this.syncOnSites('all glossaries', (siteId) => this.syncAllGlossariesFunc(!!force, siteId), siteId);
+    async syncAllGlossaries(siteId?: string, force?: boolean): Promise<void> {
+        await this.syncOnSites('all glossaries', (siteId) => this.syncAllGlossariesFunc(!!force, siteId), siteId);
     }
 
     /**
@@ -61,7 +60,6 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
      *
      * @param force Wether to force sync not depending on last execution.
      * @param siteId Site ID to sync.
-     * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     protected async syncAllGlossariesFunc(force: boolean, siteId: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -73,14 +71,13 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
     }
 
     /**
-     * Sync entried of all glossaries on a site.
+     * Sync entries of all glossaries on a site.
      *
      * @param force Wether to force sync not depending on last execution.
      * @param siteId Site ID to sync.
-     * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     protected async syncAllGlossariesEntries(force: boolean, siteId: string): Promise<void> {
-        const entries = await AddonModGlossaryOffline.getAllNewEntries(siteId);
+        const entries = await AddonModGlossaryOffline.getAllOfflineEntries(siteId);
 
         // Do not sync same glossary twice.
         const treated: Record<number, boolean> = {};
@@ -98,7 +95,7 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
 
             if (result?.updated) {
                 // Sync successful, send event.
-                CoreEvents.trigger(AddonModGlossarySyncProvider.AUTO_SYNCED, {
+                CoreEvents.trigger(GLOSSARY_AUTO_SYNCED, {
                     glossaryId: entry.glossaryid,
                     userId: entry.userid,
                     warnings: result.warnings,
@@ -180,7 +177,7 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
 
         // Get offline responses to be sent.
         const entries = await CoreUtils.ignoreErrors(
-            AddonModGlossaryOffline.getGlossaryNewEntries(glossaryId, siteId, userId),
+            AddonModGlossaryOffline.getGlossaryOfflineEntries(glossaryId, siteId, userId),
             <AddonModGlossaryOfflineEntry[]> [],
         );
 
@@ -285,11 +282,10 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
      * @param concept Glossary entry concept.
      * @param timeCreated Time to allow duplicated entries.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when deleted.
      */
     protected async deleteAddEntry(glossaryId: number, concept: string, timeCreated: number, siteId?: string): Promise<void> {
         await Promise.all([
-            AddonModGlossaryOffline.deleteNewEntry(glossaryId, concept, timeCreated, siteId),
+            AddonModGlossaryOffline.deleteOfflineEntry(glossaryId, timeCreated, siteId),
             AddonModGlossaryHelper.deleteStoredFiles(glossaryId, concept, timeCreated, siteId),
         ]);
     }
@@ -341,15 +337,28 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
 
 export const AddonModGlossarySync = makeSingleton(AddonModGlossarySyncProvider);
 
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [GLOSSARY_AUTO_SYNCED]: AddonModGlossaryAutoSyncedData;
+    }
+
+}
+
 /**
  * Data returned by a glossary sync.
  */
 export type AddonModGlossarySyncResult = CoreSyncResult;
 
 /**
- * Data passed to AUTO_SYNCED event.
+ * Data passed to GLOSSARY_AUTO_SYNCED event.
  */
-export type AddonModGlossaryAutoSyncData = {
+export type AddonModGlossaryAutoSyncedData = {
     glossaryId: number;
     userId: number;
     warnings: string[];

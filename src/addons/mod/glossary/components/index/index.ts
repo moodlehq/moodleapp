@@ -26,6 +26,7 @@ import { CoreRatingProvider } from '@features/rating/services/rating';
 import { CoreRatingOffline } from '@features/rating/services/rating-offline';
 import { CoreRatingSyncProvider } from '@features/rating/services/rating-sync';
 import { IonContent } from '@ionic/angular';
+import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
@@ -42,12 +43,15 @@ import {
     AddonModGlossaryEntryWithCategory,
     AddonModGlossaryGlossary,
     AddonModGlossaryProvider,
+    GLOSSARY_ENTRY_ADDED,
+    GLOSSARY_ENTRY_DELETED,
+    GLOSSARY_ENTRY_UPDATED,
 } from '../../services/glossary';
 import { AddonModGlossaryOfflineEntry } from '../../services/glossary-offline';
 import {
-    AddonModGlossaryAutoSyncData,
-    AddonModGlossarySyncProvider,
+    AddonModGlossaryAutoSyncedData,
     AddonModGlossarySyncResult,
+    GLOSSARY_AUTO_SYNCED,
 } from '../../services/glossary-sync';
 import { AddonModGlossaryModuleHandlerService } from '../../services/handlers/module';
 import { AddonModGlossaryPrefetchHandler } from '../../services/handlers/prefetch';
@@ -59,6 +63,7 @@ import { AddonModGlossaryModePickerPopoverComponent } from '../mode-picker/mode-
 @Component({
     selector: 'addon-mod-glossary-index',
     templateUrl: 'addon-mod-glossary-index.html',
+    styleUrls: ['index.scss'],
 })
 export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivityComponent
     implements OnInit, AfterViewInit, OnDestroy {
@@ -75,13 +80,11 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
 
     protected hasOfflineEntries = false;
     protected hasOfflineRatings = false;
-    protected syncEventName = AddonModGlossarySyncProvider.AUTO_SYNCED;
-    protected addEntryObserver?: CoreEventObserver;
+    protected syncEventName = GLOSSARY_AUTO_SYNCED;
     protected fetchedEntriesCanLoadMore = false;
     protected fetchedEntries: AddonModGlossaryEntry[] = [];
     protected sourceUnsubscribe?: () => void;
-    protected ratingOfflineObserver?: CoreEventObserver;
-    protected ratingSyncObserver?: CoreEventObserver;
+    protected observers?: CoreEventObserver[];
     protected checkCompletionAfterLog = false; // Use CoreListItemsManager log system instead.
 
     getDivider?: (entry: AddonModGlossaryEntry) => string;
@@ -136,30 +139,48 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
         });
 
         // When an entry is added, we reload the data.
-        this.addEntryObserver = CoreEvents.on(AddonModGlossaryProvider.ADD_ENTRY_EVENT, (data) => {
-            if (this.glossary && this.glossary.id === data.glossaryId) {
-                this.showLoadingAndRefresh(false);
+        this.observers = [
+            CoreEvents.on(GLOSSARY_ENTRY_ADDED, ({ glossaryId }) => {
+                if (this.glossary?.id !== glossaryId) {
+                    return;
+                }
 
                 // Check completion since it could be configured to complete once the user adds a new entry.
                 this.checkCompletion();
-            }
-        });
+
+                this.showLoadingAndRefresh(false);
+            }),
+            CoreEvents.on(GLOSSARY_ENTRY_UPDATED, ({ glossaryId }) => {
+                if (this.glossary?.id !== glossaryId) {
+                    return;
+                }
+
+                this.showLoadingAndRefresh(false);
+            }),
+            CoreEvents.on(GLOSSARY_ENTRY_DELETED, ({ glossaryId }) => {
+                if (this.glossary?.id !== glossaryId) {
+                    return;
+                }
+
+                this.showLoadingAndRefresh(false);
+            }),
+        ];
 
         // Listen for offline ratings saved and synced.
-        this.ratingOfflineObserver = CoreEvents.on(CoreRatingProvider.RATING_SAVED_EVENT, (data) => {
+        this.observers.push(CoreEvents.on(CoreRatingProvider.RATING_SAVED_EVENT, (data) => {
             if (this.glossary && data.component == 'mod_glossary' && data.ratingArea == 'entry' && data.contextLevel == 'module'
                     && data.instanceId == this.glossary.coursemodule) {
                 this.hasOfflineRatings = true;
                 this.hasOffline = true;
             }
-        });
-        this.ratingSyncObserver = CoreEvents.on(CoreRatingSyncProvider.SYNCED_EVENT, (data) => {
+        }));
+        this.observers.push(CoreEvents.on(CoreRatingSyncProvider.SYNCED_EVENT, (data) => {
             if (this.glossary && data.component == 'mod_glossary' && data.ratingArea == 'entry' && data.contextLevel == 'module'
                     && data.instanceId == this.glossary.coursemodule) {
                 this.hasOfflineRatings = false;
                 this.hasOffline = this.hasOfflineEntries;
             }
-        });
+        }));
     }
 
     /**
@@ -227,7 +248,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
      * @param syncEventData Data receiven on sync observer.
      * @returns True if refresh is needed, false otherwise.
      */
-    protected isRefreshSyncNeeded(syncEventData: AddonModGlossaryAutoSyncData): boolean {
+    protected isRefreshSyncNeeded(syncEventData: AddonModGlossaryAutoSyncedData): boolean {
         return !!this.glossary && syncEventData.glossaryId == this.glossary.id &&
                 syncEventData.userId == CoreSites.getCurrentSiteUserId();
     }
@@ -388,7 +409,11 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
      * Opens new entry editor.
      */
     openNewEntry(): void {
-        this.entries?.select(AddonModGlossaryEntriesSource.NEW_ENTRY);
+        CoreNavigator.navigate(
+            this.splitView.outletActivated
+                ? '../new'
+                : './entry/new',
+        );
     }
 
     /**
@@ -410,9 +435,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     ngOnDestroy(): void {
         super.ngOnDestroy();
 
-        this.addEntryObserver?.off();
-        this.ratingOfflineObserver?.off();
-        this.ratingSyncObserver?.off();
+        this.observers?.forEach(observer => observer.off());
         this.sourceUnsubscribe?.call(null);
         this.entries?.destroy();
     }

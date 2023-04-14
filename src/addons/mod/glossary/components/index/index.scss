@@ -1,0 +1,13 @@
+:host {
+
+    .addon-mod-glossary-index--offline-entries {
+        border-bottom: 1px solid var(--stroke);
+    }
+
+    .addon-mod-glossary-index--offline-entry {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+}

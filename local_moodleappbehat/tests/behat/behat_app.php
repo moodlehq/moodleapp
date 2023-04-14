@@ -44,27 +44,21 @@ class behat_app extends behat_app_helper {
         ],
     ];
 
+    protected $featurepath = '';
     protected $windowsize = '360x720';
 
     /**
      * @BeforeScenario
      */
     public function before_scenario(ScenarioScope $scope) {
-        if (!$scope->getFeature()->hasTag('app')) {
+        $feature = $scope->getFeature();
+
+        if (!$feature->hasTag('app')) {
             return;
         }
 
-        global $CFG;
-
-        $performanceLogs = $CFG->behat_profiles['default']['capabilities']['extra_capabilities']['goog:loggingPrefs']['performance'] ?? null;
-
-        if ($performanceLogs !== 'ALL') {
-            return;
-        }
-
-        // Enable DB Logging only for app tests with performance logs activated.
-        $this->getSession()->visit($this->get_app_url() . '/assets/env.json');
-        $this->execute_script("document.cookie = 'MoodleAppDBLoggingEnabled=true;path=/';");
+        $this->featurepath = dirname($feature->getFile());
+        $this->configure_performance_logs();
     }
 
     /**
@@ -87,6 +81,23 @@ class behat_app extends behat_app_helper {
         }
 
         $this->enter_site();
+    }
+
+    /**
+     * Configure performance logs.
+     */
+    protected function configure_performance_logs() {
+        global $CFG;
+
+        $performanceLogs = $CFG->behat_profiles['default']['capabilities']['extra_capabilities']['goog:loggingPrefs']['performance'] ?? null;
+
+        if ($performanceLogs !== 'ALL') {
+            return;
+        }
+
+        // Enable DB Logging only for app tests with performance logs activated.
+        $this->getSession()->visit($this->get_app_url() . '/assets/env.json');
+        $this->execute_script("document.cookie = 'MoodleAppDBLoggingEnabled=true;path=/';");
     }
 
     /**
@@ -776,6 +787,35 @@ class behat_app extends behat_app_helper {
         foreach ($datahash as $locator => $value) {
             $this->i_set_the_field_in_the_app($locator, $value);
         }
+    }
+
+    /**
+     * Uploads a file to a file input, the file path should be relative to a fixtures folder next to the feature file.
+     * The ìnput locator can match a container with a file input inside, it doesn't have to be the input itself.
+     *
+     * @Given /^I upload "((?:[^"]|\\")+)" to (".+") in the app$/
+     * @param string $filename
+     * @param string $inputlocator
+     */
+    public function i_upload_a_file_in_the_app(string $filename, string $inputlocator) {
+        $filepath = str_replace('/', DIRECTORY_SEPARATOR, "{$this->featurepath}/fixtures/$filename");
+        $inputlocator = $this->parse_element_locator($inputlocator);
+
+        $id = $this->spin(function() use ($inputlocator) {
+            $result = $this->runtime_js("getFileInputId($inputlocator)");
+
+            if (str_starts_with($result, 'ERROR')) {
+                throw new DriverException('Error finding input - ' . $result);
+            }
+
+            return $result;
+        });
+
+        $this->wait_for_pending_js();
+
+        $fileinput = $this ->getSession()->getPage()->findById($id);
+
+        $fileinput->attachFile($filepath);
     }
 
     /**

@@ -421,7 +421,7 @@ export class TestingBehatDomUtilsService {
      */
     findElementBasedOnText(
         locator: TestingBehatElementLocator,
-        options: TestingBehatFindOptions,
+        options: TestingBehatFindOptions = {},
     ): HTMLElement | undefined {
         return this.findElementsBasedOnText(locator, options)[0];
     }
@@ -437,7 +437,7 @@ export class TestingBehatDomUtilsService {
         locator: TestingBehatElementLocator,
         options: TestingBehatFindOptions,
     ): HTMLElement[] {
-        const topContainers = this.getCurrentTopContainerElements(options.containerName);
+        const topContainers = this.getCurrentTopContainerElements(options.containerName ?? '');
         let elements: HTMLElement[] = [];
 
         for (let i = 0; i < topContainers.length; i++) {

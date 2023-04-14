@@ -56,14 +56,8 @@ export class AddonModGlossaryEntryLinkHandlerService extends CoreContentLinksHan
                     );
 
                     await CoreNavigator.navigateToSitePath(
-                        AddonModGlossaryModuleHandlerService.PAGE_NAME + `/entry/${entryId}`,
-                        {
-                            params: {
-                                courseId: module.course,
-                                cmId: module.id,
-                            },
-                            siteId,
-                        },
+                        AddonModGlossaryModuleHandlerService.PAGE_NAME + `/${module.course}/${module.id}/entry/${entryId}`,
+                        { siteId },
                     );
                 } catch (error) {
                     CoreDomUtils.showErrorModalDefault(error, 'addon.mod_glossary.errorloadingentry', true);

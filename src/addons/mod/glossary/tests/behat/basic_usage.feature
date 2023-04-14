@@ -154,6 +154,152 @@ Feature: Test basic usage of glossary in app
     Then I should find "Garlic" in the app
     And I should find "Allium sativum" in the app
 
+  Scenario: Edit entries
+    Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
+
+    # Online
+    When I press "Cucumber" in the app
+    And I press "Edit entry" in the app
+    Then the field "Concept" matches value "Cucumber" in the app
+    And the field "Definition" matches value "Sweet cucumber" in the app
+    But I should not find "Keyword(s)" in the app
+    And I should not find "Categories" in the app
+
+    When I set the following fields to these values in the app:
+      | Concept | Coconut |
+      | Definition | Coconut is a fruit |
+    And I press "Add file" in the app
+    And I upload "stub1.txt" to "File" ".action-sheet-button" in the app
+    And I press "Add file" in the app
+    And I upload "stub2.txt" to "File" ".action-sheet-button" in the app
+    And I press "This entry should be automatically linked" "ion-toggle" in the app
+    And I press "This entry is case sensitive" "ion-toggle" in the app
+    And I press "Match whole words only" "ion-toggle" in the app
+    And I press "Save" in the app
+    Then I should find "Coconut is a fruit" in the app
+    And I should find "stub1.txt" in the app
+    And I should find "stub2.txt" in the app
+    But I should not find "Cucumber is a fruit" in the app
+
+    When I press "Edit entry" in the app
+    Then I should find "stub1.txt" in the app
+    And I should find "stub2.txt" in the app
+    And "This entry should be automatically linked" "ion-toggle" should be selected in the app
+    And "This entry is case sensitive" "ion-toggle" should be selected in the app
+    And "Match whole words only" "ion-toggle" should be selected in the app
+
+    When I press "Delete" within "stub2.txt" "ion-item" in the app
+    And I press "Delete" near "Are you sure you want to delete this file?" in the app
+    And I press "Add file" in the app
+    And I upload "stub3.txt" to "File" ".action-sheet-button" in the app
+    And I press "Save" in the app
+    Then I should find "stub1.txt" in the app
+    And I should find "stub3.txt" in the app
+    But I should not find "stub2.txt" in the app
+
+    When I press the back button in the app
+    Then I should find "Coconut" in the app
+    And I should find "Potato" in the app
+    But I should not find "Cucumber" in the app
+
+    # Offline
+    When I press "Add a new entry" in the app
+    And I switch network connection to offline
+    And I set the following fields to these values in the app:
+      | Concept | Broccoli |
+      | Definition | Brassica oleracea var. italica |
+      | Keyword(s) | vegetable, healthy |
+    And I press "Categories" in the app
+    And I press "The ones I like" in the app
+    And I press "OK" in the app
+    And I press "Add file" in the app
+    And I upload "stub1.txt" to "File" ".action-sheet-button" in the app
+    And I press "Add file" in the app
+    And I upload "stub2.txt" to "File" ".action-sheet-button" in the app
+    And I press "This entry should be automatically linked" "ion-toggle" in the app
+    And I press "This entry is case sensitive" "ion-toggle" in the app
+    And I press "Match whole words only" "ion-toggle" in the app
+    And I press "Save" in the app
+    Then I should find "Potato" in the app
+    And I should find "Broccoli" in the app
+
+    When I press "Broccoli" in the app
+    Then I should find "Brassica oleracea var. italica" in the app
+    And I should find "stub1.txt" in the app
+    And I should find "stub2.txt" in the app
+
+    When I press "Edit entry" in the app
+    Then the field "Concept" matches value "Broccoli" in the app
+    And the field "Definition" matches value "Brassica oleracea var. italica" in the app
+    And the field "Keyword(s)" matches value "vegetable, healthy" in the app
+    And I should find "The ones I like" in the app
+    And I should find "stub1.txt" in the app
+    And I should find "stub2.txt" in the app
+    And "This entry should be automatically linked" "ion-toggle" should be selected in the app
+    And "This entry is case sensitive" "ion-toggle" should be selected in the app
+    And "Match whole words only" "ion-toggle" should be selected in the app
+
+    When I set the following fields to these values in the app:
+      | Concept | Pickle |
+      | Definition | Pickle Rick |
+    And I press "Delete" within "stub2.txt" "ion-item" in the app
+    And I press "Delete" near "Are you sure you want to delete this file?" in the app
+    And I press "Add file" in the app
+    And I upload "stub3.txt" to "File" ".action-sheet-button" in the app
+    And I press "Save" in the app
+    Then I should find "Pickle Rick" in the app
+    And I should find "stub1.txt" in the app
+    And I should find "stub3.txt" in the app
+    But I should not find "stub2.txt" in the app
+    And I should not find "Brassica oleracea var. italica" in the app
+
+    When I press the back button in the app
+    Then I should find "Pickle" in the app
+    And I should find "Potato" in the app
+    But I should not find "Broccoli" in the app
+
+    When I switch network connection to wifi
+    And I press "Information" in the app
+    And I press "Synchronise now" in the app
+    Then I should not find "This Glossary has offline data to be synchronised" in the app
+
+    When I press "Pickle" in the app
+    Then I should find "Pickle Rick" in the app
+    And I should find "stub1.txt" in the app
+    And I should find "stub3.txt" in the app
+    But I should not find "stub2.txt" in the app
+    And I should not find "Brassica oleracea var. italica" in the app
+
+  Scenario: Delete entries
+    Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
+
+    # Online
+    When I press "Cucumber" in the app
+    And I press "Delete entry" in the app
+    And I press "OK" near "Are you sure you want to delete this entry?" in the app
+    Then I should find "Entry deleted" in the app
+    And I should find "Potato" in the app
+    But I should not find "Cucumber" in the app
+
+    # Offline
+    When I press "Add a new entry" in the app
+    And I switch network connection to offline
+    And I set the following fields to these values in the app:
+      | Concept | Broccoli |
+      | Definition | Brassica oleracea var. italica |
+    And I press "Save" in the app
+    Then I should find "Potato" in the app
+    And I should find "Broccoli" in the app
+
+    When I press "Broccoli" in the app
+    Then I should find "Brassica oleracea var. italica" in the app
+
+    When I press "Delete entry" in the app
+    And I press "OK" near "Are you sure you want to delete this entry?" in the app
+    Then I should find "Entry deleted" in the app
+    And I should find "Potato" in the app
+    But I should not find "Broccoli" in the app
+
   Scenario: Sync
     Given I entered the glossary activity "Test glossary" on course "Course 1" as "student1" in the app
     And I press "Add a new entry" in the app
@@ -192,8 +338,8 @@ Feature: Test basic usage of glossary in app
     And I should find "Broccoli" in the app
     And I should find "Cabbage" in the app
     And I should find "Garlic" in the app
-    But I should not see "Entries to be synced"
-    And I should not see "This Glossary has offline data to be synchronised."
+    But I should not find "Entries to be synced" in the app
+    And I should not find "This Glossary has offline data to be synchronised." in the app
 
     When I press "Garlic" in the app
     Then I should find "Garlic" in the app
