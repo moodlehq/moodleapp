@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreSite } from '@classes/site';
 import { CorePath } from './path';
 import { CoreText } from './text';
 
@@ -296,6 +297,51 @@ export class CoreUrl {
         }
 
         return CoreText.removeStartingSlash(CoreUrl.removeProtocol(url).replace(parentUrl, ''));
+    }
+
+    /**
+     * Returns if URL is a Vimeo video URL.
+     *
+     * @param url URL.
+     * @returns Whether is a Vimeo video URL.
+     */
+    static isVimeoVideoUrl(url: string): boolean {
+        return !!url.match(/https?:\/\/player\.vimeo\.com\/video\/[0-9]+/);
+    }
+
+    /**
+     * Get the URL to use to play a Vimeo video if the URL supplied is a Vimeo video URL.
+     * If it's a Vimeo video, the app will use the site's wsplayer script instead to make restricted videos work.
+     *
+     * @param url URL to treat.
+     * @param site Site that contains the URL.
+     * @returns URL, undefined if not a Vimeo video.
+     */
+    static getVimeoPlayerUrl(
+        url: string,
+        site: CoreSite,
+    ): string | undefined {
+        const matches = url.match(/https?:\/\/player\.vimeo\.com\/video\/([0-9]+)([?&]+h=([a-zA-Z0-9]*))?/);
+        if (!matches || !matches[1]) {
+            // Not a Vimeo video.
+            return;
+        }
+
+        let newUrl = CorePath.concatenatePaths(site.getURL(), '/media/player/vimeo/wsplayer.php?video=') +
+            matches[1] + '&token=' + site.getToken();
+
+        let privacyHash: string | undefined | null = matches[3];
+        if (!privacyHash) {
+            // No privacy hash using the new format. Check the legacy format.
+            const matches = url.match(/https?:\/\/player\.vimeo\.com\/video\/([0-9]+)(\/([a-zA-Z0-9]+))?/);
+            privacyHash = matches && matches[3];
+        }
+
+        if (privacyHash) {
+            newUrl += `&h=${privacyHash}`;
+        }
+
+        return newUrl;
     }
 
 }

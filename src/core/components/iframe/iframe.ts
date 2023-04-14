@@ -29,6 +29,7 @@ import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { NavigationStart } from '@angular/router';
 import { CoreSites } from '@services/sites';
+import { CoreUrl } from '@singletons/url';
 
 @Component({
     selector: 'core-iframe',
@@ -163,6 +164,12 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
             if (this.allowAutoLogin && currentSite) {
                 // Format the URL to add auto-login if needed.
                 url = await currentSite.getAutoLoginUrl(url, false);
+            }
+
+            if (currentSite?.isVersionGreaterEqualThan('3.7') && CoreUrl.isVimeoVideoUrl(url)) {
+                // Only treat the Vimeo URL if site is 3.7 or bigger. In older sites the width and height params were mandatory,
+                // and there was no easy way to make the iframe responsive.
+                url = CoreUrl.getVimeoPlayerUrl(url, currentSite) ?? url;
             }
 
             await CoreIframeUtils.fixIframeCookies(url);

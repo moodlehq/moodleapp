@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { mock } from '@/testing/utils';
+import { CoreSite } from '@classes/site';
 import { CoreUrl } from '@singletons/url';
 
 describe('CoreUrl singleton', () => {
@@ -126,6 +128,34 @@ describe('CoreUrl singleton', () => {
         expect(CoreUrl.toRelativeURL('https://school.edu/', 'http://school.edu/image.png')).toBe('image.png');
         expect(CoreUrl.toRelativeURL('https://school.edu/foo/bar', 'https://school.edu/foo/bar/image.png')).toBe('image.png');
         expect(CoreUrl.toRelativeURL('https://school.edu', 'school.edu/image.png')).toBe('image.png');
+    });
+
+    it('checks if it is a Vimeo video URL', () => {
+        expect(CoreUrl.isVimeoVideoUrl('')).toEqual(false);
+        expect(CoreUrl.isVimeoVideoUrl('https://player.vimeo.com')).toEqual(false);
+        expect(CoreUrl.isVimeoVideoUrl('https://player.vimeo.com/video/')).toEqual(false);
+        expect(CoreUrl.isVimeoVideoUrl('player.vimeo.com/video/123456')).toEqual(false);
+        expect(CoreUrl.isVimeoVideoUrl('https://player.vimeo.com/video/123456')).toEqual(true);
+        expect(CoreUrl.isVimeoVideoUrl('http://player.vimeo.com/video/123456')).toEqual(true);
+        expect(CoreUrl.isVimeoVideoUrl('https://player.vimeo.com/video/123456/654321?foo=bar')).toEqual(true);
+    });
+
+    it('gets the Vimeo player URL', () => {
+        const siteUrl = 'https://mysite.com';
+        const token = 'mytoken';
+        const site = mock(new CoreSite('42', siteUrl, token));
+
+        // Test basic usage.
+        expect(CoreUrl.getVimeoPlayerUrl('', site)).toEqual(undefined);
+        expect(CoreUrl.getVimeoPlayerUrl('https://somesite.com', site)).toEqual(undefined);
+        expect(CoreUrl.getVimeoPlayerUrl('https://player.vimeo.com/video/123456', site))
+            .toEqual(`${siteUrl}/media/player/vimeo/wsplayer.php?video=123456&token=${token}`);
+
+        // Test privacy hash.
+        expect(CoreUrl.getVimeoPlayerUrl('https://player.vimeo.com/video/123456?h=foo', site))
+            .toEqual(`${siteUrl}/media/player/vimeo/wsplayer.php?video=123456&token=${token}&h=foo`);
+        expect(CoreUrl.getVimeoPlayerUrl('https://player.vimeo.com/video/123456/foo', site))
+            .toEqual(`${siteUrl}/media/player/vimeo/wsplayer.php?video=123456&token=${token}&h=foo`);
     });
 
 });
