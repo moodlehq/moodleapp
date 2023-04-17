@@ -31,6 +31,7 @@ import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/
 @Component({
     selector: 'page-core-user-participants',
     templateUrl: 'participants.html',
+    styleUrls: ['participants.scss'],
 })
 export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestroy {
 
@@ -39,7 +40,6 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
     searchQuery: string | null = null;
     searchInProgress = false;
     searchEnabled = false;
-    showSearchBox = false;
     fetchMoreParticipantsFailed = false;
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
@@ -82,20 +82,6 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
      */
     ngOnDestroy(): void {
         this.participants.destroy();
-    }
-
-    /**
-     * Show or hide search box.
-     */
-    toggleSearch(): void {
-        this.showSearchBox = !this.showSearchBox;
-
-        if (this.showSearchBox) {
-            // Make search bar visible.
-            this.splitView.menuContent.scrollToTop();
-        } else {
-            this.clearSearch();
-        }
     }
 
     /**

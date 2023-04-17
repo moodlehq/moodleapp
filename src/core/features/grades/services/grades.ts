@@ -78,6 +78,16 @@ export class CoreGradesProvider {
     }
 
     /**
+     * Get prefix cache key for grade permissions WS calls.
+     *
+     * @param courseId ID of the course to check permissions.
+     * @returns Cache key.
+     */
+    protected getCourseGradesPermissionsCacheKey(courseId: number): string {
+        return this.getCourseGradesPrefixCacheKey(courseId) + ':canviewallgrades';
+    }
+
+    /**
      * Get cache key for courses grade WS calls.
      *
      * @returns Cache key.
@@ -291,6 +301,17 @@ export class CoreGradesProvider {
     }
 
     /**
+     * Invalidates course grade permissions WS calls.
+     *
+     * @param courseId ID of the course to get the permissions from.
+     */
+    async invalidateCourseGradesPermissionsData(courseId: number): Promise<void> {
+        const site = CoreSites.getRequiredCurrentSite();
+
+        await site.invalidateWsCacheForKey(this.getCourseGradesPermissionsCacheKey(courseId));
+    }
+
+    /**
      * Returns whether or not the plugin is enabled for a certain site.
      *
      * @param siteId Site ID. If not defined, current site.
@@ -389,6 +410,30 @@ export class CoreGradesProvider {
         await site?.write('gradereport_overview_view_grade_report', params);
     }
 
+    /**
+     * Check whether the current user can view all the grades in the course.
+     *
+     * @param courseId Course id.
+     * @returns Whether the current user can view all the grades.
+     */
+    async canViewAllGrades(courseId: number): Promise<boolean> {
+        const site = CoreSites.getRequiredCurrentSite();
+
+        if (!site.wsAvailable('gradereport_user_get_access_information')) {
+            return false;
+        }
+
+        const params: CoreGradesGetUserAccessInformationWSParams = { courseid: courseId };
+        const preSets: CoreSiteWSPreSets = { cacheKey: this.getCourseGradesPermissionsCacheKey(courseId) };
+        const access = await site.read<CoreGradesGetUserAccessInformationWSResponse>(
+            'gradereport_user_get_access_information',
+            params,
+            preSets,
+        );
+
+        return access.canviewallgrades;
+    }
+
 }
 
 export const CoreGrades = makeSingleton(CoreGradesProvider);
@@ -427,6 +472,13 @@ type CoreGradesGetOverviewCourseGradesWSParams = {
 };
 
 /**
+ * Params of gradereport_user_get_access_information WS.
+ */
+type CoreGradesGetUserAccessInformationWSParams = {
+    courseid: number; // Id of the course.
+};
+
+/**
  * Data returned by gradereport_user_get_grade_items WS.
  */
 export type CoreGradesGetUserGradeItemsWSResponse = {
@@ -455,6 +507,15 @@ export type CoreGradesGetUserGradesTableWSResponse = {
 export type CoreGradesGetOverviewCourseGradesWSResponse = {
     grades: CoreGradesGradeOverview[];
     warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Data returned by gradereport_user_get_access_information WS.
+ */
+type CoreGradesGetUserAccessInformationWSResponse = {
+    canviewusergradereport: boolean;
+    canviewmygrades: boolean;
+    canviewallgrades: boolean;
 };
 
 /**

@@ -16,8 +16,13 @@ import { Injectable } from '@angular/core';
 
 import { CoreLogger } from '@singletons/logger';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreCourses, CoreEnrolledCourseData, CoreCourseSearchedData } from '@features/courses/services/courses';
-import { CoreCourse } from '@features/course/services/course';
+import {
+    CoreCourses,
+    CoreEnrolledCourseData,
+    CoreCourseSearchedData,
+    CoreCourseUserAdminOrNavOptionIndexed,
+} from '@features/courses/services/courses';
+import { CoreCourse, CoreCourseProvider } from '@features/course/services/course';
 import {
     CoreGrades,
     CoreGradesGradeItem,
@@ -38,8 +43,10 @@ import { CoreError } from '@classes/errors/error';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreAppProvider } from '@services/app';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
+import { CoreCourseAccess } from '@features/course/services/course-options-delegate';
 
 export const GRADES_PAGE_NAME = 'grades';
+export const GRADES_PARTICIPANTS_PAGE_NAME = 'participant-grades';
 
 /**
  * Service that provides some features regarding grades information.
@@ -785,6 +792,30 @@ export class CoreGradesHelperProvider {
      */
     isGradeItem(item: CoreGradesGradeItem | CoreGradesFormattedRow): item is CoreGradesGradeItem {
         return 'outcomeid' in item;
+    }
+
+    /**
+     * Check whether to show the gradebook to this user.
+     *
+     * @param courseId The course ID.
+     * @param accessData Access type and data. Default, guest, ...
+     * @param navOptions Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
+     * @returns Whether to show the gradebook to this user.
+     */
+    async showGradebook(
+        courseId: number,
+        accessData: CoreCourseAccess,
+        navOptions?: CoreCourseUserAdminOrNavOptionIndexed,
+    ): Promise<boolean> {
+        if (accessData && accessData.type == CoreCourseProvider.ACCESS_GUEST) {
+            return false; // Not enabled for guests.
+        }
+
+        if (navOptions && navOptions.grades !== undefined) {
+            return navOptions.grades;
+        }
+
+        return CoreGrades.isPluginEnabledForCourse(courseId);
     }
 
 }

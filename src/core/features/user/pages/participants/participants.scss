@@ -1,0 +1,13 @@
+:host {
+
+    core-split-view {
+        isolation: isolate;
+    }
+
+    core-search-box {
+        position: sticky;
+        top: 8px;
+        z-index: 1;
+    }
+
+}
