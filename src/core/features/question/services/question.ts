@@ -547,14 +547,11 @@ export class CoreQuestionProvider {
         state: string,
         siteId?: string,
     ): Promise<void> {
-
         const site = await CoreSites.getSite(siteId);
         const entry: CoreQuestionDBRecord = {
             component,
             componentid: componentId,
             attemptid: attemptId,
-            userid: userId,
-            number: question.number, // eslint-disable-line id-blacklist
             slot: question.slot,
             state: state,
         };
