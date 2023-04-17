@@ -9,7 +9,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <core-loading [hideUntil]="finalUrl">
-        <core-iframe *ngIf="finalUrl" [src]="finalUrl"></core-iframe>
+    <core-loading [hideUntil]="url">
+        <core-iframe *ngIf="url" [src]="url" [allowAutoLogin]="autoLogin"></core-iframe>
     </core-loading>
 </ion-content>

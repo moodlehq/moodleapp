@@ -46,7 +46,6 @@ import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreCollapsibleItemDirective } from './collapsible-item';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { AsyncDirective } from '@classes/async-directive';
-import { CorePath } from '@singletons/path';
 import { CoreDom } from '@singletons/dom';
 import { CoreEvents } from '@singletons/events';
 import { CoreRefreshContext, CORE_REFRESH_CONTEXT } from '@/core/utils/refresh-context';
@@ -54,6 +53,7 @@ import { CorePlatform } from '@services/platform';
 import { ElementController } from '@classes/element-controllers/ElementController';
 import { MediaElementController } from '@classes/element-controllers/MediaElementController';
 import { FrameElementController } from '@classes/element-controllers/FrameElementController';
+import { CoreUrl } from '@singletons/url';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -802,23 +802,8 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         await CoreIframeUtils.fixIframeCookies(src);
 
         if (site && src) {
-            // Check if it's a Vimeo video. If it is, use the wsplayer script instead to make restricted videos work.
-            const matches = src.match(/https?:\/\/player\.vimeo\.com\/video\/([0-9]+)([?&]+h=([a-zA-Z0-9]*))?/);
-            if (matches && matches[1]) {
-                let newUrl = CorePath.concatenatePaths(site.getURL(), '/media/player/vimeo/wsplayer.php?video=') +
-                    matches[1] + '&token=' + site.getToken();
-
-                let privacyHash: string | undefined | null = matches[3];
-                if (!privacyHash) {
-                    // No privacy hash using the new format. Check the legacy format.
-                    const matches = src.match(/https?:\/\/player\.vimeo\.com\/video\/([0-9]+)(\/([a-zA-Z0-9]+))?/);
-                    privacyHash = matches && matches[3];
-                }
-
-                if (privacyHash) {
-                    newUrl += `&h=${privacyHash}`;
-                }
-
+            let vimeoUrl = CoreUrl.getVimeoPlayerUrl(src, site);
+            if (vimeoUrl) {
                 const domPromise = CoreDom.waitToBeInDOM(iframe);
                 this.domPromises.push(domPromise);
 
@@ -848,12 +833,12 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
 
                 // Width and height parameters are required in 3.6 and older sites.
                 if (site && !site.isVersionGreaterEqualThan('3.7')) {
-                    newUrl += '&width=' + width + '&height=' + height;
+                    vimeoUrl += '&width=' + width + '&height=' + height;
                 }
 
-                await CoreIframeUtils.fixIframeCookies(newUrl);
+                await CoreIframeUtils.fixIframeCookies(vimeoUrl);
 
-                iframe.src = newUrl;
+                iframe.src = vimeoUrl;
 
                 if (!iframe.width) {
                     iframe.width = String(width);
