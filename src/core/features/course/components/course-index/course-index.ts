@@ -21,6 +21,7 @@ import {
 import { CoreCourseHelper, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
+import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { ModalController } from '@singletons';
 import { CoreDom } from '@singletons/dom';
@@ -75,6 +76,9 @@ export class CoreCourseCourseIndexComponent implements OnInit {
         }
 
         // Clone sections to add information.
+        const site = CoreSites.getRequiredCurrentSite();
+        const enableIndentation = site.isVersionGreaterEqualThan('4.2');
+
         this.sectionsToRender = this.sections
             .filter((section) => !CoreCourseHelper.isSectionStealth(section))
             .map((section) => {
@@ -92,6 +96,7 @@ export class CoreCourseCourseIndexComponent implements OnInit {
                             course: module.course,
                             visible: !!module.visible,
                             uservisible: CoreCourseHelper.canUserViewModule(module, section),
+                            indented: enableIndentation && module.indent > 0,
                             completionStatus,
                         };
                     });
@@ -170,6 +175,7 @@ type CourseIndexSection = {
         id: number;
         course: number;
         visible: boolean;
+        indented: boolean;
         uservisible: boolean;
         completionStatus?: CoreCourseModuleCompletionStatus;
     }[];

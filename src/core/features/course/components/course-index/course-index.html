@@ -53,7 +53,7 @@
                     <div id="core-course-index-section-{{section.id}}">
                         <ng-container *ngIf="section.expanded">
                             <ng-container *ngFor="let module of section.modules">
-                                <ion-item class="module" [class.item-dimmed]="!module.visible"
+                                <ion-item class="module" [class.item-dimmed]="!module.visible" [class.indented]="module.indented"
                                     [class.item-hightlighted]="section.highlighted"
                                     (click)="selectSectionOrModule($event, section.id, module.id)" button>
                                     <ion-icon class="completioninfo completion_none" name="" *ngIf="module.completionStatus === undefined"
