@@ -291,7 +291,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             return '';
         }
 
-        let className = parsedUrl.domain?.replace('.', '-') || '';
+        let className = parsedUrl.domain?.replace(/\./g, '-') || '';
 
         if (parsedUrl.port) {
             className += `--${parsedUrl.port}`;
@@ -301,7 +301,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             const trailing = new RegExp('/+$');
             const path = parsedUrl.path.replace(leading, '').replace(trailing, '');
             if (path) {
-                className += '--' + path.replace('/', '-');
+                className += '--' + path.replace(/\//g, '-') || '';
             }
         }
 
