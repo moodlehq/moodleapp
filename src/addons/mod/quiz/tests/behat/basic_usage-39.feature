@@ -1,4 +1,4 @@
-@mod @mod_quiz @app @javascript
+@mod @mod_quiz @app @javascript @lms_upto3.9
 Feature: Attempt a quiz in app
   As a student
   In order to demonstrate what I know
@@ -46,11 +46,6 @@ Feature: Attempt a quiz in app
       | Test questions   | truefalse        | TF8   | Text of the sixth question                       |
       | Test questions   | match            | TF9   | Text of the seventh question                     |
       | Test questions   | description      | TF10  | Text of the eighth question                      |
-      # TODO test calculated question type.
-      # TODO test multianswer question type.
-      # The calculatedsimple type is implemented using the calculated type.
-      # The calculatedmulti type is implemented using the multichoice type.
-      # The randomsamatch type is implemented using the match type.
     And the following "questions" exist:
       | questioncategory | qtype         | name | template        |
       | Test questions   | gapselect     | TF11 | missingchoiceno |
@@ -70,56 +65,8 @@ Feature: Attempt a quiz in app
       | TF12     | 10   |
       | TF13     | 11   |
 
-  Scenario: View a quiz entry page (attempts, status, etc.)
-    Given I entered the quiz activity "Quiz 1" on course "Course 1" as "student1" in the app
-    When I press "Attempt quiz now" in the app
-    Then I should find "Text of the first question" in the app
-    But I should not find "Text of the second question" in the app
-
-    When I press "Next" in the app
-    Then I should find "Text of the second question" in the app
-    But I should not find "Text of the first question" in the app
-
-    When I press "Previous" in the app
-    Then I should find "Text of the first question" in the app
-    But I should not find "Text of the second question" in the app
-
-    When I press "Next" in the app
-    Then I should find "Text of the second question" in the app
-    But I should not find "Text of the first question" in the app
-
-    When I press "Previous" in the app
-    Then I should find "Text of the first question" in the app
-    But I should not find "Text of the second question" in the app
-
-    When I press "Next" in the app
-    And I press "Submit" in the app
-    Then I should find "Summary of attempt" in the app
-
-    When I press "Not yet answered" within "2" "ion-item" in the app
-    Then I should find "Text of the second question" in the app
-    But I should not find "Text of the first question" in the app
-
-    When I press "Submit" in the app
-    And I press "Submit all and finish" in the app
-    Then I should find "Once you submit" in the app
-
-    When I press "Cancel" near "Once you submit" in the app
-    Then I should find "Summary of attempt" in the app
-
-    When I press "Submit all and finish" in the app
-    And I press "OK" near "Once you submit" in the app
-    Then I should find "Review" in the app
-    And I should find "Started on" in the app
-    And I should find "State" in the app
-    And I should find "Completed on" in the app
-    And I should find "Time taken" in the app
-    And I should find "Marks" in the app
-    And I should find "Grade" in the app
-    And I should find "Question 1" in the app
-    And I should find "Question 2" in the app
-
-  @lms_from3.10
+  # This scenario is duplicated from main because the description type question (the eighth)
+  # cannot be filled in 3.9, since the selects are missing accessible labels.
   Scenario: Attempt a quiz (all question types)
     Given I entered the quiz activity "Quiz 2" on course "Course 1" as "student1" in the app
     When I press "Attempt quiz now" in the app
@@ -151,8 +98,6 @@ Feature: Attempt a quiz in app
     Then I should find "Text of the eighth question" in the app
 
     When I press "Next" in the app
-    And I set the field "Blank 1" to "cat" in the app
-    And I set the field "Blank 2" to "mat" in the app
     And I press "Next" in the app
     And I press "abyssal" ".drag" in the app
     And I click on ".place6.dropzone" "css"
@@ -163,39 +108,11 @@ Feature: Attempt a quiz in app
     And I click on "img.dropbackground" "css"
     And I press "Submit" in the app
     Then I should find "Answer saved" in the app
+    And I should find "Not yet answered" within "8" "ion-item" in the app
     And I should find "Incomplete answer" within "9" "ion-item" in the app
-    But I should not find "Not yet answered" in the app
 
     When I press "Submit all and finish" in the app
     And I press "OK" in the app
     Then I should find "Review" in the app
     And I should find "Finished" in the app
     And I should find "Not yet graded" in the app
-
-  Scenario: Submit a quiz & Review a quiz attempt
-    Given I entered the quiz activity "Quiz 1" on course "Course 1" as "student1" in the app
-    When I press "Attempt quiz now" in the app
-    Then I should find "Text of the first question" in the app
-    And the UI should match the snapshot
-
-    When I press "True" in the app
-    And I press "Next" in the app
-    And I press "False" in the app
-    And I press "Submit" in the app
-    And I press "Submit all and finish" in the app
-    And I press "OK" in the app
-    Then I should find "Review" in the app
-
-    When I replace "/.*/" within "page-addon-mod-quiz-review core-loading > ion-card ion-item:nth-child(1) p:nth-child(2)" with "[Started on date]"
-    And I replace "/.*/" within "page-addon-mod-quiz-review core-loading > ion-card ion-item:nth-child(3) p:nth-child(2)" with "[Completed on date]"
-    Then the UI should match the snapshot
-
-    Given I entered the quiz activity "Quiz 1" on course "Course 1" as "teacher1" in the app
-    When I press "Information" in the app
-    And I press "Open in browser" in the app
-    And I switch to the browser tab opened by the app
-    And I log in as "teacher1"
-    And I follow "Attempts: 1"
-    And I follow "Review attempt"
-    Then I should see "Finished"
-    And I should see "1.00/2.00"
