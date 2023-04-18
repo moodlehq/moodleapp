@@ -1,7 +1,11 @@
 <!-- Render (no edit). -->
 <ion-item *ngIf="!edit && field && field.name">
     <ion-label>
-        <p class="item-heading">{{ field.name }}</p>
+        <p class="item-heading">
+            <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
+                [courseId]="courseId" [wsNotFiltered]="true">
+            </core-format-text>
+        </p>
         <p *ngIf="valueNumber">{{ valueNumber * 1000 | coreFormatDate }}</p>
         <p *ngIf="displayValue">{{ displayValue }}</p>
     </ion-label>
@@ -10,7 +14,11 @@
 <!-- Edit. -->
 <ion-item *ngIf="edit && field && field.shortname && form" class="ion-text-wrap" [formGroup]="form">
     <ion-label position="stacked">
-        <span [core-mark-required]="required">{{ field.name }}</span>
+        <span [core-mark-required]="required">
+            <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
+                [courseId]="courseId" [wsNotFiltered]="true">
+            </core-format-text>
+        </span>
     </ion-label>
     <ion-datetime [formControlName]="modelName" [placeholder]="'core.choosedots' | translate" [displayFormat]="format" [max]="max"
         [min]="min" [monthNames]="monthNames" [displayTimezone]="displayTimezone">
