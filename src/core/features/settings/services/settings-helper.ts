@@ -462,7 +462,7 @@ export class CoreSettingsHelperProvider {
         const isDark = CoreDomUtils.hasModeClass('dark');
 
         if (isDark !== enable) {
-            CoreDomUtils.toggleModeClass('dark', enable);
+            CoreDomUtils.toggleModeClass('dark', enable, { includeLegacy: true });
             this.darkModeObservable.next(enable);
 
             CoreApp.setStatusBarColor();

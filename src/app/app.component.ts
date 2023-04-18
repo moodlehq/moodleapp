@@ -52,7 +52,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     ngOnInit(): void {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const win = <any> window;
-        CoreDomUtils.toggleModeClass('ionic5', true);
+        CoreDomUtils.toggleModeClass('ionic5', true, { includeLegacy: true });
         this.addVersionClass(MOODLEAPP_VERSION_PREFIX, CoreConstants.CONFIG.versionname.replace('-dev', ''));
 
         CoreEvents.on(CoreEvents.LOGOUT, async () => {
@@ -212,22 +212,22 @@ export class AppComponent implements OnInit, AfterViewInit {
                 const isOnline = CoreNetwork.isOnline();
                 const hadOfflineMessage = CoreDomUtils.hasModeClass('core-offline');
 
-                CoreDomUtils.toggleModeClass('core-offline', !isOnline);
+                CoreDomUtils.toggleModeClass('core-offline', !isOnline, { includeLegacy: true });
 
                 if (isOnline && hadOfflineMessage) {
-                    CoreDomUtils.toggleModeClass('core-online', true);
+                    CoreDomUtils.toggleModeClass('core-online', true, { includeLegacy: true });
 
                     setTimeout(() => {
-                        CoreDomUtils.toggleModeClass('core-online', false);
+                        CoreDomUtils.toggleModeClass('core-online', false, { includeLegacy: true });
                     }, 3000);
                 } else if (!isOnline) {
-                    CoreDomUtils.toggleModeClass('core-online', false);
+                    CoreDomUtils.toggleModeClass('core-online', false, { includeLegacy: true });
                 }
             });
         });
 
         const isOnline = CoreNetwork.isOnline();
-        CoreDomUtils.toggleModeClass('core-offline', !isOnline);
+        CoreDomUtils.toggleModeClass('core-offline', !isOnline, { includeLegacy: true });
 
         // Set StatusBar properties.
         CoreApp.setStatusBarColor();
@@ -256,9 +256,9 @@ export class AppComponent implements OnInit, AfterViewInit {
         parts[1] = parts[1] || '0';
         parts[2] = parts[2] || '0';
 
-        CoreDomUtils.toggleModeClass(prefix + parts[0], true);
-        CoreDomUtils.toggleModeClass(prefix + parts[0] + '-' + parts[1], true);
-        CoreDomUtils.toggleModeClass(prefix + parts[0] + '-' + parts[1] + '-' + parts[2], true);
+        CoreDomUtils.toggleModeClass(prefix + parts[0], true, { includeLegacy: true });
+        CoreDomUtils.toggleModeClass(prefix + parts[0] + '-' + parts[1], true, { includeLegacy: true });
+        CoreDomUtils.toggleModeClass(prefix + parts[0] + '-' + parts[1] + '-' + parts[2], true, { includeLegacy: true });
     }
 
     /**
@@ -272,7 +272,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 continue;
             }
 
-            CoreDomUtils.toggleModeClass(modeClass, false);
+            CoreDomUtils.toggleModeClass(modeClass, false, { includeLegacy: true });
         }
     }
 
