@@ -76,6 +76,7 @@ Feature: Test decimal separators in lesson
     Then I should find "Congratulations - end of lesson reached" in the app
     And I should find "Your score is 1 (out of 1)." in the app
 
+  @lms_from4.0
   Scenario: Attempt an online lesson successfully as a student (custom separator) and review as teacher
     Given the following "language customisations" exist:
       | component       | stringid | value |
@@ -102,8 +103,7 @@ Feature: Test decimal separators in lesson
 
     When I press the back button in the app
     And I press "Start" in the app
-    And I set the following fields to these values in the app:
-      | Your answer | 2.87 |
+    And I set the field "Your answer" to "2.87" in the app
     And I press "Submit" in the app
     Then I should find "Correct answer" in the app
     And I should find "2,87" in the app
@@ -178,9 +178,9 @@ Feature: Test decimal separators in lesson
     And I press the back button in the app
     Then I should find "An offline attempt was synchronised" in the app
 
-    When I press "Start" in the app
-    And I set the following fields to these values in the app:
-      | Your answer | 2.87 |
+    When I switch network connection to offline
+    And I press "Start" in the app
+    And I set the field "Your answer" to "2.87" in the app
     And I press "Submit" in the app
     Then I should find "Correct answer" in the app
     And I should find "2,87" in the app
