@@ -45,7 +45,7 @@ export class CoreSettingsDevPage implements OnInit {
     userToursEnabled = true;
     stagingSitesCount = 0;
     enableStagingSites?: boolean;
-    listenStagingSitesChanges = false;
+    previousEnableStagingSites?: boolean;
 
     disabledFeatures: string[] = [];
 
@@ -64,7 +64,7 @@ export class CoreSettingsDevPage implements OnInit {
 
         if (this.stagingSitesCount) {
             this.enableStagingSites = await CoreSettingsHelper.hasEnabledStagingSites();
-            this.listenStagingSitesChanges = true;
+            this.previousEnableStagingSites = this.enableStagingSites;
         }
 
         if (!this.siteId) {
@@ -170,17 +170,15 @@ export class CoreSettingsDevPage implements OnInit {
     }
 
     async setEnabledStagingSites(enabled: boolean): Promise<void> {
-        if (!this.listenStagingSitesChanges) {
-            this.listenStagingSitesChanges = true;
-
+        if (this.enableStagingSites === this.previousEnableStagingSites) {
             return;
         }
 
         try {
             await CoreSettingsHelper.setEnabledStagingSites(enabled);
+            this.previousEnableStagingSites = enabled;
         } catch (error) {
             this.enableStagingSites = !enabled;
-            this.listenStagingSitesChanges = false;
             CoreDomUtils.showErrorModal(error);
         }
     }
