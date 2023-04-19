@@ -1,9 +1,14 @@
 <!-- Render (no edit). -->
 <ion-item *ngIf="!edit && field && field.name">
     <ion-label>
-        <p class="item-heading">{{ field.name }}</p>
+        <p class="item-heading">
+            <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
+                [courseId]="courseId" [wsNotFiltered]="true">
+            </core-format-text>
+        </p>
         <p>
-            <core-format-text [text]="value" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">
+            <core-format-text [text]="value" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"
+                [wsNotFiltered]="valueNotFiltered">
             </core-format-text>
         </p>
     </ion-label>
@@ -12,7 +17,11 @@
 <!-- Edit. -->
 <ion-item *ngIf="edit && field && field.shortname" class="ion-text-wrap" [formGroup]="form">
     <ion-label position="stacked">
-        <span [core-mark-required]="required">{{ field.name }}</span>
+        <span [core-mark-required]="required">
+            <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
+                [courseId]="courseId" [wsNotFiltered]="true">
+            </core-format-text>
+        </span>
         <core-input-errors [control]="control"></core-input-errors>
     </ion-label>
     <core-rich-text-editor [control]="control" [placeholder]="field.name" [autoSave]="true" [contextLevel]="contextLevel"
