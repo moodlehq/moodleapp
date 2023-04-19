@@ -101,4 +101,15 @@
             margin-right: 4px;
         }
     }
+
+    &.indented ion-card {
+        border: none;
+        border-radius: 0;
+        margin-inline-start: calc(var(--horizontal-margin) + 1rem);
+    }
+
+    &.indented + ::ng-deep core-course-module.indented ion-card {
+        border-top: 1px solid var(--border-color);
+    }
+
 }

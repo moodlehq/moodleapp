@@ -76,6 +76,9 @@ export class CoreCourseCourseIndexComponent implements OnInit {
         }
 
         // Clone sections to add information.
+        const site = CoreSites.getRequiredCurrentSite();
+        const enableIndentation = site.isVersionGreaterEqualThan('4.2');
+
         this.sectionsToRender = this.sections
             .filter((section) => !CoreCourseHelper.isSectionStealth(section))
             .map((section) => {
@@ -93,6 +96,7 @@ export class CoreCourseCourseIndexComponent implements OnInit {
                             course: module.course,
                             visible: !!module.visible,
                             uservisible: CoreCourseHelper.canUserViewModule(module, section),
+                            indented: enableIndentation && module.indent > 0,
                             completionStatus,
                         };
                     });
@@ -192,6 +196,7 @@ type CourseIndexSection = {
         id: number;
         course: number;
         visible: boolean;
+        indented: boolean;
         uservisible: boolean;
         completionStatus?: CoreCourseModuleCompletionStatus;
     }[];

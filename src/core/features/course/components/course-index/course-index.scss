@@ -62,6 +62,11 @@ ion-item.item {
         &.item-hightlighted ion-icon.completioninfo {
             @include padding-horizontal(11px, null);
         }
+
+        &.indented {
+            margin-inline-start: 1rem;
+        }
+
     }
 
     ion-icon {

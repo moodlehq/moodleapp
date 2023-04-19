@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, HostBinding } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
 import {
@@ -52,6 +52,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     @Input() showLegacyCompletion?: boolean; // Whether to show module completion in the old format.
     @Input() isLastViewed = false; // Whether it's the last module viewed in a course.
     @Output() completionChanged = new EventEmitter<CoreCourseModuleCompletionData>(); // Notify when module completion changes.
+    @HostBinding('class.indented') indented = false;
 
     modNameTranslated = '';
     hasInfo = false;
@@ -69,10 +70,13 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
+        const site = CoreSites.getRequiredCurrentSite();
+
+        this.indented = site.isVersionGreaterEqualThan('4.2') && this.module.indent > 0;
         this.modNameTranslated = CoreCourse.translateModuleName(this.module.modname, this.module.modplural);
         this.showLegacyCompletion = this.showLegacyCompletion ??
             CoreConstants.CONFIG.uselegacycompletion ??
-            !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.11');
+            !site.isVersionGreaterEqualThan('3.11');
         this.checkShowManualCompletion();
 
         if (!this.module.handlerData) {
