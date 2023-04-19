@@ -31,7 +31,6 @@ import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/
 @Component({
     selector: 'page-core-user-participants',
     templateUrl: 'participants.html',
-    styleUrls: ['participants.scss'],
 })
 export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestroy {
 
