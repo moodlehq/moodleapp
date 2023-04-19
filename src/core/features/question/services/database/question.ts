@@ -12,16 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreSiteSchema } from '@services/sites';
 
 /**
  * Database variables for CoreQuestion service.
  */
-export const QUESTION_TABLE_NAME = 'questions';
+export const QUESTION_TABLE_NAME = 'questions_2';
 export const QUESTION_ANSWERS_TABLE_NAME = 'question_answers';
 export const QUESTION_SITE_SCHEMA: CoreSiteSchema = {
     name: 'CoreQuestionProvider',
-    version: 1,
+    version: 2,
     tables: [
         {
             name: QUESTION_TABLE_NAME,
@@ -43,14 +44,6 @@ export const QUESTION_SITE_SCHEMA: CoreSiteSchema = {
                 },
                 {
                     name: 'componentid',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'userid',
-                    type: 'INTEGER',
-                },
-                {
-                    name: 'number',
                     type: 'INTEGER',
                 },
                 {
@@ -102,6 +95,15 @@ export const QUESTION_SITE_SCHEMA: CoreSiteSchema = {
             primaryKeys: ['component', 'attemptid', 'name'],
         },
     ],
+    async migrate(db: SQLiteDB, oldVersion: number): Promise<void> {
+        if (oldVersion < 2) {
+            await db.migrateTable(
+                'questions',
+                QUESTION_TABLE_NAME,
+                ({ component, componentid, attemptid, slot, state }) => ({ component, componentid, attemptid, slot, state }),
+            );
+        }
+    },
 };
 
 /**
@@ -112,8 +114,6 @@ export type CoreQuestionDBRecord = {
     attemptid: number;
     slot: number;
     componentid: number;
-    userid: number;
-    number?: number; // eslint-disable-line id-blacklist
     state: string;
 };
 

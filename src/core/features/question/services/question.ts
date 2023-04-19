@@ -314,7 +314,7 @@ export class CoreQuestionProvider {
      * @returns Question component ID.
      */
     getQuestionComponentId(question: CoreQuestionQuestionParsed, componentId: string | number): string {
-        return componentId + '_' + question.number;
+        return componentId + '_' + question.questionnumber;
     }
 
     /**
@@ -385,6 +385,10 @@ export class CoreQuestionProvider {
         const parsedQuestions: CoreQuestionQuestionParsed[] = questions;
 
         parsedQuestions.forEach((question) => {
+            if (typeof question.questionnumber === 'undefined' && typeof question.number === 'number') {
+                question.questionnumber = String(question.number);
+            }
+
             if (!question.settings) {
                 return;
             }
@@ -547,14 +551,11 @@ export class CoreQuestionProvider {
         state: string,
         siteId?: string,
     ): Promise<void> {
-
         const site = await CoreSites.getSite(siteId);
         const entry: CoreQuestionDBRecord = {
             component,
             componentid: componentId,
             attemptid: attemptId,
-            userid: userId,
-            number: question.number, // eslint-disable-line id-blacklist
             slot: question.slot,
             state: state,
         };
@@ -594,14 +595,16 @@ export type CoreQuestionQuestionWSData = {
     lastactiontime?: number; // The timestamp of the most recent step in this question attempt.
     hasautosavedstep?: boolean; // Whether this question attempt has autosaved data.
     flagged: boolean; // Whether the question is flagged or not.
-    // eslint-disable-next-line id-blacklist
-    number?: number; // Question ordering number in the quiz.
+    questionnumber?: string; // @since 4.2. Question ordering number in the quiz.
     state?: string; // The state where the question is in. It won't be returned if the user cannot see it.
     status?: string; // Current formatted state of the question.
     blockedbyprevious?: boolean; // Whether the question is blocked by the previous question.
     mark?: string; // The mark awarded. It will be returned only if the user is allowed to see it.
     maxmark?: number; // The maximum mark possible for this question attempt.
     settings?: string; // Question settings (JSON encoded).
+
+    /** @deprecated Since 4.2. Use questionnumber instead. */
+    number?: number; // eslint-disable-line id-blacklist
 };
 /**
  * Question data with parsed data.

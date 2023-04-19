@@ -44,10 +44,10 @@
                     <!-- "Header" of the question. -->
                     <ion-item-divider>
                         <ion-label>
-                            <h2 *ngIf="question.number" class="inline">
-                                {{ 'core.question.questionno' | translate:{$a: question.number} }}
+                            <h2 *ngIf="question.questionnumber" class="inline">
+                                {{ 'core.question.questionno' | translate:{$a: question.questionnumber} }}
                             </h2>
-                            <h2 *ngIf="!question.number" class="inline">{{ 'core.question.information' | translate }}</h2>
+                            <h2 *ngIf="!question.questionnumber" class="inline">{{ 'core.question.information' | translate }}</h2>
                         </ion-label>
                         <div *ngIf="question.status || question.readableMark" slot="end"
                             class="ion-text-wrap ion-margin-horizontal addon-mod_quiz-question-note">
@@ -108,12 +108,12 @@
 
             <!-- List of questions of the summary table. -->
             <ng-container *ngFor="let question of summaryQuestions">
-                <ion-item *ngIf="question.number" (click)="changePage(question.page, false, question.slot)"
-                    [attr.aria-label]="'core.question.questionno' | translate:{$a: question.number}" [detail]="!isSequential && canReturn"
-                    [button]="!isSequential && canReturn">
+                <ion-item *ngIf="question.questionnumber" (click)="changePage(question.page, false, question.slot)"
+                    [attr.aria-label]="'core.question.questionno' | translate:{$a: question.questionnumber}"
+                    [detail]="!isSequential && canReturn" [button]="!isSequential && canReturn">
                     <ion-label>
                         <ion-row class="ion-align-items-center">
-                            <ion-col size="3" class="ion-text-center">{{ question.number }}</ion-col>
+                            <ion-col size="3" class="ion-text-center">{{ question.questionnumber }}</ion-col>
                             <ion-col size="9" class="ion-text-center ion-text-wrap">{{ question.status }}</ion-col>
                         </ion-row>
                     </ion-label>

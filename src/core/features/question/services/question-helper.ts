@@ -637,7 +637,7 @@ export class CoreQuestionHelperProvider {
     ): Promise<void> {
         if (!component) {
             component = CoreQuestionProvider.COMPONENT;
-            componentId = question.number;
+            componentId = question.questionnumber;
         }
 
         const files = CoreQuestionDelegate.getAdditionalDownloadableFiles(question, usageId) || [];
