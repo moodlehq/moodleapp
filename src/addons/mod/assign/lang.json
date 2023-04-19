@@ -22,6 +22,7 @@
     "cannotsubmitduetostatementsubmission": "You can't make a submission in the app because the submission statement could not be retrieved from the site.",
     "confirmstart": "You have {{$a}} to complete this assignment. When you begin, the timer will start to count down and can't be paused.",
     "confirmsubmission": "Are you sure you want to submit your work for grading? You will not be able to make any more changes.",
+    "currentassigngrade": "Current grade in assignment",
     "currentattempt": "This is attempt {{$a}}.",
     "currentattemptof": "This is attempt {{$a.attemptnumber}} ( {{$a.maxattempts}} attempts allowed ).",
     "currentgrade": "Current grade in gradebook",
