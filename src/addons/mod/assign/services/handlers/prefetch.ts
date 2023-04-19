@@ -374,10 +374,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
                         return this.prefetchSubmission(assign, courseId, moduleId, submissionOptions, true);
                     });
 
-                    if (!assign.markingworkflow) {
-                        // Get assignment grades only if workflow is not enabled to check grading date.
-                        subPromises.push(AddonModAssign.getAssignmentGrades(assign.id, modOptions));
-                    }
+                    subPromises.push(AddonModAssign.getAssignmentGrades(assign.id, modOptions));
 
                     // Prefetch the submission of the current user even if it does not exist, this will be create it.
                     if (!submissions || !submissions.find((subm: AddonModAssignSubmissionFormatted) => subm.submitid == userId)) {

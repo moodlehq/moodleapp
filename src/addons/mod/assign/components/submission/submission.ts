@@ -59,6 +59,7 @@ import { AddonModAssignSubmissionPluginComponent } from '../submission-plugin/su
 import { AddonModAssignModuleHandlerService } from '../../services/handlers/module';
 import { CanLeave } from '@guards/can-leave';
 import { CoreTime } from '@singletons/time';
+import { isSafeNumber, SafeNumber } from '@/core/utils/types';
 
 /**
  * Component that displays an assignment submission.
@@ -476,6 +477,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
             ));
             promises.push(AddonModAssign.invalidateAssignmentUserMappingsData(this.assign.id));
             promises.push(AddonModAssign.invalidateListParticipantsData(this.assign.id));
+            promises.push(AddonModAssign.invalidateAssignmentGradesData(this.assign.id));
         }
         promises.push(CoreGradesHelper.invalidateGradeModuleItems(this.courseId, this.submitId));
         promises.push(CoreCourse.invalidateModule(this.moduleId));
@@ -691,7 +693,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
         }
 
         // Treat the grade info.
-        await this.treatGradeInfo();
+        await this.treatGradeInfo(assign);
 
         const isManual = assign.attemptreopenmethod == AddonModAssignAttemptReopenMethodValues.MANUAL;
         const isUnlimited = assign.maxattempts == AddonModAssignProvider.UNLIMITED_ATTEMPTS;
@@ -708,7 +710,10 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
                 AddonModAssign.getSubmissionGradingStatusTranslationId(this.grade.gradingStatus);
         }
 
-        if (this.lastAttempt?.gradingstatus == 'graded' && !assign.markingworkflow && this.userSubmission && feedback) {
+        if (
+            this.lastAttempt?.gradingstatus === AddonModAssignGradingStates.GRADED && !assign.markingworkflow &&
+            this.userSubmission && feedback
+        ) {
             if (feedback.gradeddate < this.userSubmission.timemodified) {
                 this.lastAttempt.gradingstatus = AddonModAssignGradingStates.GRADED_FOLLOWUP_SUBMIT;
 
@@ -975,9 +980,10 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
     /**
      * Treat the grade info.
      *
+     * @param assign Assign info.
      * @returns Promise resolved when done.
      */
-    protected async treatGradeInfo(): Promise<void> {
+    protected async treatGradeInfo(assign: AddonModAssignAssign): Promise<void> {
         if (!this.gradeInfo) {
             return;
         }
@@ -997,12 +1003,33 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
 
         this.canSaveGrades = this.grade.method == 'simple'; // Grades can be saved if simple grading.
 
+        const gradeNotReleased = assign.markingworkflow &&
+            this.grade.gradingStatus !== AddonModAssignGradingStates.MARKING_WORKFLOW_STATE_RELEASED;
+
+        const [gradebookGrades, assignGrades] = await Promise.all([
+            CoreGradesHelper.getGradeModuleItems(this.courseId, this.moduleId, this.submitId),
+            gradeNotReleased ?
+                CoreUtils.ignoreErrors(AddonModAssign.getAssignmentGrades(assign.id, { cmId: assign.cmid })) :
+                undefined,
+        ]);
+
+        const unreleasedGrade = Number(assignGrades?.find(grade => grade.userid === this.submitId)?.grade);
+        this.grade.unreleasedGrade = undefined;
+
         if (gradeInfo.scale) {
-            this.grade.scale =
-                CoreUtils.makeMenuFromList(gradeInfo.scale, Translate.instant('core.nograde'));
+            this.grade.scale = CoreUtils.makeMenuFromList(gradeInfo.scale, Translate.instant('core.nograde'));
+
+            if (isSafeNumber(unreleasedGrade)) {
+                const scaleItem = this.grade.scale.find(scaleItem => scaleItem.value === unreleasedGrade);
+                this.grade.unreleasedGrade = scaleItem?.label;
+                this.grade.grade = (scaleItem ?? this.grade.scale[0])?.value;
+                this.originalGrades.grade = this.grade.grade;
+            }
         } else {
+            this.grade.unreleasedGrade = isSafeNumber(unreleasedGrade) ? unreleasedGrade : undefined;
+
             // Format the grade.
-            this.grade.grade = CoreUtils.formatFloat(this.grade.grade);
+            this.grade.grade = CoreUtils.formatFloat(this.grade.unreleasedGrade ?? this.grade.grade);
             this.originalGrades.grade = this.grade.grade;
 
             // Get current language to format grade input field.
@@ -1024,12 +1051,9 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
             });
         }
 
-        // Get grade items.
-        const grades = await CoreGradesHelper.getGradeModuleItems(this.courseId, this.moduleId, this.submitId);
-
         const outcomes: AddonModAssignGradeOutcome[] = [];
 
-        grades.forEach((grade: CoreGradesFormattedItem) => {
+        gradebookGrades.forEach((grade: CoreGradesFormattedItem) => {
             if (!grade.outcomeid && !grade.scaleid) {
 
                 // Clean HTML tags, grade can contain an icon.
@@ -1245,6 +1269,7 @@ type AddonModAssignSubmissionGrade = {
     scale?: CoreMenuItem<number>[];
     lang: string;
     disabled: boolean;
+    unreleasedGrade?: SafeNumber | string;
 };
 
 type AddonModAssignSubmissionOriginalGrades = {
