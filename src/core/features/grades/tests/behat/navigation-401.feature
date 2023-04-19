@@ -35,6 +35,8 @@ Feature: Grades navigation
       | GI C2.1.2 | student1 | 20    |
       | GI C2.2.1 | student1 | 40    |
 
+  # This scenario is duplicated from main because teacher gradebook is not supported
+  # in 4.1. It tests the grades from participants profile instead.
   Scenario: Mobile navigation (teacher)
     Given I entered the course "Course 2" as "teacher1" in the app
 
@@ -78,6 +80,8 @@ Feature: Grades navigation
     Then I should not find "Weight" in the app
     And I should not find "Percentage" in the app
 
+  # This scenario is duplicated from main because teacher gradebook is not supported
+  # in 4.1. It tests the grades from participants profile instead.
   Scenario: Tablet navigation (teacher)
     Given I entered the course "Course 2" as "teacher1" in the app
     And I change viewport size to "1200x640"
