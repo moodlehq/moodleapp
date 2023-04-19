@@ -81,10 +81,13 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
                         CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(CoreGradesCoursesSource, []),
                     );
                     break;
-                case 'participants':
+                case 'participants': {
+                    const search = CoreNavigator.getRouteParam('search');
+
                     this.swipeManager = new CoreGradesCourseParticipantsSwipeManager(
-                        CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(CoreUserParticipantsSource, [this.courseId]),
+                        CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(CoreUserParticipantsSource, [this.courseId, search]),
                     );
+                }
                     break;
             }
         } catch (error) {
