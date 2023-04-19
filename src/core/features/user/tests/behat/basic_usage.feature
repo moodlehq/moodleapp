@@ -75,10 +75,6 @@ Feature: Test basic usage of user features
       | user     | course | role    |
       | student1 | C1     | student |
       | student2 | C1     | student |
-    # @todo MDL-77468 This capability override is needed until the issue is integrated.
-    And the following "permission overrides" exist:
-      | capability                 | permission | role    | contextlevel | reference |
-      | moodle/user:viewalldetails | Allow      | student | Course       | C1        |
     And I entered the course "Course 1" as "student1" in the app
     When I press "Participants" in the app
     And I press "Student Student" in the app
