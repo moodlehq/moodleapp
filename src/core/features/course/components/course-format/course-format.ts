@@ -441,8 +441,10 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                             await CoreCourseModuleDelegate.getModuleDataFor(module.modname, module, this.course.id);
         }
 
-        if (CoreCourseHelper.canUserViewModule(module, section) && module.handlerData?.action) {
-            module.handlerData.action(data.event, module, module.course);
+        if (CoreCourseHelper.canUserViewModule(module, section)) {
+            this.scrollToModule(module.id);
+
+            module.handlerData?.action?.(data.event, module, module.course);
         }
 
         this.moduleId = data.moduleId;
