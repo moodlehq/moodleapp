@@ -38,6 +38,7 @@ import { CorePlatform } from '@services/platform';
 import { CoreErrorWithOptions } from '@classes/errors/errorwithtitle';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
+import { CoreCancellablePromise } from '@classes/cancellable-promise';
 
 export type TreeNode<T> = T & { children: TreeNode<T>[] };
 
@@ -1793,6 +1794,34 @@ export class CoreUtilsProvider {
      */
     wait(milliseconds: number): Promise<void> {
         return new Promise(resolve => setTimeout(resolve, milliseconds));
+    }
+
+    /**
+     * Wait until a given condition is met.
+     *
+     * @param condition Condition.
+     * @returns Cancellable promise.
+     */
+    waitFor(condition: () => boolean, interval: number = 50): CoreCancellablePromise<void> {
+        if (condition()) {
+            return CoreCancellablePromise.resolve();
+        }
+
+        let intervalId: number | undefined;
+
+        return new CoreCancellablePromise<void>(
+            async (resolve) => {
+                intervalId = window.setInterval(() => {
+                    if (!condition()) {
+                        return;
+                    }
+
+                    resolve();
+                    window.clearInterval(intervalId);
+                }, interval);
+            },
+            () => window.clearInterval(intervalId),
+        );
     }
 
     /**
