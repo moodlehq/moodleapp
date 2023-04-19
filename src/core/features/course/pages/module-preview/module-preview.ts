@@ -13,6 +13,10 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
+import {
+    CoreCourseModuleSummaryResult,
+    CoreCourseModuleSummaryComponent,
+} from '@features/course/components/module-summary/module-summary';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -90,6 +94,41 @@ export class CoreCourseModulePreviewPage implements OnInit {
         this.showManualCompletion = await CoreCourseModuleDelegate.manualCompletionAlwaysShown(this.module);
 
         this.loaded = true;
+    }
+
+    /**
+     * Opens a module summary page.
+     */
+    async openModuleSummary(): Promise<void> {
+        if (!this.module) {
+            return;
+        }
+
+        const data = await CoreDomUtils.openSideModal<CoreCourseModuleSummaryResult>({
+            component: CoreCourseModuleSummaryComponent,
+            componentProps: {
+                moduleId: this.module.id,
+                module: this.module,
+                description: this.module.description,
+                component: this.module.modname,
+                courseId: this.courseId,
+                displayOptions: {
+                    displayDescription: false,
+                    displayBlog: false,
+                },
+            },
+        });
+
+        if (data) {
+            if (this.loaded && data.action == 'refresh') {
+                this.loaded = false;
+                try {
+                    await this.doRefresh(undefined);
+                } finally {
+                    this.loaded = true;
+                }
+            }
+        }
     }
 
     /**
