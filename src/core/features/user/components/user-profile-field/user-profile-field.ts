@@ -60,14 +60,15 @@ export class CoreUserProfileFieldComponent implements OnInit {
 
         this.data.field = this.field;
         this.data.edit = CoreUtils.isTrueOrOne(this.edit);
+        this.data.contextLevel = this.contextLevel;
+        this.data.contextInstanceId = this.contextInstanceId;
+        this.data.courseId = this.courseId;
+
         if (this.edit) {
             this.data.signup = CoreUtils.isTrueOrOne(this.signup);
             this.data.disabled = 'locked' in this.field && CoreUtils.isTrueOrOne(this.field.locked);
             this.data.form = this.form;
             this.data.registerAuth = this.registerAuth;
-            this.data.contextLevel = this.contextLevel;
-            this.data.contextInstanceId = this.contextInstanceId;
-            this.data.courseId = this.courseId;
         }
     }
 
