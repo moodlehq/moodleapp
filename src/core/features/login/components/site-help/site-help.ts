@@ -59,6 +59,13 @@ export class CoreLoginSiteHelpComponent implements AfterViewInit, OnDestroy {
                 },
             },
             {
+                text: Translate.instant('core.login.faqcantloginquestion'),
+                answer: {
+                    text: Translate.instant('core.login.faqcantloginanswer'),
+                    format: AnswerFormat.SafeHTML,
+                },
+            },
+            {
                 text: Translate.instant('core.login.faqsetupsitequestion'),
                 answer: {
                     text: Translate.instant('core.login.faqsetupsiteanswer', { $link: setupLinkHtml }),
