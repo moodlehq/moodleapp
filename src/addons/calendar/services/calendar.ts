@@ -1392,7 +1392,7 @@ export class AddonCalendarProvider {
 
         const siteIds = await CoreSites.getSitesIds();
 
-        await Promise.all(siteIds.map((siteId: string) => async () => {
+        await Promise.all(siteIds.map(async (siteId) => {
 
             // Check if calendar is disabled for the site.
             const disabled = await this.isDisabled(siteId);
