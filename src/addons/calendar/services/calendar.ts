@@ -49,6 +49,7 @@ import {
     CoreReminderValueAndUnit,
 } from '@features/reminders/services/reminders';
 import { CoreReminderDBRecord } from '@features/reminders/services/database/reminders';
+import { CoreEvents } from '@singletons/events';
 
 const ROOT_CACHE_KEY = 'mmaCalendar:';
 
@@ -297,6 +298,14 @@ export class AddonCalendarProvider {
                 this.notificationClicked(notification);
             },
         );
+
+        CoreEvents.on(CoreEvents.SITE_ADDED, (data) => {
+            if (!data.siteId) {
+                return;
+            }
+
+            this.updateSiteEventReminders(data.siteId);
+        });
     }
 
     /**
@@ -1381,27 +1390,31 @@ export class AddonCalendarProvider {
     }
 
     /**
-     * Get the next events for all the sites and schedules their notifications.
-     * If an event notification time is 0, cancel its scheduled notification (if any).
-     * If local notification plugin is not enabled, resolve the promise.
-     *
-     * @returns Promise resolved when all the notifications have been scheduled.
+     * Get the next events for all the sites and updates their reminders.
      */
     async updateAllSitesEventReminders(): Promise<void> {
         await CorePlatform.ready();
 
         const siteIds = await CoreSites.getSitesIds();
 
-        await Promise.all(siteIds.map((siteId: string) => async () => {
+        await Promise.all(siteIds.map(siteId => this.updateSiteEventReminders(siteId)));
+    }
 
-            // Check if calendar is disabled for the site.
-            const disabled = await this.isDisabled(siteId);
-            if (!disabled) {
-                // Get first events.
-                const events = await this.getEventsList(undefined, undefined, undefined, siteId);
-                await this.updateEventsReminders(events, siteId);
-            }
-        }));
+    /**
+     * Get the next events for a site and updates their reminders.
+     *
+     * @param siteId Site ID.
+     */
+    async updateSiteEventReminders(siteId: string): Promise<void> {
+        // Check if calendar is disabled for the site.
+        const disabled = await this.isDisabled(siteId);
+        if (disabled) {
+            return;
+        }
+
+        // Get first events.
+        const events = await this.getEventsList(undefined, undefined, undefined, siteId);
+        await this.updateEventsReminders(events, siteId);
     }
 
     /**
