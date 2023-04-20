@@ -1,4 +1,4 @@
-@mod @mod_assign @app @javascript
+@mod @mod_assign @app @javascript @lms_from4.0
 Feature: Test marking workflow in assignment activity in app
 
   Background:
