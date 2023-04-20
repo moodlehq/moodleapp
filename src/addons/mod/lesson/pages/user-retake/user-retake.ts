@@ -94,7 +94,7 @@ export class AddonModLessonUserRetakePage implements OnInit {
         try {
             await this.setRetake(retakeNumber);
         } catch (error) {
-            this.selectedRetake = this.previousSelectedRetake;
+            this.selectedRetake = this.previousSelectedRetake ?? this.selectedRetake;
             CoreDomUtils.showErrorModal(CoreUtils.addDataNotDownloadedError(error, 'Error getting attempt.'));
         } finally {
             this.loaded = true;
