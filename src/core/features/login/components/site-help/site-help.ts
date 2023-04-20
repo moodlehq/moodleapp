@@ -38,7 +38,7 @@ export class CoreLoginSiteHelpComponent implements AfterViewInit, OnDestroy {
 
     constructor(protected el: ElementRef<HTMLElement>) {
         const getStartedTitle = Translate.instant('core.login.faqsetupsitelinktitle');
-        const canScanQR = !CoreUtils.canScanQR();
+        const canScanQR = CoreUtils.canScanQR();
         const urlImageHtml = CoreLoginHelperProvider.FAQ_URL_IMAGE_HTML;
         const qrCodeImageHtml = CoreLoginHelperProvider.FAQ_QRCODE_IMAGE_HTML;
         const setupLinkHtml = `<a href="${GET_STARTED_URL}" title="${getStartedTitle}">${GET_STARTED_URL}</a>`;
