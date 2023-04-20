@@ -15,8 +15,8 @@ Feature: Test decimal separators in lesson
       | student1 | C1     | student        |
     And the following "activities" exist:
       | activity | name           | intro                | course | idnumber | modattempts | review | maxattempts | retake | allowofflineattempts |
-      | lesson   | Basic lesson   | Basic lesson descr   | C1     | lesson   | 1           | 1      | 0           | 1      | 0                    |
-      | lesson   | Offline lesson | Offline lesson descr | C1     | lesson   | 1           | 1      | 0           | 1      | 1                    |
+      | lesson   | Basic lesson   | Basic lesson descr   | C1     | lesson   | 1           | 1      | 9           | 1      | 0                    |
+      | lesson   | Offline lesson | Offline lesson descr | C1     | lesson   | 1           | 1      | 9           | 1      | 1                    |
     # Currently there are no generators for pages. See MDL-77581.
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
