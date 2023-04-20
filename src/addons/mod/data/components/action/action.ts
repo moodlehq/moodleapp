@@ -23,12 +23,15 @@ import {
     AddonModDataAction,
     AddonModDataData,
     AddonModDataEntry,
+    AddonModDataGetDataAccessInformationWSResponse,
     AddonModDataProvider,
     AddonModDataTemplateMode,
 } from '../../services/data';
 import { AddonModDataHelper } from '../../services/data-helper';
 import { AddonModDataOffline } from '../../services/data-offline';
 import { AddonModDataModuleHandlerService } from '../../services/handlers/module';
+import { CoreDomUtils } from '@services/utils/dom';
+import { AddonModDataActionsMenuComponent, AddonModDataActionsMenuItem } from '../actionsmenu/actionsmenu';
 
 /**
  * Component that displays a database action.
@@ -39,6 +42,7 @@ import { AddonModDataModuleHandlerService } from '../../services/handlers/module
 })
 export class AddonModDataActionComponent implements OnInit {
 
+    @Input() access?: AddonModDataGetDataAccessInformationWSResponse; // Access info.
     @Input() mode!: AddonModDataTemplateMode; // The render mode.
     @Input() action!: AddonModDataAction; // The field to render.
     @Input() entry!: AddonModDataEntry; // The value of the field.
@@ -137,6 +141,68 @@ export class AddonModDataActionComponent implements OnInit {
         // Found. Just delete the action.
         await AddonModDataOffline.deleteEntry(dataId, entryId, AddonModDataAction.DELETE, this.siteId);
         CoreEvents.trigger(AddonModDataProvider.ENTRY_CHANGED, { dataId: dataId, entryId: entryId }, this.siteId);
+    }
+
+    /**
+     * Open actions menu popover.
+     */
+    async actionsMenu(): Promise<void> {
+        const items: AddonModDataActionsMenuItem[] = [];
+
+        if (this.entry.canmanageentry) {
+            items.push(
+                this.entry.deleted
+                    ? {
+                        action: () => this.undoDelete(),
+                        text: 'core.restore',
+                        icon: 'fas-rotate-left',
+                    }
+                    : {
+                        action: () => this.deleteEntry(),
+                        text: 'core.delete',
+                        icon: 'fas-trash',
+                    },
+            );
+
+            if (!this.entry.deleted) {
+                items.unshift({
+                    action: () => this.editEntry(),
+                    text: 'core.edit',
+                    icon: 'fas-pen',
+                });
+            }
+        }
+
+        if (this.database.approval && this.access?.canapprove && !this.entry.deleted) {
+            items.push(
+                !this.entry.approved
+                    ? {
+                        action: () => this.approveEntry(),
+                        text: 'addon.mod_data.approve',
+                        icon: 'fas-thumbs-up',
+                    }
+                    : {
+                        action: () => this.disapproveEntry(),
+                        text: 'addon.mod_data.disapprove',
+                        icon: 'far-thumbs-down',
+                    },
+            );
+        }
+
+        if (this.mode === AddonModDataTemplateMode.LIST) {
+            items.unshift({
+                action: () => this.viewEntry(),
+                text: 'addon.mod_data.showmore',
+                icon: 'fas-magnifying-glass-plus',
+            });
+        }
+
+        await CoreDomUtils.openPopover({
+            component: AddonModDataActionsMenuComponent,
+            componentProps: { items },
+            showBackdrop: true,
+            id: 'actionsmenu-popover',
+        });
     }
 
 }

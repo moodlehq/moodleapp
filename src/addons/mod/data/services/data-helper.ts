@@ -234,7 +234,7 @@ export class AddonModDataHelperProvider {
                     render = Translate.instant('addon.mod_data.' + (entry.approved ? 'approved' : 'notapproved'));
                 } else {
                     render = `<addon-mod-data-action action="${action}" [entry]="entries[${entry.id}]" mode="${mode}" ` +
-                        '[database]="database" [title]="title" ' +
+                        '[database]="database" [access]="access" [title]="title" ' +
                         (options.offset !== undefined ? `[offset]="${options.offset}" ` : '') +
                         (options.sortBy !== undefined ? `[sortBy]="${options.sortBy}" ` : '') +
                         (options.sortDirection !== undefined ? `sortDirection="${options.sortDirection}" ` : '') +
@@ -407,6 +407,7 @@ export class AddonModDataHelperProvider {
         database: AddonModDataData,
         accessInfo: AddonModDataGetDataAccessInformationWSResponse,
         entry: AddonModDataEntry,
+        mode: AddonModDataTemplateMode,
     ): Record<AddonModDataAction, boolean> {
         return {
             add: false, // Not directly used on entries.
@@ -425,6 +426,10 @@ export class AddonModDataHelperProvider {
 
             approvalstatus: database.approval,
             comments: database.comments,
+
+            actionsmenu: entry.canmanageentry
+                || (database.approval && accessInfo.canapprove && !entry.deleted)
+                || mode === AddonModDataTemplateMode.LIST,
 
             // Unsupported actions.
             delcheck: false,
@@ -497,7 +502,7 @@ export class AddonModDataHelperProvider {
             html.push(
                 '<tr class="lastrow">',
                 '<td class="controls template-field cell c0 lastcol" style="" colspan="2">',
-                '##edit##  ##more##  ##delete##  ##approve##  ##disapprove##  ##export##',
+                '##actionsmenu##  ##edit##  ##more##  ##delete##  ##approve##  ##disapprove##  ##export##',
                 '</td>',
                 '</tr>',
             );
@@ -505,7 +510,7 @@ export class AddonModDataHelperProvider {
             html.push(
                 '<tr class="lastrow">',
                 '<td class="controls template-field cell c0 lastcol" style="" colspan="2">',
-                '##edit##  ##delete##  ##approve##  ##disapprove##  ##export##',
+                '##actionsmenu##  ##edit##  ##delete##  ##approve##  ##disapprove##  ##export##',
                 '</td>',
                 '</tr>',
             );

@@ -1,4 +1,5 @@
 {
+    "actions": "Actions menu",
     "addentries": "Add entries",
     "advancedsearch": "Advanced search",
     "alttext": "Alternative text",
@@ -42,6 +43,7 @@
     "search": "Search",
     "searchbytagsnotsupported": "Sorry, searching by tags is not supported by the app.",
     "selectedrequired": "All selected required",
+    "showmore": "Show more",
     "single": "View single",
     "tagarea_data_records": "Data records",
     "timeadded": "Time added",

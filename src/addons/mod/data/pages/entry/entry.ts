@@ -86,6 +86,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
         database: AddonModDataData;
         title: string;
         group: number;
+        access: AddonModDataGetDataAccessInformationWSResponse | undefined;
     };
 
     ratingInfo?: CoreRatingInfo;
@@ -187,7 +188,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
 
             this.selectedGroup = CoreGroups.validateGroupId(this.selectedGroup, this.groupInfo);
 
-            const actions = AddonModDataHelper.getActions(this.database, this.access, this.entry!);
+            const actions = AddonModDataHelper.getActions(this.database, this.access, this.entry!, AddonModDataTemplateMode.SHOW);
 
             const template = AddonModDataHelper.getTemplate(this.database, AddonModDataTemplateType.SINGLE, this.fieldsArray);
             this.entryHtml = AddonModDataHelper.displayShowFields(
@@ -215,6 +216,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
                 database: this.database,
                 title: this.title,
                 group: this.selectedGroup,
+                access: this.access,
             };
 
             if (this.logAfterFetch) {
