@@ -1,13 +1,38 @@
-.core-login-faqwhatisurlanswer img {
-    max-height: 50px;
-}
+:host {
 
-.core-login-faqwhereisqrcodeanswer img {
-    max-height: 220px;
-    margin-top: 5px;
-    margin-bottom: 5px;
-}
+    .core-login-faqwhatisurlanswer img {
+        max-height: 50px;
+    }
 
-h2 {
-    font-weight: bold;
+    .core-login-faqwhereisqrcodeanswer img {
+        max-height: 220px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    &:not(.hydrated) {
+
+        .core-login-site-help--answer {
+            opacity: 0;
+            max-width: 100%;
+            position: absolute;
+            pointer-events: none;
+        }
+
+    }
+
+    &.hydrated {
+
+        .core-login-site-help--answer {
+            height: 0;
+            transition: height 200ms ease-in-out;
+
+            &.open {
+                height: var(--height);
+            }
+
+        }
+
+    }
+
 }

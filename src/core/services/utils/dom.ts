@@ -59,6 +59,7 @@ import { CoreUserSupport } from '@features/user/services/support';
 import { CoreErrorInfoComponent } from '@components/error-info/error-info';
 import { CorePlatform } from '@services/platform';
 import { AddonFilterMultilang2Handler } from '@addons/filter/multilang2/services/handlers/multilang2';
+import { CoreCancellablePromise } from '@classes/cancellable-promise';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -1918,32 +1919,62 @@ export class CoreDomUtilsProvider {
      * @param element The element to search in.
      * @returns Promise resolved with a boolean: whether there was any image to load.
      */
-    async waitForImages(element: HTMLElement): Promise<boolean> {
+    waitForImages(element: HTMLElement): CoreCancellablePromise<boolean> {
         const imgs = Array.from(element.querySelectorAll('img'));
-        const promises: Promise<void>[] = [];
-        let hasImgToLoad = false;
 
-        imgs.forEach((img) => {
-            if (img && !img.complete) {
-                hasImgToLoad = true;
+        if (imgs.length === 0) {
+            return CoreCancellablePromise.resolve(false);
+        }
 
-                // Wait for image to load or fail.
-                promises.push(new Promise((resolve) => {
-                    const imgLoaded = (): void => {
-                        resolve();
-                        img.removeEventListener('load', imgLoaded);
-                        img.removeEventListener('error', imgLoaded);
+        let completedImages = 0;
+        let waitedForImages = false;
+        const listeners: WeakMap<Element, () => unknown> = new WeakMap();
+        const imageCompleted = (resolve: (result: boolean) => void) => {
+            completedImages++;
+
+            if (completedImages === imgs.length) {
+                resolve(waitedForImages);
+            }
+        };
+
+        return new CoreCancellablePromise<boolean>(
+            resolve => {
+                for (const img of imgs) {
+                    if (!img || img.complete) {
+                        imageCompleted(resolve);
+
+                        continue;
+                    }
+
+                    waitedForImages = true;
+
+                    // Wait for image to load or fail.
+                    const imgCompleted = (): void => {
+                        img.removeEventListener('load', imgCompleted);
+                        img.removeEventListener('error', imgCompleted);
+
+                        imageCompleted(resolve);
                     };
 
-                    img.addEventListener('load', imgLoaded);
-                    img.addEventListener('error', imgLoaded);
-                }));
-            }
-        });
+                    img.addEventListener('load', imgCompleted);
+                    img.addEventListener('error', imgCompleted);
 
-        await Promise.all(promises);
+                    listeners.set(img, imgCompleted);
+                }
+            },
+            () => {
+                imgs.forEach(img => {
+                    const listener = listeners.get(img);
 
-        return hasImgToLoad;
+                    if (!listener) {
+                        return;
+                    }
+
+                    img.removeEventListener('load', listener);
+                    img.removeEventListener('error', listener);
+                });
+            },
+        );
     }
 
     /**

@@ -4,7 +4,7 @@
             <h1>{{ 'core.login.help' | translate }}</h1>
         </ion-title>
         <ion-buttons slot="end">
-            <ion-button fill="clear" (click)="closeHelp()" [attr.aria-label]="'core.close' | translate">
+            <ion-button fill="clear" (click)="close()" [attr.aria-label]="'core.close' | translate">
                 <ion-icon slot="icon-only" name="fas-xmark" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
@@ -12,57 +12,30 @@
 </ion-header>
 <ion-content>
     <ion-list>
-        <ion-item class="ion-text-wrap">
-            <ion-label>
-                <h2>{{ 'core.login.faqwhatisurlquestion' | translate }}</h2>
-            </ion-label>
-        </ion-item>
-        <ion-item class="ion-text-wrap">
-            <ion-label>
-                <p [innerHTML]="'core.login.faqwhatisurlanswer' | translate: {$image: urlImageHtml}"></p>
-            </ion-label>
-        </ion-item>
-        <ion-item class="ion-text-wrap">
-            <ion-label>
-                <h2>{{ 'core.login.faqcannotfindmysitequestion' | translate }}</h2>
-            </ion-label>
-        </ion-item>
-        <ion-item class="ion-text-wrap">
-            <ion-label>
-                <p>{{ 'core.login.faqcannotfindmysiteanswer' | translate }}</p>
-            </ion-label>
-        </ion-item>
-        <ion-item class="ion-text-wrap">
-            <ion-label>
-                <h2>{{ 'core.login.faqsetupsitequestion' | translate }}</h2>
-            </ion-label>
-        </ion-item>
-        <ion-item class="ion-text-wrap">
-            <ion-label>
-                <p>
-                    <core-format-text [text]="'core.login.faqsetupsiteanswer' | translate:{$link: setupLinkHtml}" [filter]="false">
+        <ng-container *ngFor="let question of questions">
+            <ion-item button class="ion-text-wrap divider" (click)="toggle(question)" sticky="true" [attr.aria-expanded]="isOpen(question)"
+                [attr.aria-controls]="'question-' + question.id + '-answer'" role="heading" detail="false">
+                <ion-icon name="fas-chevron-right" flip-rtl slot="start" aria-hidden="true" class="expandable-status-icon"
+                    [class.expandable-status-icon-expanded]="isOpen(question)">
+                </ion-icon>
+                <ion-label>
+                    <h2>{{ question.text }}</h2>
+                </ion-label>
+            </ion-item>
+            <ion-item [id]="'question-' + question.id + '-answer'"
+                [class]="question.answer.class + 'ion-text-wrap core-login-site-help--answer'" [class.open]="isOpen(question)"
+                [tabindex]="isOpen(question) ? null : -1" [attr.inert]="isOpen(question) ? null : 'true'">
+                <ion-label>
+                    <p *ngIf="question.answer.format === 'text'">{{ question.answer.text }}</p>
+                    <p *ngIf="question.answer.format === 'safe-html'" [innerHTML]="question.answer.text"></p>
+                    <core-format-text *ngIf="question.answer.format === 'unsafe-html'" [text]="question.answer.text" [filter]="false">
                     </core-format-text>
-                </p>
-            </ion-label>
-        </ion-item>
-        <ion-item class="ion-text-wrap">
+                </ion-label>
+            </ion-item>
+        </ng-container>
+        <ion-item>
             <ion-label>
-                <h2>{{ 'core.login.faqtestappquestion' | translate }}</h2>
-            </ion-label>
-        </ion-item>
-        <ion-item class="ion-text-wrap">
-            <ion-label>
-                <p [innerHTML]="'core.login.faqtestappanswer' | translate"></p>
-            </ion-label>
-        </ion-item>
-        <ion-item class="ion-text-wrap" *ngIf="canScanQR">
-            <ion-label>
-                <h2>{{ 'core.login.faqwhereisqrcode' | translate }}</h2>
-            </ion-label>
-        </ion-item>
-        <ion-item class="ion-text-wrap core-login-faqwhereisqrcodeanswer" *ngIf="canScanQR">
-            <ion-label>
-                <p [innerHTML]="'core.login.faqwhereisqrcodeanswer' | translate: {$image: qrCodeImageHtml}"></p>
+                <p [innerHTML]="'core.login.faqmore' | translate"></p>
             </ion-label>
         </ion-item>
     </ion-list>
