@@ -65,6 +65,14 @@ export class CoreLoginSiteHelpComponent implements AfterViewInit, OnDestroy {
                     format: AnswerFormat.SafeHTML,
                 },
             },
+            canScanQR && {
+                text: Translate.instant('core.login.faqwhereisqrcode'),
+                answer: {
+                    text: Translate.instant('core.login.faqwhereisqrcodeanswer', { $image: qrCodeImageHtml }),
+                    format: AnswerFormat.SafeHTML,
+                    class: 'core-login-faqwhereisqrcodeanswer',
+                },
+            },
             {
                 text: Translate.instant('core.login.faqsetupsitequestion'),
                 answer: {
@@ -77,14 +85,6 @@ export class CoreLoginSiteHelpComponent implements AfterViewInit, OnDestroy {
                 answer: {
                     text: Translate.instant('core.login.faqtestappanswer'),
                     format: AnswerFormat.SafeHTML,
-                },
-            },
-            canScanQR && {
-                text: Translate.instant('core.login.faqwhereisqrcode'),
-                answer: {
-                    text: Translate.instant('core.login.faqwhereisqrcodeanswer', { $image: qrCodeImageHtml }),
-                    format: AnswerFormat.SafeHTML,
-                    class: 'core-login-faqwhereisqrcodeanswer',
                 },
             },
         ];
