@@ -14,7 +14,7 @@
 
 import { Component, Input, OnInit, Type } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { CoreLang } from '@services/lang';
+import { CoreLang, multilangString } from '@services/lang';
 import { AuthEmailSignupProfileField } from '@features/login/services/login-helper';
 import { CoreUserProfileField } from '@features/user/services/user';
 import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profile-field-delegate';
@@ -52,7 +52,7 @@ export class CoreUserProfileFieldComponent implements OnInit {
         this.componentClass = await CoreUserProfileFieldDelegate.getComponent(this.field, this.signup);
 
         if ('param1' in this.field && this.field.param1) {
-            this.field.param1 = await CoreLang.filterMultilang(<string> this.field.param1);
+            this.field.param1 = await CoreLang.filterMultilang(multilangString(this.field.param1));
         }
 
         this.data.field = this.field;

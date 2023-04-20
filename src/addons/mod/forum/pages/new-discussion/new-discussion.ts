@@ -44,6 +44,7 @@ import { AddonModForumDiscussionsSwipeManager } from '../../classes/forum-discus
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { AddonModForumDiscussionsSource } from '../../classes/forum-discussions-source';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
+import { CoreLang, multilangString } from '@services/lang';
 
 type NewDiscussionData = {
     subject: string;
@@ -190,14 +191,14 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
                             }
 
                             // eslint-disable-next-line promise/no-nesting
-                            return promise.then((forumGroups) => {
+                            return promise.then(async (forumGroups) => {
                                 if (forumGroups.length > 0) {
                                     this.groups = forumGroups;
                                     this.groupIds = forumGroups.map((group) => group.id).filter((id) => id > 0);
                                     // Do not override group id.
                                     this.newDiscussion.groupId = this.newDiscussion.groupId || this.getInitialGroupId();
                                     this.showGroups = true;
-                                    this.calculateGroupName();
+                                    await this.calculateGroupName();
                                     if (this.groupIds.length <= 1) {
                                         this.newDiscussion.postToAllGroups = false;
                                     }
@@ -271,7 +272,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
                             this.newDiscussion.subscribe = !!discussion.options.discussionsubscribe;
                             this.newDiscussion.pin = !!discussion.options.discussionpinned;
                             this.messageControl.setValue(discussion.message);
-                            this.calculateGroupName();
+                            await this.calculateGroupName();
 
                             // Treat offline attachments if any.
                             if (typeof discussion.options.attachmentsid === 'object' && discussion.options.attachmentsid.offline) {
@@ -426,7 +427,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
                 groups.unshift({
                     courseid: this.courseId,
                     id: AddonModForumProvider.ALL_PARTICIPANTS,
-                    name: Translate.instant('core.allparticipants'),
+                    name: multilangString(Translate.instant('core.allparticipants')),
                 });
             }
 
@@ -611,11 +612,13 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
     /**
      * Calculate current group's name.
      */
-    calculateGroupName(): void {
+    async calculateGroupName(): Promise<void> {
         if (this.newDiscussion.groupId <= 0) {
             this.groupName = undefined;
         } else {
-            this.groupName = this.groups.find(group => group.id === this.newDiscussion.groupId)?.name;
+            const groupName = this.groups.find(group => group.id === this.newDiscussion.groupId)?.name;
+
+            this.groupName = groupName && await CoreLang.filterMultilang(groupName);
         }
     }
 

@@ -48,6 +48,7 @@ import {
 import { AddonModLessonModuleHandlerService } from '../../services/handlers/module';
 import { CoreTime } from '@singletons/time';
 import { CoreError } from '@classes/errors/error';
+import { CoreLang } from '@services/lang';
 
 /**
  * Component that displays a lesson entry page.
@@ -491,7 +492,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         // Search the name of the group if it isn't all participants.
         if (groupId && this.groupInfo && this.groupInfo.groups) {
             const group = this.groupInfo.groups.find(group => groupId == group.id);
-            this.selectedGroupName = group?.name || '';
+            this.selectedGroupName = group ? await CoreLang.filterMultilang(group.name) : '';
         }
 
         // Get the overview of retakes for the group.

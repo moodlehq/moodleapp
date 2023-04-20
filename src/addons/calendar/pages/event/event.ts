@@ -42,6 +42,7 @@ import { AddonCalendarEventsSource } from '@addons/calendar/classes/events-sourc
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { CoreReminders, CoreRemindersService } from '@features/reminders/services/reminders';
 import { CoreRemindersSetReminderMenuComponent } from '@features/reminders/components/set-reminder-menu/set-reminder-menu';
+import { CoreLang } from '@services/lang';
 
 /**
  * Page that displays a single calendar event.
@@ -370,7 +371,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
             const groups = await CoreGroups.getUserGroupsInCourse(courseId);
 
             const group = groups.find((group) => group.id == event.groupid);
-            this.groupName = group ? group.name : '';
+            this.groupName = group ? await CoreLang.filterMultilang(group.name) : '';
 
         } catch {
             // Error getting groups, just don't show the group name.

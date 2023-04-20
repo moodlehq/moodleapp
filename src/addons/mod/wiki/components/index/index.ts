@@ -55,6 +55,7 @@ import {
 } from '../../services/wiki-sync';
 import { AddonModWikiMapModalComponent, AddonModWikiMapModalReturn } from '../map/map';
 import { AddonModWikiSubwikiPickerComponent } from '../subwiki-picker/subwiki-picker';
+import { CoreLang } from '@services/lang';
 
 /**
  * Component that displays a wiki entry page.
@@ -901,7 +902,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                 if (subwiki.groupid != 0 && userGroups.length > 0) {
                     // Get groupLabel if it has groupId.
                     const group = userGroups.find(group => group.id == subwiki.groupid);
-                    groupLabel = group?.name || '';
+                    groupLabel = group ? await CoreLang.filterMultilang(group.name) : '';
                 } else {
                     groupLabel = Translate.instant('addon.mod_wiki.notingroup');
                 }

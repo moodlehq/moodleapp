@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { multilangString } from '@services/lang';
 import { Injectable } from '@angular/core';
 import { CoreComments } from '@features/comments/services/comments';
 import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/activity-prefetch-handler';
@@ -98,7 +99,7 @@ export class AddonModDataPrefetchHandlerService extends CoreCourseActivityPrefet
 
             const groupInfo = await CoreGroups.getActivityGroupInfo(module.id, false, undefined, options.siteId);
             if (!groupInfo.groups || groupInfo.groups.length == 0) {
-                groupInfo.groups = [{ id: 0, name: '' }];
+                groupInfo.groups = [{ id: 0, name: multilangString() }];
             }
             groups = groupInfo.groups || [];
 
