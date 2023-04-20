@@ -12,11 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AddonFilterMultilangHandler } from '@addons/filter/multilang/services/handlers/multilang';
-import { AddonFilterMultilang2Handler } from '@addons/filter/multilang2/services/handlers/multilang2';
 import { Component, Input, OnInit, Type } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-
+import { CoreLang } from '@services/lang';
 import { AuthEmailSignupProfileField } from '@features/login/services/login-helper';
 import { CoreUserProfileField } from '@features/user/services/user';
 import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profile-field-delegate';
@@ -54,8 +52,7 @@ export class CoreUserProfileFieldComponent implements OnInit {
         this.componentClass = await CoreUserProfileFieldDelegate.getComponent(this.field, this.signup);
 
         if ('param1' in this.field && this.field.param1) {
-            this.field.param1 = await AddonFilterMultilangHandler.filter(<string> this.field.param1);
-            this.field.param1 = await AddonFilterMultilang2Handler.filter(<string> this.field.param1);
+            this.field.param1 = await CoreLang.filterMultilang(<string> this.field.param1);
         }
 
         this.data.field = this.field;

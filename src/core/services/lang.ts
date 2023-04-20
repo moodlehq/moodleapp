@@ -24,6 +24,8 @@ import { makeSingleton, Translate, Http } from '@singletons';
 import moment from 'moment-timezone';
 import { CoreSite } from '../classes/site';
 import { CorePlatform } from '@services/platform';
+import { AddonFilterMultilangHandler } from '@addons/filter/multilang/services/handlers/multilang';
+import { AddonFilterMultilang2Handler } from '@addons/filter/multilang2/services/handlers/multilang2';
 
 /*
  * Service to handle language features, like changing the current language.
@@ -514,6 +516,18 @@ export class CoreLangProvider {
         });
 
         return <Record<string, string>> await observable.toPromise();
+    }
+
+    /**
+     * Filter a multilang string.
+     *
+     * @param text Multilang string.
+     * @returns Filtered string.
+     */
+    async filterMultilang(text: string): Promise<string> {
+        return Promise.resolve(text)
+            .then(text => AddonFilterMultilangHandler.filter(text))
+            .then(text => AddonFilterMultilang2Handler.filter(text));
     }
 
     /**

@@ -21,7 +21,7 @@ import { CoreSite } from '@classes/site';
 import { makeSingleton } from '@singletons';
 
 /**
- * Handler to support the Multilang filter.
+ * Handler to support the Multilang filter in core.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonFilterMultilangHandlerService extends CoreFilterDefaultHandler {

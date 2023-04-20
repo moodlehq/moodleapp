@@ -46,7 +46,6 @@ import { CoreViewerImageComponent } from '@features/viewer/components/image/imag
 import { CoreFormFields, CoreForms } from '../../singletons/form';
 import { CoreModalLateralTransitionEnter, CoreModalLateralTransitionLeave } from '@classes/modal-lateral-transition';
 import { CoreZoomLevel } from '@features/settings/services/settings-helper';
-import { AddonFilterMultilangHandler } from '@addons/filter/multilang/services/handlers/multilang';
 import { CoreSites } from '@services/sites';
 import { NavigationStart } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -58,8 +57,8 @@ import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreUserSupport } from '@features/user/services/support';
 import { CoreErrorInfoComponent } from '@components/error-info/error-info';
 import { CorePlatform } from '@services/platform';
-import { AddonFilterMultilang2Handler } from '@addons/filter/multilang2/services/handlers/multilang2';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
+import { CoreLang } from '@services/lang';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -1171,8 +1170,7 @@ export class CoreDomUtilsProvider {
 
         if (hasHTMLTags && !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.7')) {
             // Treat multilang.
-            options.message = await AddonFilterMultilangHandler.filter(<string> options.message);
-            options.message = await AddonFilterMultilang2Handler.filter(<string> options.message);
+            options.message = await CoreLang.filterMultilang(<string> options.message);
         }
 
         const alertId = <string> Md5.hashAsciiStr((options.header || '') + '#' + (options.message || ''));
