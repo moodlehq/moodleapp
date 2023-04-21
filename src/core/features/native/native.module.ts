@@ -30,7 +30,7 @@ import { WebView } from '@ionic-native/ionic-webview/ngx';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
 import { MediaCapture } from '@ionic-native/media-capture/ngx';
-import { Push } from '@ionic-native/push/ngx';
+import { Push } from '@moodlehq/ionic-native-push/ngx';
 import { QRScanner } from '@ionic-native/qr-scanner/ngx';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { SQLite } from '@ionic-native/sqlite/ngx';

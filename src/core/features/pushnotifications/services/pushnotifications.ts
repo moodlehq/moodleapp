@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { ILocalNotification } from '@ionic-native/local-notifications';
-import { NotificationEventResponse, PushOptions, RegistrationEventResponse } from '@ionic-native/push/ngx';
+import { NotificationEventResponse, PushOptions, RegistrationEventResponse } from '@moodlehq/ionic-native-push/ngx';
 
 import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
@@ -750,6 +750,33 @@ export class CorePushNotificationsProvider {
             // Remove pending unregisters for this site.
             await CoreUtils.ignoreErrors(this.pendingUnregistersTable.deleteByPrimaryKey({ siteid: site.getId() }));
         }
+
+        this.registerPublicKeyOnMoodle();
+    }
+
+    /**
+     * Register a public key on a Moodle site.
+     */
+    async registerPublicKeyOnMoodle(): Promise<void> {
+        this.logger.debug('Register public key on Moodle.');
+
+        const site = await CoreSites.getSite();
+
+        const publicKey = await Push.getPublicKey();
+        if (publicKey == null) {
+            throw new CoreError('Cannot get app public key.');
+        }
+
+        const data: CoreUserUpdateUserDevicePublicKeyWSParams = {
+            uuid: Device.uuid,
+            appid: CoreConstants.CONFIG.app_id,
+            publickey: publicKey,
+        };
+
+        await site.write<CoreUserUpdateUserDevicePublicKeyWSResponse>(
+            'core_user_update_user_device_public_key',
+            data,
+        );
     }
 
     /**
@@ -936,3 +963,20 @@ export type CoreUserAddUserDeviceWSParams = {
  * Data returned by core_user_add_user_device WS.
  */
 export type CoreUserAddUserDeviceWSResponse = CoreWSExternalWarning[][];
+
+/**
+ * Params of core_user_update_user_device_public_key WS.
+ */
+export type CoreUserUpdateUserDevicePublicKeyWSParams = {
+    uuid: string;
+    appid: string;
+    publickey: string;
+};
+
+/**
+ * Data returned by core_user_update_user_device_public_key WS.
+ */
+export type CoreUserUpdateUserDevicePublicKeyWSResponse = {
+    status: boolean;
+    warnings?: CoreWSExternalWarning[];
+};
