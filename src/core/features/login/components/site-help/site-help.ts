@@ -38,7 +38,7 @@ export class CoreLoginSiteHelpComponent implements AfterViewInit, OnDestroy {
 
     constructor(protected el: ElementRef<HTMLElement>) {
         const getStartedTitle = Translate.instant('core.login.faqsetupsitelinktitle');
-        const canScanQR = !CoreUtils.canScanQR();
+        const canScanQR = CoreUtils.canScanQR();
         const urlImageHtml = CoreLoginHelperProvider.FAQ_URL_IMAGE_HTML;
         const qrCodeImageHtml = CoreLoginHelperProvider.FAQ_QRCODE_IMAGE_HTML;
         const setupLinkHtml = `<a href="${GET_STARTED_URL}" title="${getStartedTitle}">${GET_STARTED_URL}</a>`;
@@ -65,6 +65,14 @@ export class CoreLoginSiteHelpComponent implements AfterViewInit, OnDestroy {
                     format: AnswerFormat.SafeHTML,
                 },
             },
+            canScanQR && {
+                text: Translate.instant('core.login.faqwhereisqrcode'),
+                answer: {
+                    text: Translate.instant('core.login.faqwhereisqrcodeanswer', { $image: qrCodeImageHtml }),
+                    format: AnswerFormat.SafeHTML,
+                    class: 'core-login-faqwhereisqrcodeanswer',
+                },
+            },
             {
                 text: Translate.instant('core.login.faqsetupsitequestion'),
                 answer: {
@@ -77,14 +85,6 @@ export class CoreLoginSiteHelpComponent implements AfterViewInit, OnDestroy {
                 answer: {
                     text: Translate.instant('core.login.faqtestappanswer'),
                     format: AnswerFormat.SafeHTML,
-                },
-            },
-            canScanQR && {
-                text: Translate.instant('core.login.faqwhereisqrcode'),
-                answer: {
-                    text: Translate.instant('core.login.faqwhereisqrcodeanswer', { $image: qrCodeImageHtml }),
-                    format: AnswerFormat.SafeHTML,
-                    class: 'core-login-faqwhereisqrcodeanswer',
                 },
             },
         ];
