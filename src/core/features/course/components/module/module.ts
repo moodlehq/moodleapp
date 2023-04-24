@@ -71,8 +71,9 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
      */
     async ngOnInit(): Promise<void> {
         const site = CoreSites.getRequiredCurrentSite();
+        const enableIndentation = await CoreCourse.isCourseIndentationEnabled(site, this.module.course);
 
-        this.indented = site.isVersionGreaterEqualThan('4.2') && this.module.indent > 0;
+        this.indented = enableIndentation && this.module.indent > 0;
         this.modNameTranslated = CoreCourse.translateModuleName(this.module.modname, this.module.modplural);
         this.showLegacyCompletion = this.showLegacyCompletion ??
             CoreConstants.CONFIG.uselegacycompletion ??
