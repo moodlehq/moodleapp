@@ -86,9 +86,12 @@
                     <!-- "Header" of the question. -->
                     <ion-item-divider>
                         <ion-label>
-                            <h2 *ngIf="question.questionnumber">{{ 'core.question.questionno' | translate:{$a: question.questionnumber} }}
+                            <h2 *ngIf="question.type !== 'description' && question.questionnumber">
+                                {{ 'core.question.questionno' | translate:{$a: question.questionnumber} }}
                             </h2>
-                            <h2 *ngIf="!question.questionnumber">{{ 'core.question.information' | translate }}</h2>
+                            <h2 *ngIf="question.type === 'description' || !question.questionnumber">
+                                {{ 'core.question.information' | translate }}
+                            </h2>
                         </ion-label>
                         <div class="ion-text-wrap ion-margin-horizontal addon-mod_quiz-question-note" slot="end"
                             *ngIf="question.status || question.readableMark">
