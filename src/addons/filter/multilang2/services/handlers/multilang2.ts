@@ -19,7 +19,9 @@ import { CoreFilterDefaultHandler } from '@features/filter/services/handlers/def
 import { makeSingleton } from '@singletons';
 
 /**
- * Handler to support the Multilang filter.
+ * Handler to support the multilang2 community filter.
+ *
+ * @see https://moodle.org/plugins/filter_multilang2
  */
 @Injectable({ providedIn: 'root' })
 export class AddonFilterMultilang2HandlerService extends CoreFilterDefaultHandler {

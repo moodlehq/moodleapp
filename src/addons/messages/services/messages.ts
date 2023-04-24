@@ -33,6 +33,7 @@ import { CoreError } from '@classes/errors/error';
 import { AddonMessagesSyncEvents, AddonMessagesSyncProvider } from './messages-sync';
 import { CoreWSError } from '@classes/errors/wserror';
 import { AddonNotificationsPreferencesNotificationProcessorState } from '@addons/notifications/services/notifications';
+import { MultilangString } from '@services/lang';
 
 const ROOT_CACHE_KEY = 'mmaMessages:';
 
@@ -2970,7 +2971,7 @@ export type AddonMessagesConversationMember = {
     conversations?: { // Conversations between users.
         id: number; // Conversations id.
         type: number; // Conversation type: private or public.
-        name: string; // Multilang compatible conversation name2.
+        name: MultilangString; // Multilang compatible conversation name2.
         timecreated: number; // The timecreated timestamp for the conversation.
     }[];
 };
@@ -3495,7 +3496,7 @@ export type AddonMessagesGetUserContactsWSResponse = {
     conversations?: { // Conversations between users.
         id: number; // Conversations id.
         type: number; // Conversation type: private or public.
-        name: string; // Multilang compatible conversation name2.
+        name: MultilangString; // Multilang compatible conversation name2.
         timecreated: number; // The timecreated timestamp for the conversation.
     }[];
 }[];
@@ -3535,7 +3536,7 @@ export type AddonMessagesGetContactRequestsWSResponse = {
     conversations?: { // Conversations between users.
         id: number; // Conversations id.
         type: number; // Conversation type: private or public.
-        name: string; // Multilang compatible conversation name2.
+        name: MultilangString; // Multilang compatible conversation name2.
         timecreated: number; // The timecreated timestamp for the conversation.
     }[];
 }[];
