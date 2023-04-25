@@ -1,4 +1,10 @@
-<ion-button size="small" *ngIf="action == 'more'" fill="clear" (click)="viewEntry()" [attr.aria-label]="'addon.mod_data.more' | translate">
+<ion-button size="small" *ngIf="action == 'actionsmenu'" fill="clear" (click)="actionsMenu()"
+    [attr.aria-label]="'addon.mod_data.actions' | translate">
+    <ion-icon name="fas-ellipsis-vertical" slot="icon-only" aria-hidden="true"></ion-icon>
+</ion-button>
+
+<ion-button size="small" *ngIf="action == 'more'" fill="clear" (click)="viewEntry()"
+    [attr.aria-label]="'addon.mod_data.showmore' | translate">
     <ion-icon name="fas-magnifying-glass-plus" slot="icon-only" aria-hidden="true"></ion-icon>
 </ion-button>
 

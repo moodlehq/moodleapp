@@ -18,11 +18,13 @@ import { CoreCourseComponentsModule } from '@features/course/components/componen
 import { AddonModDataIndexComponent } from './index';
 import { AddonModDataSearchComponent } from './search/search';
 import { CoreCompileHtmlComponentModule } from '@features/compile/components/compile-html/compile-html.module';
+import { AddonModDataActionsMenuComponent } from './actionsmenu/actionsmenu';
 
 @NgModule({
     declarations: [
         AddonModDataIndexComponent,
         AddonModDataSearchComponent,
+        AddonModDataActionsMenuComponent,
     ],
     imports: [
         CoreSharedModule,
@@ -32,6 +34,7 @@ import { CoreCompileHtmlComponentModule } from '@features/compile/components/com
     exports: [
         AddonModDataIndexComponent,
         AddonModDataSearchComponent,
+        AddonModDataActionsMenuComponent,
     ],
 })
 export class AddonModDataComponentsModule {}

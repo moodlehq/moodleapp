@@ -52,7 +52,7 @@ Feature: Users can manage entries in database activities
       | URL | https://moodlecloud.com/ |
       | Description | Moodle Cloud |
     And I press "Save" near "Web links" in the app
-    And I press "More" near "Moodle community site" in the app
+    And I press "Show more" near "Moodle community site" in the app
     Then I should find "Moodle community site" in the app
     And I should be able to press "Previous" in the app
     But I should not be able to press "Next" in the app
@@ -81,7 +81,7 @@ Feature: Users can manage entries in database activities
     When I press "Web links" near "General" in the app
     Then "Edit" "link" should not exist
     And "Delete" "link" should not exist
-    And I press "More" in the app
+    And I press "Show more" in the app
     And "Edit" "link" should not exist
     And "Delete" "link" should not exist
 
@@ -122,7 +122,7 @@ Feature: Users can manage entries in database activities
     And I press "Save" near "Web links" in the app
 
     # Edit the entry from single view.
-    When I press "More" in the app
+    When I press "Show more" in the app
     And I press "Edit" in the app
     And I set the following fields to these values in the app:
       | URL | https://moodlecloud.com/ |
@@ -184,7 +184,7 @@ Feature: Users can manage entries in database activities
     And I should not find "Moodle Cloud" in the app
 
     # Edit the entry from single view.
-    When I press "More" in the app
+    When I press "Show more" in the app
     And I should find "https://telegram.org/" in the app
     And I should find "Telegram" in the app
     And I press "Edit" in the app
