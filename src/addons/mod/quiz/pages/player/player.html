@@ -44,10 +44,12 @@
                     <!-- "Header" of the question. -->
                     <ion-item-divider>
                         <ion-label>
-                            <h2 *ngIf="question.questionnumber" class="inline">
+                            <h2 *ngIf="question.type !== 'description' && question.questionnumber" class="inline">
                                 {{ 'core.question.questionno' | translate:{$a: question.questionnumber} }}
                             </h2>
-                            <h2 *ngIf="!question.questionnumber" class="inline">{{ 'core.question.information' | translate }}</h2>
+                            <h2 *ngIf="question.type === 'description' || !question.questionnumber" class="inline">
+                                {{ 'core.question.information' | translate }}
+                            </h2>
                         </ion-label>
                         <div *ngIf="question.status || question.readableMark" slot="end"
                             class="ion-text-wrap ion-margin-horizontal addon-mod_quiz-question-note">
@@ -108,7 +110,8 @@
 
             <!-- List of questions of the summary table. -->
             <ng-container *ngFor="let question of summaryQuestions">
-                <ion-item *ngIf="question.questionnumber" (click)="changePage(question.page, false, question.slot)"
+                <ion-item *ngIf="question.type !== 'description' && question.questionnumber"
+                    (click)="changePage(question.page, false, question.slot)"
                     [attr.aria-label]="'core.question.questionno' | translate:{$a: question.questionnumber}"
                     [detail]="!isSequential && canReturn" [button]="!isSequential && canReturn">
                     <ion-label>

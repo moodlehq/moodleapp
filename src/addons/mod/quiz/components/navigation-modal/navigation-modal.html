@@ -18,11 +18,16 @@
                 (click)="loadPage(question.page, question.slot)" detail="false">
 
                 <ion-label>
-                    <span *ngIf="question.questionnumber">{{ 'core.question.questionno' | translate:{$a: question.questionnumber} }}</span>
-                    <span *ngIf="!question.questionnumber">{{ 'core.question.information' | translate }}</span>
+                    <span *ngIf="question.type !== 'description' && question.questionnumber">
+                        {{ 'core.question.questionno' | translate:{$a: question.questionnumber} }}
+                    </span>
+                    <span *ngIf="question.type === 'description' || !question.questionnumber">
+                        {{ 'core.question.information' | translate }}
+                    </span>
                 </ion-label>
 
-                <ion-icon *ngIf="!question.questionnumber" name="fas-circle-info" slot="end" aria-hidden="true"></ion-icon>
+                <ion-icon *ngIf="question.type === 'description' || !question.questionnumber" name="fas-circle-info" slot="end"
+                    aria-hidden="true"></ion-icon>
                 <ion-icon *ngIf="question.stateClass == 'core-question-requiresgrading'" name="fas-circle-question"
                     [attr.aria-label]="question.status" slot="end">
                 </ion-icon>
