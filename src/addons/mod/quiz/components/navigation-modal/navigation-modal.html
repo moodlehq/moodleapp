@@ -17,7 +17,7 @@
                 [attr.aria-current]="!summaryShown && currentPage == question.page ? 'page' : 'false'"
                 (click)="loadPage(question.page, question.slot)" detail="false">
 
-                <ion-label>
+                <ion-label class="ion-text-wrap">
                     <span *ngIf="question.type !== 'description' && question.questionnumber">
                         {{ 'core.question.questionno' | translate:{$a: question.questionnumber} }}
                     </span>
