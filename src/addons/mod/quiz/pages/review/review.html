@@ -85,7 +85,7 @@
                 <ion-card id="addon-mod_quiz-question-{{question.slot}}">
                     <!-- "Header" of the question. -->
                     <ion-item-divider>
-                        <ion-label>
+                        <ion-label class="ion-text-wrap">
                             <h2 *ngIf="question.type !== 'description' && question.questionnumber">
                                 {{ 'core.question.questionno' | translate:{$a: question.questionnumber} }}
                             </h2>
