@@ -140,10 +140,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        // Stop auto save.
-        this.autoSave.cancelAutoSave();
-        this.autoSave.stopCheckChangesProcess();
-        this.autoSaveErrorSubscription?.unsubscribe();
+        this.stopAutoSave();
 
         if (this.quiz) {
             // Unblock the quiz so it can be synced.
@@ -423,9 +420,18 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
             CoreEvents.trigger(CoreEvents.ACTIVITY_DATA_SENT, { module: 'quiz' });
 
-            // Leave the player.
-            this.forceLeave = true;
-            CoreNavigator.back();
+            if (!timeUp || !this.quiz.graceperiod) {
+                // Leave the player.
+                this.forceLeave = true;
+                CoreNavigator.back();
+            } else {
+                // Stay in player to show summary.
+                this.stopAutoSave();
+                this.clearTimer();
+
+                await this.refreshAttempt();
+                await this.loadSummary();
+            }
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.mod_quiz.errorsaveattempt', true);
         } finally {
@@ -496,6 +502,13 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
     }
 
     /**
+     * Remove timer info.
+     */
+    protected clearTimer(): void {
+        delete this.endTime;
+    }
+
+    /**
      * Load a page questions.
      *
      * @param page The page to load.
@@ -540,6 +553,22 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
         // Start looking for changes.
         this.autoSave.startCheckChangesProcess(this.quiz, this.attempt, this.preflightData, this.offline);
+    }
+
+    /**
+     * Refresh attempt data.
+     */
+    protected async refreshAttempt(): Promise<void> {
+        if (!this.quiz) {
+            return;
+        }
+
+        const attempts = await AddonModQuiz.getUserAttempts(this.quiz.id, {
+            cmId: this.quiz.coursemodule,
+            readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
+        });
+
+        this.attempt = attempts.find(attempt => attempt.id === this.attempt?.id);
     }
 
     /**
@@ -808,6 +837,15 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
         this.timeUpCalled = true;
         this.finishAttempt(false, true);
+    }
+
+    /**
+     * Stop auto-saving answers.
+     */
+    protected stopAutoSave(): void {
+        this.autoSave.cancelAutoSave();
+        this.autoSave.stopCheckChangesProcess();
+        this.autoSaveErrorSubscription?.unsubscribe();
     }
 
 }
