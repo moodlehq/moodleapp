@@ -103,6 +103,10 @@ export abstract class CoreItemsManager<
      * @param item Item, null if none.
      */
     setSelectedItem(item: Item | null): void {
+        if (item === this.selectedItem) {
+            return;
+        }
+
         this.selectedItem = item;
 
         this.listeners.forEach(listener => listener.onSelectedItemUpdated?.call(listener, item));

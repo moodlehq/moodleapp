@@ -57,6 +57,10 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
         return this.outletRouteSubject.asObservable();
     }
 
+    get nativeElement(): HTMLElement {
+        return this.element.nativeElement;
+    }
+
     /**
      * @inheritdoc
      */
