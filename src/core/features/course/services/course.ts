@@ -33,6 +33,7 @@ import { CoreCourseOffline } from './course-offline';
 import { CoreError } from '@classes/errors/error';
 import {
     CoreCourseAnyCourseData,
+    CoreCourses,
     CoreCoursesProvider,
 } from '../../courses/services/courses';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -248,6 +249,28 @@ export class CoreCourseProvider {
     isIncompleteAutomaticCompletion(completion: CoreCourseModuleCompletionData): boolean {
         return completion.tracking === CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_AUTOMATIC &&
             completion.state === CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE;
+    }
+
+    /**
+     * Check whether a course has indentation enabled.
+     *
+     * @param site Site.
+     * @param courseId Course id.
+     * @returns Whether indentation is enabled.
+     */
+    async isCourseIndentationEnabled(site: CoreSite, courseId: number): Promise<boolean> {
+        if (!site.isVersionGreaterEqualThan('4.0')) {
+            return false;
+        }
+
+        const course = await CoreCourses.getCourseByField('id', courseId, site.id);
+        const formatOptions = CoreUtils.objectToKeyValueMap<{ indentation?: string }>(
+            course.courseformatoptions ?? [],
+            'name',
+            'value',
+        );
+
+        return formatOptions.indentation === '1';
     }
 
     /**

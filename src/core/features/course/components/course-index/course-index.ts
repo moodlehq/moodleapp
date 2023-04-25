@@ -14,6 +14,7 @@
 
 import { Component, ElementRef, Input, OnInit } from '@angular/core';
 import {
+    CoreCourse,
     CoreCourseModuleCompletionStatus,
     CoreCourseModuleCompletionTracking,
     CoreCourseProvider,
@@ -77,7 +78,8 @@ export class CoreCourseCourseIndexComponent implements OnInit {
 
         // Clone sections to add information.
         const site = CoreSites.getRequiredCurrentSite();
-        const enableIndentation = site.isVersionGreaterEqualThan('4.2');
+
+        const enableIndentation = await CoreCourse.isCourseIndentationEnabled(site, this.course.id);
 
         this.sectionsToRender = this.sections
             .filter((section) => !CoreCourseHelper.isSectionStealth(section))

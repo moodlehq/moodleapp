@@ -1312,11 +1312,7 @@ export class CoreUtilsProvider {
         keyName: string,
         valueName: string,
         keyPrefix?: string,
-    ): {[name: string]: T} | undefined {
-        if (!objects) {
-            return;
-        }
-
+    ): {[name: string]: T} {
         const prefixSubstr = keyPrefix ? keyPrefix.length : 0;
         const mapped = {};
         objects.forEach((item) => {
