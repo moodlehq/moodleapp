@@ -44,27 +44,34 @@ export class AddonFilterMultilangHandlerService extends CoreFilterDefaultHandler
         options?: CoreFilterFormatTextOptions, // eslint-disable-line @typescript-eslint/no-unused-vars
         siteId?: string, // eslint-disable-line @typescript-eslint/no-unused-vars
     ): Promise<string> {
-        let language = await CoreLang.getCurrentLanguage();
+        // Get available languages.
+        const regex = /<(?:lang|span)[^>]+lang="([a-zA-Z0-9_-]+)"[^>]*>.*?<\/(?:lang|span)>/img;
+        const languages: Set<string> = new Set();
+        let match: RegExpExecArray | null;
 
-        // Match the current language.
-        const anyLangRegEx = /<(?:lang|span)[^>]+lang="[a-zA-Z0-9_-]+"[^>]*>(.*?)<\/(?:lang|span)>/g;
-        let currentLangRegEx = new RegExp('<(?:lang|span)[^>]+lang="' + language + '"[^>]*>(.*?)</(?:lang|span)>', 'g');
+        while ((match = regex.exec(text))) {
+            const language = match[1].toLowerCase().replace(/_/g, '-');
 
-        if (!text.match(currentLangRegEx)) {
-            // Current lang not found. Try to find the first language.
-            const matches = text.match(anyLangRegEx);
-            if (matches?.[0]) {
-                language = matches[0].match(/lang="([a-zA-Z0-9_-]+)"/)?.[1] || language;
-                currentLangRegEx = new RegExp('<(?:lang|span)[^>]+lang="' + language + '"[^>]*>(.*?)</(?:lang|span)>', 'g');
-            } else {
-                // No multi-lang tag found, stop.
-                return text;
-            }
+            languages.add(language);
         }
 
-        // Extract contents of current language.
+        // Find language to use.
+        let language: string | undefined = await CoreLang.getCurrentLanguage();
+
+        if (!languages.has(language)) {
+            language = CoreLang.getParentLanguage();
+        }
+
+        if (!language) {
+            return text;
+        }
+
+        // Apply filter.
+        const anyLangRegEx = /<(lang|span)[^>]+lang="[a-zA-Z0-9_-]+"[^>]*>.*?<\/(lang|span)>/img;
+        const languageRegEx = language.replace(/-/g, '(?:-|_)');
+        const currentLangRegEx = new RegExp(`<(?:lang|span)[^>]+lang="${languageRegEx}"[^>]*>(.*?)</(?:lang|span)>`, 'img');
+
         text = text.replace(currentLangRegEx, '$1');
-        // Delete the rest of languages
         text = text.replace(anyLangRegEx, '');
 
         return text;
