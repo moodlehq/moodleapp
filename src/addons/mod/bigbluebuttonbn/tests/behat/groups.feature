@@ -2,7 +2,8 @@
 Feature: Test usage of BBB activity with groups in app
 
   Background:
-    Given I enable "bigbluebuttonbn" "mod" plugin
+    Given the Moodle site is compatible with this feature
+    And I enable "bigbluebuttonbn" "mod" plugin
     And the following "users" exist:
       | username | firstname | lastname | email                |
       | teacher1 | Teacher   | teacher  | teacher1@example.com |

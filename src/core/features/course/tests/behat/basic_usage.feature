@@ -415,7 +415,8 @@ Feature: Test basic usage of one course in app
 
   @lms_from4.0
   Scenario: Self enrol
-    Given I log in as "teacher1"
+    Given the Moodle site is compatible with this feature
+    And I log in as "teacher1"
     And I add "Self enrolment" enrolment method in "Course 1" with:
       | Custom instance name | Student self enrolment |
     And I entered the app as "student2"
