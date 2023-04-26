@@ -64,8 +64,15 @@ export class CoreInterceptor implements HttpInterceptor {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<any> {
         // Add the header and serialize the body if needed.
+        if (req.headers.has('Content-Type')) {
+            return next.handle(req);
+        }
+
         const newReq = req.clone({
-            headers: req.headers.set('Content-Type', 'application/x-www-form-urlencoded'),
+            headers: req.headers.set(
+                'Content-Type',
+                'application/x-www-form-urlencoded',
+            ),
             body: typeof req.body == 'object' && String(req.body) != '[object File]' ?
                 CoreInterceptor.serialize(req.body) : req.body,
         });

@@ -29,7 +29,9 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCoursesHelper, CoreCourseWithImageAndColor } from '@features/courses/services/courses-helper';
 import { CoreColors } from '@singletons/colors';
 import { CorePath } from '@singletons/path';
-
+import { HttpClient,HttpHeaders } from '@angular/common/http';
+import { CoreSites } from '@services/sites';
+import { firstValueFrom } from '@/core/utils/rxjs';
 /**
  * Page that displays the list of courses the user is enrolled in.
  */
@@ -67,7 +69,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
         pageParams: {},
     };
 
-    constructor(private route: ActivatedRoute) {
+    constructor(private route: ActivatedRoute, private http: HttpClient) {
         this.selectTabObserver = CoreEvents.on(CoreEvents.SELECT_COURSE_TAB, (data) => {
             if (!data.name) {
                 // If needed, set sectionId and sectionNumber. They'll only be used if the content tabs hasn't been loaded yet.
@@ -297,6 +299,37 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
         if (this.course) {
             CoreCourseHelper.openCourseSummary(this.course);
         }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+    async handleAttendance ()  {
+        const headers = new HttpHeaders({
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            'Content-Type': 'application/json',
+        });
+
+        /**
+         *
+         */
+        function onError(error) {
+            alert('code: ' + error.code + '\n' +
+                'message: ' + error.message + '\n');
+        }
+        const userId = CoreSites.getCurrentSiteUserId();
+        navigator.geolocation.getCurrentPosition(async (position) => {
+            try {
+                await firstValueFrom(this.http.post(`${CoreSites.getCurrentSite()?.siteUrl}/mod/attendance/api.php`, {
+                    courseid: this.course?.id,
+                    studentid: userId,
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                    type: 3,
+                }, { headers: headers }));
+            } catch (e) {
+                // eslint-disable-next-line no-console
+                console.log(e);
+            }
+        }, onError);
     }
 
     /**
