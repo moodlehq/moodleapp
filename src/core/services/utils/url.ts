@@ -261,7 +261,7 @@ export class CoreUrlUtilsProvider {
 
         try {
             let lang = await CoreLang.getCurrentLanguage();
-            lang = CoreLang.getParentLanguage(lang) || lang;
+            lang = CoreLang.getParentLanguage() || lang;
 
             return docsUrl.replace('/en/', '/' + lang + '/');
         } catch (error) {

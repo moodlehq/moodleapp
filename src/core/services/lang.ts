@@ -152,12 +152,11 @@ export class CoreLangProvider {
     /**
      * Get the parent language defined on the language strings.
      *
-     * @param currentLanguage Current language.
      * @returns If a parent language is set, return the index name.
      */
-    getParentLanguage(currentLanguage: string): string | undefined {
+    getParentLanguage(): string | undefined {
         const parentLang = Translate.instant('core.parentlanguage');
-        if (parentLang != '' && parentLang != 'core.parentlanguage' && parentLang != currentLanguage) {
+        if (parentLang !== '' && parentLang !== 'core.parentlanguage' && parentLang !== this.currentLanguage) {
             return parentLang;
         }
     }
@@ -169,41 +168,16 @@ export class CoreLangProvider {
      * @returns Promise resolved when the change is finished.
      */
     async changeCurrentLanguage(language: string): Promise<void> {
-        const promises: Promise<unknown>[] = [];
-
-        // Change the language, resolving the promise when we receive the first value.
-        promises.push(new Promise((resolve, reject) => {
-            CoreSubscriptions.once(Translate.use(language), async data => {
-                // Check if it has a parent language.
-                const fallbackLang = this.getParentLanguage(language);
-
-                if (fallbackLang) {
-                    try {
-                        // Merge parent translations with the child ones.
-                        const parentTranslations = Translate.translations[fallbackLang] ?? await this.readLangFile(fallbackLang);
-
-                        const mergedData = Object.assign(parentTranslations, data);
-
-                        Object.assign(data, mergedData);
-                    } catch {
-                        // Ignore errors.
-                    }
-                }
-
-                resolve(data);
-            }, reject);
-        }));
-
-        // Change the config.
-        promises.push(CoreConfig.set('current_language', language));
-
         // Use british english when parent english is loaded.
         moment.locale(language == 'en' ? 'en-gb' : language);
 
         this.currentLanguage = language;
 
         try {
-            await Promise.all(promises);
+            await Promise.all([
+                this.reloadLanguageStrings(),
+                CoreConfig.set('current_language', language),
+            ]);
         } finally {
             // Load the custom and site plugins strings for the language.
             if (this.loadLangStrings(this.customStrings, language) || this.loadLangStrings(this.sitePluginsStrings, language)) {
@@ -556,6 +530,39 @@ export class CoreLangProvider {
                 }
             }
         }
+    }
+
+    /**
+     * Reload language strings for the current language.
+     */
+    protected async reloadLanguageStrings(): Promise<void> {
+        const currentLanguage = this.currentLanguage;
+
+        if (!currentLanguage) {
+            return;
+        }
+
+        await new Promise((resolve, reject) => {
+            CoreSubscriptions.once(Translate.use(currentLanguage), async data => {
+                // Check if it has a parent language.
+                const fallbackLang = this.getParentLanguage();
+
+                if (fallbackLang) {
+                    try {
+                        // Merge parent translations with the child ones.
+                        const parentTranslations = Translate.translations[fallbackLang] ?? await this.readLangFile(fallbackLang);
+
+                        const mergedData = Object.assign(parentTranslations, data);
+
+                        Object.assign(data, mergedData);
+                    } catch {
+                        // Ignore errors.
+                    }
+                }
+
+                resolve(data);
+            }, reject);
+        });
     }
 
 }

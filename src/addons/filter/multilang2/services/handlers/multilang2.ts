@@ -45,7 +45,7 @@ export class AddonFilterMultilang2HandlerService extends CoreFilterDefaultHandle
 
         const currentLang = await CoreLang.getCurrentLanguage();
         this.replacementDone = false;
-        const parentLanguage = CoreLang.getParentLanguage(currentLang);
+        const parentLanguage = CoreLang.getParentLanguage();
 
         const search = /{\s*mlang\s+((?:[a-z0-9_-]+)(?:\s*,\s*[a-z0-9_-]+\s*)*)\s*}(.*?){\s*mlang\s*}/gim;
         const result = text.replace(
