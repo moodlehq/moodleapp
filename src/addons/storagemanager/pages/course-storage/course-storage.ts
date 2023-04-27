@@ -494,12 +494,8 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
             CoreCourseHelper.calculateSectionsStatus(this.sections, this.courseId, false, false);
 
             // For delete all, reset all section sizes so icons are updated.
-            if (this.totalSize == 0) {
-                this.sections.map((section) => {
-                    section.calculatingSize = true;
-                    section.totalSize = 0;
-                    section.calculatingSize = false;
-                });
+            if (this.totalSize === 0) {
+                this.sections.map(section => section.totalSize = 0);
             }
             this.changeDetectorRef.markForCheck();
         }
