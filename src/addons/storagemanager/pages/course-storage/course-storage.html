@@ -136,6 +136,9 @@
                                             [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate: { name: module.name }">
                                         </ion-icon>
                                     </ion-button>
+                                    <p *ngIf="!downloadEnabled || !module.handlerData?.showDownloadButton" class="sr-only">
+                                        {{ 'core.notdownloadable' | translate }}
+                                    </p>
                                 </div>
                             </ion-item>
                         </ng-container>
