@@ -48,6 +48,7 @@ import { CoreForms } from '@singletons/form';
 import { CoreDom } from '@singletons/dom';
 import { CoreTime } from '@singletons/time';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
+import { CoreWSError } from '@classes/errors/wserror';
 
 /**
  * Page that allows attempting a quiz.
@@ -433,7 +434,18 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
                 await this.loadSummary();
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_quiz.errorsaveattempt', true);
+            // eslint-disable-next-line promise/catch-or-return
+            CoreDomUtils
+                .showErrorModalDefault(error, 'addon.mod_quiz.errorsaveattempt', true)
+                .then(async alert => {
+                    await alert?.onWillDismiss();
+
+                    if (error instanceof CoreWSError && error.errorcode === 'attemptalreadyclosed') {
+                        CoreNavigator.back();
+                    }
+
+                    return;
+                });
         } finally {
             modal?.dismiss();
         }
