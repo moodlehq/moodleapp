@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { ILocalNotification } from '@ionic-native/local-notifications';
-import { NotificationEventResponse, PushOptions, RegistrationEventResponse } from '@ionic-native/push/ngx';
+import { NotificationEventResponse, PushOptions, RegistrationEventResponse } from '@moodlehq/ionic-native-push/ngx';
 
 import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
@@ -103,10 +103,14 @@ export class CorePushNotificationsProvider {
 
         // Register device on Moodle site when login.
         CoreEvents.on(CoreEvents.LOGIN, async () => {
+            if (!this.canRegisterOnMoodle()) {
+                return;
+            }
+
             try {
                 await this.registerDeviceOnMoodle();
             } catch (error) {
-                this.logger.warn('Can\'t register device', error);
+                this.logger.error('Can\'t register device', error);
             }
         });
 
@@ -305,11 +309,11 @@ export class CorePushNotificationsProvider {
     }
 
     /**
-     * Get data to register the device in Moodle.
+     * Get required data to register the device in Moodle.
      *
      * @returns Data.
      */
-    protected getRegisterData(): CoreUserAddUserDeviceWSParams {
+    protected getRequiredRegisterData(): CoreUserAddUserDeviceWSParams {
         if (!this.pushID) {
             throw new CoreError('Cannot get register data because pushID is not set.');
         }
@@ -581,7 +585,7 @@ export class CorePushNotificationsProvider {
 
         await CoreUtils.ignoreErrors(Promise.all([
             // Remove the device from the local DB.
-            this.registeredDevicesTables[site.getId()].delete(this.getRegisterData()),
+            this.registeredDevicesTables[site.getId()].delete(this.getRequiredRegisterData()),
             // Remove pending unregisters for this site.
             this.pendingUnregistersTable.deleteByPrimaryKey({ siteid: site.getId() }),
         ]));
@@ -680,12 +684,12 @@ export class CorePushNotificationsProvider {
                 // Execute the callback in the Angular zone, so change detection doesn't stop working.
                 NgZone.run(() => {
                     this.pushID = data.registrationId;
-                    if (!CoreSites.isLoggedIn()) {
+                    if (!CoreSites.isLoggedIn() || !this.canRegisterOnMoodle()) {
                         return;
                     }
 
                     this.registerDeviceOnMoodle().catch((error) => {
-                        this.logger.warn('Can\'t register device', error);
+                        this.logger.error('Can\'t register device', error);
                     });
                 });
             });
@@ -721,35 +725,95 @@ export class CorePushNotificationsProvider {
 
         try {
 
-            const data = this.getRegisterData();
-            let result = {
-                unregister: true,
-                register: true,
-            };
+            const data = this.getRequiredRegisterData();
+            data.publickey = await this.getPublicKey(site);
 
-            if (!forceUnregister) {
-                // Check if the device is already registered.
-                result = await this.shouldRegister(data, site);
-            }
+            const neededActions = await this.getRegisterDeviceActions(data, site, forceUnregister);
 
-            if (result.unregister) {
+            if (neededActions.unregister) {
                 // Unregister the device first.
                 await CoreUtils.ignoreErrors(this.unregisterDeviceOnMoodle(site));
             }
 
-            if (result.register) {
+            if (neededActions.register) {
                 // Now register the device.
-                await site.write('core_user_add_user_device', CoreUtils.clone(data));
+                const addDeviceResponse =
+                    await site.write<CoreUserAddUserDeviceWSResponse>('core_user_add_user_device', CoreUtils.clone(data));
+
+                const deviceAlreadyRegistered =
+                    addDeviceResponse[0] && addDeviceResponse[0].find(warning => warning.warningcode === 'existingkeyforthisuser');
+                if (deviceAlreadyRegistered && data.publickey) {
+                    // Device already registered, make sure the public key is up to date.
+                    await this.updatePublicKeyOnMoodle(site, data);
+                }
 
                 CoreEvents.trigger(CoreEvents.DEVICE_REGISTERED_IN_MOODLE, {}, site.getId());
 
                 // Insert the device in the local DB.
                 await CoreUtils.ignoreErrors(this.registeredDevicesTables[site.getId()].insert(data));
+            } else if (neededActions.updatePublicKey) {
+                // Device already registered, make sure the public key is up to date.
+                const response = await this.updatePublicKeyOnMoodle(site, data);
+
+                if (response?.warnings?.find(warning => warning.warningcode === 'devicedoesnotexist')) {
+                    // The device doesn't exist in the server. Remove the device from the local DB and try again.
+                    await this.registeredDevicesTables[site.getId()].delete({
+                        appid: data.appid,
+                        uuid: data.uuid,
+                        name: data.name,
+                        model: data.model,
+                        platform: data.platform,
+                    });
+
+                    await this.registerDeviceOnMoodle(siteId, false);
+                }
             }
         } finally {
             // Remove pending unregisters for this site.
             await CoreUtils.ignoreErrors(this.pendingUnregistersTable.deleteByPrimaryKey({ siteid: site.getId() }));
         }
+    }
+
+    /**
+     * Get the public key to register in a site.
+     *
+     * @param site Site to register
+     * @returns Public key, undefined if the site or the device doesn't support encryption.
+     */
+    protected async getPublicKey(site: CoreSite): Promise<string | undefined> {
+        if (!site.isVersionGreaterEqualThan('4.2')) {
+            return;
+        }
+
+        const publicKey = await Push.getPublicKey();
+
+        return publicKey ?? undefined;
+    }
+
+    /**
+     * Update a public key on a Moodle site.
+     *
+     * @param site Site.
+     * @param data Device data.
+     * @returns WS response, undefined if no public key.
+     */
+    protected async updatePublicKeyOnMoodle(
+        site: CoreSite,
+        data: CoreUserAddUserDeviceWSParams,
+    ): Promise<CoreUserUpdateUserDevicePublicKeyWSResponse | undefined> {
+        if (!data.publickey) {
+            return;
+        }
+
+        this.logger.debug('Update public key on Moodle.');
+
+        const params: CoreUserUpdateUserDevicePublicKeyWSParams = {
+            uuid: data.uuid,
+            appid: data.appid,
+            publickey: data.publickey,
+        };
+
+        return await site.write<CoreUserUpdateUserDevicePublicKeyWSResponse>('core_user_update_user_device_public_key', params);
     }
 
     /**
@@ -812,16 +876,26 @@ export class CorePushNotificationsProvider {
     }
 
     /**
-     * Check if device should be registered (and unregistered first).
+     * Get the needed actions to perform to register a device.
      *
      * @param data Data of the device.
      * @param site Site to use.
-     * @returns Promise resolved with booleans: whether to register/unregister.
+     * @param forceUnregister Whether to force unregister and register.
+     * @returns Whether each action needs to be performed or not.
      */
-    protected async shouldRegister(
+    protected async getRegisterDeviceActions(
         data: CoreUserAddUserDeviceWSParams,
         site: CoreSite,
-    ): Promise<{register: boolean; unregister: boolean}> {
+        forceUnregister?: boolean,
+    ): Promise<RegisterDeviceActions> {
+        if (forceUnregister) {
+            // No need to check if device is stored, always unregister and register the device.
+            return {
+                unregister: true,
+                register: true,
+                updatePublicKey: false,
+            };
+        }
 
         // Check if the device is already registered.
         const records = await CoreUtils.ignoreErrors(
@@ -836,35 +910,24 @@ export class CorePushNotificationsProvider {
 
         let isStored = false;
         let versionOrPushChanged = false;
+        let updatePublicKey = false;
 
         (records || []).forEach((record) => {
             if (record.version == data.version && record.pushid == data.pushid) {
                 // The device is already stored.
                 isStored = true;
+                updatePublicKey = !!data.publickey && record.publickey !== data.publickey;
             } else {
                 // The version or pushid has changed.
                 versionOrPushChanged = true;
             }
         });
 
-        if (isStored) {
-            // The device has already been registered, no need to register it again.
-            return {
-                register: false,
-                unregister: false,
-            };
-        } else if (versionOrPushChanged) {
-            // This data can be updated by calling register WS, no need to call unregister.
-            return {
-                register: true,
-                unregister: false,
-            };
-        } else {
-            return {
-                register: true,
-                unregister: true,
-            };
-        }
+        return {
+            register: !isStored, // No need to register if device is already stored.
+            unregister: !isStored && !versionOrPushChanged, // No need to unregister first if only version or push changed.
+            updatePublicKey,
+        };
     }
 
 }
@@ -930,9 +993,33 @@ export type CoreUserAddUserDeviceWSParams = {
     version: string; // The device version '6.1.2' or '4.2.2' etc.
     pushid: string; // The device PUSH token/key/identifier/registration id.
     uuid: string; // The device UUID.
+    publickey?: string; // @since 4.2. The app generated public key.
 };
 
 /**
  * Data returned by core_user_add_user_device WS.
  */
 export type CoreUserAddUserDeviceWSResponse = CoreWSExternalWarning[][];
+
+/**
+ * Params of core_user_update_user_device_public_key WS.
+ */
+export type CoreUserUpdateUserDevicePublicKeyWSParams = {
+    uuid: string;
+    appid: string;
+    publickey: string;
+};
+
+/**
+ * Data returned by core_user_update_user_device_public_key WS.
+ */
+export type CoreUserUpdateUserDevicePublicKeyWSResponse = {
+    status: boolean;
+    warnings?: CoreWSExternalWarning[];
+};
+
+type RegisterDeviceActions = {
+    register: boolean; // Whether device needs to be registered in LMS.
+    unregister: boolean; // Whether device needs to be unregistered before register in LMS to make sure data is up to date.
+    updatePublicKey: boolean; // Whether only public key needs to be updated.
+};

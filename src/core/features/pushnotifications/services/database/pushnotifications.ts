@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreAppSchema } from '@services/app';
 import { CoreSiteSchema } from '@services/sites';
 
@@ -21,7 +22,7 @@ import { CoreSiteSchema } from '@services/sites';
  */
 export const BADGE_TABLE_NAME = 'addon_pushnotifications_badge';
 export const PENDING_UNREGISTER_TABLE_NAME = 'addon_pushnotifications_pending_unregister';
-export const REGISTERED_DEVICES_TABLE_NAME = 'addon_pushnotifications_registered_devices';
+export const REGISTERED_DEVICES_TABLE_NAME = 'addon_pushnotifications_registered_devices_2';
 export const APP_SCHEMA: CoreAppSchema = {
     name: 'CorePushNotificationsProvider',
     version: 1,
@@ -70,7 +71,7 @@ export const APP_SCHEMA: CoreAppSchema = {
 };
 export const SITE_SCHEMA: CoreSiteSchema = {
     name: 'AddonPushNotificationsProvider',
-    version: 1,
+    version: 2,
     tables: [
         {
             name: REGISTERED_DEVICES_TABLE_NAME,
@@ -103,10 +104,20 @@ export const SITE_SCHEMA: CoreSiteSchema = {
                     name: 'pushid',
                     type: 'TEXT',
                 },
+                {
+                    name: 'publickey',
+                    type: 'TEXT',
+                },
             ],
             primaryKeys: ['appid', 'uuid'],
         },
     ],
+    async migrate(db: SQLiteDB, oldVersion: number): Promise<void> {
+        if (oldVersion < 2) {
+            // Schema changed in v4.2.
+            await db.migrateTable('addon_pushnotifications_registered_devices', REGISTERED_DEVICES_TABLE_NAME);
+        }
+    },
 };
 
 /**
@@ -139,4 +150,5 @@ export type CorePushNotificationsRegisteredDeviceDBRecord = {
     platform: string; // Device platform.
     version: string; // Device version.
     pushid: string; // Push ID.
+    publickey?: string; // Public key.
 };
