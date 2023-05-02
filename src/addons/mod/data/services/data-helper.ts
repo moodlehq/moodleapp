@@ -191,9 +191,10 @@ export class AddonModDataHelperProvider {
      * @param template Template HMTL.
      * @param fields Fields that defines every content in the entry.
      * @param entry Entry.
-     * @param offset Entry offset.
      * @param mode Mode list or show.
      * @param actions Actions that can be performed to the record.
+     * @param options Show fields options (sortBy, offset, etc).
+     *
      * @returns Generated HTML.
      */
     displayShowFields(
@@ -225,28 +226,54 @@ export class AddonModDataHelperProvider {
         for (const action in actions) {
             const replaceRegex = new RegExp('##' + action + '##', 'gi');
             // Is enabled?
-            if (actions[action]) {
-                let render = '';
-                if (action == AddonModDataAction.MOREURL) {
-                    // Render more url directly because it can be part of an HTML attribute.
-                    render = CoreSites.getRequiredCurrentSite().getURL() + '/mod/data/view.php?d={{database.id}}&rid=' + entry.id;
-                } else if (action == 'approvalstatus') {
-                    render = Translate.instant('addon.mod_data.' + (entry.approved ? 'approved' : 'notapproved'));
-                } else {
-                    render = `<addon-mod-data-action action="${action}" [entry]="entries[${entry.id}]" mode="${mode}" ` +
-                        '[database]="database" [access]="access" [title]="title" ' +
-                        (options.offset !== undefined ? `[offset]="${options.offset}" ` : '') +
-                        (options.sortBy !== undefined ? `[sortBy]="${options.sortBy}" ` : '') +
-                        (options.sortDirection !== undefined ? `sortDirection="${options.sortDirection}" ` : '') +
-                        '[group]="group"></addon-mod-data-action>';
-                }
-                template = template.replace(replaceRegex, render);
-            } else {
+            if (!actions[action]) {
                 template = template.replace(replaceRegex, '');
+
+                continue;
             }
+
+            if (action == AddonModDataAction.MOREURL) {
+                // Render more url directly because it can be part of an HTML attribute.
+                template = template.replace(
+                    replaceRegex,
+                    CoreSites.getRequiredCurrentSite().getURL() + '/mod/data/view.php?d={{database.id}}&rid=' + entry.id,
+                );
+
+                continue;
+            } else if (action == 'approvalstatus') {
+                template = template.replace(
+                    replaceRegex,
+                    Translate.instant('addon.mod_data.' + (entry.approved ? 'approved' : 'notapproved')),
+                );
+
+                continue;
+            }
+
+            template = template.replace(
+                replaceRegex,
+                `<addon-mod-data-action action="${action}" [entry]="entries[${entry.id}]" mode="${mode}" ` +
+                '[database]="database" [access]="access" [title]="title" ' +
+                (options.offset !== undefined ? `[offset]="${options.offset}" ` : '') +
+                (options.sortBy !== undefined ? `[sortBy]="${options.sortBy}" ` : '') +
+                (options.sortDirection !== undefined ? `sortDirection="${options.sortDirection}" ` : '') +
+                '[group]="group"></addon-mod-data-action>',
+            );
         }
 
-        return template;
+        // Replace otherfields found on template.
+        const regex = new RegExp('##otherfields##', 'gi');
+
+        if (!template.match(regex)) {
+            return template;
+        }
+
+        const unusedFields = fields.filter(field => !template.includes(`[field]="fields[${field.id}]`)).map((field) =>
+            `<p><strong>${field.name}</strong></p>` +
+                '<p><addon-mod-data-field-plugin [field]="fields[' + field.id + ']" [value]="entries[' + entry.id +
+                '].contents[' + field.id + ']" mode="' + mode + '" [database]="database" (gotoEntry)="gotoEntry($event)">' +
+                '</addon-mod-data-field-plugin></p>');
+
+        return template.replace(regex, unusedFields.join(''));
     }
 
     /**
