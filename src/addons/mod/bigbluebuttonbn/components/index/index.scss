@@ -10,6 +10,10 @@
         font-size: 100%;
     }
 
+    .addon-mod_bbb-recording-playback-title ion-label {
+        margin-bottom: 0;
+    }
+
     .addon-mod_bbb-recording-details {
         border-top: 2px solid var(--recording-details-border);
         border-bottom: 2px solid var(--recording-details-border);

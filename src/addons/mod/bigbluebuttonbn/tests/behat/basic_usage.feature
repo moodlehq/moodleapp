@@ -143,15 +143,15 @@ Feature: Test basic usage of BBB activity in app
       | BBB             | Recording 1 | Description 1 | 3      |
       | BBB             | Recording 2 | Description 2 | 3      |
     And I entered the bigbluebuttonbn activity "BBB" on course "Course 1" as "student1" in the app
-    Then I should find "Presentation" in the app
-    And I should find "Recording 1" in the app
+    Then I should find "Recording 1" in the app
     And I should find "Recording 2" in the app
     But I should not find "Description 1" in the app
     And I should not find "Description 2" in the app
+    And I should not find "Presentation" in the app
 
     When I press "Recording 1" in the app
     Then I should find "Description 1" in the app
-    And I should find "Presentation" within "Playback" "ion-item" in the app
+    And I should find "Presentation" in the app
     And I should find "Recording 1" within "Name" "ion-item" in the app
     And I should find "Date" in the app
     And I should find "3600" within "Duration" "ion-item" in the app
@@ -162,12 +162,12 @@ Feature: Test basic usage of BBB activity in app
 
     When I press "Recording 2" in the app
     Then I should find "Description 2" in the app
-    And I should find "Presentation" within "Playback" "ion-item" in the app
+    And I should find "Presentation" in the app
     And I should find "Recording 2" within "Name" "ion-item" in the app
     But I should not find "Description 1" in the app
 
     # Test play button, but the mock server doesn't support viewing recordings.
-    When I press "Play" near "Recording 1" in the app
+    When I press "Presentation" in the app
     And I press "OK" in the app
     And I switch to the browser tab opened by the app
     And I log in as "student1"
