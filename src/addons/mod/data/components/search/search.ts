@@ -125,6 +125,18 @@ export class AddonModDataSearchComponent implements OnInit {
         [placeholder]="\'addon.mod_data.authorlastname\' | translate" formControlName="lastname"></ion-input></span>';
         template = template.replace(replaceRegex, render);
 
+        // Searching by otherfields.
+        const regex = new RegExp('##otherfields##', 'gi');
+
+        if (template.match(regex)) {
+            const unusedFields = this.fieldsArray.filter(field => !template.includes(`[field]="fields[${field.id}]`)).map((field) =>
+                `<p><strong>${field.name}</strong></p>` +
+                    '<p><addon-mod-data-field-plugin mode="search" [field]="fields[' + field.id +
+                    ']" [form]="form" [searchFields]="search"></addon-mod-data-field-plugin><p>');
+
+            template = template.replace(regex, unusedFields.join(''));
+        }
+
         // Searching by tags is not supported.
         replaceRegex = new RegExp('##tags##', 'gi');
         const message = CoreTag.areTagsAvailableInSite() ?
