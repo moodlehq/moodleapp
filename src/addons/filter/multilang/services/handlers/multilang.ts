@@ -47,10 +47,12 @@ export class AddonFilterMultilangHandlerService extends CoreFilterDefaultHandler
         // Get available languages.
         const regex = /<(?:lang|span)[^>]+lang="([a-zA-Z0-9_-]+)"[^>]*>.*?<\/(?:lang|span)>/img;
         const languages: Set<string> = new Set();
+        let firstLanguage: string | undefined;
         let match: RegExpExecArray | null;
 
         while ((match = regex.exec(text))) {
             const language = match[1].toLowerCase().replace(/_/g, '-');
+            firstLanguage = firstLanguage ?? language;
 
             languages.add(language);
         }
@@ -60,6 +62,10 @@ export class AddonFilterMultilangHandlerService extends CoreFilterDefaultHandler
 
         if (!languages.has(language)) {
             language = CoreLang.getParentLanguage();
+        }
+
+        if (!language) {
+            language = firstLanguage;
         }
 
         if (!language) {

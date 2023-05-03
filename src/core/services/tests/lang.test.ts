@@ -122,6 +122,25 @@ describe('Lang', () => {
         `, 'Japanese text');
     });
 
+    it('filters multilang text using unknown language', async () => {
+        currentLanguage = 'ca';
+        parentLanguage = undefined;
+
+        await expectMultilangFilter(`
+            <span class="multilang" lang="es">Spanish</span>
+            <span class="multilang" lang="en">English</span>
+            <span class="multilang" lang="ja">Japanese</span>
+            text
+        `, 'Spanish text');
+
+        await expectMultilangFilter(`
+            {mlang es}Spanish{mlang}
+            {mlang en}English{mlang}
+            {mlang ja}Japanese{mlang}
+            text
+        `, 'text');
+    });
+
     /**
      * Test multilang filter (normalizing whitespace).
      */
