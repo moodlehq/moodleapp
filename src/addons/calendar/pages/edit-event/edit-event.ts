@@ -563,7 +563,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
      *
      * @param event Event.
      */
-    protected returnToList(event?: AddonCalendarEvent | AddonCalendarOfflineEventDBRecord): void {
+    protected returnToList(event: AddonCalendarEvent | AddonCalendarOfflineEventDBRecord): void {
         // Unblock the sync because the view will be destroyed and the sync process could be triggered before ngOnDestroy.
         this.unblockSync();
 
@@ -575,48 +575,18 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
                 this.currentSite.getId(),
             );
         } else {
-            if (event) {
-                CoreEvents.trigger(
-                    AddonCalendarProvider.NEW_EVENT_EVENT,
-                    {
-                        eventId: event.id,
-                        oldEventId: this.eventId,
-                    },
-                    this.currentSite.getId(),
-                );
-            } else {
-                CoreEvents.trigger(AddonCalendarProvider.NEW_EVENT_DISCARDED_EVENT, {}, this.currentSite.getId());
-            }
+            CoreEvents.trigger(
+                AddonCalendarProvider.NEW_EVENT_EVENT,
+                {
+                    eventId: event.id,
+                    oldEventId: this.eventId,
+                },
+                this.currentSite.getId(),
+            );
         }
 
         this.originalData = undefined; // Avoid asking for confirmation.
         CoreNavigator.back();
-    }
-
-    /**
-     * Discard an offline saved discussion.
-     */
-    async discard(): Promise<void> {
-        if (!this.eventId) {
-            return;
-        }
-
-        try {
-            await CoreDomUtils.showConfirm(Translate.instant('core.areyousure'));
-
-            try {
-                await AddonCalendarOffline.deleteEvent(this.eventId);
-
-                CoreForms.triggerFormCancelledEvent(this.formElement, this.currentSite.getId());
-
-                this.returnToList();
-            } catch {
-                // Shouldn't happen.
-                CoreDomUtils.showErrorModal('Error discarding event.');
-            }
-        } catch {
-            // Ignore errors
-        }
     }
 
     /**
