@@ -18,7 +18,8 @@
 </ion-header>
 <ion-content>
     <core-loading [hideUntil]="loaded">
-        <core-group-selector [groupInfo]="groupInfo" [(selected)]="selectedGroup" (selectedChange)="setGroup(selectedGroup)">
+        <core-group-selector [groupInfo]="groupInfo" [(selected)]="selectedGroup" (selectedChange)="setGroup(selectedGroup)"
+            [courseId]="database?.course">
         </core-group-selector>
 
         <div class="addon-data-contents {{cssClass}}" *ngIf="database">

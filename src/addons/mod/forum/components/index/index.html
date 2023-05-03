@@ -25,7 +25,8 @@
             </ion-item>
         </core-course-module-info>
 
-        <core-group-selector *ngIf="supportsChangeGroup" [groupInfo]="groupInfo" [(selected)]="groupId" (selectedChange)="groupChanged()">
+        <core-group-selector *ngIf="supportsChangeGroup" [groupInfo]="groupInfo" [(selected)]="groupId" (selectedChange)="groupChanged()"
+            [courseId]="courseId">
         </core-group-selector>
 
         <!-- Cut-off date or due date message -->
@@ -95,7 +96,10 @@
                             <span *ngIf="discussion.userfullname">{{discussion.userfullname}}</span>
                             <p *ngIf="discussion.groupname" class="core-groupname">
                                 <ion-icon name="fas-users" [attr.aria-label]="'addon.mod_forum.group' | translate">
-                                </ion-icon> {{ discussion.groupname }}
+                                </ion-icon>
+                                <core-format-text [text]="discussion.groupname" contextLevel="course" [contextInstanceId]="courseId"
+                                    [wsNotFiltered]="true">
+                                </core-format-text>
                             </p>
                             <p *ngIf="isOnlineDiscussion(discussion)">
                                 {{discussion.created * 1000 | coreFormatDate: "strftimerecentfull"}}

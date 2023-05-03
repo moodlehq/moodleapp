@@ -48,7 +48,7 @@ import {
 import { AddonModLessonModuleHandlerService } from '../../services/handlers/module';
 import { CoreTime } from '@singletons/time';
 import { CoreError } from '@classes/errors/error';
-import { CoreLang } from '@services/lang';
+import { Translate } from '@singletons';
 
 /**
  * Component that displays a lesson entry page.
@@ -79,7 +79,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     leftDuringTimed?: boolean; // Whether the user has started and left a retake.
     groupInfo?: CoreGroupInfo; // The group info.
     reportLoaded?: boolean; // Whether the report data has been loaded.
-    selectedGroupName?: string; // The name of the selected group.
+    selectedGroupEmptyMessage?: string; // The message to show if the selected group is empty.
     overview?: AttemptsOverview; // Reports overview data.
     finishedOffline?: boolean; // Whether a retake was finished in offline.
     avetimeReadable?: string; // Average time in a readable format.
@@ -487,12 +487,15 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         }
 
         this.group = groupId;
-        this.selectedGroupName = '';
+        this.selectedGroupEmptyMessage = '';
 
         // Search the name of the group if it isn't all participants.
         if (groupId && this.groupInfo && this.groupInfo.groups) {
             const group = this.groupInfo.groups.find(group => groupId == group.id);
-            this.selectedGroupName = group ? await CoreLang.filterMultilang(group.name) : '';
+
+            this.selectedGroupEmptyMessage = group
+                ? Translate.instant('addon.mod_lesson.nolessonattemptsgroup', { $a: group.name })
+                : '';
         }
 
         // Get the overview of retakes for the group.

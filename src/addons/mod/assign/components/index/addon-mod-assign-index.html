@@ -21,7 +21,8 @@
     <ng-container *ngIf="assign && canViewAllSubmissions">
         <ion-list class="core-list-align-detail-right">
 
-            <core-group-selector [groupInfo]="groupInfo" [(selected)]="group" (selectedChange)="setGroup(group)"></core-group-selector>
+            <core-group-selector [groupInfo]="groupInfo" [(selected)]="group" (selectedChange)="setGroup(group)" [courseId]="courseId">
+            </core-group-selector>
 
             <ion-item class="ion-text-wrap">
                 <ion-label>

@@ -20,7 +20,6 @@ import { CoreError } from '@classes/errors/error';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreCourses } from '@features/courses/services/courses';
-import { multilangString, MultilangString } from '@services/lang';
 
 const ROOT_CACHE_KEY = 'mmGroups:';
 
@@ -175,7 +174,7 @@ export class CoreGroupsProvider {
             groupInfo.defaultGroupId = 0;
         } else {
             if (result.canaccessallgroups || groupInfo.visibleGroups) {
-                groupInfo.groups.push({ id: 0, name: multilangString(Translate.instant('core.allparticipants')) });
+                groupInfo.groups.push({ id: 0, name: Translate.instant('core.allparticipants') });
                 groupInfo.defaultGroupId = 0;
             } else {
                 groupInfo.defaultGroupId = result.groups[0].id;
@@ -443,7 +442,7 @@ export const CoreGroups = makeSingleton(CoreGroupsProvider);
  */
 export type CoreGroup = {
     id: number; // Group ID.
-    name: MultilangString; // Multilang compatible name, course unique'.
+    name: string; // Multilang compatible name, course unique'.
     description?: string; // Group description text.
     descriptionformat?: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     idnumber?: string; // Id number.
@@ -527,7 +526,7 @@ type CoreGroupGetCourseUserGroupsWSParams = {
 export type CoreGroupGetCourseUserGroupsWSResponse = {
     groups: {
         id: number; // Group record id.
-        name: MultilangString; // Multilang compatible name, course unique.
+        name: string; // Multilang compatible name, course unique.
         description: string; // Group description text.
         descriptionformat: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
         idnumber: string; // Id number.

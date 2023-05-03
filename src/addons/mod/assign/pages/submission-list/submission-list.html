@@ -21,7 +21,8 @@
         </ion-refresher>
         <core-loading [hideUntil]="submissions.loaded">
             <ion-list>
-                <core-group-selector [groupInfo]="groupInfo" [(selected)]="groupId" (selectedChange)="reloadSubmissions()">
+                <core-group-selector [groupInfo]="groupInfo" [(selected)]="groupId" (selectedChange)="reloadSubmissions()"
+                    [courseId]="courseId">
                 </core-group-selector>
 
                 <!-- List of submissions. -->
@@ -36,7 +37,8 @@
                             </p>
                             <p *ngIf="assign && assign!.teamsubmission">
                                 <span *ngIf="submission.groupname" class="core-groupname">
-                                    {{submission.groupname}}
+                                    <core-format-text [text]="submission.groupname" contextLevel="course" [contextInstanceId]="courseId">
+                                    </core-format-text>
                                 </span>
                                 <span *ngIf="assign!.preventsubmissionnotingroup && !submission.groupname && submission.noGroups
                                     && !submission.blindid" class="text-danger">

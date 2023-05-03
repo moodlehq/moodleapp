@@ -15,7 +15,8 @@
         </ion-refresher>
         <core-loading [hideUntil]="attempts && attempts.loaded">
             <ion-list class="ion-no-margin">
-                <core-group-selector [groupInfo]="groupInfo" [(selected)]="selectedGroup" (selectedChange)="reloadAttempts()">
+                <core-group-selector [groupInfo]="groupInfo" [(selected)]="selectedGroup" (selectedChange)="reloadAttempts()"
+                    [courseId]="courseId">
                 </core-group-selector>
 
                 <ng-container *ngIf="identifiableAttemptsTotal > 0">

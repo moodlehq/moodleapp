@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { mockSingleton } from '@/testing/utils';
-import { CoreLang, CoreLangProvider, multilangString } from '@services/lang';
+import { CoreLang, CoreLangProvider } from '@services/lang';
 
 describe('Lang', () => {
 
@@ -126,7 +126,7 @@ describe('Lang', () => {
      * Test multilang filter (normalizing whitespace).
      */
     async function expectMultilangFilter(text: string, expected: string): Promise<void> {
-        const actual = await lang.filterMultilang(multilangString(text));
+        const actual = await lang.filterMultilang(text);
 
         expect(actual.replace(/\s+/g, ' ').trim()).toEqual(expected);
     }

@@ -34,7 +34,10 @@
                             <p *ngIf="post.author && post.author.groups" class="core-groupname">
                                 <ng-container *ngFor="let group of post.author.groups">
                                     <ion-icon name="fas-users" [attr.aria-label]="'addon.mod_forum.group' | translate">
-                                    </ion-icon> {{ group.name }}
+                                    </ion-icon>
+                                    <core-format-text [text]="group.name" contextLevel="course" [contextInstanceId]="courseId"
+                                        [wsNotFiltered]="true">
+                                    </core-format-text>
                                 </ng-container>
                             </p>
                             <p *ngIf="post.timecreated">{{post.timecreated * 1000 | coreFormatDate: "strftimerecentfull"}}</p>

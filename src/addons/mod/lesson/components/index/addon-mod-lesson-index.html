@@ -56,14 +56,16 @@
         <core-tab *ngIf="canViewReports" [title]="'addon.mod_lesson.reports' | translate" (ionSelect)="reportsSelected()">
             <ng-template>
                 <core-loading [hideUntil]="reportLoaded">
-                    <core-group-selector [groupInfo]="groupInfo" [(selected)]="group" (selectedChange)="setGroup(group)">
+                    <core-group-selector [groupInfo]="groupInfo" [(selected)]="group" (selectedChange)="setGroup(group)"
+                        [courseId]="courseId">
                     </core-group-selector>
 
                     <!-- No lesson retakes. -->
-                    <core-empty-box *ngIf="!overview && selectedGroupName" icon="fas-chart-bar"
-                        [message]="'addon.mod_lesson.nolessonattemptsgroup' | translate:{$a: selectedGroupName}">
+                    <core-empty-box *ngIf="lesson && !overview && selectedGroupEmptyMessage" icon="fas-chart-bar">
+                        <core-format-text [text]="selectedGroupEmptyMessage" contextLevel="course" [contextInstanceId]="courseId"
+                            [wsNotFiltered]="true"></core-format-text>
                     </core-empty-box>
-                    <core-empty-box *ngIf="!overview && !selectedGroupName" icon="fas-chart-bar"
+                    <core-empty-box *ngIf="!overview && !selectedGroupEmptyMessage" icon="fas-chart-bar"
                         [message]="'addon.mod_lesson.nolessonattempts' | translate">
                     </core-empty-box>
 

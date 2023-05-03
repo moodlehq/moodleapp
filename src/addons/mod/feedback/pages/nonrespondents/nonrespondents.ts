@@ -31,10 +31,10 @@ import { AddonModFeedbackHelper, AddonModFeedbackNonRespondent } from '../../ser
 export class AddonModFeedbackNonRespondentsPage implements OnInit {
 
     protected cmId!: number;
-    protected courseId!: number;
     protected feedback?: AddonModFeedbackWSFeedback;
     protected page = 0;
 
+    courseId!: number;
     selectedGroup!: number;
     groupInfo?: CoreGroupInfo;
     users: AddonModFeedbackNonRespondent[] = [];

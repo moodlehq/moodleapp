@@ -39,6 +39,7 @@ export class AddonModFeedbackAttemptsPage implements AfterViewInit, OnDestroy {
 
     promisedAttempts: CorePromisedValue<AddonModFeedbackAttemptsManager>;
     fetchFailed = false;
+    courseId?: number;
 
     constructor(protected route: ActivatedRoute) {
         this.promisedAttempts = new CorePromisedValue();
@@ -86,11 +87,11 @@ export class AddonModFeedbackAttemptsPage implements AfterViewInit, OnDestroy {
      */
     async ngAfterViewInit(): Promise<void> {
         try {
+            this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
             const cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
-            const courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
             const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
                 AddonModFeedbackAttemptsSource,
-                [courseId, cmId],
+                [this.courseId, cmId],
             );
 
             source.selectedGroup = CoreNavigator.getRouteNumberParam('group') || 0;

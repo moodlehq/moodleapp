@@ -26,7 +26,6 @@ import { CoreSite } from '../classes/site';
 import { CorePlatform } from '@services/platform';
 import { AddonFilterMultilangHandler } from '@addons/filter/multilang/services/handlers/multilang';
 import { AddonFilterMultilang2Handler } from '@addons/filter/multilang2/services/handlers/multilang2';
-import { Brand } from '@/core/utils/types';
 
 /*
  * Service to handle language features, like changing the current language.
@@ -499,8 +498,8 @@ export class CoreLangProvider {
      * @param text Multilang string.
      * @returns Filtered string.
      */
-    async filterMultilang(text: MultilangString): Promise<string> {
-        return Promise.resolve(text as unknown as string)
+    async filterMultilang(text: string): Promise<string> {
+        return Promise.resolve(text)
             .then(text => AddonFilterMultilangHandler.filter(text))
             .then(text => AddonFilterMultilang2Handler.filter(text));
     }
@@ -570,25 +569,9 @@ export class CoreLangProvider {
 export const CoreLang = makeSingleton(CoreLangProvider);
 
 /**
- * Make a multilang string.
- *
- * @param text String.
- * @returns Multilang string.
- */
-export function multilangString(text: string = ''): MultilangString {
-    return text as unknown as MultilangString;
-}
-
-/**
  * Language code. E.g. 'au', 'es', etc.
  */
 export type CoreLangLanguage = string;
-
-/**
- * Branded type to mark multilang strings, this is useful to avoid rendering
- * multilang strings without filtering.
- */
-export type MultilangString = Brand<unknown, 'multilang'>;
 
 /**
  * Language object has two leves, first per language and second per string key.

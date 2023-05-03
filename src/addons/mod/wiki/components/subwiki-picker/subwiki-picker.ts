@@ -25,6 +25,7 @@ import { AddonModWikiSubwiki, AddonModWikiSubwikiListGrouping } from '../../serv
 })
 export class AddonModWikiSubwikiPickerComponent {
 
+    @Input() courseId?: number;
     @Input() subwikis: AddonModWikiSubwikiListGrouping[] = [];
     @Input() currentSubwiki!: AddonModWikiSubwiki;
 
