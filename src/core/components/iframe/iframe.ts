@@ -156,8 +156,14 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
      * Detect changes on input properties.
      */
     async ngOnChanges(changes: {[name: string]: SimpleChange }): Promise<void> {
-        if (changes.src) {
-            let url = CoreUrlUtils.getYoutubeEmbedUrl(changes.src.currentValue) || changes.src.currentValue;
+        if (!changes.src) {
+            return;
+        }
+
+        let url = changes.src.currentValue;
+
+        if (!CoreUrlUtils.isLocalFileUrl(url)) {
+            url = CoreUrlUtils.getYoutubeEmbedUrl(changes.src.currentValue) || changes.src.currentValue;
             this.displayHelp = CoreIframeUtils.shouldDisplayHelpForUrl(url);
 
             const currentSite = CoreSites.getCurrentSite();
@@ -173,14 +179,14 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
             }
 
             await CoreIframeUtils.fixIframeCookies(url);
-
-            this.safeUrl = DomSanitizer.bypassSecurityTrustResourceUrl(CoreFile.convertFileSrc(url));
-
-            // Now that the URL has been set, initialize the iframe. Wait for the iframe to the added to the DOM.
-            setTimeout(() => {
-                this.init();
-            });
         }
+
+        this.safeUrl = DomSanitizer.bypassSecurityTrustResourceUrl(CoreFile.convertFileSrc(url));
+
+        // Now that the URL has been set, initialize the iframe. Wait for the iframe to the added to the DOM.
+        setTimeout(() => {
+            this.init();
+        });
     }
 
     /**

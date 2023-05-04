@@ -504,7 +504,7 @@ export class CoreUrlUtilsProvider {
      */
     removeProtocolAndWWW(url: string): string {
         // Remove protocol.
-        url = url.replace(/.*?:\/\//g, '');
+        url = url.replace(/^.*?:\/\//, '');
         // Remove www.
         url = url.replace(/^www./, '');
 
