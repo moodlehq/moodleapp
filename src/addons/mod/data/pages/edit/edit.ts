@@ -438,6 +438,20 @@ export class AddonModDataEditPage implements OnInit {
             replaceRegEx = new RegExp(replace, 'gi');
 
             template = template.replace(replaceRegEx, 'field_' + field.id);
+
+            // Replace the field name tag.
+            replace = '[[' + field.name + '#name]]';
+            replace = replace.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
+            replaceRegEx = new RegExp(replace, 'gi');
+
+            template = template.replace(replaceRegEx, field.name);
+
+            // Replace the field description tag.
+            replace = '[[' + field.name + '#description]]';
+            replace = replace.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
+            replaceRegEx = new RegExp(replace, 'gi');
+
+            template = template.replace(replaceRegEx, field.description);
         });
 
         const regex = new RegExp('##otherfields##', 'gi');
