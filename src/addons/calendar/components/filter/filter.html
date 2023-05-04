@@ -17,9 +17,9 @@
         <core-spacer *ngIf="filter.course || filter.category || filter.group"></core-spacer>
         <ng-container *ngIf="filter.course || filter.category || filter.group">
             <ion-radio-group [(ngModel)]="courseId" (ionChange)="onChange()">
-                <ion-item class="ion-text-wrap" *ngFor="let course of courses">
+                <ion-item class="ion-text-wrap" *ngFor="let course of sortedCourses">
                     <ion-label>
-                        <core-format-text [text]="course.fullname"></core-format-text>
+                        <core-format-text [text]="course.shortname"></core-format-text>
                     </ion-label>
                     <ion-radio slot="end" [value]="course.id"></ion-radio>
                 </ion-item>

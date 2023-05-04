@@ -61,8 +61,7 @@
             <ion-item class="ion-text-wrap">
                 <ion-label>
                     <p class="item-heading">{{ 'addon.calendar.when' | translate }}</p>
-                    <core-format-text [text]="event.formattedtime" [contextLevel]="event.contextLevel"
-                        [contextInstanceId]="event.contextInstanceId"></core-format-text>
+                    <core-format-text [text]="event.formattedtime" [filter]="false"></core-format-text>
                 </ion-label>
                 <ion-note slot="end" *ngIf="event.deleted">
                     <ion-icon name="fas-trash" aria-hidden="true"></ion-icon> {{ 'core.deletedoffline' | translate }}

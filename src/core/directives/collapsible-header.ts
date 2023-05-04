@@ -125,6 +125,8 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
             await this.enteredPromise,
         ]);
 
+        this.listenEvents();
+
         await this.initializeFloatingTitle();
         this.initializeContent();
     }
@@ -290,8 +292,6 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         if (!this.page) {
             return;
         }
-
-        this.listenEvents();
 
         // Initialize from tabs.
         const tabs = CoreDirectivesRegistry.resolve(this.page.querySelector('core-tabs-outlet'), CoreTabsOutletComponent);

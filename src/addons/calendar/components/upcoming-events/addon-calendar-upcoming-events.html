@@ -21,7 +21,9 @@
                             <core-format-text [text]="event.name" [contextLevel]="event.contextLevel"
                                 [contextInstanceId]="event.contextInstanceId"></core-format-text>
                         </p>
-                        <p [innerHTML]="event.formattedtime"></p>
+                        <p>
+                            <core-format-text [text]="event.formattedtime" [filter]="false"></core-format-text>
+                        </p>
                     </ion-label>
                     <ion-note *ngIf="event.offline && !event.deleted" slot="end">
                         <ion-icon name="fas-clock" aria-hidden="true"></ion-icon>
