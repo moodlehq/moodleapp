@@ -25,7 +25,13 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
-import { AddonModBBB, AddonModBBBData, AddonModBBBMeetingInfo, AddonModBBBService } from '../../services/bigbluebuttonbn';
+import {
+    AddonModBBB,
+    AddonModBBBData,
+    AddonModBBBMeetingInfo,
+    AddonModBBBRecordingPlaybackTypes,
+    AddonModBBBService,
+} from '../../services/bigbluebuttonbn';
 
 /**
  * Component that displays a Big Blue Button activity.
@@ -43,7 +49,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
     groupInfo?: CoreGroupInfo;
     groupId = 0;
     meetingInfo?: AddonModBBBMeetingInfo;
-    recordings?: RecordingData[];
+    recordings?: Recording[];
 
     constructor(
         protected content?: IonContent,
@@ -139,13 +145,17 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
         const columns = CoreUtils.arrayToObject(recordingsTable.columns, 'key');
 
         this.recordings = recordingsTable.parsedData.map(recordingData => {
-            const playbackEl = CoreDomUtils.convertToElement(String(recordingData.playback));
-            const playbackAnchor = playbackEl.querySelector('a');
-            const details: RecordingDetailData[] = [];
+            const details: RecordingDetail[] = [];
+            const playbacksEl = CoreDomUtils.convertToElement(String(recordingData.playback));
+            const playbacks: RecordingPlayback[] = Array.from(playbacksEl.querySelectorAll('a')).map(playbackAnchor => ({
+                name: playbackAnchor.textContent ?? '',
+                url: playbackAnchor.href,
+                icon: this.getPlaybackIcon(playbackAnchor),
+            }));
 
             Object.entries(recordingData).forEach(([key, value]) => {
                 const columnData = columns[key];
-                if (!columnData || value === '' || key === 'actionbar') {
+                if (!columnData || value === '' || key === 'actionbar' || key === 'playback') {
                     return;
                 }
 
@@ -158,16 +168,11 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
                         return;
                     }
 
-                    if (key === 'playback') {
-                        // Remove HTML, we're only interested in the text.
-                        value = (valueElement.textContent ?? '').trim();
-                    } else {
-                        // Treat "quick edit" buttons, they aren't supported in the app.
-                        const quickEditLink = valueElement.querySelector('.quickeditlink');
-                        if (quickEditLink) {
-                            // The first span in quick edit link contains the actual HTML, use it.
-                            value = (quickEditLink.querySelector('span')?.innerHTML ?? '').trim();
-                        }
+                    // Treat "quick edit" buttons, they aren't supported in the app.
+                    const quickEditLink = valueElement.querySelector('.quickeditlink');
+                    if (quickEditLink) {
+                        // The first span in quick edit link contains the actual HTML, use it.
+                        value = (quickEditLink.querySelector('span')?.innerHTML ?? '').trim();
                     }
                 }
 
@@ -179,14 +184,38 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
             });
 
             return {
-                type: playbackAnchor?.innerText ??
-                    Translate.instant('addon.mod_bigbluebuttonbn.view_recording_format_presentation'),
                 name: CoreTextUtils.cleanTags(String(recordingData.recording), { singleLine: true }),
-                url: playbackAnchor?.href ?? '',
+                playbackLabel: columns.playback.label,
+                playbacks,
                 details,
                 expanded: false,
             };
         });
+    }
+
+    /**
+     * Get the playback icon.
+     *
+     * @param playbackAnchor Anchor element.
+     * @returns Icon name.
+     */
+    protected getPlaybackIcon(playbackAnchor: HTMLAnchorElement): string {
+        const type = playbackAnchor.dataset.target;
+        switch (type) {
+            case AddonModBBBRecordingPlaybackTypes.NOTES:
+                return 'far-file-lines';
+            case AddonModBBBRecordingPlaybackTypes.PODCAST:
+                return 'fas-microphone-lines';
+            case AddonModBBBRecordingPlaybackTypes.SCREENSHARE:
+                return 'fas-display';
+            case AddonModBBBRecordingPlaybackTypes.STATISTICS:
+                return 'fas-chart-line';
+            case AddonModBBBRecordingPlaybackTypes.VIDEO:
+                return 'fas-video';
+            case AddonModBBBRecordingPlaybackTypes.PRESENTATION:
+            default:
+                return 'fas-circle-play';
+        }
     }
 
     /**
@@ -323,21 +352,21 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
      *
      * @param recording Recording.
      */
-    toggle(recording: RecordingData): void {
+    toggle(recording: Recording): void {
         recording.expanded = !recording.expanded;
     }
 
     /**
-     * Play a recording.
+     * Open a recording playback.
      *
      * @param event Click event.
-     * @param recording Recording.
+     * @param playback Playback.
      */
-    playRecording(event: MouseEvent, recording: RecordingData): void {
+    openPlayback(event: MouseEvent, playback: RecordingPlayback): void {
         event.preventDefault();
         event.stopPropagation();
 
-        CoreSites.getCurrentSite()?.openInBrowserWithAutoLogin(recording.url);
+        CoreSites.getCurrentSite()?.openInBrowserWithAutoLogin(playback.url);
     }
 
 }
@@ -345,19 +374,28 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
 /**
  * Recording data.
  */
-type RecordingData = {
-    type: string;
+type Recording = {
     name: string;
-    url: string;
     expanded: boolean;
-    details: RecordingDetailData[];
+    playbackLabel: string;
+    playbacks: RecordingPlayback[];
+    details: RecordingDetail[];
 };
 
 /**
  * Recording detail data.
  */
-type RecordingDetailData = {
+type RecordingDetail = {
     label: string;
     value: string;
     allowHTML: boolean;
+};
+
+/**
+ * Recording playback data.
+ */
+type RecordingPlayback = {
+    name: string;
+    url: string;
+    icon: string;
 };
