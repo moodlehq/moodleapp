@@ -391,11 +391,23 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * @returns Promise resolved when done.
      */
     protected async fetchModule(): Promise<void> {
+        const previousCompletion = this.module.completiondata;
+
         const module = await CoreCourse.getModule(this.module.id, this.courseId);
 
         await CoreCourseHelper.loadModuleOfflineCompletion(this.courseId, module);
 
         this.module = module;
+
+        // @todo: Temporary fix to update course page completion. This should be refactored in MOBILE-4326.
+        if (previousCompletion && module.completiondata && previousCompletion.state !== module.completiondata.state) {
+            await CoreUtils.ignoreErrors(CoreCourse.invalidateSections(this.courseId));
+
+            CoreEvents.trigger(CoreEvents.COMPLETION_MODULE_VIEWED, {
+                courseId: this.courseId,
+                cmId: module.completiondata.cmid,
+            });
+        }
     }
 
     /**
