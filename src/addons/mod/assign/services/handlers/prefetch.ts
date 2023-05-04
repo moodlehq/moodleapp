@@ -35,7 +35,6 @@ import { AddonModAssignSync, AddonModAssignSyncResult } from '../assign-sync';
 import { CoreUser } from '@features/user/services/user';
 import { CoreGradesHelper } from '@features/grades/services/grades-helper';
 import { CoreCourses } from '@features/courses/services/courses';
-import { multilangString } from '@services/lang';
 
 /**
  * Handler to prefetch assigns.
@@ -356,7 +355,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
 
         // Teacher, prefetch all submissions.
         if (!groupInfo.groups || groupInfo.groups.length == 0) {
-            groupInfo.groups = [{ id: 0, name: multilangString() }];
+            groupInfo.groups = [{ id: 0, name: '' }];
         }
 
         const promises = groupInfo.groups.map((group) =>

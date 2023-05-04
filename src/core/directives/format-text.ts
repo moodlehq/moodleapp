@@ -414,6 +414,10 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
             this.contextInstanceId = site.getSiteHomeId();
         }
 
+        if (this.contextLevel === 'course' && this.contextInstanceId === undefined && this.courseId !== undefined) {
+            this.contextInstanceId = this.courseId;
+        }
+
         const filter = this.filter === undefined ?
             !!(this.contextLevel && this.contextInstanceId !== undefined) : CoreUtils.isTrueOrOne(this.filter);
 

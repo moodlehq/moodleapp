@@ -44,7 +44,6 @@ import { AddonModForumDiscussionsSwipeManager } from '../../classes/forum-discus
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { AddonModForumDiscussionsSource } from '../../classes/forum-discussions-source';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
-import { CoreLang, multilangString } from '@services/lang';
 
 type NewDiscussionData = {
     subject: string;
@@ -93,7 +92,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
     advanced = false; // Display all form fields.
     accessInfo: AddonModForumAccessInformation = {};
     courseId!: number;
-    groupName?: string;
+    postInGroupMessage?: string;
 
     discussions?: AddonModForumNewDiscussionDiscussionsSwipeManager;
 
@@ -427,7 +426,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
                 groups.unshift({
                     courseid: this.courseId,
                     id: AddonModForumProvider.ALL_PARTICIPANTS,
-                    name: multilangString(Translate.instant('core.allparticipants')),
+                    name: Translate.instant('core.allparticipants'),
                 });
             }
 
@@ -614,11 +613,11 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
      */
     async calculateGroupName(): Promise<void> {
         if (this.newDiscussion.groupId <= 0) {
-            this.groupName = undefined;
+            this.postInGroupMessage = undefined;
         } else {
             const groupName = this.groups.find(group => group.id === this.newDiscussion.groupId)?.name;
 
-            this.groupName = groupName && await CoreLang.filterMultilang(groupName);
+            this.postInGroupMessage = groupName && Translate.instant('addon.mod_forum.postingroup', { groupname: groupName });
         }
     }
 

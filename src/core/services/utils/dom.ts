@@ -58,7 +58,7 @@ import { CoreUserSupport } from '@features/user/services/support';
 import { CoreErrorInfoComponent } from '@components/error-info/error-info';
 import { CorePlatform } from '@services/platform';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
-import { CoreLang, multilangString } from '@services/lang';
+import { CoreLang } from '@services/lang';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -1170,7 +1170,7 @@ export class CoreDomUtilsProvider {
 
         if (hasHTMLTags && !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.7')) {
             // Treat multilang.
-            options.message = await CoreLang.filterMultilang(multilangString(<string> options.message));
+            options.message = await CoreLang.filterMultilang(<string> options.message);
         }
 
         const alertId = <string> Md5.hashAsciiStr((options.header || '') + '#' + (options.message || ''));

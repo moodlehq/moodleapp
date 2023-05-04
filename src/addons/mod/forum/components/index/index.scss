@@ -6,6 +6,16 @@
         color: var(--core-star-color);
     }
 
+    .core-discussionusername {
+        font-size: 1.2em;
+    }
+
+    .core-groupname {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
     .addon-mod-forum-discussion.item {
         ion-label {
             margin-top: 4px;

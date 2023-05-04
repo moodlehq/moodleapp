@@ -14,7 +14,8 @@
             <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
         </ion-refresher>
         <core-loading [hideUntil]="sessions.loaded">
-            <core-group-selector [groupInfo]="groupInfo" [(selected)]="groupId" (selectedChange)="reloadSessions()"></core-group-selector>
+            <core-group-selector [groupInfo]="groupInfo" [(selected)]="groupId" (selectedChange)="reloadSessions()" [courseId]="courseId">
+            </core-group-selector>
 
             <ion-item>
                 <ion-label>{{ 'addon.mod_chat.showincompletesessions' | translate }}</ion-label>

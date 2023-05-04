@@ -60,7 +60,8 @@
 
 <ng-template #basicInfo>
     <ion-list *ngIf="access && access.canviewanalysis && !access.isempty">
-        <core-group-selector [groupInfo]="groupInfo" [(selected)]="group" (selectedChange)="setGroup(group)"></core-group-selector>
+        <core-group-selector [groupInfo]="groupInfo" [(selected)]="group" (selectedChange)="setGroup(group)" [courseId]="courseId">
+        </core-group-selector>
 
         <ion-item class="ion-text-wrap" (click)="openAttempts()" [class.hide-detail]="!(access.canviewreports && completedCount > 0)"
             [detail]="true" [button]="access.canviewreports && completedCount > 0">

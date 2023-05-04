@@ -1147,10 +1147,10 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
         if (this.assign.teamsubmission) {
             if (lastAttempt.submissiongroup) {
                 // Get the name of the group.
-                promises.push(CoreGroups.getActivityAllowedGroups(this.assign.cmid).then(async (result) => {
+                promises.push(CoreGroups.getActivityAllowedGroups(this.assign.cmid).then((result) => {
                     const group = result.groups.find((group) => group.id === lastAttempt.submissiongroup);
                     if (group) {
-                        lastAttempt.submissiongroupname = await CoreLang.filterMultilang(group.name);
+                        lastAttempt.submissiongroupname = group.name;
                     }
 
                     return;

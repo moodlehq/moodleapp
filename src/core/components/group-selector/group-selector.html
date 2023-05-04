@@ -13,8 +13,9 @@
         </ion-label>
         <ion-select [(ngModel)]="selected" (ionChange)="selectedChange.emit(selected)" interface="action-sheet"
             [interfaceOptions]="{header: 'core.group' | translate}">
-            <ion-select-option *ngFor="let option of options" [value]="option.value">
-                {{ option.text }}
+            <ion-select-option *ngFor="let group of groupInfo.groups" [value]=" group.id">
+                <core-format-text [text]="group.name" contextLevel="course" [contextInstanceId]="courseId" [wsNotFiltered]="true">
+                </core-format-text>
             </ion-select-option>
         </ion-select>
     </ion-item>

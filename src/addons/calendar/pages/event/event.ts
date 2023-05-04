@@ -30,7 +30,6 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreSites } from '@services/sites';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreGroups } from '@services/groups';
 import { NgZone, Translate } from '@singletons';
 import { Subscription } from 'rxjs';
 import { CoreNavigator } from '@services/navigator';
@@ -42,7 +41,6 @@ import { AddonCalendarEventsSource } from '@addons/calendar/classes/events-sourc
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { CoreReminders, CoreRemindersService } from '@features/reminders/services/reminders';
 import { CoreRemindersSetReminderMenuComponent } from '@features/reminders/components/set-reminder-menu/set-reminder-menu';
-import { CoreLang } from '@services/lang';
 
 /**
  * Page that displays a single calendar event.
@@ -261,7 +259,7 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
 
             // If it's a group event, get the name of the group.
             if (courseId && this.event.groupid) {
-                promises.push(this.loadGroupName(this.event, courseId));
+                this.groupName = event.groupname;
             }
 
             if (this.event.iscategoryevent && this.event.category) {
@@ -357,26 +355,6 @@ export class AddonCalendarEventPage implements OnInit, OnDestroy {
         }
 
         return deleted;
-    }
-
-    /**
-     * Load group name.
-     *
-     * @param event Event.
-     * @param courseId Course ID.
-     * @returns Promise resolved when done.
-     */
-    protected async loadGroupName(event: AddonCalendarEventToDisplay, courseId: number): Promise<void> {
-        try {
-            const groups = await CoreGroups.getUserGroupsInCourse(courseId);
-
-            const group = groups.find((group) => group.id == event.groupid);
-            this.groupName = group ? await CoreLang.filterMultilang(group.name) : '';
-
-        } catch {
-            // Error getting groups, just don't show the group name.
-            this.groupName = '';
-        }
     }
 
     /**

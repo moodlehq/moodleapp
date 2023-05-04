@@ -14,7 +14,8 @@
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
         <ion-list class="ion-no-margin">
-            <core-group-selector [groupInfo]="groupInfo" [(selected)]="selectedGroup" (selectedChange)="loadAttempts(selectedGroup)">
+            <core-group-selector [groupInfo]="groupInfo" [(selected)]="selectedGroup" (selectedChange)="loadAttempts(selectedGroup)"
+                [courseId]="courseId">
             </core-group-selector>
 
             <ion-item-divider>

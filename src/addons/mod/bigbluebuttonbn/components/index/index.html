@@ -14,7 +14,8 @@
     </core-course-module-info>
 
     <core-group-selector [groupInfo]="groupInfo" [(selected)]="groupId" (selectedChange)="groupChanged()"
-        [multipleGroupsMessage]="'addon.mod_bigbluebuttonbn.view_groups_selection_warning' | translate"></core-group-selector>
+        [multipleGroupsMessage]="'addon.mod_bigbluebuttonbn.view_groups_selection_warning' | translate" [courseId]="module.course">
+    </core-group-selector>
 
     <ng-container *ngIf="meetingInfo && showRoom">
         <ion-item class="ion-text-wrap" *ngIf="meetingInfo.openingtime">

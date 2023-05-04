@@ -181,7 +181,8 @@
                     </h3>
                 </ion-label>
             </ion-item-divider>
-            <core-group-selector [groupInfo]="groupInfo" [(selected)]="group" (selectedChange)="setGroup(group)"></core-group-selector>
+            <core-group-selector [groupInfo]="groupInfo" [(selected)]="group" (selectedChange)="setGroup(group)" [courseId]="courseId">
+            </core-group-selector>
 
             <ng-container *ngFor="let submission of grades">
                 <addon-mod-workshop-submission [submission]="submission" [courseId]="workshop!.course" [module]="module"

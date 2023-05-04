@@ -25,7 +25,8 @@
         [courseId]="courseId" [hasDataToSync]="hasOffline || hasOfflineRatings" (completionChanged)="onCompletionChange()">
     </core-course-module-info>
 
-    <core-group-selector [groupInfo]="groupInfo" [(selected)]="selectedGroup" (selectedChange)="setGroup(selectedGroup)">
+    <core-group-selector [groupInfo]="groupInfo" [(selected)]="selectedGroup" (selectedChange)="setGroup(selectedGroup)"
+        [courseId]="database?.course">
     </core-group-selector>
 
     <ion-card class="core-info-card" *ngIf="!access?.timeavailable && timeAvailableFrom">

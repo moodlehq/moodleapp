@@ -85,7 +85,10 @@
             <ion-item class="ion-text-wrap core-groupname" *ngIf="groupName">
                 <ion-label>
                     <p class="item-heading">{{ 'core.group' | translate}}</p>
-                    <p>{{ groupName }}</p>
+                    <p>
+                        <core-format-text [text]="groupName" contextLevel="course" [contextInstanceId]="event.courseid">
+                        </core-format-text>
+                    </p>
                 </ion-label>
             </ion-item>
             <ion-item class="ion-text-wrap" *ngIf="categoryPath">
