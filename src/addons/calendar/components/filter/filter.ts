@@ -30,6 +30,7 @@ import { AddonCalendarFilter, AddonCalendarEventIcons } from '../../services/cal
 })
 export class AddonCalendarFilterComponent implements OnInit {
 
+    @Input() courses: Partial<CoreEnrolledCourseData>[] = [];
     @Input() filter: AddonCalendarFilter = {
         filtered: false,
         courseId: undefined,
@@ -42,10 +43,9 @@ export class AddonCalendarFilterComponent implements OnInit {
     };
 
     courseId = -1;
-
-    @Input() courses: Partial<CoreEnrolledCourseData>[] = [];
     typeIcons: AddonCalendarEventIcons[] = [];
     types: string[] = [];
+    sortedCourses: Partial<CoreEnrolledCourseData>[] = [];
 
     constructor() {
         CoreUtils.enumKeys(AddonCalendarEventType).forEach((name) => {
@@ -61,6 +61,9 @@ export class AddonCalendarFilterComponent implements OnInit {
      */
     ngOnInit(): void {
         this.courseId = this.filter.courseId || -1;
+
+        this.sortedCourses = Array.from(this.courses)
+            .sort((a, b) => (a.shortname?.toLowerCase() ?? '').localeCompare(b.shortname?.toLowerCase() ?? ''));
     }
 
     /**
