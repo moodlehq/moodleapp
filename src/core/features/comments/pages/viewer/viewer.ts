@@ -187,11 +187,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
 
             this.comments = comments.concat(this.comments);
 
-            this.comments.forEach((comment, index) => {
-                comment.showDate = this.showDate(comment, this.comments[index - 1]);
-                comment.showUserData = this.showUserData(comment, this.comments[index - 1]);
-                comment.showTail = this.showTail(comment, this.comments[index + 1]);
-            });
+            this.comments.forEach((comment, index) => this.calculateCommentData(comment, this.comments[index - 1]));
 
             this.canDeleteComments = this.addDeleteCommentsAvailable &&
                 (this.hasOffline || this.comments.some((comment) => !!comment.delete));
@@ -214,6 +210,18 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
             }
         }
 
+    }
+
+    /**
+     * Calculate some comment data.
+     *
+     * @param comment Comment.
+     * @param prevComment Previous comment.
+     */
+    protected calculateCommentData(comment: CoreCommentsDataToDisplay, prevComment?: CoreCommentsDataToDisplay): void {
+        comment.showDate = this.showDate(comment, prevComment);
+        comment.showUserData = this.showUserData(comment, prevComment);
+        comment.showTail = this.showTail(comment, prevComment);
     }
 
     /**
@@ -245,17 +253,15 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
         this.refreshIcon = CoreConstants.ICON_LOADING;
         this.syncIcon = CoreConstants.ICON_LOADING;
 
-        try {
-            await this.invalidateComments();
-        } finally {
-            this.page = 0;
-            this.comments = [];
+        await CoreUtils.ignoreErrors(this.invalidateComments());
 
-            try {
-                await this.fetchComments(true, showErrors);
-            } finally {
-                refresher?.complete();
-            }
+        this.page = 0;
+        this.comments = [];
+
+        try {
+            await this.fetchComments(true, showErrors);
+        } finally {
+            refresher?.complete();
         }
     }
 
@@ -325,13 +331,11 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
             if (commentsResponse) {
                 this.invalidateComments();
 
-                const addedComments = await this.loadCommentProfile(commentsResponse);
-                addedComments.showDate = this.showDate(addedComments, this.comments[this.comments.length - 1]);
-                addedComments.showUserData = this.showUserData(addedComments, this.comments[this.comments.length - 1]);
-                addedComments.showTail = this.showTail(addedComments, this.comments[this.comments.length + 1]);
+                const addedComment = await this.loadCommentProfile(commentsResponse);
+                this.calculateCommentData(addedComment, this.comments[this.comments.length - 1]);
 
                 // Add the comment to the top.
-                this.comments = this.comments.concat([addedComments]);
+                this.comments = this.comments.concat([addedComment]);
                 this.canDeleteComments = this.addDeleteCommentsAvailable;
 
                 CoreEvents.trigger(CoreCommentsProvider.COMMENTS_COUNT_CHANGED_EVENT, {
@@ -342,6 +346,8 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
                     area: this.area,
                     countChange: 1,
                 }, CoreSites.getCurrentSiteId());
+
+                this.refreshInBackground();
 
             } else if (commentsResponse === false) {
                 // Comments added in offline mode.
@@ -410,6 +416,8 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
                         area: this.area,
                         countChange: -1,
                     }, CoreSites.getCurrentSiteId());
+
+                    this.refreshInBackground();
                 }
             } else {
                 this.loadOfflineData();
@@ -600,6 +608,28 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
      */
     toggleDelete(): void {
         this.showDelete = !this.showDelete;
+    }
+
+    /**
+     * Refresh cached data in background.
+     */
+    protected async refreshInBackground(): Promise<void> {
+        await CoreUtils.ignoreErrors(this.invalidateComments());
+
+        const promises: Promise<unknown>[] = [];
+
+        for (let i = 0; i <= this.page; i++) {
+            promises.push(CoreComments.getComments(
+                this.contextLevel,
+                this.instanceId,
+                this.componentName,
+                this.itemId,
+                this.area,
+                i,
+            ));
+        }
+
+        await Promise.all(promises);
     }
 
     /**
