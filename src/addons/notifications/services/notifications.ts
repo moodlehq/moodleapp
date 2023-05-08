@@ -18,11 +18,12 @@ import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUser } from '@features/user/services/user';
+import { CoreUser, USER_NOREPLY_USER } from '@features/user/services/user';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreLogger } from '@singletons/logger';
-import { makeSingleton } from '@singletons';
+import { Translate, makeSingleton } from '@singletons';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
+import { AddonNotificationsPushNotification } from './handlers/push-click';
 
 declare module '@singletons/events' {
 
@@ -57,6 +58,48 @@ export class AddonNotificationsProvider {
     }
 
     /**
+     * Convert a push notification data to use the same format as the get_messages WS.
+     *
+     * @param notification Push notification to convert.
+     * @returns Converted notification.
+     */
+    async convertPushToMessage(
+        notification: AddonNotificationsPushNotification,
+    ): Promise<AddonNotificationsNotificationMessageFormatted> {
+        const message = notification.message ?? '';
+        const siteInfo = CoreSites.getCurrentSite()?.getInfo();
+
+        if (notification.senderImage && notification.customdata && !notification.customdata.notificationiconurl) {
+            notification.customdata.notificationiconurl = notification.senderImage;
+        }
+
+        const notificationMessage: AddonNotificationsNotificationMessage = {
+            id: notification.id ?? 0,
+            useridfrom: notification.userfromid ? Number(notification.userfromid) : USER_NOREPLY_USER,
+            userfromfullname: notification.userfromfullname ?? Translate.instant('core.noreplyname'),
+            useridto: notification.usertoid ? Number(notification.usertoid) : (siteInfo?.userid ?? 0),
+            usertofullname: siteInfo?.fullname ?? '',
+            subject: notification.title ?? '',
+            text: message,
+            fullmessage: message,
+            fullmessageformat: 1,
+            fullmessagehtml: message,
+            smallmessage: message,
+            notification: Number(notification.notif ?? 1),
+            contexturl: notification.contexturl || null,
+            contexturlname: null,
+            timecreated: Number(notification.date ?? 0),
+            timeread: 0,
+            component: notification.moodlecomponent,
+            customdata: notification.customdata ? JSON.stringify(notification.customdata) : undefined,
+        };
+
+        const formatted = await this.formatNotificationsData([notificationMessage]);
+
+        return formatted[0];
+    }
+
+    /**
      * Function to format notification data.
      *
      * @param notifications List of notifications.
@@ -76,7 +119,7 @@ export class AddonNotificationsProvider {
             notification.read = notification.timeread > 0;
 
             if (typeof notification.customdata == 'string') {
-                notification.customdata = CoreTextUtils.parseJSON<Record<string, unknown>>(notification.customdata, {});
+                notification.customdata = CoreTextUtils.parseJSON<Record<string, string|number>>(notification.customdata, {});
             }
 
             // Try to set courseid the notification belongs to.
@@ -91,12 +134,15 @@ export class AddonNotificationsProvider {
 
             if (!notification.iconurl) {
                 // The iconurl is only returned in 4.0 or above. Calculate it if not present.
-                if (notification.component && notification.component.startsWith('mod_')) {
+                if (notification.moodlecomponent && notification.moodlecomponent.startsWith('mod_')) {
                     notification.iconurl = await CoreCourseModuleDelegate.getModuleIconSrc(
-                        notification.component.replace('mod_', ''),
+                        notification.moodlecomponent.replace('mod_', ''),
                     );
                 }
             }
+
+            const imgUrl = notification.customdata?.notificationpictureurl || notification.customdata?.notificationiconurl;
+            notification.imgUrl = imgUrl ? String(imgUrl) : undefined;
 
             if (notification.useridfrom > 0) {
                 // Try to get the profile picture of the user.
@@ -502,8 +548,8 @@ export type AddonNotificationsNotificationMessage = {
     fullmessagehtml: string; // The message in html.
     smallmessage: string; // The shorten message.
     notification: number; // Is a notification?.
-    contexturl: string; // Context URL.
-    contexturlname: string; // Context URL link name.
+    contexturl: string | null; // Context URL.
+    contexturlname: string | null; // Context URL link name.
     timecreated: number; // Time created.
     timeread: number; // Time read.
     usertofullname: string; // User to full name.
@@ -532,15 +578,16 @@ export type AddonNotificationsGetUserNotificationPreferencesResult = {
  * Calculated data for messages returned by core_message_get_messages.
  */
 export type AddonNotificationsNotificationCalculatedData = {
-    mobiletext?: string; // Calculated in the app. Text to display for the notification.
+    mobiletext: string; // Calculated in the app. Text to display for the notification.
     moodlecomponent?: string; // Calculated in the app. Moodle's component.
-    notif?: number; // Calculated in the app. Whether it's a notification.
-    notification?: number; // Calculated in the app in some cases. Whether it's a notification.
-    read?: boolean; // Calculated in the app. Whether the notifications is read.
+    notif: number; // Calculated in the app. Whether it's a notification.
+    notification: number; // Calculated in the app in some cases. Whether it's a notification.
+    read: boolean; // Calculated in the app. Whether the notifications is read.
     courseid?: number; // Calculated in the app. Course the notification belongs to.
     profileimageurlfrom?: string; // Calculated in the app. Avatar of user that sent the notification.
     userfromfullname?: string; // Calculated in the app in some cases. User from full name.
-    customdata?: Record<string, unknown>; // Parsed custom data.
+    customdata?: Record<string, string|number>; // Parsed custom data.
+    imgUrl?: string; // Calculated in the app. URL of the image to use if the notification has no real user from.
 };
 
 /**

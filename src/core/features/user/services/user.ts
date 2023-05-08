@@ -60,6 +60,11 @@ export const USER_PROFILE_PICTURE_UPDATED = 'CoreUserProfilePictureUpdated';
 export const USER_PROFILE_SERVER_TIMEZONE = '99';
 
 /**
+ * Fake ID for a "no reply" user.
+ */
+export const USER_NOREPLY_USER = -10;
+
+/**
  * Service to provide user functionalities.
  */
 @Injectable({ providedIn: 'root' })

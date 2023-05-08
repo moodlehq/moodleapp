@@ -2202,6 +2202,7 @@
   "core.nopermissionerror": "local_moodlemobileapp",
   "core.nopermissions": "error",
   "core.nopermissiontoaccesspage": "error",
+  "core.noreplyname": "moodle",
   "core.noresults": "moodle",
   "core.noselection": "form",
   "core.notapplicable": "local_moodlemobileapp",
