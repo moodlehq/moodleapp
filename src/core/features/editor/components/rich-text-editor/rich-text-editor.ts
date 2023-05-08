@@ -175,7 +175,6 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         this.editorElement.onkeyup = () => this.onChange();
         this.editorElement.onpaste = () => this.onChange();
         this.editorElement.oninput = () => this.onChange();
-        this.editorElement.onkeydown = event => this.moveCursor(event);
 
         // Use paragraph on enter.
         document.execCommand('DefaultParagraphSeparator', false, 'p');
@@ -375,64 +374,6 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     }
 
     /**
-     * On key down function to move the cursor.
-     * https://stackoverflow.com/questions/6249095/how-to-set-caretcursor-position-in-contenteditable-element-div
-     *
-     * @param event The event.
-     */
-    moveCursor(event: KeyboardEvent): void {
-        if (!this.rteEnabled || !this.editorElement) {
-            return;
-        }
-
-        if (event.key != 'ArrowLeft' && event.key != 'ArrowRight') {
-            return;
-        }
-
-        this.stopBubble(event);
-
-        const move = event.key === 'ArrowLeft' ? -1 : +1;
-        const cursor = this.getCurrentCursorPosition(this.editorElement);
-
-        this.setCurrentCursorPosition(this.editorElement, cursor + move);
-    }
-
-    /**
-     * Returns the number of chars from the beggining where is placed the cursor.
-     *
-     * @param parent Parent where to get the position from.
-     * @returns Position in chars.
-     */
-    protected getCurrentCursorPosition(parent: Node): number {
-        const selection = window.getSelection();
-
-        let charCount = -1;
-
-        if (selection?.focusNode && parent.contains(selection.focusNode)) {
-            let node: Node | null = selection.focusNode;
-            charCount = selection.focusOffset;
-
-            while (node) {
-                if (node.isSameNode(parent)) {
-                    break;
-                }
-
-                if (node.previousSibling) {
-                    node = node.previousSibling;
-                    charCount += (node.textContent || '').length;
-                } else {
-                    node = node.parentNode;
-                    if (node === null) {
-                        break;
-                    }
-                }
-            }
-        }
-
-        return charCount;
-    }
-
-    /**
      * Set the caret position on the character number.
      *
      * @param parent Parent where to set the position.
@@ -446,6 +387,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
          * @param node Node where to start.
          * @param range Previous calculated range.
          * @param chars Object with counting of characters (input-output param).
+         * @param chars.count Count of characters.
          * @returns Selection range.
          */
         const setRange = (node: Node, range: Range, chars: { count: number }): Range => {
