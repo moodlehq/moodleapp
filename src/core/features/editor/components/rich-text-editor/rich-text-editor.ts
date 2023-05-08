@@ -108,6 +108,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     protected resizeListener?: CoreEventObserver;
     protected domPromise?: CoreCancellablePromise<void>;
     protected buttonsDomPromise?: CoreCancellablePromise<void>;
+    protected shortcutCommands?: Record<string, EditorCommand>;
 
     rteEnabled = false;
     isPhone = false;
@@ -171,11 +172,6 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         this.setContent(this.control?.value);
         this.originalContent = this.control?.value;
         this.lastDraft = this.control?.value;
-        this.editorElement.onchange = () => this.onChange();
-        this.editorElement.onkeyup = () => this.onChange();
-        this.editorElement.onpaste = () => this.onChange();
-        this.editorElement.oninput = () => this.onChange();
-        this.editorElement.onkeydown = event => this.moveCursor(event);
 
         // Use paragraph on enter.
         document.execCommand('DefaultParagraphSeparator', false, 'p');
@@ -272,6 +268,26 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
                 this.direction = CorePlatform.isRTL ? 'rtl' : 'ltr';
             });
         });
+    }
+
+    /**
+     * Handle keydown events in the editor.
+     *
+     * @param event Event
+     */
+    onKeyDown(event: KeyboardEvent): void {
+        this.onChange();
+
+        const shortcutId = this.getShortcutId(event);
+        const commands = this.getShortcutCommands();
+        const command = commands[shortcutId];
+
+        if (!command) {
+            return;
+        }
+
+        this.stopBubble(event);
+        this.executeCommand(command);
     }
 
     /**
@@ -375,64 +391,6 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     }
 
     /**
-     * On key down function to move the cursor.
-     * https://stackoverflow.com/questions/6249095/how-to-set-caretcursor-position-in-contenteditable-element-div
-     *
-     * @param event The event.
-     */
-    moveCursor(event: KeyboardEvent): void {
-        if (!this.rteEnabled || !this.editorElement) {
-            return;
-        }
-
-        if (event.key != 'ArrowLeft' && event.key != 'ArrowRight') {
-            return;
-        }
-
-        this.stopBubble(event);
-
-        const move = event.key === 'ArrowLeft' ? -1 : +1;
-        const cursor = this.getCurrentCursorPosition(this.editorElement);
-
-        this.setCurrentCursorPosition(this.editorElement, cursor + move);
-    }
-
-    /**
-     * Returns the number of chars from the beggining where is placed the cursor.
-     *
-     * @param parent Parent where to get the position from.
-     * @returns Position in chars.
-     */
-    protected getCurrentCursorPosition(parent: Node): number {
-        const selection = window.getSelection();
-
-        let charCount = -1;
-
-        if (selection?.focusNode && parent.contains(selection.focusNode)) {
-            let node: Node | null = selection.focusNode;
-            charCount = selection.focusOffset;
-
-            while (node) {
-                if (node.isSameNode(parent)) {
-                    break;
-                }
-
-                if (node.previousSibling) {
-                    node = node.previousSibling;
-                    charCount += (node.textContent || '').length;
-                } else {
-                    node = node.parentNode;
-                    if (node === null) {
-                        break;
-                    }
-                }
-            }
-        }
-
-        return charCount;
-    }
-
-    /**
      * Set the caret position on the character number.
      *
      * @param parent Parent where to set the position.
@@ -446,6 +404,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
          * @param node Node where to start.
          * @param range Previous calculated range.
          * @param chars Object with counting of characters (input-output param).
+         * @param chars.count Count of characters.
          * @returns Selection range.
          */
         const setRange = (node: Node, range: Range, chars: { count: number }): Range => {
@@ -641,7 +600,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
     }
 
     /**
-     * Execute an action over the selected text.
+     * Execute an action over the selected text when a button is activated.
      *  API docs: https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand
      *
      * @param event Event data
@@ -660,6 +619,18 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
             return;
         }
 
+        this.executeCommand({ name: command, parameters });
+    }
+
+    /**
+     * Execute an action over the selected text.
+     *  API docs: https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand
+     *
+     * @param command Editor command.
+     * @param command.name Command name.
+     * @param command.parameters Command parameters.
+     */
+    protected executeCommand({ name: command, parameters }: EditorCommand): void {
         if (parameters == 'block') {
             document.execCommand('formatBlock', false, '<' + command + '>');
 
@@ -1061,6 +1032,10 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      * @returns Promise resolved when done.
      */
     async scanQR(event: Event): Promise<void> {
+        if (event.type == 'keyup' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
+            return;
+        }
+
         this.stopBubble(event);
 
         // Scan for a QR code.
@@ -1117,4 +1092,121 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         this.buttonsDomPromise?.cancel();
     }
 
+    /**
+     * Get commands triggered by keyboard shortcuts.
+     *
+     * @returns Commands dictionary indexed by their corresponding keyboard shortcut id.
+     */
+    getShortcutCommands(): Record<string, EditorCommand> {
+        if (!this.shortcutCommands) {
+            const isIOS = CorePlatform.isIOS();
+            const metaKey = isIOS ? 'metaKey' : 'ctrlKey';
+            const shiftKey = isIOS ? 'ctrlKey' : 'shiftKey';
+
+            // Same shortcuts as TinyMCE:
+            // @see https://www.tiny.cloud/docs/advanced/keyboard-shortcuts/
+            const shortcuts: { code: string; modifiers: (keyof KeyboardShortcut)[]; command: EditorCommand }[] = [
+                {
+                    code: 'KeyB',
+                    modifiers: [metaKey],
+                    command: {
+                        name: 'bold',
+                        parameters: 'strong',
+                    },
+                },
+                {
+                    code: 'KeyI',
+                    modifiers: [metaKey],
+                    command: {
+                        name: 'italic',
+                        parameters: 'em',
+                    },
+                },
+                {
+                    code: 'KeyU',
+                    modifiers: [metaKey],
+                    command: {
+                        name: 'underline',
+                        parameters: 'u',
+                    },
+                },
+                {
+                    code: 'Digit3',
+                    modifiers: ['altKey', shiftKey],
+                    command: {
+                        name: 'h3',
+                        parameters: 'block',
+                    },
+                },
+                {
+                    code: 'Digit4',
+                    modifiers: ['altKey', shiftKey],
+                    command: {
+                        name: 'h4',
+                        parameters: 'block',
+                    },
+                },
+                {
+                    code: 'Digit5',
+                    modifiers: ['altKey', shiftKey],
+                    command: {
+                        name: 'h5',
+                        parameters: 'block',
+                    },
+                },
+                {
+                    code: 'Digit7',
+                    modifiers: ['altKey', shiftKey],
+                    command: {
+                        name: 'p',
+                        parameters: 'block',
+                    },
+                },
+            ];
+
+            this.shortcutCommands = shortcuts.reduce((shortcuts, { code, modifiers, command }) => {
+                const id = this.getShortcutId({
+                    code: code,
+                    altKey: modifiers.includes('altKey'),
+                    metaKey: modifiers.includes('metaKey'),
+                    shiftKey: modifiers.includes('shiftKey'),
+                    ctrlKey: modifiers.includes('ctrlKey'),
+                });
+
+                shortcuts[id] = command;
+
+                return shortcuts;
+            }, {} as Record<string, EditorCommand>);
+        }
+
+        return this.shortcutCommands;
+    }
+
+    /**
+     * Get a unique identifier for a given keyboard shortcut.
+     *
+     * @param shortcut Shortcut.
+     * @returns Identifier.
+     */
+    protected getShortcutId(shortcut: KeyboardShortcut): string {
+        return (shortcut.altKey ? '1' : '0')
+            + (shortcut.metaKey ? '1' : '0')
+            + (shortcut.shiftKey ? '1' : '0')
+            + (shortcut.ctrlKey ? '1' : '0')
+            + shortcut.code;
+    }
+
+}
+
+/**
+ * Combination
+ */
+type KeyboardShortcut = Pick<KeyboardEvent, 'code' | 'altKey' | 'metaKey' | 'ctrlKey' | 'shiftKey'>;
+
+/**
+ * Editor command.
+ */
+interface EditorCommand {
+    name: string;
+    parameters?: string;
 }
