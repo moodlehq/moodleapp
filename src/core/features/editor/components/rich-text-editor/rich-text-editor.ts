@@ -1032,6 +1032,10 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      * @returns Promise resolved when done.
      */
     async scanQR(event: Event): Promise<void> {
+        if (event.type == 'keyup' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
+            return;
+        }
+
         this.stopBubble(event);
 
         // Scan for a QR code.
