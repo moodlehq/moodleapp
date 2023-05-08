@@ -524,7 +524,7 @@
   "addon.mod_choice.savemychoice": "choice",
   "addon.mod_choice.userchoosethisoption": "choice",
   "addon.mod_choice.yourselection": "choice",
-  "addon.mod_data.actions": "data",
+  "addon.mod_data.actionsmenu": "data",
   "addon.mod_data.addentries": "data",
   "addon.mod_data.advancedsearch": "data",
   "addon.mod_data.alttext": "data",
