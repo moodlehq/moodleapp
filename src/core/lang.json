@@ -216,6 +216,7 @@
     "nopermissionerror": "Sorry, but you do not currently have permissions to do that",
     "nopermissions": "Sorry, but you do not currently have permissions to do that ({{$a}}).",
     "nopermissiontoaccesspage": "You don't have permission to access this page.",
+    "noreplyname": "Do not reply to this email",
     "noresults": "No results",
     "noselection": "No selection",
     "notapplicable": "n/a",

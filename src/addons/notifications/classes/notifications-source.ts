@@ -15,22 +15,23 @@
 import {
     AddonNotifications,
     AddonNotificationsGetReadType,
+    AddonNotificationsNotificationMessageFormatted,
     AddonNotificationsProvider,
 } from '@addons/notifications/services/notifications';
-import { AddonNotificationsNotificationToRender } from '@addons/notifications/services/notifications-helper';
 import { CoreRoutedItemsManagerSource } from '@classes/items-management/routed-items-manager-source';
 
 /**
  * Provides a list of notifications.
  */
-export class AddonNotificationsNotificationsSource extends CoreRoutedItemsManagerSource<AddonNotificationsNotificationToRender> {
+export class AddonNotificationsNotificationsSource
+    extends CoreRoutedItemsManagerSource<AddonNotificationsNotificationMessageFormatted> {
 
     protected totals: Record<string, number> = {};
 
     /**
      * @inheritdoc
      */
-    getItemPath(notification: AddonNotificationsNotificationToRender): string {
+    getItemPath(notification: AddonNotificationsNotificationMessageFormatted): string {
         return notification.id.toString();
     }
 
@@ -47,7 +48,7 @@ export class AddonNotificationsNotificationsSource extends CoreRoutedItemsManage
      * @inheritdoc
      */
     protected async loadPageItems(page: number): Promise<{
-        items: AddonNotificationsNotificationToRender[];
+        items: AddonNotificationsNotificationMessageFormatted[];
         hasMoreItems: boolean;
     }> {
         const results = await this.loadNotifications(AddonNotificationsGetReadType.BOTH, page * this.getPageLength());
@@ -67,7 +68,7 @@ export class AddonNotificationsNotificationsSource extends CoreRoutedItemsManage
      * @returns Notifications and whether there are any more.
      */
     protected async loadNotifications(type: AddonNotificationsGetReadType, offset: number, limit?: number): Promise<{
-        notifications: AddonNotificationsNotificationToRender[];
+        notifications: AddonNotificationsNotificationMessageFormatted[];
         hasMoreNotifications: boolean;
     }> {
         limit = limit ?? this.getPageLength();
@@ -94,7 +95,7 @@ export class AddonNotificationsNotificationsSource extends CoreRoutedItemsManage
     /**
      * @inheritdoc
      */
-    protected setItems(notifications: AddonNotificationsNotificationToRender[], hasMoreItems: boolean): void {
+    protected setItems(notifications: AddonNotificationsNotificationMessageFormatted[], hasMoreItems: boolean): void {
         const sortedNotifications = notifications.slice(0);
 
         sortedNotifications.sort((a, b) => a.timecreated < b.timecreated ? 1 : -1);

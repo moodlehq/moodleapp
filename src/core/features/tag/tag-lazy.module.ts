@@ -45,7 +45,7 @@ function buildRoutes(injector: Injector): Routes {
         },
         {
             ...indexAreaRoute,
-            path: `${indexAreaRoute.path}/index`,
+            path: `index/${indexAreaRoute.path}`,
         },
     ];
 

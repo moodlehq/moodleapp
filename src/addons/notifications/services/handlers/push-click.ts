@@ -41,7 +41,7 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
      * @param notification The notification to check.
      * @returns Whether the notification click is handled by this handler
      */
-    async handles(notification: AddonNotificationsNotificationData): Promise<boolean> {
+    async handles(notification: AddonNotificationsPushNotification): Promise<boolean> {
         if (!notification.moodlecomponent) {
             // The notification doesn't come from Moodle. Handle it.
             return true;
@@ -63,7 +63,7 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
      * @param notification Notification to mark.
      * @returns Promise resolved when done.
      */
-    protected async markAsRead(notification: AddonNotificationsNotificationData): Promise<void> {
+    protected async markAsRead(notification: AddonNotificationsPushNotification): Promise<void> {
         await CoreUtils.ignoreErrors(AddonNotificationsHelper.markNotificationAsRead(notification));
     }
 
@@ -73,7 +73,7 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
      * @param notification The notification to check.
      * @returns Promise resolved when done.
      */
-    async handleClick(notification: AddonNotificationsNotificationData): Promise<void> {
+    async handleClick(notification: AddonNotificationsPushNotification): Promise<void> {
 
         if (notification.customdata?.extendedtext) {
             // Display the text in a modal.
@@ -137,7 +137,7 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
 
 export const AddonNotificationsPushClickHandler = makeSingleton(AddonNotificationsPushClickHandlerService);
 
-export type AddonNotificationsNotificationData = CorePushNotificationsNotificationBasicData & {
+export type AddonNotificationsPushNotification = CorePushNotificationsNotificationBasicData & {
     contexturl?: string; // URL related to the notification.
     savedmessageid?: number; // Notification ID (optional).
     id?: number; // Notification ID (optional).

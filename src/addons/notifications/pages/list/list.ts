@@ -20,7 +20,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
-    AddonNotifications, AddonNotificationsProvider,
+    AddonNotifications, AddonNotificationsNotificationMessageFormatted, AddonNotificationsProvider,
 } from '../../services/notifications';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
@@ -31,7 +31,6 @@ import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-lin
 import { CoreTimeUtils } from '@services/utils/time';
 import { AddonNotificationsNotificationsSource } from '@addons/notifications/classes/notifications-source';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
-import { AddonNotificationsNotificationToRender } from '@addons/notifications/services/notifications-helper';
 import { AddonLegacyNotificationsNotificationsSource } from '@addons/notifications/classes/legacy-notifications-source';
 
 /**
@@ -45,7 +44,7 @@ import { AddonLegacyNotificationsNotificationsSource } from '@addons/notificatio
 export class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
-    notifications!: CoreListItemsManager<AddonNotificationsNotificationToRender, AddonNotificationsNotificationsSource>;
+    notifications!: CoreListItemsManager<AddonNotificationsNotificationMessageFormatted, AddonNotificationsNotificationsSource>;
     fetchMoreNotificationsFailed = false;
     canMarkAllNotificationsAsRead = false;
     loadingMarkAllNotificationsAsRead = false;

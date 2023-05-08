@@ -34,6 +34,9 @@
             width: var(--icon-size);
             height: var(--icon-size);
         }
+        ion-icon {
+            font-size: var(--icon-size);
+        }
         padding: 0.7rem;
         background: var(--background-color);
         border-radius: var(--small-radius);
@@ -42,5 +45,12 @@
     .core-notification-icon {
         --module-icon-size: var(--icon-size);
         @include margin(6px, 8px, 6px, 0px);
+    }
+
+    .core-notification-img {
+        @include margin(6px, 8px, 6px, 0px);
+        width: var(--core-avatar-size);
+        height: var(--core-avatar-size);
+        object-fit: cover;
     }
 }

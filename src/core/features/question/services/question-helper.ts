@@ -806,7 +806,7 @@ export class CoreQuestionHelperProvider {
                 newIcon.className = 'core-correct-icon ion-color ion-color-success questioncorrectnessicon';
             } else {
                 newIcon.setAttribute('name', 'fas-xmark');
-                newIcon.setAttribute('src', 'assets/fonts/font-awesome/solid/times.svg');
+                newIcon.setAttribute('src', 'assets/fonts/font-awesome/solid/xmark.svg');
                 newIcon.className = 'core-correct-icon ion-color ion-color-danger questioncorrectnessicon';
             }
 

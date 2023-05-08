@@ -13,8 +13,10 @@
 // limitations under the License.
 
 import { AddonNotificationsNotificationsSource } from '@addons/notifications/classes/notifications-source';
-import { AddonNotificationsGetReadType } from '@addons/notifications/services/notifications';
-import { AddonNotificationsNotificationToRender } from '@addons/notifications/services/notifications-helper';
+import {
+    AddonNotificationsGetReadType,
+    AddonNotificationsNotificationMessageFormatted,
+} from '@addons/notifications/services/notifications';
 
 /**
  * Provides a list of notifications using legacy web services.
@@ -25,10 +27,10 @@ export class AddonLegacyNotificationsNotificationsSource extends AddonNotificati
      * @inheritdoc
      */
     protected async loadPageItems(page: number): Promise<{
-        items: AddonNotificationsNotificationToRender[];
+        items: AddonNotificationsNotificationMessageFormatted[];
         hasMoreItems: boolean;
     }> {
-        let items: AddonNotificationsNotificationToRender[] = [];
+        let items: AddonNotificationsNotificationMessageFormatted[] = [];
         let hasMoreItems = false;
         let pageUnreadCount = 0;
         const pageLength = this.getPageLength();

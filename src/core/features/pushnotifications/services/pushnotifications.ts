@@ -460,7 +460,7 @@ export class CorePushNotificationsProvider {
             title: notification.title,
             message: notification.message,
             customdata: typeof rawData.customdata == 'string' ?
-                CoreTextUtils.parseJSON<Record<string, unknown>>(rawData.customdata, {}) : rawData.customdata,
+                CoreTextUtils.parseJSON<Record<string, string|number>>(rawData.customdata, {}) : rawData.customdata,
         });
 
         let site: CoreSite | undefined;
@@ -964,7 +964,7 @@ export type CorePushNotificationsNotificationBasicRawData = {
 export type CorePushNotificationsNotificationBasicData = Omit<CorePushNotificationsNotificationBasicRawData, 'customdata'> & {
     title?: string; // Notification title.
     message?: string; // Notification message.
-    customdata?: Record<string, unknown>; // Parsed custom data.
+    customdata?: Record<string, string|number>; // Parsed custom data.
 };
 
 /**

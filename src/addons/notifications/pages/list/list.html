@@ -28,21 +28,18 @@
                 <core-user-avatar *ngIf="notification.useridfrom > 0" [user]="notification" slot="start"
                     [profileUrl]="notification.profileimageurlfrom" [fullname]="notification.userfromfullname"
                     [userId]="notification.useridfrom">
-                    <div class="core-avatar-extra-img" *ngIf="notification.iconurl && !notification.modname">
+                    <div class="core-avatar-extra-img" *ngIf="notification.iconurl">
                         <img [src]="notification.iconurl" alt="" role="presentation">
                     </div>
-                    <core-mod-icon *ngIf="notification.modname" [modicon]="notification.iconurl" [modname]="notification.modname"
-                        [showAlt]="false">
-                    </core-mod-icon>
                 </core-user-avatar>
 
-                <ng-container *ngIf="notification.useridfrom <= 0 && notification.iconurl">
-                    <div class="core-notification-icon" *ngIf="!notification.modname" slot="start">
-                        <img [src]="notification.iconurl" alt="" role="presentation">
+                <ng-container *ngIf="notification.useridfrom <= 0">
+                    <img *ngIf="notification.imgUrl" class="core-notification-img" [src]="notification.imgUrl" core-external-content alt=""
+                        role="presentation" slot="start">
+                    <div class="core-notification-icon" *ngIf="!notification.imgUrl" slot="start">
+                        <img *ngIf="notification.iconurl" [src]="notification.iconurl" core-external-content alt="" role="presentation">
+                        <ion-icon *ngIf="!notification.iconurl" name="fas-bell" aria-hidden="true"></ion-icon>
                     </div>
-                    <core-mod-icon *ngIf="notification.modname" [modicon]="notification.iconurl" [modname]="notification.modname"
-                        [showAlt]="false" class="core-notification-icon" slot="start">
-                    </core-mod-icon>
                 </ng-container>
 
                 <ion-label>
