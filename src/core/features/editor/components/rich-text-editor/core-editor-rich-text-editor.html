@@ -1,7 +1,8 @@
 <div class="core-rte-editor-container" (click)="focusRTE()" [class.toolbar-hidden]="toolbarHidden">
     <div [hidden]="!rteEnabled" #editor class="core-rte-editor" role="textbox" contenteditable="true"
         [attr.aria-labelledby]="ariaLabelledBy" [attr.data-placeholder-text]="placeholder" (focus)="showToolbar($event)"
-        (blur)="hideToolbar($event)">
+        (blur)="hideToolbar($event)" (keydown)="onKeyDown($event)" (keyup)="onChange()" (change)="onChange()" (paste)="onChange()"
+        (input)="onChange()">
     </div>
 
     <ion-textarea [hidden]="rteEnabled" #textarea class="core-textarea" role="textbox" [attr.name]="name" ngControl="control"
