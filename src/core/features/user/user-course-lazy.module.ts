@@ -28,6 +28,7 @@ const routes: Routes = [
             {
                 path: ':userId',
                 loadChildren: () => import('@features/user/user-profile-lazy.module').then(m => m.CoreUserProfileLazyModule),
+                data: { swipeManagerSource: 'participants' },
             },
         ], () => CoreScreen.isTablet),
     },
