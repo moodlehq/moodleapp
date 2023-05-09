@@ -58,15 +58,13 @@ export class AddonFilterMultilangHandlerService extends CoreFilterDefaultHandler
         }
 
         // Find language to use.
-        let language: string | undefined = await CoreLang.getCurrentLanguage();
-
-        if (!languages.has(language)) {
-            language = CoreLang.getParentLanguage();
-        }
-
-        if (!language) {
-            language = firstLanguage;
-        }
+        const language = [
+            await CoreLang.getCurrentLanguage(),
+            CoreLang.getParentLanguage(),
+            CoreLang.getFallbackLanguage(),
+            firstLanguage,
+        ]
+            .find(candidate => candidate && languages.has(candidate));
 
         if (!language) {
             return text;
