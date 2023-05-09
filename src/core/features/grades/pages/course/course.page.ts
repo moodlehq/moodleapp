@@ -58,6 +58,7 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     rowsOnView = 0;
     totalColumnsSpan?: number;
     withinSplitView?: boolean;
+    loaded = false;
 
     protected useLegacyLayout?: boolean; // Whether to use the layout before 4.1.
     protected fetchSuccess = false;
@@ -111,6 +112,8 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
 
         await this.swipeManager?.start();
         await this.fetchInitialGrades();
+
+        this.loaded = true;
     }
 
     /**
