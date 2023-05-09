@@ -150,7 +150,7 @@ export class CoreFilepoolProvider {
             this.checkQueueProcessing();
 
             // Start queue when device goes online.
-            CoreNetwork.onConnect().subscribe(() => {
+            CoreNetwork.onConnectShouldBeStable().subscribe(() => {
                 // Execute the callback in the Angular zone, so change detection doesn't stop working.
                 NgZone.run(() => this.checkQueueProcessing());
             });

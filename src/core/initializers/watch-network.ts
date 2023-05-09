@@ -16,9 +16,12 @@ import { CoreCronDelegate } from '@services/cron';
 import { NgZone } from '@singletons';
 import { CoreNetwork } from '@services/network';
 
+/**
+ * Initializer function.
+ */
 export default function(): void {
     // When the app is re-connected, start network handlers that were stopped.
-    CoreNetwork.onConnect().subscribe(() => {
+    CoreNetwork.onConnectShouldBeStable().subscribe(() => {
         // Execute the callback in the Angular zone, so change detection doesn't stop working.
         NgZone.run(() => CoreCronDelegate.startNetworkHandlers());
     });
