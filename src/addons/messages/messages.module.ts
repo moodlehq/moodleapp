@@ -87,7 +87,7 @@ const preferencesRoutes: Routes = [
                 CoreUserDelegate.registerHandler(AddonMessagesSendMessageUserHandler.instance);
 
                 // Sync some discussions when device goes online.
-                CoreNetwork.onConnect().subscribe(() => {
+                CoreNetwork.onConnectShouldBeStable().subscribe(() => {
                     // Execute the callback in the Angular zone, so change detection doesn't stop working.
                     NgZone.run(() => {
                         AddonMessagesSync.syncAllDiscussions(undefined, true);

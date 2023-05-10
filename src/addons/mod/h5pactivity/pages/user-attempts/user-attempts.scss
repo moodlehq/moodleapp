@@ -1,6 +1,11 @@
 :host {
     .addon-mod_h5pactivity-table-header {
         font-weight: bold;
+
+        ion-col {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     }
 
     .addon-mod_h5pactivity-table-row .addon-mod_h5pactivity-table-success-col {

@@ -196,10 +196,15 @@ export class AppComponent implements OnInit, AfterViewInit {
      */
     ngAfterViewInit(): void {
         if (!this.outlet) {
+            this.logger.debug('Aftew view init: no outlet found');
+
             return;
         }
 
+        this.logger.debug('Aftew view init');
+
         CoreSubscriptions.once(this.outlet.activateEvents, async () => {
+            this.logger.debug('Activate event triggered');
             await CorePlatform.ready();
 
             this.logger.debug('Hide splash screen');
@@ -212,6 +217,8 @@ export class AppComponent implements OnInit, AfterViewInit {
      */
     protected async onPlatformReady(): Promise<void> {
         await CorePlatform.ready();
+
+        this.logger.debug('Platform is ready');
 
         // Refresh online status when changes.
         CoreNetwork.onChange().subscribe(() => {

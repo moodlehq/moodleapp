@@ -98,12 +98,12 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
      * Fetch notes.
      *
      * @param sync When to resync notes.
-     * @param showErrors When to display errors or not.
+     * @param showSyncErrors When to display sync errors or not.
      * @returns Promise with the notes.
      */
-    protected async fetchNotes(sync = false, showErrors = false): Promise<void> {
+    protected async fetchNotes(sync = false, showSyncErrors = false): Promise<void> {
         if (sync) {
-            await this.syncNotes(showErrors);
+            await this.syncNotes(showSyncErrors);
         }
 
         try {
@@ -150,15 +150,15 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
     /**
      * Refresh notes on PTR.
      *
-     * @param showErrors Whether to display errors or not.
+     * @param showSyncErrors Whether to display sync errors or not.
      * @param refresher Refresher instance.
      */
-    refreshNotes(showErrors: boolean, refresher?: IonRefresher): void {
+    refreshNotes(showSyncErrors: boolean, refresher?: IonRefresher): void {
         this.refreshIcon = CoreConstants.ICON_LOADING;
         this.syncIcon = CoreConstants.ICON_LOADING;
 
         AddonNotes.invalidateNotes(this.courseId, this.userId).finally(() => {
-            this.fetchNotes(true, showErrors).finally(() => {
+            this.fetchNotes(true, showSyncErrors).finally(() => {
                 if (refresher) {
                     refresher?.complete();
                 }
@@ -253,7 +253,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
         e.stopPropagation();
 
         await AddonNotesOffline.undoDeleteNote(note.id);
-        this.refreshNotes(true);
+        this.refreshNotes(false);
     }
 
     /**
@@ -266,16 +266,16 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
     /**
      * Tries to synchronize course notes.
      *
-     * @param showErrors Whether to display errors or not.
+     * @param showSyncErrors Whether to display sync errors or not.
      * @returns Promise resolved when done.
      */
-    protected async syncNotes(showErrors: boolean): Promise<void> {
+    protected async syncNotes(showSyncErrors: boolean): Promise<void> {
         try {
             const result = await AddonNotesSync.syncNotes(this.courseId);
 
             this.showSyncWarnings(result.warnings);
         } catch (error) {
-            if (showErrors) {
+            if (showSyncErrors) {
                 CoreDomUtils.showErrorModalDefault(error, 'core.errorsync', true);
             }
         }
