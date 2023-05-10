@@ -45,7 +45,7 @@
             </button>
         </ion-slide>
         <ion-slide>
-            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.strike" [title]="'core.editor.strike' | translate"
+            <button [disabled]="!rteEnabled" [attr.aria-pressed]="toolbarStyles.strike" [title]="'core.editor.strikethrough' | translate"
                 (click)="buttonAction($event, 'strikethrough', 'strike')" (keyup)="buttonAction($event, 'strikethrough', 'strike')"
                 (mousedown)="downAction($event)" (keydown)="downAction($event)" tabindex="0">
                 <ion-icon name="fas-strikethrough" aria-hidden="true"></ion-icon>
