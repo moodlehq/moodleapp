@@ -2268,7 +2268,7 @@
   "core.reminders.atthetime": "local_moodlemobileapp",
   "core.reminders.custom": "local_moodlemobileapp",
   "core.reminders.customreminder": "local_moodlemobileapp",
-  "core.reminders.delete": "moodle",
+  "core.reminders.delete": "local_moodlemobileapp",
   "core.reminders.reminderset": "local_moodlemobileapp",
   "core.reminders.reminderunset": "local_moodlemobileapp",
   "core.reminders.setareminder": "local_moodlemobileapp",

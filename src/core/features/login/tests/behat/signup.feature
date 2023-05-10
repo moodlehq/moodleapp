@@ -40,7 +40,7 @@ Feature: Test signup in app
     And I should find "Password required" in the app
     And I should find "Missing email address" in the app
     And I should find "Missing given name" in the app
-    And I should find "Missing surname" in the app
+    And I should find "Missing last name" in the app
 
     When I set the following fields to these values in the app:
       | Username | u1 |
@@ -48,7 +48,7 @@ Feature: Test signup in app
       | Email address | u1@u1.com |
       | Email (again) | u2@u1.com |
       | First name | User |
-      | Surname | Test |
+      | Last name | Test |
       | City/town | Barcelona |
       | Country | Spain |
     Then I should find "Emails do not match" in the app
@@ -98,7 +98,7 @@ Feature: Test signup in app
       | Email address | u1@u1.com |
       | Email (again) | u1@u1.com |
       | First name | User |
-      | Surname | Test |
+      | Last name | Test |
       | City/town | Barcelona |
       | Country | Spain |
     And I press "Create my new account" in the app
@@ -147,7 +147,7 @@ Feature: Test signup in app
       | Email address | u1@u1.com |
       | Email (again) | u1@u1.com |
       | First name | User |
-      | Surname | Test |
+      | Last name | Test |
       | City/town | Barcelona |
       | Country | Spain |
     And I press "Create my new account" in the app
