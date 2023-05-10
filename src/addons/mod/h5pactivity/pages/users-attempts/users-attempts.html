@@ -31,9 +31,9 @@
             </ion-item>
 
             <!-- List of users. -->
-            <ion-item class="ion-text-wrap addon-mod_h5pactivity-table-row" *ngFor="let user of users" detail="true" button
+            <ion-item class="ion-text-wrap addon-mod_h5pactivity-table-row" *ngFor="let user of users" detail="true"
                 [attr.aria-label]="'addon.mod_h5pactivity.review_user_attempts' | translate:{$a: user.attempts.length}"
-                (click)="openUser(user)">
+                (click)="openUser(user)" [class.hide-detail]="!user.attempts.length" [button]="user.attempts.length > 0">
 
                 <ion-label>
                     <ion-row class="ion-align-items-center">

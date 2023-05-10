@@ -208,6 +208,10 @@ export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
      * @param user User to open.
      */
     openUser(user: AddonModH5PActivityUserAttemptsFormatted): void {
+        if (!user.attempts.length) {
+            return;
+        }
+
         CoreNavigator.navigate(`../userattempts/${user.userid}`);
     }
 
