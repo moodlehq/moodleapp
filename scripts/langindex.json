@@ -2310,7 +2310,7 @@
   "core.selectagroup": "moodle",
   "core.send": "message",
   "core.sending": "chat",
-  "core.serverconnection": "error",
+  "core.serverconnection": "local_moodlemobileapp",
   "core.settings.about": "local_moodlemobileapp",
   "core.settings.accessstatement": "access",
   "core.settings.appsettings": "local_moodlemobileapp",
