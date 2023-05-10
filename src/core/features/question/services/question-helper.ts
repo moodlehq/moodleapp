@@ -792,7 +792,7 @@ export class CoreQuestionHelperProvider {
                 const classList = icon.classList.toString();
                 if (classList.indexOf('fa-check') >= 0) {
                     correct = true;
-                } else if (classList.indexOf('fa-xmark') < 0 || classList.indexOf('fa-remove') < 0) {
+                } else if (classList.indexOf('fa-xmark') < 0 && classList.indexOf('fa-remove') < 0) {
                     return;
                 }
             }
@@ -815,6 +815,7 @@ export class CoreQuestionHelperProvider {
             icon.parentNode?.replaceChild(newIcon, icon);
         });
 
+        // Treat legacy markup used before MDL-77856 (4.2).
         const spans = Array.from(element.querySelectorAll('.feedbackspan.accesshide'));
         spans.forEach((span) => {
             // Search if there's a hidden feedback for this element.
@@ -851,20 +852,37 @@ export class CoreQuestionHelperProvider {
         contextInstanceId?: number,
         courseId?: number,
     ): void {
-        const icons = <HTMLElement[]> Array.from(element.querySelectorAll('ion-icon.questioncorrectnessicon[tappable]'));
+        const icons = <HTMLElement[]> Array.from(element.querySelectorAll('ion-icon.questioncorrectnessicon'));
         const title = Translate.instant('core.question.feedback');
+        const getClickableFeedback = (icon: HTMLElement) => {
+            if (icon.parentElement instanceof HTMLButtonElement && icon.parentElement.dataset.toggle === 'popover') {
+                return {
+                    element: icon.parentElement,
+                    html: icon.parentElement?.dataset.content,
+                };
+            }
 
-        icons.forEach((icon) => {
-            // Search the feedback for the icon.
-            const span = <HTMLElement | undefined> icon.parentElement?.querySelector('.feedbackspan.accesshide');
+            // Support legacy icons used before MDL-77856 (4.2).
+            if (icon.hasAttribute('tappable')) {
+                return {
+                    element: icon,
+                    html: icon.parentElement?.querySelector('.feedbackspan.accesshide')?.innerHTML,
+                };
+            }
 
-            if (!span) {
+            return null;
+        };
+
+        icons.forEach(icon => {
+            const target = getClickableFeedback(icon);
+
+            if (!target || !target.html) {
                 return;
             }
 
             // There's a hidden feedback, show it when the icon is clicked.
-            icon.addEventListener('click', () => {
-                CoreTextUtils.viewText(title, span.innerHTML, {
+            target.element.addEventListener('click', () => {
+                CoreTextUtils.viewText(title, target.html ?? '', {
                     component: component,
                     componentId: componentId,
                     filter: true,
