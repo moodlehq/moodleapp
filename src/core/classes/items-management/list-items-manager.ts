@@ -40,7 +40,10 @@ export class CoreListItemsManager<
     constructor(source: Source, pageRouteLocator: unknown | ActivatedRoute) {
         super(source);
 
+        const debouncedScrollToCurrentElement = CoreUtils.debounce(() => this.scrollToCurrentElement(), 300);
+
         this.pageRouteLocator = pageRouteLocator;
+        this.addListener({ onSelectedItemUpdated: debouncedScrollToCurrentElement });
     }
 
     get items(): Item[] {
@@ -130,7 +133,6 @@ export class CoreListItemsManager<
         }
 
         await this.navigateToItem(item, { reset: this.resetNavigation() });
-        setTimeout(async () => await this.scrollToCurrentElement(), 100);
     }
 
     /**
