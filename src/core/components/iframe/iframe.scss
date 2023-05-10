@@ -1,5 +1,9 @@
 :host {
     flex-grow: 1;
+
+    .core-iframe-loading {
+        display: none;
+    }
 }
 
 :host-context(.core-iframe-fullscreen) {
