@@ -196,15 +196,12 @@ export class AppComponent implements OnInit, AfterViewInit {
      */
     ngAfterViewInit(): void {
         if (!this.outlet) {
-            this.logger.debug('Aftew view init: no outlet found');
-
             return;
         }
 
-        this.logger.debug('Aftew view init');
+        this.logger.debug('App component initialized');
 
         CoreSubscriptions.once(this.outlet.activateEvents, async () => {
-            this.logger.debug('Activate event triggered');
             await CorePlatform.ready();
 
             this.logger.debug('Hide splash screen');
