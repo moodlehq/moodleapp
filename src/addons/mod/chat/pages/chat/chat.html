@@ -93,7 +93,7 @@
     </core-loading>
 </ion-content>
 <ion-footer class="footer-adjustable">
-    <ion-toolbar [color]="isOnline && polling && loaded ? 'contrast' : 'light'">
+    <ion-toolbar [color]="isOnline && polling && loaded ? null : 'light'">
         <p class="ion-text-center" *ngIf="!isOnline">
             {{ 'addon.mod_chat.mustbeonlinetosendmessages' | translate }}
         </p>
