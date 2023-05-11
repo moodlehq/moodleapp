@@ -334,15 +334,16 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
                     return label;
                 });
 
-                item.chartData = parsedData.map((dataItem) => <number> dataItem.answercount);
+                item.chartData = parsedData.map((dataItem) => Number(dataItem.answercount));
 
-                if (item.typ == 'multichoicerated') {
+                if (item.typ === 'multichoicerated') {
                     item.average = parsedData.reduce((prev, current) => prev + Number(current.avg), 0.0);
                 }
 
                 const subtype = item.presentation.charAt(0);
 
-                const single = subtype != 'c';
+                // Display bar chart if there are no answers to avoid division by 0 error.
+                const single = subtype !== 'c' && item.chartData.some((count) => count > 0);
                 item.chartType = single ? 'doughnut' : 'bar';
                 item.templateName = 'chart';
                 break;

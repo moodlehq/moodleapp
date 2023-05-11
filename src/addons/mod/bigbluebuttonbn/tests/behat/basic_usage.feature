@@ -53,8 +53,8 @@ Feature: Test basic usage of BBB activity in app
 
     Given I wait "10" seconds
     Then I should find "The session is in progress." in the app
-    And I should find "1" near "viewer" in the app
-    And I should find "0" near "moderator" in the app
+    And I should find "1" near "Viewer" in the app
+    And I should find "0" near "Moderator" in the app
 
   Scenario: Join meeting (moderator)
     Given the following "activities" exist:
@@ -69,8 +69,8 @@ Feature: Test basic usage of BBB activity in app
 
     Given I wait "10" seconds
     Then I should find "The session is in progress." in the app
-    And I should find "1" near "moderator" in the app
-    And I should find "0" near "viewer" in the app
+    And I should find "1" near "Moderator" in the app
+    And I should find "0" near "Viewer" in the app
 
   Scenario: Wait for moderator
     Given the following "activities" exist:
@@ -91,8 +91,8 @@ Feature: Test basic usage of BBB activity in app
     And I press "Close" in the app
     And I pull to refresh in the app
     Then I should find "The session is in progress." in the app
-    And I should find "1" near "moderator" in the app
-    And I should find "0" near "viewer" in the app
+    And I should find "1" near "Moderator" in the app
+    And I should find "0" near "Viewer" in the app
     And I should be able to press "Join session" in the app
 
     When I close all opened windows

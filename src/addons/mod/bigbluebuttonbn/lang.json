@@ -10,12 +10,12 @@
     "view_groups_selection_warning": "There is a room for each group and you have access to more than one. Be sure to select the correct one.",
     "view_message_conference_in_progress": "The session is in progress.",
     "view_message_conference_room_ready": "This room is ready. You can join the session now.",
-    "view_message_moderator": "moderator",
-    "view_message_moderators": "moderators",
+    "view_message_moderator": "Moderator",
+    "view_message_moderators": "Moderators",
     "view_message_norecordings": "There are no recordings available.",
-    "view_message_session_started_at": "This session started at",
-    "view_message_viewer": "viewer",
-    "view_message_viewers": "viewers",
+    "view_message_session_started_at": "Session started at",
+    "view_message_viewer": "Viewer",
+    "view_message_viewers": "Viewers",
     "view_nojoin": "You do not have a role that is allowed to join this session.",
     "view_section_title_recordings": "Recordings"
 }

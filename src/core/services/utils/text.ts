@@ -538,7 +538,7 @@ export class CoreTextUtilsProvider {
      * @returns Error message, undefined if not found.
      */
     getErrorMessageFromError(error?: CoreAnyError): string | undefined {
-        if (typeof error == 'string') {
+        if (typeof error === 'string') {
             return error;
         }
 

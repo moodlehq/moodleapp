@@ -7,11 +7,11 @@
     "h5": "Heading (small)",
     "hidetoolbar": "Hide toolbar",
     "italic": "Italic",
-    "orderedlist": "Ordered list",
+    "orderedlist": "Ordered List",
     "p": "Paragraph",
-    "strike": "Strike through",
+    "strikethrough": "Strikethrough",
     "textrecovered": "A draft version of this text was automatically restored.",
     "toggle": "Toggle editor",
     "underline": "Underline",
-    "unorderedlist": "Unordered list"
+    "unorderedlist": "Bulleted List"
 }

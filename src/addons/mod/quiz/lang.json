@@ -10,7 +10,7 @@
     "clearchoice": "Clear my choice",
     "comment": "Comment",
     "completedon": "Completed on",
-    "confirmclose": "Once you submit, you will no longer be able to change your answers for this attempt.",
+    "confirmclose": "Once you submit your answers, you won’t be able to change them.",
     "confirmcontinueoffline": "This attempt has not been synchronised since {{$a}}. If you have continued this attempt in another device since then, you may lose data.",
     "confirmleavequizonerror": "An error occurred while saving the answers. Are you sure you want to leave the quiz?",
     "confirmstart": "Your attempt will have a time limit of {{$a}}. When you start, the timer will begin to count down and cannot be paused. You must finish your attempt before it expires. Are you sure you wish to start now?",

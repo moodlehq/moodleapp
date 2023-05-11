@@ -764,7 +764,7 @@ class behat_app extends behat_app_helper {
             $result = $this->runtime_js("setField('$field', '$value')");
 
             if ($result !== 'OK') {
-                throw new DriverException('Error setting field - ' . $result);
+                throw new DriverException('Error setting field "' . $field . '" - ' . $result);
             }
 
             return true;

@@ -228,6 +228,10 @@ html {
         }
     }
 
+    ion-popover.ios {
+        --min-width: 250px;
+    }
+
     ion-toast {
         --color: var(--ion-color-step-50);
         --button-color: var(--primary);

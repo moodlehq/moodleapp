@@ -31,14 +31,6 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
     </ion-refresher>
     <core-loading [hideUntil]="eventLoaded">
-        <!-- There is data to be synchronized -->
-        <ion-card class="core-warning-card" *ngIf="hasOffline || (event && event.deleted)">
-            <ion-item>
-                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true"></ion-icon>
-                <ion-label>{{ 'core.hasdatatosync' | translate:{$a: 'addon.calendar.calendarevent' | translate} }}</ion-label>
-            </ion-item>
-        </ion-card>
-
         <ion-list *ngIf="event">
             <ion-item class="ion-text-wrap addon-calendar-event" collapsible [ngClass]="['addon-calendar-eventtype-'+event.eventtype]">
                 <core-mod-icon *ngIf="event.moduleIcon" [modicon]="event.moduleIcon" [showAlt]="false" [modname]="event.modulename"
@@ -58,6 +50,13 @@
                     </h1>
                 </ion-label>
             </ion-item>
+            <!-- There is data to be synchronized -->
+            <ion-card class="core-warning-card" *ngIf="hasOffline || event.deleted">
+                <ion-item>
+                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true"></ion-icon>
+                    <ion-label>{{ 'core.hasdatatosync' | translate:{$a: 'addon.calendar.calendarevent' | translate} }}</ion-label>
+                </ion-item>
+            </ion-card>
             <ion-item class="ion-text-wrap">
                 <ion-label>
                     <p class="item-heading">{{ 'addon.calendar.when' | translate }}</p>

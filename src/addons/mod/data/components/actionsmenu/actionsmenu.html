@@ -1,9 +1,12 @@
-<ion-list>
-    <ion-item button class="ion-text-wrap" (click)="onItemClick(item)" *ngFor="let item of items" detail="false"
-        [attr.aria-label]="item.text | translate">
-        <ion-label>
-            <p class="item-heading">{{ item.text | translate }}</p>
-        </ion-label>
-        <ion-icon [name]="item.icon" slot="end" aria-hidden="true"></ion-icon>
-    </ion-item>
-</ion-list>
+<ion-content>
+    <ion-list>
+        <ion-item button class="ion-text-wrap" (click)="onItemClick(item)" *ngFor="let item of items" detail="false"
+            [attr.aria-label]="item.text | translate">
+            <ion-label>
+                <p class="item-heading">{{ item.text | translate }}</p>
+            </ion-label>
+            <ion-icon [name]="item.icon" slot="end" aria-hidden="true"></ion-icon>
+        </ion-item>
+    </ion-list>
+
+</ion-content>

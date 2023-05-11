@@ -103,7 +103,7 @@
     </ion-fab>
 </ion-content>
 <ion-footer class="footer-adjustable" *ngIf="loaded && (!conversationId || conversation)">
-    <ion-toolbar [color]="footerType == 'message' ? 'contrast' : 'light'">
+    <ion-toolbar [color]="footerType == 'message' ? null : 'light'">
         <p *ngIf="footerType == 'unable'" class="ion-text-center ion-margin-horizontal">
             {{ 'addon.messages.unabletomessage' | translate }}
         </p>

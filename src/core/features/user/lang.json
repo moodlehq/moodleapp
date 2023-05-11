@@ -1,6 +1,5 @@
 {
     "address": "Address",
-    "useraccount": "User account",
     "city": "City/town",
     "completeprofile": "Complete profile",
     "completeprofilehelp": "If you have problems completing your profile, try again later or contact your school or learning provider.",
@@ -20,7 +19,7 @@
     "firstname": "First name",
     "interests": "Interests",
     "lastcourseaccess": "Last access to course",
-    "lastname": "Surname",
+    "lastname": "Last name",
     "manager": "Manager",
     "newpicture": "New picture",
     "noparticipants": "No participants found for this course",
@@ -35,6 +34,7 @@
     "supportmessagesent": "Your message has been sent.",
     "supportsubject": "[App] {{subject}}",
     "teacher": "Non-editing teacher",
+    "useraccount": "User account",
     "userwithid": "User with ID {{id}}",
     "webpage": "Web page"
 }
