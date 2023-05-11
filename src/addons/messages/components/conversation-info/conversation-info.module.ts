@@ -13,10 +13,10 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-
 import { CoreSharedModule } from '@/core/shared.module';
+import { AddonMessagesConversationInfoComponent } from './conversation-info.component';
 
-import { AddonMessagesConversationInfoComponent } from './conversation-info/conversation-info';
+export { AddonMessagesConversationInfoComponent };
 
 @NgModule({
     declarations: [
@@ -26,4 +26,4 @@ import { AddonMessagesConversationInfoComponent } from './conversation-info/conv
         CoreSharedModule,
     ],
 })
-export class AddonMessagesComponentsModule {}
+export class AddonMessagesConversationInfoComponentModule {}
