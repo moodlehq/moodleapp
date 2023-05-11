@@ -49,6 +49,12 @@ export const ADDON_MOD_GLOSSARY_SERVICES: Type<unknown>[] = [
 ];
 
 const mainMenuRoutes: Routes = [
+    // Link handlers navigation.
+    {
+        path: `${AddonModGlossaryModuleHandlerService.PAGE_NAME}/entry/:entrySlug`,
+        loadChildren: () => import('./glossary-entry-lazy.module').then(m => m.AddonModGlossaryEntryLazyModule),
+    },
+
     // Course activity navigation.
     {
         path: AddonModGlossaryModuleHandlerService.PAGE_NAME,

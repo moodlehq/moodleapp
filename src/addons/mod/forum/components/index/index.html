@@ -80,7 +80,7 @@
                     <p class="addon-mod-forum-discussion-title ion-text-wrap item-heading">
                         <ion-icon name="fas-map-pin" *ngIf="discussion.pinned"
                             [attr.aria-label]="'addon.mod_forum.discussionpinned' | translate"></ion-icon>
-                        <ion-icon name="fas-star" class="addon-forum-star" *ngIf="!discussion.pinned && discussion.starred"
+                        <ion-icon name="fas-star" class="addon-forum-star" *ngIf="discussion.starred"
                             [attr.aria-label]="'addon.mod_forum.favourites' | translate"></ion-icon>
                         <core-format-text [text]="discussion.subject" contextLevel="module" [contextInstanceId]="module && module.id"
                             [courseId]="courseId">
