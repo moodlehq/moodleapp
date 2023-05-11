@@ -601,6 +601,8 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                     module: this.module,
                     ...options,
                 },
+                animated: !options.replace,
+                replace: options.replace,
             },
         );
     }
@@ -649,6 +651,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                 subwikiId: subwikiId,
                 userId: userId,
                 groupId: groupId,
+                replace: true,
             });
         }
     }
@@ -1089,4 +1092,5 @@ type AddonModWikiOpenPageOptions = {
     pageId?: number;
     userId?: number;
     groupId?: number;
+    replace?: boolean;
 };
