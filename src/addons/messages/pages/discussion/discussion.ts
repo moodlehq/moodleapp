@@ -42,7 +42,6 @@ import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { ActivatedRoute } from '@angular/router';
-import { AddonMessagesConversationInfoComponent } from '../../components/conversation-info/conversation-info';
 import { CoreConstants } from '@/core/constants';
 import { CoreDom } from '@singletons/dom';
 
@@ -1245,6 +1244,9 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
      */
     async viewInfo(): Promise<void> {
         if (this.isGroup) {
+            const { AddonMessagesConversationInfoComponent } =
+                await import('@addons/messages/components/conversation-info/conversation-info.module');
+
             // Display the group information.
             const userId = await CoreDomUtils.openSideModal<number>({
                 component: AddonMessagesConversationInfoComponent,
