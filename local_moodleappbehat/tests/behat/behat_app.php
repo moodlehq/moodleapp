@@ -45,7 +45,6 @@ class behat_app extends behat_app_helper {
     ];
 
     protected $featurepath = '';
-    protected $windowsize = '360x720';
 
     /**
      * @BeforeScenario
