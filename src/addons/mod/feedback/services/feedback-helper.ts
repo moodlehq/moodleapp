@@ -220,9 +220,9 @@ export class AddonModFeedbackHelperProvider {
      * @param entries Entries array to get profile from.
      * @returns Returns the same array with the profileimageurl added if found.
      */
-    protected async addImageProfile(entries: AddonModFeedbackWSAttempt[]): Promise<AddonModFeedbackAttempt[]>;
-    protected async addImageProfile(entries: AddonModFeedbackWSNonRespondent[]): Promise<AddonModFeedbackNonRespondent[]>;
-    protected async addImageProfile(
+    async addImageProfile(entries: AddonModFeedbackWSAttempt[]): Promise<AddonModFeedbackAttempt[]>;
+    async addImageProfile(entries: AddonModFeedbackWSNonRespondent[]): Promise<AddonModFeedbackNonRespondent[]>;
+    async addImageProfile(
         entries: (AddonModFeedbackWSAttempt | AddonModFeedbackWSNonRespondent)[],
     ): Promise<(AddonModFeedbackAttempt | AddonModFeedbackNonRespondent)[]> {
         return Promise.all(entries.map(async (entry: AddonModFeedbackAttempt | AddonModFeedbackNonRespondent) => {

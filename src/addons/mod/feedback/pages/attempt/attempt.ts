@@ -24,10 +24,9 @@ import {
     AddonModFeedback,
     AddonModFeedbackProvider,
     AddonModFeedbackWSAnonAttempt,
-    AddonModFeedbackWSAttempt,
     AddonModFeedbackWSFeedback,
 } from '../../services/feedback';
-import { AddonModFeedbackFormItem, AddonModFeedbackHelper } from '../../services/feedback-helper';
+import { AddonModFeedbackAttempt, AddonModFeedbackFormItem, AddonModFeedbackHelper } from '../../services/feedback-helper';
 
 /**
  * Page that displays a feedback attempt review.
@@ -41,7 +40,7 @@ export class AddonModFeedbackAttemptPage implements OnInit, OnDestroy {
     cmId: number;
     courseId: number;
     feedback?: AddonModFeedbackWSFeedback;
-    attempt?: AddonModFeedbackWSAttempt;
+    attempt?: AddonModFeedbackAttempt;
     attempts: AddonModFeedbackAttemptsSwipeManager;
     anonAttempt?: AddonModFeedbackWSAnonAttempt;
     items: AddonModFeedbackAttemptItem[] = [];
@@ -102,7 +101,7 @@ export class AddonModFeedbackAttemptPage implements OnInit, OnDestroy {
                 this.anonAttempt = attempt;
                 delete this.attempt;
             } else {
-                this.attempt = attempt;
+                this.attempt = (await AddonModFeedbackHelper.addImageProfile([attempt]))[0];
                 delete this.anonAttempt;
             }
 
@@ -145,7 +144,7 @@ export class AddonModFeedbackAttemptPage implements OnInit, OnDestroy {
      * @param attempt Attempt to check.
      * @returns If attempt is anonymous.
      */
-    isAnonAttempt(attempt: AddonModFeedbackWSAttempt | AddonModFeedbackWSAnonAttempt): attempt is AddonModFeedbackWSAnonAttempt {
+    isAnonAttempt(attempt: AddonModFeedbackAttempt | AddonModFeedbackWSAnonAttempt): attempt is AddonModFeedbackWSAnonAttempt {
         return !('fullname' in attempt);
     }
 
