@@ -1,4 +1,4 @@
-<ion-button size="small" *ngIf="action == 'actionsmenu'" fill="clear" (click)="actionsMenu()"
+<ion-button size="small" *ngIf="action == 'actionsmenu'" fill="clear" (click)="actionsMenu($event)"
     [attr.aria-label]="'addon.mod_data.actionsmenu' | translate">
     <ion-icon name="fas-ellipsis-vertical" slot="icon-only" aria-hidden="true"></ion-icon>
 </ion-button>

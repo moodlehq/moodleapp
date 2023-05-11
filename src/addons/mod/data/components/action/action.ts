@@ -146,7 +146,10 @@ export class AddonModDataActionComponent implements OnInit {
     /**
      * Open actions menu popover.
      */
-    async actionsMenu(): Promise<void> {
+    async actionsMenu(event: Event): Promise<void> {
+        event.stopPropagation();
+        event.preventDefault();
+
         const items: AddonModDataActionsMenuItem[] = [];
 
         if (this.entry.canmanageentry) {
@@ -202,6 +205,7 @@ export class AddonModDataActionComponent implements OnInit {
             componentProps: { items },
             showBackdrop: true,
             id: 'actionsmenu-popover',
+            event,
         });
     }
 
