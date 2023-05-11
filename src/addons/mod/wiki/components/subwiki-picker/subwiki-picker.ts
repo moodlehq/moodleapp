@@ -38,10 +38,10 @@ export class AddonModWikiSubwikiPickerComponent {
     isSubwikiSelected(subwiki: AddonModWikiSubwiki): boolean {
 
         if (subwiki.id > 0 && this.currentSubwiki.id > 0) {
-            return subwiki.id == this.currentSubwiki.id;
+            return subwiki.id === this.currentSubwiki.id;
         }
 
-        return subwiki.userid == this.currentSubwiki.userid && subwiki.groupid == this.currentSubwiki.groupid;
+        return subwiki.userid === this.currentSubwiki.userid && subwiki.groupid === this.currentSubwiki.groupid;
     }
 
     /**
