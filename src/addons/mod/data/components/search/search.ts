@@ -104,12 +104,26 @@ export class AddonModDataSearchComponent implements OnInit {
         this.fieldsArray.forEach((field) => {
             let replace = '[[' + field.name + ']]';
             replace = replace.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
-            const replaceRegex = new RegExp(replace, 'gi');
+            let replaceRegex = new RegExp(replace, 'gi');
 
             // Replace field by a generic directive.
             const render = '<addon-mod-data-field-plugin mode="search" [field]="fields[' + field.id +
                 ']" [form]="form" [searchFields]="search"></addon-mod-data-field-plugin>';
             template = template.replace(replaceRegex, render);
+
+            // Replace the field name tag.
+            replace = '[[' + field.name + '#name]]';
+            replace = replace.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
+            replaceRegex = new RegExp(replace, 'gi');
+
+            template = template.replace(replaceRegex, field.name);
+
+            // Replace the field description tag.
+            replace = '[[' + field.name + '#description]]';
+            replace = replace.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
+            replaceRegex = new RegExp(replace, 'gi');
+
+            template = template.replace(replaceRegex, field.description);
         });
 
         // Not pluginable other search elements.
