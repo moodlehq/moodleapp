@@ -648,4 +648,5 @@
             </array>
         </config-file>
     </platform>
+    <engine name="ios" spec="6.2.0" />
 </widget>

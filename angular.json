@@ -17,8 +17,8 @@
             "customWebpackConfig": {
               "path": "./webpack.config.js"
             },
-            "allowedCommonJsDependencies":[
-                "chart.js"
+            "allowedCommonJsDependencies": [
+              "chart.js"
             ],
             "outputPath": "www",
             "index": "src/index.html",
@@ -122,9 +122,9 @@
           "builder": "@angular-eslint/builder:lint",
           "options": {
             "lintFilePatterns": [
-                "src/**/*.ts",
-                "src/core/**/*.html",
-                "src/addons/**/*.html"
+              "src/**/*.ts",
+              "src/core/**/*.html",
+              "src/addons/**/*.html"
             ]
           }
         },
@@ -156,7 +156,8 @@
     }
   },
   "cli": {
-    "defaultCollection": "@ionic/angular-toolkit"
+    "defaultCollection": "@ionic/angular-toolkit",
+    "analytics": false
   },
   "schematics": {
     "@ionic/angular-toolkit:component": {
