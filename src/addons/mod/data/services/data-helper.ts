@@ -214,13 +214,28 @@ export class AddonModDataHelperProvider {
         fields.forEach((field) => {
             let replace = '[[' + field.name + ']]';
             replace = replace.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
-            const replaceRegex = new RegExp(replace, 'gi');
+            let replaceRegex = new RegExp(replace, 'gi');
 
             // Replace field by a generic directive.
             const render = '<addon-mod-data-field-plugin [field]="fields[' + field.id + ']" [value]="entries[' + entry.id +
                     '].contents[' + field.id + ']" mode="' + mode + '" [database]="database" (gotoEntry)="gotoEntry($event)">' +
                     '</addon-mod-data-field-plugin>';
+
             template = template.replace(replaceRegex, render);
+
+            // Replace the field name tag.
+            replace = '[[' + field.name + '#name]]';
+            replace = replace.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
+            replaceRegex = new RegExp(replace, 'gi');
+
+            template = template.replace(replaceRegex, field.name);
+
+            // Replace the field description tag.
+            replace = '[[' + field.name + '#description]]';
+            replace = replace.replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&');
+            replaceRegex = new RegExp(replace, 'gi');
+
+            template = template.replace(replaceRegex, field.description);
         });
 
         for (const action in actions) {
