@@ -120,15 +120,15 @@ body {
 }
 
 // Correctly inherit ion-text-wrap onto labels.
-.item ion-label core-format-text > *,
-.fake-ion-item core-format-text > * {
+.item ion-label core-format-text > *:not(pre),
+.fake-ion-item core-format-text > *:not(pre) {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.item.ion-text-wrap > ion-label core-format-text > *,
-.fake-ion-item.ion-text-wrap core-format-text > * {
+.item.ion-text-wrap > ion-label core-format-text > *:not(pre),
+.fake-ion-item.ion-text-wrap core-format-text > *:not(pre) {
     white-space: normal;
     overflow: inherit;
 }
