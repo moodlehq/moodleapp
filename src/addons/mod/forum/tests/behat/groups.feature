@@ -323,7 +323,7 @@ Feature: Test usage of forum activity with groups in app
 
   Scenario: New discussion not opened in tablet if not visible
     Given I entered the forum activity "Separate groups forum" on course "Course 1" as "teacher1" in the app
-    And I change viewport size to "1200x640"
+    And I change viewport size to "1200x640" in the app
 
     When I press "Separate groups" in the app
     And I press "Group 1" in the app

@@ -133,7 +133,7 @@ Feature: Report builder
 
   Scenario: Open report in tablet
     Given I enter the app
-    And I change viewport size to "1200x640"
+    And I change viewport size to "1200x640" in the app
     And I log in as "student1"
     And I press the user menu button in the app
     When I press "Reports" in the app

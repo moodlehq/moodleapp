@@ -76,7 +76,7 @@ Feature: It navigates properly in pages with a split-view component.
 
     # Open user menu
     Given I entered the app as "student1"
-    And I change viewport size to "1200x640"
+    And I change viewport size to "1200x640" in the app
     And I press the user menu button in the app
 
     # Open grades page
@@ -85,6 +85,7 @@ Feature: It navigates properly in pages with a split-view component.
     And I should find "Course 1" in the app
     And I should find "Course 2" in the app
     And I should find "Grade category C1" in the app
+    And the UI should match the snapshot
 
     # Open C1 course grades
     When I press "Grade item C1" in the app

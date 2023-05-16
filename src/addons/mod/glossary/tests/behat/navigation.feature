@@ -214,7 +214,7 @@ Feature: Test glossary navigation
   @ci_jenkins_skip
   Scenario: Tablet navigation on glossary
     Given I entered the course "Course 1" as "student1" in the app
-    And I change viewport size to "1200x640"
+    And I change viewport size to "1200x640" in the app
 
     # Alphabetically
     When I press "Fruits glossary" in the app

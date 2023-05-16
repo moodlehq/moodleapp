@@ -151,7 +151,7 @@ Feature: Test assignments navigation
 
   Scenario: Tablet navigation on assignment
     Given I entered the course "Course 1" as "teacher1" in the app
-    And I change viewport size to "1200x640"
+    And I change viewport size to "1200x640" in the app
 
     # Initial status
     When I press "Assignment" in the app

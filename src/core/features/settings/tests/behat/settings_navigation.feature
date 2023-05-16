@@ -47,7 +47,7 @@ Feature: It navigates properly within settings.
 
   Scenario: Tablet navigation on settings
     Given I entered the app as "student1"
-    And I change viewport size to "1200x640"
+    And I change viewport size to "1200x640" in the app
 
     # Settings
     When I press "More" in the app

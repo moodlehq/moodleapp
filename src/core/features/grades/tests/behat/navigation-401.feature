@@ -84,7 +84,7 @@ Feature: Grades navigation
   # in 4.1. It tests the grades from participants profile instead.
   Scenario: Tablet navigation (teacher)
     Given I entered the course "Course 2" as "teacher1" in the app
-    And I change viewport size to "1200x640"
+    And I change viewport size to "1200x640" in the app
 
     # Course grades
     When I press "Participants" in the app

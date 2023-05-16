@@ -1102,4 +1102,15 @@ class behat_app extends behat_app_helper {
         $this->zone_js("navigator.navigateToSitePath('/calendar/index', $options)");
     }
 
+    /**
+     * Change the viewport size in the browser running the Moodle App.
+     *
+     * @Given /^I change viewport size to "(?P<width>\d+)x(?P<height>\d+)" in the app$/
+     * @param int $width Width
+     * @param int $height Height
+     */
+    public function i_change_viewport_size_in_the_app(int $width, int $height) {
+        $this->resize_app_window($width, $height);
+    }
+
 }
