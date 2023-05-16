@@ -600,9 +600,7 @@ EOF;
     /**
      * Resize window to have app dimensions.
      */
-    protected function resize_app_window() {
-        $width = 500;
-        $height = 720;
+    protected function resize_app_window(int $width = 500, int $height = 720) {
         $offset = $this->evaluate_script("{
             x: window.outerWidth - document.body.offsetWidth,
             y: window.outerHeight - window.innerHeight,

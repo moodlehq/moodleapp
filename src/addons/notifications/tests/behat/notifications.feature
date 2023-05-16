@@ -81,7 +81,7 @@ Feature: Notifications
 
   Scenario: Tablet navigation
     Given I enter the app
-    And I change viewport size to "1200x640"
+    And I change viewport size to "1200x640" in the app
     And I log in as "student1"
     And I press "Notifications" in the app
     Then I should find "Test 30" in the app
