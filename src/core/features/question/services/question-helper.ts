@@ -855,10 +855,13 @@ export class CoreQuestionHelperProvider {
         const icons = <HTMLElement[]> Array.from(element.querySelectorAll('ion-icon.questioncorrectnessicon'));
         const title = Translate.instant('core.question.feedback');
         const getClickableFeedback = (icon: HTMLElement) => {
-            if (icon.parentElement instanceof HTMLButtonElement && icon.parentElement.dataset.toggle === 'popover') {
+            const parentElement = icon.parentElement;
+            const parentIsClickable = parentElement instanceof HTMLButtonElement || parentElement instanceof HTMLAnchorElement;
+
+            if (parentElement && parentIsClickable && parentElement.dataset.toggle === 'popover') {
                 return {
-                    element: icon.parentElement,
-                    html: icon.parentElement?.dataset.content,
+                    element: parentElement,
+                    html: parentElement?.dataset.content,
                 };
             }
 
@@ -866,7 +869,7 @@ export class CoreQuestionHelperProvider {
             if (icon.hasAttribute('tappable')) {
                 return {
                     element: icon,
-                    html: icon.parentElement?.querySelector('.feedbackspan.accesshide')?.innerHTML,
+                    html: parentElement?.querySelector('.feedbackspan.accesshide')?.innerHTML,
                 };
             }
 
@@ -881,7 +884,11 @@ export class CoreQuestionHelperProvider {
             }
 
             // There's a hidden feedback, show it when the icon is clicked.
-            target.element.addEventListener('click', () => {
+            target.element.dataset.disabledA11yClicks = 'true';
+            target.element.addEventListener('click', event => {
+                event.preventDefault();
+                event.stopPropagation();
+
                 CoreTextUtils.viewText(title, target.html ?? '', {
                     component: component,
                     componentId: componentId,

@@ -536,9 +536,15 @@ export class CoreDom {
         element: HTMLElement & {disabled?: boolean},
         callback: (event: MouseEvent | KeyboardEvent) => void,
     ): void {
-        element.addEventListener('click', (event) => callback(event));
+        const enabled = () => !CoreUtils.isTrueOrOne(element.dataset.disabledA11yClicks ?? 'false');
+
+        element.addEventListener('click', (event) => enabled() && callback(event));
 
         element.addEventListener('keydown', (event) => {
+            if (!enabled()) {
+                return;
+            }
+
             if (event.key === ' ' || event.key === 'Enter') {
                 event.preventDefault();
                 event.stopPropagation();
@@ -546,6 +552,10 @@ export class CoreDom {
         });
 
         element.addEventListener('keyup', (event) => {
+            if (!enabled()) {
+                return;
+            }
+
             if (event.key === ' ' || event.key === 'Enter') {
                 event.preventDefault();
                 event.stopPropagation();
