@@ -24,6 +24,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton } from '@singletons';
 
 import { AddonModForumModuleHandlerService } from './module';
+import { isSafeNumber } from '@/core/utils/types';
 
 /**
  * Handler for forum push notifications clicks.
@@ -44,7 +45,8 @@ export class AddonModForumPushClickHandlerService implements CorePushNotificatio
     async handles(notification: NotificationData): Promise<boolean> {
         return CoreUtils.isTrueOrOne(notification.notif)
             && notification.moodlecomponent == 'mod_forum'
-            && notification.name == 'posts';
+            && notification.name == 'posts'
+            && !!(notification.contexturl || notification.customdata?.postid);
     }
 
     /**
@@ -58,12 +60,16 @@ export class AddonModForumPushClickHandlerService implements CorePushNotificatio
         const data = notification.customdata || {};
         const courseId = Number(notification.courseid);
         const discussionId = Number(contextUrlParams.d || data.discussionid);
-        const cmId = Number(data.cmid);
+        const cmId = data.cmid && Number(data.cmid);
         const pageParams: Params = {
             forumId: Number(data.instance),
             cmId,
             courseId,
         };
+
+        if (!isSafeNumber(discussionId)) {
+            return;
+        }
 
         if (data.postid || contextUrlParams.urlHash) {
             pageParams.postId = Number(data.postid || contextUrlParams.urlHash.replace('p', ''));
