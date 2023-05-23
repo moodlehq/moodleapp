@@ -123,7 +123,7 @@ export class AddonCompetencyCourseCompetenciesPage implements OnInit, OnDestroy 
      * @param competencyId Competency Id.
      */
     openCompetencySummary(competencyId: number): void {
-        CoreNavigator.navigateToSitePath(
+        CoreNavigator.navigate(
             `./${competencyId}/${ADDON_COMPETENCY_SUMMARY_PAGE}`,
             {
                 params: {
