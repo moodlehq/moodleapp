@@ -216,7 +216,7 @@ export class CoreFilterHelperProvider {
                 options.filter = true;
 
                 // We cannot check which filters are available, apply them all.
-                return CoreFilterDelegate.getEnabledFilters(contextLevel, instanceId);
+                return await CoreFilterDelegate.getEnabledFilters(contextLevel, instanceId);
             }
 
             const courseId = options.courseId;
@@ -239,21 +239,21 @@ export class CoreFilterHelperProvider {
                 // Get all the modules filters with a single call to decrease the number of WS calls.
                 const getFilters = () => this.getCourseModulesContexts(courseId, siteId);
 
-                return this.getCacheableFilters(contextLevel, instanceId, getFilters, options, site);
+                return await this.getCacheableFilters(contextLevel, instanceId, getFilters, options, site);
 
             } else if (contextLevel == 'course') {
                 // If enrolled, get all enrolled courses filters with a single call to decrease number of WS calls.
                 const getFilters = () => this.getCourseContexts(instanceId, siteId);
 
-                return this.getCacheableFilters(contextLevel, instanceId, getFilters, options, site);
+                return await this.getCacheableFilters(contextLevel, instanceId, getFilters, options, site);
             } else if (contextLevel == 'block' && courseId && CoreCourse.canGetCourseBlocks(site)) {
                 // Get all the course blocks filters with a single call to decrease number of WS calls.
                 const getFilters = () => this.getBlocksContexts(courseId, siteId);
 
-                return this.getCacheableFilters(contextLevel, instanceId, getFilters, options, site);
+                return await this.getCacheableFilters(contextLevel, instanceId, getFilters, options, site);
             }
 
-            return CoreFilter.getAvailableInContext(contextLevel, instanceId, siteId);
+            return await CoreFilter.getAvailableInContext(contextLevel, instanceId, siteId);
         } catch (error) {
             this.logger.error('Error getting filters, return an empty array', error, contextLevel, instanceId);
 
