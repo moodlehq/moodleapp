@@ -197,7 +197,7 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
             CoreDomUtils.showToast('addon.mod_glossary.entrydeleted', true, ToastDuration.LONG);
 
             if (this.splitView?.outletActivated) {
-                await CoreNavigator.navigate('../');
+                await CoreNavigator.navigate('../../');
             } else {
                 await CoreNavigator.back();
             }
