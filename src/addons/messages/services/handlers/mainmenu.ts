@@ -191,7 +191,14 @@ export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler,
      * @returns Promise resolved when done, rejected if failure.
      */
     async execute(siteId?: string): Promise<void> {
-        if (!CoreSites.isCurrentSite(siteId)) {
+        const site = CoreSites.getCurrentSite();
+
+        if (
+            !CoreSites.isCurrentSite(siteId) ||
+            !site ||
+            site.isFeatureDisabled('CoreMainMenuDelegate_AddonMessages') ||
+            !site.canUseAdvancedFeature('messaging')
+        ) {
             return;
         }
 
