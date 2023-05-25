@@ -2,6 +2,8 @@
 Feature: Test signup in app
   I need basic signup functionality to work
 
+  # These scenarios are duplicated from main because the error message about
+  # non alpha-numeric characters has changed.
   Background:
     Given the following config values are set as admin:
       | registerauth | email |
@@ -27,7 +29,7 @@ Feature: Test signup in app
       | Email address | u1@u1.com |
       | Email (again) | u1@u1.com |
       | First name | User |
-      | Surname | Test |
+      | Last name | Test |
       | City/town | Barcelona |
       | Country | Spain |
     And I press "Create my new account" in the app

@@ -46,7 +46,7 @@ export class AddonModForumPushClickHandlerService implements CorePushNotificatio
         return CoreUtils.isTrueOrOne(notification.notif)
             && notification.moodlecomponent == 'mod_forum'
             && notification.name == 'posts'
-            && !!(notification.contexturl || notification.customdata?.postid);
+            && !!(notification.contexturl || notification.customdata?.discussionid);
     }
 
     /**
