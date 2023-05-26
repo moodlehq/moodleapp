@@ -781,7 +781,7 @@ export class CorePushNotificationsProvider {
      * @returns Public key, undefined if the site or the device doesn't support encryption.
      */
     protected async getPublicKey(site: CoreSite): Promise<string | undefined> {
-        if (!site.isVersionGreaterEqualThan('4.2')) {
+        if (!site.wsAvailable('core_user_update_user_device_public_key')) {
             return;
         }
 
