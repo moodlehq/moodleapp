@@ -2349,6 +2349,7 @@
   "core.settings.enablefirebaseanalyticsdescription": "local_moodlemobileapp",
   "core.settings.enablerichtexteditor": "local_moodlemobileapp",
   "core.settings.enablerichtexteditordescription": "local_moodlemobileapp",
+  "core.settings.encryptedpushsupported": "local_moodlemobileapp",
   "core.settings.entriesincache": "local_moodlemobileapp",
   "core.settings.estimatedfreespace": "local_moodlemobileapp",
   "core.settings.filesystemroot": "local_moodlemobileapp",

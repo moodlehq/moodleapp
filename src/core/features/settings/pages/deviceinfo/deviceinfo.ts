@@ -58,6 +58,7 @@ interface CoreSettingsDeviceInfo {
     uuid?: string;
     pushId?: string;
     localNotifAvailable: string;
+    encryptedPushSupported?: boolean;
 }
 
 /**
@@ -210,6 +211,11 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
         const showDevOptionsOnConfig = await CoreConfig.get('showDevOptions', 0);
         this.devOptionsForced = CoreConstants.BUILD.isDevelopment || CoreConstants.BUILD.isTesting;
         this.showDevOptions = this.devOptionsForced || showDevOptionsOnConfig == 1;
+
+        const publicKey = this.deviceInfo.pushId ?
+            await CoreUtils.ignoreErrors(CorePushNotifications.getPublicKey()) :
+            undefined;
+        this.deviceInfo.encryptedPushSupported = publicKey !== undefined;
     }
 
     /**

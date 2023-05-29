@@ -148,6 +148,13 @@
                 <p>{{ deviceInfo.pushId }}</p>
             </ion-label>
         </ion-item>
+        <ion-item *ngIf="deviceInfo.pushId" (longPress)="copyItemInfo($event)">
+            <ion-label class="ion-text-wrap">
+                <p class="item-heading">{{ 'core.settings.encryptedpushsupported' | translate }}</p>
+                <p *ngIf="!deviceInfo.encryptedPushSupported">{{ 'core.no' | translate }}</p>
+                <p *ngIf="deviceInfo.encryptedPushSupported">{{ 'core.yes' | translate }}</p>
+            </ion-label>
+        </ion-item>
         <ion-item (longPress)="copyItemInfo($event)">
             <ion-label class="ion-text-wrap">
                 <p class="item-heading">{{ 'core.settings.localnotifavailable' | translate }}</p>
