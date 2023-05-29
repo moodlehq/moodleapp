@@ -726,7 +726,7 @@ export class CorePushNotificationsProvider {
         try {
 
             const data = this.getRequiredRegisterData();
-            data.publickey = await this.getPublicKey(site);
+            data.publickey = await this.getPublicKeyForSite(site);
 
             const neededActions = await this.getRegisterDeviceActions(data, site, forceUnregister);
 
@@ -780,8 +780,21 @@ export class CorePushNotificationsProvider {
      * @param site Site to register
      * @returns Public key, undefined if the site or the device doesn't support encryption.
      */
-    protected async getPublicKey(site: CoreSite): Promise<string | undefined> {
+    protected async getPublicKeyForSite(site: CoreSite): Promise<string | undefined> {
         if (!site.wsAvailable('core_user_update_user_device_public_key')) {
+            return;
+        }
+
+        return await this.getPublicKey();
+    }
+
+    /**
+     * Get the device public key.
+     *
+     * @returns Public key, undefined if the device doesn't support encryption.
+     */
+    async getPublicKey(): Promise<string | undefined> {
+        if (!CorePlatform.isMobile()) {
             return;
         }
 
