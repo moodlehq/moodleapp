@@ -12,6 +12,11 @@ jobs:
       with:
         persist-credentials: false
         fetch-depth: 0
+    - uses: actions/setup-node@v3
+      with:
+        node-version-file: '.nvmrc'
+    - name: Install npm packages
+      run: npm ci --no-audit
     - name: Create release tags
       env:
         GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
