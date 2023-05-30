@@ -54,8 +54,10 @@ class behat_performance extends behat_base {
      *
      * @Then /^"([^"]+)" should have taken (less than|more than|exactly) (\d+(?:\.\d+)? (?:seconds|milliseconds))$/
      */
-    public function timing_should_have_taken(string $measure, Closure $comparison, float $expectedtime) {
+    public function timing_should_have_taken(string $measure, string $comparison, string $expectedtime) {
         $measuretiming = $this->get_performance_measure($measure);
+        $comparison = $this->parse_comparison($comparison);
+        $expectedtime = $this->parse_time($expectedtime);
 
         if (!call_user_func($comparison, $measuretiming->duration, $expectedtime)) {
             throw new ExpectationException(
@@ -70,11 +72,10 @@ class behat_performance extends behat_base {
     /**
      * Parse time.
      *
-     * @Transform /^\d+(?:\.\d+)? (?:seconds|milliseconds)$/
      * @param string $text Time string.
      * @return float
      */
-    public function parse_time(string $text): float {
+    private function parse_time(string $text): float {
         $spaceindex = strpos($text, ' ');
         $value = floatval(substr($text, 0, $spaceindex));
 
@@ -88,11 +89,10 @@ class behat_performance extends behat_base {
     /**
      * Parse a comparison function.
      *
-     * @Transform /^less than|more than|exactly$/
      * @param string $text Comparison string.
      * @return Closure
      */
-    public function parse_comparison(string $text): Closure {
+    private function parse_comparison(string $text): Closure {
         switch ($text) {
             case 'less than':
                 return function ($a, $b) {
