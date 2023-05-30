@@ -81,7 +81,7 @@
     "@moodlehq/cordova-plugin-qrscanner": "3.0.1-moodle.5",
     "@moodlehq/cordova-plugin-zip": "3.1.0-moodle.1",
     "@moodlehq/ionic-native-push": "5.36.0-moodle.2",
-    "@moodlehq/phonegap-plugin-push": "4.0.0-moodle.4",
+    "@moodlehq/phonegap-plugin-push": "4.0.0-moodle.5",
     "@ngx-translate/core": "13.0.0",
     "@ngx-translate/http-loader": "6.0.0",
     "@types/chart.js": "2.9.31",
