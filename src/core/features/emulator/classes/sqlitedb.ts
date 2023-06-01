@@ -51,13 +51,13 @@ export class SQLiteDBMock extends SQLiteDB {
         await this.ready();
 
         return new Promise((resolve, reject): void => {
-            this.db?.transaction((tx) => {
+            this.db?.transaction((transaction) => {
                 // Query all tables from sqlite_master that we have created and can modify.
                 const args = [];
                 const query = `SELECT * FROM sqlite_master
                             WHERE name NOT LIKE 'sqlite\\_%' escape '\\' AND name NOT LIKE '\\_%' escape '\\'`;
 
-                tx.executeSql(query, args, (tx, result) => {
+                transaction.executeSql(query, args, (tx, result) => {
                     if (result.rows.length <= 0) {
                         // No tables to delete, stop.
                         resolve(null);
@@ -69,14 +69,16 @@ export class SQLiteDBMock extends SQLiteDB {
                     const promises: Promise<void>[] = [];
 
                     for (let i = 0; i < result.rows.length; i++) {
-                        promises.push(new Promise((resolve, reject): void => {
-                            // Drop the table.
-                            const name = JSON.stringify(result.rows.item(i).name);
-                            tx.executeSql('DROP TABLE ' + name, [], resolve, reject);
-                        }));
+                        promises.push();
                     }
 
-                    Promise.all(promises).then(resolve).catch(reject);
+                    Promise.all(result.rows.map(row =>
+                        // eslint-disable-next-line @typescript-eslint/no-shadow
+                        new Promise((resolve, reject): void => {
+                            // Drop the table.
+                            const name = JSON.stringify(row.name);
+                            tx.executeSql('DROP TABLE ' + name, [], resolve, reject);
+                        }))).then(resolve).catch(reject);
                 }, reject);
             });
         });
@@ -127,6 +129,7 @@ export class SQLiteDBMock extends SQLiteDB {
 
                 // Execute all the queries. Each statement can be a string or an array.
                 sqlStatements.forEach((statement) => {
+                    // eslint-disable-next-line @typescript-eslint/no-shadow
                     promises.push(new Promise((resolve, reject): void => {
                         let query;
                         let params;

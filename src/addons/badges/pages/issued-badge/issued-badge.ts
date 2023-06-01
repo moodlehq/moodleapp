@@ -103,23 +103,23 @@ export class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
 
         try {
             const badges = await AddonBadges.getUserBadges(this.courseId, this.userId);
-            const badge = badges.find((badge) => this.badgeHash == badge.uniquehash);
+            const badgeFound = badges.find((badge) => this.badgeHash == badge.uniquehash);
 
-            if (!badge) {
+            if (!badgeFound) {
                 return;
             }
 
-            this.badge = badge;
-            if (badge.courseid) {
+            this.badge = badgeFound;
+            if (badgeFound.courseid) {
                 try {
-                    this.course = await CoreCourses.getUserCourse(badge.courseid, true);
+                    this.course = await CoreCourses.getUserCourse(badgeFound.courseid, true);
                 } catch {
                     // Maybe an old deleted course.
                     this.course = undefined;
                 }
             }
 
-            this.logView(badge);
+            this.logView(badgeFound);
         } catch (message) {
             CoreDomUtils.showErrorModalDefault(message, 'Error getting badge data.');
         }

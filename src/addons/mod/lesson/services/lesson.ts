@@ -2865,10 +2865,10 @@ export class AddonModLessonProvider {
             // Drop all attempts that go beyond max attempts for the lesson.
             for (const pageId in attemptSet) {
                 // Sort the list by time in ascending order.
-                const attempts = attemptSet[pageId].sort((a, b) =>
+                const attemptsInSet = attemptSet[pageId].sort((a, b) =>
                     ('timeseen' in a ? a.timeseen : a.timemodified) - ('timeseen' in b ? b.timeseen : b.timemodified));
 
-                attemptSet[pageId] = attempts.slice(0, lesson.maxattempts);
+                attemptSet[pageId] = attemptsInSet.slice(0, lesson.maxattempts);
             }
         }
 
@@ -2879,8 +2879,8 @@ export class AddonModLessonProvider {
         result.nquestions = Object.keys(attemptSet).length;
 
         for (const pageId in attemptSet) {
-            const attempts = attemptSet[pageId];
-            const lastAttempt = attempts[attempts.length - 1];
+            const attemptsInSet = attemptSet[pageId];
+            const lastAttempt = attemptsInSet[attemptsInSet.length - 1];
 
             if (lesson.custom) {
                 // If essay question, handle it, otherwise add to score.
@@ -3269,13 +3269,13 @@ export class AddonModLessonProvider {
         if (lesson.review && !result.correctanswer && !result.isessayquestion) {
             // Calculate the number of question attempt in the page if it isn't calculated already.
             if (nAttempts === undefined) {
-                const result = await this.getQuestionsAttempts(lesson.id, retake, {
+                const response = await this.getQuestionsAttempts(lesson.id, retake, {
                     cmId: lesson.coursemodule,
                     pageId: pageData.page.id,
                     siteId,
                 });
 
-                nAttempts = result.online.length + result.offline.length;
+                nAttempts = response.online.length + response.offline.length;
             }
 
             const messageId = nAttempts == 1 ? 'firstwrong' : 'secondpluswrong';

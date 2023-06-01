@@ -91,8 +91,7 @@ export class CoreRemindersSetReminderMenuComponent implements OnInit {
         }
 
         // Search if it's one of the preset options.
-        const option = this.presetOptions.find(option =>
-            option.value === initialValue?.value && option.unit === initialValue.unit);
+        const option = this.presetOptions.find(({ value, unit }) => value === initialValue?.value && unit === initialValue.unit);
 
         if (option) {
             this.currentValue = option.radioValue;
@@ -111,7 +110,7 @@ export class CoreRemindersSetReminderMenuComponent implements OnInit {
      * @param value Value to set.
      */
     setReminder(value?: string): void {
-        const option = this.presetOptions.find(option => option.radioValue === value);
+        const option = this.presetOptions.find(({ radioValue }) => radioValue === value);
 
         if (!option) {
             PopoverController.dismiss();

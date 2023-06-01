@@ -564,7 +564,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
 
             if (hasDeletedComments) {
                 deletedComments.forEach((deletedComment) => {
-                    const comment = this.comments.find((comment) => comment.id == deletedComment.commentid);
+                    const comment = this.comments.find(({ id }) => id == deletedComment.commentid);
 
                     if (comment) {
                         comment.deleted = !!deletedComment.deleted;

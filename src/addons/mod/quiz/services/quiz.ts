@@ -755,13 +755,13 @@ export class AddonModQuizProvider {
         );
 
         // Search the quiz.
-        const quiz = response.quizzes.find(quiz => quiz[key] == value);
+        const quizFound = response.quizzes.find(quiz => quiz[key] == value);
 
-        if (!quiz) {
+        if (!quizFound) {
             throw new CoreError(Translate.instant('core.course.modulenotfound'));
         }
 
-        return quiz;
+        return quizFound;
     }
 
     /**

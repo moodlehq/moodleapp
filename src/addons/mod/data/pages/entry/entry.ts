@@ -373,12 +373,12 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
             this.hasNext = false;
         } else {
             // Last entry of the page, check if there are more pages.
-            const entries = await AddonModData.getEntries(this.database!.id, {
+            const entriesFound = await AddonModData.getEntries(this.database!.id, {
                 groupId: this.selectedGroup,
                 page: page + 1,
                 perPage: perPage,
             });
-            this.hasNext = entries?.entries?.length > 0;
+            this.hasNext = entriesFound?.entries?.length > 0;
         }
 
         if (this.entryId > 0) {

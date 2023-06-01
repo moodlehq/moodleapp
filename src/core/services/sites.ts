@@ -98,10 +98,10 @@ export class CoreSitesProvider {
     constructor(@Optional() @Inject(CORE_SITE_SCHEMAS) siteSchemas: CoreSiteSchema[][] | null) {
         this.logger = CoreLogger.getInstance('CoreSitesProvider');
         this.siteSchemas = CoreArray.flatten(siteSchemas ?? []).reduce(
-            (siteSchemas, schema) => {
-                siteSchemas[schema.name] = schema;
+            (schemas, schema) => {
+                schemas[schema.name] = schema;
 
-                return siteSchemas;
+                return schemas;
             },
             this.siteSchemas,
         );

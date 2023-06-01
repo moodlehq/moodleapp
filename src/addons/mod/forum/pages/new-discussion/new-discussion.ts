@@ -373,8 +373,8 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
                     // If the user can't post to it an error will be shown when he tries to add the discussion.
                     .catch(() =>({ status: true }))
 
-                    .then((response) => {
-                        if (response.status) {
+                    .then((result) => {
+                        if (result.status) {
                             filtered.push(group);
                         }
 

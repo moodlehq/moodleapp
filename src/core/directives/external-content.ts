@@ -428,7 +428,6 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
 
         // Set events to download big files (not downloaded automatically).
         if (targetAttr !== 'poster' && (tagName === 'VIDEO' || tagName === 'AUDIO' || tagName === 'A' || tagName === 'SOURCE')) {
-            const eventName = tagName == 'A' ? 'click' : 'play';
             let clickableEl: Element | null = this.element;
 
             if (tagName == 'SOURCE') {
@@ -439,7 +438,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
                 return;
             }
 
-            clickableEl.addEventListener(eventName, () => {
+            clickableEl.addEventListener(tagName == 'A' ? 'click' : 'play', () => {
                 // User played media or opened a downloadable link.
                 // Download the file if in wifi and it hasn't been downloaded already (for big files).
                 if (state !== CoreConstants.DOWNLOADED && state !== CoreConstants.DOWNLOADING && CoreNetwork.isWifi()) {

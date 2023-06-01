@@ -25,8 +25,8 @@ export class CorePromisedValue<T = unknown> extends CorePromise<T> {
      * @param promise Promise.
      * @returns Promised value.
      */
-    static from<T>(promise: Promise<T>): CorePromisedValue<T> {
-        const promisedValue = new CorePromisedValue<T>();
+    static from<Type>(promise: Promise<Type>): CorePromisedValue<Type> {
+        const promisedValue = new CorePromisedValue<Type>();
 
         promise
             .then(value => promisedValue.resolve(value))

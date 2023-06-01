@@ -210,7 +210,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
                     // Title is set, it could be editing an offline page or creating a new page using an edit link.
                     // First of all, verify if this page was created in the current sync.
                     if (syncResult) {
-                        const page = syncResult.created.find((page) => page.title == pageTitle);
+                        const page = syncResult.created.find(({ title }) => title == pageTitle);
 
                         if (page && page.pageId > 0) {
                             // Page was created, now it exists in the site.

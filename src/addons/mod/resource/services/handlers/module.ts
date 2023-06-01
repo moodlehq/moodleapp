@@ -83,12 +83,12 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
             hidden: true,
             icon: openWithPicker ? 'fas-share-from-square' : 'fas-file',
             label: module.name + ': ' + Translate.instant(openWithPicker ? 'core.openwith' : 'addon.mod_resource.openthefile'),
-            action: async (event: Event, module: CoreCourseModuleData, courseId: number): Promise<void> => {
-                const hide = await this.hideOpenButton(module);
+            action: async (event: Event, courseModule: CoreCourseModuleData, selectedCourseId: number): Promise<void> => {
+                const hide = await this.hideOpenButton(courseModule);
                 if (!hide) {
-                    AddonModResourceHelper.openModuleFile(module, courseId);
+                    AddonModResourceHelper.openModuleFile(courseModule, selectedCourseId);
 
-                    CoreCourse.storeModuleViewed(courseId, module.id);
+                    CoreCourse.storeModuleViewed(selectedCourseId, courseModule.id);
                 }
             },
         };

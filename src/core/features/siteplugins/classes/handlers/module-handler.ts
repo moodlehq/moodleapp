@@ -97,14 +97,14 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
             // There is a method, add an action.
             handlerData.action = async (
                 event: Event,
-                module: CoreCourseModuleData,
-                courseId: number,
+                courseModule: CoreCourseModuleData,
+                courseid: number,
                 options?: CoreNavigationOptions,
             ) => {
                 event.preventDefault();
                 event.stopPropagation();
 
-                await this.openActivityPage(module, courseId, options);
+                await this.openActivityPage(courseModule, courseid, options);
             };
         }
 

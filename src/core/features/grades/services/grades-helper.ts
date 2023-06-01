@@ -117,14 +117,15 @@ export class CoreGradesHelperProvider {
         const row: CoreGradesFormattedTableRow = {};
 
         if (!useLegacyLayout && 'leader' in tableRow) {
-            const row = {
-                itemtype: 'leader',
-                rowspan: tableRow.leader?.rowspan,
-            };
+            this.setRowStyleClasses(
+                {
+                    itemtype: 'leader',
+                    rowspan: tableRow.leader?.rowspan,
+                },
+                (tableRow.leader as CoreGradesTableLeaderColumn).class,
+            );
 
-            this.setRowStyleClasses(row, (tableRow.leader as CoreGradesTableLeaderColumn).class);
-
-            return row;
+            return { itemtype: 'leader', rowspan: tableRow.leader?.rowspan };
         }
 
         for (let name in tableRow) {
@@ -395,7 +396,7 @@ export class CoreGradesHelperProvider {
             return '';
         }
 
-        const grade = grades.find((grade) => grade.value == selectedGrade);
+        const grade = grades.find(({ value }) => value == selectedGrade);
 
         return grade ? grade.label : '';
     }
@@ -436,7 +437,7 @@ export class CoreGradesHelperProvider {
             return 0;
         }
 
-        const grade = grades.find((grade) => grade.label == selectedGrade);
+        const grade = grades.find(({ label }) => label == selectedGrade);
 
         return !grade || grade.value < 0
             ? 0
@@ -582,7 +583,7 @@ export class CoreGradesHelperProvider {
             const items = await CoreGrades.getGradeItems(courseId, userId, undefined, siteId);
 
             // Find the item of the module.
-            const item = Array.isArray(items) && items.find((item) => moduleId == item.cmid);
+            const item = Array.isArray(items) && items.find(({ cmid }) => moduleId == cmid);
 
             if (!item) {
                 throw new CoreError('Grade item not found.');

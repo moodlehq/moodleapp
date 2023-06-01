@@ -1032,7 +1032,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
             this.grade.scale = CoreUtils.makeMenuFromList(gradeInfo.scale, Translate.instant('core.nograde'));
 
             if (isSafeNumber(unreleasedGrade)) {
-                const scaleItem = this.grade.scale.find(scaleItem => scaleItem.value === unreleasedGrade);
+                const scaleItem = this.grade.scale.find(({ value }) => value === unreleasedGrade);
                 this.grade.unreleasedGrade = scaleItem?.label;
                 this.grade.grade = (scaleItem ?? this.grade.scale[0])?.value;
                 this.originalGrades.grade = this.grade.grade;
@@ -1160,7 +1160,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
             if (lastAttempt.submissiongroup) {
                 // Get the name of the group.
                 promises.push(CoreGroups.getActivityAllowedGroups(this.assign.cmid).then((result) => {
-                    const group = result.groups.find((group) => group.id === lastAttempt.submissiongroup);
+                    const group = result.groups.find(({ id }) => id === lastAttempt.submissiongroup);
                     if (group) {
                         lastAttempt.submissiongroupname = group.name;
                     }

@@ -314,10 +314,10 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
      * @param eventId Event ID.
      */
     protected undeleteEvent(eventId: number): void {
-        const event = this.onlineEvents.find((event) => event.id == eventId);
+        const onlineEvent = this.onlineEvents.find((event) => event.id == eventId);
 
-        if (event) {
-            event.deleted = false;
+        if (onlineEvent) {
+            onlineEvent.deleted = false;
         }
     }
 

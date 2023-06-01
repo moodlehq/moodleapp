@@ -1050,8 +1050,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
 
             // Scroll has changed, but maybe it hasn't reached the full height yet.
             setTimeout(() => {
-                const newScrollHeight = (this.scrollElement?.scrollHeight || 0);
-                const scrollTo = newScrollHeight - oldScrollBottom + infiniteHeight;
+                const scrollTo = (this.scrollElement?.scrollHeight || 0) - oldScrollBottom + infiniteHeight;
 
                 this.content!.scrollToPoint(0, scrollTo, 0);
             }, 30);

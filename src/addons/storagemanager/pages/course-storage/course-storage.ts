@@ -208,7 +208,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
                 }
 
                 // Get the affected section.
-                const section = this.sections.find(section => section.id == data.sectionId);
+                const section = this.sections.find(({ id }) => id == data.sectionId);
                 if (!section) {
                     return;
                 }
@@ -243,8 +243,8 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
             let module: AddonStorageManagerModule | undefined;
 
             this.sections.some((section) => {
-                module = section.modules.find((module) =>
-                    module.id == data.componentId && module.prefetchHandler && data.component == module.prefetchHandler?.component);
+                module = section.modules.find(({ id, prefetchHandler }) =>
+                    id == data.componentId && prefetchHandler && data.component == prefetchHandler?.component);
 
                 return !!module;
             });
@@ -319,7 +319,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
             this.changeDetectorRef.markForCheck();
 
             if (!section) {
-                section = this.sections.find((section) => section.modules.some((mod) => mod.id === module.id));
+                section = this.sections.find(({ modules: sectionModules }) => sectionModules.some((mod) => mod.id === module.id));
                 if (section) {
                     section.calculatingSize = true;
                     this.changeDetectorRef.markForCheck();
@@ -497,7 +497,7 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
 
             // For delete all, reset all section sizes so icons are updated.
             if (this.totalSize === 0) {
-                this.sections.map(section => section.totalSize = 0);
+                this.sections.map(courseSection => courseSection.totalSize = 0);
             }
             this.changeDetectorRef.markForCheck();
         }

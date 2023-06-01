@@ -48,11 +48,11 @@ export class CoreModuleHandlerBase implements Partial<CoreCourseModuleHandler> {
             hasCustomCmListItem: false,
             action: async (
                 event: Event,
-                module: CoreCourseModuleData,
-                courseId: number,
+                courseModule: CoreCourseModuleData,
+                id: number,
                 options?: CoreNavigationOptions,
             ): Promise<void> => {
-                await this.openActivityPage(module, courseId, options);
+                await this.openActivityPage(courseModule, id, options);
             },
         };
     }

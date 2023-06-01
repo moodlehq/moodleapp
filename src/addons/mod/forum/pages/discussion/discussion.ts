@@ -542,9 +542,9 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
             if (AddonModForum.isSetPinStateAvailableForSite() && this.forumId) {
                 // Use the canAddDiscussion WS to check if the user can pin discussions.
                 try {
-                    const response = await AddonModForum.canAddDiscussionToAll(this.forumId, { cmId: this.cmId });
+                    const result = await AddonModForum.canAddDiscussionToAll(this.forumId, { cmId: this.cmId });
 
-                    this.canPin = !!response.canpindiscussions;
+                    this.canPin = !!result.canpindiscussions;
                 } catch (error) {
                     this.canPin = false;
                 }

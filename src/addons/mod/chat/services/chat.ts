@@ -56,7 +56,7 @@ export class AddonModChatProvider {
 
         const response = await site.read<AddonModChatGetChatsByCoursesWSResponse>('mod_chat_get_chats_by_courses', params, preSets);
 
-        const chat = response.chats.find((chat) => chat.coursemodule == cmId);
+        const chat = response.chats.find(({ coursemodule }) => coursemodule == cmId);
         if (chat) {
             return chat;
         }

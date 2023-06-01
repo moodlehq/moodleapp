@@ -91,7 +91,7 @@ export class CoreSitePreferencesPage implements AfterViewInit, OnDestroy {
         try {
             await this.fetchData();
         } finally {
-            const handler = pageToOpen ? this.handlers.items.find(handler => handler.page == pageToOpen) : undefined;
+            const handler = pageToOpen ? this.handlers.items.find(({ page }) => page == pageToOpen) : undefined;
 
             if (handler) {
                 this.handlers.watchSplitViewOutlet(this.splitView);

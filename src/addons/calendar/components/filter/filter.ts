@@ -80,9 +80,9 @@ export class AddonCalendarFilterComponent implements OnInit {
      */
     onChange(): void {
         if (this.courseId > 0) {
-            const course = this.courses.find((course) => this.courseId == course.id);
-            this.filter.courseId = course?.id;
-            this.filter.categoryId = course?.categoryid;
+            const courseFound = this.courses.find((course) => this.courseId == course.id);
+            this.filter.courseId = courseFound?.id;
+            this.filter.categoryId = courseFound?.categoryid;
         } else {
             this.filter.courseId = undefined;
             this.filter.categoryId = undefined;

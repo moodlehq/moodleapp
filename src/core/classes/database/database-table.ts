@@ -463,7 +463,7 @@ export type CoreDatabaseConditions<DBRecord> = {
 export type CoreDatabaseColumnSorting<DBRecordColumn extends string | symbol | number> = {
     [Column in DBRecordColumn]:
     (Record<Column, 'asc' | 'desc'> & Partial<Record<Exclude<DBRecordColumn, Column>, never>>) extends infer ColumnSorting
-        ? { [Column in keyof ColumnSorting]: ColumnSorting[Column] }
+        ? { [SortedColumn in keyof ColumnSorting]: ColumnSorting[SortedColumn] }
         : never;
 }[DBRecordColumn];
 

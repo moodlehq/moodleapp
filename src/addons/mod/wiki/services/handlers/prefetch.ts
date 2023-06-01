@@ -140,7 +140,7 @@ export class AddonModWikiPrefetchHandlerService extends CoreCourseActivityPrefet
         return this.prefetchPackage(
             module,
             courseId,
-            (siteId) => this.prefetchWiki(module, courseId, !!single, downloadTime, siteId),
+            (id) => this.prefetchWiki(module, courseId, !!single, downloadTime, id),
             siteId,
         );
     }

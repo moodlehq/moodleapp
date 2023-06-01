@@ -71,7 +71,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
      * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     async syncAllForums(siteId?: string, force?: boolean): Promise<void> {
-        await this.syncOnSites('all forums', (siteId) => this.syncAllForumsFunc(!!force, siteId), siteId);
+        await this.syncOnSites('all forums', (id) => this.syncAllForumsFunc(!!force, id), siteId);
     }
 
     /**
@@ -242,7 +242,7 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
                     ? await AddonModForum.instance
                         .getForumById(discussion.courseid, discussion.forumid, { siteId })
                         .then(forum => CoreGroups.getActivityAllowedGroups(forum.cmid))
-                        .then(result => result.groups.map((group) => group.id))
+                        .then(({ groups }) => groups.map((group) => group.id))
                     : [discussion.groupid];
 
                 await Promise.all(groupIds.map(async groupId => {
@@ -291,12 +291,10 @@ export class AddonModForumSyncProvider extends CoreCourseActivitySyncBaseProvide
 
             if (result.updated) {
                 // Data has been sent to server. Now invalidate the WS calls.
-                const promises = [
+                await CoreUtils.ignoreErrors(Promise.all([
                     AddonModForum.invalidateDiscussionsList(forumId, siteId),
                     AddonModForum.invalidateCanAddDiscussion(forumId, siteId),
-                ];
-
-                await CoreUtils.ignoreErrors(Promise.all(promises));
+                ]));
             }
 
             // Sync finished, set sync time.

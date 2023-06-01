@@ -182,12 +182,12 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
         if (sync) {
             // Try to synchronize the course data.
             // For now we don't allow manual syncing, so ignore errors.
-            const result = await CoreUtils.ignoreErrors(CoreCourseSync.syncCourse(
+            const response = await CoreUtils.ignoreErrors(CoreCourseSync.syncCourse(
                 this.course.id,
                 this.course.displayname || this.course.fullname,
             ));
-            if (result?.warnings?.length) {
-                CoreDomUtils.showAlert(undefined, result.warnings[0].message);
+            if (response?.warnings?.length) {
+                CoreDomUtils.showAlert(undefined, response.warnings[0].message);
             }
         }
 

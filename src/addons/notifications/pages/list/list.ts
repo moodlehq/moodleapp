@@ -107,7 +107,7 @@ export class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
                 return;
             }
 
-            const notification = this.notifications.items.find((notification) => notification.id === data.id);
+            const notification = this.notifications.items.find(({ id }) => id === data.id);
             if (!notification) {
                 return;
             }

@@ -326,10 +326,10 @@ export class AddonModForumHelperProvider {
 
             if (response.discussions && response.discussions.length > 0) {
                 // Note that discussion.id is the main post ID but discussion ID is discussion.discussion.
-                const discussion = response.discussions.find((discussion) => discussion.discussion == discussionId);
+                const forumDiscussion = response.discussions.find((discussion) => discussion.discussion == discussionId);
 
-                if (discussion) {
-                    return discussion;
+                if (forumDiscussion) {
+                    return forumDiscussion;
                 }
 
                 if (response.canLoadMore) {

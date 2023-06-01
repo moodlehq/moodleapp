@@ -586,7 +586,7 @@ export class TestingBehatRuntimeService {
     async notificationIsPresentWithText(title: string): Promise<string> {
         const notifications = await LocalNotifications.getAllTriggered();
 
-        const notification = notifications.find((notification) => notification.title?.includes(title));
+        const notification = notifications.find(({ title: notificationTitle }) => notificationTitle?.includes(title));
 
         if (!notification) {
             return 'NO';
@@ -609,7 +609,7 @@ export class TestingBehatRuntimeService {
     async closeNotification(title: string): Promise<string> {
         const notifications = await LocalNotifications.getAllTriggered();
 
-        const notification = notifications.find((notification) => notification.title?.includes(title));
+        const notification = notifications.find(({ title: notificationTitle }) => notificationTitle?.includes(title));
 
         if (!notification || !notification.id) {
             return `ERROR: Notification with title ${title} cannot be closed`;

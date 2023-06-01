@@ -127,10 +127,10 @@ export class CoreLoginSitePage implements OnInit {
 
             if (search.length >= 3) {
                 // Update the sites list.
-                const sites = await CoreSites.findSites(search);
+                const sitesFound = await CoreSites.findSites(search);
 
                 // Add UI tweaks.
-                this.sites = this.extendCoreLoginSiteInfo(<CoreLoginSiteInfoExtended[]> sites);
+                this.sites = this.extendCoreLoginSiteInfo(<CoreLoginSiteInfoExtended[]> sitesFound);
 
                 this.hasSites = !!this.sites.length;
             } else {

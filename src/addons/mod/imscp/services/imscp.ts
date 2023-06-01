@@ -150,12 +150,12 @@ export class AddonModImscpProvider {
      * @returns File URL.
      */
     protected getFileUrlFromContents(items: CoreCourseModuleContentFile[], targetFilePath: string): string | undefined {
-        const item = items.find((item) => {
-            if (item.type != 'file') {
+        const item = items.find(({ type, filepath, filename }) => {
+            if (type != 'file') {
                 return false;
             }
 
-            const filePath = CorePath.concatenatePaths(item.filepath, item.filename);
+            const filePath = CorePath.concatenatePaths(filepath, filename);
             const filePathAlt = filePath.charAt(0) === '/' ? filePath.substring(1) : '/' + filePath;
 
             // Check if it's main file.

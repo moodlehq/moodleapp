@@ -232,18 +232,13 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
 
         // Prefetch the posts.
         promises.push(this.getPostsForPrefetch(forum, modOptions).then((posts) => {
-            const promises: Promise<unknown>[] = [];
-
             const files = this.getIntroFilesFromInstance(module, forum).concat(this.getPostsFiles(posts));
-            promises.push(CoreFilepool.addFilesToQueue(siteId, files, this.component, module.id));
 
-            // Prefetch groups data.
-            promises.push(this.prefetchGroupsInfo(forum, courseId, !!forum.cancreatediscussions, siteId));
-
-            // Prefetch avatars.
-            promises.push(CoreUser.prefetchUserAvatars(posts, 'userpictureurl', siteId));
-
-            return Promise.all(promises);
+            return Promise.all([
+                CoreFilepool.addFilesToQueue(siteId, files, this.component, module.id),
+                this.prefetchGroupsInfo(forum, courseId, !!forum.cancreatediscussions, siteId),
+                CoreUser.prefetchUserAvatars(posts, 'userpictureurl', siteId),
+            ]);
         }));
 
         // Prefetch access information.

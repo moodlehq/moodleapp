@@ -493,7 +493,7 @@ export class CoreH5PContentValidator {
                 }
 
                 // Find semantics for name=key.
-                const field = semantics.fields.find(field => field.name === key);
+                const field = semantics.fields.find(({ name }) => name === key);
                 let value: unknown = null;
 
                 if (field) {

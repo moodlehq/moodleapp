@@ -95,11 +95,11 @@ export class CoreGradesUserHandlerService implements CoreUserProfileHandler {
                 icon: 'fas-chart-bar',
                 title: 'core.grades.grades',
                 class: 'core-grades-user-handler',
-                action: (event, user, context, contextId): void => {
+                action: (event, userProfile, delegateContext, contextId): void => {
                     event.preventDefault();
                     event.stopPropagation();
                     CoreNavigator.navigateToSitePath(
-                        [COURSE_PAGE_NAME, contextId, PARTICIPANTS_PAGE_NAME, user.id, GRADES_PAGE_NAME].join('/'),
+                        [COURSE_PAGE_NAME, contextId, PARTICIPANTS_PAGE_NAME, userProfile.id, GRADES_PAGE_NAME].join('/'),
                     );
                 },
             };

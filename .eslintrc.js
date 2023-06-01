@@ -243,6 +243,8 @@ const appConfig = {
         'no-multiple-empty-lines': ['error', { "max": 1 }],
         'no-new-wrappers': 'error',
         'no-sequences': 'error',
+        'no-shadow': 'off',
+        '@typescript-eslint/no-shadow': 'error',
         'no-trailing-spaces': 'error',
         'no-unused-labels': 'error',
         'no-var': 'error',

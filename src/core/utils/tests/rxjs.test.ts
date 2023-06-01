@@ -48,7 +48,7 @@ describe('RXJS Utils', () => {
         // Act.
         control.setValue('two');
 
-        formControlValue<string>(control).subscribe(value => emited.push(value));
+        formControlValue<string>(control).subscribe(emittedValue => emited.push(emittedValue));
 
         control.setValue(null);
         control.setValue('three');

@@ -451,16 +451,16 @@ export class CoreWSProvider {
         }
 
         return promise.then(async (response) => {
-            let data = response.body;
+            let body = response.body;
 
             // Some moodle web services return null.
             // If the responseExpected value is set then so long as no data is returned, we create a blank object.
-            if (!data && !preSets.responseExpected) {
-                data = [{}];
+            if (!body && !preSets.responseExpected) {
+                body = [{}];
             }
 
             // Check if error. Ajax layer should always return an object (if error) or an array (if success).
-            if (!data || typeof data != 'object') {
+            if (!body || typeof body != 'object') {
                 const message = CoreSites.isLoggedIn()
                     ? Translate.instant('core.siteunavailablehelp', { site: CoreSites.getCurrentSite()?.siteUrl })
                     : Translate.instant('core.sitenotfoundhelp');
@@ -473,19 +473,19 @@ export class CoreWSProvider {
                         details: Translate.instant('core.errorinvalidresponse', { method }),
                     }),
                 });
-            } else if (data.error) {
-                throw new CoreAjaxWSError(data);
+            } else if (body.error) {
+                throw new CoreAjaxWSError(body);
             }
 
             // Get the first response since only one request was done.
-            data = data[0];
+            body = body[0];
 
-            if (data.error) {
-                throw new CoreAjaxWSError(data.exception);
+            if (body.error) {
+                throw new CoreAjaxWSError(body.exception);
             }
 
-            return data.data;
-        }, async (data: HttpErrorResponse) => {
+            return body.data;
+        }, async ({ status, error }: HttpErrorResponse) => {
             const message = CoreSites.isLoggedIn()
                 ? Translate.instant('core.siteunavailablehelp', { site: CoreSites.getCurrentSite()?.siteUrl })
                 : Translate.instant('core.sitenotfoundhelp');
@@ -500,33 +500,33 @@ export class CoreWSProvider {
                     case NativeHttp.ErrorCode.SSL_EXCEPTION:
                         options.errorcode = 'invalidcertificate';
                         options.errorDetails = Translate.instant('core.certificaterror', {
-                            details: CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Invalid certificate',
+                            details: CoreTextUtils.getErrorMessageFromError(error) ?? 'Invalid certificate',
                         });
                         break;
                     case NativeHttp.ErrorCode.SERVER_NOT_FOUND:
                         options.errorcode = 'servernotfound';
-                        options.errorDetails = CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Server could not be found';
+                        options.errorDetails = CoreTextUtils.getErrorMessageFromError(error) ?? 'Server could not be found';
                         break;
                     case NativeHttp.ErrorCode.TIMEOUT:
                         options.errorcode = 'requesttimeout';
-                        options.errorDetails = CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Request timed out';
+                        options.errorDetails = CoreTextUtils.getErrorMessageFromError(error) ?? 'Request timed out';
                         break;
                     case NativeHttp.ErrorCode.UNSUPPORTED_URL:
                         options.errorcode = 'unsupportedurl';
-                        options.errorDetails = CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Url not supported';
+                        options.errorDetails = CoreTextUtils.getErrorMessageFromError(error) ?? 'Url not supported';
                         break;
                     case NativeHttp.ErrorCode.NOT_CONNECTED:
                         options.errorcode = 'connectionerror';
-                        options.errorDetails = CoreTextUtils.getErrorMessageFromError(data.error)
+                        options.errorDetails = CoreTextUtils.getErrorMessageFromError(error)
                             ?? 'Connection error, is network available?';
                         break;
                     case NativeHttp.ErrorCode.ABORTED:
                         options.errorcode = 'requestaborted';
-                        options.errorDetails = CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Request aborted';
+                        options.errorDetails = CoreTextUtils.getErrorMessageFromError(error) ?? 'Request aborted';
                         break;
                     case NativeHttp.ErrorCode.POST_PROCESSING_FAILED:
                         options.errorcode = 'requestprocessingfailed';
-                        options.errorDetails = CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Request processing failed';
+                        options.errorDetails = CoreTextUtils.getErrorMessageFromError(error) ?? 'Request processing failed';
                         break;
                 }
             }
@@ -540,7 +540,7 @@ export class CoreWSProvider {
                         });
                         break;
                     default: {
-                        const details = CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Unknown error';
+                        const details = CoreTextUtils.getErrorMessageFromError(error) ?? 'Unknown error';
 
                         options.errorcode = 'serverconnectionajax';
                         options.errorDetails = Translate.instant('core.serverconnection', {
@@ -551,7 +551,7 @@ export class CoreWSProvider {
                 }
             }
 
-            throw new CoreAjaxError(options, 1, data.status);
+            throw new CoreAjaxError(options, 1, status);
         });
     }
 
@@ -824,7 +824,7 @@ export class CoreWSProvider {
         this.ongoingCalls[queueItemId] = promise;
 
         // HTTP not finished, but we should delete the promise after timeout.
-        const timeout = setTimeout(() => {
+        const callsDeletionTimeout = setTimeout(() => {
             delete this.ongoingCalls[queueItemId];
         }, this.getRequestTimeout());
 
@@ -832,7 +832,7 @@ export class CoreWSProvider {
         return promise.finally(() => {
             delete this.ongoingCalls[queueItemId];
 
-            clearTimeout(timeout);
+            clearTimeout(callsDeletionTimeout);
         });
     }
 

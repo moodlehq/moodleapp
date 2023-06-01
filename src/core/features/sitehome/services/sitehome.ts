@@ -53,7 +53,7 @@ export class CoreSiteHomeProvider {
         }
 
         const forums = await AddonModForum.getCourseForums(siteHomeId);
-        const forum = forums.find((forum) => forum.type == 'news');
+        const forum = forums.find(({ type }) => type == 'news');
 
         if (forum) {
             return forum;

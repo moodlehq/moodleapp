@@ -45,7 +45,7 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider<AddonNotesSyncR
      * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllNotes(siteId?: string, force?: boolean): Promise<void> {
-        return this.syncOnSites('all notes', (siteId) => this.syncAllNotesFunc(!!force, siteId), siteId);
+        return this.syncOnSites('all notes', (id) => this.syncAllNotesFunc(!!force, id), siteId);
     }
 
     /**
@@ -187,10 +187,9 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider<AddonNotesSyncR
             throw error;
         }).then(async () => {
             // Notes were sent, delete them from local DB.
-            const promises: Promise<void>[] = offlineNotes.map((note) =>
-                AddonNotesOffline.deleteOfflineNote(note.userid, note.content, note.created, siteId));
-
-            await Promise.all(promises);
+            await Promise.all(offlineNotes.map(
+                (note) => AddonNotesOffline.deleteOfflineNote(note.userid, note.content, note.created, siteId),
+            ));
 
             return;
         }));
@@ -211,9 +210,7 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider<AddonNotesSyncR
             throw error;
         }).then(async () => {
             // Notes were sent, delete them from local DB.
-            const promises = notesToDelete.map((noteId) => AddonNotesOffline.undoDeleteNote(noteId, siteId));
-
-            await Promise.all(promises);
+            await Promise.all(notesToDelete.map((noteId) => AddonNotesOffline.undoDeleteNote(noteId, siteId)));
 
             return;
         }));

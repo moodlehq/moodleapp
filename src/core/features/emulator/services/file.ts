@@ -544,8 +544,8 @@ export class FileMock extends File {
                 }
             };
 
-            fileEntry.file((file) => {
-                reader[`readAs${readAs}`].call(reader, file);
+            fileEntry.file((success) => {
+                reader[`readAs${readAs}`].call(reader, success);
             }, (error) => {
                 reject(error);
             });

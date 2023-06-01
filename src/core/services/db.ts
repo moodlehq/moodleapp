@@ -59,7 +59,7 @@ export class CoreDbProvider {
             .replace(':dbname', dbName)
             .replace(':sql', Object
                 .values(params ?? [])
-                .reduce((sql: string, param: string) => sql.replace('?', param) as string, sql) as string)
+                .reduce((query: string, param: string) => query.replace('?', param) as string, sql) as string)
             .replace(':duration', `${Math.round(duration).toString().padStart(4, '0')}ms`)
             .replace(':result', error?.message ?? 'Success');
 

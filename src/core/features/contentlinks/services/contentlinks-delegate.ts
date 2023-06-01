@@ -188,13 +188,13 @@ export class CoreContentLinksDelegateService {
             }
 
             // Filter the site IDs using the isEnabled function.
-            promises.push(CoreUtils.filterEnabledSites(siteIds, isEnabledFn, checkAll).then(async (siteIds) => {
-                if (!siteIds.length) {
+            promises.push(CoreUtils.filterEnabledSites(siteIds, isEnabledFn, checkAll).then(async (ids) => {
+                if (!ids.length) {
                     // No sites supported, no actions.
                     return;
                 }
 
-                const actions = await handler.getActions(siteIds, relativeUrl, params, courseId, data);
+                const actions = await handler.getActions(ids, relativeUrl, params, courseId, data);
 
                 if (actions && actions.length) {
                     // Set default values if any value isn't supplied.
@@ -206,9 +206,9 @@ export class CoreContentLinksDelegateService {
                         // Wrap the action function in our own function to treat logged out sites.
                         const actionFunction = action.action;
                         action.action = async (siteId) => {
-                            const site = await CoreSites.getSite(siteId);
+                            const siteFound = await CoreSites.getSite(siteId);
 
-                            if (!site.isLoggedOut()) {
+                            if (!siteFound.isLoggedOut()) {
                                 // Call the action now.
                                 return actionFunction(siteId);
                             }

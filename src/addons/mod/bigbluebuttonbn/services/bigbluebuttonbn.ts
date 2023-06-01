@@ -84,7 +84,7 @@ export class AddonModBBBService {
             preSets,
         );
 
-        const bbb = response.bigbluebuttonbns.find((bbb) => bbb.coursemodule == cmId);
+        const bbb = response.bigbluebuttonbns.find(({ coursemodule }) => coursemodule == cmId);
         if (bbb) {
             return bbb;
         }

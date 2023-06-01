@@ -428,18 +428,17 @@ export class AddonModAssignHelperProvider {
             submissions = submissions.filter((submission) => submission.userid == 0);
         }
 
-        return participants.map((participant) => {
-            const groupId = participant.groupid ??
-                (participant.groups && participant.groups[0] ? participant.groups[0].id : 0);
+        return participants.map(({ groupid, groups, groupname, id, submitted, fullname, profileimageurl }) => {
+            const participantGroupId = groupid ?? (groups && groups[0] ? groups[0].id : 0);
 
             const foundSubmission = submissions.find((submission) => {
                 if (teamsubmission) {
-                    return submission.groupid == groupId;
+                    return submission.groupid == participantGroupId;
                 }
 
                 const submitId = submission.userid && submission.userid > 0 ? submission.userid : submission.blindid;
 
-                return participant.id == submitId;
+                return id == submitId;
             });
 
             let submission: AddonModAssignSubmissionFormatted | undefined;
@@ -447,28 +446,28 @@ export class AddonModAssignHelperProvider {
                 // Create submission if none.
                 submission = this.createEmptySubmission();
                 submission.groupid = groupId;
-                submission.status = participant.submitted
+                submission.status = submitted
                     ? AddonModAssignSubmissionStatusValues.SUBMITTED
                     : AddonModAssignSubmissionStatusValues.NEW;
             } else {
                 submission = Object.assign({}, foundSubmission);
             }
 
-            submission.submitid = participant.id;
+            submission.submitid = id;
 
             if (!blind) {
-                submission.userid = participant.id;
-                submission.userfullname = participant.fullname;
-                submission.userprofileimageurl = participant.profileimageurl;
+                submission.userid = id;
+                submission.userfullname = fullname;
+                submission.userprofileimageurl = profileimageurl;
             } else {
-                submission.blindid = participant.id;
+                submission.blindid = id;
             }
 
-            submission.manyGroups = !!participant.groups && participant.groups.length > 1;
-            submission.noGroups = !!participant.groups && participant.groups.length == 0;
-            if (participant.groupname) {
-                submission.groupid = participant.groupid;
-                submission.groupname = participant.groupname;
+            submission.manyGroups = !!groups && groups.length > 1;
+            submission.noGroups = !!groups && groups.length == 0;
+            if (groupname) {
+                submission.groupid = groupid;
+                submission.groupname = groupname;
             }
 
             return submission;

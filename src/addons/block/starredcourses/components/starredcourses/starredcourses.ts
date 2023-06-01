@@ -131,11 +131,8 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
         // Get the courses using getCoursesByField to get more info about each course.
         const courses = await CoreCourses.getCoursesByField('ids', courseIds.join(','));
 
-        this.courses = starredCourses.map((recentCourse) => {
-            const course = courses.find((course) => recentCourse.id == course.id);
-
-            return Object.assign(recentCourse, course);
-        });
+        this.courses = starredCourses.map((recentCourse) =>
+            Object.assign(recentCourse, courses.find((course) => recentCourse.id == course.id)));
 
         // Get course options and extra info.
         const options = await CoreCourses.getCoursesAdminAndNavOptions(courseIds);

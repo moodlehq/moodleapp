@@ -908,22 +908,22 @@ export class CoreDomUtilsProvider {
 
         // Treat elements with src (img, audio, video, ...).
         const media = Array.from(element.querySelectorAll('img, video, audio, source, track'));
-        media.forEach((media: HTMLElement) => {
-            const currentSrc = media.getAttribute('src');
+        media.forEach((mediaHtmlElement: HTMLElement) => {
+            const currentSrc = mediaHtmlElement.getAttribute('src');
             const newSrc = currentSrc ?
                 paths[CoreUrlUtils.removeUrlParams(CoreTextUtils.decodeURIComponent(currentSrc))] :
                 undefined;
 
             if (newSrc !== undefined) {
-                media.setAttribute('src', newSrc);
+                mediaHtmlElement.setAttribute('src', newSrc);
             }
 
             // Treat video posters.
-            const currentPoster = media.getAttribute('poster');
-            if (media.tagName == 'VIDEO' && currentPoster) {
+            const currentPoster = mediaHtmlElement.getAttribute('poster');
+            if (mediaHtmlElement.tagName == 'VIDEO' && currentPoster) {
                 const newPoster = paths[CoreTextUtils.decodeURIComponent(currentPoster)];
                 if (newPoster !== undefined) {
-                    media.setAttribute('poster', newPoster);
+                    mediaHtmlElement.setAttribute('poster', newPoster);
                 }
             }
         });

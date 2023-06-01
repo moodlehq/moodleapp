@@ -152,7 +152,7 @@ export class AddonModWorkshopHelperProvider {
         } catch {
             const submissions = await AddonModWorkshop.getSubmissions(workshopId, options);
 
-            const submission = submissions.find((submission) => submission.id == submissionId);
+            const submission = submissions.find(({ id }) => id == submissionId);
 
             if (!submission) {
                 throw new CoreError('Submission not found');

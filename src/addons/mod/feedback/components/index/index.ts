@@ -485,7 +485,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
 
             this.warning = '';
             if (analysis.warnings?.length) {
-                const warning = analysis.warnings.find((warning) => warning.warningcode == 'insufficientresponsesforthisgroup');
+                const warning = analysis.warnings.find(({ warningcode }) => warningcode == 'insufficientresponsesforthisgroup');
                 this.warning = warning?.message;
             }
         }

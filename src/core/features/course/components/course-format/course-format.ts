@@ -152,9 +152,9 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             let section: CoreCourseSection | undefined;
 
             if (data.sectionId !== undefined && this.sections) {
-                section = this.sections.find((section) => section.id == data.sectionId);
+                section = this.sections.find(({ id }) => id == data.sectionId);
             } else if (data.sectionNumber !== undefined && this.sections) {
-                section = this.sections.find((section) => section.section == data.sectionNumber);
+                section = this.sections.find(({ section: sectionNumber }) => sectionNumber == data.sectionNumber);
             }
 
             if (section) {
@@ -301,14 +301,14 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             this.sectionChanged(sections[0]);
         } else if (this.initialSectionId || this.initialSectionNumber !== undefined) {
             // We have an input indicating the section ID to load. Search the section.
-            const section = sections.find((section) =>
+            const sectionFound = sections.find((section) =>
                 section.id == this.initialSectionId ||
                     (section.section !== undefined && section.section == this.initialSectionNumber));
 
             // Don't load the section if it cannot be viewed by the user.
-            if (section && this.canViewSection(section)) {
+            if (sectionFound && this.canViewSection(sectionFound)) {
                 this.loaded = true;
-                this.sectionChanged(section);
+                this.sectionChanged(sectionFound);
             }
         } else if (this.initialBlockInstanceId && this.displayBlocks && this.hasBlocks) {
             CoreDomUtils.openSideModal({
@@ -408,14 +408,14 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         const scroll = await this.content.getScrollElement();
         const containerTop = scroll.getBoundingClientRect().top;
 
-        const element = Array.from(allSectionElements).find((element) => {
+        const elementFound = Array.from(allSectionElements).find((element) => {
             const position = element.getBoundingClientRect();
 
             // The bottom is inside the container or lower.
             return position.bottom >= containerTop;
         });
 
-        return Number(element?.getAttribute('id')) || undefined;
+        return Number(elementFound?.getAttribute('id')) || undefined;
     }
 
     /**
@@ -436,7 +436,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         if (!data) {
             return;
         }
-        const section = this.sections.find((section) => section.id == data.sectionId);
+        const section = this.sections.find(({ id }) => id == data.sectionId);
         if (!section) {
             return;
         }
@@ -445,7 +445,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         if (!data.moduleId) {
             return;
         }
-        const module = section.modules.find((module) => module.id == data.moduleId);
+        const module = section.modules.find(({ id }) => id == data.moduleId);
         if (!module) {
             return;
         }

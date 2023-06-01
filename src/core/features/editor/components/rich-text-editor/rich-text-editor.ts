@@ -407,27 +407,27 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
          * @param chars.count Count of characters.
          * @returns Selection range.
          */
-        const setRange = (node: Node, range: Range, chars: { count: number }): Range => {
-            if (chars.count === 0) {
+        const setRange = (node: Node, range: Range, characters: { count: number }): Range => {
+            if (characters.count === 0) {
                 range.setEnd(node, 0);
-            } else if (node && chars.count > 0) {
+            } else if (node && characters.count > 0) {
                 if (node.hasChildNodes()) {
                     // Navigate through children.
                     for (let lp = 0; lp < node.childNodes.length; lp++) {
-                        range = setRange(node.childNodes[lp], range, chars);
+                        range = setRange(node.childNodes[lp], range, characters);
 
-                        if (chars.count === 0) {
+                        if (characters.count === 0) {
                             break;
                         }
                     }
-                } else if ((node.textContent || '').length < chars.count) {
+                } else if ((node.textContent || '').length < characters.count) {
                     // Jump this node.
                     // @todo empty nodes will be omitted.
-                    chars.count -= (node.textContent || '').length;
+                    characters.count -= (node.textContent || '').length;
                 } else {
                     // The cursor will be placed in this element.
-                    range.setEnd(node, chars.count);
-                    chars.count = 0;
+                    range.setEnd(node, characters.count);
+                    characters.count = 0;
                 }
             }
 
@@ -1164,7 +1164,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
                 },
             ];
 
-            this.shortcutCommands = shortcuts.reduce((shortcuts, { code, modifiers, command }) => {
+            this.shortcutCommands = shortcuts.reduce((hotkeys, { code, modifiers, command }) => {
                 const id = this.getShortcutId({
                     code: code,
                     altKey: modifiers.includes('altKey'),
@@ -1173,9 +1173,9 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
                     ctrlKey: modifiers.includes('ctrlKey'),
                 });
 
-                shortcuts[id] = command;
+                hotkeys[id] = command;
 
-                return shortcuts;
+                return hotkeys;
             }, {} as Record<string, EditorCommand>);
         }
 

@@ -119,12 +119,13 @@ export function buildRegExpUrlMatcher(regexp: RegExp): UrlMatcher {
         }
 
         // Consume segments that match.
-        const [consumedSegments, consumedPath] = segments.slice(1).reduce(([segments, path], segment) => path === match
-            ? [segments, path]
-            : [
-                segments.concat(segment),
-                `${path}/${segment.path}`,
-            ], [[segments[0]] as UrlSegment[], segments[0].path]);
+        const [consumedSegments, consumedPath] = segments.slice(1).reduce(([prevSegments, routePath], segment) =>
+            routePath === match
+                ? [prevSegments, routePath]
+                : [
+                    prevSegments.concat(prevSegments),
+                    `${routePath}/${segment.path}`,
+                ], [[segments[0]] as UrlSegment[], segments[0].path]);
 
         if (consumedPath !== match) {
             return null;

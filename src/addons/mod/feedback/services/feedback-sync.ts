@@ -65,7 +65,7 @@ export class AddonModFeedbackSyncProvider extends CoreCourseActivitySyncBaseProv
      * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllFeedbacks(siteId?: string, force?: boolean): Promise<void> {
-        return this.syncOnSites('all feedbacks', (siteId) => this.syncAllFeedbacksFunc(!!force, siteId), siteId);
+        return this.syncOnSites('all feedbacks', (id) => this.syncAllFeedbacksFunc(!!force, id), siteId);
     }
 
     /**

@@ -568,18 +568,18 @@ export class CoreCourseHelperProvider {
             // Check if the section has embedded files in the description.
             hasEmbeddedFiles = CoreFilepool.extractDownloadableFilesFromHtml(section.summary).length > 0;
         } else if (sections) {
-            await Promise.all(sections.map(async (section) => {
-                if (section.id == CoreCourseProvider.ALL_SECTIONS_ID) {
+            await Promise.all(sections.map(async (item) => {
+                if (item.id == CoreCourseProvider.ALL_SECTIONS_ID) {
                     return;
                 }
 
-                const sectionSize = await CoreCourseModulePrefetchDelegate.getDownloadSize(section.modules, courseId);
+                const sectionSize = await CoreCourseModulePrefetchDelegate.getDownloadSize(item.modules, courseId);
 
                 sizeSum.total = sizeSum.total && sectionSize.total;
                 sizeSum.size += sectionSize.size;
 
                 // Check if the section has embedded files in the description.
-                if (!hasEmbeddedFiles && CoreFilepool.extractDownloadableFilesFromHtml(section.summary).length > 0) {
+                if (!hasEmbeddedFiles && CoreFilepool.extractDownloadableFilesFromHtml(item.summary).length > 0) {
                     hasEmbeddedFiles = true;
                 }
             }));
@@ -1784,16 +1784,16 @@ export class CoreCourseHelperProvider {
         let allSectionsStatus = CoreConstants.NOT_DOWNLOADABLE;
 
         section.isDownloading = true;
-        const promises = sections.map(async (section) => {
-            if (section.id == CoreCourseProvider.ALL_SECTIONS_ID) {
+        const promises = sections.map(async (item) => {
+            if (item.id == CoreCourseProvider.ALL_SECTIONS_ID) {
                 return;
             }
 
             try {
-                await this.prefetchSingleSectionIfNeeded(section, courseId);
+                await this.prefetchSingleSectionIfNeeded(item, courseId);
             } finally {
                 // Calculate the status of the section that finished.
-                const result = await this.calculateSectionStatus(section, courseId, false, false);
+                const result = await this.calculateSectionStatus(item, courseId, false, false);
 
                 // Calculate "All sections" status.
                 allSectionsStatus = CoreFilepool.determinePackagesStatus(allSectionsStatus, result.statusData.status);

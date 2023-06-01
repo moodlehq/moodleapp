@@ -55,7 +55,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
      * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     async syncAllEvents(siteId?: string, force = false): Promise<void> {
-        await this.syncOnSites('all calendar events', (siteId) => this.syncAllEventsFunc(force, siteId), siteId);
+        await this.syncOnSites('all calendar events', (id) => this.syncAllEventsFunc(force, id), siteId);
     }
 
     /**
@@ -146,12 +146,10 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
             if (result.updated) {
 
                 // Data has been sent to server. Now invalidate the WS calls.
-                const promises = [
+                await CoreUtils.ignoreErrors(Promise.all([
                     AddonCalendar.invalidateEventsList(siteId),
                     AddonCalendarHelper.refreshAfterChangeEvents(result.toinvalidate, siteId),
-                ];
-
-                await CoreUtils.ignoreErrors(Promise.all(promises));
+                ]));
             }
         }
 

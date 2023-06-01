@@ -257,23 +257,24 @@ export class AddonModWorkshopProvider {
             preSets,
         );
 
-        const workshop = response.workshops.find((workshop) => workshop[key] == value);
-        if (!workshop) {
+        const workshopFound = response.workshops.find((workshop) => workshop[key] == value);
+
+        if (!workshopFound) {
             throw new CoreError(Translate.instant('core.course.modulenotfound'));
         }
 
         // Set submission types for Moodle 3.5.
-        if (workshop.submissiontypetext === undefined) {
-            if (workshop.nattachments !== undefined && workshop.nattachments > 0) {
-                workshop.submissiontypetext = AddonModWorkshopSubmissionType.SUBMISSION_TYPE_AVAILABLE;
-                workshop.submissiontypefile = AddonModWorkshopSubmissionType.SUBMISSION_TYPE_AVAILABLE;
+        if (workshopFound.submissiontypetext === undefined) {
+            if (workshopFound.nattachments !== undefined && workshopFound.nattachments > 0) {
+                workshopFound.submissiontypetext = AddonModWorkshopSubmissionType.SUBMISSION_TYPE_AVAILABLE;
+                workshopFound.submissiontypefile = AddonModWorkshopSubmissionType.SUBMISSION_TYPE_AVAILABLE;
             } else {
-                workshop.submissiontypetext = AddonModWorkshopSubmissionType.SUBMISSION_TYPE_REQUIRED;
-                workshop.submissiontypefile = AddonModWorkshopSubmissionType.SUBMISSION_TYPE_DISABLED;
+                workshopFound.submissiontypetext = AddonModWorkshopSubmissionType.SUBMISSION_TYPE_REQUIRED;
+                workshopFound.submissiontypefile = AddonModWorkshopSubmissionType.SUBMISSION_TYPE_DISABLED;
             }
         }
 
-        return workshop;
+        return workshopFound;
     }
 
     /**

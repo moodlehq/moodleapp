@@ -45,7 +45,7 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
      * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllComments(siteId?: string, force?: boolean): Promise<void> {
-        return this.syncOnSites('all comments', (siteId) => this.syncAllCommentsFunc(!!force, siteId), siteId);
+        return this.syncOnSites('all comments', (id) => this.syncAllCommentsFunc(!!force, id), siteId);
     }
 
     /**

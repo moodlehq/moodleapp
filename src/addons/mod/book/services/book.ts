@@ -98,9 +98,9 @@ export class AddonModBookProvider {
         const response: AddonModBookGetBooksByCoursesWSResponse = await site.read('mod_book_get_books_by_courses', params, preSets);
 
         // Search the book.
-        const book = response.books.find((book) => book[key] == value);
-        if (book) {
-            return book;
+        const bookFound = response.books.find((book) => book[key] == value);
+        if (bookFound) {
+            return bookFound;
         }
 
         throw new CoreError(Translate.instant('core.course.modulenotfound'));

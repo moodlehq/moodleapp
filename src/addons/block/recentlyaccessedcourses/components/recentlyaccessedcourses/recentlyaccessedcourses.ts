@@ -144,11 +144,8 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
         // Get the courses using getCoursesByField to get more info about each course.
         const courses = await CoreCourses.getCoursesByField('ids', courseIds.join(','));
 
-        this.courses = recentCourses.map((recentCourse) => {
-            const course = courses.find((course) => recentCourse.id == course.id);
-
-            return Object.assign(recentCourse, course);
-        });
+        this.courses = recentCourses.map((recentCourse) =>
+            Object.assign(recentCourse, courses.find((course) => recentCourse.id == course.id)));
 
         // Get course options and extra info.
         const options = await CoreCourses.getCoursesAdminAndNavOptions(courseIds);

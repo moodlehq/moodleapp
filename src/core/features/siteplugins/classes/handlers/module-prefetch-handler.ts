@@ -58,7 +58,7 @@ export class CoreSitePluginsModulePrefetchHandler extends CoreCourseActivityPref
         return this.prefetchPackage(
             module,
             courseId,
-            (siteId) => this.downloadPrefetchPlugin(module, courseId, false, dirPath, siteId),
+            (id) => this.downloadPrefetchPlugin(module, courseId, false, dirPath, id),
             siteId,
         );
     }

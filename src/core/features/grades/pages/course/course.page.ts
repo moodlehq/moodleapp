@@ -200,7 +200,7 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
             await this.fetchGrades();
 
             if (this.gradeId && this.rows) {
-                const row = this.rows.find((row) => row.id == this.gradeId);
+                const row = this.rows.find(({ id }) => id == this.gradeId);
 
                 if (row) {
                     this.toggleRow(row, true);

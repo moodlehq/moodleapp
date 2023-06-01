@@ -78,9 +78,10 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
             AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT,
             (data) => {
                 if (data.userBlocked || data.userUnblocked) {
-                    const user = this.confirmedContacts.find((user) => user.id == data.userId);
-                    if (user) {
-                        user.isblocked = !!data.userBlocked;
+                    const userFound = this.confirmedContacts.find((user) => user.id == data.userId);
+
+                    if (userFound) {
+                        userFound.isblocked = !!data.userBlocked;
                     }
                 } else if (data.contactRemoved) {
                     const index = this.confirmedContacts.findIndex((contact) => contact.id == data.userId);

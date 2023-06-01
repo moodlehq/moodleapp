@@ -329,7 +329,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
     protected async prefetchParticipantSubmissions(
         assign: AddonModAssignAssign,
         canviewsubmissions: boolean,
-        submissions: AddonModAssignSubmission[] = [],
+        assignSubmissions: AddonModAssignSubmission[] = [],
         moduleId: number,
         courseId: number,
         userId: number,
@@ -359,7 +359,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
         }
 
         const promises = groupInfo.groups.map((group) =>
-            AddonModAssignHelper.getSubmissionsUserData(assign, submissions, group.id, options)
+            AddonModAssignHelper.getSubmissionsUserData(assign, assignSubmissions, group.id, options)
                 .then((submissions: AddonModAssignSubmissionFormatted[]) => {
 
                     const subPromises: Promise<unknown>[] = submissions.map((submission) => {

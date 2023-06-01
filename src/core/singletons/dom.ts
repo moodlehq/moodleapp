@@ -166,7 +166,7 @@ export class CoreDom {
         }
 
         const slots = content.shadowRoot.querySelectorAll('slot');
-        const slot = Array.from(slots).find((slot) => slot.name === slotName);
+        const slot = Array.from(slots).find(({ name }) => name === slotName);
 
         if (!slot) {
             // Slot not found.
@@ -333,9 +333,9 @@ export class CoreDom {
         return new CoreCancellablePromise<void>(
             (resolve) => {
                 observer = new MutationObserver(() => {
-                    const root = element.getRootNode({ composed: true });
+                    const rootNode = element.getRootNode({ composed: true });
 
-                    if (root !== document) {
+                    if (rootNode !== document) {
                         return;
                     }
 
@@ -436,8 +436,8 @@ export class CoreDom {
             return () => clearInterval(interval);
         }
 
-        const observer = new IntersectionObserver(([{ isIntersecting, intersectionRatio }]) => {
-            setVisible(isIntersecting && intersectionRatio >= intersectionRatio);
+        const observer = new IntersectionObserver(([{ isIntersecting, intersectionRatio: intersection }]) => {
+            setVisible(isIntersecting && intersection >= intersection);
         });
 
         observer.observe(element);

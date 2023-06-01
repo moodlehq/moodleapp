@@ -49,12 +49,12 @@ export class CoreSettingsSpaceUsagePage implements OnInit, OnDestroy {
                 : undefined;
 
             if (!siteEntry) {
-                siteEntry = this.accountsList.sameSite.find((siteEntry) => siteEntry.id === siteId);
+                siteEntry = this.accountsList.sameSite.find(({ id }) => id === siteId);
             }
 
             if (!siteEntry) {
                 this.accountsList.otherSites.some((sites) => {
-                    siteEntry = sites.find((siteEntry) => siteEntry.id === siteId);
+                    siteEntry = sites.find(({ id }) => id === siteId);
 
                     return siteEntry;
                 });

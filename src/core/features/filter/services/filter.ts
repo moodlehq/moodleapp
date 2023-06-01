@@ -433,8 +433,8 @@ export class CoreFilterProvider {
             result.hadSystemContext = true;
 
             // Use course site home instead. Check if it's already in the list.
-            result.hadSiteHomeContext = contexts.some((context) =>
-                context.contextlevel == 'course' && context.instanceid == site.getSiteHomeId());
+            result.hadSiteHomeContext = contexts.some(({ contextlevel, instanceid }) =>
+                contextlevel == 'course' && instanceid == site.getSiteHomeId());
 
             if (result.hadSiteHomeContext) {
                 // Site home is already in list, remove this context from the list.

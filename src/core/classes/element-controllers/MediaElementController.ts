@@ -117,13 +117,13 @@ export class MediaElementController extends ElementController {
         const player = await this.searchJSPlayer();
 
         if (!player) {
-            this.jsPlayerListener = CoreEvents.on(VIDEO_JS_PLAYER_CREATED, ({ element, player }) => {
+            this.jsPlayerListener = CoreEvents.on(VIDEO_JS_PLAYER_CREATED, ({ element, player: createdPlayer }) => {
                 if (element !== media) {
                     return;
                 }
 
                 this.jsPlayerListener?.off();
-                this.jsPlayer.resolve(player);
+                this.jsPlayer.resolve(createdPlayer);
             });
 
             return;

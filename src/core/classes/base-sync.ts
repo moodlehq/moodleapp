@@ -291,7 +291,7 @@ export class CoreSyncBaseProvider<T = void> {
         }
 
         // Execute function for every site.
-        await Promise.all(siteIds.map((siteId) => syncFunction(siteId)));
+        await Promise.all(siteIds.map((id) => syncFunction(id)));
     }
 
     /**

@@ -1134,7 +1134,7 @@ export class AddonModScormProvider {
 
         // If the SCORM isn't available the WS returns a warning and it doesn't return timeopen and timeclosed.
         if (currentScorm.timeopen === undefined) {
-            const warning = response.warnings?.find(warning => warning.itemid === currentScorm.id);
+            const warning = response.warnings?.find(({ itemid }) => itemid === currentScorm.id);
             currentScorm.warningMessage = warning?.message;
         }
 
@@ -1668,11 +1668,11 @@ export class AddonModScormProvider {
                 return false;
             }
 
-            const isOutdated = data.status == CoreConstants.OUTDATED ||
+            const isOutdatedData = data.status == CoreConstants.OUTDATED ||
                     (data.status == CoreConstants.DOWNLOADING && data.previous == CoreConstants.OUTDATED);
 
             // Package needs to be downloaded if it's not outdated (not downloaded) or if the hash has changed.
-            return !isOutdated || data.extra != scorm.sha1hash;
+            return !isOutdatedData || data.extra != scorm.sha1hash;
 
         } else if (isOutdated) {
             // The package is outdated, but maybe the file hasn't changed.

@@ -109,6 +109,9 @@ export function firstValueFrom<T>(observable: Observable<T>): Promise<T> {
  */
 export function ignoreErrors<Result>(observable: Observable<Result>): Observable<Result | undefined>;
 export function ignoreErrors<Result, Fallback>(observable: Observable<Result>, fallback: Fallback): Observable<Result | Fallback>;
+/**
+ *
+ */
 export function ignoreErrors<Result, Fallback>(
     observable: Observable<Result>,
     fallback?: Fallback,
@@ -164,7 +167,7 @@ export function zipIncludingComplete<T extends Observable<unknown>[]>(
                     hasCompleted = true;
 
                     // Emit all pending values.
-                    const maxValues = observablesData.reduce((maxValues, data) => Math.max(maxValues, data.values.length), 0);
+                    const maxValues = observablesData.reduce((prevValues, data) => Math.max(prevValues, data.values.length), 0);
                     while (nextIndex < maxValues) {
                         emitNextValue();
                         nextIndex++;

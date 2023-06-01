@@ -318,9 +318,9 @@ export class AddonModQuizReviewPage implements OnInit {
         }
 
         // Treat additional data.
-        this.additionalData.forEach((data) => {
+        this.additionalData.forEach((additionalData) => {
             // Remove help links from additional data.
-            data.content = CoreDomUtils.removeElementFromHtml(data.content, '.helptooltip');
+            additionalData.content = CoreDomUtils.removeElementFromHtml(additionalData.content, '.helptooltip');
         });
     }
 

@@ -85,17 +85,17 @@ describe('CoreSubscriptions singleton', () => {
     });
 
     it('allows unsubscribing from outside the once function', async () => {
-        const subject = new Subject();
-        const success = jest.fn();
-        const error = jest.fn();
+        const newSubject = new Subject();
+        const newSuccess = jest.fn();
+        const newError = jest.fn();
 
-        const unsubscribe = CoreSubscriptions.once(subject, success, error);
+        const unsubscribe = CoreSubscriptions.once(newSubject, success, error);
         unsubscribe();
 
         subject.next('foo');
         subject.error('bar');
-        expect(success).not.toHaveBeenCalled();
-        expect(error).not.toHaveBeenCalled();
+        expect(newSuccess).not.toHaveBeenCalled();
+        expect(newError).not.toHaveBeenCalled();
     });
 
 });

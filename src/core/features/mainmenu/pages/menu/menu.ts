@@ -175,7 +175,7 @@ export class CoreMainMenuPage implements OnInit, OnDestroy {
             const handler = handlers[i];
 
             // Check if the handler is already in the tabs list. If so, use it.
-            const tab = this.tabs.find((tab) => tab.page == handler.page);
+            const tab = this.tabs.find(({ page }) => page == handler.page);
 
             tab ? tab.hide = false : null;
             handler.hide = false;

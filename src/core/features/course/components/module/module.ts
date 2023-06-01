@@ -124,20 +124,24 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
                 return;
             }
 
-            this.moduleStatusObserver = CoreEvents.on(CoreEvents.PACKAGE_STATUS_CHANGED, (data) => {
-                if (this.module.id != data.componentId || data.component != this.prefetchHandler?.component) {
-                    return;
-                }
+            this.moduleStatusObserver = CoreEvents.on(
+                CoreEvents.PACKAGE_STATUS_CHANGED,
+                ({ status: packageStatus, component, componentId }) => {
+                    if (this.module.id != componentId || component != this.prefetchHandler?.component) {
+                        return;
+                    }
 
-                let status = data.status;
-                if (this.prefetchHandler.determineStatus) {
+                    if (this.prefetchHandler.determineStatus) {
                     // Call determineStatus to get the right status to display.
-                    status = this.prefetchHandler.determineStatus(this.module, status, true);
-                }
+                        packageStatus = this.prefetchHandler.determineStatus(this.module, packageStatus, true);
+                    }
 
-                // Update the status.
-                this.updateModuleStatus(status);
-            }, CoreSites.getCurrentSiteId());
+                    // Update the status.
+                    this.updateModuleStatus(packageStatus);
+                },
+
+                CoreSites.getCurrentSiteId(),
+            );
         }
     }
 

@@ -333,8 +333,8 @@ export class CoreUrl {
         let privacyHash: string | undefined | null = matches[3];
         if (!privacyHash) {
             // No privacy hash using the new format. Check the legacy format.
-            const matches = url.match(/https?:\/\/player\.vimeo\.com\/video\/([0-9]+)(\/([a-zA-Z0-9]+))?/);
-            privacyHash = matches && matches[3];
+            const urlMatches = url.match(/https?:\/\/player\.vimeo\.com\/video\/([0-9]+)(\/([a-zA-Z0-9]+))?/);
+            privacyHash = urlMatches && urlMatches[3];
         }
 
         if (privacyHash) {

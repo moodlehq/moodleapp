@@ -66,7 +66,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
      * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllDatabases(siteId?: string, force?: boolean): Promise<void> {
-        return this.syncOnSites('all databases', (siteId) => this.syncAllDatabasesFunc(!!force, siteId), siteId);
+        return this.syncOnSites('all databases', (id) => this.syncAllDatabasesFunc(!!force, id), siteId);
     }
 
     /**
@@ -371,13 +371,13 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
                 }));
 
                 if (editAction.action == AddonModDataAction.ADD) {
-                    const result = await AddonModData.addEntryOnline(
+                    const response = await AddonModData.addEntryOnline(
                         editAction.dataid,
                         editAction.fields,
                         editAction.groupid,
                         siteId,
                     );
-                    entryId = result.newentryid;
+                    entryId = response.newentryid;
                     entryResult.entryId = entryId;
                 } else {
                     await AddonModData.editEntryOnline(entryId, editAction.fields, siteId);

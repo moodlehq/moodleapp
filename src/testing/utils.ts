@@ -80,6 +80,9 @@ const DEFAULT_SERVICE_SINGLETON_MOCKS: [CoreSingletonProxy, unknown][] = [
     })],
 ];
 
+/**
+ *
+ */
 async function renderAngularComponent<T>(component: Type<T>, config: RenderConfig): Promise<TestingComponentFixture<T>> {
     config.declarations.push(component);
 
@@ -114,6 +117,9 @@ async function renderAngularComponent<T>(component: Type<T>, config: RenderConfi
     return fixture;
 }
 
+/**
+ *
+ */
 function createWrapperComponent<U>(template: string, componentClass: Type<U>): Type<WrapperComponent<U>> {
     @Component({ template })
     class HostComponent extends WrapperComponent<U> {
@@ -125,6 +131,9 @@ function createWrapperComponent<U>(template: string, componentClass: Type<U>): T
     return HostComponent;
 }
 
+/**
+ *
+ */
 function getDefaultDeclarations(): unknown[] {
     return [
         TranslatePipeStub,
@@ -132,6 +141,9 @@ function getDefaultDeclarations(): unknown[] {
     ];
 }
 
+/**
+ *
+ */
 function getDefaultProviders(config: RenderConfig): unknown[] {
     const serviceProviders = DEFAULT_SERVICE_SINGLETON_MOCKS.map(
         ([singleton, mockInstance]) => ({
@@ -159,6 +171,9 @@ function getDefaultProviders(config: RenderConfig): unknown[] {
     ];
 }
 
+/**
+ *
+ */
 function resolveServiceInstanceFromTestBed(injectionToken: Exclude<ServiceInjectionToken, string>): Record<string, unknown> | null {
     if (!testBedInitialized) {
         return null;
@@ -167,6 +182,9 @@ function resolveServiceInstanceFromTestBed(injectionToken: Exclude<ServiceInject
     return TestBed.inject(injectionToken) as Record<string, unknown> | null;
 }
 
+/**
+ *
+ */
 function createNewServiceInstance(injectionToken: Exclude<ServiceInjectionToken, string>): Record<string, unknown> | null {
     try {
         const constructor = injectionToken as { new (): Record<string, unknown> };
@@ -192,6 +210,9 @@ export type TestingComponentFixture<T = unknown> = Omit<ComponentFixture<T>, 'na
 
 export type WrapperComponentFixture<T = unknown> = TestingComponentFixture<WrapperComponent<T>>;
 
+/**
+ *
+ */
 export function findElement<E = HTMLElement>(
     fixture: TestingComponentFixture,
     selector: string,
@@ -215,6 +236,9 @@ export function findElement<E = HTMLElement>(
     return null;
 }
 
+/**
+ *
+ */
 export function requireElement<E = HTMLElement>(
     fixture: TestingComponentFixture,
     selector: string,
@@ -272,6 +296,9 @@ export function mockSingleton<T>(
     methods: string[],
     instance?: Record<string, unknown>,
 ): T;
+/**
+ *
+ */
 export function mockSingleton<T>(
     singleton: CoreSingletonProxy<T>,
     methodsOrProperties: string[] | Record<string, unknown> = [],
@@ -299,6 +326,9 @@ export function mockSingleton<T>(
     return mockInstance;
 }
 
+/**
+ *
+ */
 export function resetTestingEnvironment(): void {
     testBedInitialized = false;
 
@@ -307,6 +337,9 @@ export function resetTestingEnvironment(): void {
     }
 }
 
+/**
+ *
+ */
 export function getServiceInstance(injectionToken: ServiceInjectionToken): Record<string, unknown> {
     if (typeof injectionToken === 'string') {
         return {};
@@ -317,6 +350,9 @@ export function getServiceInstance(injectionToken: ServiceInjectionToken): Recor
         ?? {};
 }
 
+/**
+ *
+ */
 export async function renderComponent<T>(
     component: Type<T>,
     config: Partial<RenderConfig> = {},
@@ -329,10 +365,13 @@ export async function renderComponent<T>(
     });
 }
 
-export async function renderPageComponent<T>(
-    component: Type<T>,
+/**
+ *
+ */
+export async function renderPageComponent<ComponentType>(
+    component: Type<ComponentType>,
     config: Partial<RenderPageConfig> = {},
-): Promise<TestingComponentFixture<T>> {
+): Promise<TestingComponentFixture<ComponentType>> {
     mockSingleton(CoreNavigator, mock<CoreNavigatorService>({
         getRequiredRouteParam<T>(name: string) {
             if (!config.routeParams?.[name]) {
@@ -347,6 +386,9 @@ export async function renderPageComponent<T>(
     return renderComponent(component, config);
 }
 
+/**
+ *
+ */
 export async function renderTemplate<T>(
     component: Type<T>,
     template: string,
@@ -366,6 +408,9 @@ export async function renderTemplate<T>(
     );
 }
 
+/**
+ *
+ */
 export async function renderWrapperComponent<T>(
     component: Type<T>,
     tag: string,
@@ -412,7 +457,7 @@ export function mockTranslate(translations: Record<string, string> = {}): void {
     mockSingleton(Translate as CoreSingletonProxy<TranslateService>, {
         instant: (key, replacements) => {
             const applyReplacements = (text: string): string => Object.entries(replacements ?? {}).reduce(
-                (text, [name, value]) => text.replace(`{{${name}}}`, value),
+                (prevText, [name, value]) => prevText.replace(`{{${name}}}`, value),
                 text,
             );
 

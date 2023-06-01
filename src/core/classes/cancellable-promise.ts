@@ -25,8 +25,8 @@ export class CoreCancellablePromise<T = unknown> extends CorePromise<T> {
      * @returns Resolved promise.
      */
     static resolve(): CoreCancellablePromise<void>;
-    static resolve<T>(result: T): CoreCancellablePromise<T>;
-    static resolve<T>(result?: T): CoreCancellablePromise<T> {
+    static resolve<Type>(result: Type): CoreCancellablePromise<Type>;
+    static resolve<Type>(result?: Type): CoreCancellablePromise<Type> {
         return new this(resolve => result ? resolve(result) : (resolve as () => void)(), () => {
             // Nothing to do here.
         });

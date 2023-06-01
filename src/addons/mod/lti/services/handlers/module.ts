@@ -61,11 +61,11 @@ export class AddonModLtiModuleHandlerService extends CoreModuleHandlerBase imple
         data.button = {
             icon: 'fas-up-right-from-square',
             label: 'addon.mod_lti.launchactivity',
-            action: (event: Event, module: CoreCourseModuleData, courseId: number): void => {
+            action: (event: Event, dataModule: CoreCourseModuleData, dataCourseId: number): void => {
                 // Launch the LTI.
-                AddonModLtiHelper.getDataAndLaunch(courseId, module);
+                AddonModLtiHelper.getDataAndLaunch(dataCourseId, dataModule);
 
-                CoreCourse.storeModuleViewed(courseId, module.id);
+                CoreCourse.storeModuleViewed(dataCourseId, module.id);
             },
         };
 

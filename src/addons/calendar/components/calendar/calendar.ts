@@ -322,10 +322,10 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
             }
 
             return month.weeks?.some((week) => week.days.some((day) => {
-                const event = day.eventsFormated?.find((event) => event.id == eventId);
+                const eventFormatted = day.eventsFormated?.find((event) => event.id == eventId);
 
-                if (event) {
-                    event.deleted = false;
+                if (eventFormatted) {
+                    eventFormatted.deleted = false;
 
                     return true;
                 }

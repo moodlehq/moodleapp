@@ -346,13 +346,12 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
             if (this.favourites.expanded === undefined && (this.selectedConversationId || this.selectedUserId)) {
                 // A certain conversation should be opened.
                 // We don't know which option it belongs to, so we need to fetch the data for all of them.
-                const promises: Promise<void>[] = [];
 
-                promises.push(this.fetchDataForOption(this.favourites, false));
-                promises.push(this.fetchDataForOption(this.group, false));
-                promises.push(this.fetchDataForOption(this.individual, false));
-
-                await Promise.all(promises);
+                await Promise.all([
+                    this.fetchDataForOption(this.favourites, false),
+                    this.fetchDataForOption(this.group, false),
+                    this.fetchDataForOption(this.individual, false),
+                ]);
                 // All conversations have been loaded, find the one we need to load and expand its option.
                 const conversation = this.findConversation(this.selectedConversationId, this.selectedUserId);
                 if (conversation) {
@@ -639,7 +638,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                     promises.push(CoreUser.getProfile(message.touserid, undefined, true).catch(() => {
                         // User not found.
                     }).then((user) => {
-                        const conversation: AddonMessagesConversationForList = {
+                        const conversationForList: AddonMessagesConversationForList = {
                             id: 0,
                             type: AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL,
                             membercount: 0, // Faked data.
@@ -654,8 +653,8 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                             imageurl: user ? user.profileimageurl : '',
                         };
 
-                        this.addLastOfflineMessage(conversation, message);
-                        this.addOfflineConversation(conversation);
+                        this.addLastOfflineMessage(conversationForList, message);
+                        this.addOfflineConversation(conversationForList);
 
                         return;
                     }));

@@ -240,8 +240,8 @@ export class AddonModScormHelperProvider {
 
         // Search the first valid SCO.
         // In browse/review mode return the first visible sco. In normal mode, first incomplete sco.
-        const sco = scos.find(sco => sco.isvisible && sco.launch && sco.prereq &&
-            (!isNormalMode || AddonModScorm.isStatusIncomplete(sco.status)));
+        const sco = scos.find(({ isvisible, launch, prereq, status }) => isvisible && launch && prereq &&
+            (!isNormalMode || AddonModScorm.isStatusIncomplete(status)));
 
         // If no "valid" SCO, load the first one. In web it loads the first child because the toc contains the organization SCO.
         return sco || scos[0];

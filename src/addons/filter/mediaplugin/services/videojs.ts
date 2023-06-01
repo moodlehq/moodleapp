@@ -21,7 +21,7 @@ import { CoreUrlUtils } from '@services/utils/url';
 import { makeSingleton } from '@singletons';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreEvents } from '@singletons/events';
-import type videojs from 'video.js';
+import type vjs from 'video.js';
 
 // eslint-disable-next-line no-duplicate-imports
 import type { VideoJSOptions, VideoJSPlayer } from 'video.js';
@@ -47,7 +47,7 @@ export const VIDEO_JS_PLAYER_CREATED = 'video_js_player_created';
 @Injectable({ providedIn: 'root' })
 export class AddonFilterMediaPluginVideoJSService {
 
-    protected videojs?: CorePromisedValue<typeof videojs>;
+    protected videojs?: CorePromisedValue<typeof vjs>;
 
     /**
      * Create a VideoJS player.
@@ -130,7 +130,7 @@ export class AddonFilterMediaPluginVideoJSService {
      *
      * @returns VideoJS.
      */
-    protected async getVideoJS(): Promise<typeof videojs> {
+    protected async getVideoJS(): Promise<typeof vjs> {
         if (!this.videojs) {
             this.videojs = new CorePromisedValue();
 

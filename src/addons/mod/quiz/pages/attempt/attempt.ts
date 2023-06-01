@@ -135,7 +135,7 @@ export class AddonModQuizAttemptPage implements OnInit {
         // Get all the attempts and search the one we want.
         const attempts = await AddonModQuiz.getUserAttempts(quizId, { cmId: this.cmId });
 
-        const attempt = attempts.find(attempt => attempt.id == this.attemptId);
+        const attempt = attempts.find(({ id }) => id == this.attemptId);
 
         if (!attempt) {
             // Attempt not found, error.

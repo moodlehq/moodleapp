@@ -88,7 +88,7 @@ export class CoreEagerDatabaseTable<
         if (options?.sorting) {
             record = this.getMany(conditions, { ...options, limit: 1 })[0];
         } else if (conditions) {
-            record = Object.values(this.records).find(record => this.recordMatches(record, conditions));
+            record = Object.values(this.records).find(dbRecord => this.recordMatches(dbRecord, conditions));
         } else {
             record = Object.values(this.records)[0];
         }

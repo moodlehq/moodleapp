@@ -1493,9 +1493,10 @@ export class AddonMessagesProvider {
         params.limitfrom = limitFromRead;
 
         try {
-            const response = await this.getMessages(params, preSets, siteId);
-            if (response.messages) {
-                messages = messages.concat(response.messages);
+            const result = await this.getMessages(params, preSets, siteId);
+
+            if (result.messages) {
+                messages = messages.concat(result.messages);
             }
 
             return messages;

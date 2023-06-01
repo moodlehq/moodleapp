@@ -188,17 +188,17 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
         }
 
         // This is an offline page. Check if the page was created.
-        const page = data.created.find((page) => page.title == this.pageTitle);
+        const page = data.created.find(({ title }) => title == this.pageTitle);
         if (page) {
             // Page was created, set the ID so it's retrieved from server.
             this.currentPage = page.pageId;
             this.pageIsOffline = false;
         } else {
             // Page not found in created list, check if it was discarded.
-            const page = data.discarded.find((page) => page.title == this.pageTitle);
-            if (page) {
-                // Page discarded, show warning.
-                this.pageWarning = page.warning;
+            const pageFound = data.discarded.find(({ title }) => title == this.pageTitle);
+            if (pageFound) {
+                // page discarded, show warning.
+                this.pageWarning = pageFound.warning;
                 this.pageContent = '';
                 this.pageIsOffline = false;
                 this.hasOffline = false;
@@ -378,7 +378,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
 
         if (this.pageTitle) {
             // Got the page title but not its ID. Search the page.
-            const page = subwikiPages.find((page) => page.title === this.pageTitle);
+            const page = subwikiPages.find((subwikiPage) => subwikiPage.title === this.pageTitle);
             if (page) {
                 this.currentPage = page.id;
             }
@@ -387,7 +387,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
         }
 
         // No page specified, search first page.
-        const firstPage = subwikiPages.find((page) => page.firstpage);
+        const firstPage = subwikiPages.find((subwikiPage) => subwikiPage.firstpage);
         this.currentPage = firstPage?.id;
         this.pageTitle = firstPage?.title ?? this.wiki?.firstpagetitle;
     }
@@ -955,7 +955,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             } else {
                 if (subwiki.groupid !== 0 && userGroups.length > 0) {
                     // Get groupLabel if it has groupId.
-                    const group = userGroups.find(group => group.id == subwiki.groupid);
+                    const group = userGroups.find(({ id }) => id == subwiki.groupid);
                     groupLabel = group?.name ?? '';
                 } else {
                     groupLabel = Translate.instant('addon.mod_wiki.notingroup');

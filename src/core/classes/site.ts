@@ -655,7 +655,7 @@ export class CoreSite {
 
         const observable = this.performRequest<T>(method, data, preSets, wsPreSets).pipe(
             // Return a clone of the original object, this may prevent errors if in the callback the object is modified.
-            map((data) => CoreUtils.clone(data)),
+            map(response => CoreUtils.clone(response)),
         );
 
         this.setOngoingRequest(cacheId, preSets, observable);
@@ -1025,9 +1025,10 @@ export class CoreSite {
 
         // Check if there is an identical request waiting in the queue (read requests only by default).
         if (preSets.reusePending) {
-            const request = this.requestQueue.find((request) => request.cacheId == cacheId);
-            if (request) {
-                return request.deferred;
+            const requestFound = this.requestQueue.find((request) => request.cacheId == cacheId);
+
+            if (requestFound) {
+                return requestFound.deferred;
             }
         }
 
@@ -1228,7 +1229,7 @@ export class CoreSite {
             } else {
                 if (entries.length > 1) {
                     // More than one entry found. Search the one with same ID as this call.
-                    entry = entries.find((entry) => entry.id == id);
+                    entry = entries.find(({ id: entryId }) => entryId == id);
                 }
 
                 if (!entry) {
@@ -2494,7 +2495,7 @@ export function chainRequests<T, O extends ObservableInput<any>>(
             },
         });
     }).pipe(
-        mergeMap(({ data, readingStrategy }) => callback(data, readingStrategy)),
+        mergeMap(({ data, readingStrategy: strategy }) => callback(data, strategy)),
     );
 }
 

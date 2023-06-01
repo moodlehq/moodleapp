@@ -381,7 +381,7 @@ export class AddonModDataEditPage implements OnInit {
                     this.errors = {};
                     if (updateEntryResult.fieldnotifications) {
                         updateEntryResult.fieldnotifications.forEach((fieldNotif) => {
-                            const field = this.fieldsArray.find((field) => field.name == fieldNotif.fieldname);
+                            const field = this.fieldsArray.find(({ name }) => name == fieldNotif.fieldname);
                             if (field) {
                                 this.errors[field.id] = fieldNotif.notification;
                             }

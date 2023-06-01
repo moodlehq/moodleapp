@@ -107,8 +107,8 @@ export class AddonEnrolSelfService {
 
         if (response.warnings && response.warnings.length) {
             // Invalid password warnings.
-            const warning = response.warnings.find((warning) =>
-                warning.warningcode == '2' || warning.warningcode == '3' || warning.warningcode == '4');
+            const warning = response.warnings.find((responseWarning) =>
+            responseWarning.warningcode == '2' || responseWarning.warningcode == '3' || responseWarning.warningcode == '4');
 
             if (warning) {
                 throw new CoreWSError({ errorcode: CoreCoursesProvider.ENROL_INVALID_KEY, message: warning.message });

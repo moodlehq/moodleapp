@@ -200,7 +200,7 @@ export class AddonModAssignSubmissionsSource extends CoreRoutedItemsManagerSourc
 
                 if (!assign.markingworkflow) {
                     // Get the last grade of the submission.
-                    const grade = grades.find((grade) => grade.userid == submission.userid);
+                    const grade = grades.find(({ userid }) => userid == submission.userid);
 
                     if (grade) {
                         // Override status if grade is found.

@@ -266,8 +266,8 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
             this.loaded[courseId] = false;
             delete this.coursesHandlers[courseId];
         } else {
-            for (const courseId in this.coursesHandlers) {
-                this.clearCoursesHandlers(Number(courseId));
+            for (const id in this.coursesHandlers) {
+                this.clearCoursesHandlers(Number(id));
             }
         }
     }
@@ -456,7 +456,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
                 handlersToDisplay.push({
                     data: data,
                     priority: handler.priority || 0,
-                    prefetch: async (course) => await handler.prefetch?.(course),
+                    prefetch: async () => await handler.prefetch?.(course),
                     name: handler.name,
                 });
 

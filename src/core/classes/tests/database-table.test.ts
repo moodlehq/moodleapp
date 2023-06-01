@@ -24,21 +24,27 @@ type User = {
     surname: string;
 };
 
+/**
+ *
+ */
 function userMatches(user: User, conditions: Partial<User>) {
     return !Object.entries(conditions).some(([column, value]) => user[column] !== value);
 }
 
+/**
+ *
+ */
 function prepareStubs(config: Partial<CoreDatabaseConfiguration> = {}): [User[], SQLiteDB, CoreDatabaseTable<User>] {
     const records: User[] = [];
     const database = mock<SQLiteDB>({
         getRecord: async <T>(_, conditions) => {
-            const record = records.find(record => userMatches(record, conditions));
+            const recordFound = records.find(record => userMatches(record, conditions));
 
-            if (!record) {
+            if (!recordFound) {
                 throw new Error();
             }
 
-            return record as unknown as T;
+            return recordFound as unknown as T;
         },
         getRecords: async <T>(_, conditions) => records.filter(record => userMatches(record, conditions)) as unknown as T[],
         getAllRecords: async <T>() => records.slice(0) as unknown as T[],
@@ -68,6 +74,9 @@ function prepareStubs(config: Partial<CoreDatabaseConfiguration> = {}): [User[],
     return [records, database, table];
 }
 
+/**
+ *
+ */
 async function testFindItems(records: User[], table: CoreDatabaseTable<User>) {
     const john = { id: 1, name: 'John', surname: 'Doe' };
     const amy = { id: 2, name: 'Amy', surname: 'Doe' };
@@ -83,6 +92,9 @@ async function testFindItems(records: User[], table: CoreDatabaseTable<User>) {
     await expect(table.getOneByPrimaryKey({ id: 2 })).resolves.toEqual(amy);
 }
 
+/**
+ *
+ */
 async function testInsertItems(records: User[], database: SQLiteDB, table: CoreDatabaseTable<User>) {
     // Arrange.
     const john = { id: 1, name: 'John', surname: 'Doe' };
@@ -98,6 +110,9 @@ async function testInsertItems(records: User[], database: SQLiteDB, table: CoreD
     await expect(table.getOneByPrimaryKey({ id: 1 })).resolves.toEqual(john);
 }
 
+/**
+ *
+ */
 async function testDeleteItems(records: User[], database: SQLiteDB, table: CoreDatabaseTable<User>) {
     // Arrange.
     const john = { id: 1, name: 'John', surname: 'Doe' };
@@ -121,6 +136,9 @@ async function testDeleteItems(records: User[], database: SQLiteDB, table: CoreD
     await expect(table.getOneByPrimaryKey({ id: 3 })).resolves.toEqual(jane);
 }
 
+/**
+ *
+ */
 async function testDeleteItemsByPrimaryKey(records: User[], database: SQLiteDB, table: CoreDatabaseTable<User>) {
     // Arrange.
     const john = { id: 1, name: 'John', surname: 'Doe' };

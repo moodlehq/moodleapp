@@ -879,7 +879,7 @@ export class CoreCoursesProvider {
 
         const courses = await this.getUserCourses(preferCache, siteId);
 
-        const course = courses.find((course) => course.id == id);
+        const course = courses.find(({ id: courseId }) => courseId == id);
 
         if (course) {
             return course;

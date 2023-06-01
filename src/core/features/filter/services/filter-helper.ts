@@ -141,10 +141,10 @@ export class CoreFilterHelperProvider {
 
         const contexts: CoreFiltersGetAvailableInContextWSParamContext[] = [];
 
-        courseIds.forEach((courseId) => {
+        courseIds.forEach((id) => {
             contexts.push({
                 contextlevel: 'course',
-                instanceid: courseId,
+                instanceid: id,
             });
         });
 

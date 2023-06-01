@@ -73,7 +73,7 @@ export class AddonModWorkshopAssessmentStrategyAccumulativeHandlerLazyService
             form.current[n].grade = form.current[n].grade ? parseInt(String(form.current[n].grade), 10) : -1;
 
             const gradingType = parseInt(String(field.grade), 10);
-            const dimension = form.dimensionsinfo.find((dimension) => dimension.id == parseInt(field.dimensionid, 10));
+            const dimension = form.dimensionsinfo.find((dimensionInfo) => dimensionInfo.id == parseInt(field.dimensionid, 10));
             const scale = dimension && gradingType < 0 ? dimension.scale : undefined;
 
             promises.push(CoreGradesHelper.makeGradesMenu(gradingType, undefined, defaultGrade, -1, scale).then((grades) => {

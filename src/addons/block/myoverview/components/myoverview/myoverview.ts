@@ -429,19 +429,19 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             return this.refreshContent(true);
         }
 
-        const course = this.allCourses.find((course) => course.id == data.courseId);
+        const courseFound = this.allCourses.find((course) => course.id == data.courseId);
         if (data.action == CoreCoursesProvider.ACTION_STATE_CHANGED) {
-            if (!course) {
+            if (!courseFound) {
                 // Not found, use WS update.
                 return this.refreshContent(true);
             }
 
             if (data.state == CoreCoursesProvider.STATE_FAVOURITE) {
-                course.isfavourite = !!data.value;
+                courseFound.isfavourite = !!data.value;
             }
 
             if (data.state == CoreCoursesProvider.STATE_HIDDEN) {
-                course.hidden = !!data.value;
+                courseFound.hidden = !!data.value;
             }
 
             await this.invalidateCourseList();
@@ -449,12 +449,12 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         }
 
         if (data.action == CoreCoursesProvider.ACTION_VIEW && data.courseId != CoreSites.getCurrentSiteHomeId()) {
-            if (!course) {
+            if (!courseFound) {
                 // Not found, use WS update.
                 return this.refreshContent(true);
             }
 
-            course.lastaccess = CoreTimeUtils.timestamp();
+            courseFound.lastaccess = CoreTimeUtils.timestamp();
 
             await this.invalidateCourseList();
             await this.filterCourses();

@@ -399,13 +399,13 @@ export class AddonModH5PActivityProvider {
 
             const attemptsResults = await AddonModH5PActivity.getAllAttemptsResults(id, cacheOptions);
 
-            const attempt = attemptsResults.attempts.find((attempt) => attempt.id == attemptId);
+            const attemptFound = attemptsResults.attempts.find((attempt) => attempt.id == attemptId);
 
-            if (!attempt) {
+            if (!attemptFound) {
                 throw error;
             }
 
-            return attempt;
+            return attemptFound;
         }
     }
 
@@ -653,7 +653,7 @@ export class AddonModH5PActivityProvider {
                     dontFailOnError: true,
                 });
 
-                const user = users.find(user => user.userid === userId);
+                const user = users.find(({ userid }) => userid === userId);
                 if (!user) {
                     throw error;
                 }

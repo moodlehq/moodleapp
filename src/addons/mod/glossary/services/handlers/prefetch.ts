@@ -154,31 +154,27 @@ export class AddonModGlossaryPrefetchHandlerService extends CoreCourseActivityPr
             (newOptions) => AddonModGlossary.getEntriesByLetter(glossary.id, newOptions),
             options,
         ).then((entries) => {
-            const promises: Promise<unknown>[] = [];
             const commentsEnabled = !CoreComments.areCommentsDisabledInSite();
 
-            entries.forEach((entry) => {
-                // Don't fetch individual entries, it's too many WS calls.
-                if (glossary.allowcomments && commentsEnabled) {
-                    promises.push(CoreComments.getComments(
-                        'module',
-                        glossary.coursemodule,
-                        'mod_glossary',
-                        entry.id,
-                        'glossary_entry',
-                        0,
-                        siteId,
-                    ));
-                }
-            });
+            const entriesWithEnabledComments = entries.filter(() => !glossary.allowcomments || !commentsEnabled).map((entry) =>
+            // Don't fetch individual entries, it's too many WS calls.
+                CoreComments.getComments(
+                    'module',
+                    glossary.coursemodule,
+                    'mod_glossary',
+                    entry.id,
+                    'glossary_entry',
+                    0,
+                    siteId,
+                ));
 
             const files = this.getFilesFromGlossaryAndEntries(module, glossary, entries);
-            promises.push(CoreFilepool.addFilesToQueue(siteId, files, this.component, module.id));
 
-            // Prefetch user avatars.
-            promises.push(CoreUser.prefetchUserAvatars(entries, 'userpictureurl', siteId));
-
-            return Promise.all(promises);
+            return Promise.all([
+                entriesWithEnabledComments,
+                CoreFilepool.addFilesToQueue(siteId, files, this.component, module.id),
+                CoreUser.prefetchUserAvatars(entries, 'userpictureurl', siteId),
+            ]);
         }));
 
         // Get all categories.

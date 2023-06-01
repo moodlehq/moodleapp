@@ -217,7 +217,7 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
             return id;
         }
 
-        const user = this.users.find((user) => user.id == idNumber);
+        const user = this.users.find(({ id: userId }) => userId == idNumber);
 
         if (user) {
             return user.fullname;
@@ -227,10 +227,10 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
             const data = await AddonModChat.getChatUsers(this.sessionId!, { cmId: this.cmId });
 
             this.users = data.users;
-            const user = this.users.find((user) => user.id == idNumber);
+            const userFound = this.users.find(({ id: userId }) => userId == idNumber);
 
-            if (user) {
-                return user.fullname;
+            if (userFound) {
+                return userFound.fullname;
             }
 
             return id;

@@ -551,8 +551,8 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
             }
 
             this.returnToList(event);
-        } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error sending data.');
+        } catch (err) {
+            CoreDomUtils.showErrorModalDefault(err, 'Error sending data.');
         }
 
         modal.dismiss();

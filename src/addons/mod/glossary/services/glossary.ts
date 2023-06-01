@@ -591,7 +591,7 @@ export class AddonModGlossaryProvider {
             siteId: options.siteId,
         });
 
-        const entry = result.entries.find(entry => entry.id == entryId);
+        const entry = result.entries.find(({ id }) => id == entryId);
 
         if (entry) {
             // Entry found, return it.
@@ -762,7 +762,7 @@ export class AddonModGlossaryProvider {
     async getGlossary(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModGlossaryGlossary> {
         const glossaries = await this.getCourseGlossaries(courseId, options);
 
-        const glossary = glossaries.find((glossary) => glossary.coursemodule == cmId);
+        const glossary = glossaries.find(({ coursemodule }) => coursemodule == cmId);
 
         if (glossary) {
             return glossary;
@@ -786,7 +786,7 @@ export class AddonModGlossaryProvider {
     ): Promise<AddonModGlossaryGlossary> {
         const glossaries = await this.getCourseGlossaries(courseId, options);
 
-        const glossary = glossaries.find((glossary) => glossary.id == glossaryId);
+        const glossary = glossaries.find(({ id }) => id == glossaryId);
 
         if (glossary) {
             return glossary;
@@ -1002,11 +1002,14 @@ export class AddonModGlossaryProvider {
 
             // If we get here, there's no offline entry with this name, check online.
             // Get entries from the cache.
-            const entries = await this.fetchAllEntries((options) => this.getEntriesByLetter(glossaryId, options), {
-                cmId: options.cmId,
-                readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
-                siteId: options.siteId,
-            });
+            const entries = await this.fetchAllEntries(
+                (glossaryEntryOptions) => this.getEntriesByLetter(glossaryId, glossaryEntryOptions),
+                {
+                    cmId: options.cmId,
+                    readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
+                    siteId: options.siteId,
+                },
+            );
 
             // Check if there's any entry with the same concept.
             return entries.some((entry) => entry.concept == concept);

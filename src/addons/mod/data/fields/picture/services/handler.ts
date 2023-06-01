@@ -114,9 +114,9 @@ export class AddonModDataFieldPictureHandlerService implements AddonModDataField
         // Get image.
         if (originalFiles.length > 0) {
             const filenameSeek = originalFieldData?.content || '';
-            const file = originalFiles.find((file) => ('name' in file ? file.name : file.filename) == filenameSeek);
-            if (file) {
-                originalFiles = [file];
+            const fileFound = originalFiles.find((file) => ('name' in file ? file.name : file.filename) == filenameSeek);
+            if (fileFound) {
+                originalFiles = [fileFound];
             }
         }
 

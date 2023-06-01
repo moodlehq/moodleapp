@@ -59,7 +59,7 @@ export class AddonModH5PActivitySyncProvider extends CoreCourseActivitySyncBaseP
      * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllActivities(siteId?: string, force?: boolean): Promise<void> {
-        return this.syncOnSites('H5P activities', (siteId) => this.syncAllActivitiesFunc(!!force, siteId), siteId);
+        return this.syncOnSites('H5P activities', (id) => this.syncAllActivitiesFunc(!!force, id), siteId);
     }
 
     /**

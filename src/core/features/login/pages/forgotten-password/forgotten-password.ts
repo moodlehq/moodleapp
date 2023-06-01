@@ -101,8 +101,8 @@ export class CoreLoginForgottenPasswordPage implements OnInit {
 
             if (response.status === 'dataerror') {
                 // Show an error from the warnings.
-                const warning = response.warnings?.find((warning) =>
-                    (warning.item === 'email' && isMail) || (warning.item === 'username' && !isMail));
+                const warning = response.warnings?.find(({ item }) =>
+                    (item === 'email' && isMail) || (item === 'username' && !isMail));
                 if (warning) {
                     CoreDomUtils.showErrorModal(warning.message);
                 }

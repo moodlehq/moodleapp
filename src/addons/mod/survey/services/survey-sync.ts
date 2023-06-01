@@ -61,7 +61,7 @@ export class AddonModSurveySyncProvider extends CoreCourseActivitySyncBaseProvid
      * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllSurveys(siteId?: string, force?: boolean): Promise<void> {
-        return this.syncOnSites('all surveys', (siteId) => this.syncAllSurveysFunc(!!force, siteId), siteId);
+        return this.syncOnSites('all surveys', (id) => this.syncAllSurveysFunc(!!force, id), siteId);
     }
 
     /**

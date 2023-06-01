@@ -170,10 +170,10 @@ export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
             } else if (h5pActivity.grademethod === AddonModH5PActivityProvider.GRADEAVERAGEATTEMPT) {
                 if (user.attempts.length) {
                     // Calculate the average.
-                    const sumScores = user.attempts.reduce((sumScores, attempt) =>
+                    const accumulatedScores = user.attempts.reduce((sumScores, attempt) =>
                         sumScores + attempt.rawscore * 100 / attempt.maxscore, 0);
 
-                    user.score = Math.round(sumScores / user.attempts.length);
+                    user.score = Math.round(accumulatedScores / user.attempts.length);
                 }
             } else if (user.scored?.attempts[0]) {
                 // Only a single attempt used to calculate the grade. Use it.

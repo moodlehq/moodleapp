@@ -135,7 +135,7 @@ export class AddonModLessonUserRetakePage implements OnInit {
             });
 
             // Search the student.
-            const student: StudentData | undefined = data?.students?.find(student => student.id == this.userId);
+            const student: StudentData | undefined = data?.students?.find(({ id }) => id == this.userId);
             if (!student) {
                 // Student not found.
                 throw new CoreError(Translate.instant('addon.mod_lesson.cannotfinduser'));

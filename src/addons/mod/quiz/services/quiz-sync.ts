@@ -108,7 +108,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
             // Attempt wasn't finished at start. Check if it's finished now.
             const attempts = await AddonModQuiz.getUserAttempts(quiz.id, { cmId: quiz.coursemodule, siteId });
 
-            const attempt = attempts.find(attempt => attempt.id == options?.onlineAttempt?.id);
+            const attempt = attempts.find(({ id }) => id == options?.onlineAttempt?.id);
 
             attemptFinished = attempt ? AddonModQuiz.isAttemptFinished(attempt.state) : false;
         }
@@ -180,7 +180,7 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
      * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllQuizzes(siteId?: string, force?: boolean): Promise<void> {
-        return this.syncOnSites('all quizzes', (siteId) => this.syncAllQuizzesFunc(!!force, siteId), siteId);
+        return this.syncOnSites('all quizzes', (id) => this.syncAllQuizzesFunc(!!force, id), siteId);
     }
 
     /**

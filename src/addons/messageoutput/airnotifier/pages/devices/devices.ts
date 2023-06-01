@@ -85,12 +85,12 @@ export class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestr
         });
 
         for (const platform in formattedDevices) {
-            const devices = formattedDevices[platform];
-            devices.devices.sort((a, b) => b.timemodified - a.timemodified);
+            const formattedDevicesByPlatform = formattedDevices[platform];
+            formattedDevicesByPlatform.devices.sort((a, b) => b.timemodified - a.timemodified);
 
-            devices.platform = devices.platform.replace('-fcm', '');
+            formattedDevicesByPlatform.platform = formattedDevicesByPlatform.platform.replace('-fcm', '');
 
-            this.platformDevices.push(devices);
+            this.platformDevices.push(formattedDevicesByPlatform);
         }
     }
 

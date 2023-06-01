@@ -360,11 +360,11 @@ export class CoreQuestionHelperProvider {
         const answers: Record<string, boolean> = {};
 
         // Search all input elements.
-        Array.from(form.elements).forEach((element: HTMLInputElement) => {
-            const name = element.name || '';
+        Array.from(form.elements).forEach((inputElement: HTMLInputElement) => {
+            const name = inputElement.name || '';
 
             // Ignore flag and submit inputs.
-            if (!name || name.match(/_:flagged$/) || element.type == 'submit' || element.tagName == 'BUTTON') {
+            if (!name || name.match(/_:flagged$/) || inputElement.type == 'submit' || inputElement.tagName == 'BUTTON') {
                 return;
             }
 
@@ -495,7 +495,7 @@ export class CoreQuestionHelperProvider {
             return [];
         }
 
-        const area = question.responsefileareas.find((area) => area.area == areaName);
+        const area = question.responsefileareas.find(({ area: fileArea }) => fileArea == areaName);
 
         return area?.files || [];
     }
@@ -584,10 +584,10 @@ export class CoreQuestionHelperProvider {
         const form = <HTMLFormElement> element.children[0];
 
         // Search all input elements.
-        Array.from(form.elements).forEach((element: HTMLInputElement | HTMLButtonElement) => {
-            let name = element.name || '';
+        Array.from(form.elements).forEach(({ name: elementName, type, tagName, value }: HTMLInputElement | HTMLButtonElement) => {
+            let name = elementName || '';
             // Ignore flag and submit inputs.
-            if (!name || name.match(/_:flagged$/) || element.type == 'submit' || element.tagName == 'BUTTON' ||
+            if (!name || name.match(/_:flagged$/) || type == 'submit' || tagName == 'BUTTON' ||
                     !question.localAnswers) {
                 return;
             }
@@ -595,7 +595,7 @@ export class CoreQuestionHelperProvider {
             // Search if there's a local answer.
             name = CoreQuestion.removeQuestionPrefix(name);
             if (question.localAnswers[name] === undefined) {
-                if (Object.keys(question.localAnswers).length && element.type == 'radio') {
+                if (Object.keys(question.localAnswers).length && type == 'radio') {
                     // No answer stored, but there is a sequencecheck or similar. This means the user cleared his choice.
                     element.removeAttribute('checked');
                 }
@@ -603,23 +603,23 @@ export class CoreQuestionHelperProvider {
                 return;
             }
 
-            if (element.tagName == 'TEXTAREA') {
+            if (tagName == 'TEXTAREA') {
                 // Just put the answer inside the textarea.
                 element.innerHTML = question.localAnswers[name];
-            } else if (element.tagName == 'SELECT') {
+            } else if (tagName == 'SELECT') {
                 // Search the selected option and select it.
                 const selected = element.querySelector('option[value="' + question.localAnswers[name] + '"]');
                 if (selected) {
                     selected.setAttribute('selected', 'selected');
                 }
-            } else if (element.type == 'radio') {
+            } else if (type == 'radio') {
                 // Check if this radio is selected.
-                if (element.value == question.localAnswers[name]) {
+                if (value == question.localAnswers[name]) {
                     element.setAttribute('checked', 'checked');
                 } else {
                     element.removeAttribute('checked');
                 }
-            } else if (element.type == 'checkbox') {
+            } else if (type == 'checkbox') {
                 // Check if this checkbox is checked.
                 if (CoreUtils.isTrueOrOne(question.localAnswers[name])) {
                     element.setAttribute('checked', 'checked');

@@ -122,7 +122,7 @@ export class AddonModLessonSyncProvider extends CoreCourseActivitySyncBaseProvid
      * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllLessons(siteId?: string, force = false): Promise<void> {
-        return this.syncOnSites('all lessons', (siteId) => this.syncAllLessonsFunc(!!force, siteId), siteId);
+        return this.syncOnSites('all lessons', (id) => this.syncAllLessonsFunc(!!force, id), siteId);
     }
 
     /**

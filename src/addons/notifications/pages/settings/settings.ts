@@ -180,10 +180,10 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
      * @param name Name of the selected processor.
      */
     changeProcessor(name: string): void {
-        const processor = this.preferences?.processors.find((processor) => processor.name == name);
+        const processorFound = this.preferences?.processors.find((processor) => processor.name == name);
 
-        if (processor) {
-            this.loadProcessor(processor);
+        if (processorFound) {
+            this.loadProcessor(processorFound);
         }
     }
 
@@ -219,18 +219,16 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
      * @returns Promise resolved when done.
      */
     async changePreferenceLegacy(notification: AddonNotificationsPreferencesNotificationFormatted, state: string): Promise<void> {
-        const processor = notification.processorsByName?.[this.currentProcessorName];
-        if (!processor) {
+        const notificationProcessor = notification.processorsByName?.[this.currentProcessorName];
+
+        if (!notificationProcessor) {
             return;
         }
 
-        const processorState: ProcessorStateFormatted = processor[state];
+        const processorState: ProcessorStateFormatted = notificationProcessor[state];
         const preferenceName = notification.preferencekey + '_' + processorState.name;
 
-        let value = notification.processors
-            .filter((processor) => processor[state].checked)
-            .map((processor) => processor.name)
-            .join(',');
+        let value = notification.processors.filter((processor) => processor[state].checked).map(({ name }) => name).join(',');
 
         if (value == '') {
             value = 'none';
@@ -246,7 +244,7 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
         } catch (error) {
             // Show error and revert change.
             CoreDomUtils.showErrorModal(error);
-            processor[state].checked = !processor[state].checked;
+            notificationProcessor[state].checked = !notificationProcessor[state].checked;
         } finally {
             processorState.updating = false;
         }
@@ -266,10 +264,7 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
 
         const preferenceName = notification.preferencekey + '_enabled';
 
-        let value = notification.processors
-            .filter((processor) => processor.enabled)
-            .map((processor) => processor.name)
-            .join(',');
+        let value = notification.processors.filter(({ enabled }) => enabled).map(({ name }) => name).join(',');
 
         if (value == '') {
             value = 'none';

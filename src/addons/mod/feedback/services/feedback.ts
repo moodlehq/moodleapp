@@ -373,13 +373,13 @@ export class AddonModFeedbackProvider {
             ...options, // Include all options.
         });
 
-        const attempt = responses.attempts.find((attempt) => attemptId == attempt.id);
+        const attempt = responses.attempts.find(({ id }) => attemptId == id);
 
         if (attempt) {
             return attempt;
         }
 
-        const anonAttempt = responses.anonattempts.find((attempt) => attemptId == attempt.id);
+        const anonAttempt = responses.anonattempts.find(({ id }) => attemptId == id);
 
         if (anonAttempt) {
             return anonAttempt;

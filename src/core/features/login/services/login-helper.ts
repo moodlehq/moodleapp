@@ -1014,8 +1014,7 @@ export class CoreLoginHelperProvider {
                     throw new CoreError('Error sending confirmation email');
                 }
 
-                const message = Translate.instant('core.login.emailconfirmsentsuccess');
-                CoreDomUtils.showAlert(Translate.instant('core.success'), message);
+                CoreDomUtils.showAlert(Translate.instant('core.success'), Translate.instant('core.login.emailconfirmsentsuccess'));
             } finally {
                 modal.dismiss();
             }

@@ -52,7 +52,7 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
      * @param force Wether to force sync not depending on last execution.
      */
     async syncAllGlossaries(siteId?: string, force?: boolean): Promise<void> {
-        await this.syncOnSites('all glossaries', (siteId) => this.syncAllGlossariesFunc(!!force, siteId), siteId);
+        await this.syncOnSites('all glossaries', (id) => this.syncAllGlossariesFunc(!!force, id), siteId);
     }
 
     /**

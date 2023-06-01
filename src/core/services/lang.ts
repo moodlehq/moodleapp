@@ -514,8 +514,8 @@ export class CoreLangProvider {
      */
     async filterMultilang(text: string): Promise<string> {
         return Promise.resolve(text)
-            .then(text => AddonFilterMultilangHandler.filter(text))
-            .then(text => AddonFilterMultilang2Handler.filter(text));
+            .then(textToFilter => AddonFilterMultilangHandler.filter(textToFilter))
+            .then(textToFilter => AddonFilterMultilang2Handler.filter(textToFilter));
     }
 
     /**

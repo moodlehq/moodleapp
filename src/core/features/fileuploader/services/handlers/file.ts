@@ -125,9 +125,9 @@ export class CoreFileUploaderFileHandlerService implements CoreFileUploaderHandl
                         );
 
                         CoreFileUploaderHelper.fileUploaded(result);
-                    } catch (error) {
+                    } catch (err) {
                         CoreDomUtils.showErrorModalDefault(
-                            error,
+                            err,
                             Translate.instant('core.fileuploader.errorreadingfile'),
                         );
                     }

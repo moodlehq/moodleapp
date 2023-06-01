@@ -95,11 +95,11 @@ export class AddonCompetencyUserHandlerService implements CoreUserProfileHandler
                 icon: 'fas-route',
                 title: 'addon.competency.learningplans',
                 class: 'addon-competency-handler',
-                action: (event, user): void => {
+                action: (event, { id }): void => {
                     event.preventDefault();
                     event.stopPropagation();
                     CoreNavigator.navigateToSitePath(ADDON_COMPETENCY_LEARNING_PLANS_PAGE, {
-                        params: { userId: user.id },
+                        params: { userId: id },
                     });
                 },
             };
@@ -109,11 +109,11 @@ export class AddonCompetencyUserHandlerService implements CoreUserProfileHandler
             icon: 'fas-award',
             title: 'addon.competency.competencies',
             class: 'addon-competency-handler',
-            action: (event, user, context, contextId): void => {
+            action: (event, { id }, delegateContext, contextId): void => {
                 event.preventDefault();
                 event.stopPropagation();
                 CoreNavigator.navigateToSitePath(
-                    [COURSE_PAGE_NAME, contextId, PARTICIPANTS_PAGE_NAME, user.id, ADDON_COMPETENCY_COMPETENCIES_PAGE].join('/'),
+                    [COURSE_PAGE_NAME, contextId, PARTICIPANTS_PAGE_NAME, id, ADDON_COMPETENCY_COMPETENCIES_PAGE].join('/'),
                 );
             },
         };

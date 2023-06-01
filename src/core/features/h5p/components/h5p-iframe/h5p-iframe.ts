@@ -193,9 +193,9 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
                 );
 
                 return url;
-            } catch (error) {
+            } catch (err) {
                 // Still failing. Delete the H5P package?
-                this.logger.error('Error loading downloaded index:', error, this.fileUrl);
+                this.logger.error('Error loading downloaded index:', err, this.fileUrl);
             }
         }
     }

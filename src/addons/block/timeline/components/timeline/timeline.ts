@@ -167,7 +167,7 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
             next6months: { from: 0, to: 180 },
         };
         const sortValue = this.sort.valueChanges as Observable<AddonBlockTimelineSort>;
-        const courses = sortValue.pipe(
+        const sortedCourses = sortValue.pipe(
             distinctUntilChanged(),
             map(async sort => {
                 switch (sort) {
@@ -185,7 +185,7 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
             }),
         );
 
-        this.sections$ = combineLatest([this.filter$, sortValue, this.search$, courses]).pipe(
+        this.sections$ = combineLatest([this.filter$, sortValue, this.search$, sortedCourses]).pipe(
             map(async ([filter, sort, search, courses]) => {
                 const includeOverdue = filter === AddonBlockTimelineFilter.Overdue;
                 const dateRange = filtersRange[filter];

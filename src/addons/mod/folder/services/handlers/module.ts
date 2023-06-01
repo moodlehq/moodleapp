@@ -69,12 +69,12 @@ export class AddonModFolderModuleHandlerService extends CoreModuleHandlerBase im
         }
 
         // @todo Temporary fix to open inline folders. We should use a more generic solution.
-        data.action = async (event, module, courseId, options): Promise<void> => {
+        data.action = async (event, actionModule, actionCourseId, options): Promise<void> => {
             options = options || {};
             options.params = options.params || {};
-            Object.assign(options.params, { module });
+            Object.assign(options.params, { module: actionModule });
 
-            const routeParams = '/' + courseId + '/' + module.id;
+            const routeParams = '/' + actionCourseId + '/' + actionModule.id;
 
             await CoreNavigator.navigateToSitePath(this.pageName + routeParams, options);
         };

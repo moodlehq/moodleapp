@@ -61,15 +61,15 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
         /**
          * Open the URL.
          *
-         * @param module The module object.
+         * @param courseModule The module object.
          * @param courseId The course ID.
          */
-        const openUrl = async (module: CoreCourseModuleData, courseId: number): Promise<void> => {
-            await this.logView(module);
+        const openUrl = async (courseModule: CoreCourseModuleData, courseId: number): Promise<void> => {
+            await this.logView(courseModule);
 
-            CoreCourse.storeModuleViewed(courseId, module.id);
+            CoreCourse.storeModuleViewed(courseId, courseModule.id);
 
-            const contents = await CoreCourse.getModuleContents(module);
+            const contents = await CoreCourse.getModuleContents(courseModule);
             AddonModUrlHelper.open(contents[0].fileurl);
         };
 
@@ -78,16 +78,16 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
             title: module.name,
             class: 'addon-mod_url-handler',
             showDownloadButton: false,
-            action: async (event: Event, module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions) => {
+            action: async (event: Event, courseModule: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions) => {
                 const modal = await CoreDomUtils.showModalLoading();
 
                 try {
-                    const shouldOpen = await this.shouldOpenLink(module);
+                    const shouldOpen = await this.shouldOpenLink(courseModule);
 
                     if (shouldOpen) {
-                        openUrl(module, courseId);
+                        openUrl(courseModule, courseId);
                     } else {
-                        this.openActivityPage(module, module.course, options);
+                        this.openActivityPage(courseModule, courseModule.course, options);
                     }
                 } finally {
                     modal.dismiss();
@@ -97,8 +97,8 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
                 hidden: true, // Hide it until we calculate if it should be displayed or not.
                 icon: 'fas-link',
                 label: 'core.openmodinbrowser',
-                action: (event: Event, module: CoreCourseModuleData, courseId: number): void => {
-                    openUrl(module, courseId);
+                action: (event: Event, courseModule: CoreCourseModuleData, courseId: number): void => {
+                    openUrl(courseModule, courseId);
                 },
             },
         };

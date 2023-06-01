@@ -56,15 +56,15 @@ export class CoreBrowser {
      * @returns Cookie value.
      */
     static getCookie(name: string): string | null {
-        const cookies = (document.cookie ?? '').split(';').reduce((cookies, cookie) => {
-            const [name, value] = cookie.trim().split('=');
+        const accumulatedCookies = (document.cookie ?? '').split(';').reduce((cookies, cookie) => {
+            const [cookieName, value] = cookie.trim().split('=');
 
-            cookies[name] = value;
+            cookies[cookieName] = value;
 
             return cookies;
         }, {});
 
-        return cookies[name] ?? null;
+        return accumulatedCookies[name] ?? null;
     }
 
     /**

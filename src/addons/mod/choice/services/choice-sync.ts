@@ -60,7 +60,7 @@ export class AddonModChoiceSyncProvider extends CoreCourseActivitySyncBaseProvid
      * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllChoices(siteId?: string, force?: boolean): Promise<void> {
-        return this.syncOnSites('all choices', (siteId) => this.syncAllChoicesFunc(!!force, siteId), siteId);
+        return this.syncOnSites('all choices', (id) => this.syncAllChoicesFunc(!!force, id), siteId);
     }
 
     /**

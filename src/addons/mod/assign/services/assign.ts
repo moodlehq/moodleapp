@@ -195,10 +195,10 @@ export class AddonModAssignProvider {
 
         // Search the assignment to return.
         if (response.courses.length) {
-            const assignment = response.courses[0].assignments.find((assignment) => assignment[key] == value);
+            const assignmentFound = response.courses[0].assignments.find((assignment) => assignment[key] == value);
 
-            if (assignment) {
-                return assignment;
+            if (assignmentFound) {
+                return assignmentFound;
             }
         }
 
@@ -258,10 +258,10 @@ export class AddonModAssignProvider {
 
         // Search the user.
         if (response.assignments.length && response.assignments[0].assignmentid == assignId) {
-            const mapping = response.assignments[0].mappings.find((mapping) => mapping.userid == userId);
+            const mappingFound = response.assignments[0].mappings.find((mapping) => mapping.userid == userId);
 
-            if (mapping) {
-                return mapping.id;
+            if (mappingFound) {
+                return mappingFound.id;
             }
         } else if (response.warnings && response.warnings.length) {
             throw response.warnings[0];
@@ -1080,11 +1080,11 @@ export class AddonModAssignProvider {
         }
 
         // Ignore some warnings.
-        const warning = result.warnings.find(warning =>
+        const warningFound = result.warnings.find(warning =>
             warning.warningcode !== 'timelimitnotenabled' && warning.warningcode !== 'opensubmissionexists');
 
-        if (warning) {
-            throw new CoreWSError(warning);
+        if (warningFound) {
+            throw new CoreWSError(warningFound);
         }
     }
 

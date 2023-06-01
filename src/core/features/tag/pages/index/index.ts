@@ -83,7 +83,7 @@ export class CoreTagIndexPage implements OnInit {
         try {
             await this.fetchData();
             if (CoreScreen.isTablet && this.areas && this.areas.length > 0) {
-                const area = this.areas.find((area) => area.id == this.areaId);
+                const area = this.areas.find(({ id }) => id == this.areaId);
                 this.openArea(area || this.areas[0]);
             }
         } finally {

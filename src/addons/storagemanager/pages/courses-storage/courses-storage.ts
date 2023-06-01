@@ -182,7 +182,7 @@ export class AddonStorageManagerCoursesStoragePage implements OnInit, OnDestroy 
             return;
         }
 
-        const course = this.downloadedCourses.find((course) => course.id === courseId);
+        const course = this.downloadedCourses.find(({ id }) => id === courseId);
 
         if (!course) {
             return;

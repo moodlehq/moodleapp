@@ -277,8 +277,7 @@ export class LocalNotificationsMock extends LocalNotifications {
      * @inheritdoc
      */
     async get(notificationId: number): Promise<ILocalNotification> {
-        const notification = this.scheduledNotifications
-            .find((notification) => notification.id === notificationId);
+        const notification = this.scheduledNotifications.find(({ id }) => id === notificationId);
 
         if (!notification) {
             throw new Error('Invalid Notification Id.');

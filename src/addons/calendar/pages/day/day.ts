@@ -827,13 +827,13 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
     markAsDeleted(eventId: number, deleted: boolean): void {
         // Mark the event as deleted or not.
         this.getItems()?.some(day => {
-            const event = day.onlineEvents?.find((event) => event.id == eventId);
+            const onlineEvent = day.onlineEvents?.find((event) => event.id == eventId);
 
-            if (!event) {
+            if (!onlineEvent) {
                 return false;
             }
 
-            event.deleted = deleted;
+            onlineEvent.deleted = deleted;
 
             if (deleted) {
                 day.hasOffline = true;

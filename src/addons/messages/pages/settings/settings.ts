@@ -179,10 +179,7 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
         processor: AddonMessagesMessagePreferencesNotificationProcessor,
     ): Promise<void> {
         // Update both states at the same time.
-        let value = notification.processors
-            .filter((processor) => processor.enabled)
-            .map((processor) => processor.name)
-            .join(',');
+        let value = notification.processors.filter(({ enabled }) => enabled).map(({ name }) => name).join(',');
 
         if (value == '') {
             value = 'none';
@@ -228,8 +225,8 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
         const preferenceName = notification.preferencekey + '_' + processorState.name;
 
         const value = notification.processors
-            .filter((processor) => processor[state].checked)
-            .map((processor) => processor.name)
+            .filter((notificationProcessor) => notificationProcessor[state].checked)
+            .map(({ name }) => name)
             .join(',');
 
         notification['updating'+state] = true;

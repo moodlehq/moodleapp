@@ -562,19 +562,17 @@ export class CoreCourseProvider {
         // Helper function to do the WS request without processing the result.
         const doRequest = async (
             site: CoreSite,
-            courseId: number,
-            moduleId: number,
-            modName: string | undefined,
+            courseid: number,
+            moduleid: number,
+            modname: string | undefined,
             includeStealth: boolean,
-            preferCache: boolean,
+            useCache: boolean,
         ): Promise<CoreCourseGetContentsWSSection[]> => {
-            const params: CoreCourseGetContentsParams = {
-                courseid: courseId,
-            };
+            const params: CoreCourseGetContentsParams = { courseid };
             params.options = [];
 
             const preSets: CoreSiteWSPreSets = {
-                omitExpires: preferCache,
+                omitExpires: useCache,
                 updateFrequency: CoreSite.FREQUENCY_RARELY,
             };
 
@@ -586,21 +584,21 @@ export class CoreCourseProvider {
             }
 
             // If modName is set, retrieve all modules of that type. Otherwise get only the module.
-            if (modName) {
+            if (modname) {
                 params.options.push({
                     name: 'modname',
-                    value: modName,
+                    value: modname,
                 });
-                preSets.cacheKey = this.getModuleByModNameCacheKey(modName);
+                preSets.cacheKey = this.getModuleByModNameCacheKey(modname);
             } else {
                 params.options.push({
                     name: 'cmid',
-                    value: moduleId,
+                    value: moduleid,
                 });
-                preSets.cacheKey = this.getModuleCacheKey(moduleId);
+                preSets.cacheKey = this.getModuleCacheKey(moduleid);
             }
 
-            if (!preferCache && ignoreCache) {
+            if (!useCache && ignoreCache) {
                 preSets.getFromCache = false;
                 preSets.emergencyCache = false;
             }
@@ -614,10 +612,10 @@ export class CoreCourseProvider {
                 if (!ignoreCache && !CoreNetwork.isOnline()) {
                     if (includeStealth) {
                         // Older versions didn't include the includestealthmodules option.
-                        return doRequest(site, courseId, moduleId, modName, false, true);
-                    } else if (modName) {
+                        return doRequest(site, courseid, moduleid, modname, false, true);
+                    } else if (modname) {
                         // Falback to the request for the given moduleId only.
-                        return doRequest(site, courseId, moduleId, undefined, this.canRequestStealthModules(site), true);
+                        return doRequest(site, courseid, moduleid, undefined, this.canRequestStealthModules(site), true);
                     }
                 }
 
@@ -904,7 +902,7 @@ export class CoreCourseProvider {
         }
 
         const sections = await this.getSections(courseId, excludeModules, excludeContents, undefined, siteId);
-        const section = sections.find((section) => section.id == sectionId);
+        const section = sections.find(({ id }) => id == sectionId);
 
         if (section) {
             return section;

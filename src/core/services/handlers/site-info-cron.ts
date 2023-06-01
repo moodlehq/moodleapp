@@ -36,7 +36,7 @@ export class CoreSiteInfoCronHandlerService implements CoreCronHandler {
         if (!siteId) {
             const siteIds = await CoreSites.getSitesIds();
 
-            await Promise.all(siteIds.map((siteId) => CoreSites.updateSiteInfo(siteId)));
+            await Promise.all(siteIds.map((id) => CoreSites.updateSiteInfo(id)));
         } else {
             await CoreSites.updateSiteInfo(siteId);
         }

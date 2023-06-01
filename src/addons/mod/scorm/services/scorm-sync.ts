@@ -445,7 +445,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
      * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllScorms(siteId?: string, force?: boolean): Promise<void> {
-        return this.syncOnSites('all SCORMs', (siteId) => this.syncAllScormsFunc(!!force, siteId), siteId);
+        return this.syncOnSites('all SCORMs', (id) => this.syncAllScormsFunc(!!force, id), siteId);
     }
 
     /**
@@ -524,10 +524,10 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
 
         try {
             // Send the data in each SCO.
-            const promises = Object.entries(scos).map(async ([key, tracks]) => {
+            const promises = Object.entries(scos).map(async ([key, entryTrack]) => {
                 const scoId = Number(key);
 
-                await AddonModScorm.saveTracksOnline(scormId, scoId, attempt, tracks, siteId);
+                await AddonModScorm.saveTracksOnline(scormId, scoId, attempt, entryTrack, siteId);
 
                 // Sco data successfully sent. Mark them as synced. This is needed because some SCOs sync might fail.
                 await CoreUtils.ignoreErrors(AddonModScormOffline.markAsSynced(scormId, attempt, scoId, siteId));

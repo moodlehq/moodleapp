@@ -654,10 +654,10 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
         } catch {
             // Error checking if module has updates.
             const packageId = CoreFilepool.getPackageId(handler.component, module.id);
-            const status = this.statusCache.getValue<string>(packageId, 'status', true);
+            const cacheStatus = this.statusCache.getValue<string>(packageId, 'status', true);
 
             return {
-                status: this.determineModuleStatus(module, status || CoreConstants.NOT_DOWNLOADED),
+                status: this.determineModuleStatus(module, cacheStatus || CoreConstants.NOT_DOWNLOADED),
                 updateStatus: true,
             };
         }

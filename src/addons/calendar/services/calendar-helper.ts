@@ -406,8 +406,8 @@ export class AddonCalendarHelperProvider {
      * @param moment Month moment.
      * @returns The "id".
      */
-    getMonthId(moment: moment.Moment): string {
-        return `${moment.year()}#${moment.month() + 1}`;
+    getMonthId(monthMoment: moment.Moment): string {
+        return `${monthMoment.year()}#${monthMoment.month() + 1}`;
     }
 
     /**
@@ -416,8 +416,8 @@ export class AddonCalendarHelperProvider {
      * @param moment Day moment.
      * @returns The "id".
      */
-    getDayId(moment: moment.Moment): string {
-        return `${this.getMonthId(moment)}#${moment.date()}`;
+    getDayId(dayMoment: moment.Moment): string {
+        return `${this.getMonthId(dayMoment)}#${dayMoment.date()}`;
     }
 
     /**

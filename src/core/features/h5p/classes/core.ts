@@ -286,8 +286,8 @@ export class CoreH5PCore {
                 const addon = addons[i];
 
                 if (addon.addTo?.content?.types?.length) {
-                    for (let i = 0; i < addon.addTo.content.types.length; i++) {
-                        const type = addon.addTo.content.types[i];
+                    for (let index = 0; index < addon.addTo.content.types.length; index++) {
+                        const type = addon.addTo.content.types[index];
                         let regex = type?.text?.regex;
                         if (regex && regex[0] === '/' && regex.slice(-1) === '/') {
                             // Regex designed for PHP. Remove the starting and ending slashes to convert them to JS format.

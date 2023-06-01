@@ -40,7 +40,7 @@ export class AddonModWorkshopPhaseInfoComponent implements OnInit {
                     task.link = this.externalUrl;
                 }
             });
-            const action = this.phases[x].actions.find((action) => action.url && action.type == 'switchphase');
+            const action = this.phases[x].actions.find(({ url, type }) => url && type == 'switchphase');
             this.phases[x].switchUrl = action ? action.url : '';
         }
     }

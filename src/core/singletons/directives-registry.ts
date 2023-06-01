@@ -127,8 +127,8 @@ export class CoreDirectivesRegistry {
             return;
         }
 
-        await Promise.all(elements.map(async element => {
-            const instances = this.resolveAll<T>(element, directiveClass);
+        await Promise.all(elements.map(async item => {
+            const instances = this.resolveAll<T>(item, directiveClass);
 
             await Promise.all(instances.map(instance => instance.ready()));
         }));

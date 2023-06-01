@@ -484,7 +484,7 @@ export class AddonModForumProvider {
     async getForum(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModForumData> {
         const forums = await this.getCourseForums(courseId, options);
 
-        const forum = forums.find(forum => forum.cmid == cmId);
+        const forum = forums.find(({ cmid }) => cmid == cmId);
 
         if (!forum) {
             throw new CoreError(Translate.instant('core.course.modulenotfound'));
@@ -503,7 +503,7 @@ export class AddonModForumProvider {
      */
     async getForumById(courseId: number, forumId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModForumData> {
         const forums = await this.getCourseForums(courseId, options);
-        const forum = forums.find(forum => forum.id === forumId);
+        const forum = forums.find(({ id }) => id === forumId);
 
         if (!forum) {
             throw new Error(`Forum with id ${forumId} not found`);
@@ -799,7 +799,7 @@ export class AddonModForumProvider {
                 throw error;
             }
 
-            const params: AddonModForumGetForumDiscussionsPaginatedWSParams = {
+            const data: AddonModForumGetForumDiscussionsPaginatedWSParams = {
                 forumid: forumId,
                 page: options.page,
                 perpage: AddonModForumProvider.DISCUSSIONS_PER_PAGE,
@@ -810,7 +810,7 @@ export class AddonModForumProvider {
 
             response = await site.read<AddonModForumGetForumDiscussionsPaginatedWSResponse>(
                 'mod_forum_get_forum_discussions_paginated',
-                params,
+                data,
                 preSets,
             );
         }
@@ -915,16 +915,13 @@ export class AddonModForumProvider {
                         sortOrder: sortOrder.value,
                         readingStrategy: CoreSitesReadingStrategy.ONLY_CACHE,
                     })
-                    .then((response) => {
-                        // Now invalidate the WS calls.
-                        const promises: Promise<void>[] = [];
-
-                        response.discussions.forEach((discussion) => {
-                            promises.push(this.invalidateDiscussionPosts(discussion.discussion, forum.id));
-                        });
-
-                        return CoreUtils.allPromises(promises);
-                    }),
+                    .then((response) =>
+                    // Now invalidate the WS calls.
+                        CoreUtils.allPromises(
+                            response.discussions.map(
+                                (discussion) => this.invalidateDiscussionPosts(discussion.discussion, forum.id),
+                            ),
+                        )),
             );
         });
 

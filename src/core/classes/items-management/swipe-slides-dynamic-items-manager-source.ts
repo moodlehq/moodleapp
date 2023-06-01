@@ -92,8 +92,8 @@ export abstract class CoreSwipeSlidesDynamicItemsManagerSource<Item extends Core
         const previousItemId = previousItem ? this.getItemId(previousItem) : null;
         const nextItemId = nextItem ? this.getItemId(nextItem) : null;
 
-        const added = this.items.some((item, index) => {
-            const itemId = this.getItemId(item);
+        const added = this.items.some((element, index) => {
+            const itemId = this.getItemId(element);
             let indexToInsert = -1;
             if (itemId === previousItemId) {
                 // Previous item found, add the item after it.

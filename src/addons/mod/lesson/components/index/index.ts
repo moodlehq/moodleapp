@@ -510,7 +510,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
 
         // Search the name of the group if it isn't all participants.
         if (groupId && this.groupInfo && this.groupInfo.groups) {
-            const group = this.groupInfo.groups.find(group => groupId == group.id);
+            const group = this.groupInfo.groups.find(({ id }) => groupId == id);
 
             this.selectedGroupEmptyMessage = group
                 ? Translate.instant('addon.mod_lesson.nolessonattemptsgroup', { $a: group.name })

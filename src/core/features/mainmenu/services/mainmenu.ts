@@ -277,8 +277,8 @@ export class CoreMainMenuProvider {
     async isCurrentMainMenuHandler(pageName: string): Promise<boolean> {
         const handlers = await this.getCurrentMainMenuHandlers();
 
-        const handler = handlers.find((handler) => {
-            const tabRoot = /^[^/]+/.exec(handler.page)?.[0] ?? handler.page;
+        const handler = handlers.find(({ page }) => {
+            const tabRoot = /^[^/]+/.exec(page)?.[0] ?? page;
 
             return tabRoot == pageName;
         });

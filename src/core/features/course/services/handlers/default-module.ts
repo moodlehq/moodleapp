@@ -49,11 +49,11 @@ export class CoreCourseModuleDefaultHandler implements CoreCourseModuleHandler {
             icon: CoreCourse.getModuleIconSrc(module.modname, module.modicon),
             title: module.name,
             class: 'core-course-default-handler core-course-module-' + module.modname + '-handler',
-            action: async (event: Event, module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions) => {
+            action: async (event: Event, courseModule: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions) => {
                 event.preventDefault();
                 event.stopPropagation();
 
-                await this.openActivityPage(module, courseId, options);
+                await this.openActivityPage(courseModule, courseId, options);
             },
         };
 

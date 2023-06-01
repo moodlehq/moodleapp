@@ -378,8 +378,8 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
         await Promise.all(promises);
 
         // We have quiz data, now we'll get specific data for each attempt.
-        await Promise.all(attempts.map(async (attempt) => {
-            await this.prefetchAttempt(quiz, attempt, preflightData, siteId);
+        await Promise.all(attempts.map(async (quizAttempt) => {
+            await this.prefetchAttempt(quiz, quizAttempt, preflightData, siteId);
         }));
 
         if (!canStart) {

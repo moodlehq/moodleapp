@@ -22,9 +22,9 @@ import { Story } from '@storybook/angular';
  * @returns Story.
  */
 export function story<T>(template: Story<T>, defaultArgs: Partial<T> = {}): Story<T> {
-    const story = template.bind({});
+    const definedStory = template.bind({});
 
-    story.args = defaultArgs;
+    definedStory.args = defaultArgs;
 
-    return story;
+    return definedStory;
 }

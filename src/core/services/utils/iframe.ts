@@ -407,7 +407,7 @@ export class CoreIframeUtilsProvider {
 
             // Add click listener to the link, this way if the iframe has added a listener to the link it will be executed first.
             link.treated = true;
-            link.addEventListener('click', event => this.linkClicked(link, element, event));
+            link.addEventListener('click', clickEvent => this.linkClicked(link, element, clickEvent));
         }, {
             capture: true, // Use capture to fix this listener not called if the element clicked is too deep in the DOM.
         });

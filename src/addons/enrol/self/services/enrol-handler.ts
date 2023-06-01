@@ -113,16 +113,14 @@ export class AddonEnrolSelfHandlerService implements CoreEnrolSelfHandler {
         const validatePassword = async (password = ''): Promise<CorePasswordModalResponse> => {
             const modal = await CoreDomUtils.showModalLoading('core.loading', true);
 
-            const response: CorePasswordModalResponse = {
-                password,
-            };
+            const passwordModalResponse: CorePasswordModalResponse = { password };
 
             try {
-                response.validated = await AddonEnrolSelf.selfEnrol(method.courseid, password, method.id);
+                passwordModalResponse.validated = await AddonEnrolSelf.selfEnrol(method.courseid, password, method.id);
             } catch (error) {
                 if (error && error.errorcode === CoreCoursesProvider.ENROL_INVALID_KEY) {
-                    response.validated = false;
-                    response.error = error.message;
+                    passwordModalResponse.validated = false;
+                    passwordModalResponse.error = error.message;
                 } else {
                     CoreDomUtils.showErrorModalDefault(error, 'addon.enrol_self.errorselfenrol', true);
 
@@ -132,7 +130,7 @@ export class AddonEnrolSelfHandlerService implements CoreEnrolSelfHandler {
                 modal.dismiss();
             }
 
-            return response;
+            return passwordModalResponse;
         };
 
         let response: CorePasswordModalResponse | undefined;
@@ -145,14 +143,14 @@ export class AddonEnrolSelfHandlerService implements CoreEnrolSelfHandler {
 
         if (!response.validated) {
             try {
-                const response = await CoreDomUtils.promptPassword({
+                const promptPasswordResponse = await CoreDomUtils.promptPassword({
                     validator: validatePassword,
                     title: method.name,
                     placeholder: 'addon.enrol_self.password',
                     submit: 'core.courses.enrolme',
                 });
 
-                if (!response.validated) {
+                if (!promptPasswordResponse.validated) {
                     return false;
                 }
             } catch {

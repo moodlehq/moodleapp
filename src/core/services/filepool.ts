@@ -878,17 +878,15 @@ export class CoreFilepoolProvider {
 
         // Set package as downloading.
         const promise = this.storePackageStatus(siteId, CoreConstants.DOWNLOADING, component, componentId).then(async () => {
-            const promises: Promise<string | void>[] = [];
             let packageLoaded = 0;
 
-            fileList.forEach((file) => {
+            const promises: Promise<string | void>[] = fileList.map((file) => {
                 const fileUrl = CoreFileHelper.getFileUrl(file);
                 const options = {
                     isexternalfile: 'isexternalfile' in file ? file.isexternalfile : undefined,
                     repositorytype: 'repositorytype' in file ? file.repositorytype : undefined,
                 };
                 let path: string | undefined;
-                let promise: Promise<string | void>;
                 let fileLoaded = 0;
                 let onFileProgress: ((progress: ProgressEvent) => void) | undefined;
 
@@ -918,7 +916,7 @@ export class CoreFilepoolProvider {
                 }
 
                 if (prefetch) {
-                    promise = this.addToQueueByUrl(
+                    return this.addToQueueByUrl(
                         siteId,
                         fileUrl,
                         component,
@@ -929,22 +927,19 @@ export class CoreFilepoolProvider {
                         0,
                         options,
                     );
-                } else {
-                    promise = this.downloadUrl(
-                        siteId,
-                        fileUrl,
-                        false,
-                        component,
-                        componentId,
-                        file.timemodified,
-                        onFileProgress,
-                        path,
-                        options,
-                    );
                 }
 
-                // Using undefined for success & fail will pass the success/failure to the parent promise.
-                promises.push(promise);
+                return this.downloadUrl(
+                    siteId,
+                    fileUrl,
+                    false,
+                    component,
+                    componentId,
+                    file.timemodified,
+                    onFileProgress,
+                    path,
+                    options,
+                );
             });
 
             try {
@@ -1087,10 +1082,10 @@ export class CoreFilepoolProvider {
                 const url = await this.downloadForPoolByUrl(siteId, fileUrl, options, filePath, onProgress);
 
                 return finishSuccessfulDownload(url);
-            } catch (error) {
+            } catch (err) {
                 this.notifyFileDownloadError(siteId, fileId, links);
 
-                throw error;
+                throw err;
             }
         }
     }
@@ -1104,8 +1099,8 @@ export class CoreFilepoolProvider {
     extractDownloadableFilesFromHtml(html: string): string[] {
         let urls: string[] = [];
 
-        const element = CoreDomUtils.convertToElement(html);
-        const elements: AnchorOrMediaElement[] = Array.from(element.querySelectorAll('a, img, audio, video, source, track'));
+        const htmlElement = CoreDomUtils.convertToElement(html);
+        const elements: AnchorOrMediaElement[] = Array.from(htmlElement.querySelectorAll('a, img, audio, video, source, track'));
 
         for (let i = 0; i < elements.length; i++) {
             const element = elements[i];
@@ -1125,7 +1120,7 @@ export class CoreFilepoolProvider {
         }
 
         // Now get other files from plugin file handlers.
-        urls = urls.concat(CorePluginFileDelegate.getDownloadableFilesFromHTML(element));
+        urls = urls.concat(CorePluginFileDelegate.getDownloadableFilesFromHTML(htmlElement));
 
         return urls;
     }
@@ -1550,7 +1545,7 @@ export class CoreFilepoolProvider {
                 }
 
                 return CoreConstants.DOWNLOADED;
-            } catch (e) {
+            } catch {
                 return CoreConstants.NOT_DOWNLOADED;
             }
         }
@@ -1589,11 +1584,11 @@ export class CoreFilepoolProvider {
         options: CoreFilepoolFileOptions = {},
         revision?: number,
     ): Promise<string> {
-        const addToQueue = (fileUrl: string): void => {
+        const addToQueue = (url: string): void => {
             // Add the file to queue if needed and ignore errors.
             CoreUtils.ignoreErrors(this.addToQueueIfNeeded(
                 siteId,
-                fileUrl,
+                url,
                 component,
                 componentId,
                 timemodified,
@@ -2976,11 +2971,11 @@ export class CoreFilepoolProvider {
             const absoluteUrl = CoreUrl.toAbsoluteURL(fileUrl, url);
 
             try {
-                let fileUrl = absoluteUrl;
+                let currentFileUrl = absoluteUrl;
 
                 if (!CoreUrlUtils.isLocalFileUrl(absoluteUrl)) {
                     // Not a local file, download it.
-                    fileUrl = await this.downloadUrl(
+                    currentFileUrl = await this.downloadUrl(
                         siteId,
                         absoluteUrl,
                         false,
@@ -2995,10 +2990,10 @@ export class CoreFilepoolProvider {
                 }
 
                 // Convert the URL so it works in mobile devices.
-                fileUrl = CoreFile.convertFileSrc(fileUrl);
+                currentFileUrl = CoreFile.convertFileSrc(currentFileUrl);
 
-                if (fileUrl !== url) {
-                    cssCode = cssCode.replace(new RegExp(CoreTextUtils.escapeForRegex(url), 'g'), fileUrl);
+                if (currentFileUrl !== url) {
+                    cssCode = cssCode.replace(new RegExp(CoreTextUtils.escapeForRegex(url), 'g'), currentFileUrl);
                     updated = true;
                 }
             } catch (error) {

@@ -773,7 +773,7 @@ export class CoreFileUploaderHelperProvider {
             // Allow the user to retry.
             try {
                 await CoreDomUtils.showConfirm(error, errorStr, retryStr);
-            } catch (error) {
+            } catch (err) {
                 // User cancelled. Delete the file if needed.
                 if (options.deleteAfterUpload) {
                     CoreFile.removeExternalFile(path);

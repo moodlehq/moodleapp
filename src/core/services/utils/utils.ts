@@ -99,7 +99,7 @@ export class CoreUtilsProvider {
         };
 
         const errors = await Promise.all(promises.map(getPromiseError));
-        const error = errors.find(error => !!error);
+        const error = errors.find(err => !!err);
 
         if (error) {
             throw error;
@@ -1020,11 +1020,11 @@ export class CoreUtilsProvider {
             // Error, use the original path.
         }
 
-        const openFile = async (mimetype?: string) => {
+        const openFile = async (fileMimetype?: string) => {
             if (this.shouldOpenWithDialog(options)) {
-                await FileOpener.showOpenWithDialog(path, mimetype || '');
+                await FileOpener.showOpenWithDialog(path, fileMimetype || '');
             } else {
-                await FileOpener.open(path, mimetype || '');
+                await FileOpener.open(path, fileMimetype || '');
             }
         };
 

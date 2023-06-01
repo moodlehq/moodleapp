@@ -317,13 +317,13 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
 
             if (this.password) {
                 // Lesson uses password, get the whole lesson object.
-                const options = {
+                const lessonOptions = {
                     password: this.password,
                     cmId: this.cmId,
                     readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
                 };
                 promises.push(this.callFunction<AddonModLessonLessonWSData>(
-                    () => AddonModLesson.getLessonWithPassword(lessonId, options),
+                    () => AddonModLesson.getLessonWithPassword(lessonId, lessonOptions),
                     options,
                 ).then((lesson) => {
                     this.lesson = lesson;
@@ -706,16 +706,16 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
             if (!this.offline && !this.review && AddonModLesson.isLessonOffline(lesson)) {
                 // Lesson allows offline and the user changed some data in server. Update cached data.
                 const retake = this.accessInfo!.attemptscount;
-                const options = {
+                const requestOptions = {
                     cmId: this.cmId,
                     readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
                 };
 
                 // Update in background the list of content pages viewed or question attempts.
                 if (AddonModLesson.isQuestionPage(this.pageData?.page?.type || -1)) {
-                    AddonModLesson.getQuestionsAttemptsOnline(lesson.id, retake, options);
+                    AddonModLesson.getQuestionsAttemptsOnline(lesson.id, retake, requestOptions);
                 } else {
-                    AddonModLesson.getContentPagesViewedOnline(lesson.id, retake, options);
+                    AddonModLesson.getContentPagesViewedOnline(lesson.id, retake, requestOptions);
                 }
             }
 
