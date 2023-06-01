@@ -31,6 +31,9 @@ import { firstValueFrom, zipIncludingComplete } from '@/core/utils/rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { chainRequests, WSObservable } from '@classes/site';
 
+// Id for a course item representing all courses (for example, for course filters).
+export const ALL_COURSES_ID = -1;
+
 /**
  * Helper to gather some common courses functions.
  */
@@ -45,14 +48,17 @@ export class CoreCoursesHelperProvider {
      * @param courseId Course ID to get the category.
      * @returns Promise resolved with the list of courses and the category.
      */
-    async getCoursesForPopover(courseId?: number): Promise<{courses: Partial<CoreEnrolledCourseData>[]; categoryId?: number}> {
-        const courses: Partial<CoreEnrolledCourseData>[] = await CoreCourses.getUserCourses(false);
+    async getCoursesForPopover(courseId?: number): Promise<{courses: CoreEnrolledCourseData[]; categoryId?: number}> {
+        const courses: CoreEnrolledCourseData[] = await CoreCourses.getUserCourses(false);
 
         // Add "All courses".
         courses.unshift({
-            id: -1,
+            id: ALL_COURSES_ID,
             fullname: Translate.instant('core.fulllistofcourses'),
+            shortname: Translate.instant('core.fulllistofcourses'),
             categoryid: -1,
+            summary: '',
+            summaryformat: 1,
         });
 
         let categoryId: number | undefined;
