@@ -62,7 +62,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
     year?: number;
     month?: number;
     canCreate = false;
-    courses: Partial<CoreEnrolledCourseData>[] = [];
+    courses: CoreEnrolledCourseData[] = [];
     loaded = false;
     hasOffline = false;
     isOnline = false;

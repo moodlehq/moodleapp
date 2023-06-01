@@ -489,7 +489,7 @@ type PreloadedDay = DayBasicData & CoreSwipeSlidesDynamicItem & {
  */
 class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicItemsManagerSource<PreloadedDay> {
 
-    courses: Partial<CoreEnrolledCourseData>[] = [];
+    courses: CoreEnrolledCourseData[] = [];
     eventsSources: Set<AddonCalendarEventsSource> = new Set();
     // Offline events classified in month & day.
     offlineEvents: Record<string, Record<number, AddonCalendarEventToDisplay[]>> = {};
