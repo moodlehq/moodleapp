@@ -531,6 +531,14 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
             return;
         }
 
+        // @todo MOBILE-4350: This is called before getting the attempt data in sequential quizzes as a workaround for a bug
+        // in the LMS. Once the bug has been fixed, this should be reverted.
+        if (this.isSequential) {
+            await CoreUtils.ignoreErrors(
+                AddonModQuiz.logViewAttempt(this.attempt.id, page, this.preflightData, this.offline, this.quiz),
+            );
+        }
+
         const data = await AddonModQuiz.getAttemptData(this.attempt.id, page, this.preflightData, {
             cmId: this.quiz.coursemodule,
             readingStrategy: this.offline ? CoreSitesReadingStrategy.PREFER_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
@@ -559,9 +567,12 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
         });
 
         // Mark the page as viewed.
-        CoreUtils.ignoreErrors(
-            AddonModQuiz.logViewAttempt(this.attempt.id, page, this.preflightData, this.offline, this.quiz),
-        );
+        if (!this.isSequential) {
+            // @todo MOBILE-4350: Undo workaround.
+            CoreUtils.ignoreErrors(
+                AddonModQuiz.logViewAttempt(this.attempt.id, page, this.preflightData, this.offline, this.quiz),
+            );
+        }
 
         // Start looking for changes.
         this.autoSave.startCheckChangesProcess(this.quiz, this.attempt, this.preflightData, this.offline);
