@@ -15,8 +15,9 @@ Feature: Attempt a quiz in app
       | user     | course | role    |
       | student1 | C1     | student |
     And the following "activities" exist:
-      | activity   | name   | intro              | course | idnumber |
-      | quiz       | Quiz 1 | Quiz 1 description | C1     | quiz1    |
+      | activity   | name   | intro              | course | idnumber | navmethod  |
+      | quiz       | Quiz 1 | Quiz 1 description | C1     | quiz1    | free       |
+      | quiz       | Quiz 2 | Quiz 2 description | C1     | quiz2    | sequential |
     And the following "question categories" exist:
       | contextlevel | reference | name           |
       | Course       | C1        | Test questions |
@@ -24,10 +25,16 @@ Feature: Attempt a quiz in app
       | questioncategory | qtype       | name  | questiontext                |
       | Test questions   | truefalse   | TF1   | Text of the first question  |
       | Test questions   | truefalse   | TF2   | Text of the second question |
+      | Test questions   | truefalse   | TF3   | Text of the third question |
     And quiz "Quiz 1" contains the following questions:
       | question | page |
       | TF1      | 1    |
       | TF2      | 2    |
+    And quiz "Quiz 2" contains the following questions:
+      | question | page |
+      | TF1      | 1    |
+      | TF2      | 2    |
+      | TF3      | 3    |
 
   Scenario: Next and previous navigation
     Given I entered the quiz activity "Quiz 1" on course "Course 1" as "student1" in the app
@@ -35,7 +42,12 @@ Feature: Attempt a quiz in app
     Then I should find "Text of the first question" in the app
     But I should not find "Text of the second question" in the app
 
-    When I press "Next" in the app
+    When I press "Open navigation popover" in the app
+    Then I should find "Question 1" in the app
+    And I should find "Question 2" in the app
+
+    When I press "Close" in the app
+    And I press "Next" in the app
     Then I should find "Text of the second question" in the app
     But I should not find "Text of the first question" in the app
 
@@ -54,6 +66,8 @@ Feature: Attempt a quiz in app
     When I press "Next" in the app
     And I press "Submit" in the app
     Then I should find "Summary of attempt" in the app
+    And I should find "Not yet answered" within "1" "ion-item" in the app
+    And I should find "Not yet answered" within "2" "ion-item" in the app
 
     When I press "Not yet answered" within "2" "ion-item" in the app
     Then I should find "Text of the second question" in the app
@@ -69,3 +83,57 @@ Feature: Attempt a quiz in app
     When I press "Submit all and finish" in the app
     And I press "OK" near "Once you submit" in the app
     Then I should find "Review" in the app
+    And I should find "Text of the first question" in the app
+    And I should find "Text of the second question" in the app
+
+  Scenario: Sequential navigation
+    Given I entered the quiz activity "Quiz 2" on course "Course 1" as "student1" in the app
+    And I press "Attempt quiz now" in the app
+    Then I should find "Text of the first question" in the app
+    But I should not find "Text of the second question" in the app
+    And I should not find "Text of the third question" in the app
+
+    When I press "Open navigation popover" in the app
+    Then I should find "Question 1" in the app
+    But I should not find "Question 2" in the app
+    And I should not find "Question 3" in the app
+
+    When I press "Close" in the app
+    And I press "Next" in the app
+    Then I should find "Text of the second question" in the app
+    But I should not find "Text of the first question" in the app
+    And I should not find "Text of the third question" in the app
+    And I should not find "Previous" in the app
+
+    When I press "Open navigation popover" in the app
+    Then I should find "Question 2" in the app
+    But I should not find "Question 1" in the app
+    And I should not find "Question 3" in the app
+
+    When I press "Close" in the app
+    And I press "Next" in the app
+    Then I should find "Text of the third question" in the app
+    But I should not find "Text of the first question" in the app
+    And I should not find "Text of the second question" in the app
+    And I should not find "Previous" in the app
+
+    When I press "Open navigation popover" in the app
+    Then I should find "Question 3" in the app
+    But I should not find "Question 1" in the app
+    And I should not find "Question 2" in the app
+
+    When I press "Close" in the app
+    And I press "Submit" in the app
+    Then I should find "Summary of attempt" in the app
+    # @todo MOBILE-4350: Uncomment these.
+    # And I should find "Not yet answered" within "1" "ion-item" in the app
+    # And I should find "Not yet answered" within "2" "ion-item" in the app
+    # And I should find "Not yet answered" within "3" "ion-item" in the app
+
+    When I press "Submit all and finish" in the app
+    And I press "OK" near "Once you submit" in the app
+    Then I should find "Review" in the app
+    # @todo MOBILE-4350: Uncomment these.
+    # And I should find "Text of the first question" in the app
+    # And I should find "Text of the second question" in the app
+    # And I should find "Text of the third question" in the app
