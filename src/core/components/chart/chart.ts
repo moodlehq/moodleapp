@@ -16,7 +16,7 @@ import { Component, Input, OnDestroy, OnInit, ElementRef, OnChanges, ViewChild, 
 import { CoreFilter } from '@features/filter/services/filter';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { CoreUtils } from '@services/utils/utils';
-import { Chart, ChartLegendLabelItem, ChartLegendOptions } from 'chart.js';
+import { ChartLegendLabelItem, ChartLegendOptions } from 'chart.js';
 
 /**
  * This component shows a chart using chart.js.
@@ -98,6 +98,8 @@ export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
         if (!context) {
             return;
         }
+
+        const { Chart } = await import('./chart.lazy');
 
         this.chart = new Chart(context, {
             type: this.type,
