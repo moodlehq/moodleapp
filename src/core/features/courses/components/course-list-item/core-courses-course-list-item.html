@@ -3,7 +3,7 @@
     button [attr.aria-label]="course.displayname || course.fullname">
 
     <div *ngIf="layout == 'card' || layout == 'summarycard'" class="core-course-thumb" [class.core-course-color-img]="course.courseimage">
-        <img *ngIf="course.courseimage" [src]="course.courseimage" core-external-content alt="" />
+        <img *ngIf="course.courseimage" [src]="course.courseimage" core-external-content alt="" (error)="loadFallbackCourseIcon()" />
         <ion-icon *ngIf="!course.courseimage" name="fas-graduation-cap" class="course-icon" aria-hidden="true">
         </ion-icon>
     </div>
@@ -34,7 +34,7 @@
                 aria-hidden="true">
             </ion-icon>
             <ion-avatar *ngIf="course.courseimage" slot="start" class="core-course-thumb">
-                <img [src]="course.courseimage" core-external-content alt="" />
+                <img [src]="course.courseimage" core-external-content alt="" (error)="loadFallbackCourseIcon()" />
             </ion-avatar>
         </ng-container>
 

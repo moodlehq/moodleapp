@@ -18,7 +18,7 @@
     </ion-refresher>
     <core-loading [hideUntil]="dataLoaded">
         <div *ngIf="course" class="core-course-thumb" #courseThumb>
-            <img *ngIf="course.courseimage" [src]="course.courseimage" core-external-content alt="" />
+            <img *ngIf="course.courseimage" [src]="course.courseimage" core-external-content alt="" (error)="loadFallbackCourseIcon()" />
             <ion-icon *ngIf="!course.courseimage" name="fas-graduation-cap" class="course-icon" aria-hidden="true">
             </ion-icon>
         </div>
