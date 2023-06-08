@@ -138,6 +138,10 @@ ion-card.core-course-list-item {
     }
 }
 
+// Fill geopaterns
+.core-course-thumb img[src$=".svg"] {
+    min-width: 100%;
+}
 
 // Card layout.
 ion-card.core-course-list-card {

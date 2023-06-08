@@ -1,7 +1,7 @@
 <ion-card [attr.course-color]="course.color ? null : course.colorNumber">
-    <div (click)="openCourse()" class="core-course-thumb" [class.core-course-color-img]="course.courseImage"
+    <div (click)="openCourse()" class="core-course-thumb" [class.core-course-color-img]="course.courseimage"
         [style.background-color]="course.color">
-        <img *ngIf="course.courseImage" [src]="course.courseImage" core-external-content alt="" />
+        <img *ngIf="course.courseimage" [src]="course.courseimage" core-external-content alt="" />
     </div>
     <ion-item button (click)="openCourse()" [attr.aria-label]="course.displayname || course.fullname" class="core-course-header"
         [class.core-course-only-title]="!showAll || progress < 0 && completionUserTracked === false" detail="false">

@@ -21,12 +21,12 @@
 <div class="core-course-header">
     <ion-item class="core-format-progress-list ion-text-wrap list-item-limited-width" collapsible>
         <ng-container *ngIf="course">
-            <div *ngIf="!course.courseImage" #courseThumb slot="start" class="core-course-thumb">
-                <ion-icon *ngIf="!course.courseImage" name="fas-graduation-cap" class="course-icon" aria-hidden="true">
+            <div *ngIf="!course.courseimage" #courseThumb slot="start" class="core-course-thumb">
+                <ion-icon name="fas-graduation-cap" class="course-icon" aria-hidden="true">
                 </ion-icon>
             </div>
-            <ion-avatar *ngIf="course.courseImage" slot="start" class="core-course-thumb">
-                <img [src]="course.courseImage" core-external-content alt="" />
+            <ion-avatar *ngIf="course.courseimage" slot="start" class="core-course-thumb">
+                <img [src]="course.courseimage" core-external-content alt="" />
             </ion-avatar>
         </ng-container>
 
