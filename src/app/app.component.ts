@@ -34,6 +34,7 @@ import { CoreDom } from '@singletons/dom';
 import { CorePlatform } from '@services/platform';
 import { CoreUrl } from '@singletons/url';
 import { CoreLogger } from '@singletons/logger';
+import { CorePromisedValue } from '@classes/promised-value';
 
 const MOODLE_SITE_URL_PREFIX = 'url-';
 const MOODLE_VERSION_PREFIX = 'version-';
@@ -206,7 +207,37 @@ export class AppComponent implements OnInit, AfterViewInit {
 
             this.logger.debug('Hide splash screen');
             SplashScreen.hide();
+            this.setSystemUIColorsAfterSplash();
         });
+    }
+
+    /**
+     * Set the system UI Colors after hiding the splash to ensure it's correct.
+     *
+     * @returns Promise resolved when done.
+     */
+    protected async setSystemUIColorsAfterSplash(): Promise<void> {
+        // When the app starts and the splash is hidden, the color of the bars changes from transparent to black.
+        // We have to set the current color but we don't know when the change will be made.
+        // This problem is only related to Android, so on iOS it will be only set once.
+        if (!CorePlatform.isAndroid()) {
+            CoreApp.setSystemUIColors();
+
+            return;
+        }
+
+        const promise = new CorePromisedValue<void>();
+
+        const interval = window.setInterval(() => {
+            CoreApp.setSystemUIColors();
+        });
+        setTimeout(() => {
+            clearInterval(interval);
+            promise.resolve();
+
+        }, 1000);
+
+        return promise;
     }
 
     /**
@@ -240,9 +271,6 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         const isOnline = CoreNetwork.isOnline();
         CoreDomUtils.toggleModeClass('core-offline', !isOnline, { includeLegacy: true });
-
-        // Set StatusBar properties.
-        CoreApp.setStatusBarColor();
     }
 
     /**
