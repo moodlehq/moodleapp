@@ -285,7 +285,7 @@
     "publisher": "ionic",
     "licenseFile": "README.md"
   },
-  "@moodlehq/phonegap-plugin-push@4.0.0-moodle.5": {
+  "@moodlehq/phonegap-plugin-push@4.0.0-moodle.6": {
     "licenses": "MIT",
     "repository": "https://github.com/moodlemobile/phonegap-plugin-push",
     "publisher": "Erisu",
