@@ -1806,3 +1806,21 @@ ion-modal.core-modal-no-background {
         display: none;
     }
 }
+
+/*
+* This is to solve popver issue in chrome 114
+* For more info see: https://github.com/ionic-team/ionic-framework/issues/27599
+*/
+[popover].popover-viewport {
+    display: initial;
+    position: initial;
+    margin: initial;
+    border: initial;
+    background: initial;
+    padding: initial;
+    width: initial;
+    height: initial;
+    overflow: initial;
+    inset: initial;
+    color: initial;
+}
