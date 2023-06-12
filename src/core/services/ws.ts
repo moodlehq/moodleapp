@@ -42,6 +42,7 @@ import { CorePlatform } from '@services/platform';
 import { CoreSiteError, CoreSiteErrorOptions } from '@classes/errors/siteerror';
 import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
 import { CoreSites } from '@services/sites';
+import { CoreLang } from './lang';
 
 /**
  * This service allows performing WS calls and download/upload files.
@@ -419,7 +420,11 @@ export class CoreWSProvider {
      * @param preSets Extra settings and information. Only some
      * @returns Promise resolved with the response data in success and rejected with CoreAjaxError.
      */
-    protected performAjax<T = unknown>(method: string, data: Record<string, unknown>, preSets: CoreWSAjaxPreSets): Promise<T> {
+    protected async performAjax<T = unknown> (
+        method: string,
+        data: Record<string, unknown>,
+        preSets: CoreWSAjaxPreSets,
+    ): Promise<T> {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let promise: Promise<HttpResponse<any>>;
 
@@ -440,9 +445,11 @@ export class CoreWSProvider {
             args: this.convertValuesToString(data),
         }];
 
+        const lang = await CoreLang.getCurrentLanguage();
+
         // The info= parameter has no function. It is just to help with debugging.
         // We call it info to match the parameter name use by Moodle's AMD ajax module.
-        let siteUrl = preSets.siteUrl + '/lib/ajax/' + script + '?info=' + method;
+        let siteUrl = preSets.siteUrl + '/lib/ajax/' + script + '?info=' + method + `&lang=${lang}`;
 
         if (preSets.noLogin && preSets.useGet) {
             // Send params using GET.
