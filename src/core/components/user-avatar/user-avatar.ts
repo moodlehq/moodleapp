@@ -20,6 +20,8 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { USER_PROFILE_PICTURE_UPDATED, CoreUserBasicData } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreNetwork } from '@services/network';
+import { CoreUrl } from '@singletons/url';
+import { CoreUserHelper } from '@features/user/services/user-helper';
 
 /**
  * Component to display a "user avatar".
@@ -41,8 +43,10 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
     @Input() userId?: number; // If provided or found it will be used to link the image to the profile.
     @Input() courseId?: number;
     @Input() checkOnline = false; // If want to check and show online status.
+    @Input() siteId?: string;
 
     avatarUrl?: string;
+    initials = '';
 
     // Variable to check if we consider this user online or not.
     // @todo Use setting when available (see MDL-63972) so we can use site setting.
@@ -56,7 +60,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
         this.pictureObserver = CoreEvents.on(
             USER_PROFILE_PICTURE_UPDATED,
             (data) => {
-                if (data.userId == this.userId) {
+                if (data.userId === this.userId) {
                     this.avatarUrl = data.picture;
                 }
             },
@@ -68,6 +72,8 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
      * @inheritdoc
      */
     ngOnInit(): void {
+        this.siteId = this.siteId || CoreSites.getCurrentSiteId();
+
         this.setFields();
     }
 
@@ -82,17 +88,32 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
+     * Avatar image loading error handler.
+     */
+    loadImageError(): void {
+        this.avatarUrl = undefined;
+    }
+
+    /**
      * Set fields from user.
      */
     protected setFields(): void {
         const profileUrl = this.profileUrl || (this.user && (this.user.profileimageurl || this.user.userprofileimageurl ||
             this.user.userpictureurl || this.user.profileimageurlsmall || (this.user.urls && this.user.urls.profileimage)));
 
-        if (typeof profileUrl == 'string') {
+        if (typeof profileUrl === 'string') {
             this.avatarUrl = profileUrl;
         }
 
         this.fullname = this.fullname || (this.user && (this.user.fullname || this.user.userfullname));
+
+        if (this.user) {
+            this.initials = CoreUserHelper.getUserInitials(this.user);
+        }
+
+        if (this.initials && this.avatarUrl && CoreUrl.parse(this.avatarUrl)?.path?.startsWith('/theme/image.php')) {
+            this.avatarUrl = undefined;
+        }
 
         this.userId = this.userId || (this.user && (this.user.userid || this.user.id));
         this.courseId = this.courseId || (this.user && this.user.courseid);

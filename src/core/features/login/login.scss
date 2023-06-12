@@ -75,6 +75,10 @@
         text-decoration: underline;
     }
 
+    core-user-avatar.large-avatar {
+        --core-avatar-size: var(--core-large-avatar-size);
+    }
+
     @if ($core-login-hide-forgot-password) {
         .core-login-forgotten-password {
             display: none;

@@ -84,7 +84,7 @@ export class CoreSettingsSynchronizationPage implements OnInit, OnDestroy {
 
             if (siteInfo) {
                 siteEntry.siteUrl = siteInfo.siteurl;
-                siteEntry.fullName = siteInfo.fullname;
+                siteEntry.fullname = siteInfo.fullname;
             }
         });
 

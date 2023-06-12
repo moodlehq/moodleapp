@@ -63,7 +63,7 @@ export class CoreSitePickerComponent implements OnInit {
 
             site.fullNameAndSiteName = Translate.instant(
                 'core.fullnameandsitename',
-                { fullname: site.fullName, sitename: siteName },
+                { fullname: site.fullname, sitename: siteName },
             );
         }));
 

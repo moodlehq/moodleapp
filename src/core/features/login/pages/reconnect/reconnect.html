@@ -20,8 +20,8 @@
         <div class="list-item-limited-width">
             <div class="ion-text-wrap ion-text-center ion-margin-bottom" [ngClass]="{'item-avatar-center': showUserAvatar}">
                 <!-- Show user avatar. -->
-                <img *ngIf="showUserAvatar" [src]="userAvatar" class="large-avatar" core-external-content [siteId]="siteId"
-                    alt="{{ 'core.pictureof' | translate:{$a: userFullName} }}" onError="this.src='assets/img/user-avatar.png'">
+                <core-user-avatar class="large-avatar" *ngIf="showUserAvatar" [user]="siteInfo" [linkProfile]="false"
+                    [siteId]="siteId"></core-user-avatar>
 
                 <div class="core-login-site-logo" *ngIf="!showUserAvatar">
                     <!-- Show site logo or a default image. -->
@@ -29,8 +29,8 @@
                     <img *ngIf="!logoUrl" src="assets/img/login_logo.png" role="presentation" alt="">
                 </div>
 
-                <p *ngIf="siteName" class="ion-padding core-sitename">
-                    <core-format-text [text]="siteName" [filter]="false"></core-format-text>
+                <p *ngIf="siteInfo?.siteName" class="ion-padding core-sitename">
+                    <core-format-text [text]="siteInfo?.siteName" [filter]="false"></core-format-text>
                 </p>
                 <p class="core-siteurl">{{siteUrl}}</p>
 

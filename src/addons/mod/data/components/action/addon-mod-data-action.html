@@ -39,10 +39,8 @@
 <span *ngIf="action == 'timeadded'">{{ entry.timecreated * 1000 | coreFormatDate }}</span>
 <span *ngIf="action == 'timemodified'">{{ entry.timemodified * 1000 | coreFormatDate }}</span>
 
-<a *ngIf="action == 'userpicture'" core-user-link [courseId]="database.course" [userId]="entry.userid" [title]="entry.fullname">
-    <img class="avatar-round" [src]="userPicture" [alt]="'core.pictureof' | translate:{$a: entry.fullname}" core-external-content
-        onError="this.src='assets/img/user-avatar.png'">
-</a>
+<core-user-avatar *ngIf="action == 'userpicture'" [user]="entry" slot="start" [courseId]="database.course" [userId]="entry.userid"
+    [profileUrl]="userPicture"></core-user-avatar>
 
 <a *ngIf="action == 'user' && entry" core-user-link [courseId]="database.course" [userId]="entry.userid" [title]="entry.fullname">
     {{entry.fullname}}

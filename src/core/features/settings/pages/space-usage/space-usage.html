@@ -69,12 +69,10 @@
 
 <!-- Template to render a site space usage. -->
 <ng-template #siteUsage let-site="site">
-    <ion-avatar slot="start">
-        <img [src]="site.avatar" core-external-content [siteId]="site.id" alt="{{ 'core.pictureof' | translate:{$a: site.fullName} }}"
-            onError="this.src='assets/img/user-avatar.png'">
-    </ion-avatar>
+    <core-user-avatar [user]="site" slot="start" [linkProfile]="false" [siteId]="site.id"></core-user-avatar>
+
     <ion-label class="ion-text-wrap">
-        <p class="item-heading">{{site.fullName}}</p>
+        <p class="item-heading">{{site.fullname}}</p>
         <ion-badge color="light" *ngIf="site.spaceUsage !== undefined">{{ site.spaceUsage | coreBytesToSize }}</ion-badge>
     </ion-label>
     <ion-button fill="clear" color="danger" slot="end" (click)="deleteSiteStorage(site)"
