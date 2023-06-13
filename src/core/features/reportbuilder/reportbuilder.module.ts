@@ -14,9 +14,11 @@
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
+import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.module';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreUserDelegate } from '@features/user/services/user-delegate';
+import { CoreReportBuilderLinkHandler } from './services/handlers/reportbuilder-link';
 import { CoreReportBuilderHandler, CoreReportBuilderHandlerService } from './services/handlers/reportbuilder';
 
 const routes: Routes = [
@@ -37,6 +39,7 @@ const routes: Routes = [
             multi: true,
             useValue: () => {
                 CoreUserDelegate.registerHandler(CoreReportBuilderHandler.instance);
+                CoreContentLinksDelegate.registerHandler(CoreReportBuilderLinkHandler.instance);
             },
         },
     ],
