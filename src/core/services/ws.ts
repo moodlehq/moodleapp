@@ -506,21 +506,49 @@ export class CoreWSProvider {
             };
 
             switch (data.status) {
-                case -2: // Certificate error.
+                case NativeHttp.ErrorCode.SSL_EXCEPTION:
                     options.errorcode = 'invalidcertificate';
                     options.errorDetails = Translate.instant('core.certificaterror', {
-                        details: CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Unknown error',
+                        details: CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Invalid certificate',
                     });
                     break;
-                case 404: // AJAX endpoint not found.
+                case NativeHttp.ErrorCode.SERVER_NOT_FOUND:
+                    options.errorcode = 'servernotfound';
+                    options.errorDetails = CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Server could not be found';
+                    break;
+                case NativeHttp.ErrorCode.TIMEOUT:
+                    options.errorcode = 'requesttimeout';
+                    options.errorDetails = CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Request timed out';
+                    break;
+                case NativeHttp.ErrorCode.UNSUPPORTED_URL:
+                    options.errorcode = 'unsupportedurl';
+                    options.errorDetails = CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Url not supported';
+                    break;
+                case NativeHttp.ErrorCode.NOT_CONNECTED:
+                    options.errorcode = 'connectionerror';
+                    options.errorDetails = CoreTextUtils.getErrorMessageFromError(data.error)
+                        ?? 'Connection error, is network available?';
+                    break;
+                case NativeHttp.ErrorCode.ABORTED:
+                    options.errorcode = 'requestaborted';
+                    options.errorDetails = CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Request aborted';
+                    break;
+                case NativeHttp.ErrorCode.POST_PROCESSING_FAILED:
+                    options.errorcode = 'requestprocessingfailed';
+                    options.errorDetails = CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Request processing failed';
+                    break;
+                case 404:
                     options.errorcode = 'endpointnotfound';
                     options.errorDetails = Translate.instant('core.ajaxendpointnotfound', { $a: CoreSite.MINIMUM_MOODLE_VERSION });
                     break;
-                default:
+                default: {
+                    const details = CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Unknown error';
+
                     options.errorcode = 'serverconnectionajax';
                     options.errorDetails = Translate.instant('core.serverconnection', {
-                        details: CoreTextUtils.getErrorMessageFromError(data.error) ?? 'Unknown error',
+                        details: `[Response status code: ${data.status}] ${details}`,
                     });
+                }
                     break;
             }
 
