@@ -19,6 +19,7 @@ Feature: Test decimal separators in lesson
       | lesson   | Offline lesson | Offline lesson descr | C1     | lesson   | 1           | 1      | 9           | 1      | 1                    |
     # Currently there are no generators for pages. See MDL-77581.
     And I log in as "teacher1"
+    And I change window size to "small"
     And I am on "Course 1" course homepage
     And I follow "Basic lesson"
     And I follow "Add a question page"
