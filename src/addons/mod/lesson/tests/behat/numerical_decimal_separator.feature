@@ -2,7 +2,8 @@
 Feature: Test decimal separators in lesson
 
   Background:
-    Given the following "users" exist:
+    Given the Moodle site is compatible with this feature
+    And the following "users" exist:
       | username | firstname | lastname | email                |
       | teacher1 | Teacher   | teacher  | teacher1@example.com |
       | student1 | Student   | student  | student1@example.com |
