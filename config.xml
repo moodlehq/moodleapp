@@ -74,17 +74,6 @@
             <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
         </config-file>
         <config-file parent="/*" target="res/xml/config.xml">
-            <feature name="IntentShim">
-                <param name="android-package" value="com.darryncampbell.cordova.plugin.intent.IntentShim" />
-                <param name="onload" value="true" />
-            </feature>
-        </config-file>
-        <config-file mode="merge" parent="/manifest/application" platform="android" target="AndroidManifest.xml">
-            <provider android:authorities="${applicationId}.darryncampbell.cordova.plugin.intent.fileprovider" android:exported="false" android:grantUriPermissions="true" android:name="com.darryncampbell.cordova.plugin.intent.CordovaPluginIntentFileProvider">
-                <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/provider_paths" />
-            </provider>
-        </config-file>
-        <config-file parent="/*" target="res/xml/config.xml">
             <feature name="Clipboard">
                 <param name="android-package" value="com.verso.cordova.clipboard.Clipboard" />
             </feature>
