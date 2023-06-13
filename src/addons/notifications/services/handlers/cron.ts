@@ -67,7 +67,13 @@ export class AddonNotificationsCronHandlerService implements CoreCronHandler {
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async execute(siteId?: string, force?: boolean): Promise<void> {
-        if (!CoreSites.isCurrentSite(siteId)) {
+        const site = CoreSites.getCurrentSite();
+
+        if (
+            !CoreSites.isCurrentSite(siteId) ||
+            !site ||
+            site.isFeatureDisabled('CoreMainMenuDelegate_AddonNotifications')
+        ) {
             return;
         }
 
