@@ -2,7 +2,8 @@
 Feature: Test marking workflow in assignment activity in app
 
   Background:
-    Given the following "users" exist:
+    Given the Moodle site is compatible with this feature
+    And the following "users" exist:
       | username | firstname | lastname | email |
       | teacher1 | Teacher   | teacher  | teacher1@example.com |
       | student1 | Student1  | student1 | student1@example.com |
@@ -21,7 +22,7 @@ Feature: Test marking workflow in assignment activity in app
       | student3 | C1     | student |
       | student4 | C1     | student |
       | student5 | C1     | student |
-      And the following "groups" exist:
+    And the following "groups" exist:
       | name    | course | idnumber |
       | Group 1 | C1     | G1       |
       | Group 2 | C1     | G2       |
