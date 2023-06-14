@@ -2,7 +2,8 @@
 Feature: Test decimal separators in lesson
 
   Background:
-    Given the following "users" exist:
+    Given the Moodle site is compatible with this feature
+    And the following "users" exist:
       | username | firstname | lastname | email                |
       | teacher1 | Teacher   | teacher  | teacher1@example.com |
       | student1 | Student   | student  | student1@example.com |
@@ -19,6 +20,7 @@ Feature: Test decimal separators in lesson
       | lesson   | Offline lesson | Offline lesson descr | C1     | lesson   | 1           | 1      | 9           | 1      | 1                    |
     # Currently there are no generators for pages. See MDL-77581.
     And I log in as "teacher1"
+    And I change window size to "small"
     And I am on "Course 1" course homepage
     And I follow "Basic lesson"
     And I follow "Add a question page"
