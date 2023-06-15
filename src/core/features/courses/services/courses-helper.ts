@@ -205,8 +205,20 @@ export class CoreCoursesHelperProvider {
      * @param course Course data.
      */
     async loadCourseColorAndImage(course: CoreCourseWithImageAndColor): Promise<void> {
+        // Moodle 4.1 downwards geopatterns are embedded in b64 in only some WS, remote them to keep it coherent.
+        if (course.courseimage?.startsWith('data')) {
+            course.courseimage = undefined;
+        }
+
+        if (course.courseimage !== undefined) {
+            course.courseImage = course.courseimage; // @deprecated sinde 4.3 use courseimage instead.
+
+            return;
+        }
+
         if (course.overviewfiles && course.overviewfiles[0]) {
-            course.courseImage = course.overviewfiles[0].fileurl;
+            course.courseimage = course.overviewfiles[0].fileurl;
+            course.courseImage = course.courseimage; // @deprecated sinde 4.3 use courseimage instead.
 
             return;
         }
@@ -436,7 +448,8 @@ export type CoreCourseWithImageAndColor = {
     overviewfiles?: CoreWSExternalFile[];
     colorNumber?: number; // Color index number.
     color?: string; // Color RGB.
-    courseImage?: string; // Course thumbnail.
+    courseImage?: string; // Course thumbnail. @deprecated since 4.3, use courseimage instead.
+    courseimage?: string; // Course thumbnail.
 };
 
 /**

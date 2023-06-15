@@ -40,6 +40,11 @@
                 right: 0;
                 left: 0;
                 margin: auto;
+
+                // Fill geopaterns
+                &[src$=".svg"] {
+                    min-width: 100%;
+                }
             }
         }
 

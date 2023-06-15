@@ -27,6 +27,11 @@
             color: var(--course-color-tint);
             background: var(--course-color, transparent);
         }
+
+        // Fill geopaterns
+        img[src$=".svg"] {
+            min-width: 100%;
+        }
     }
 
     @if ($core-hide-courseimage-on-course) {

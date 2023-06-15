@@ -2,9 +2,9 @@
     [class.core-course-list-card]="layout == 'card' || layout == 'summarycard'" [class.item-dimmed]="course.hidden" (click)="openCourse()"
     button [attr.aria-label]="course.displayname || course.fullname">
 
-    <div *ngIf="layout == 'card' || layout == 'summarycard'" class="core-course-thumb" [class.core-course-color-img]="course.courseImage">
-        <img *ngIf="course.courseImage" [src]="course.courseImage" core-external-content alt="" />
-        <ion-icon *ngIf="!course.courseImage" name="fas-graduation-cap" class="course-icon" aria-hidden="true">
+    <div *ngIf="layout == 'card' || layout == 'summarycard'" class="core-course-thumb" [class.core-course-color-img]="course.courseimage">
+        <img *ngIf="course.courseimage" [src]="course.courseimage" core-external-content alt="" (error)="loadFallbackCourseIcon()" />
+        <ion-icon *ngIf="!course.courseimage" name="fas-graduation-cap" class="course-icon" aria-hidden="true">
         </ion-icon>
     </div>
 
@@ -30,11 +30,11 @@
     <ion-item class="ion-text-wrap">
 
         <ng-container *ngIf="layout == 'list' || layout == 'listwithenrol'">
-            <ion-icon *ngIf="!course.courseImage" name="fas-graduation-cap" slot="start" class="course-icon core-course-thumb"
+            <ion-icon *ngIf="!course.courseimage" name="fas-graduation-cap" slot="start" class="course-icon core-course-thumb"
                 aria-hidden="true">
             </ion-icon>
-            <ion-avatar *ngIf="course.courseImage" slot="start" class="core-course-thumb">
-                <img [src]="course.courseImage" core-external-content alt="" />
+            <ion-avatar *ngIf="course.courseimage" slot="start" class="core-course-thumb">
+                <img [src]="course.courseimage" core-external-content alt="" (error)="loadFallbackCourseIcon()" />
             </ion-avatar>
         </ng-container>
 
