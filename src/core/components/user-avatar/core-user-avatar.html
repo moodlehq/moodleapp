@@ -1,14 +1,26 @@
-<img *ngIf="avatarUrl && linkProfile" [src]="avatarUrl" [alt]="'core.pictureof' | translate:{$a: fullname}" core-external-content
-    onError="this.src='assets/img/user-avatar.png'" (ariaButtonClick)="gotoProfile($event)">
+<ng-container *ngIf="avatarUrl">
+    <img *ngIf="linkProfile" [src]="avatarUrl" [alt]="'core.pictureof' | translate:{$a: fullname}" core-external-content
+        (error)="loadImageError()" (ariaButtonClick)="gotoProfile($event)" [siteId]="siteId">
 
-<img *ngIf="avatarUrl && !linkProfile" [src]="avatarUrl" [alt]="'core.pictureof' | translate:{$a: fullname}" core-external-content
-    onError="this.src='assets/img/user-avatar.png'" aria-hidden="true">
+    <img *ngIf="!linkProfile" [src]="avatarUrl" [alt]="'core.pictureof' | translate:{$a: fullname}" core-external-content
+        (error)="loadImageError()" aria-hidden="true" [siteId]="siteId">
+</ng-container>
+<ng-container *ngIf="!avatarUrl && initials">
+    <div class="userinitials" *ngIf="linkProfile" [attr.aria-label]="'core.pictureof' | translate:{$a: fullname}"
+        (ariaButtonClick)="gotoProfile($event)">
+        {{ initials }}
+    </div>
 
-<img *ngIf="!avatarUrl && linkProfile" src="assets/img/user-avatar.png" [alt]="'core.pictureof' | translate:{$a: fullname}"
-    (ariaButtonClick)="gotoProfile($event)">
+    <div class="userinitials" *ngIf="!linkProfile" [attr.aria-label]="'core.pictureof' | translate:{$a: fullname}" aria-hidden="true">
+        {{ initials }}
+    </div>
+</ng-container>
+<ng-container *ngIf="!avatarUrl && !initials">
+    <img *ngIf="linkProfile" src="assets/img/user-avatar.png" [alt]="'core.pictureof' | translate:{$a: fullname}"
+        (ariaButtonClick)="gotoProfile($event)">
 
-<img *ngIf="!avatarUrl && !linkProfile" src="assets/img/user-avatar.png" [alt]="'core.pictureof' | translate:{$a: fullname}"
-    aria-hidden="true">
+    <img *ngIf="!linkProfile" src="assets/img/user-avatar.png" [alt]="'core.pictureof' | translate:{$a: fullname}" aria-hidden="true">
+</ng-container>
 
 <span *ngIf="checkOnline && isOnline()" class="contact-status online" role="status" [attr.aria-label]="'core.online' | translate">
 </span>

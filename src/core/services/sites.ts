@@ -1260,9 +1260,11 @@ export class CoreSitesProvider {
                     id: site.id,
                     siteUrl: site.siteUrl,
                     siteUrlWithoutProtocol: site.siteUrl.replace(/^https?:\/\//, '').toLowerCase(),
-                    fullName: siteInfo?.fullname,
+                    fullname: siteInfo?.fullname,
+                    firstname: siteInfo?.firstname,
+                    lastname: siteInfo?.lastname,
                     siteName: siteInfo?.sitename,
-                    avatar: siteInfo?.userpictureurl,
+                    userpictureurl: siteInfo?.userpictureurl,
                     siteHomeId: siteInfo?.siteid || 1,
                     loggedOut: !!site.loggedOut,
                 };
@@ -1300,8 +1302,8 @@ export class CoreSitesProvider {
             }
 
             // Finally use fullname.
-            textA = a.fullName?.toLowerCase().trim() || '';
-            textB = b.fullName?.toLowerCase().trim() || '';
+            textA = a.fullname?.toLowerCase().trim() || '';
+            textB = b.fullname?.toLowerCase().trim() || '';
 
             return textA.localeCompare(textB);
         });
@@ -2016,9 +2018,11 @@ export type CoreSiteBasicInfo = {
     id: string; // Site ID.
     siteUrl: string; // Site URL.
     siteUrlWithoutProtocol: string; // Site URL without protocol.
-    fullName?: string; // User's full name.
+    fullname?: string; // User's full name.
+    firstname?: string; // User's first name.
+    lastname?: string; // User's last name.
+    userpictureurl?: string; // User avatar.
     siteName?: string; // Site's name.
-    avatar?: string; // User's avatar.
     badge?: number; // Badge to display in the site.
     siteHomeId?: number; // Site home ID.
     loggedOut: boolean; // If Site is logged out.

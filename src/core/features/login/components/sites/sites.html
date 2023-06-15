@@ -35,13 +35,11 @@
                 </ion-item-divider>
 
                 <ion-item detail="false">
-                    <ion-avatar slot="start">
-                        <img [src]="accountsList.currentSite.avatar" core-external-content [siteId]="accountsList.currentSite.id"
-                            alt="{{ 'core.pictureof' | translate:{$a: accountsList.currentSite.fullName} }}"
-                            onError="this.src='assets/img/user-avatar.png'">
-                    </ion-avatar>
+                    <core-user-avatar [user]="accountsList.currentSite" slot="start" [linkProfile]="false"
+                        [siteId]="accountsList.currentSite.id"></core-user-avatar>
+
                     <ion-label>
-                        <p class="item-heading">{{accountsList.currentSite.fullName}}</p>
+                        <p class="item-heading">{{accountsList.currentSite.fullname}}</p>
                     </ion-label>
                     <ion-icon color="success" name="fas-check"></ion-icon>
                 </ion-item>
@@ -75,12 +73,10 @@
 <!-- Template to render a list of sites. -->
 <ng-template #siteList let-sites="sites">
     <ion-item button *ngFor="let site of sites" (click)="login($event, site.id)" detail="true">
-        <ion-avatar slot="start">
-            <img [src]="site.avatar" core-external-content [siteId]="site.id" alt="{{ 'core.pictureof' | translate:{$a: site.fullName} }}"
-                onError="this.src='assets/img/user-avatar.png'">
-        </ion-avatar>
+        <core-user-avatar [user]="site" slot="start" [linkProfile]="false" [siteId]="site.id"></core-user-avatar>
+
         <ion-label>
-            <p class="item-heading">{{site.fullName}}</p>
+            <p class="item-heading">{{site.fullname}}</p>
         </ion-label>
         <ion-badge slot="end" *ngIf="!showDelete && site.badge" @coreShowHideAnimation>
             <span aria-hidden="true">{{site.badge}}</span>

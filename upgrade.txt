@@ -1,6 +1,10 @@
 This files describes API changes in the Moodle Mobile app,
 information provided here is intended especially for developers.
 
+=== 4.3.0 ===
+
+ - CoreSiteBasicInfo fullName attribute has changed to fullname and avatar to userpictureurl to match user fields.
+
 === 4.2.0 ===
 
 - CoreIconComponent has been removed after deprecation period: Use CoreFaIconDirective instead.

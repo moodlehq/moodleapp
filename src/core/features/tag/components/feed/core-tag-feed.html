@@ -1,8 +1,7 @@
 <ion-card *ngFor="let item of items">
     <ion-item class="ion-text-wrap" [href]="item.url" core-link [capture]="true">
-        <ion-avatar slot="start" *ngIf="item.avatarUrl">
-            <img [src]="item.avatarUrl" core-external-content alt="" role="presentation" onError="this.src='assets/img/user-avatar.png'">
-        </ion-avatar>
+        <core-user-avatar *ngIf="item.avatarUrl" [profileUrl]="item.avatarUrl" slot="start" [linkProfile]="false"></core-user-avatar>
+
         <core-mod-icon *ngIf="item.iconUrl" [modicon]="item.iconUrl" slot="start" [showAlt]="false">
         </core-mod-icon>
         <ion-label>

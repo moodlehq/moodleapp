@@ -1,51 +1,72 @@
 @import "~theme/globals";
+:host {
+    --core-avatar-size: 30px;
 
-:host .core-block-content ::ng-deep {
-    max-height: 200px;
-    overflow-y: auto;
-    .item-inner,
-    .input-wrapper {
-        overflow-y: visible;
-        align-self: start;
-    }
+    .core-block-content ::ng-deep {
+        max-height: 200px;
+        overflow-y: auto;
+        .item-inner,
+        .input-wrapper {
+            overflow-y: visible;
+            align-self: start;
+        }
 
-    .list {
-        margin-left: 0;
-        margin-right: 0;
-        -webkit-padding-start: 0;
+        .list {
+            margin-left: 0;
+            margin-right: 0;
+            -webkit-padding-start: 0;
 
-        li.listentry {
-            clear: both;
-            list-style-type: none;
+            li.listentry {
+                clear: both;
+                list-style-type: none;
 
-            .user {
-                @include float(start);
-                position: relative;
-                padding-bottom: 16px;
+                .user {
+                    @include float(start);
+                    position: relative;
+                    padding-bottom: 16px;
 
-                .core-adapted-img-container {
-                    display: inline;
-                    @include margin-horizontal(0px, 8px);
+                    .core-adapted-img-container {
+                        display: inline;
+                        @include margin-horizontal(0px, 0.25rem);
+                    }
+
+                    .userpicture {
+                        border-radius: var(--core-avatar-radius);
+                        width: var(--core-avatar-size);
+                        height: var(--core-avatar-size);
+                    }
+
+                    .userinitials {
+                        background-color: var(--gray-200);
+                        vertical-align: middle;
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        border-radius: var(--core-avatar-radius);
+                        color: var(--gray-800);
+                        font-weight: normal;
+                        width: var(--core-avatar-size);
+                        height: var(--core-avatar-size);
+                        font-size: 0.7rem;
+                        margin-right: 0.25rem;
+                        text-decoration: none;
+                    }
                 }
 
-                .userpicture {
-                    border-radius: 50%;
+                .message {
+                    @include float(end);
+                    margin-top: 3px;
                 }
-            }
 
-            .message {
-                @include float(end);
-                margin-top: 3px;
-            }
-
-            .uservisibility { // No support on the app.
-                display: none;
+                .uservisibility { // No support on the app.
+                    display: none;
+                }
             }
         }
-    }
 
-    .info {
-        text-align: center;
-    }
+        .info {
+            text-align: center;
+        }
 
+    }
 }
