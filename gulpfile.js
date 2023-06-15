@@ -16,6 +16,7 @@ const BuildLangTask = require('./gulp/task-build-lang');
 const BuildBehatPluginTask = require('./gulp/task-build-behat-plugin');
 const BuildEnvTask = require('./gulp/task-build-env');
 const PushTask = require('./gulp/task-push');
+const OverrideLangTask = require('./gulp/task-override-lang');
 const Utils = require('./gulp/utils');
 const gulp = require('gulp');
 
@@ -34,6 +35,11 @@ const args = Utils.getCommandLineArguments();
 // Build the language files into a single file per language.
 gulp.task('lang', (done) => {
     new BuildLangTask().run(paths.lang, done);
+});
+
+// Use the English generated lang file (src/assets/lang/en.json) to override strings in features lang.json files.
+gulp.task('lang-override', (done) => {
+    new OverrideLangTask().run(done);
 });
 
 // Build an env file depending on the current environment.
