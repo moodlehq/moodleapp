@@ -64,18 +64,18 @@ export class CoreUrlUtilsProvider {
         const urlAndAnchor = url.split('#');
         url = urlAndAnchor[0];
 
-        let separator = url.indexOf('?') != -1 ? '&' : '?';
+        let separator = url.indexOf('?') !== -1 ? '&' : '?';
 
         for (const key in params) {
             let value = params[key];
 
-            if (boolToNumber && typeof value == 'boolean') {
+            if (boolToNumber && typeof value === 'boolean') {
                 // Convert booleans to 1 or 0.
                 value = value ? '1' : '0';
             }
 
-            // Ignore objects.
-            if (typeof value != 'object') {
+            // Ignore objects and undefined.
+            if (typeof value !== 'object' && value !== undefined) {
                 url += separator + key + '=' + value;
                 separator = '&';
             }
