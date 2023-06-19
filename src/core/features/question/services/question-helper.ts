@@ -26,6 +26,7 @@ import { CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreQuestion, CoreQuestionProvider, CoreQuestionQuestionParsed, CoreQuestionsAnswers } from './question';
 import { CoreQuestionDelegate } from './question-delegate';
+import { CoreIcons } from '@singletons/icons';
 
 /**
  * Service with some common functions to handle questions.
@@ -801,12 +802,14 @@ export class CoreQuestionHelperProvider {
             const newIcon: HTMLIonIconElement = document.createElement('ion-icon');
 
             if (correct) {
-                newIcon.setAttribute('name', 'fas-check');
-                newIcon.setAttribute('src', 'assets/fonts/font-awesome/solid/check.svg');
+                const iconName = 'check';
+                newIcon.setAttribute('name', `fas-${iconName}`);
+                newIcon.setAttribute('src', CoreIcons.getIconSrc('font-awesome', 'solid', iconName));
                 newIcon.className = 'core-correct-icon ion-color ion-color-success questioncorrectnessicon';
             } else {
-                newIcon.setAttribute('name', 'fas-xmark');
-                newIcon.setAttribute('src', 'assets/fonts/font-awesome/solid/xmark.svg');
+                const iconName = 'xmark';
+                newIcon.setAttribute('name', `fas-${iconName}`);
+                newIcon.setAttribute('src', CoreIcons.getIconSrc('font-awesome', 'solid', iconName));
                 newIcon.className = 'core-correct-icon ion-color ion-color-danger questioncorrectnessicon';
             }
 

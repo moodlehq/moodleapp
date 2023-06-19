@@ -4,6 +4,7 @@ information provided here is intended especially for developers.
 === 4.3.0 ===
 
  - CoreSiteBasicInfo fullName attribute has changed to fullname and avatar to userpictureurl to match user fields.
+ - Font Awesome icon library has been updated to 6.4.0. But nothing has changed, only version number.
 
 === 4.2.0 ===
 
