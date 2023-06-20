@@ -469,12 +469,6 @@ export class CoreCourseHelperProvider {
             let handlers: CoreCourseOptionsHandlerToDisplay[] = [];
             let menuHandlers: CoreCourseOptionsMenuHandlerToDisplay[] = [];
             let success = true;
-            let isGuest = false;
-
-            if (options.canHaveGuestCourses) {
-                // Check if the user can only access as guest.
-                isGuest = await this.courseUsesGuestAccess(course.id, siteId);
-            }
 
             // Get the sections and the handlers.
             subPromises.push(CoreCourse.getSections(course.id, false, true).then((courseSections) => {
@@ -483,12 +477,12 @@ export class CoreCourseHelperProvider {
                 return;
             }));
 
-            subPromises.push(CoreCourseOptionsDelegate.getHandlersToDisplay(course, false, isGuest).then((cHandlers) => {
+            subPromises.push(CoreCourseOptionsDelegate.getHandlersToDisplay(course, false).then((cHandlers) => {
                 handlers = cHandlers;
 
                 return;
             }));
-            subPromises.push(CoreCourseOptionsDelegate.getMenuHandlersToDisplay(course, false, isGuest).then((mHandlers) => {
+            subPromises.push(CoreCourseOptionsDelegate.getMenuHandlersToDisplay(course, false).then((mHandlers) => {
                 menuHandlers = mHandlers;
 
                 return;
@@ -595,55 +589,6 @@ export class CoreCourseHelperProvider {
 
         // Show confirm modal if needed.
         await CoreDomUtils.confirmDownloadSize(sizeSum, undefined, undefined, undefined, undefined, alwaysConfirm);
-    }
-
-    /**
-     * Check whether a course is accessed using guest access.
-     *
-     * @param courseId Course ID.
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved with boolean: whether course is accessed using guest access.
-     */
-    async courseUsesGuestAccess(courseId: number, siteId?: string): Promise<boolean> {
-        try {
-            try {
-                // Check if user is enrolled. If enrolled, no guest access.
-                await CoreCourses.getUserCourse(courseId, false, siteId);
-
-                return false;
-            } catch {
-                // Ignore errors.
-            }
-
-            try {
-                // The user is not enrolled in the course. Use getCourses to see if it's an admin/manager and can see the course.
-                await CoreCourses.getCourse(courseId, siteId);
-
-                return false;
-            } catch {
-                // Ignore errors.
-            }
-
-            // Check if guest access is enabled.
-            const enrolmentMethods = await CoreCourses.getCourseEnrolmentMethods(courseId, siteId);
-
-            const method = enrolmentMethods.find((method) => method.type === 'guest');
-
-            if (!method) {
-                return false;
-            }
-
-            const info = await CoreCourses.getCourseGuestEnrolmentInfo(method.id);
-            if (!info.status) {
-                // Not active, reject.
-                return false;
-            }
-
-            // Don't allow guest access if it requires a password.
-            return !info.passwordrequired;
-        } catch {
-            return false;
-        }
     }
 
     /**
@@ -1215,20 +1160,17 @@ export class CoreCourseHelperProvider {
      *
      * @param courses Courses array to prefetch.
      * @param prefetch Prefetch information to be updated.
-     * @param options Other options.
      * @returns Promise resolved when done.
      */
     async prefetchCourses(
         courses: CoreCourseAnyCourseData[],
         prefetch: CorePrefetchStatusInfo,
-        options: CoreCoursePrefetchCoursesOptions = {},
     ): Promise<void> {
         prefetch.loading = true;
         prefetch.icon = CoreConstants.ICON_DOWNLOADING;
         prefetch.badge = '';
 
         const prefetchOptions = {
-            ...options,
             onProgress: (progress) => {
                 prefetch.badge = progress.count + ' / ' + progress.total;
                 prefetch.badgeA11yText = Translate.instant('core.course.downloadcoursesprogressdescription', progress);
@@ -2144,16 +2086,9 @@ export type CoreCoursePrefetchCourseOptions = {
 };
 
 /**
- * Options for prefetch courses function.
- */
-export type CoreCoursePrefetchCoursesOptions = {
-    canHaveGuestCourses?: boolean; // Whether the list of courses can contain courses with only guest access.
-};
-
-/**
  * Options for confirm and prefetch courses function.
  */
-export type CoreCourseConfirmPrefetchCoursesOptions = CoreCoursePrefetchCoursesOptions & {
+export type CoreCourseConfirmPrefetchCoursesOptions = {
     onProgress?: (data: CoreCourseCoursesProgress) => void;
 };
 
