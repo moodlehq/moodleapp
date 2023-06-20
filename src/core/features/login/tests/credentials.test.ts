@@ -13,10 +13,11 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { findElement, mockSingleton, renderPageComponent, requireElement } from '@/testing/utils';
+import { findElement, mock, mockSingleton, renderPageComponent, requireElement } from '@/testing/utils';
 import { CoreLoginError } from '@classes/errors/loginerror';
 import { CoreLoginComponentsModule } from '@features/login/components/components.module';
 import { CoreLoginCredentialsPage } from '@features/login/pages/credentials/credentials';
+import { CoreLang } from '@services/lang';
 import { CoreSites } from '@services/sites';
 import { Http } from '@singletons';
 import { of } from 'rxjs';
@@ -29,6 +30,7 @@ describe('Credentials page', () => {
     beforeEach(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         mockSingleton(Http, { get: () => of(null as any) });
+        mockSingleton(CoreLang, mock({ getCurrentLanguage: async () => 'en' }));
     });
 
     it('renders', async () => {
