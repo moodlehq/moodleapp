@@ -40,6 +40,7 @@ import {
 } from '../../services/glossary';
 import { AddonModGlossaryHelper } from '../../services/glossary-helper';
 import { AddonModGlossaryOffline } from '../../services/glossary-offline';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 /**
  * Page that displays the edit form.
@@ -76,6 +77,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
 
     originalData?: AddonModGlossaryFormData;
 
+    protected entry?: AddonModGlossaryEntry;
     protected syncId?: string;
     protected syncObserver?: CoreEventObserver;
     protected isDestroyed = false;
@@ -99,6 +101,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
             } else if (entrySlug) {
                 const { entry } = await AddonModGlossary.getEntry(Number(entrySlug));
 
+                this.entry = entry;
                 this.editorExtraParams.timecreated = entry.timecreated;
                 this.handler = new AddonModGlossaryOnlineFormHandler(this, entry);
             } else {
@@ -127,6 +130,18 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
             await this.handler.loadData(this.glossary);
 
             this.loaded = true;
+
+            if (this.handler instanceof AddonModGlossaryOfflineFormHandler) {
+                return;
+            }
+
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM,
+                ws: 'mod_glossary_get_glossaries_by_courses',
+                name: this.glossary.name,
+                data: { id: this.glossary.id, category: 'glossary' },
+                url: '/mod/glossary/edit.php' + (this.entry ? `?cmid=${this.cmId}&id=${this.entry.id}` : ''),
+            });
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.mod_glossary.errorloadingglossary', true);
 

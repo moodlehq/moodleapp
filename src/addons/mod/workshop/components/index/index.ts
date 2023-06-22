@@ -66,7 +66,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
     @Input() group = 0;
 
     component = AddonModWorkshopProvider.COMPONENT;
-    moduleName = 'workshop';
+    pluginName = 'workshop';
 
     workshop?: AddonModWorkshopData;
     page = 0;
@@ -255,7 +255,9 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
             return; // Shouldn't happen.
         }
 
-        await AddonModWorkshop.logView(this.workshop.id, this.workshop.name);
+        await CoreUtils.ignoreErrors(AddonModWorkshop.logView(this.workshop.id));
+
+        this.analyticsLogEvent('mod_workshop_view_workshop');
     }
 
     /**

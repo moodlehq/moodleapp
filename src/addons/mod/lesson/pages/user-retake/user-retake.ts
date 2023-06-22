@@ -35,6 +35,7 @@ import {
 } from '../../services/lesson';
 import { AddonModLessonAnswerData, AddonModLessonHelper } from '../../services/lesson-helper';
 import { CoreTime } from '@singletons/time';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 /**
  * Page that displays a retake made by a certain user.
@@ -59,6 +60,11 @@ export class AddonModLessonUserRetakePage implements OnInit {
     protected userId?: number; // User ID to see the retakes.
     protected retakeNumber?: number; // Number of the initial retake to see.
     protected previousSelectedRetake?: number; // To be able to detect the previous selected retake when it has changed.
+    protected logView: () => void;
+
+    constructor() {
+        this.logView = CoreTime.once(() => this.performLogView());
+    }
 
     /**
      * @inheritdoc
@@ -93,6 +99,8 @@ export class AddonModLessonUserRetakePage implements OnInit {
 
         try {
             await this.setRetake(retakeNumber);
+
+            this.performLogView();
         } catch (error) {
             this.selectedRetake = this.previousSelectedRetake ?? this.selectedRetake;
             CoreDomUtils.showErrorModal(CoreUtils.addDataNotDownloadedError(error, 'Error getting attempt.'));
@@ -160,6 +168,8 @@ export class AddonModLessonUserRetakePage implements OnInit {
             this.student.profileimageurl = user?.profileimageurl;
 
             await this.setRetake(this.selectedRetake);
+
+            this.logView();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error getting data.', true);
         }
@@ -241,6 +251,23 @@ export class AddonModLessonUserRetakePage implements OnInit {
         });
 
         return formattedData;
+    }
+
+    /**
+     * Log view.
+     */
+    protected performLogView(): void {
+        if (!this.lesson) {
+            return;
+        }
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM,
+            ws: 'mod_lesson_get_user_attempt',
+            name: this.lesson.name + ': ' + Translate.instant('addon.mod_lesson.detailedstats'),
+            data: { id: this.lesson.id, userid: this.userId, try: this.selectedRetake, category: 'lesson' },
+            url: `/mod/lesson/report.php?id=${this.cmId}&action=reportdetail&userid=${this.userId}&try=${this.selectedRetake}`,
+        });
     }
 
 }

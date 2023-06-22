@@ -59,7 +59,7 @@ const contentToken = '<!-- CORE-DATABASE-CONTENT-GOES-HERE -->';
 export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 
     component = AddonModDataProvider.COMPONENT;
-    moduleName = 'data';
+    pluginName = 'data';
 
     access?: AddonModDataGetDataAccessInformationWSResponse;
     database?: AddonModDataData;
@@ -420,8 +420,6 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
         try {
             await this.fetchEntriesData();
-            // Log activity view for coherence with Moodle web.
-            await this.logActivity();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
         } finally {
@@ -470,9 +468,6 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
         try {
             await this.fetchEntriesData();
-
-            // Log activity view for coherence with Moodle web.
-            return this.logActivity();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
         }
@@ -535,7 +530,9 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
             return;
         }
 
-        await AddonModData.logView(this.database.id, this.database.name);
+        await AddonModData.logView(this.database.id);
+
+        this.analyticsLogEvent('mod_data_view_database');
     }
 
     /**

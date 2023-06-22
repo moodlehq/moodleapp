@@ -41,6 +41,8 @@ import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
 import { CoreCourse } from '@features/course/services/course';
 import { CorePasswordModalResponse } from '@components/password-modal/password-modal';
+import { CoreTime } from '@singletons/time';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 const ENROL_BROWSER_METHODS = ['fee', 'paypal'];
 
@@ -81,6 +83,7 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
     protected courseStatusObserver?: CoreEventObserver;
     protected appResumeSubscription: Subscription;
     protected waitingForBrowserEnrol = false;
+    protected logView: () => void;
 
     constructor() {
         // Refresh the view when the app is resumed.
@@ -94,6 +97,20 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
                 this.dataLoaded = false;
 
                 await this.refreshData();
+            });
+        });
+
+        this.logView = CoreTime.once(async () => {
+            if (!this.course || this.isModal) {
+                return;
+            }
+
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM,
+                ws: 'core_course_get_courses',
+                name: this.course.fullname,
+                data: { id: this.course.id, category: 'course' },
+                url: `/enrol/index.php?id=${this.course.id}`,
             });
         });
     }
@@ -161,6 +178,8 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
                 this.getCourseData(),
                 this.loadCourseExtraData(),
             ]);
+
+            this.logView();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error getting enrolment data');
         }

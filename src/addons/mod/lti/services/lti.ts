@@ -272,14 +272,11 @@ export class AddonModLtiProvider {
             ltiid: id,
         };
 
-        return CoreCourseLogHelper.logSingle(
+        return CoreCourseLogHelper.log(
             'mod_lti_view_lti',
             params,
             AddonModLtiProvider.COMPONENT,
             id,
-            name,
-            'lti',
-            {},
             siteId,
         );
     }

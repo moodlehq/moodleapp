@@ -35,6 +35,7 @@ import {
 } from '../../services/scorm';
 import { AddonModScormHelper, AddonModScormTOCScoWithIcon } from '../../services/scorm-helper';
 import { AddonModScormSync } from '../../services/scorm-sync';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 /**
  * Page that allows playing a SCORM.
@@ -442,8 +443,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
             this.markCompleted(sco);
         }
 
-        // Trigger SCO launch event.
-        CoreUtils.ignoreErrors(AddonModScorm.logLaunchSco(this.scorm.id, sco.id, this.scorm.name));
+        this.logEvent(sco.id);
     }
 
     /**
@@ -579,6 +579,27 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
             cmId: this.cmId,
             readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
         }));
+    }
+
+    /**
+     * Log event.
+     */
+    protected async logEvent(scoId: number): Promise<void> {
+        await CoreUtils.ignoreErrors(AddonModScorm.logLaunchSco(this.scorm.id, scoId));
+
+        let url = '/mod/scorm/player.php';
+        if (this.scorm.popup) {
+            url += `?a=${this.scorm.id}&currentorg=${this.organizationId}&scoid=${scoId}` +
+                `&display=popup&mode=${this.mode}`;
+        }
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM,
+            ws: 'mod_scorm_get_scorm_user_data',
+            name: this.scorm.name,
+            data: { id: this.scorm.id, scoid: scoId, organization: this.organizationId, category: 'scorm' },
+            url,
+        });
     }
 
     /**

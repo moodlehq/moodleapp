@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
@@ -21,6 +21,9 @@ import { CoreGroupInfo } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { AddonModChatSessionFormatted, AddonModChatSessionsSource } from '../../classes/chat-sessions-source';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreTime } from '@singletons/time';
+import { Translate } from '@singletons';
 
 /**
  * Page that displays list of chat sessions.
@@ -29,14 +32,32 @@ import { AddonModChatSessionFormatted, AddonModChatSessionsSource } from '../../
     selector: 'page-addon-mod-chat-sessions',
     templateUrl: 'sessions.html',
 })
-export class AddonModChatSessionsPage implements AfterViewInit, OnDestroy {
+export class AddonModChatSessionsPage implements OnInit, AfterViewInit, OnDestroy {
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
     sessions!: CoreListItemsManager<AddonModChatSessionFormatted, AddonModChatSessionsSource>;
     courseId?: number;
+    protected logView: () => void;
 
     constructor() {
+        this.logView = CoreTime.once(() => {
+            const source = this.sessions.getSource();
+
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
+                ws: 'mod_chat_view_sessions',
+                name: Translate.instant('addon.mod_chat.chatreport'),
+                data: { chatid: source.CHAT_ID, category: 'chat' },
+                url: `/mod/chat/report.php?id=${source.CM_ID}`,
+            });
+        });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnInit(): void {
         try {
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
             const chatId = CoreNavigator.getRequiredRouteNumberParam('chatId');
@@ -91,6 +112,8 @@ export class AddonModChatSessionsPage implements AfterViewInit, OnDestroy {
     async fetchSessions(): Promise<void> {
         try {
             await this.sessions.load();
+
+            this.logView();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'core.errorloadingcontent', true);
         }

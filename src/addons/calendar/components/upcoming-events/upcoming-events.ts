@@ -25,6 +25,10 @@ import { AddonCalendarHelper, AddonCalendarFilter } from '../../services/calenda
 import { AddonCalendarOffline } from '../../services/calendar-offline';
 import { CoreCategoryData, CoreCourses } from '@features/courses/services/courses';
 import { CoreConstants } from '@/core/constants';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreUrlUtils } from '@services/utils/url';
+import { CoreTime } from '@singletons/time';
+import { Translate } from '@singletons';
 
 /**
  * Component that displays upcoming events.
@@ -54,6 +58,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
     protected lookAhead = 0;
     protected timeFormat?: string;
     protected differ: KeyValueDiffer<unknown, unknown>; // To detect changes in the data input.
+    protected logView: () => void;
 
     // Observers.
     protected undeleteEventObserver: CoreEventObserver;
@@ -84,6 +89,23 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
         );
 
         this.differ = differs.find([]).create();
+
+        this.logView = CoreTime.once(() => {
+            const params = {
+                course: this.filter?.courseId,
+            };
+
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
+                ws: 'core_calendar_get_calendar_upcoming_view',
+                name: Translate.instant('addon.calendar.upcomingevents'),
+                data: {
+                    ...params,
+                    category: 'calendar',
+                },
+                url: CoreUrlUtils.addParamsToUrl('/calendar/view.php?view=upcoming', params),
+            });
+        });
     }
 
     /**
@@ -148,8 +170,9 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
         try {
             await Promise.all(promises);
 
-            this.fetchEvents();
+            await this.fetchEvents();
 
+            this.logView();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
         }

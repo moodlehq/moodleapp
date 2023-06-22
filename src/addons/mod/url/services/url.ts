@@ -210,23 +210,19 @@ export class AddonModUrlProvider {
      * Report the url as being viewed.
      *
      * @param id Module ID.
-     * @param name Name of the assign.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the WS call is successful.
      */
-    logView(id: number, name?: string, siteId?: string): Promise<void> {
+    logView(id: number, siteId?: string): Promise<void> {
         const params: AddonModUrlViewUrlWSParams = {
             urlid: id,
         };
 
-        return CoreCourseLogHelper.logSingle(
+        return CoreCourseLogHelper.log(
             'mod_url_view_url',
             params,
             AddonModUrlProvider.COMPONENT,
             id,
-            name,
-            'url',
-            {},
             siteId,
         );
     }

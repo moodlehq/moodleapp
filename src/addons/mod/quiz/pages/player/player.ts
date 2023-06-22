@@ -49,6 +49,7 @@ import { CoreDom } from '@singletons/dom';
 import { CoreTime } from '@singletons/time';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreWSError } from '@classes/errors/wserror';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 /**
  * Page that allows attempting a quiz.
@@ -534,9 +535,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
         // @todo MOBILE-4350: This is called before getting the attempt data in sequential quizzes as a workaround for a bug
         // in the LMS. Once the bug has been fixed, this should be reverted.
         if (this.isSequential) {
-            await CoreUtils.ignoreErrors(
-                AddonModQuiz.logViewAttempt(this.attempt.id, page, this.preflightData, this.offline, this.quiz),
-            );
+            await this.logViewPage(page);
         }
 
         const data = await AddonModQuiz.getAttemptData(this.attempt.id, page, this.preflightData, {
@@ -569,13 +568,53 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
         // Mark the page as viewed.
         if (!this.isSequential) {
             // @todo MOBILE-4350: Undo workaround.
-            CoreUtils.ignoreErrors(
-                AddonModQuiz.logViewAttempt(this.attempt.id, page, this.preflightData, this.offline, this.quiz),
-            );
+            await this.logViewPage(page);
         }
 
         // Start looking for changes.
         this.autoSave.startCheckChangesProcess(this.quiz, this.attempt, this.preflightData, this.offline);
+    }
+
+    /**
+     * Log view a page.
+     *
+     * @param page Page viewed.
+     */
+    protected async logViewPage(page: number): Promise<void> {
+        if (!this.quiz || !this.attempt) {
+            return;
+        }
+
+        await CoreUtils.ignoreErrors(AddonModQuiz.logViewAttempt(this.attempt.id, page, this.preflightData, this.offline));
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM,
+            ws: 'mod_quiz_view_attempt',
+            name: this.quiz.name,
+            data: { id: this.attempt.id, quizid: this.quiz.id, page, category: 'quiz' },
+            url: `/mod/quiz/attempt.php?attempt=${this.attempt.id}&cmid=${this.cmId}` + (page > 0 ? `&page=${page}` : ''),
+        });
+    }
+
+    /**
+     * Log view summary.
+     */
+    protected async logViewSummary(): Promise<void> {
+        if (!this.quiz || !this.attempt) {
+            return;
+        }
+
+        await CoreUtils.ignoreErrors(
+            AddonModQuiz.logViewAttemptSummary(this.attempt.id, this.preflightData, this.quiz.id),
+        );
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM,
+            ws: 'mod_quiz_view_attempt_summary',
+            name: this.quiz.name,
+            data: { id: this.attempt.id, quizid: this.quiz.id, category: 'quiz' },
+            url: `/mod/quiz/summary.php?attempt=${this.attempt.id}&cmid=${this.cmId}`,
+        });
     }
 
     /**
@@ -618,10 +657,7 @@ export class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLeave {
 
         this.dueDateWarning = AddonModQuiz.getAttemptDueDateWarning(this.quiz, this.attempt);
 
-        // Log summary as viewed.
-        CoreUtils.ignoreErrors(
-            AddonModQuiz.logViewAttemptSummary(this.attempt.id, this.preflightData, this.quiz.id, this.quiz.name),
-        );
+        this.logViewSummary();
     }
 
     /**

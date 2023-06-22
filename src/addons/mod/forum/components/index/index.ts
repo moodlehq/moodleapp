@@ -71,7 +71,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
     component = AddonModForumProvider.COMPONENT;
-    moduleName = 'forum';
+    pluginName = 'forum';
     descriptionNote?: string;
     promisedDiscussions: CorePromisedValue<AddonModForumDiscussionsManager>;
     discussionsItems: AddonModForumDiscussionItem[] = [];
@@ -708,12 +708,14 @@ class AddonModForumDiscussionsManager extends CoreListItemsManager<AddonModForum
         }
 
         try {
-            await AddonModForum.logView(forum.id, forum.name);
+            await AddonModForum.logView(forum.id);
 
             CoreCourse.checkModuleCompletion(this.page.courseId, this.page.module.completiondata);
         } catch {
             // Ignore errors.
         }
+
+        this.page.analyticsLogEvent('mod_forum_view_forum');
     }
 
     /**

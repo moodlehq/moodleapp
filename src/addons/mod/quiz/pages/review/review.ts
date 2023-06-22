@@ -37,6 +37,7 @@ import {
     AddonModQuizWSAdditionalData,
 } from '../../services/quiz';
 import { AddonModQuizHelper } from '../../services/quiz-helper';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 /**
  * Page that allows reviewing a quiz attempt.
@@ -73,11 +74,15 @@ export class AddonModQuizReviewPage implements OnInit {
     protected attemptId!: number; // The attempt being reviewed.
     protected currentPage!: number; // The current page being reviewed.
     protected options?: AddonModQuizCombinedReviewOptions; // Review options.
-    protected fetchSuccess = false;
+    protected logView: () => void;
 
     constructor(
         protected elementRef: ElementRef,
     ) {
+        this.logView = CoreTime.once(() => this.performLogView(true, {
+            showAllDisabled: !this.showAll,
+            page: this.currentPage,
+        }));
     }
 
     /**
@@ -127,6 +132,8 @@ export class AddonModQuizReviewPage implements OnInit {
 
         try {
             await this.loadPage(page);
+
+            this.performLogView(false, { page });
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.mod_quiz.errorgetquestions', true);
         } finally {
@@ -156,12 +163,7 @@ export class AddonModQuizReviewPage implements OnInit {
             // Load questions.
             await this.loadPage(this.currentPage);
 
-            if (!this.fetchSuccess) {
-                this.fetchSuccess = true;
-                CoreUtils.ignoreErrors(
-                    AddonModQuiz.logViewAttemptReview(this.attemptId, this.quiz.id, this.quiz.name),
-                );
-            }
+            this.logView();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.mod_quiz.errorgetquiz', true);
         }
@@ -325,11 +327,13 @@ export class AddonModQuizReviewPage implements OnInit {
     /**
      * Switch mode: all questions in same page OR one page at a time.
      */
-    switchMode(): void {
+    async switchMode(): Promise<void> {
         this.showAll = !this.showAll;
 
         // Load all questions or first page, depending on the mode.
-        this.loadPage(this.showAll ? -1 : 0);
+        await this.loadPage(this.showAll ? -1 : 0);
+
+        this.performLogView(false, { showAllDisabled: !this.showAll });
     }
 
     async openNavigation(): Promise<void> {
@@ -351,6 +355,37 @@ export class AddonModQuizReviewPage implements OnInit {
         this.changePage(modalData.page, modalData.slot);
     }
 
+    /**
+     * Perform log view.
+     *
+     * @param logInLMS Whether to log in LMS too or only in analytics.
+     * @param options Other options.
+     */
+    protected async performLogView(logInLMS = false, options: LogViewOptions = {}): Promise<void> {
+        if (!this.quiz) {
+            return;
+        }
+
+        if (logInLMS) {
+            await CoreUtils.ignoreErrors(AddonModQuiz.logViewAttemptReview(this.attemptId, this.quiz.id));
+        }
+
+        let url = `/mod/quiz/review.php?attempt=${this.attemptId}&cmid=${this.cmId}`;
+        if (options.showAllDisabled) {
+            url += '&showall=0';
+        } else if (options.page && options.page > 0) {
+            url += `&page=${ options.page}`;
+        }
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM,
+            ws: 'mod_quiz_view_attempt_review',
+            name: this.quiz.name,
+            data: { id: this.attemptId, quizid: this.quiz.id, page: options.page, category: 'quiz' },
+            url: url,
+        });
+    }
+
 }
 
 /**
@@ -358,4 +393,9 @@ export class AddonModQuizReviewPage implements OnInit {
  */
 type QuizQuestion = CoreQuestionQuestionParsed & {
     readableMark?: string;
+};
+
+type LogViewOptions = {
+    page?: number; // Page being viewed (if viewing pages);
+    showAllDisabled?: boolean; // Whether the showAll option has just been disabled.
 };

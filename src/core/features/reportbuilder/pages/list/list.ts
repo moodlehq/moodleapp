@@ -18,9 +18,12 @@ import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/
 import { CoreReportBuilderReportsSource } from '@features/reportbuilder/classes/reports-source';
 import { CoreReportBuilder, CoreReportBuilderReport, REPORTS_LIST_LIMIT } from '@features/reportbuilder/services/reportbuilder';
 import { IonRefresher } from '@ionic/angular';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
+import { Translate } from '@singletons';
+import { CoreTime } from '@singletons/time';
 import { BehaviorSubject } from 'rxjs';
 
 @Component({
@@ -39,7 +42,11 @@ export class CoreReportBuilderListPage implements AfterViewInit, OnDestroy {
         loadMoreError: false,
     });
 
+    protected logView: () => void;
+
     constructor() {
+        this.logView = CoreTime.once(() => this.performLogView());
+
         try {
             const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(CoreReportBuilderReportsSource, []);
             this.reports = new CoreListItemsManager(source, CoreReportBuilderListPage);
@@ -71,6 +78,8 @@ export class CoreReportBuilderListPage implements AfterViewInit, OnDestroy {
     async fetchReports(reload: boolean): Promise<void> {
         reload ? await this.reports.reload() : await this.reports.load();
         this.updateState({ loadMoreError: false });
+
+        this.logView();
     }
 
     /**
@@ -109,6 +118,19 @@ export class CoreReportBuilderListPage implements AfterViewInit, OnDestroy {
         await CoreUtils.ignoreErrors(CoreReportBuilder.invalidateReportsList());
         await CoreUtils.ignoreErrors(this.fetchReports(true));
         await ionRefresher?.complete();
+    }
+
+    /**
+     * Log view.
+     */
+    protected performLogView(): void {
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
+            ws: 'core_reportbuilder_list_reports',
+            name: Translate.instant('core.reportbuilder.reports'),
+            data: { category: 'reportbuilder' },
+            url: '/reportbuilder/index.php',
+        });
     }
 
     /**

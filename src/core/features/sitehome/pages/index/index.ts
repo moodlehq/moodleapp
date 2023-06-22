@@ -29,6 +29,8 @@ import { CoreCourseModulePrefetchDelegate } from '@features/course/services/modu
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import { CoreBlockHelper } from '@features/block/services/block-helper';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreTime } from '@singletons/time';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 /**
  * Page that displays site home index.
@@ -54,13 +56,25 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     newsForumModule?: CoreCourseModuleData;
 
     protected updateSiteObserver: CoreEventObserver;
-    protected fetchSuccess = false;
+    protected logView: () => void;
 
     constructor() {
         // Refresh the enabled flags if site is updated.
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
         }, CoreSites.getCurrentSiteId());
+
+        this.logView = CoreTime.once(async () => {
+            await CoreUtils.ignoreErrors(CoreCourse.logView(this.siteHomeId));
+
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM,
+                ws: 'core_course_view_course',
+                name: this.currentSite.getInfo()?.sitename ?? '',
+                data: { id: this.siteHomeId, category: 'course' },
+                url: '/?redirect=0',
+            });
+        });
     }
 
     /**
@@ -138,15 +152,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
                 this.hasContent = result.hasContent || this.hasContent;
             }
 
-            if (!this.fetchSuccess) {
-                this.fetchSuccess = true;
-                CoreUtils.ignoreErrors(CoreCourse.logView(
-                    this.siteHomeId,
-                    undefined,
-                    undefined,
-                    this.currentSite.getInfo()?.sitename,
-                ));
-            }
+            this.logView();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'core.course.couldnotloadsectioncontent', true);
         }

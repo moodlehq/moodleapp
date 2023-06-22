@@ -31,6 +31,9 @@ import { CoreCourse } from '../services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '../services/course-helper';
 import { CoreCourseModuleDelegate, CoreCourseModuleMainComponent } from '../services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '../services/module-prefetch-delegate';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreUrlUtils } from '@services/utils/url';
+import { CoreTime } from '@singletons/time';
 
 /**
  * Result of a resource download.
@@ -56,8 +59,8 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     component?: string; // Component name.
     componentId?: number; // Component ID.
     hasOffline = false; // Resources don't have any data to sync.
-
     description?: string; // Module description.
+    pluginName?: string; // The plugin name without "mod_", e.g. assign or book.
 
     protected fetchContentDefaultError = 'core.course.errorgetmodule'; // Default error to show when loading contents.
     protected isCurrentView = false; // Whether the component is in the current view.
@@ -72,14 +75,16 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     protected showCompletion = false; // Whether to show completion inside the activity.
     protected displayDescription = true; // Wether to show Module description on module page, and not on summary or the contrary.
     protected isDestroyed = false; // Whether the component is destroyed.
-    protected fetchSuccess = false; // Whether a fetch was finished successfully.
     protected checkCompletionAfterLog = true; // Whether to check if completion has changed after calling logActivity.
+    protected finishSuccessfulFetch: () => void;
 
     constructor(
         @Optional() @Inject('') loggerName: string = 'CoreCourseModuleMainResourceComponent',
         protected courseContentsPage?: CoreCourseContentsPage,
     ) {
         this.logger = CoreLogger.getInstance(loggerName);
+
+        this.finishSuccessfulFetch = CoreTime.once(() => this.performFinishSuccessfulFetch());
     }
 
     /**
@@ -447,16 +452,11 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     }
 
     /**
-     * Finish a successful fetch.
+     * Finish first successful fetch.
      *
      * @returns Promise resolved when done.
      */
-    protected async finishSuccessfulFetch(): Promise<void> {
-        if (this.fetchSuccess) {
-            return; // Already treated.
-        }
-
-        this.fetchSuccess = true;
+    protected async performFinishSuccessfulFetch(): Promise<void> {
         this.storeModuleViewed();
 
         // Log activity now.
@@ -487,6 +487,36 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      */
     protected async logActivity(): Promise<void> {
         // To be overridden.
+    }
+
+    /**
+     * Log activity view in analytics.
+     *
+     * @param wsName Name of the WS used.
+     * @param data Other data to send.
+     * @returns Promise resolved when done.
+     */
+    async analyticsLogEvent(
+        wsName: string,
+        options: AnalyticsLogEventOptions = {},
+    ): Promise<void> {
+        let url: string | undefined;
+        if (options.sendUrl === true || options.sendUrl === undefined) {
+            if (typeof options.url === 'string') {
+                url = options.url;
+            } else if (this.pluginName) {
+                // Use default value.
+                url = CoreUrlUtils.addParamsToUrl(`/mod/${this.pluginName}/view.php?id=${this.module.id}`, options.data);
+            }
+        }
+
+        await CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM,
+            ws: wsName,
+            name: options.name || this.module.name,
+            data: { id: this.module.instance, category: this.pluginName, ...options.data },
+            url,
+        });
     }
 
     /**
@@ -534,3 +564,10 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     }
 
 }
+
+type AnalyticsLogEventOptions = {
+    data?: Record<string, unknown>; // Other data to send.
+    name?: string; // Name to send, defaults to activity name.
+    url?: string; // URL to use. If not set and sendUrl is true, a default value will be used.
+    sendUrl?: boolean; // Whether to pass a URL to analytics. Defaults to true.
+};

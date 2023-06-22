@@ -26,6 +26,10 @@ import { ADDON_COMPETENCY_SUMMARY_PAGE } from '@addons/competency/competency.mod
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { AddonCompetencyCourseCompetenciesSource } from '@addons/competency/classes/competency-course-competencies-source';
+import { CoreTime } from '@singletons/time';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreSites } from '@services/sites';
+import { Translate } from '@singletons';
 
 /**
  * Page that displays the list of competencies of a course.
@@ -41,7 +45,11 @@ export class AddonCompetencyCourseCompetenciesPage implements OnInit, OnDestroy 
         AddonCompetencyCourseCompetenciesSource
     >;
 
+    protected logView: () => void;
+
     constructor() {
+        this.logView = CoreTime.once(() => this.performLogView());
+
         try {
             const courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
             const userId = CoreNavigator.getRouteNumberParam('userId');
@@ -53,7 +61,6 @@ export class AddonCompetencyCourseCompetenciesPage implements OnInit, OnDestroy 
             this.competencies = new CoreListItemsManager(source, AddonCompetencyCourseCompetenciesPage);
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
-
             CoreNavigator.back();
 
             return;
@@ -112,6 +119,8 @@ export class AddonCompetencyCourseCompetenciesPage implements OnInit, OnDestroy 
     protected async fetchCourseCompetencies(): Promise<void> {
         try {
             await this.competencies.getSource().reload();
+
+            this.logView();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error getting course competencies data.');
         }
@@ -144,6 +153,28 @@ export class AddonCompetencyCourseCompetenciesPage implements OnInit, OnDestroy 
 
         this.fetchCourseCompetencies().finally(() => {
             refresher?.complete();
+        });
+    }
+
+    /**
+     * Log view.
+     */
+    protected performLogView(): void {
+        const source = this.competencies.getSource();
+        if (source.USER_ID && source.USER_ID !== CoreSites.getCurrentSiteUserId()) {
+            // Only log event when viewing own competencies. In LMS viewing students competencies uses a different view.
+            return;
+        }
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
+            ws: 'tool_lp_data_for_course_competencies_page',
+            name: Translate.instant('addon.competency.coursecompetencies'),
+            data: {
+                category: 'competency',
+                courseid: source.COURSE_ID,
+            },
+            url: `/admin/tool/lp/coursecompetencies.php?courseid=${source.COURSE_ID}`,
         });
     }
 

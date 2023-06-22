@@ -49,6 +49,10 @@ import {
 } from '@classes/items-management/swipe-slides-dynamic-items-manager-source';
 import { CoreSwipeSlidesDynamicItemsManager } from '@classes/items-management/swipe-slides-dynamic-items-manager';
 import moment from 'moment-timezone';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreUrlUtils } from '@services/utils/url';
+import { CoreTime } from '@singletons/time';
+import { Translate } from '@singletons';
 
 /**
  * Component that displays a calendar.
@@ -81,6 +85,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
     // Observers and listeners.
     protected undeleteEventObserver: CoreEventObserver;
     protected managerUnsubscribe?: () => void;
+    protected logView: () => void;
 
     constructor(differs: KeyValueDiffers) {
         this.currentSiteId = CoreSites.getCurrentSiteId();
@@ -107,6 +112,29 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
 
         this.hiddenDiffer = this.hidden;
         this.filterDiffer = differs.find(this.filter ?? {}).create();
+
+        this.logView = CoreTime.once(() => {
+            const month = this.manager?.getSelectedItem();
+            if (!month) {
+                return;
+            }
+
+            const params = {
+                course: this.filter?.courseId,
+                time: month.moment.unix(),
+            };
+
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
+                ws: 'core_calendar_get_calendar_monthly_view',
+                name: Translate.instant('addon.calendar.detailedmonthviewtitle', { $a: this.periodName }),
+                data: {
+                    ...params,
+                    category: 'calendar',
+                },
+                url: CoreUrlUtils.addParamsToUrl('/calendar/view.php?view=month', params),
+            });
+        });
     }
 
     @HostBinding('attr.hidden') get hiddenAttribute(): string | null {
@@ -124,7 +152,7 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
         const source = new AddonCalendarMonthSlidesItemsManagerSource(this, moment({
             year: this.initialYear,
             month: this.initialMonth ? this.initialMonth - 1 : undefined,
-        }));
+        }).startOf('month'));
         this.manager = new CoreSwipeSlidesDynamicItemsManager(source);
         this.managerUnsubscribe = this.manager.addListener({
             onSelectedItemUpdated: (item) => {
@@ -176,6 +204,8 @@ export class AddonCalendarCalendarComponent implements OnInit, DoCheck, OnDestro
             await this.manager?.getSource().fetchData();
 
             await this.manager?.getSource().load(this.manager?.getSelectedItem());
+
+            this.logView();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
         }

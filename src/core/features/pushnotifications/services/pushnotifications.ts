@@ -380,7 +380,6 @@ export class CorePushNotificationsProvider {
         itemCategory: string | undefined,
         wsName: string,
         data?: Record<string, string | number | boolean | undefined>,
-        siteId?: string,
     ): Promise<void> {
         data = data || {};
         data.id = itemId;
@@ -405,7 +404,6 @@ export class CorePushNotificationsProvider {
         itemCategory: string,
         wsName: string,
         data?: Record<string, string | number | boolean | undefined>,
-        siteId?: string,
     ): Promise<void> {
         data = data || {};
         data.moodleaction = wsName;

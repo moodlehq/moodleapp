@@ -27,6 +27,8 @@ import {
     AddonModFeedbackWSFeedback,
 } from '../../services/feedback';
 import { AddonModFeedbackAttempt, AddonModFeedbackFormItem, AddonModFeedbackHelper } from '../../services/feedback-helper';
+import { CoreTime } from '@singletons/time';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 /**
  * Page that displays a feedback attempt review.
@@ -48,6 +50,7 @@ export class AddonModFeedbackAttemptPage implements OnInit, OnDestroy {
     loaded = false;
 
     protected attemptId: number;
+    protected logView: () => void;
 
     constructor() {
         this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
@@ -60,6 +63,21 @@ export class AddonModFeedbackAttemptPage implements OnInit, OnDestroy {
         );
 
         this.attempts = new AddonModFeedbackAttemptsSwipeManager(source);
+
+        this.logView = CoreTime.once(() => {
+            if (!this.feedback) {
+                return;
+            }
+
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM,
+                ws: 'mod_feedback_get_responses_analysis',
+                name: this.feedback.name,
+                data: { id: this.attemptId, feedbackid: this.feedback.id, category: 'feedback' },
+                url: `/mod/feedback/show_entries.php?id=${this.cmId}` +
+                    (this.attempt ? `userid=${this.attempt.userid}` : '' ) + `&showcompleted=${this.attemptId}`,
+            });
+        });
     }
 
     /**
@@ -129,6 +147,8 @@ export class AddonModFeedbackAttemptPage implements OnInit, OnDestroy {
 
                 return attemptItem;
             }).filter((itemData) => itemData); // Filter items with errors.
+
+            this.logView();
         } catch (message) {
             // Some call failed on fetch, go back.
             CoreDomUtils.showErrorModalDefault(message, 'core.course.errorgetmodule', true);

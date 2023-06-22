@@ -776,23 +776,19 @@ export class AddonModH5PActivityProvider {
      * Report an H5P activity as being viewed.
      *
      * @param id H5P activity ID.
-     * @param name Name of the activity.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the WS call is successful.
      */
-    logView(id: number, name?: string, siteId?: string): Promise<void> {
+    logView(id: number, siteId?: string): Promise<void> {
         const params: AddonModH5PActivityViewH5pactivityWSParams = {
             h5pactivityid: id,
         };
 
-        return CoreCourseLogHelper.logSingle(
+        return CoreCourseLogHelper.log(
             'mod_h5pactivity_view_h5pactivity',
             params,
             AddonModH5PActivityProvider.COMPONENT,
             id,
-            name,
-            'h5pactivity',
-            {},
             siteId,
         );
     }
@@ -801,11 +797,10 @@ export class AddonModH5PActivityProvider {
      * Report an H5P activity report as being viewed.
      *
      * @param id H5P activity ID.
-     * @param name Name of the activity.
      * @param options Options.
      * @returns Promise resolved when the WS call is successful.
      */
-    async logViewReport(id: number, name?: string,  options: AddonModH5PActivityViewReportOptions = {}): Promise<void> {
+    async logViewReport(id: number, options: AddonModH5PActivityViewReportOptions = {}): Promise<void> {
         const site = await CoreSites.getSite(options.siteId);
 
         if (!site.wsAvailable('mod_h5pactivity_log_report_viewed')) {
@@ -819,14 +814,11 @@ export class AddonModH5PActivityProvider {
             attemptid: options.attemptId,
         };
 
-        return CoreCourseLogHelper.logSingle(
+        return CoreCourseLogHelper.log(
             'mod_h5pactivity_log_report_viewed',
             params,
             AddonModH5PActivityProvider.COMPONENT,
             id,
-            name,
-            'h5pactivity',
-            {},
             site.getId(),
         );
     }

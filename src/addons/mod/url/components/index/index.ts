@@ -34,6 +34,7 @@ import { AddonModUrlHelper } from '../../services/url-helper';
 export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit {
 
     component = AddonModUrlProvider.COMPONENT;
+    pluginName = 'url';
 
     url?: string;
     name?: string;
@@ -153,12 +154,14 @@ export class AddonModUrlIndexComponent extends CoreCourseModuleMainResourceCompo
      */
     protected async logView(): Promise<void> {
         try {
-            await AddonModUrl.logView(this.module.instance, this.module.name);
+            await AddonModUrl.logView(this.module.instance);
 
             this.checkCompletion();
         } catch {
             // Ignore errors.
         }
+
+        this.analyticsLogEvent('mod_url_view_url');
     }
 
     /**

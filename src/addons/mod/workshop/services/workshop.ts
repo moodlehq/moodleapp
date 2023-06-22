@@ -1443,23 +1443,19 @@ export class AddonModWorkshopProvider {
      * Report the workshop as being viewed.
      *
      * @param id Workshop ID.
-     * @param name Name of the workshop.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the WS call is successful.
      */
-    async logView(id: number, name?: string, siteId?: string): Promise<void> {
+    async logView(id: number, siteId?: string): Promise<void> {
         const params: AddonModWorkshopViewWorkshopWSParams = {
             workshopid: id,
         };
 
-        await CoreCourseLogHelper.logSingle(
+        await CoreCourseLogHelper.log(
             'mod_workshop_view_workshop',
             params,
             AddonModWorkshopProvider.COMPONENT,
             id,
-            name,
-            'workshop',
-            {},
             siteId,
         );
     }
@@ -1469,23 +1465,19 @@ export class AddonModWorkshopProvider {
      *
      * @param id Submission ID.
      * @param workshopId Workshop ID.
-     * @param name Name of the workshop.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the WS call is successful.
      */
-    async logViewSubmission(id: number, workshopId: number, name?: string, siteId?: string): Promise<void> {
+    async logViewSubmission(id: number, workshopId: number, siteId?: string): Promise<void> {
         const params: AddonModWorkshopViewSubmissionWSParams = {
             submissionid: id,
         };
 
-        await CoreCourseLogHelper.logSingle(
+        await CoreCourseLogHelper.log(
             'mod_workshop_view_submission',
             params,
             AddonModWorkshopProvider.COMPONENT,
             workshopId,
-            name,
-            'workshop',
-            params,
             siteId,
         );
     }

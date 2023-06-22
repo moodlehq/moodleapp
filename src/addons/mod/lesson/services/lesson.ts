@@ -2951,11 +2951,10 @@ export class AddonModLessonProvider {
      *
      * @param id Module ID.
      * @param password Lesson password (if any).
-     * @param name Name of the assign.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the WS call is successful.
      */
-    async logViewLesson(id: number, password?: string, name?: string, siteId?: string): Promise<void> {
+    async logViewLesson(id: number, password?: string, siteId?: string): Promise<void> {
         const params: AddonModLessonViewLessonWSParams = {
             lessonid: id,
         };
@@ -2964,14 +2963,11 @@ export class AddonModLessonProvider {
             params.password = password;
         }
 
-        await CoreCourseLogHelper.logSingle(
+        await CoreCourseLogHelper.log(
             'mod_lesson_view_lesson',
             params,
             AddonModLessonProvider.COMPONENT,
             id,
-            name,
-            'lesson',
-            {},
             siteId,
         );
     }

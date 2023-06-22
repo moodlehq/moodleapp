@@ -71,7 +71,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
     component = AddonModGlossaryProvider.COMPONENT;
-    moduleName = 'glossary';
+    pluginName = 'glossary';
 
     canAdd = false;
     loadMoreError = false;
@@ -482,12 +482,14 @@ class AddonModGlossaryEntriesManager extends CoreListItemsManager<AddonModGlossa
         }
 
         try {
-            await AddonModGlossary.logView(glossary.id, viewMode, glossary.name);
+            await AddonModGlossary.logView(glossary.id, viewMode);
 
             CoreCourse.checkModuleCompletion(this.page.courseId, this.page.module.completiondata);
         } catch {
             // Ignore errors.
         }
+
+        this.page.analyticsLogEvent('mod_glossary_view_glossary', { data: { mode: viewMode } });
     }
 
     /**

@@ -28,6 +28,7 @@ import { CoreUtilsOpenFileOptions } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CorePath } from '@singletons/path';
 import { AddonModResource, AddonModResourceProvider } from './resource';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 /**
  * Service that provides helper functions for resources.
@@ -206,6 +207,14 @@ export class AddonModResourceHelperProvider {
             } catch {
                 // Ignore errors.
             }
+
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM,
+                ws: 'mod_resource_view_resource',
+                name: module.name,
+                data: { id: module.instance, category: 'resource' },
+                url: `/mod/resource/view.php?id=${module.id}`,
+            });
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.mod_resource.errorwhileloadingthecontent', true);
         } finally {

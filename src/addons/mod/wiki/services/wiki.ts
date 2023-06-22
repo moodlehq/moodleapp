@@ -621,23 +621,19 @@ export class AddonModWikiProvider {
      *
      * @param id Page ID.
      * @param wikiId Wiki ID.
-     * @param name Name of the wiki.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the WS call is successful.
      */
-    logPageView(id: number, wikiId: number, name?: string, siteId?: string): Promise<void> {
+    logPageView(id: number, wikiId: number, siteId?: string): Promise<void> {
         const params: AddonModWikiViewPageWSParams = {
             pageid: id,
         };
 
-        return CoreCourseLogHelper.logSingle(
+        return CoreCourseLogHelper.log(
             'mod_wiki_view_page',
             params,
             AddonModWikiProvider.COMPONENT,
             wikiId,
-            name,
-            'wiki',
-            params,
             siteId,
         );
     }
@@ -646,23 +642,19 @@ export class AddonModWikiProvider {
      * Report the wiki as being viewed.
      *
      * @param id Wiki ID.
-     * @param name Name of the wiki.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the WS call is successful.
      */
-    logView(id: number, name?: string, siteId?: string): Promise<void> {
+    logView(id: number, siteId?: string): Promise<void> {
         const params: AddonModWikiViewWikiWSParams = {
             wikiid: id,
         };
 
-        return CoreCourseLogHelper.logSingle(
+        return CoreCourseLogHelper.log(
             'mod_wiki_view_wiki',
             params,
             AddonModWikiProvider.COMPONENT,
             id,
-            name,
-            'wiki',
-            {},
             siteId,
         );
     }

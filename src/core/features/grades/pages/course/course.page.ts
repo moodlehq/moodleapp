@@ -35,6 +35,8 @@ import { CoreUserParticipantsSource } from '@features/user/classes/participants-
 import { CoreUserData, CoreUserParticipant } from '@features/user/services/user';
 import { CoreGradesCoursesSource } from '@features/grades/classes/grades-courses-source';
 import { CoreDom } from '@singletons/dom';
+import { CoreTime } from '@singletons/time';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 /**
  * Page that displays a course grades.
@@ -61,12 +63,14 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     loaded = false;
 
     protected useLegacyLayout?: boolean; // Whether to use the layout before 4.1.
-    protected fetchSuccess = false;
+    protected logView: () => void;
 
     constructor(
         protected route: ActivatedRoute,
         protected element: ElementRef<HTMLElement>,
     ) {
+        this.logView = CoreTime.once(() => this.performLogView());
+
         try {
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId', { route });
             this.userId = CoreNavigator.getRouteNumberParam('userId', { route }) ?? CoreSites.getCurrentSiteUserId();
@@ -232,10 +236,7 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
         this.rowsOnView = this.getRowsOnHeight();
         this.totalColumnsSpan = formattedTable.columns.reduce((total, column) => total + column.colspan, 0);
 
-        if (!this.fetchSuccess) {
-            this.fetchSuccess = true;
-            await CoreGrades.logCourseGradesView(this.courseId, this.userId);
-        }
+        this.logView();
     }
 
     /**
@@ -255,6 +256,22 @@ export class CoreGradesCoursePage implements AfterViewInit, OnDestroy {
     loadMore(infiniteComplete?: () => void): void {
         this.rowsOnView += this.getRowsOnHeight();
         infiniteComplete && infiniteComplete();
+    }
+
+    /**
+     * Log view.
+     */
+    protected async performLogView(): Promise<void> {
+        await CoreUtils.ignoreErrors(CoreGrades.logCourseGradesView(this.courseId, this.userId));
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM,
+            ws: 'gradereport_user_view_grade_report',
+            name: this.title ?? '',
+            data: { id: this.courseId, userid: this.userId, category: 'grades' },
+            url: `/grade/report/user/index.php?id=${this.courseId}` +
+                (this.userId !== CoreSites.getCurrentSiteUserId() ? `&userid=${this.userId}` : ''),
+        });
     }
 
 }

@@ -75,7 +75,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
 
     component = AddonModWikiProvider.COMPONENT;
     componentId?: number;
-    moduleName = 'wiki';
+    pluginName = 'wiki';
     groupWiki = false;
 
     isOnline = false;
@@ -327,9 +327,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
 
                     await this.showLoadingAndFetch(true, false);
 
-                    if (this.currentPage && this.wiki) {
-                        CoreUtils.ignoreErrors(AddonModWiki.logPageView(this.currentPage, this.wiki.id, this.wiki.name));
-                    }
+                    this.currentPage && this.logPageViewed(this.currentPage);
                 }, CoreSites.getCurrentSiteId());
             }
 
@@ -443,12 +441,60 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             return; // Shouldn't happen.
         }
 
-        if (!this.pageId) {
-            await AddonModWiki.logView(this.wiki.id, this.wiki.name);
-        } else {
+        if (this.pageId) {
+            // View page.
             this.checkCompletionAfterLog = false;
-            CoreUtils.ignoreErrors(AddonModWiki.logPageView(this.pageId, this.wiki.id, this.wiki.name));
+            await this.logPageViewed(this.pageId);
+
+            return;
         }
+
+        await AddonModWiki.logView(this.wiki.id);
+
+        if (this.groupId === undefined && this.userId === undefined) {
+            // View initial page.
+            this.analyticsLogEvent('mod_wiki_view_wiki', { name: this.currentPageObj?.title });
+
+            return;
+        }
+
+        // Viewing a different subwiki.
+        const hasPersonalSubwikis = this.loadedSubwikis.some(subwiki => subwiki.userid > 0);
+        const hasGroupSubwikis = this.loadedSubwikis.some(subwiki => subwiki.groupid > 0);
+
+        let url = `/mod/wiki/view.php?wid=${this.wiki.id}&title=${this.wiki.firstpagetitle}`;
+        if (hasPersonalSubwikis && hasGroupSubwikis) {
+            url += `&groupanduser=${this.groupId}-${this.userId}`;
+        } else if (hasPersonalSubwikis) {
+            url += `&uid=${this.userId}`;
+        } else {
+            url += `&group=${this.groupId}`;
+        }
+
+        this.analyticsLogEvent('mod_wiki_view_wiki', {
+            name: this.currentPageObj?.title,
+            data: { subwiki: this.subwikiId, userid: this.userId, groupid: this.groupId },
+            url,
+        });
+    }
+
+    /**
+     * Log page viewed.
+     *
+     * @param pageId Page ID.
+     */
+    protected async logPageViewed(pageId: number): Promise<void> {
+        if (!this.wiki) {
+            return; // Shouldn't happen.
+        }
+
+        await CoreUtils.ignoreErrors(AddonModWiki.logPageView(pageId, this.wiki.id));
+
+        this.analyticsLogEvent('mod_wiki_view_page', {
+            name: this.currentPageObj?.title,
+            data: { pageid: this.pageId },
+            url: `/mod/wiki/view.php?page=${this.pageId}`,
+        });
     }
 
     /**
@@ -619,7 +665,9 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                 homeView: this.getWikiHomeView(),
                 moduleId: this.module.id,
                 courseId: this.courseId,
+                selectedId: this.currentPage,
                 selectedTitle: this.currentPageObj && this.currentPageObj.title,
+                wiki: this.wiki,
             },
         });
 

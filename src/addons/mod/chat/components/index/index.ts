@@ -32,7 +32,7 @@ import { AddonModChatModuleHandlerService } from '../../services/handlers/module
 export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {
 
     component = AddonModChatProvider.COMPONENT;
-    moduleName = 'chat';
+    pluginName = 'chat';
     chat?: AddonModChatChat;
     chatInfo?: {
         date: string;
@@ -85,7 +85,9 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
             return; // Shouldn't happen.
         }
 
-        await AddonModChat.logView(this.chat.id, this.chat.name);
+        await AddonModChat.logView(this.chat.id);
+
+        this.analyticsLogEvent('mod_chat_view_chat');
     }
 
     /**

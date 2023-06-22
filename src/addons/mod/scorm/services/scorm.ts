@@ -1420,24 +1420,20 @@ export class AddonModScormProvider {
      *
      * @param scormId SCORM ID.
      * @param scoId SCO ID.
-     * @param name Name of the SCORM.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the WS call is successful.
      */
-    logLaunchSco(scormId: number, scoId: number, name?: string, siteId?: string): Promise<void> {
+    logLaunchSco(scormId: number, scoId: number, siteId?: string): Promise<void> {
         const params: AddonModScormLaunchScoWSParams = {
             scormid: scormId,
             scoid: scoId,
         };
 
-        return CoreCourseLogHelper.logSingle(
+        return CoreCourseLogHelper.log(
             'mod_scorm_launch_sco',
             params,
             AddonModScormProvider.COMPONENT,
             scormId,
-            name,
-            'scorm',
-            { scoid: scoId },
             siteId,
         );
     }
@@ -1446,23 +1442,19 @@ export class AddonModScormProvider {
      * Report a SCORM as being viewed.
      *
      * @param id Module ID.
-     * @param name Name of the SCORM.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the WS call is successful.
      */
-    logView(id: number, name?: string, siteId?: string): Promise<void> {
+    logView(id: number, siteId?: string): Promise<void> {
         const params: AddonModScormViewScormWSParams = {
             scormid: id,
         };
 
-        return CoreCourseLogHelper.logSingle(
+        return CoreCourseLogHelper.log(
             'mod_scorm_view_scorm',
             params,
             AddonModScormProvider.COMPONENT,
             id,
-            name,
-            'scorm',
-            {},
             siteId,
         );
     }

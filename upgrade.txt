@@ -6,6 +6,7 @@ information provided here is intended especially for developers.
  - CoreSiteBasicInfo fullName attribute has changed to fullname and avatar to userpictureurl to match user fields.
  - Font Awesome icon library has been updated to 6.4.0. But nothing has changed, only version number.
  - The analytics system in the app has been refactored and some functions that could trigger analytics calls no longer do it, now you need to use CoreAnalytics instead. Some functions in CoreCourseLogHelper and CorePushNotificationsProvider have been deprecated.
+ - Due to the analytics refactor, the parameters of most log functions have changed.
 
 === 4.2.0 ===
 

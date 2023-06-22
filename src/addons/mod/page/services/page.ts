@@ -141,23 +141,19 @@ export class AddonModPageProvider {
      * Report a page as being viewed.
      *
      * @param pageid Module ID.
-     * @param name Name of the page.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the WS call is successful.
      */
-    logView(pageid: number, name?: string, siteId?: string): Promise<void> {
+    logView(pageid: number, siteId?: string): Promise<void> {
         const params: AddonModPageViewPageWSParams = {
             pageid,
         };
 
-        return CoreCourseLogHelper.logSingle(
+        return CoreCourseLogHelper.log(
             'mod_page_view_page',
             params,
             AddonModPageProvider.COMPONENT,
             pageid,
-            name,
-            'page',
-            {},
             siteId,
         );
     }

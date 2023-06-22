@@ -38,6 +38,7 @@ import {
 import { AddonModFeedbackFormItem, AddonModFeedbackHelper } from '../../services/feedback-helper';
 import { AddonModFeedbackSync } from '../../services/feedback-sync';
 import { AddonModFeedbackModuleHandlerService } from '../../services/handlers/module';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 /**
  * Page that displays feedback form.
@@ -122,7 +123,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
         }
 
         try {
-            await AddonModFeedback.logView(this.feedback.id, this.feedback.name, true);
+            await AddonModFeedback.logView(this.feedback.id, true);
 
             CoreCourse.checkModuleCompletion(this.courseId, this.module!.completiondata);
         } catch {
@@ -263,6 +264,8 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
             const itemsCopy = CoreUtils.clone(this.items); // Copy the array to avoid modifications.
             this.originalData = AddonModFeedbackHelper.getPageItemsResponses(itemsCopy);
         }
+
+        this.analyticsLogEvent();
     }
 
     /**
@@ -433,6 +436,40 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
         } finally {
             modal.dismiss();
         }
+    }
+
+    /**
+     * Log event in analytics.
+     */
+    protected analyticsLogEvent(): void {
+        if (!this.feedback) {
+            return;
+        }
+
+        if (this.preview) {
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM,
+                ws: 'mod_feedback_get_items',
+                name: this.feedback.name,
+                data: { id: this.feedback.id, category: 'feedback' },
+                url: `/mod/feedback/print.php?id=${this.cmId}&courseid=${this.courseId}`,
+            });
+
+            return;
+        }
+
+        let url = '/mod/feedback/complete.php';
+        if (!this.completed) {
+            url += `?id=${this.cmId}` + (this.currentPage ? `&gopage=${this.currentPage}` : '') + `&courseid=${this.courseId}`;
+        }
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM,
+            ws: this.completed ? 'mod_feedback_get_feedback_access_information' : 'mod_feedback_get_page_items',
+            name: this.feedback.name,
+            data: { id: this.feedback.id, category: 'feedback', page: this.currentPage },
+            url,
+        });
     }
 
     /**

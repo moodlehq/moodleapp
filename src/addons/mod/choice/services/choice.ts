@@ -365,23 +365,19 @@ export class AddonModChoiceProvider {
      * Report the choice as being viewed.
      *
      * @param id Choice ID.
-     * @param name Name of the choice.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the WS call is successful.
      */
-    logView(id: number, name?: string, siteId?: string): Promise<void> {
+    logView(id: number, siteId?: string): Promise<void> {
         const params: AddonModChoiceViewChoiceWSParams = {
             choiceid: id,
         };
 
-        return CoreCourseLogHelper.logSingle(
+        return CoreCourseLogHelper.log(
             'mod_choice_view_choice',
             params,
             AddonModChoiceProvider.COMPONENT,
             id,
-            name,
-            'choice',
-            {},
             siteId,
         );
     }

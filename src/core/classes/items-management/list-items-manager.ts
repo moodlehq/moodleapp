@@ -23,6 +23,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreRoutedItemsManagerSource } from './routed-items-manager-source';
 import { CoreRoutedItemsManager } from './routed-items-manager';
 import { CoreDom } from '@singletons/dom';
+import { CoreTime } from '@singletons/time';
 
 /**
  * Helper class to manage the state and routing of a list of items in a page.
@@ -35,7 +36,7 @@ export class CoreListItemsManager<
     protected pageRouteLocator?: unknown | ActivatedRoute;
     protected splitView?: CoreSplitViewComponent;
     protected splitViewOutletSubscription?: Subscription;
-    protected fetchSuccess = false; // Whether a fetch was finished successfully.
+    protected finishSuccessfulFetch: () => void;
 
     constructor(source: Source, pageRouteLocator: unknown | ActivatedRoute) {
         super(source);
@@ -44,6 +45,7 @@ export class CoreListItemsManager<
 
         this.pageRouteLocator = pageRouteLocator;
         this.addListener({ onSelectedItemUpdated: debouncedScrollToCurrentElement });
+        this.finishSuccessfulFetch = CoreTime.once(() => CoreUtils.ignoreErrors(this.logActivity()));
     }
 
     get items(): Item[] {
@@ -158,19 +160,6 @@ export class CoreListItemsManager<
         await this.getSource().load();
 
         this.finishSuccessfulFetch();
-    }
-
-    /**
-     * Finish a successful fetch.
-     */
-    protected async finishSuccessfulFetch(): Promise<void> {
-        if (this.fetchSuccess) {
-            return; // Already treated.
-        }
-
-        // Log activity.
-        this.fetchSuccess = true;
-        await CoreUtils.ignoreErrors(this.logActivity());
     }
 
     /**

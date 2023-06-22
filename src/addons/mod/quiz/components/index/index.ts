@@ -57,7 +57,7 @@ import {
 export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 
     component = AddonModQuizProvider.COMPONENT;
-    moduleName = 'quiz';
+    pluginName = 'quiz';
     quiz?: AddonModQuizQuizData; // The quiz.
     now?: number; // Current time.
     syncTime?: string; // Last synchronization time.
@@ -386,7 +386,9 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             return; // Shouldn't happen.
         }
 
-        await AddonModQuiz.logViewQuiz(this.quiz.id, this.quiz.name);
+        await CoreUtils.ignoreErrors(AddonModQuiz.logViewQuiz(this.quiz.id));
+
+        this.analyticsLogEvent('mod_quiz_view_quiz');
     }
 
     /**

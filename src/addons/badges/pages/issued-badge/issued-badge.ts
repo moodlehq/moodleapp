@@ -26,6 +26,8 @@ import { ActivatedRoute } from '@angular/router';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { AddonBadgesUserBadgesSource } from '@addons/badges/classes/user-badges-source';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreTime } from '@singletons/time';
 
 /**
  * Page that displays the list of calendar events.
@@ -38,6 +40,7 @@ export class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
 
     protected badgeHash = '';
     protected userId!: number;
+    protected logView: (badge: AddonBadgesUserBadge) => void;
 
     courseId = 0;
     user?: CoreUserProfile;
@@ -58,6 +61,16 @@ export class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
         );
 
         this.badges = new CoreSwipeNavigationItemsManager(source);
+
+        this.logView = CoreTime.once((badge) => {
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM,
+                ws: 'core_badges_view_user_badges',
+                name: badge.name,
+                data: { id: badge.uniquehash, category: 'badges' },
+                url: `/badges/badge.php?hash=${badge.uniquehash}`,
+            });
+        });
     }
 
     /**
@@ -105,6 +118,8 @@ export class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
                     this.course = undefined;
                 }
             }
+
+            this.logView(badge);
         } catch (message) {
             CoreDomUtils.showErrorModalDefault(message, 'Error getting badge data.');
         }

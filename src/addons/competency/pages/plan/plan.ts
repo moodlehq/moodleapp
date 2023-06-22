@@ -23,6 +23,8 @@ import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/
 import { AddonCompetencyPlansSource } from '@addons/competency/classes/competency-plans-source';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { AddonCompetencyPlanCompetenciesSource } from '@addons/competency/classes/competency-plan-competencies-source';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreTime } from '@singletons/time';
 
 /**
  * Page that displays a learning plan.
@@ -36,7 +38,11 @@ export class AddonCompetencyPlanPage implements OnInit, OnDestroy {
     plans!: CoreSwipeNavigationItemsManager;
     competencies!: CoreListItemsManager<AddonCompetencyDataForPlanPageCompetency, AddonCompetencyPlanCompetenciesSource>;
 
+    protected logView: () => void;
+
     constructor() {
+        this.logView = CoreTime.once(() => this.performLogView());
+
         try {
             const planId = CoreNavigator.getRequiredRouteNumberParam('planId');
             const userId = CoreNavigator.getRouteNumberParam('userId');
@@ -93,6 +99,8 @@ export class AddonCompetencyPlanPage implements OnInit, OnDestroy {
     protected async fetchLearningPlan(): Promise<void> {
         try {
             await this.competencies.getSource().reload();
+
+            this.logView();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error getting learning plan data.');
         }
@@ -108,6 +116,28 @@ export class AddonCompetencyPlanPage implements OnInit, OnDestroy {
 
         this.fetchLearningPlan().finally(() => {
             refresher?.complete();
+        });
+    }
+
+    /**
+     * Log view.
+     */
+    protected performLogView(): void {
+        if (!this.plan) {
+            return;
+        }
+
+        const planId = this.competencies.getSource().PLAN_ID;
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
+            ws: 'tool_lp_data_for_plan_page',
+            name: this.plan.plan.name,
+            data: {
+                category: 'competency',
+                planid: planId,
+            },
+            url: `/admin/tool/lp/coursecompetencies.php?id=${planId}`,
         });
     }
 

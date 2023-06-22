@@ -19,9 +19,12 @@ import {
 import { Component, OnInit } from '@angular/core';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { IonRefresher } from '@ionic/angular';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
+import { Translate } from '@singletons';
+import { CoreTime } from '@singletons/time';
 
 /**
  * Page that displays the course completion report.
@@ -33,6 +36,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 export class AddonCourseCompletionReportPage implements OnInit {
 
     protected userId!: number;
+    protected logView: () => void;
 
     courseId!: number;
     completionLoaded = false;
@@ -41,6 +45,21 @@ export class AddonCourseCompletionReportPage implements OnInit {
     tracked = true; // Whether completion is tracked.
     statusText?: string;
     user?: CoreUserProfile;
+
+    constructor() {
+        this.logView = CoreTime.once(() => {
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM,
+                ws: 'core_completion_get_course_completion_status',
+                name: Translate.instant('addon.coursecompletion.coursecompletion'),
+                data: {
+                    course: this.courseId,
+                    user: this.userId,
+                },
+                url: `/blocks/completionstatus/details.php?course=${this.courseId}&user=${this.userId}`,
+            });
+        });
+    }
 
     /**
      * @inheritdoc
@@ -77,6 +96,7 @@ export class AddonCourseCompletionReportPage implements OnInit {
             this.showSelfComplete = AddonCourseCompletion.canMarkSelfCompleted(this.userId, this.completion);
 
             this.tracked = true;
+            this.logView();
         } catch (error) {
             if (error && error.errorcode == 'notenroled') {
                 // Not enrolled error, probably a teacher.

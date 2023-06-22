@@ -24,6 +24,8 @@ import { Translate } from '@singletons';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
+import { CoreTime } from '@singletons/time';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 /**
  * Page that displays most used tags and allows searching.
@@ -41,6 +43,20 @@ export class CoreTagSearchPage implements OnInit {
     cloud?: CoreTagCloud;
     loaded = false;
     searching = false;
+
+    protected logView: () => void;
+
+    constructor() {
+        this.logView = CoreTime.once(async () => {
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
+                ws: 'core_tag_get_tag_cloud',
+                name: Translate.instant('core.tag.searchtags'),
+                data: { category: 'tag' },
+                url: '/tag/search.php',
+            });
+        });
+    }
 
     /**
      * View loaded.
@@ -63,6 +79,10 @@ export class CoreTagSearchPage implements OnInit {
                 this.fetchCollections(),
                 this.fetchTags(),
             ]);
+
+            if (!this.query) {
+                this.logView();
+            }
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error loading tags.');
         }

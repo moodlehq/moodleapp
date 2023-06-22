@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
-import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { CoreUser } from '@features/user/services/user';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
@@ -413,8 +412,6 @@ export class AddonNotesProvider {
             courseid: courseId,
             userid: userId || 0,
         };
-
-        CorePushNotifications.logViewListEvent('notes', 'core_notes_view_notes', params, site.getId());
 
         await site.write('core_notes_view_notes', params);
     }

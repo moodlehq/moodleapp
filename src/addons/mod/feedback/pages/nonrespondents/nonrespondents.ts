@@ -20,6 +20,8 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { AddonModFeedback, AddonModFeedbackWSFeedback } from '../../services/feedback';
 import { AddonModFeedbackHelper, AddonModFeedbackNonRespondent } from '../../services/feedback-helper';
+import { CoreTime } from '@singletons/time';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 /**
  * Page that displays feedback non respondents.
@@ -33,6 +35,7 @@ export class AddonModFeedbackNonRespondentsPage implements OnInit {
     protected cmId!: number;
     protected feedback?: AddonModFeedbackWSFeedback;
     protected page = 0;
+    protected logView: () => void;
 
     courseId!: number;
     selectedGroup!: number;
@@ -42,6 +45,22 @@ export class AddonModFeedbackNonRespondentsPage implements OnInit {
     canLoadMore = false;
     loaded = false;
     loadMoreError = false;
+
+    constructor() {
+        this.logView = CoreTime.once(() => {
+            if (!this.feedback) {
+                return;
+            }
+
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
+                ws: 'mod_feedback_get_non_respondents',
+                name: this.feedback.name,
+                data: { feedbackid: this.feedback.id, category: 'feedback' },
+                url: `/mod/feedback/show_nonrespondents.php?id=${this.cmId}&courseid=${this.courseId}`,
+            });
+        });
+    }
 
     /**
      * @inheritdoc
@@ -81,6 +100,8 @@ export class AddonModFeedbackNonRespondentsPage implements OnInit {
             this.selectedGroup = CoreGroups.validateGroupId(this.selectedGroup, this.groupInfo);
 
             await this.loadGroupUsers(this.selectedGroup);
+
+            this.logView();
         } catch (message) {
             CoreDomUtils.showErrorModalDefault(message, 'core.course.errorgetmodule', true);
 

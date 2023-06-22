@@ -22,6 +22,8 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreConstants } from '@/core/constants';
 import { IonRefresher } from '@ionic/angular';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreTime } from '@singletons/time';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 /**
  * Page that displays all modules of a certain type in a course.
@@ -39,6 +41,24 @@ export class CoreCourseListModTypePage implements OnInit {
 
     protected modName?: string;
     protected archetypes: Record<string, number> = {}; // To speed up the check of modules.
+    protected logView: () => void;
+
+    constructor() {
+        this.logView = CoreTime.once(async () => {
+            if (!this.modName) {
+                return;
+            }
+
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
+                ws: 'core_course_get_contents',
+                name: this.title,
+                data: { category: this.modName },
+                url: (this.modName === 'resources' ? '/course/resources.php' : `/mod/${this.modName}/index.php`) +
+                    `?id=${this.courseId}`,
+            });
+        });
+    }
 
     /**
      * @inheritdoc

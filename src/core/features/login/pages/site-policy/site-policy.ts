@@ -22,6 +22,8 @@ import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSite } from '@classes/site';
 import { CoreNavigator } from '@services/navigator';
 import { CoreEvents } from '@singletons/events';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { Translate } from '@singletons';
 
 /**
  * Page to accept a site policy.
@@ -94,6 +96,14 @@ export class CoreLoginSitePolicyPage implements OnInit {
         } finally {
             this.policyLoaded = true;
         }
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM,
+            ws: 'auth_email_get_signup_settings',
+            name: Translate.instant('core.login.policyagreement'),
+            data: { category: 'policy' },
+            url: '/user/policy.php',
+        });
     }
 
     /**

@@ -26,6 +26,7 @@ import { makeSingleton } from '@singletons';
 import { AddonModUrlIndexComponent } from '../../components/index/index';
 import { AddonModUrl } from '../url';
 import { AddonModUrlHelper } from '../url-helper';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 /**
  * Handler to support url modules.
@@ -64,14 +65,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
          * @param courseId The course ID.
          */
         const openUrl = async (module: CoreCourseModuleData, courseId: number): Promise<void> => {
-            try {
-                if (module.instance) {
-                    await AddonModUrl.logView(module.instance, module.name);
-                    CoreCourse.checkModuleCompletion(module.course, module.completiondata);
-                }
-            } catch {
-                // Ignore errors.
-            }
+            await this.logView(module);
 
             CoreCourse.storeModuleViewed(courseId, module.id);
 
@@ -194,6 +188,28 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
         const iconUrl = module?.modicon ?? modicon;
 
         return !iconUrl?.startsWith('assets/img/files/');
+    }
+
+    /**
+     * Log module viewed.
+     */
+    protected async logView(module: CoreCourseModuleData): Promise<void> {
+        try {
+            if (module.instance) {
+                await AddonModUrl.logView(module.instance);
+                CoreCourse.checkModuleCompletion(module.course, module.completiondata);
+            }
+        } catch {
+            // Ignore errors.
+        }
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM,
+            ws: 'mod_url_view_url',
+            name: module.name,
+            data: { id: module.instance, category: 'url' },
+            url: `/mod/url/view.php?id=${module.id}`,
+        });
     }
 
 }

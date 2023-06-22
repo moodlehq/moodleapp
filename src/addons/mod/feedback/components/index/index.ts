@@ -56,7 +56,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
     @Input() group = 0;
 
     component = AddonModFeedbackProvider.COMPONENT;
-    moduleName = 'feedback';
+    pluginName = 'feedback';
     feedback?: AddonModFeedbackWSFeedback;
     goPage?: number;
     items: AddonModFeedbackItem[] = [];
@@ -140,7 +140,18 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
             return; // Shouldn't happen.
         }
 
-        await AddonModFeedback.logView(this.feedback.id, this.feedback.name);
+        await AddonModFeedback.logView(this.feedback.id);
+
+        this.callAnalyticsLogEvent();
+    }
+
+    /**
+     * Call analytics.
+     */
+    protected callAnalyticsLogEvent(): void {
+        this.analyticsLogEvent('mod_feedback_view_feedback', {
+            url: this.tab === 'analysis' ? `/mod/feedback/analysis.php?id=${this.module.id}` : undefined,
+        });
     }
 
     /**
@@ -429,10 +440,15 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
      * @param tabName New tab name.
      */
     tabChanged(tabName: string): void {
+        const tabHasChanged = this.tab !== undefined && this.tab !== tabName;
         this.tab = tabName;
 
         if (!this.tabsLoaded[this.tab]) {
             this.loadContent(false, false, true);
+        }
+
+        if (tabHasChanged) {
+            this.callAnalyticsLogEvent();
         }
     }
 

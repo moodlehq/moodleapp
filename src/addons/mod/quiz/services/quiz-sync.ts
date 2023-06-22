@@ -404,13 +404,11 @@ export class AddonModQuizSyncProvider extends CoreCourseActivitySyncBaseProvider
 
         if (!finish) {
             // Answers sent, now set the current page.
-            // Don't pass the quiz instance because we don't want to trigger a Firebase event in this case.
             await CoreUtils.ignoreErrors(AddonModQuiz.logViewAttempt(
                 onlineAttempt.id,
                 offlineAttempt.currentpage,
                 preflightData,
                 false,
-                undefined,
                 siteId,
             ));
         }

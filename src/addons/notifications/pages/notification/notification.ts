@@ -24,9 +24,11 @@ import { ActivatedRouteSnapshot } from '@angular/router';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { CoreContentLinksAction, CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
+import { Translate } from '@singletons';
 
 /**
  * Page to render a notification.
@@ -72,6 +74,16 @@ export class AddonNotificationsNotificationPage implements OnInit, OnDestroy {
         AddonNotificationsHelper.markNotificationAsRead(notification);
 
         this.loaded = true;
+
+        if (notification.id) {
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM,
+                ws: 'core_message_get_messages',
+                name: Translate.instant('addon.notifications.notifications'),
+                data: { id: notification.id, category: 'notifications' },
+                url: `/message/output/popup/notifications.php?notificationid=${notification.id}&offset=0`,
+            });
+        }
     }
 
     /**

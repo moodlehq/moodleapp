@@ -20,6 +20,10 @@ import { CoreNavigator } from '@services/navigator';
 import { AddonCompetencyPlanFormatted, AddonCompetencyPlansSource } from '@addons/competency/classes/competency-plans-source';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
+import { CoreTime } from '@singletons/time';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreSites } from '@services/sites';
+import { Translate } from '@singletons';
 
 /**
  * Page that displays the list of learning plans.
@@ -34,11 +38,25 @@ export class AddonCompetencyPlanListPage implements AfterViewInit, OnDestroy {
 
     plans: CoreListItemsManager<AddonCompetencyPlanFormatted, AddonCompetencyPlansSource>;
 
+    protected logView: () => void;
+
     constructor() {
         const userId = CoreNavigator.getRouteNumberParam('userId');
         const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(AddonCompetencyPlansSource, [userId]);
 
         this.plans = new CoreListItemsManager(source, AddonCompetencyPlanListPage);
+
+        this.logView = CoreTime.once(async () => {
+            const userId = source.USER_ID ?? CoreSites.getCurrentSiteId();
+
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
+                ws: 'tool_lp_data_for_plans_page',
+                name: Translate.instant('addon.competency.userplans'),
+                data: { userid: userId },
+                url: `/admin/tool/lp/plans.php?userid=${userId}`,
+            });
+        });
     }
 
     /**
@@ -58,6 +76,8 @@ export class AddonCompetencyPlanListPage implements AfterViewInit, OnDestroy {
     protected async fetchLearningPlans(): Promise<void> {
         try {
             await this.plans.load();
+
+            this.logView();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error getting learning plans data.');
         }

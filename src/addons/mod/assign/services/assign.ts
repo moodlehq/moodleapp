@@ -878,23 +878,19 @@ export class AddonModAssignProvider {
      * Report an assignment submission as being viewed.
      *
      * @param assignid Assignment ID.
-     * @param name Name of the assign.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the WS call is successful.
      */
-    async logSubmissionView(assignid: number, name?: string, siteId?: string): Promise<void> {
+    async logSubmissionView(assignid: number, siteId?: string): Promise<void> {
         const params: AddonModAssignViewSubmissionStatusWSParams = {
             assignid,
         };
 
-        await CoreCourseLogHelper.logSingle(
+        await CoreCourseLogHelper.log(
             'mod_assign_view_submission_status',
             params,
             AddonModAssignProvider.COMPONENT,
             assignid,
-            name,
-            'assign',
-            {},
             siteId,
         );
     }
@@ -903,23 +899,19 @@ export class AddonModAssignProvider {
      * Report an assignment grading table is being viewed.
      *
      * @param assignid Assignment ID.
-     * @param name Name of the assign.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the WS call is successful.
      */
-    async logGradingView(assignid: number, name?: string, siteId?: string): Promise<void> {
+    async logGradingView(assignid: number, siteId?: string): Promise<void> {
         const params: AddonModAssignViewGradingTableWSParams = {
             assignid,
         };
 
-        await CoreCourseLogHelper.logSingle(
+        await CoreCourseLogHelper.log(
             'mod_assign_view_grading_table',
             params,
             AddonModAssignProvider.COMPONENT,
             assignid,
-            name,
-            'assign',
-            {},
             siteId,
         );
     }
@@ -928,23 +920,19 @@ export class AddonModAssignProvider {
      * Report an assign as being viewed.
      *
      * @param assignid Assignment ID.
-     * @param name Name of the assign.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the WS call is successful.
      */
-    async logView(assignid: number, name?: string, siteId?: string): Promise<void> {
+    async logView(assignid: number, siteId?: string): Promise<void> {
         const params: AddonModAssignViewAssignWSParams = {
             assignid,
         };
 
-        await CoreCourseLogHelper.logSingle(
+        await CoreCourseLogHelper.log(
             'mod_assign_view_assign',
             params,
             AddonModAssignProvider.COMPONENT,
             assignid,
-            name,
-            'assign',
-            {},
             siteId,
         );
     }
