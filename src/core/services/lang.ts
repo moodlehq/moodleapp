@@ -380,7 +380,7 @@ export class CoreLangProvider {
 
         const list: string[] = strings.split(/(?:\r\n|\r|\n)/);
         list.forEach((entry: string) => {
-            const values: string[] = entry.split('|');
+            const values: string[] = entry.split('|').map(value => value.trim());
 
             if (values.length < 3) {
                 // Not enough data, ignore the entry.
