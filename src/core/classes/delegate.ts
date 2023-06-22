@@ -208,6 +208,15 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
     }
 
     /**
+     * Check if the delegate has at least 1 registered handler (not necessarily enabled).
+     *
+     * @returns If there is at least 1 handler.
+     */
+    hasHandlers(): boolean {
+        return Object.keys(this.handlers).length > 0;
+    }
+
+    /**
      * Check if a time belongs to the last update handlers call.
      * This is to handle the cases where updateHandlers don't finish in the same order as they're called.
      *

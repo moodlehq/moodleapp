@@ -19,7 +19,6 @@ import { CoreSites } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
-import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { makeSingleton } from '@singletons';
 import { ACTIVITY_LOG_TABLE, CoreCourseActivityLogDBRecord } from './database/log';
 import { CoreStatusWithWarningsWSResponse } from '@services/ws';
@@ -190,7 +189,6 @@ export class CoreCourseLogHelperProvider {
 
     /**
      * Perform log online. Data will be saved offline for syncing.
-     * It also triggers a Firebase view_item event.
      *
      * @param ws WS name.
      * @param data Data to send to the WS.
@@ -198,9 +196,10 @@ export class CoreCourseLogHelperProvider {
      * @param componentId Component ID.
      * @param name Name of the viewed item.
      * @param category Category of the viewed item.
-     * @param eventData Data to pass to the Firebase event.
+     * @param eventData Data to pass to the analytics event.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when done.
+     * @deprecated since 4.3. Please use CoreCourseLogHelper.log instead.
      */
     logSingle(
         ws: string,
@@ -209,26 +208,24 @@ export class CoreCourseLogHelperProvider {
         componentId: number,
         name?: string,
         category?: string,
-        eventData?: Record<string, unknown>,
+        eventData?: Record<string, string | number | boolean | undefined>,
         siteId?: string,
     ): Promise<void> {
-        CorePushNotifications.logViewEvent(componentId, name, category, ws, eventData, siteId);
-
         return this.log(ws, data, component, componentId, siteId);
     }
 
     /**
      * Perform log online. Data will be saved offline for syncing.
-     * It also triggers a Firebase view_item_list event.
      *
      * @param ws WS name.
      * @param data Data to send to the WS.
      * @param component Component name.
      * @param componentId Component ID.
      * @param category Category of the viewed item.
-     * @param eventData Data to pass to the Firebase event.
+     * @param eventData Data to pass to the analytics event.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when done.
+     * @deprecated since 4.3. Please use CoreCourseLogHelper.log instead.
      */
     logList(
         ws: string,
@@ -236,11 +233,9 @@ export class CoreCourseLogHelperProvider {
         component: string,
         componentId: number,
         category: string,
-        eventData?: Record<string, unknown>,
+        eventData?: Record<string, string | number | boolean | undefined>,
         siteId?: string,
     ): Promise<void> {
-        CorePushNotifications.logViewListEvent(category, ws, eventData, siteId);
-
         return this.log(ws, data, component, componentId, siteId);
     }
 

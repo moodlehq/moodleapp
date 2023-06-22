@@ -47,6 +47,7 @@ import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/da
 import { CoreObject } from '@singletons/object';
 import { lazyMap, LazyMap } from '@/core/utils/lazy-map';
 import { CorePlatform } from '@services/platform';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 /**
  * Service to handle push notifications.
@@ -133,8 +134,11 @@ export class CorePushNotificationsProvider {
         CoreLocalNotifications.registerClick<CorePushNotificationsNotificationBasicData>(
             CorePushNotificationsProvider.COMPONENT,
             (notification) => {
-                // Log notification open event.
-                this.logEvent('moodle_notification_open', notification, true);
+                CoreAnalytics.logEvent({
+                    eventName: 'moodle_notification_open',
+                    type: CoreAnalyticsEventType.PUSH_NOTIFICATION,
+                    data: notification,
+                });
 
                 this.notificationClicked(notification);
             },
@@ -145,8 +149,11 @@ export class CorePushNotificationsProvider {
             'clear',
             CorePushNotificationsProvider.COMPONENT,
             (notification) => {
-                // Log notification dismissed event.
-                this.logEvent('moodle_notification_dismiss', notification, true);
+                CoreAnalytics.logEvent({
+                    eventName: 'moodle_notification_dismiss',
+                    type: CoreAnalyticsEventType.PUSH_NOTIFICATION,
+                    data: notification,
+                });
             },
         );
     }
@@ -248,26 +255,14 @@ export class CorePushNotificationsProvider {
     }
 
     /**
-     * Enable or disable Firebase analytics.
+     * Enable or disable analytics.
      *
      * @param enable Whether to enable or disable.
      * @returns Promise resolved when done.
+     * @deprecated since 4.3. Use CoreAnalytics.enableAnalytics instead.
      */
     async enableAnalytics(enable: boolean): Promise<void> {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const win = <any> window; // This feature is only present in our fork of the plugin.
-
-        if (!CoreConstants.CONFIG.enableanalytics || !win.PushNotification?.enableAnalytics) {
-            return;
-        }
-
-        await new Promise<void>(resolve => {
-            win.PushNotification.enableAnalytics(resolve, (error) => {
-                this.logger.error('Error enabling or disabling Firebase analytics', enable, error);
-
-                resolve();
-            }, !!enable);
-        });
+        return CoreAnalytics.enableAnalytics(enable);
     }
 
     /**
@@ -340,37 +335,35 @@ export class CorePushNotificationsProvider {
     }
 
     /**
-     * Log a firebase event.
+     * Log an analytics event.
      *
-     * @param name Name of the event.
+     * @param eventName Name of the event.
      * @param data Data of the event.
-     * @param filter Whether to filter the data. This is useful when logging a full notification.
      * @returns Promise resolved when done. This promise is never rejected.
+     * @deprecated since 4.3. Use CoreAnalytics.logEvent instead.
      */
-    async logEvent(name: string, data: Record<string, unknown>, filter?: boolean): Promise<void> {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const win = <any> window; // This feature is only present in our fork of the plugin.
-
-        if (!CoreConstants.CONFIG.enableanalytics || !win.PushNotification?.logEvent) {
-            return;
+    async logEvent(eventName: string, data: Record<string, string | number | boolean | undefined>): Promise<void> {
+        if (eventName !== 'view_item' && eventName !== 'view_item_list') {
+            return CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.PUSH_NOTIFICATION,
+                eventName,
+                data,
+            });
         }
 
-        // Check if the analytics is enabled by the user.
-        const enabled = await CoreConfig.get<boolean>(CoreConstants.SETTINGS_ANALYTICS_ENABLED, true);
-        if (!enabled) {
-            return;
-        }
+        const name = data.name ? String(data.name) : '';
+        delete data.name;
 
-        await new Promise<void>(resolve => {
-            win.PushNotification.logEvent(resolve, (error) => {
-                this.logger.error('Error logging firebase event', name, error);
-                resolve();
-            }, name, data, !!filter);
+        return CoreAnalytics.logEvent({
+            type: eventName === 'view_item' ? CoreAnalyticsEventType.VIEW_ITEM : CoreAnalyticsEventType.VIEW_ITEM_LIST,
+            ws: <string> data.moodleaction ?? '',
+            name,
+            data,
         });
     }
 
     /**
-     * Log a firebase view_item event.
+     * Log an analytics VIEW_ITEM_LIST event.
      *
      * @param itemId The item ID.
      * @param itemName The item name.
@@ -379,57 +372,46 @@ export class CorePushNotificationsProvider {
      * @param data Other data to pass to the event.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when done. This promise is never rejected.
+     * @deprecated since 4.3. Use CoreAnalytics.logEvent instead.
      */
     logViewEvent(
         itemId: number | string | undefined,
         itemName: string | undefined,
         itemCategory: string | undefined,
         wsName: string,
-        data?: Record<string, unknown>,
+        data?: Record<string, string | number | boolean | undefined>,
         siteId?: string,
     ): Promise<void> {
         data = data || {};
-
-        // Add "moodle" to the name of all extra params.
-        data = CoreUtils.prefixKeys(data, 'moodle');
+        data.id = itemId;
+        data.name = itemName;
+        data.category = itemCategory;
         data.moodleaction = wsName;
-        data.moodlesiteid = siteId || CoreSites.getCurrentSiteId();
 
-        if (itemId) {
-            data.item_id = itemId;
-        }
-        if (itemName) {
-            data.item_name = itemName;
-        }
-        if (itemCategory) {
-            data.item_category = itemCategory;
-        }
-
-        return this.logEvent('view_item', data, false);
+        return this.logEvent('view_item', data);
     }
 
     /**
-     * Log a firebase view_item_list event.
+     * Log an analytics view item list event.
      *
      * @param itemCategory The item category.
      * @param wsName Name of the WS.
      * @param data Other data to pass to the event.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when done. This promise is never rejected.
+     * @deprecated since 4.3. Use CoreAnalytics.logEvent instead.
      */
-    logViewListEvent(itemCategory: string, wsName: string, data?: Record<string, unknown>, siteId?: string): Promise<void> {
+    logViewListEvent(
+        itemCategory: string,
+        wsName: string,
+        data?: Record<string, string | number | boolean | undefined>,
+        siteId?: string,
+    ): Promise<void> {
         data = data || {};
-
-        // Add "moodle" to the name of all extra params.
-        data = CoreUtils.prefixKeys(data, 'moodle');
         data.moodleaction = wsName;
-        data.moodlesiteid = siteId || CoreSites.getCurrentSiteId();
+        data.category = itemCategory;
 
-        if (itemCategory) {
-            data.item_category = itemCategory;
-        }
-
-        return this.logEvent('view_item_list', data, false);
+        return this.logEvent('view_item_list', data);
     }
 
     /**

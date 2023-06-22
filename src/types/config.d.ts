@@ -50,7 +50,6 @@ export interface EnvironmentConfig {
     forcedefaultlanguage: boolean;
     privacypolicy: string;
     notificoncolor: string;
-    enableanalytics: boolean;
     enableonboarding: boolean;
     forceColorScheme: CoreColorScheme;
     forceLoginLogo: boolean;
