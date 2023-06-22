@@ -31,6 +31,20 @@ export type CoreObjectWithoutUndefined<T> = Pretty<{
 export class CoreObject {
 
     /**
+     * Returns a value of an object and deletes it from the object.
+     *
+     * @param obj Object.
+     * @param key Key of the value to consume.
+     * @returns Whether objects are equal.
+     */
+    static consumeKey<T, K extends keyof T>(obj: T, key: K): T[K] {
+        const value = obj[key];
+        delete obj[key];
+
+        return value;
+    }
+
+    /**
      * Check if two objects have the same shape and the same leaf values.
      *
      * @param a First object.
