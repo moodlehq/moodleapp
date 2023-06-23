@@ -13,12 +13,10 @@
 // limitations under the License.
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { SafeUrl } from '@angular/platform-browser';
 import { IonRefresher } from '@ionic/angular';
 
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
@@ -52,11 +50,10 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
     hasDetails = false;
     user?: CoreUserProfile;
     title?: string;
-    formattedAddress?: string;
-    encodedAddress?: SafeUrl;
     canChangeProfilePicture = false;
     interests?: string[];
     displayTimezone = false;
+    canShowDepartment = false;
 
     protected userId!: number;
     protected site!: CoreSite;
@@ -88,6 +85,7 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
     async ngOnInit(): Promise<void> {
         this.userId = CoreNavigator.getRouteNumberParam('userId') || 0;
         this.courseId = CoreNavigator.getRouteNumberParam('courseId') || 0;
+        this.canShowDepartment = this.userId != this.site.getUserId();
 
         // Allow to change the profile image only in the app profile page.
         this.canChangeProfilePicture =
@@ -109,11 +107,6 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
     async fetchUser(): Promise<void> {
         try {
             const user = await CoreUser.getProfile(this.userId, this.courseId);
-
-            if (user.address) {
-                this.formattedAddress = CoreUserHelper.formatAddress(user.address, user.city, user.country);
-                this.encodedAddress = CoreTextUtils.buildAddressURL(this.formattedAddress);
-            }
 
             this.interests = user.interests ?
                 user.interests.split(',').map(interest => interest.trim()) :

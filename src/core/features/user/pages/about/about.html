@@ -59,21 +59,13 @@
                             </a></p>
                     </ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="formattedAddress">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.user.address' | translate}}</p>
-                        <p><a class="core-anchor" [href]="encodedAddress" core-link auto-login="no" [showBrowserWarning]="false">
-                                {{ formattedAddress }}
-                            </a></p>
-                    </ion-label>
-                </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="user.city && !formattedAddress">
+                <ion-item class="ion-text-wrap" *ngIf="user.city">
                     <ion-label>
                         <p class="item-heading">{{ 'core.user.city' | translate}}</p>
                         <p>{{ user.city }}</p>
                     </ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="user.country && !formattedAddress">
+                <ion-item class="ion-text-wrap" *ngIf="user.country">
                     <ion-label>
                         <p class="item-heading">{{ 'core.user.country' | translate}}</p>
                         <p>{{ user.country }}</p>
@@ -85,6 +77,26 @@
                         <p>{{ user.timezone }}</p>
                     </ion-label>
                 </ion-item>
+                <ng-container *ngIf="canShowDepartment">
+                    <ion-item class="ion-text-wrap" *ngIf="user.idnumber">
+                        <ion-label>
+                            <p class="item-heading">{{ 'core.user.idnumber' | translate }}</p>
+                            <p>{{ user.idnumber }}</p>
+                        </ion-label>
+                    </ion-item>
+                    <ion-item class="ion-text-wrap" *ngIf="user.institution">
+                        <ion-label>
+                            <p class="item-heading">{{ 'core.user.institution' | translate }}</p>
+                            <p>{{ user.institution }}</p>
+                        </ion-label>
+                    </ion-item>
+                    <ion-item class="ion-text-wrap" *ngIf="user.department">
+                        <ion-label>
+                            <p class="item-heading">{{ 'core.user.department' | translate }}</p>
+                            <p>{{ user.department }}</p>
+                        </ion-label>
+                    </ion-item>
+                </ng-container>
             </ion-item-group>
             <ion-item-group *ngIf="hasDetails">
                 <ion-item-divider>
