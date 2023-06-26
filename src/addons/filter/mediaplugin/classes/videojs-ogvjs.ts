@@ -186,7 +186,7 @@ export class VideoJSOgvJS extends Tech {
      * @returns True if volume can be controlled.
      */
     static canControlVolume(): boolean {
-        if (CorePlatform.isIPhone()) {
+        if (CorePlatform.isIPhone() || CorePlatform.isIPad()) {
             return false;
         }
 
@@ -393,7 +393,7 @@ export class VideoJSOgvJS extends Tech {
      */
     setVolume(percentAsDecimal: number): void {
         // eslint-disable-next-line no-prototype-builtins
-        if (!CorePlatform.isIPhone() && this.el_.hasOwnProperty('volume')) {
+        if (!CorePlatform.isIPhone() && !CorePlatform.isIPad() && this.el_.hasOwnProperty('volume')) {
             this.el_.volume = percentAsDecimal;
         }
     }
