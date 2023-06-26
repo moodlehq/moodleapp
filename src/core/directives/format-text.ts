@@ -54,6 +54,7 @@ import { ElementController } from '@classes/element-controllers/ElementControlle
 import { MediaElementController } from '@classes/element-controllers/MediaElementController';
 import { FrameElementController } from '@classes/element-controllers/FrameElementController';
 import { CoreUrl } from '@singletons/url';
+import { CoreIcons } from '@singletons/icons';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective
@@ -278,10 +279,10 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
             button.classList.add('core-image-viewer-icon');
             button.classList.add('hidden');
             button.setAttribute('aria-label', label);
+            const iconName = 'up-right-and-down-left-from-center';
+            const src = CoreIcons.getIconSrc('font-awesome', 'solid', iconName);
             // Add an ion-icon item to apply the right styles, but the ion-icon component won't be executed.
-            button.innerHTML = '<ion-icon name="fas-up-right-and-down-left-from-center" aria-hidden="true" \
-                src="assets/fonts/font-awesome/solid/up-right-and-down-left-from-center.svg">\
-            </ion-icon>';
+            button.innerHTML = `<ion-icon name="fas-${iconName}" aria-hidden="true" src="${src}"></ion-icon>`;
 
             button.addEventListener('click', (e: Event) => {
                 e.preventDefault();
@@ -478,6 +479,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         const videos = Array.from(div.querySelectorAll('video'));
         const iframes = Array.from(div.querySelectorAll('iframe'));
         const buttons = Array.from(div.querySelectorAll('.button'));
+        const icons = Array.from(div.querySelectorAll('i.fa,i.fas,i.far,i.fab'));
         const elementsWithInlineStyles = Array.from(div.querySelectorAll('*[style]'));
         const stopClicksElements = Array.from(div.querySelectorAll('button,input,select,textarea'));
         const frames = Array.from(div.querySelectorAll(CoreIframeUtilsProvider.FRAME_TAGS.join(',').replace(/iframe,?/, '')));
@@ -548,6 +550,11 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
             if (button.querySelector('a')) {
                 button.classList.add('core-button-with-inner-link');
             }
+        });
+
+        // Handle Font Awesome icons to be rendered by the app.
+        icons.forEach((icon) => {
+            CoreIcons.replaceCSSIcon(icon);
         });
 
         // Handle inline styles.
