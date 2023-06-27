@@ -9,7 +9,7 @@
 DIR="${BASH_SOURCE%/*}"
 if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi
 
-cd $DIR
+cd "$DIR"
 
 source "functions.sh"
 source "lang_functions.sh"
@@ -27,7 +27,7 @@ if [ ! -f 'langindex.json' ]; then
 fi
 
 findbetter=$1
-parse_file $findbetter
+parse_file "$findbetter"
 
 echo
 
