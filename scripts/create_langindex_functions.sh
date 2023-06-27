@@ -315,7 +315,7 @@ function parse_file {
 
         if [ -z "$found" ] || [ "$found" == 'null' ]; then
 
-            exec="jq -r .\"$key\" $1"
+            exec="jq -r .\"$key\" $file"
             value=$($exec)
             guess_file "$key" "$value"
         else
@@ -323,11 +323,11 @@ function parse_file {
                 # Do nothing since is not translatable.
                 continue
             elif [ -n "$findbetter" ]; then
-                exec="jq -r .\"$key\" $1"
+                exec="jq -r .\"$key\" $file"
                 value=$($exec)
                 find_better_file "$key" "$value" "$found"
             elif [ "$found" != 'local_moodlemobileapp' ]; then
-                current_translation_exists "$key" "$found" "$1"
+                current_translation_exists "$key" "$found" "$file"
             fi
         fi
     done
