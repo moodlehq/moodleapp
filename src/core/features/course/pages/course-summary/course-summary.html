@@ -151,6 +151,13 @@
             </ion-item>
         </ion-card>
 
+        <ion-card class="core-info-card ion-text-wrap" *ngIf="!isEnrolled && useGuestAccess && guestAccessPasswordRequired">
+            <ion-item>
+                <ion-icon name="fas-key" slot="start" aria-hidden="true"></ion-icon>
+                <ion-label>{{ 'core.course.guestaccess_withpassword' | translate }}</ion-label>
+            </ion-item>
+        </ion-card>
+
         <ion-button (click)="openCourse()" *ngIf="!isModal && canAccessCourse" expand="block" fill="outline" class="ion-text-wrap">
             <ion-icon name="fas-eye" slot="start" aria-hidden="true"></ion-icon>
             {{ 'core.course.viewcourse' | translate }}

@@ -47,20 +47,6 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
     updatesNames = /^configuration$|^.*files$|^grades$|^gradeitems$|^pages$|^answers$|^questionattempts$|^pagesviewed$/;
 
     /**
-     * Ask password.
-     *
-     * @returns Promise resolved with the password.
-     */
-    protected async askUserPassword(): Promise<string> {
-        // Create and show the modal.
-        return CoreDomUtils.promptPassword({
-            title: 'addon.mod_lesson.enterpassword',
-            placeholder: 'core.login.password',
-            submit: 'addon.mod_lesson.continue',
-        });
-    }
-
-    /**
      * Get the download size of a module.
      *
      * @param module Module.
@@ -149,7 +135,13 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
             throw new CoreError(accessInfo.preventaccessreasons[0].message);
         }
 
-        password = await this.askUserPassword();
+        // Create and show the modal.
+        const response = await CoreDomUtils.promptPassword({
+            title: 'addon.mod_lesson.enterpassword',
+            placeholder: 'core.login.password',
+            submit: 'addon.mod_lesson.continue',
+        });
+        password = response.password;
 
         return this.validatePassword(lessonId, accessInfo, password, options);
     }

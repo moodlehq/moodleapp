@@ -592,7 +592,7 @@ export class CoreCourseHelperProvider {
     }
 
     /**
-     * Check whether a course is accessed using guest access and if requires password to enter.
+     * Check whether a course is accessed using guest access and if it requires password to enter.
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
@@ -634,7 +634,8 @@ export class CoreCourseHelperProvider {
 
             // Don't allow guest access if it requires a password and it's available.
             return {
-                guestAccess: !!info.status && !info.passwordrequired,
+                guestAccess: info.status === true &&
+                    (!info.passwordrequired || CoreCourses.isValidateGuestAccessPasswordAvailable()),
                 passwordRequired: info.passwordrequired,
             };
         } catch {
