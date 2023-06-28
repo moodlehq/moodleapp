@@ -100,6 +100,27 @@ Feature: Test Global Search
 
     # TODO test other results like course, user, and messages (global search generator not supported)
 
+  Scenario: Filter results
+    Given global search expects the query "page" and will return:
+      | type     | idnumber |
+      | activity | page01   |
+    And I entered the app as "student1"
+    When I press the more menu button in the app
+    And I press "Global search" in the app
+    And I set the field "Search" to "page" in the app
+    And I press "Search" "button" in the app
+    Then I should find "Test page 01" in the app
+
+    When I press "Filter" in the app
+    And I press "C1" in the app
+    And I press "Users" in the app
+    And global search expects the query "page" and will return:
+      | type     | idnumber  |
+      | activity | page02    |
+    And I press "Close" in the app
+    Then I should find "Test page 02" in the app
+    But I should not find "Test page 01" in the app
+
   Scenario: See search banner
     Given the following config values are set as admin:
       | searchbannerenable | 1 |

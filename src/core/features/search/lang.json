@@ -1,5 +1,10 @@
 {
+    "allcourses": "All courses",
+    "allcategories": "All categories",
     "empty": "What are you searching for?",
+    "filtercategories": "Filter results by",
+    "filtercourses": "Search in",
+    "filterheader": "Filter",
     "globalsearch": "Global search",
     "noresults": "No results for \"{{$a}}\"",
     "noresultshelp": "Check for typos or try using different keywords",

@@ -42,5 +42,11 @@
                 <p><small>{{ 'core.search.noresultshelp' | translate }}</small></p>
             </ng-container>
         </core-empty-box>
+
+        <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end">
+            <ion-fab-button (click)="openFilters()" [attr.aria-label]="'core.filter' | translate">
+                <ion-icon name="fas-filter" aria-hidden="true"></ion-icon>
+            </ion-fab-button>
+        </ion-fab>
     </div>
 </ion-content>

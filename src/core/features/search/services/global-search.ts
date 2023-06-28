@@ -19,8 +19,23 @@ import { CoreWSExternalWarning } from '@services/ws';
 import { CoreCourseListItem, CoreCourses } from '@features/courses/services/courses';
 import { CoreUserWithAvatar } from '@components/user-avatar/user-avatar';
 import { CoreUser } from '@features/user/services/user';
+import { CoreSite } from '@classes/site';
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [CORE_SEARCH_GLOBAL_SEARCH_FILTERS_UPDATED]: CoreSearchGlobalSearchFilters;
+    }
+
+}
 
 export const CORE_SEARCH_GLOBAL_SEARCH_PAGE_LENGTH = 10;
+export const CORE_SEARCH_GLOBAL_SEARCH_FILTERS_UPDATED = 'core-search-global-search-filters-updated';
 
 export type CoreSearchGlobalSearchResult = {
     id: number;
@@ -66,6 +81,8 @@ export interface CoreSearchGlobalSearchFilters {
 @Injectable({ providedIn: 'root' })
 export class CoreSearchGlobalSearchService {
 
+    private static readonly SEARCH_AREAS_CACHE_KEY = 'CoreSearchGlobalSearch:SearchAreas';
+
     /**
      * Get results.
      *
@@ -79,6 +96,13 @@ export class CoreSearchGlobalSearchService {
         filters: CoreSearchGlobalSearchFilters,
         page: number,
     ): Promise<{ results: CoreSearchGlobalSearchResult[]; canLoadMore: boolean }> {
+        if (this.filtersYieldEmptyResults(filters)) {
+            return {
+                results: [],
+                canLoadMore: false,
+            };
+        }
+
         const site = CoreSites.getRequiredCurrentSite();
         const params: CoreSearchGetResultsWSParams = {
             query,
@@ -103,6 +127,10 @@ export class CoreSearchGlobalSearchService {
      * @returns Top search results.
      */
     async getTopResults(query: string, filters: CoreSearchGlobalSearchFilters): Promise<CoreSearchGlobalSearchResult[]> {
+        if (this.filtersYieldEmptyResults(filters)) {
+            return [];
+        }
+
         const site = CoreSites.getRequiredCurrentSite();
         const params: CoreSearchGetTopResultsWSParams = {
             query,
@@ -124,7 +152,10 @@ export class CoreSearchGlobalSearchService {
         const site = CoreSites.getRequiredCurrentSite();
         const params: CoreSearchGetSearchAreasListWSParams = {};
 
-        const { areas } = await site.read<CoreSearchGetSearchAreasListWSResponse>('core_search_get_search_areas_list', params);
+        const { areas } = await site.read<CoreSearchGetSearchAreasListWSResponse>('core_search_get_search_areas_list', params, {
+            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            cacheKey: CoreSearchGlobalSearchService.SEARCH_AREAS_CACHE_KEY,
+        });
 
         return areas.map(area => ({
             id: area.id,
@@ -134,6 +165,15 @@ export class CoreSearchGlobalSearchService {
                 name: area.categoryname,
             },
         }));
+    }
+
+    /**
+     * Invalidate search areas cache.
+     */
+    async invalidateSearchAreas(): Promise<void> {
+        const site = CoreSites.getRequiredCurrentSite();
+
+        await site.invalidateWsCacheForKey(CoreSearchGlobalSearchService.SEARCH_AREAS_CACHE_KEY);
     }
 
     /**
@@ -192,6 +232,16 @@ export class CoreSearchGlobalSearchService {
         }
 
         return result;
+    }
+
+    /**
+     * Check whether the given filter will necessarily yield an empty list of results.
+     *
+     * @param filters Filters.
+     * @returns Whether the given filters will return 0 results.
+     */
+    protected filtersYieldEmptyResults(filters: CoreSearchGlobalSearchFilters): boolean {
+        return filters.courseIds?.length === 0 || filters.searchAreaCategoryIds?.length === 0;
     }
 
     /**

@@ -7,7 +7,7 @@
             "",
             "@Component({",
             "    selector: '$2${TM_FILENAME_BASE}',",
-            "    templateUrl: '$2${TM_FILENAME_BASE}.html',",
+            "    templateUrl: '${TM_FILENAME_BASE}.html',",
             "})",
             "export class ${1:${TM_FILENAME_BASE}}Component {",
             "",
@@ -109,6 +109,24 @@
             ""
         ],
         "description": "[Moodle] Create a Pure Singleton"
+    },
+    "[Moodle] Events": {
+        "prefix": "maeventsdeclaration",
+        "body": [
+            "declare module '@singletons/events' {",
+            "",
+            "    /**",
+            "     * Augment CoreEventsData interface with events specific to this service.",
+            "     *",
+            "     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation",
+            "     */",
+            "    export interface CoreEventsData {",
+            "        [$1]: $2;",
+            "    }",
+            "",
+            "}"
+        ],
+        "description": ""
     },
     "Innherit doc": {
         "prefix": "inheritdoc",
