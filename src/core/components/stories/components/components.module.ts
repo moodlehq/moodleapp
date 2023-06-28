@@ -19,9 +19,13 @@ import { StorybookModule } from '@/storybook/storybook.module';
 import { CoreSearchComponentsModule } from '@features/search/components/components.module';
 import { CoreComponentsModule } from '@components/components.module';
 import { CommonModule } from '@angular/common';
+import { CoreCourseImageCardsPageComponent } from '@components/stories/components/course-image-cards-page/course-image-cards-page';
+import { CoreCourseImageListPageComponent } from '@components/stories/components/course-image-list-page/course-image-list-page';
 
 @NgModule({
     declarations: [
+        CoreCourseImageCardsPageComponent,
+        CoreCourseImageListPageComponent,
         CoreEmptyBoxPageComponent,
         CoreEmptyBoxWrapperComponent,
     ],
