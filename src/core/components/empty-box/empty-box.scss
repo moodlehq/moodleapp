@@ -1,22 +1,23 @@
 @import "~theme/globals";
 
 :host {
+    --image-size: 120px;
+    --icon-color: var(--text-color);
+
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     flex-grow: 1;
-
     color: var(--text-color);
     margin: 0 auto;
     text-align: center;
     padding: 16px;
-    --image-size: 120px;
-
     height: 100%;
 
     ion-icon {
         font-size: var(--image-size);
+        color: var(--icon-color);
     }
     img {
         height: var(--image-size);
@@ -28,6 +29,20 @@
     &.core-empty-box-clickable {
         z-index: 0;
     }
+
+    &.dimmed {
+        --icon-color: var(--gray-400);
+        --text-color: var(--gray-700);
+    }
+
+}
+
+:host-context(html.dark) {
+
+    &.dimmed {
+        --text-color: var(--gray-300);
+    }
+
 }
 
 @include media-breakpoint-down(sm) {
