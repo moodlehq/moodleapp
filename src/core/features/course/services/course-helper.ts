@@ -592,6 +592,57 @@ export class CoreCourseHelperProvider {
     }
 
     /**
+     * Check whether a course is accessed using guest access and if requires password to enter.
+     *
+     * @param courseId Course ID.
+     * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved with guestAccess and passwordRequired booleans.
+     */
+    async courseUsesGuestAccessInfo(
+        courseId: number,
+        siteId?: string,
+    ): Promise<{guestAccess: boolean; passwordRequired?: boolean}> {
+        try {
+            try {
+                // Check if user is enrolled. If enrolled, no guest access.
+                await CoreCourses.getUserCourse(courseId, false, siteId);
+
+                return { guestAccess: false };
+            } catch {
+                // Ignore errors.
+            }
+
+            try {
+                // The user is not enrolled in the course. Use getCourses to see if it's an admin/manager and can see the course.
+                await CoreCourses.getCourse(courseId, siteId);
+
+                return { guestAccess: false };
+            } catch {
+                // Ignore errors.
+            }
+
+            // Check if guest access is enabled.
+            const enrolmentMethods = await CoreCourses.getCourseEnrolmentMethods(courseId, siteId);
+
+            const method = enrolmentMethods.find((method) => method.type === 'guest');
+
+            if (!method) {
+                return { guestAccess: false };
+            }
+
+            const info = await CoreCourses.getCourseGuestEnrolmentInfo(method.id);
+
+            // Don't allow guest access if it requires a password and it's available.
+            return {
+                guestAccess: !!info.status && !info.passwordrequired,
+                passwordRequired: info.passwordrequired,
+            };
+        } catch {
+            return { guestAccess: false };
+        }
+    }
+
+    /**
      * Create and return a section for "All sections".
      *
      * @returns Created section.

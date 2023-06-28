@@ -25,6 +25,7 @@ import {
     CoreCourseModulePrefetchDelegate,
     CoreCourseModulePrefetchHandler } from '@features/course/services/module-prefetch-delegate';
 import { CoreCourses } from '@features/courses/services/courses';
+import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -103,7 +104,9 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
             this.title = Translate.instant('core.sitehome.sitehome');
         }
 
-        this.isGuest = !!CoreNavigator.getRouteBooleanParam('isGuest');
+        this.isGuest = CoreNavigator.getRouteBooleanParam('isGuest') ??
+            (await CoreCourseHelper.courseUsesGuestAccessInfo(this.courseId)).guestAccess;
+
         this.initialSectionId = CoreNavigator.getRouteNumberParam('sectionId');
 
         this.downloadCourseEnabled = !CoreCourses.isDownloadCourseDisabledInSite();

@@ -143,7 +143,9 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
 
         this.firstTabName = CoreNavigator.getRouteParam('selectedTab');
         this.module = CoreNavigator.getRouteParam<CoreCourseModuleData>('module');
-        this.isGuest = !!CoreNavigator.getRouteBooleanParam('isGuest');
+        this.isGuest = CoreNavigator.getRouteBooleanParam('isGuest') ??
+            (!!this.course && (await CoreCourseHelper.courseUsesGuestAccessInfo(this.course.id)).guestAccess);
+
         this.modNavOptions = CoreNavigator.getRouteParam<CoreNavigationOptions>('modNavOptions');
         this.openModule = CoreNavigator.getRouteBooleanParam('openModule') ?? true; // If false, just scroll to module.
         if (!this.modNavOptions) {

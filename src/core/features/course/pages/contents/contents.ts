@@ -64,6 +64,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
     moduleId?: number;
     displayEnableDownload = false;
     displayRefresher = false;
+    isGuest?: boolean;
 
     protected formatOptions?: Record<string, unknown>;
     protected completionObserver?: CoreEventObserver;
@@ -92,6 +93,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
         this.sectionId = CoreNavigator.getRouteNumberParam('sectionId');
         this.sectionNumber = CoreNavigator.getRouteNumberParam('sectionNumber');
         this.moduleId = CoreNavigator.getRouteNumberParam('moduleId');
+        this.isGuest = CoreNavigator.getRouteBooleanParam('isGuest');
 
         this.debouncedUpdateCachedCompletion = CoreUtils.debounce(() => {
             if (this.modulesHaveCompletion) {
