@@ -1,3 +1,7 @@
 {
+    "empty": "What are you searching for?",
+    "globalsearch": "Global search",
+    "noresults": "No results for \"{{$a}}\"",
+    "noresultshelp": "Check for typos or try using different keywords",
     "resultby": "By {{$a}}"
 }

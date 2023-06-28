@@ -97,6 +97,7 @@ export abstract class CoreItemsManagerSource<Item = unknown> {
     reset(): void {
         this.items = null;
         this.dirty = false;
+        this.loaded = false;
 
         this.listeners.forEach(listener => listener.onReset?.call(listener));
     }
