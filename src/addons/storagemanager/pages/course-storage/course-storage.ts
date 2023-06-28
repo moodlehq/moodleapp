@@ -24,8 +24,7 @@ import {
 import {
     CoreCourseModulePrefetchDelegate,
     CoreCourseModulePrefetchHandler } from '@features/course/services/module-prefetch-delegate';
-import { CoreCourses } from '@features/courses/services/courses';
-import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
+import { CoreCourseAnyCourseData, CoreCourses } from '@features/courses/services/courses';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -660,6 +659,25 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
         this.changeDetectorRef.markForCheck();
     }
 
+    protected async getCourse(courseId: number): Promise<CoreCourseAnyCourseData | undefined> {
+        try {
+            // Check if user is enrolled. If enrolled, no guest access.
+            return await CoreCourses.getUserCourse(courseId, true);
+        } catch {
+            // Ignore errors.
+        }
+
+        try {
+            // The user is not enrolled in the course. Use getCourses to see if it's an admin/manager and can see the course.
+            return await CoreCourses.getCourse(courseId);
+        } catch {
+            // Ignore errors.
+        }
+
+        return await CoreCourses.getCourseByField('id', this.courseId);
+
+    }
+
     /**
      * Prefetch the whole course.
      *
@@ -669,12 +687,10 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
         event.stopPropagation();
         event.preventDefault();
 
-        const courses = await CoreCourses.getUserCourses(true);
-        let course = courses.find((course) => course.id == this.courseId);
+        const course = await this.getCourse(this.courseId);
         if (!course) {
-            course = await CoreCourses.getCourse(this.courseId);
-        }
-        if (!course) {
+            CoreDomUtils.showErrorModal('core.course.errordownloadingcourse', true);
+
             return;
         }
 
