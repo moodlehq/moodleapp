@@ -37,6 +37,15 @@ export abstract class CoreItemsManagerSource<Item = unknown> {
     }
 
     /**
+     * Check whether the source is dirty.
+     *
+     * @returns Whether the source is dirty.
+     */
+    isDirty(): boolean {
+        return this.dirty;
+    }
+
+    /**
      * Check whether data is loaded.
      *
      * @returns Whether data is loaded.
