@@ -19,7 +19,6 @@ import { CoreEvents } from '@singletons/events';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreConstants, ModPurpose } from '@/core/constants';
-import { AddonModForumIndexComponent } from '../../components/index';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreIonicColorNames } from '@singletons/colors';
@@ -86,6 +85,8 @@ export class AddonModForumModuleHandlerService extends CoreModuleHandlerBase imp
      * @inheritdoc
      */
     async getMainComponent(): Promise<Type<unknown> | undefined> {
+        const { AddonModForumIndexComponent } = await import('../../components/index');
+
         return AddonModForumIndexComponent;
     }
 

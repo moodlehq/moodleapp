@@ -13,22 +13,23 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-
-import { CoreSharedModule } from '@/core/shared.module';
-import { CoreSearchBoxComponent } from './search-box/search-box';
-import { CoreSearchGlobalSearchResultComponent } from '@features/search/components/global-search-result/global-search-result';
+import { StorybookModule } from '@/storybook/storybook.module';
+import { CoreSearchComponentsModule } from '@features/search/components/components.module';
+import { CoreComponentsModule } from '@components/components.module';
+import { CommonModule } from '@angular/common';
+import {
+    CoreSearchGlobalSearchResultsPageComponent,
+} from '@features/search/stories/components/global-search-results-page/global-search-results-page';
 
 @NgModule({
     declarations: [
-        CoreSearchBoxComponent,
-        CoreSearchGlobalSearchResultComponent,
+        CoreSearchGlobalSearchResultsPageComponent,
     ],
     imports: [
-        CoreSharedModule,
-    ],
-    exports: [
-        CoreSearchBoxComponent,
-        CoreSearchGlobalSearchResultComponent,
+        CommonModule,
+        StorybookModule,
+        CoreComponentsModule,
+        CoreSearchComponentsModule,
     ],
 })
-export class CoreSearchComponentsModule {}
+export class CoreSearchComponentsStorybookModule {}

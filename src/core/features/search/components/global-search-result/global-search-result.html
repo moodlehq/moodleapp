@@ -1,0 +1,23 @@
+<ion-item lines="inset" button (click)="onClick.emit($event)">
+    <core-course-image *ngIf="result.course" [course]="result.course"></core-course-image>
+    <core-user-avatar *ngIf="result.user" [user]="result.user" [linkProfile]="false"></core-user-avatar>
+    <ion-label>
+        <h3 *ngIf="result.title">
+            <ion-icon *ngIf="renderedIcon" [name]="renderedIcon" aria-hidden="true"></ion-icon>
+            <core-mod-icon *ngIf="!renderedIcon && result.module" [modicon]="result.module.iconurl"
+                [modname]="result.module.name"></core-mod-icon>
+            <core-format-text [text]="result.title"></core-format-text>
+        </h3>
+        <core-format-text *ngIf="result.content && !result.course && !result.user" [text]="result.content"></core-format-text>
+        <div *ngIf="result.context" class="flex-row">
+            <div *ngIf="result.context.courseName" class="result-context">
+                <ion-icon name="fas-graduation-cap" aria-hidden="true"></ion-icon>
+                <core-format-text [text]="result.context.courseName"></core-format-text>
+            </div>
+            <div *ngIf="result.context.userName" class="result-context">
+                <ion-icon name="fas-user" aria-hidden="true"></ion-icon>
+                <span>{{ 'core.search.resultby' | translate: { $a: result.context.userName } }}</span>
+            </div>
+        </div>
+    </ion-label>
+</ion-item>
