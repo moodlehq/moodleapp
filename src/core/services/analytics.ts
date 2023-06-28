@@ -61,7 +61,7 @@ export class CoreAnalyticsService extends CoreDelegate<CoreAnalyticsHandler> {
      *
      * @param event Event data.
      */
-    async logEvent(event: CoreAnalyticsViewEvent | CoreAnalyticsPushEvent): Promise<void> {
+    async logEvent(event: CoreAnalyticsAnyEvent): Promise<void> {
         const site = CoreSites.getCurrentSite();
         if (!site) {
             return;
@@ -126,12 +126,18 @@ export enum CoreAnalyticsEventType {
     VIEW_ITEM = 'view_item', // View some page or data that mainly contains one item.
     VIEW_ITEM_LIST = 'view_item_list', // View some page or data that mainly contains a list of items.
     PUSH_NOTIFICATION = 'push_notification', // Event related to push notifications.
+    DOWNLOAD_FILE = 'download_file', // A file was downloaded.
 }
+
+/**
+ * Any type of event data.
+ */
+export type CoreAnalyticsAnyEvent = CoreAnalyticsViewEvent | CoreAnalyticsPushEvent | CoreAnalyticsDownloadFileEvent;
 
 /**
  * Event data, including calculated data.
  */
-export type CoreAnalyticsEvent = (CoreAnalyticsViewEvent | CoreAnalyticsPushEvent) & {
+export type CoreAnalyticsEvent = CoreAnalyticsAnyEvent & {
     siteId: string;
 };
 
@@ -157,4 +163,12 @@ export type CoreAnalyticsPushEvent = {
     type: CoreAnalyticsEventType.PUSH_NOTIFICATION;
     eventName: string; // Name of the event.
     data: CorePushNotificationsNotificationBasicData;
+};
+
+/**
+ * Data specific for the DOWNLOAD_FILE events.
+ */
+export type CoreAnalyticsDownloadFileEvent = {
+    type: CoreAnalyticsEventType.DOWNLOAD_FILE;
+    fileUrl: string;
 };

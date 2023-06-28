@@ -55,6 +55,7 @@ import { lazyMap, LazyMap } from '../utils/lazy-map';
 import { asyncInstance, AsyncInstance } from '../utils/async-instance';
 import { CorePath } from '@singletons/path';
 import { CorePromisedValue } from '@classes/promised-value';
+import { CoreAnalytics, CoreAnalyticsEventType } from './analytics';
 
 /*
  * Factory for handling downloading files and retrieve downloaded files.
@@ -762,6 +763,11 @@ export class CoreFilepoolProvider {
                 repositorytype: options.repositorytype,
                 path: fileEntry.path,
                 extension: fileEntry.extension,
+            });
+
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.DOWNLOAD_FILE,
+                fileUrl: CoreUrlUtils.unfixPluginfileURL(fileUrl, site.getURL()),
             });
 
             // Add the anchor again to the local URL.

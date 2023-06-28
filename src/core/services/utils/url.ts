@@ -542,7 +542,10 @@ export class CoreUrlUtilsProvider {
             return url;
         }
 
-        // Not a pluginfile URL. Treat webservice/pluginfile case.
+        // Check tokenpluginfile first.
+        url = url.replace(/\/tokenpluginfile\.php\/[^/]+\//, '/pluginfile.php/');
+
+        // Treat webservice/pluginfile case.
         url = url.replace(/\/webservice\/pluginfile\.php\//, '/pluginfile.php/');
 
         // Make sure the URL doesn't contain the token.
