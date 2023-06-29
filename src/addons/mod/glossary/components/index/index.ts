@@ -56,6 +56,7 @@ import {
 import { AddonModGlossaryModuleHandlerService } from '../../services/handlers/module';
 import { AddonModGlossaryPrefetchHandler } from '../../services/handlers/prefetch';
 import { AddonModGlossaryModePickerPopoverComponent } from '../mode-picker/mode-picker';
+import { CoreTime } from '@singletons/time';
 
 /**
  * Component that displays a glossary entry page.
@@ -86,6 +87,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     protected sourceUnsubscribe?: () => void;
     protected observers?: CoreEventObserver[];
     protected checkCompletionAfterLog = false; // Use CoreListItemsManager log system instead.
+    protected logSearch?: () => void;
 
     getDivider?: (entry: AddonModGlossaryEntry) => string;
     showDivider: (entry: AddonModGlossaryEntry, previous?: AddonModGlossaryEntry) => boolean = () => false;
@@ -226,6 +228,10 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
 
         this.hasOfflineRatings = hasOfflineRatings;
         this.hasOffline = this.hasOfflineEntries || this.hasOfflineRatings;
+
+        if (this.isSearch && this.logSearch) {
+            this.logSearch();
+        }
     }
 
     /**
@@ -424,9 +430,21 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
     search(query: string): void {
         this.loadingMessage = Translate.instant('core.searching');
         this.showLoading = true;
+        this.logSearch = CoreTime.once(() => this.performLogSearch(query));
 
         this.entries?.getSource().search(query);
         this.loadContent();
+    }
+
+    /**
+     * Log search.
+     *
+     * @param query Text entered on the search box.
+     */
+    protected async performLogSearch(query: string): Promise<void> {
+        this.analyticsLogEvent('mod_glossary_get_entries_by_search', {
+            data: { mode: 'search', hook: query, fullsearch: 1 },
+        });
     }
 
     /**

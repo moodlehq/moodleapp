@@ -65,6 +65,7 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
     protected courseIds = '';
     protected isDestroyed = false;
     protected logView: () => void;
+    protected logSearch?: () => void;
 
     constructor() {
         this.currentSiteId = CoreSites.getRequiredCurrentSite().getId();
@@ -159,7 +160,7 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
         try {
             if (this.searchMode) {
                 if (this.searchText) {
-                    await this.search(this.searchText);
+                    await this.searchCourses();
                 }
             } else {
                 await this.loadCourses(true);
@@ -247,6 +248,7 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
         this.courses = [];
         this.searchPage = 0;
         this.searchTotal = 0;
+        this.logSearch = CoreTime.once(() => this.performLogSearch());
 
         const modal = await CoreDomUtils.showModalLoading('core.searching', true);
         await this.searchCourses().finally(() => {
@@ -266,6 +268,23 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
 
         this.loaded = false;
         this.fetchCourses();
+    }
+
+    /**
+     * Log search.
+     */
+    protected async performLogSearch(): Promise<void> {
+        if (!this.searchMode) {
+            return;
+        }
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
+            ws: 'core_course_search_courses',
+            name: Translate.instant('core.courses.availablecourses'),
+            data: { search: this.searchText, category: 'course' },
+            url: `/course/search.php?search=${this.searchText}`,
+        });
     }
 
     /**
@@ -305,6 +324,8 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
 
             this.searchPage++;
             this.canLoadMore = this.courses.length < this.searchTotal;
+
+            this.logSearch?.();
         } catch (error) {
             this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
             !this.isDestroyed && CoreDomUtils.showErrorModalDefault(error, 'core.courses.errorsearching', true);
