@@ -127,12 +127,14 @@ export enum CoreAnalyticsEventType {
     VIEW_ITEM_LIST = 'view_item_list', // View some page or data that mainly contains a list of items.
     PUSH_NOTIFICATION = 'push_notification', // Event related to push notifications.
     DOWNLOAD_FILE = 'download_file', // A file was downloaded.
+    OPEN_LINK = 'open_link', // A link was opened in browser or InAppBrowser.
 }
 
 /**
  * Any type of event data.
  */
-export type CoreAnalyticsAnyEvent = CoreAnalyticsViewEvent | CoreAnalyticsPushEvent | CoreAnalyticsDownloadFileEvent;
+export type CoreAnalyticsAnyEvent = CoreAnalyticsViewEvent | CoreAnalyticsPushEvent | CoreAnalyticsDownloadFileEvent |
+CoreAnalyticsOpenLinkEvent;
 
 /**
  * Event data, including calculated data.
@@ -171,4 +173,12 @@ export type CoreAnalyticsPushEvent = {
 export type CoreAnalyticsDownloadFileEvent = {
     type: CoreAnalyticsEventType.DOWNLOAD_FILE;
     fileUrl: string;
+};
+
+/**
+ * Data specific for the OPEN_LINK events.
+ */
+export type CoreAnalyticsOpenLinkEvent = {
+    type: CoreAnalyticsEventType.OPEN_LINK;
+    link: string;
 };

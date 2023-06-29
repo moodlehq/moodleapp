@@ -39,6 +39,8 @@ import { CoreErrorWithOptions } from '@classes/errors/errorwithoptions';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreUrlUtils } from './url';
 
 export type TreeNode<T> = T & { children: TreeNode<T>[] };
 
@@ -1058,7 +1060,7 @@ export class CoreUtilsProvider {
      * @param options Override default options passed to InAppBrowser.
      * @returns The opened window.
      */
-    openInApp(url: string, options?: InAppBrowserOptions): InAppBrowserObject {
+    openInApp(url: string, options?: CoreUtilsOpenInAppOptions): InAppBrowserObject {
         options = options || {};
         options.usewkwebview = 'yes'; // Force WKWebView in iOS.
         options.enableViewPortScale = options.enableViewPortScale ?? 'yes'; // Enable zoom on iOS by default.
@@ -1116,6 +1118,11 @@ export class CoreUtilsProvider {
             });
         }
 
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.OPEN_LINK,
+            link: CoreUrlUtils.unfixPluginfileURL(options.originalUrl ?? url),
+        });
+
         return this.iabInstance;
     }
 
@@ -1170,13 +1177,19 @@ export class CoreUtilsProvider {
      * @param options Options.
      */
     async openInBrowser(url: string, options: CoreUtilsOpenInBrowserOptions = {}): Promise<void> {
+        const originaUrl = CoreUrlUtils.unfixPluginfileURL(options.originalUrl ?? options.browserWarningUrl ?? url);
         if (options.showBrowserWarning || options.showBrowserWarning === undefined) {
             try {
-                await CoreWindow.confirmOpenBrowserIfNeeded(options.browserWarningUrl ?? url);
+                await CoreWindow.confirmOpenBrowserIfNeeded(originaUrl);
             } catch (error) {
                 return; // Cancelled, stop.
             }
         }
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.OPEN_LINK,
+            link: originaUrl,
+        });
 
         window.open(url, '_system');
     }
@@ -1204,12 +1217,19 @@ export class CoreUtilsProvider {
                 type: mimetype,
             };
 
-            return WebIntent.startActivity(options).catch((error) => {
+            try {
+                await WebIntent.startActivity(options);
+
+                CoreAnalytics.logEvent({
+                    type: CoreAnalyticsEventType.OPEN_LINK,
+                    link: CoreUrlUtils.unfixPluginfileURL(url),
+                });
+            } catch (error) {
                 this.logger.error('Error opening online file ' + url + ' with mimetype ' + mimetype);
                 this.logger.error('Error: ', JSON.stringify(error));
 
                 throw new Error(Translate.instant('core.erroropenfilenoapp'));
-            });
+            }
         }
 
         // In the rest of platforms we need to open them in InAppBrowser.
@@ -1897,7 +1917,18 @@ export type CoreUtilsOpenFileOptions = {
  */
 export type CoreUtilsOpenInBrowserOptions = {
     showBrowserWarning?: boolean; // Whether to display a warning before opening in browser. Defaults to true.
-    browserWarningUrl?: string; // The URL to display in the warning message. Use it to hide sensitive information.
+    originalUrl?: string; // Original URL to open (in case the URL was treated, e.g. to add a token or an auto-login).
+    /**
+     * @deprecated since 4.3, use originalUrl instead.
+     */
+    browserWarningUrl?: string;
+};
+
+/**
+ * Options for opening in InAppBrowser.
+ */
+export type CoreUtilsOpenInAppOptions = InAppBrowserOptions & {
+    originalUrl?: string; // Original URL to open (in case the URL was treated, e.g. to add a token or an auto-login).
 };
 
 /**

@@ -1892,12 +1892,12 @@ export class CoreSite {
             options.showBrowserWarning = false; // A warning already shown, no need to show another.
         }
 
+        options.originalUrl = url;
+
         // Open the URL.
         if (inApp) {
             return CoreUtils.openInApp(autoLoginUrl, options);
         } else {
-            options.browserWarningUrl = url;
-
             return CoreUtils.openInBrowser(autoLoginUrl, options);
         }
     }
