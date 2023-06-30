@@ -1,14 +1,40 @@
 :host {
-    .core-timer {
-        --background: transparent !important;
-        border-radius: var(--big-radius);
+    --timer-background: transparent;
 
+    .core-timer {
         .core-timer-time-left, .core-timesup {
             font-weight: bold;
         }
 
-        span {
-            margin-right: 5px;
+        .core-timesup {
+            flex-grow: 1;
+            text-align: center;
+        }
+    }
+
+    ion-item.core-timer {
+        --background: var(--timer-background);
+        --color: var(--timer-text-color, var(--text-color));
+    }
+
+    div.core-timer {
+        background: var(--timer-background);
+        color: var(--timer-text-color, var(--text-color));
+        border-radius: var(--big-radius);
+    }
+
+    button {
+        color: var(--timer-text-color, var(--core-link-color));
+    }
+
+    ion-item.core-timer ion-label,
+    div.core-timer {
+        display: flex;
+        align-items: center;
+
+        .core-timer-visibility {
+            flex-grow: 1;
+            text-align: end;
         }
     }
 }

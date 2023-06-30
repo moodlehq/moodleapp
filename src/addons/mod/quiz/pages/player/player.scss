@@ -9,22 +9,14 @@ $quiz-timer-iterations: 15 !default;
         margin-bottom: 2px;
     }
 
-    ion-content ion-toolbar {
-        border-bottom: 1px solid var(--stroke);
-    }
-
-    core-timer ::ng-deep {
-        .core-timer {
-            // Make the timer go red when it's reaching 0.
-            @for $i from 0 through $quiz-timer-iterations {
-                &.core-timer-timeleft-#{$i} {
-                    background-color: rgba($quiz-timer-warn-color, 1 - ($i / $quiz-timer-iterations)) !important;
-
-                    @if $i <= $quiz-timer-iterations / 2 {
-                        label, span, ion-icon {
-                            color: var(--white);
-                        }
-                    }
+    core-timer {
+        // Make the timer go red when it's reaching 0.
+        @for $i from 0 through $quiz-timer-iterations {
+            &.core-timer-timeleft-#{$i} {
+                $timer-background: rgba($quiz-timer-warn-color, 1 - ($i / $quiz-timer-iterations));
+                --timer-background: #{$timer-background};
+                @if $i <= $quiz-timer-iterations / 2 {
+                    --timer-text-color: var(--white);
                 }
             }
         }

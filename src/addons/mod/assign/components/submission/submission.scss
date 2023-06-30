@@ -27,15 +27,15 @@
         margin-right: 2px;
     }
 
-    core-timer .core-timer {
+    core-timer {
         &.core-timer-under-300 {
-            background-color: var(--danger-tint);
-            color: var(--danger-shade);
+            --timer-background: var(--danger-tint);
+            --timer-text-color: var(--danger-shade);
         }
 
         &.core-timer-under-900 {
-            background-color: var(--warning-tint);
-            color: var(--warning-shade);
+            --timer-background: var(--warning-tint);
+            --timer-text-color: var(--warning-shade);
         }
     }
 }

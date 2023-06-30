@@ -1,17 +1,13 @@
-:host ::ng-deep {
+:host {
     core-timer {
-        display: block;
+        &.core-timer-under-300 {
+            --timer-background: var(--danger-tint);
+            --timer-text-color: var(--danger-shade);
+        }
 
-        .core-timer {
-            &.core-timer-under-300 {
-                background-color: var(--danger-tint);
-                color: var(--danger-shade);
-            }
-
-            &.core-timer-under-900 {
-                background-color: var(--warning-tint);
-                color: var(--warning-shade);
-            }
+        &.core-timer-under-900 {
+            --timer-background: var(--warning-tint);
+            --timer-text-color: var(--warning-shade);
         }
     }
 }
