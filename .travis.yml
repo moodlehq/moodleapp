@@ -61,8 +61,6 @@ jobs:
       apt:
         packages:
         - libsecret-1-dev
-        - php5-cli
-        - php5-common
   - name: "Build iOS"
     language: node_js
     if: env(BUILD_IOS) = 1 AND (env(DEPLOY) = 1 OR (env(DEPLOY) = 2 AND tag IS NOT blank))

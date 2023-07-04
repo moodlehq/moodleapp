@@ -14,8 +14,8 @@ function get_app_version {
         return
     fi
 
-    APP_VERSION=`jq -r '.versionname' ../moodle.config.json| cut -d. -f1-2`
-    if [ ! -z $APP_VERSION ]; then
+    APP_VERSION=$(jq -r '.versionname' ../moodle.config.json| cut -d. -f1-2)
+    if [ ! -z "$APP_VERSION" ]; then
         export LANGVERSION=$APP_VERSION
         echo "Using app version $LANGVERSION"
         return

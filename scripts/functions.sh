@@ -58,13 +58,13 @@ function print_title {
 }
 
 function telegram_notify {
-    if [ ! -z $TELEGRAM_APIKEY ] && [ ! -z $TELEGRAM_CHATID ] ; then
+    if [ ! -z "$TELEGRAM_APIKEY" ] && [ ! -z "$TELEGRAM_CHATID" ] ; then
         set_branch_and_repo
 
         MESSAGE="$1%0ABranch: *$REFNAME* on $REPO%0ACommit: $COMMIT%0AJob: $JOB ($RUN_NUMBER) [Complete log here]($JOB_URL)"
         URL="https://api.telegram.org/bot$TELEGRAM_APIKEY/sendMessage"
 
-        curl -s -X POST $URL -d chat_id=$TELEGRAM_CHATID -d text="$MESSAGE"
+        curl -s -X POST "$URL" -d chat_id="$TELEGRAM_CHATID" -d text="$MESSAGE"
     fi
 }
 
@@ -78,12 +78,12 @@ function notify_on_error_exit {
 
 
 function set_branch_and_repo {
-    if [ ! -z $REPO ]; then
+    if [ ! -z "$REPO" ]; then
         # Already filled.
         return;
     fi
 
-    if [ -z $TRAVIS_OS_NAME ]; then
+    if [ -z "$TRAVIS_OS_NAME" ]; then
         #Run on github
         if [ "$RUNNER_OS" == 'macOS' ]; then
             export OS_NAME='osx'
@@ -118,12 +118,12 @@ function set_branch_and_repo {
         export CI_TYPE='travis'
     fi
 
-    if [ -z $REFNAME ]; then
+    if [ -z "$REFNAME" ]; then
         print_error "Empty branch/tag, cancelling..."
         exit 0
     fi
 
-    if [ -z $REPO ]; then
+    if [ -z "$REPO" ]; then
         print_error "Empty repo, cancelling..."
         exit 0
     fi

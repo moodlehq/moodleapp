@@ -10,7 +10,7 @@
 DIR="${BASH_SOURCE%/*}"
 if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi
 
-cd $DIR
+cd "$DIR"
 
 source "functions.sh"
 source "lang_functions.sh"
