@@ -47,6 +47,8 @@ export class CoreLoginSitesPage implements OnInit {
     async ngOnInit(): Promise<void> {
         if (CoreNavigator.getRouteBooleanParam('openAddSite')) {
             this.add();
+
+            return;
         }
 
         this.accountsList = await CoreLoginHelper.getAccountsList();
