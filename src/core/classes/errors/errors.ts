@@ -24,7 +24,7 @@ import { CoreCaptureError } from './captureerror';
 import { CoreNetworkError } from './network-error';
 import { CoreSiteError } from './siteerror';
 import { CoreLoginError } from './loginerror';
-import { CoreErrorWithOptions } from './errorwithtitle';
+import { CoreErrorWithOptions } from './errorwithoptions';
 import { CoreHttpError } from './httperror';
 
 export const CORE_ERRORS_CLASSES: Type<unknown>[] = [
