@@ -98,8 +98,8 @@ Feature: Test basic usage of one course in app
     And I should find "Test scorm name" in the app
     And I should find "Test workshop name" in the app
 
-    When I set "page-core-course-index .core-course-thumb" styles to "--course-color" "lightblue"
-    And I set "page-core-course-index .core-course-thumb" styles to "--course-color-tint" "white"
+    When I set "page-core-course-index .core-course-thumb" styles to "background" "lightblue"
+    And I set "page-core-course-index .core-course-thumb img" styles to "display" "none"
     Then the UI should match the snapshot
 
     When I press "Choice course 1" in the app
