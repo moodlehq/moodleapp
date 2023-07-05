@@ -24,9 +24,11 @@
     "build": "ionic build",
     "build:prod": "NODE_ENV=production ionic build --prod",
     "build:test": "NODE_ENV=testing ionic build --configuration=testing",
-    "dev:android": "ionic cordova run android --livereload --external --ssl",
+    "dev:android": "concurrently \"npm run dev:android:app\" \"npm run dev:android:cordova\"",
+    "dev:android:app": "ionic cordova run android --livereload --external --ssl",
+    "dev:android:cordova": "npm run dev --prefix cordova-plugin-moodleapp",
     "dev:ios": "ionic cordova run ios",
-    "prod:android": "NODE_ENV=production ionic cordova run android --prod",
+    "prod:android": "npm run prod --prefix cordova-plugin-moodleapp && NODE_ENV=production ionic cordova run android --prod",
     "prod:ios": "NODE_ENV=production ionic cordova run ios --prod",
     "storybook": "start-storybook -p 6006",
     "test": "NODE_ENV=testing gulp && jest --verbose",
@@ -107,6 +109,7 @@
     "cordova-plugin-geolocation": "^4.1.0",
     "cordova-plugin-ionic-keyboard": "^2.2.0",
     "cordova-plugin-media-capture": "3.0.3",
+    "cordova-plugin-moodleapp": "file:cordova-plugin-moodleapp",
     "cordova-plugin-network-information": "^3.0.0",
     "cordova-plugin-prevent-override": "^1.0.1",
     "cordova-plugin-screen-orientation": "^3.0.2",
@@ -157,6 +160,7 @@
     "@typescript-eslint/parser": "^4.22.0",
     "check-es-compat": "^1.1.1",
     "compare-versions": "^4.1.4",
+    "concurrently": "^8.2.0",
     "cross-env": "^7.0.3",
     "eslint": "^7.25.0",
     "eslint-config-prettier": "^8.3.0",
@@ -244,7 +248,8 @@
       "@moodlehq/cordova-plugin-file-transfer": {},
       "cordova-plugin-prevent-override": {},
       "cordova-plugin-androidx-adapter": {},
-      "cordova-plugin-screen-orientation": {}
+      "cordova-plugin-screen-orientation": {},
+      "cordova-plugin-moodleapp": {}
     }
   },
   "optionalDependencies": {

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="cordova-plugin-moodleapp" version="0.0.0">
+    <name>MoodleApp</name>
+    <description>Plugin with custom functionality for the Moodle App</description>
+    <js-module src="www/index.js" name="moodleapp">
+        <clobbers target="cordova.MoodleApp" />
+    </js-module>
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="SystemUI">
+                <param name="android-package" value="com.moodle.moodlemobile.SystemUI"/>
+            </feature>
+        </config-file>
+        <source-file src="src/android/SystemUI.java" target-dir="src/com/moodle/moodlemobile" />
+    </platform>
+</plugin>
