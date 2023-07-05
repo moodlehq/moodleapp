@@ -14,7 +14,10 @@
 
 package com.moodle.moodlemobile;
 
+import android.graphics.Color;
+import android.os.Build;
 import android.util.Log;
+import android.view.Window;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
@@ -30,7 +33,7 @@ public class SystemUI extends CordovaPlugin {
         try {
             switch (action) {
                 case "setNavigationBarColor":
-                    this.setNavigationBarColor();
+                    this.setNavigationBarColor(args.getString(0));
                     callbackContext.success();
 
                     return true;
@@ -42,10 +45,41 @@ public class SystemUI extends CordovaPlugin {
         return false;
     }
 
-    private void setNavigationBarColor() {
-        Log.e(TAG, "Setting navigation bar color");
+    private void setNavigationBarColor(String color) {
+        if (Build.VERSION.SDK_INT < 21) {
+            return;
+        }
 
-        // TODO
+        if (color == null || color.isEmpty()) {
+            return;
+        }
+
+        Log.d(TAG, "Setting navigation bar color to " + color);
+
+        this.cordova.getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                final int FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS = 0x80000000;
+                final int SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR = 0x00000010;
+                final Window window = cordova.getActivity().getWindow();
+                int uiOptions = window.getDecorView().getSystemUiVisibility();
+
+                uiOptions = uiOptions | FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS;
+                uiOptions = uiOptions & ~SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+
+                window.getDecorView().setSystemUiVisibility(uiOptions);
+
+                try {
+                    // Using reflection makes sure any 5.0+ device will work without having to compile with SDK level 21
+                    window.getClass().getDeclaredMethod("setNavigationBarColor", int.class).invoke(window, Color.parseColor(color));
+                } catch (IllegalArgumentException ignore) {
+                    Log.e(TAG, "Invalid hexString argument, use f.i. '#999999'");
+                } catch (Exception ignore) {
+                    // this should not happen, only in case Android removes this method in a version > 21
+                    Log.w(TAG, "Method window.setNavigationBarColor not found for SDK level " + Build.VERSION.SDK_INT);
+                }
+            }
+        });
     }
 
 }

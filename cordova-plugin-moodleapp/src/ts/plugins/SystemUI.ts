@@ -19,10 +19,12 @@ export class SystemUI {
 
     /**
      * Set navigation bar color.
+     *
+     * @param color Color.
      */
-    async setNavigationBarColor(): Promise<void> {
+    async setNavigationBarColor(color: string): Promise<void> {
         await new Promise((resolve, reject) => {
-            cordova.exec(resolve, reject, 'SystemUI', 'setNavigationBarColor', []);
+            cordova.exec(resolve, reject, 'SystemUI', 'setNavigationBarColor', [color]);
         });
     }
 
