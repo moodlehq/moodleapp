@@ -59,6 +59,7 @@ import { CoreErrorInfoComponent } from '@components/error-info/error-info';
 import { CorePlatform } from '@services/platform';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreLang } from '@services/lang';
+import { CorePasswordModalParams } from '@components/password-modal/password-modal';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -1878,6 +1879,33 @@ export class CoreDomUtilsProvider {
         if (result?.data) {
             return result?.data;
         }
+    }
+
+    /**
+     * Prompts password to the user and returns the entered text.
+     *
+     * @param passwordParams Params to show the modal.
+     * @returns Entered password.
+     */
+    async promptPassword(passwordParams?: CorePasswordModalParams): Promise<CorePasswordModalResponse> {
+        const { CorePasswordModalComponent } =
+            await import('@/core/components/password-modal/password-modal.module');
+
+        const modalData = await CoreDomUtils.openModal<string>(
+            {
+                cssClass: 'core-password-modal',
+                showBackdrop: true,
+                backdropDismiss: true,
+                component: CorePasswordModalComponent,
+                componentProps: passwordParams,
+            },
+        );
+
+        if (typeof modalData !== 'string') {
+            throw new CoreCanceledError();
+        }
+
+        return modalData;
     }
 
     /**

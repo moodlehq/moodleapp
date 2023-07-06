@@ -12,37 +12,42 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild, ElementRef } from '@angular/core';
-import { IonInput } from '@ionic/angular';
+import { Component, ViewChild, ElementRef, Input } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
 import { CoreForms } from '@singletons/form';
 import { ModalController } from '@singletons';
 
 /**
- * Modal that asks the password for a lesson.
+ * Modal that asks the password.
+ *
+ * WARNING: This component is not loaded with components.module.ts.
  */
 @Component({
-    selector: 'page-addon-mod-lesson-password-modal',
+    selector: 'core-password-modal',
     templateUrl: 'password-modal.html',
 })
-export class AddonModLessonPasswordModalComponent {
+export class CorePasswordModalComponent {
 
     @ViewChild('passwordForm') formElement?: ElementRef;
+
+    @Input() title? = 'core.login.password'; // Translatable string to be shown on modal title.
+    @Input() placeholder? =  'core.login.password'; // Translatable string to be shown on password input as placeholder.
+    @Input() submit? = 'core.submit'; // Translatable string to be shown on submit button.
+    @Input() password? = ''; // Previous entered password.
 
     /**
      * Send the password back.
      *
      * @param e Event.
-     * @param password The input element.
      */
-    submitPassword(e: Event, password: IonInput): void {
+    submitPassword(e: Event): void {
         e.preventDefault();
         e.stopPropagation();
 
         CoreForms.triggerFormSubmittedEvent(this.formElement, false, CoreSites.getCurrentSiteId());
 
-        ModalController.dismiss(password.value);
+        ModalController.dismiss(this.password);
     }
 
     /**
@@ -55,3 +60,5 @@ export class AddonModLessonPasswordModalComponent {
     }
 
 }
+
+export type CorePasswordModalParams = Pick<CorePasswordModalComponent, 'title' | 'placeholder' | 'submit' | 'password'>;

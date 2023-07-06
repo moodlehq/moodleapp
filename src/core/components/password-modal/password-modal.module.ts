@@ -13,25 +13,17 @@
 // limitations under the License.
 
 import { NgModule } from '@angular/core';
-
+import { CorePasswordModalComponent } from './password-modal';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCoursesCourseListItemComponent } from './course-list-item/course-list-item';
-import { CoreCoursesCourseProgressComponent } from './course-progress/course-progress';
-import { CoreCoursesCourseOptionsMenuComponent } from './course-options-menu/course-options-menu';
+
+export { CorePasswordModalComponent };
 
 @NgModule({
     declarations: [
-        CoreCoursesCourseListItemComponent,
-        CoreCoursesCourseProgressComponent,
-        CoreCoursesCourseOptionsMenuComponent,
+        CorePasswordModalComponent,
     ],
     imports: [
         CoreSharedModule,
     ],
-    exports: [
-        CoreCoursesCourseListItemComponent,
-        CoreCoursesCourseProgressComponent,
-        CoreCoursesCourseOptionsMenuComponent,
-    ],
 })
-export class CoreCoursesComponentsModule {}
+export class CorePasswordModalModule {}

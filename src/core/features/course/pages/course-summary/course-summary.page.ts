@@ -31,7 +31,6 @@ import {
 } from '@features/course/services/course-options-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { ActionSheetController, ModalController, NgZone, Translate } from '@singletons';
-import { CoreCoursesSelfEnrolPasswordComponent } from '../../../courses/components/self-enrol-password/self-enrol-password';
 import { CoreNavigator } from '@services/navigator';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreCoursesHelper, CoreCourseWithImageAndColor } from '@features/courses/services/courses-helper';
@@ -374,25 +373,23 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
             modal?.dismiss();
 
             if (error && error.errorcode === CoreCoursesProvider.ENROL_INVALID_KEY) {
-                // Initialize the self enrol modal.
-                // Invalid password, show the modal to enter the password.
-                const modalData = await CoreDomUtils.openModal<string>(
-                    {
-                        component: CoreCoursesSelfEnrolPasswordComponent,
-                        componentProps: { password },
-                    },
-                );
 
-                if (modalData !== undefined) {
+                try {
+                    // Initialize the self enrol modal.
+                    // Invalid password, show the modal to enter the password.
+                    const modalData = await CoreDomUtils.promptPassword({
+                        password,
+                        title: 'core.courses.selfenrolment',
+                        placeholder: 'core.courses.password',
+                        submit: 'core.courses.enrolme',
+                    });
+
                     this.selfEnrolInCourse(instanceId, modalData);
-
-                    return;
-                }
-
-                if (!password) {
+                } catch {
                     // No password entered, don't show error.
-                    return;
                 }
+
+                return;
             }
 
             CoreDomUtils.showErrorModalDefault(error, 'core.courses.errorselfenrol', true);

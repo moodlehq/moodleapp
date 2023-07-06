@@ -729,6 +729,21 @@ body.core-iframe-fullscreen ion-router-outlet {
     }
 }
 
+.core-password-modal {
+    --border-radius: var(--medium-radius);
+    --min-width: auto;
+    --min-height: 260px;
+    --width: 320px;
+    --height: auto;
+
+    form {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        justify-content: space-between;
+    }
+}
+
 // Hidden submit button.
 .core-submit-hidden-enter {
     position: absolute;
@@ -871,7 +886,7 @@ img.large-avatar,
     max-width: var(--core-large-avatar-size);
     max-height: var(--core-large-avatar-size);
     margin-bottom: 10px;
-    border-radius : 50%;
+    border-radius: 50%;
     padding: 4px;
     border: 1px solid var(--stroke);
     background-color: transparent;

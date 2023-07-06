@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreError } from '@classes/errors/error';
 
 import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/activity-prefetch-handler';
@@ -26,7 +25,6 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { AddonModLessonPasswordModalComponent } from '../../components/password-modal/password-modal';
 import {
     AddonModLesson,
     AddonModLessonGetAccessInformationWSResponse,
@@ -55,15 +53,11 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
      */
     protected async askUserPassword(): Promise<string> {
         // Create and show the modal.
-        const modalData = await CoreDomUtils.openModal<string>({
-            component: AddonModLessonPasswordModalComponent,
+        return CoreDomUtils.promptPassword({
+            title: 'addon.mod_lesson.enterpassword',
+            placeholder: 'core.login.password',
+            submit: 'addon.mod_lesson.continue',
         });
-
-        if (typeof modalData != 'string') {
-            throw new CoreCanceledError();
-        }
-
-        return modalData;
     }
 
     /**
