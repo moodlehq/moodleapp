@@ -105,6 +105,32 @@ export class AddonModChatProvider {
     }
 
     /**
+     * Report chat session views.
+     *
+     * @param id Chat instance ID.
+     * @param period Session period if viewing an individual session.
+     * @param period.start Period start.
+     * @param period.end Period end.
+     */
+    async logViewSessions(id: number, period?: { start: number; end: number }): Promise<void> {
+        const params: AddonModChatViewSessionsWSParams = {
+            cmid: id,
+        };
+
+        if (period) {
+            params.start = period.start;
+            params.end = period.end;
+        }
+
+        await CoreCourseLogHelper.log(
+            'mod_chat_view_sessions',
+            params,
+            AddonModChatProvider.COMPONENT,
+            id,
+        );
+    }
+
+    /**
      * Send a message to a chat.
      *
      * @param sessionId Chat sessiond ID.
@@ -476,6 +502,15 @@ export type AddonModChatLoginUserWSResponse = {
  */
 export type AddonModChatViewChatWSParams = {
     chatid: number; // Chat instance id.
+};
+
+/**
+ * Params of mod_chat_view_sessions WS.
+ */
+export type AddonModChatViewSessionsWSParams = {
+    cmid: number; // Course module id.
+    start?: number; // Session start time.
+    end?: number; // Session end time.
 };
 
 /**
