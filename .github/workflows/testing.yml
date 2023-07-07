@@ -13,7 +13,9 @@ jobs:
       with:
         node-version-file: '.nvmrc'
     - name: Install npm packages
-      run: npm ci --no-audit
+      run: |
+        npm ci --no-audit
+        npm ci --no-audit --prefix cordova-plugin-moodleapp
     - name: Check langindex
       run: |
         result=$(cat scripts/langindex.json | grep \"TBD\" | wc -l); test $result -eq 0
@@ -46,11 +48,15 @@ jobs:
           echo "Found $found missing langkeys"
           exit 1
         fi
-    - name: Run Linter (ignore warnings)
-      run: npm run lint -- --quiet
+    - name: Run Linters (ignore warnings)
+      run: |
+        npm run lint -- --quiet
+        npm run lint --prefix cordova-plugin-moodleapp
     - name: Run tests
       run: npm run test:ci
     - name: Production builds
-      run: npm run build:prod
+      run: |
+        npm run build:prod
+        npm run prod --prefix cordova-plugin-moodleapp
     - name: JavaScript code compatibility
       run: result=$(npx check-es-compat www/*.js 2> /dev/null | grep -v -E "Array\.prototype\.includes|Promise\.prototype\.finally|String\.prototype\.(matchAll|trimRight)|globalThis" | grep -Po "(?<=error).*?(?=\s+ecmascript)" | wc -l); test $result -eq 1

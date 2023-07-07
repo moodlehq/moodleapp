@@ -22,6 +22,7 @@
     "types": [
         "@moodlehq/cordova-plugin-file-transfer",
         "@moodlehq/cordova-plugin-inappbrowser",
+        "cordova-plugin-moodleapp",
         "cordova",
         "dom-mediacapture-record",
         "faker",
