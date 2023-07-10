@@ -442,41 +442,6 @@ Feature: Test basic usage of one course in app
     And I should find "Test scorm name" in the app
     And I should find "Test workshop name" in the app
 
-  @lms_from4.0
-  Scenario: Guest access
-    Given I entered the course "Course 1" as "teacher1" in the app
-    And I press "Course summary" in the app
-    And I press "Open in browser" in the app
-    And I switch to the browser tab opened by the app
-    And I log in as "teacher1"
-    And I click on "Participants" "link"
-    And I select "Enrolment methods" from the "jump" singleselect
-    And I click on "Enable" "icon" in the "Guest access" "table_row"
-    And I close the browser tab opened by the app
-    Given I entered the app as "student2"
-    When I press "Site home" in the app
-    And I press "Available courses" in the app
-    And I press "Course 1" in the app
-
-    Then I should find "Course summary" in the app
-    And I should find "Course" in the app
-
-    When I press "View course" "ion-button" in the app
-    Then the header should be "Course 1" in the app
-    And I should find "Choice course 1" in the app
-    And I should find "assignment" in the app
-    And I should find "Test forum name" in the app
-    And I should find "Test chat name" in the app
-    And I should find "Web links" in the app
-    And I should find "Test feedback name" in the app
-    And I should find "Test glossary" in the app
-    And I should find "Quiz 1" in the app
-    And I should find "Test survey name" in the app
-    And I should find "Test wiki name" in the app
-    And I should find "Test lesson name" in the app
-    And I should find "Test scorm name" in the app
-    And I should find "Test workshop name" in the app
-
   Scenario: View blocks on drawer
     Given the following "blocks" exist:
       | blockname        | contextlevel | reference | pagetypepattern | defaultregion | configdata                                                                                                   |

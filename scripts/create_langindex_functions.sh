@@ -3,7 +3,7 @@
 # Functions used to create langidex.
 #
 
-SERVER_URL='https://download.moodle.org/'
+SERVER_URL='https://packaging.moodle.org/'
 
 # Downloads a file and if it's a zip file, unzip it.
 function download_file {
@@ -12,7 +12,7 @@ function download_file {
 
     pushd "$LANGPACKS_PATH" > /dev/null
 
-    curl -s "$url" --output "$filename" > /dev/null
+    curl -L -s "$url" --output "$filename" > /dev/null
     size=$(du -k "$filename" | cut -f 1)
     if [ ! -n "$filename" ] || [ "$size" -le 1 ]; then
         echo "Wrong or corrupt file $filename"
@@ -45,7 +45,7 @@ function get_english {
     get_app_version
 
     echo "Getting English language..."
-    download_file "$SERVER_URL/download.php/direct/langpack/$LANGVERSION/en.zip"
+    download_file "$SERVER_URL/langpack/$LANGVERSION/en.zip"
 }
 
 #Saves or updates a key on langindex_old.json

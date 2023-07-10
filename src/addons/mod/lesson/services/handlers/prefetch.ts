@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreError } from '@classes/errors/error';
 
 import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/activity-prefetch-handler';
@@ -26,7 +25,6 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { AddonModLessonPasswordModalComponent } from '../../components/password-modal/password-modal';
 import {
     AddonModLesson,
     AddonModLessonGetAccessInformationWSResponse,
@@ -47,24 +45,6 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
     component = AddonModLessonProvider.COMPONENT;
     // Don't check timers to decrease positives. If a user performs some action it will be reflected in other items.
     updatesNames = /^configuration$|^.*files$|^grades$|^gradeitems$|^pages$|^answers$|^questionattempts$|^pagesviewed$/;
-
-    /**
-     * Ask password.
-     *
-     * @returns Promise resolved with the password.
-     */
-    protected async askUserPassword(): Promise<string> {
-        // Create and show the modal.
-        const modalData = await CoreDomUtils.openModal<string>({
-            component: AddonModLessonPasswordModalComponent,
-        });
-
-        if (typeof modalData != 'string') {
-            throw new CoreCanceledError();
-        }
-
-        return modalData;
-    }
 
     /**
      * Get the download size of a module.
@@ -155,7 +135,13 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
             throw new CoreError(accessInfo.preventaccessreasons[0].message);
         }
 
-        password = await this.askUserPassword();
+        // Create and show the modal.
+        const response = await CoreDomUtils.promptPassword({
+            title: 'addon.mod_lesson.enterpassword',
+            placeholder: 'core.login.password',
+            submit: 'addon.mod_lesson.continue',
+        });
+        password = response.password;
 
         return this.validatePassword(lessonId, accessInfo, password, options);
     }
