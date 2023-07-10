@@ -22,7 +22,7 @@
             <!-- @todo plagiarism_print_disclosure -->
             <core-timer *ngIf="timeLimitEndTime > 0" [endTime]="timeLimitEndTime" (finished)="timeUp()" timeUpText="00:00:00"
                 [timerText]="'addon.mod_assign.assigntimeleft' | translate" [align]="'center'" [timeLeftClassThreshold]="-1"
-                [underTimeClassThresholds]="[300, 900]" class="ion-margin-horizontal">
+                [underTimeClassThresholds]="[300, 900]">
             </core-timer>
 
             <!-- Assign activity instructions and attachments if needed. -->

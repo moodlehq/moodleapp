@@ -29,11 +29,12 @@ import { CoreTimeUtils } from '@services/utils/time';
 })
 export class CoreTimerComponent implements OnInit, OnDestroy {
 
-    @Input() endTime?: string | number; // Timestamp (in seconds) when the timer should end.
+    @Input() endTime = 0; // Timestamp (in seconds) when the timer should end.
     @Input() timerText?: string; // Text to show next to the timer. If not defined, no text shown.
     @Input() timeLeftClass?: string; // Name of the class to apply with each second. By default, 'core-timer-timeleft-'.
     @Input() timeLeftClassThreshold = 100; // Number of seconds to start adding the timeLeftClass. Set it to -1 to not add it.
-    @Input() align?: string; // Where to align the time and text. Defaults to 'left'. Other values: 'center', 'right'.
+    @Input() align = 'start'; // Where to align the time and text. Defaults to 'start'. Other values: 'center', 'end'.
+    @Input() hiddable = false; // Whether the user can hide the time left.
     @Input() timeUpText?: string; // Text to show when the timer reaches 0. If not defined, 'core.timesup'.
     @Input() mode: CoreTimerMode = CoreTimerMode.ITEM; // How to display data.
     @Input() underTimeClassThresholds = []; // Number of seconds to add the class 'core-timer-under-'.
@@ -41,6 +42,7 @@ export class CoreTimerComponent implements OnInit, OnDestroy {
 
     timeLeft?: number; // Seconds left to end.
     modeBasic = CoreTimerMode.BASIC;
+    showTimeLeft = true;
 
     protected timeInterval?: number;
     protected element?: HTMLElement;
@@ -54,18 +56,21 @@ export class CoreTimerComponent implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         const timeLeftClass = this.timeLeftClass || 'core-timer-timeleft-';
-        const endTime = Math.round(Number(this.endTime));
+        const endTime = Math.round(this.endTime);
         this.underTimeClassThresholds.sort((a, b) => a - b); // Sort by increase order.
 
-        if (!endTime) {
-            return;
+        // @deprecated since 4.3. Use start/end instead.
+        if (this.align === 'left') {
+            this.align = 'start';
+        } else if (this.align === 'right') {
+            this.align = 'end';
         }
 
         let container: HTMLElement | undefined;
 
         // Check time left every 200ms.
         this.timeInterval = window.setInterval(() => {
-            container = container || this.elementRef.nativeElement.querySelector('.core-timer');
+            container = container || this.elementRef.nativeElement;
             this.timeLeft = Math.max(endTime - CoreTimeUtils.timestamp(), 0);
 
             if (container) {
@@ -104,7 +109,14 @@ export class CoreTimerComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Component destroyed.
+     * Toggles the time left visibility.
+     */
+    toggleTimeLeftVisibility(): void {
+        this.showTimeLeft = !this.showTimeLeft;
+    }
+
+    /**
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         clearInterval(this.timeInterval);

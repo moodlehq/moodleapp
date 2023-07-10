@@ -22,13 +22,9 @@
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
-    <!-- Navigation arrows and time left. -->
-    <ion-toolbar *ngIf="loaded && endTime && questions.length && !quizAborted && !showSummary" color="light">
-        <ion-title>
-            <core-timer [endTime]="endTime" (finished)="timeUp()" [timerText]="'addon.mod_quiz.timeleft' | translate" [align]="'center'">
-            </core-timer>
-        </ion-title>
-    </ion-toolbar>
+    <core-timer *ngIf="loaded && endTime && questions.length && !quizAborted && !showSummary" [endTime]="endTime" (finished)="timeUp()"
+        [timerText]="'addon.mod_quiz.timeleft' | translate" [hiddable]="true">
+    </core-timer>
 </ion-header>
 <ion-content class="limited-width">
     <core-loading [hideUntil]="loaded" class="has-spacer">

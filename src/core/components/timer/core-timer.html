@@ -1,21 +1,32 @@
-<ion-item *ngIf="mode !== modeBasic" class="core-timer" role="timer"
-    [ngClass]="{'ion-text-center': align == 'center', 'ion-text-end': align == 'right'}">
-    <ion-icon name="fas-clock" slot="start" aria-hidden="true"></ion-icon>
-    <ion-label>
+<ng-container *ngIf="timeLeft !== undefined">
+    <ion-item *ngIf="mode !== modeBasic" class="core-timer" role="timer" [attr.aria-label]="timerText">
+        <ion-label class="ion-justify-content-{{align}}">
+            <ng-container *ngTemplateOutlet="timerTemplate"></ng-container>
+        </ion-label>
+    </ion-item>
+
+    <div *ngIf="mode === modeBasic" class="core-timer ion-padding ion-justify-content-{{align}}" role="timer" [attr.aria-label]="timerText">
         <ng-container *ngTemplateOutlet="timerTemplate"></ng-container>
-    </ion-label>
-</ion-item>
+    </div>
 
-<div *ngIf="mode === modeBasic" class="core-timer ion-padding" role="timer"
-    [ngClass]="{'ion-text-center': align == 'center', 'ion-text-end': align == 'right'}">
-    <ng-container *ngTemplateOutlet="timerTemplate"></ng-container>
-</div>
+    <ng-template #timerTemplate>
+        <ng-container *ngIf="timeLeft > 0">
+            <div class="ion-text-wrap">
+                <span *ngIf="timerText" class="core-timer-text">{{ timerText }}</span>
+                <span *ngIf="showTimeLeft" class="core-timer-time-left">
+                    {{ timeLeft | coreSecondsToHMS }}
+                </span>
+            </div>
 
-<ng-template #timerTemplate>
-    <span *ngIf="timerText" class="core-timer-text">{{ timerText }}</span>
-    <span *ngIf="timeLeft && timeLeft > 0" class="core-timer-time-left">{{ timeLeft | coreSecondsToHMS }}</span>
-    <span class="core-timesup" *ngIf="timeLeft !== undefined && timeLeft <= 0">
-        <ng-container *ngIf="timeUpText">{{ timeUpText }}</ng-container>
-        <ng-container *ngIf="!timeUpText">{{ 'core.timesup' | translate }}</ng-container>
-    </span>
-</ng-template>
+            <div *ngIf="hiddable" class="core-timer-visibility">
+                ( <button class="as-link" *ngIf="showTimeLeft" (click)="toggleTimeLeftVisibility()">{{ 'core.hide' | translate }}</button>
+                <button class="as-link" *ngIf="!showTimeLeft" (click)="toggleTimeLeftVisibility()">{{ 'core.show' | translate }}</button> )
+            </div>
+        </ng-container>
+
+        <div class="core-timesup" *ngIf="timeLeft <= 0">
+            <ng-container *ngIf="timeUpText">{{ timeUpText }}</ng-container>
+            <ng-container *ngIf="!timeUpText">{{ 'core.timesup' | translate }}</ng-container>
+        </div>
+    </ng-template>
+</ng-container>
