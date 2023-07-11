@@ -36,6 +36,7 @@ export class CoreSettingsAboutPage {
     a11yStatement = CoreConstants.CONFIG.a11yStatement ?? 'https://apps.moodle.com/admin/tool/policy/view.php?versionid=5';
     currentSite?: CoreSite;
     showSurvey: boolean | undefined = false;
+    legalDisclaimer = CoreConstants.CONFIG.legalDisclaimer;
 
     constructor() {
         this.currentSite = CoreSites.getCurrentSite();

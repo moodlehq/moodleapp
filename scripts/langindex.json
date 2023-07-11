@@ -2365,6 +2365,7 @@
   "core.settings.ioscookies": "local_moodlemobileapp",
   "core.settings.ioscookiesdescription": "local_moodlemobileapp",
   "core.settings.language": "moodle",
+  "core.settings.legaldisclaimer": "local_moodlemobileapp",
   "core.settings.license": "moodle",
   "core.settings.localnotifavailable": "local_moodlemobileapp",
   "core.settings.locationhref": "local_moodlemobileapp",
