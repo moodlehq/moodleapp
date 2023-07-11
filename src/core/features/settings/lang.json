@@ -50,6 +50,7 @@
     "ioscookies": "Cross-Website Tracking",
     "ioscookiesdescription": "Embedded content from the site might require cross-site cookies to work. To enable it, please go to the app's iOS settings and enable 'Allow Cross-Website Tracking'.",
     "language": "Language",
+    "legaldisclaimer": "Legal disclaimer",
     "license": "Licence",
     "localnotifavailable": "Local notifications available",
     "locationhref": "Web view URL",

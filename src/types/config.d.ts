@@ -63,6 +63,7 @@ export interface EnvironmentConfig {
     customMainMenuItems?: CoreMainMenuLocalizedCustomItem[];
     feedbackFormUrl?: string | false;
     a11yStatement?: string | false;
+    legalDisclaimer?: string | false;
     iabToolbarColors?: 'auto' | { background: string; text?: string } | null;
     wsrequestqueuelimit: number; // Maximum number of requests allowed in the queue.
     wsrequestqueuedelay: number; // Maximum number of miliseconds to wait before processing the queue.
