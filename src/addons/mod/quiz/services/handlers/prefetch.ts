@@ -447,7 +447,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
             if (attempt.state == AddonModQuizProvider.ATTEMPT_IN_PROGRESS) {
                 // Get data for each page.
                 promises = promises.concat(pages.map(async (page) => {
-                    if (isSequential && attempt.currentpage && page < attempt.currentpage) {
+                    if (isSequential && typeof attempt.currentpage === 'number' && page < attempt.currentpage) {
                         // Sequential quiz, cannot get pages before the current one.
                         return;
                     }

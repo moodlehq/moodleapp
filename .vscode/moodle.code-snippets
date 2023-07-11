@@ -110,4 +110,13 @@
         ],
         "description": "[Moodle] Create a Pure Singleton"
     },
+    "Innherit doc": {
+        "prefix": "inheritdoc",
+        "body": [
+            "/**",
+            " * @inheritdoc",
+            " */"
+        ],
+        "description": "Add @inheritdoc documentation block"
+    }
 }

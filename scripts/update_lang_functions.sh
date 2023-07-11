@@ -22,7 +22,7 @@ function copy_lang {
     lang=$1
 
     index_keys=$(jq -r 'to_entries[] | "\"\(.key)\","' langindex.json)
-    index_keys=$(echo "$index_keys" | sed 's/,*$//')
+    index_keys=${index_keys:0:-1}
 
     hyphenlang=${lang/_/-}
     langfilepath=$LANG_PATH/$hyphenlang.json
