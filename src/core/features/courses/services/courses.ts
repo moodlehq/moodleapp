@@ -1827,7 +1827,6 @@ export type CoreCourseEnrolmentInfo = {
     courseid: number; // Id of course.
     type: string; // Type of enrolment plugin.
     name: string; // Name of enrolment plugin.
-    status: boolean | string; // Available status of enrolment plugin. True if successful, else error message or false.
 };
 
 /**
@@ -1835,6 +1834,7 @@ export type CoreCourseEnrolmentInfo = {
  */
 export type CoreCourseEnrolmentMethod = CoreCourseEnrolmentInfo & {
     wsfunction?: string; // Webservice function to get more information.
+    status: string; // Status of enrolment plugin. True if successful, else error message or false.
 };
 
 /**
@@ -1877,6 +1877,7 @@ export type CoreCourseGetRecentCoursesOptions = CoreSitesCommonWSOptions & {
  */
 export type CoreCourseEnrolmentGuestMethod = CoreCourseEnrolmentInfo & {
     passwordrequired: boolean; // Is a password required?
+    status: boolean; // Is the enrolment enabled?
 };
 
 /**

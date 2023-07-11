@@ -241,7 +241,7 @@ export class CoreCoursesCourseLinkHandlerService extends CoreContentLinksHandler
             let isSelfEnrolEnabled = false;
             let instances = 0;
             methods.forEach((method) => {
-                if (method.type == 'self' && method.status) {
+                if (method.type == 'self' && CoreUtils.isTrueOrOne(method.status)) {
                     isSelfEnrolEnabled = true;
                     instances++;
                 }

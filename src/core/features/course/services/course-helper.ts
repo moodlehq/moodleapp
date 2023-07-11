@@ -634,8 +634,7 @@ export class CoreCourseHelperProvider {
 
             // Don't allow guest access if it requires a password and it's available.
             return {
-                guestAccess: info.status === true &&
-                    (!info.passwordrequired || CoreCourses.isValidateGuestAccessPasswordAvailable()),
+                guestAccess: info.status && (!info.passwordrequired || CoreCourses.isValidateGuestAccessPasswordAvailable()),
                 passwordRequired: info.passwordrequired,
             };
         } catch {

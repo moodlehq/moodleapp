@@ -144,7 +144,7 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
         // Don't allow guest access if it requires a password if not supported.
         this.guestAccessPasswordRequired = info.passwordrequired;
 
-        return info.status === true && (!info.passwordrequired || CoreCourses.isValidateGuestAccessPasswordAvailable());
+        return info.status && (!info.passwordrequired || CoreCourses.isValidateGuestAccessPasswordAvailable());
     }
 
     /**
@@ -193,7 +193,7 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
         const enrolmentMethods = await CoreCourses.getCourseEnrolmentMethods(this.courseId);
 
         enrolmentMethods.forEach((method) => {
-            if (!method.status) {
+            if (!CoreUtils.isTrueOrOne(method.status)) {
                 return;
             }
 
