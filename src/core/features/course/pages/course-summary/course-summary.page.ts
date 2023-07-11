@@ -298,7 +298,7 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
         if (this.useGuestAccess && this.guestAccessPasswordRequired && guestInstanceId) {
             // Check if the user has access to the course as guest with a previous sent password.
             let validated = await CoreUtils.promiseWorks(
-                CoreCourse.getSections(this.courseId, true, true, undefined, undefined, false),
+                CoreCourse.getSections(this.courseId, true, true, { getFromCache: false, emergencyCache: false }, undefined, false),
             );
 
             if (!validated) {
