@@ -73,6 +73,11 @@ export class CoreTimerComponent implements OnInit, OnDestroy {
             container = container || this.elementRef.nativeElement;
             this.timeLeft = Math.max(endTime - CoreTimeUtils.timestamp(), 0);
 
+            if (this.timeLeft <= 100) {
+                this.hiddable = false;
+                this.showTimeLeft = true;
+            }
+
             if (container) {
                 // Add class if timer is below timeLeftClassThreshold.
                 if (this.timeLeft < this.timeLeftClassThreshold && !container.classList.contains(timeLeftClass + this.timeLeft)) {
