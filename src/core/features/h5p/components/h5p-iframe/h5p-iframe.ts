@@ -29,6 +29,7 @@ import { CoreSite } from '@classes/site';
 import { CoreLogger } from '@singletons/logger';
 import { CoreH5PCore, CoreH5PDisplayOptions } from '../../classes/core';
 import { CoreH5PHelper } from '../../classes/helper';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 /**
  * Component to render an iframe with an H5P package.
@@ -64,7 +65,6 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
         public elementRef: ElementRef,
         router: Router,
     ) {
-
         this.logger = CoreLogger.getInstance('CoreH5PIframeComponent');
         this.site = CoreSites.getRequiredCurrentSite();
         this.siteId = this.site.getId();
@@ -101,6 +101,12 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
     protected async play(): Promise<void> {
         let localUrl: string | undefined;
         let state: string;
+        this.onlinePlayerUrl = this.onlinePlayerUrl || CoreH5P.h5pPlayer.calculateOnlinePlayerUrl(
+            this.site.getURL(),
+            this.fileUrl || '',
+            this.displayOptions,
+            this.trackComponent,
+        );
 
         if (this.fileUrl) {
             state = await CoreFilepool.getFileStateByUrl(this.siteId, this.fileUrl);
@@ -117,14 +123,16 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
             if (localUrl) {
                 // Local package.
                 this.iframeSrc = localUrl;
-            } else {
-                this.onlinePlayerUrl = this.onlinePlayerUrl || CoreH5P.h5pPlayer.calculateOnlinePlayerUrl(
-                    this.site.getURL(),
-                    this.fileUrl || '',
-                    this.displayOptions,
-                    this.trackComponent,
-                );
 
+                // Only log analytics event when playing local package, online package already logs it.
+                CoreAnalytics.logEvent({
+                    type: CoreAnalyticsEventType.VIEW_ITEM,
+                    ws: 'core_h5p_get_trusted_h5p_file',
+                    name: 'H5P content',
+                    data: { category: 'h5p' },
+                    url: this.onlinePlayerUrl,
+                });
+            } else {
                 // Never allow downloading in the app. This will only work if the user is allowed to change the params.
                 const src = this.onlinePlayerUrl.replace(
                     CoreH5PCore.DISPLAY_OPTION_DOWNLOAD + '=1',

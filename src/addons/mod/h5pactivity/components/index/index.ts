@@ -63,7 +63,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     @Output() onActivityFinish = new EventEmitter<boolean>();
 
     component = AddonModH5PActivityProvider.COMPONENT;
-    moduleName = 'h5pactivity';
+    pluginName = 'h5pactivity';
 
     h5pActivity?: AddonModH5PActivityData; // The H5P activity object.
     accessInfo?: AddonModH5PActivityAccessInfo; // Info about the user capabilities.
@@ -441,9 +441,11 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         this.playing = true;
 
         // Mark the activity as viewed.
-        await AddonModH5PActivity.logView(this.h5pActivity.id, this.h5pActivity.name, this.siteId);
+        await AddonModH5PActivity.logView(this.h5pActivity.id, this.siteId);
 
         this.checkCompletion();
+
+        this.analyticsLogEvent('mod_h5pactivity_view_h5pactivity');
     }
 
     /**

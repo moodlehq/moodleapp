@@ -21,7 +21,6 @@ import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreGradesFormattedItem, CoreGradesHelper } from '@features/grades/services/grades-helper';
-import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import {
     CoreQuestion,
     CoreQuestionQuestionParsed,
@@ -1535,7 +1534,6 @@ export class AddonModQuizProvider {
      * @param page Page number.
      * @param preflightData Preflight required data (like password).
      * @param offline Whether attempt is offline.
-     * @param quiz Quiz instance. If set, a Firebase event will be stored.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the WS call is successful.
      */
@@ -1544,7 +1542,6 @@ export class AddonModQuizProvider {
         page: number = 0,
         preflightData: Record<string, string> = {},
         offline?: boolean,
-        quiz?: AddonModQuizQuizWSData,
         siteId?: string,
     ): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1564,16 +1561,6 @@ export class AddonModQuizProvider {
         if (offline) {
             promises.push(AddonModQuizOffline.setAttemptCurrentPage(attemptId, page, site.getId()));
         }
-        if (quiz) {
-            CorePushNotifications.logViewEvent(
-                quiz.id,
-                quiz.name,
-                'quiz',
-                'mod_quiz_view_attempt',
-                { attemptid: attemptId, page },
-                siteId,
-            );
-        }
 
         await Promise.all(promises);
     }
@@ -1583,23 +1570,19 @@ export class AddonModQuizProvider {
      *
      * @param attemptId Attempt ID.
      * @param quizId Quiz ID.
-     * @param name Name of the quiz.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the WS call is successful.
      */
-    logViewAttemptReview(attemptId: number, quizId: number, name?: string, siteId?: string): Promise<void> {
+    logViewAttemptReview(attemptId: number, quizId: number, siteId?: string): Promise<void> {
         const params: AddonModQuizViewAttemptReviewWSParams = {
             attemptid: attemptId,
         };
 
-        return CoreCourseLogHelper.logSingle(
+        return CoreCourseLogHelper.log(
             'mod_quiz_view_attempt_review',
             params,
             AddonModQuizProvider.COMPONENT,
             quizId,
-            name,
-            'quiz',
-            params,
             siteId,
         );
     }
@@ -1610,7 +1593,6 @@ export class AddonModQuizProvider {
      * @param attemptId Attempt ID.
      * @param preflightData Preflight required data (like password).
      * @param quizId Quiz ID.
-     * @param name Name of the quiz.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the WS call is successful.
      */
@@ -1618,7 +1600,6 @@ export class AddonModQuizProvider {
         attemptId: number,
         preflightData: Record<string, string>,
         quizId: number,
-        name?: string,
         siteId?: string,
     ): Promise<void> {
         const params: AddonModQuizViewAttemptSummaryWSParams = {
@@ -1630,14 +1611,11 @@ export class AddonModQuizProvider {
             ),
         };
 
-        return CoreCourseLogHelper.logSingle(
+        return CoreCourseLogHelper.log(
             'mod_quiz_view_attempt_summary',
             params,
             AddonModQuizProvider.COMPONENT,
             quizId,
-            name,
-            'quiz',
-            { attemptid: attemptId },
             siteId,
         );
     }
@@ -1646,23 +1624,19 @@ export class AddonModQuizProvider {
      * Report a quiz as being viewed.
      *
      * @param id Module ID.
-     * @param name Name of the quiz.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the WS call is successful.
      */
-    logViewQuiz(id: number, name?: string, siteId?: string): Promise<void> {
+    logViewQuiz(id: number, siteId?: string): Promise<void> {
         const params: AddonModQuizViewQuizWSParams = {
             quizid: id,
         };
 
-        return CoreCourseLogHelper.logSingle(
+        return CoreCourseLogHelper.log(
             'mod_quiz_view_quiz',
             params,
             AddonModQuizProvider.COMPONENT,
             id,
-            name,
-            'quiz',
-            {},
             siteId,
         );
     }

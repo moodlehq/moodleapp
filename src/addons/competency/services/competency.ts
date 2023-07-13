@@ -16,7 +16,6 @@ import { Injectable } from '@angular/core';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
 import { CoreCommentsArea } from '@features/comments/services/comments';
 import { CoreCourseSummary, CoreCourseModuleSummary } from '@features/course/services/course';
-import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { CoreUserSummary } from '@features/user/services/user';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
@@ -495,7 +494,7 @@ export class AddonCompetencyProvider {
      * @param planId ID of the plan.
      * @param competencyId ID of the competency.
      * @param planStatus Current plan Status to decide what action should be logged.
-     * @param name Name of the competency.
+     * @param name Deprecated, not used anymore.
      * @param userId User ID. If not defined, current user.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the WS call is successful.
@@ -525,12 +524,6 @@ export class AddonCompetencyProvider {
             ? 'core_competency_user_competency_plan_viewed'
             : 'core_competency_user_competency_viewed_in_plan';
 
-        CorePushNotifications.logViewEvent(competencyId, name, 'competency', wsName, {
-            planid: planId,
-            planstatus: planStatus,
-            userid: userId,
-        }, siteId);
-
         await site.write(wsName, params, preSets);
     }
 
@@ -539,7 +532,7 @@ export class AddonCompetencyProvider {
      *
      * @param courseId ID of the course.
      * @param competencyId ID of the competency.
-     * @param name Name of the competency.
+     * @param name Deprecated, not used anymore.
      * @param userId User ID. If not defined, current user.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the WS call is successful.
@@ -564,14 +557,7 @@ export class AddonCompetencyProvider {
             typeExpected: 'boolean',
         };
 
-        const wsName = 'core_competency_user_competency_viewed_in_course';
-
-        CorePushNotifications.logViewEvent(competencyId, name, 'competency', 'wsName', {
-            courseid: courseId,
-            userid: userId,
-        }, siteId);
-
-        await site.write(wsName, params, preSets);
+        await site.write('core_competency_user_competency_viewed_in_course', params, preSets);
     }
 
     /**
@@ -593,10 +579,7 @@ export class AddonCompetencyProvider {
             typeExpected: 'boolean',
         };
 
-        const wsName = 'core_competency_competency_viewed';
-        CorePushNotifications.logViewEvent(competencyId, name, 'competency', wsName, {}, siteId);
-
-        await site.write(wsName, params, preSets);
+        await site.write('core_competency_competency_viewed', params, preSets);
     }
 
 }

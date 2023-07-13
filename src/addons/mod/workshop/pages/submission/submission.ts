@@ -47,6 +47,8 @@ import {
 } from '../../services/workshop-helper';
 import { AddonModWorkshopOffline } from '../../services/workshop-offline';
 import { AddonModWorkshopSyncProvider, AddonModWorkshopAutoSyncData } from '../../services/workshop-sync';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreTime } from '@singletons/time';
 
 /**
  * Page that displays a workshop submission.
@@ -102,7 +104,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
     protected obsAssessmentSaved: CoreEventObserver;
     protected syncObserver: CoreEventObserver;
     protected isDestroyed = false;
-    protected fetchSuccess = false;
+    protected logView: () => void;
 
     constructor(
         protected fb: FormBuilder,
@@ -125,6 +127,8 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
             // Update just when all database is synced.
             this.eventReceived(data);
         }, this.siteId);
+
+        this.logView = CoreTime.once(() => this.performLogView());
     }
 
     /**
@@ -599,19 +603,21 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
     /**
      * Log submission viewed.
      */
-    protected async logView(): Promise<void> {
-        if (this.fetchSuccess) {
-            return; // Already done.
-        }
-
-        this.fetchSuccess = true;
-
+    protected async performLogView(): Promise<void> {
         try {
-            await AddonModWorkshop.logViewSubmission(this.submissionId, this.workshopId, this.workshop.name);
+            await AddonModWorkshop.logViewSubmission(this.submissionId, this.workshopId);
             CoreCourse.checkModuleCompletion(this.courseId, this.module.completiondata);
         } catch {
             // Ignore errors.
         }
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM,
+            ws: 'mod_workshop_view_submission',
+            name: this.workshop.name,
+            data: { id: this.workshop.id, submissionid: this.submissionId, category: 'workshop' },
+            url: `/mod/workshop/submission.php?cmid=${this.module.id}&id=${this.submissionId}`,
+        });
     }
 
     /**

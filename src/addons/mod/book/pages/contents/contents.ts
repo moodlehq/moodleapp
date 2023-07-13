@@ -40,6 +40,8 @@ import {
     AddonModBookProvider,
     AddonModBookTocChapter,
 } from '../../services/book';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreUrlUtils } from '@services/utils/url';
 
 /**
  * Page that displays a book contents.
@@ -286,7 +288,15 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
         }
 
         // Chapter loaded, log view.
-        await CoreUtils.ignoreErrors(AddonModBook.logView(this.module.instance, chapterId, this.module.name));
+        await CoreUtils.ignoreErrors(AddonModBook.logView(this.module.instance, chapterId));
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM,
+            ws: 'mod_book_view_book',
+            name: this.module.name,
+            data: { id: this.module.instance, category: 'book', chapterid: chapterId },
+            url: CoreUrlUtils.addParamsToUrl(`/mod/book/view.php?id=${this.module.id}`, { chapterid: chapterId }),
+        });
 
         const currentChapterIndex = this.chapters.findIndex((chapter) => chapter.id == chapterId);
         const isLastChapter = currentChapterIndex < 0 || this.chapters[currentChapterIndex + 1] === undefined;

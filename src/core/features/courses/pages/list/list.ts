@@ -20,6 +20,9 @@ import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreCourseBasicSearchedData, CoreCourses, CoreCoursesProvider } from '../../services/courses';
+import { CoreTime } from '@singletons/time';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { Translate } from '@singletons';
 
 type CoreCoursesListMode = 'search' | 'all' | 'my';
 
@@ -61,6 +64,8 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
     protected downloadEnabledObserver: CoreEventObserver;
     protected courseIds = '';
     protected isDestroyed = false;
+    protected logView: () => void;
+    protected logSearch?: () => void;
 
     constructor() {
         this.currentSiteId = CoreSites.getRequiredCurrentSite().getId();
@@ -95,6 +100,26 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
 
         this.downloadEnabledObserver = CoreEvents.on(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, (data) => {
             this.downloadEnabled = (this.downloadCourseEnabled || this.downloadCoursesEnabled) && data.enabled;
+        });
+
+        this.logView = CoreTime.once(async () => {
+            if (this.showOnlyEnrolled) {
+                CoreAnalytics.logEvent({
+                    type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
+                    ws: 'core_enrol_get_users_courses',
+                    name: Translate.instant('core.courses.mycourses'),
+                    data: { category: 'course' },
+                    url: '/my/courses.php',
+                });
+            } else {
+                CoreAnalytics.logEvent({
+                    type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
+                    ws: 'core_course_get_courses_by_field',
+                    name: Translate.instant('core.courses.availablecourses'),
+                    data: { category: 'course' },
+                    url: '/course/index.php',
+                });
+            }
         });
     }
 
@@ -135,7 +160,7 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
         try {
             if (this.searchMode) {
                 if (this.searchText) {
-                    await this.search(this.searchText);
+                    await this.searchCourses();
                 }
             } else {
                 await this.loadCourses(true);
@@ -176,6 +201,8 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
 
             this.coursesLoaded = this.courses.length;
             this.canLoadMore = this.loadedCourses.length > this.courses.length;
+
+            this.logView();
         } catch (error) {
             this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
             !this.isDestroyed && CoreDomUtils.showErrorModalDefault(error, 'core.courses.errorloadcourses', true);
@@ -221,6 +248,7 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
         this.courses = [];
         this.searchPage = 0;
         this.searchTotal = 0;
+        this.logSearch = CoreTime.once(() => this.performLogSearch());
 
         const modal = await CoreDomUtils.showModalLoading('core.searching', true);
         await this.searchCourses().finally(() => {
@@ -240,6 +268,23 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
 
         this.loaded = false;
         this.fetchCourses();
+    }
+
+    /**
+     * Log search.
+     */
+    protected async performLogSearch(): Promise<void> {
+        if (!this.searchMode) {
+            return;
+        }
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
+            ws: 'core_course_search_courses',
+            name: Translate.instant('core.courses.availablecourses'),
+            data: { search: this.searchText, category: 'course' },
+            url: `/course/search.php?search=${this.searchText}`,
+        });
     }
 
     /**
@@ -279,6 +324,8 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
 
             this.searchPage++;
             this.canLoadMore = this.courses.length < this.searchTotal;
+
+            this.logSearch?.();
         } catch (error) {
             this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
             !this.isDestroyed && CoreDomUtils.showErrorModalDefault(error, 'core.courses.errorsearching', true);

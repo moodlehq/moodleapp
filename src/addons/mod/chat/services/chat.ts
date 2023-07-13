@@ -87,23 +87,19 @@ export class AddonModChatProvider {
      * Report a chat as being viewed.
      *
      * @param id Chat instance ID.
-     * @param name Name of the chat.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the WS call is successful.
      */
-    async logView(id: number, name?: string, siteId?: string): Promise<void> {
+    async logView(id: number, siteId?: string): Promise<void> {
         const params: AddonModChatViewChatWSParams = {
             chatid: id,
         };
 
-        await CoreCourseLogHelper.logSingle(
+        await CoreCourseLogHelper.log(
             'mod_chat_view_chat',
             params,
             AddonModChatProvider.COMPONENT,
             id,
-            name,
-            'chat',
-            {},
             siteId,
         );
     }

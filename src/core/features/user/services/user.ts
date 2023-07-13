@@ -26,7 +26,6 @@ import { CoreEvents, CoreEventSiteData, CoreEventUserDeletedData, CoreEventUserS
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalWarning } from '@services/ws';
 import { CoreError } from '@classes/errors/error';
 import { USERS_TABLE_NAME, CoreUserDBRecord } from './database/user';
-import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { CoreUserHelper } from './user-helper';
 import { CoreUrl } from '@singletons/url';
 
@@ -569,24 +568,20 @@ export class CoreUserProvider {
      *
      * @param userId User ID.
      * @param courseId Course ID.
-     * @param name Name of the user.
      * @returns Promise resolved when done.
      */
-    async logView(userId: number, courseId?: number, name?: string, siteId?: string): Promise<CoreStatusWithWarningsWSResponse> {
+    async logView(userId: number, courseId?: number, siteId?: string): Promise<CoreStatusWithWarningsWSResponse> {
         const site = await CoreSites.getSite(siteId);
 
         const params: CoreUserViewUserProfileWSParams = {
             userid: userId,
         };
-        const wsName = 'core_user_view_user_profile';
 
         if (courseId) {
             params.courseid = courseId;
         }
 
-        CorePushNotifications.logViewEvent(userId, name, 'user', wsName, { courseid: courseId });
-
-        return site.write(wsName, params);
+        return site.write('core_user_view_user_profile', params);
     }
 
     /**
@@ -601,8 +596,6 @@ export class CoreUserProvider {
         const params: CoreUserViewUserListWSParams = {
             courseid: courseId,
         };
-
-        CorePushNotifications.logViewListEvent('user', 'core_user_view_user_list', params);
 
         return site.write('core_user_view_user_list', params);
     }

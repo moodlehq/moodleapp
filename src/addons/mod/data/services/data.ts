@@ -955,23 +955,19 @@ export class AddonModDataProvider {
      * Report the database as being viewed.
      *
      * @param id Module ID.
-     * @param name Name of the data.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the WS call is successful.
      */
-    async logView(id: number, name?: string, siteId?: string): Promise<void> {
+    async logView(id: number, siteId?: string): Promise<void> {
         const params: AddonModDataViewDatabaseWSParams = {
             databaseid: id,
         };
 
-        await CoreCourseLogHelper.logSingle(
+        await CoreCourseLogHelper.log(
             'mod_data_view_database',
             params,
             AddonModDataProvider.COMPONENT,
             id,
-            name,
-            'data',
-            {},
             siteId,
         );
     }

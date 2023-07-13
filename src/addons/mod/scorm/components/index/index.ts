@@ -57,7 +57,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
     @Input() autoPlayData?: AddonModScormAutoPlayData; // Data to use to play the SCORM automatically.
 
     component = AddonModScormProvider.COMPONENT;
-    moduleName = 'scorm';
+    pluginName = 'scorm';
 
     scorm?: AddonModScormScorm; // The SCORM object.
     currentOrganization: Partial<AddonModScormOrganization> & { identifier: string} = {
@@ -361,7 +361,9 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
             return; // Shouldn't happen.
         }
 
-        await AddonModScorm.logView(this.scorm.id, this.scorm.name);
+        await CoreUtils.ignoreErrors(AddonModScorm.logView(this.scorm.id));
+
+        this.analyticsLogEvent('mod_scorm_view_scorm');
     }
 
     /**

@@ -38,7 +38,6 @@ import {
 } from '../../courses/services/courses';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreWSError } from '@classes/errors/wserror';
-import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { CoreCourseHelper, CoreCourseModuleData, CoreCourseModuleCompletionData } from './course-helper';
 import { CoreCourseFormatDelegate } from './format-delegate';
 import { CoreCronDelegate } from '@services/cron';
@@ -1191,22 +1190,19 @@ export class CoreCourseProvider {
      * @param courseId Course ID.
      * @param sectionNumber Section number.
      * @param siteId Site ID. If not defined, current site.
-     * @param name Name of the course.
      * @returns Promise resolved when the WS call is successful.
      */
-    async logView(courseId: number, sectionNumber?: number, siteId?: string, name?: string): Promise<void> {
+    async logView(courseId: number, sectionNumber?: number, siteId?: string): Promise<void> {
         const params: CoreCourseViewCourseWSParams = {
             courseid: courseId,
         };
-        const wsName = 'core_course_view_course';
 
         if (sectionNumber !== undefined) {
             params.sectionnumber = sectionNumber;
         }
 
         const site = await CoreSites.getSite(siteId);
-        CorePushNotifications.logViewEvent(courseId, name, 'course', wsName, { sectionnumber: sectionNumber }, siteId);
-        const response: CoreStatusWithWarningsWSResponse = await site.write(wsName, params);
+        const response: CoreStatusWithWarningsWSResponse = await site.write('core_course_view_course', params);
 
         if (!response.status) {
             throw Error('WS core_course_view_course failed.');

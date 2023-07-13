@@ -30,6 +30,7 @@ import { CoreForms } from '@singletons/form';
 import { AddonModWiki, AddonModWikiProvider } from '../../services/wiki';
 import { AddonModWikiOffline } from '../../services/wiki-offline';
 import { AddonModWikiSync } from '../../services/wiki-sync';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 /**
  * Page that allows adding or editing a wiki page.
@@ -64,6 +65,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
     protected editOffline = false; // Whether the user is editing an offline page.
     protected subwikiFiles: CoreWSFile[] = []; // List of files of the subwiki.
     protected originalContent?: string; // The original page content.
+    protected originalTitle?: string; // The original page title.
     protected version?: number; // Page version.
     protected renewLockInterval?: number; // An interval to renew the lock every certain time.
     protected forceLeave = false; // To allow leaving the page without checking for changes.
@@ -89,17 +91,17 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
         this.groupId = CoreNavigator.getRouteNumberParam('groupId');
         this.userId = CoreNavigator.getRouteNumberParam('userId');
 
-        let pageTitle = CoreNavigator.getRouteParam<string>('pageTitle');
-        pageTitle = pageTitle ? CoreTextUtils.cleanTags(pageTitle.replace(/\+/g, ' '), { singleLine: true }) : '';
+        const pageTitle = CoreNavigator.getRouteParam<string>('pageTitle');
+        this.originalTitle = pageTitle ? CoreTextUtils.cleanTags(pageTitle.replace(/\+/g, ' '), { singleLine: true }) : '';
 
-        this.canEditTitle = !pageTitle;
-        this.title = pageTitle ?
-            Translate.instant('addon.mod_wiki.editingpage', { $a: pageTitle }) :
+        this.canEditTitle = !this.originalTitle;
+        this.title = this.originalTitle ?
+            Translate.instant('addon.mod_wiki.editingpage', { $a: this.originalTitle }) :
             Translate.instant('addon.mod_wiki.newpagehdr');
         this.blockId = AddonModWikiSync.getSubwikiBlockId(this.subwikiId, this.wikiId, this.userId, this.groupId);
 
         // Create the form group and its controls.
-        this.pageForm.addControl('title', this.formBuilder.control(pageTitle));
+        this.pageForm.addControl('title', this.formBuilder.control(this.originalTitle));
         this.pageForm.addControl('text', this.contentControl);
 
         // Block the wiki so it cannot be synced.
@@ -111,8 +113,8 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
             if (this.section) {
                 this.editorExtraParams.section = this.section;
             }
-        } else if (pageTitle) {
-            this.editorExtraParams.pagetitle = pageTitle;
+        } else if (this.originalTitle) {
+            this.editorExtraParams.pagetitle = this.originalTitle;
         }
 
         try {
@@ -126,6 +128,8 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
                     this.blockId = newBlockId;
                     CoreSync.blockOperation(this.component, this.blockId);
                 }
+
+                this.logView();
             }
         } finally {
             this.loaded = true;
@@ -158,6 +162,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
                 this.wikiId = pageContents.wikiid;
                 this.subwikiId = pageContents.subwikiid;
                 this.title = Translate.instant('addon.mod_wiki.editingpage', { $a: pageContents.title });
+                this.originalTitle = pageContents.title;
                 this.groupId = pageContents.groupid;
                 this.userId = pageContents.userid;
                 canEdit = pageContents.caneditpage;
@@ -464,6 +469,34 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
         if (response.version && this.version != response.version) {
             this.wrongVersionLock = true;
         }
+    }
+
+    /**
+     * Log view.
+     */
+    protected logView(): void {
+        let url: string;
+        if (this.pageId) {
+            url = `/mod/wiki/edit.php?pageid=${this.pageId}` +
+                (this.section ? `&section=${this.section.replace(/ /g, '+')}` : '');
+        } else if (this.originalTitle) {
+            const title = this.originalTitle.replace(/ /g, '+');
+            if (this.subwikiId) {
+                url = `/mod/wiki/create.php?swid=${this.subwikiId}&title=${title}&action=new`;
+            } else {
+                url = `/mod/wiki/create.php?wid=${this.wikiId}&group=${this.groupId ?? 0}&uid=${this.userId ?? 0}&title=${title}`;
+            }
+        } else {
+            url = `/mod/wiki/create.php?action=new&wid=${this.wikiId}&swid=${this.subwikiId}`;
+        }
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM,
+            ws: this.pageId ? 'mod_wiki_edit_page' : 'mod_wiki_new_page',
+            name: this.originalTitle ?? Translate.instant('addon.mod_wiki.newpagehdr'),
+            data: { id: this.wikiId, subwiki: this.subwikiId, category: 'wiki' },
+            url,
+        });
     }
 
     /**

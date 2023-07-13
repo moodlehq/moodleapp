@@ -45,6 +45,8 @@ import { AddonModDataModuleHandlerService } from '../../services/handlers/module
 import { AddonModDataPrefetchHandler } from '../../services/handlers/prefetch';
 import { AddonModDataComponentsCompileModule } from '../components-compile.module';
 import { AddonModDataSearchComponent } from '../search/search';
+import { CoreUrlUtils } from '@services/utils/url';
+import { CoreTime } from '@singletons/time';
 
 const contentToken = '<!-- CORE-DATABASE-CONTENT-GOES-HERE -->';
 
@@ -59,7 +61,7 @@ const contentToken = '<!-- CORE-DATABASE-CONTENT-GOES-HERE -->';
 export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 
     component = AddonModDataProvider.COMPONENT;
-    moduleName = 'data';
+    pluginName = 'data';
 
     access?: AddonModDataGetDataAccessInformationWSResponse;
     database?: AddonModDataData;
@@ -114,6 +116,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     protected entryChangedObserver?: CoreEventObserver;
     protected ratingOfflineObserver?: CoreEventObserver;
     protected ratingSyncObserver?: CoreEventObserver;
+    protected logSearch?: () => void;
 
     constructor(
         protected content?: IonContent,
@@ -404,6 +407,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         // Add data to search object.
         if (modalData) {
             this.search = modalData;
+            this.logSearch = CoreTime.once(() => this.performLogSearch());
             this.searchEntries(0);
         }
     }
@@ -420,8 +424,8 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
         try {
             await this.fetchEntriesData();
-            // Log activity view for coherence with Moodle web.
-            await this.logActivity();
+
+            this.logSearch?.();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
         } finally {
@@ -470,9 +474,6 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
         try {
             await this.fetchEntriesData();
-
-            // Log activity view for coherence with Moodle web.
-            return this.logActivity();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
         }
@@ -535,7 +536,34 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
             return;
         }
 
-        await AddonModData.logView(this.database.id, this.database.name);
+        await AddonModData.logView(this.database.id);
+
+        this.analyticsLogEvent('mod_data_view_database');
+    }
+
+    /**
+     * Log search.
+     */
+    protected async performLogSearch(): Promise<void> {
+        if (!this.database || !this.search.searching) {
+            return;
+        }
+
+        const params: Record<string, unknown> = {
+            perpage: AddonModDataProvider.PER_PAGE,
+            search: !this.search.searchingAdvanced ? this.search.text : '',
+            sort: this.search.sortBy,
+            order: this.search.sortDirection,
+            advanced: this.search.searchingAdvanced ? 1 : 0,
+            filter: 1,
+        };
+
+        // @todo: Add advanced search parameters. Leave them empty if not using advanced search.
+
+        this.analyticsLogEvent('mod_data_search_entries', {
+            data: params,
+            url: CoreUrlUtils.addParamsToUrl(`/mod/data/view.php?d=${this.database.id}`, params),
+        });
     }
 
     /**

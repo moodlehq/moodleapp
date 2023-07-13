@@ -39,6 +39,8 @@ import {
 import { AddonModWorkshopHelper, AddonModWorkshopSubmissionAssessmentWithFormData } from '../../services/workshop-helper';
 import { AddonModWorkshopOffline } from '../../services/workshop-offline';
 import { AddonModWorkshopSyncProvider } from '../../services/workshop-sync';
+import { CoreTime } from '@singletons/time';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 /**
  * Page that displays a workshop assessment.
@@ -89,6 +91,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy, CanLea
     protected siteId: string;
     protected currentUserId: number;
     protected forceLeave = false;
+    protected logView: () => void;
 
     constructor(
         protected fb: FormBuilder,
@@ -111,6 +114,20 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy, CanLea
                 this.refreshAllData();
             }
         }, this.siteId);
+
+        this.logView = CoreTime.once(async () => {
+            if (!this.workshop) {
+                return;
+            }
+
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM,
+                ws: 'mod_workshop_get_assessment',
+                name: this.workshop.name,
+                data: { id: this.workshop.id, assessmentid: this.assessment.id, category: 'workshop' },
+                url: `/mod/workshop/assessment.php?asid=${this.assessment.id}`,
+            });
+        });
     }
 
     /**

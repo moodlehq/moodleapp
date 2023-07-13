@@ -50,6 +50,7 @@ import { CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/s
 import { CoreCourseCourseIndexTourComponent } from '../course-index-tour/course-index-tour';
 import { CoreDom } from '@singletons/dom';
 import { CoreUserTourDirectiveOptions } from '@directives/user-tour';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
@@ -518,9 +519,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
                 this.content.scrollToTop(0);
             }
 
-            CoreUtils.ignoreErrors(
-                CoreCourse.logView(this.course.id, newSection.section, undefined, this.course.fullname),
-            );
+            this.logView(newSection.section, !previousValue);
         }
         this.changeDetectorRef.markForCheck();
     }
@@ -653,6 +652,37 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      */
     canViewSection(section: CoreCourseSection): boolean {
         return CoreCourseHelper.canUserViewSection(section) && !CoreCourseHelper.isSectionStealth(section);
+    }
+
+    /**
+     * Log view.
+     *
+     * @param sectionNumber Section loaded (if any).
+     * @param firstLoad Whether it's the first load when opening the course.
+     */
+    async logView(sectionNumber?: number, firstLoad = false): Promise<void> {
+        await CoreUtils.ignoreErrors(
+            CoreCourse.logView(this.course.id, sectionNumber),
+        );
+
+        let extraParams = sectionNumber ? `&section=${sectionNumber}` : '';
+        if (firstLoad && sectionNumber) {
+            // If course is configured to show all sections in one page, don't include section in URL in first load.
+            const courseDisplay = 'courseformatoptions' in this.course &&
+                this.course.courseformatoptions?.find(option => option.name === 'coursedisplay');
+
+            if (!courseDisplay || Number(courseDisplay.value) !== 0) {
+                extraParams = '';
+            }
+        }
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM,
+            ws: 'core_course_view_course',
+            name: this.course.fullname,
+            data: { id: this.course.id, sectionnumber: sectionNumber, category: 'course' },
+            url: `/course/view.php?id=${this.course.id}${extraParams}`,
+        });
     }
 
 }

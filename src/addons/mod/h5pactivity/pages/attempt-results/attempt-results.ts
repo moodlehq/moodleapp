@@ -25,6 +25,8 @@ import {
     AddonModH5PActivityData,
     AddonModH5PActivityAttemptResults,
 } from '../../services/h5pactivity';
+import { CoreTime } from '@singletons/time';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 /**
  * Page that displays results of an attempt.
@@ -45,7 +47,28 @@ export class AddonModH5PActivityAttemptResultsPage implements OnInit {
     cmId!: number;
 
     protected attemptId!: number;
-    protected fetchSuccess = false;
+    protected logView: () => void;
+
+    constructor() {
+        this.logView = CoreTime.once(async () => {
+            if (!this.h5pActivity) {
+                return;
+            }
+
+            await CoreUtils.ignoreErrors(AddonModH5PActivity.logViewReport(
+                this.h5pActivity.id,
+                { attemptId: this.attemptId },
+            ));
+
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM,
+                ws: 'mod_h5pactivity_log_report_viewed',
+                name: this.h5pActivity.name,
+                data: { id: this.h5pActivity.id, attemptid: this.attemptId, category: 'h5pactivity' },
+                url: `/mod/h5pactivity/report.php?a=${this.h5pActivity.id}&attemptid=${this.attemptId}`,
+            });
+        });
+    }
 
     /**
      * @inheritdoc
@@ -92,14 +115,7 @@ export class AddonModH5PActivityAttemptResultsPage implements OnInit {
 
             await this.fetchUserProfile();
 
-            if (!this.fetchSuccess) {
-                this.fetchSuccess = true;
-                CoreUtils.ignoreErrors(AddonModH5PActivity.logViewReport(
-                    this.h5pActivity.id,
-                    this.h5pActivity.name,
-                    { attemptId: this.attemptId },
-                ));
-            }
+            this.logView();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error loading attempt.');
         } finally {

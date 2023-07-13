@@ -22,6 +22,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModLti, AddonModLtiLti } from './lti';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 /**
  * Service that provides some helper functions for LTI.
@@ -86,7 +87,7 @@ export class AddonModLtiHelperProvider {
             const launchData = await AddonModLti.getLtiLaunchData(lti.id);
 
             // "View" LTI without blocking the UI.
-            this.logViewAndCheckCompletion(courseId, module, lti.id, lti.name, siteId);
+            this.logViewAndCheckCompletion(courseId, module, lti.id, siteId);
 
             // Launch LTI.
             return AddonModLti.launch(launchData.endpoint, launchData.parameters);
@@ -111,16 +112,23 @@ export class AddonModLtiHelperProvider {
         courseId: number,
         module: CoreCourseModuleData,
         ltiId: number,
-        name?: string,
         siteId?: string,
     ): Promise<void> {
         try {
-            await AddonModLti.logView(ltiId, name, siteId);
+            await AddonModLti.logView(ltiId,siteId);
 
             CoreCourse.checkModuleCompletion(courseId, module.completiondata);
         } catch {
             // Ignore errors.
         }
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM,
+            ws: 'mod_lti_view_lti',
+            name: module.name,
+            data: { id: module.instance, category: 'lti' },
+            url: `/mod/lti/view.php?id=${module.id}`,
+        });
     }
 
 }

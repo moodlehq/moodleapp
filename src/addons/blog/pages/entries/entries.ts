@@ -20,11 +20,14 @@ import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-lin
 import { CoreTag } from '@features/tag/services/tag';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { IonRefresher } from '@ionic/angular';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
+import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
+import { CoreTime } from '@singletons/time';
 
 /**
  * Page that displays the list of blog entries.
@@ -43,7 +46,7 @@ export class AddonBlogEntriesPage implements OnInit {
     protected canLoadMoreEntries = false;
     protected canLoadMoreUserEntries = true;
     protected siteHomeId: number;
-    protected fetchSuccess = false;
+    protected logView: () => void;
 
     loaded = false;
     canLoadMore = false;
@@ -61,6 +64,25 @@ export class AddonBlogEntriesPage implements OnInit {
     constructor() {
         this.currentUserId = CoreSites.getCurrentSiteUserId();
         this.siteHomeId = CoreSites.getCurrentSiteHomeId();
+
+        this.logView = CoreTime.once(async () => {
+            await CoreUtils.ignoreErrors(AddonBlog.logView(this.filter));
+
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
+                ws: 'core_blog_view_entries',
+                name: this.title,
+                data: {
+                    ...this.filter,
+                    category: 'blog',
+                },
+                url: CoreUrlUtils.addParamsToUrl('/blog/index.php', {
+                    ...this.filter,
+                    modid: this.filter.cmid,
+                    cmid: undefined,
+                }),
+            });
+        });
     }
 
     /**
@@ -200,10 +222,7 @@ export class AddonBlogEntriesPage implements OnInit {
 
             await Promise.all(promises);
 
-            if (!this.fetchSuccess) {
-                this.fetchSuccess = true;
-                CoreUtils.ignoreErrors(AddonBlog.logView(this.filter));
-            }
+            this.logView();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.blog.errorloadentries', true);
             this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.

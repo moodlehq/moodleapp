@@ -21,12 +21,16 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CoreAnimations } from '@components/animations';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { IonContent, IonRefresher } from '@ionic/angular';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils, ToastDuration } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
+import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
+import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreTime } from '@singletons/time';
 
 /**
  * Page that displays a list of notes.
@@ -54,9 +58,11 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
     currentUserId!: number;
 
     protected syncObserver!: CoreEventObserver;
-    protected logAfterFetch = true;
+    protected logView: () => void;
 
     constructor() {
+        this.logView = CoreTime.once(() => this.performLogView());
+
         try {
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
             this.userId = CoreNavigator.getRouteNumberParam('userId');
@@ -128,10 +134,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
                 this.notes = await AddonNotes.getNotesUserData(notesList);
             }
 
-            if (this.logAfterFetch) {
-                this.logAfterFetch = false;
-                CoreUtils.ignoreErrors(AddonNotes.logView(this.courseId, this.userId));
-            }
+            this.logView();
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
         } finally {
@@ -176,7 +179,6 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
         this.notesLoaded = false;
         this.refreshIcon = CoreConstants.ICON_LOADING;
         this.syncIcon = CoreConstants.ICON_LOADING;
-        this.logAfterFetch = true;
 
         await this.fetchNotes(true);
     }
@@ -189,6 +191,8 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
     async addNote(e: Event): Promise<void> {
         e.preventDefault();
         e.stopPropagation();
+
+        this.logViewAdd();
 
         const modalData = await CoreDomUtils.openModal<AddonNotesAddModalReturn>({
             component: AddonNotesAddComponent,
@@ -225,6 +229,8 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
         e.stopPropagation();
 
         try {
+            this.logViewDelete(note);
+
             await CoreDomUtils.showDeleteConfirm('addon.notes.deleteconfirm');
             try {
                 await AddonNotes.deleteNote(note, this.courseId);
@@ -292,6 +298,58 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
         if (message) {
             CoreDomUtils.showAlert(undefined, message);
         }
+    }
+
+    /**
+     * Log view.
+     */
+    protected async performLogView(): Promise<void> {
+        await CoreUtils.ignoreErrors(AddonNotes.logView(this.courseId, this.userId));
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
+            ws: 'core_notes_view_notes',
+            name: Translate.instant('addon.notes.notes'),
+            data: { courseid: this.courseId, userid: this.userId || 0, category: 'notes' },
+            url: CoreUrlUtils.addParamsToUrl('/notes/index.php', {
+                user: this.userId,
+                course: this.courseId !== CoreSites.getCurrentSiteHomeId() ? this.courseId : undefined,
+            }),
+        });
+    }
+
+    /**
+     * Log view.
+     */
+    protected async logViewAdd(): Promise<void> {
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM,
+            ws: 'core_notes_create_notes',
+            name: Translate.instant('addon.notes.notes'),
+            data: { courseid: this.courseId, userid: this.userId || 0, category: 'notes' },
+            url: CoreUrlUtils.addParamsToUrl('/notes/edit.php', {
+                courseid: this.courseId,
+                userid: this.userId,
+                publishstate: this.type === 'personal' ? 'draft' : (this.type === 'course' ? 'public' : 'site'),
+            }),
+        });
+    }
+
+    /**
+     * Log view.
+     */
+    protected async logViewDelete(note: AddonNotesNoteFormatted): Promise<void> {
+        if (!note.id) {
+            return;
+        }
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM,
+            ws: 'core_notes_delete_notes',
+            name: Translate.instant('addon.notes.notes'),
+            data: { id: note.id, category: 'notes' },
+            url: `/notes/delete.php?id=${note.id}`,
+        });
     }
 
     /**

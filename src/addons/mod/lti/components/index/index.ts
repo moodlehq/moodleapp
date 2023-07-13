@@ -30,7 +30,7 @@ import { AddonModLtiHelper } from '../../services/lti-helper';
 export class AddonModLtiIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {
 
     component = AddonModLtiProvider.COMPONENT;
-    moduleName = 'lti';
+    pluginName = 'lti';
     displayDescription = false;
 
     lti?: AddonModLtiLti; // The LTI object.

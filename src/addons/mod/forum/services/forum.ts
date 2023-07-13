@@ -996,23 +996,19 @@ export class AddonModForumProvider {
      * Report a forum as being viewed.
      *
      * @param id Module ID.
-     * @param name Name of the forum.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the WS call is successful.
      */
-    logView(id: number, name?: string, siteId?: string): Promise<void> {
+    logView(id: number, siteId?: string): Promise<void> {
         const params = {
             forumid: id,
         };
 
-        return CoreCourseLogHelper.logSingle(
+        return CoreCourseLogHelper.log(
             'mod_forum_view_forum',
             params,
             AddonModForumProvider.COMPONENT,
             id,
-            name,
-            'forum',
-            {},
             siteId,
         );
     }
@@ -1022,23 +1018,19 @@ export class AddonModForumProvider {
      *
      * @param id Discussion ID.
      * @param forumId Forum ID.
-     * @param name Name of the forum.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the WS call is successful.
      */
-    logDiscussionView(id: number, forumId: number, name?: string, siteId?: string): Promise<void> {
+    logDiscussionView(id: number, forumId: number, siteId?: string): Promise<void> {
         const params = {
             discussionid: id,
         };
 
-        return CoreCourseLogHelper.logSingle(
+        return CoreCourseLogHelper.log(
             'mod_forum_view_forum_discussion',
             params,
             AddonModForumProvider.COMPONENT,
             forumId,
-            name,
-            'forum',
-            params,
             siteId,
         );
     }

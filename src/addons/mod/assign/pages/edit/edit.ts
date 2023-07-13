@@ -39,6 +39,7 @@ import { AddonModAssignOffline } from '../../services/assign-offline';
 import { AddonModAssignSync } from '../../services/assign-sync';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalFile } from '@services/ws';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 /**
  * Page that allows adding or editing an assigment submission.
@@ -226,6 +227,17 @@ export class AddonModAssignEditPage implements OnInit, OnDestroy, CanLeave {
                 // No offline data found.
                 this.hasOffline = false;
             }
+
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM,
+                ws: 'mod_assign_save_submission',
+                name: Translate.instant('addon.mod_assign.subpagetitle', {
+                    contextname: this.assign.name,
+                    subpage: Translate.instant('addon.mod_assign.editsubmission'),
+                }),
+                data: { id: this.assign.id, category: 'assign' },
+                url: `/mod/assign/view.php?action=editsubmission&id=${this.moduleId}`,
+            });
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error getting assigment data.');
 

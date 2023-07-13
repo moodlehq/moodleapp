@@ -25,6 +25,9 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { AddonModAssignListFilterName, AddonModAssignSubmissionsSource } from '../../classes/submissions-source';
 import { AddonModAssignSubmissionComponent } from '../../components/submission/submission';
 import { AddonModAssign, AddonModAssignAssign } from '../../services/assign';
+import { CoreTime } from '@singletons/time';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { Translate } from '@singletons';
 
 /**
  * Page that displays a submission.
@@ -49,8 +52,29 @@ export class AddonModAssignSubmissionReviewPage implements OnInit, OnDestroy, Ca
     protected assign?: AddonModAssignAssign; // The assignment the submission belongs to.
     protected blindMarking = false; // Whether it uses blind marking.
     protected forceLeave = false; // To allow leaving the page without checking for changes.
+    protected logView: () => void;
 
-    constructor(protected route: ActivatedRoute) { }
+    constructor(protected route: ActivatedRoute) {
+        this.logView = CoreTime.once(() => {
+            if (!this.assign) {
+                return;
+            }
+
+            const id = this.blindMarking ? this.blindId : this.submitId;
+            const paramName = this.blindMarking ? 'blindid' : 'userid';
+
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM,
+                ws: 'mod_assign_get_submission_status',
+                name: Translate.instant('addon.mod_assign.subpagetitle', {
+                    contextname: this.assign.name,
+                    subpage: Translate.instant('addon.mod_assign.grading'),
+                }),
+                data: { id, assignid: this.assign.id, category: 'assign' },
+                url: `/mod/assign/view.php?id=${this.assign.cmid}&action=grader&${paramName}=${id}`,
+            });
+        });
+    }
 
     /**
      * @inheritdoc
@@ -84,6 +108,7 @@ export class AddonModAssignSubmissionReviewPage implements OnInit, OnDestroy, Ca
             }
 
             this.fetchSubmission().finally(() => {
+                this.logView();
                 this.loaded = true;
             });
         });

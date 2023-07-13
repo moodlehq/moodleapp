@@ -40,6 +40,7 @@ import {
 } from '../../services/workshop';
 import { AddonModWorkshopHelper, AddonModWorkshopSubmissionDataWithOfflineData } from '../../services/workshop-helper';
 import { AddonModWorkshopOffline } from '../../services/workshop-offline';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 /**
  * Page that displays the workshop edit submission.
@@ -224,6 +225,8 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
             }
 
             this.loaded = true;
+
+            this.logView();
         } catch (error) {
             this.loaded = false;
 
@@ -231,6 +234,23 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
 
             this.forceLeavePage();
         }
+    }
+
+    /**
+     * Log view.
+     */
+    protected logView(): void {
+        if (!this.workshop) {
+            return;
+        }
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM,
+            ws: this.editing ? 'mod_workshop_update_submission' : 'mod_workshop_add_submission',
+            name: this.workshop.name,
+            data: { id: this.workshop.id, submissionid: this.submissionId, category: 'workshop' },
+            url: `/mod/workshop/submission.php?cmid=${this.module.id}&id=${this.submissionId}&edit=on`,
+        });
     }
 
     /**

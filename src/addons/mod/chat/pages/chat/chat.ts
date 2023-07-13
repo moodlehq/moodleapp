@@ -28,6 +28,8 @@ import { Subscription } from 'rxjs';
 import { AddonModChatUsersModalComponent, AddonModChatUsersModalResult } from '../../components/users-modal/users-modal';
 import { AddonModChat, AddonModChatProvider, AddonModChatUser } from '../../services/chat';
 import { AddonModChatFormattedMessage, AddonModChatHelper } from '../../services/chat-helper';
+import { CoreTime } from '@singletons/time';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 /**
  * Page that displays a chat session.
@@ -61,6 +63,7 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
     protected viewDestroyed = false;
     protected pollingRunning = false;
     protected users: AddonModChatUser[] = [];
+    protected logView: () => void;
 
     constructor() {
         this.currentUserId = CoreSites.getCurrentSiteUserId();
@@ -69,6 +72,16 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             NgZone.run(() => {
                 this.isOnline = CoreNetwork.isOnline();
+            });
+        });
+
+        this.logView = CoreTime.once(() => {
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
+                ws: 'mod_chat_get_chat_latest_messages',
+                name: this.title,
+                data: { chatid: this.chatId, category: 'chat' },
+                url: `/mod/chat/gui_ajax/index.php?id=${this.chatId}`,
             });
         });
     }
@@ -88,6 +101,7 @@ export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
             await this.fetchMessages();
 
             this.startPolling();
+            this.logView();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.mod_chat.errorwhileconnecting', true);
             CoreNavigator.back();

@@ -27,6 +27,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { AlertButton } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CorePlatform } from '@services/platform';
+import { CoreAnalytics } from '@services/analytics';
 
 /**
  * Page that displays the general settings.
@@ -101,7 +102,7 @@ export class CoreSettingsGeneralPage {
 
         this.debugDisplay = await CoreConfig.get(CoreConstants.SETTINGS_DEBUG_DISPLAY, false);
 
-        this.analyticsSupported = CoreConstants.CONFIG.enableanalytics;
+        this.analyticsSupported = CoreAnalytics.hasHandlers();
         if (this.analyticsSupported) {
             this.analyticsEnabled = await CoreConfig.get(CoreConstants.SETTINGS_ANALYTICS_ENABLED, true);
         }

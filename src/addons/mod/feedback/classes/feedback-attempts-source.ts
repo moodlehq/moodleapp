@@ -37,8 +37,7 @@ export class AddonModFeedbackAttemptsSource extends CoreRoutedItemsManagerSource
     anonymous?: AddonModFeedbackWSAnonAttempt[];
     anonymousTotal?: number;
     groupInfo?: CoreGroupInfo;
-
-    protected feedback?: AddonModFeedbackWSFeedback;
+    feedback?: AddonModFeedbackWSFeedback;
 
     constructor(courseId: number, cmId: number) {
         super();

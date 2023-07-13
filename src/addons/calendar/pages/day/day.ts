@@ -33,7 +33,7 @@ import { CoreCategoryData, CoreCourses, CoreEnrolledCourseData } from '@features
 import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
 import { AddonCalendarFilterComponent } from '../../components/filter/filter';
 import moment from 'moment-timezone';
-import { NgZone } from '@singletons';
+import { NgZone, Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { Params } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -47,6 +47,9 @@ import {
 } from '@classes/items-management/swipe-slides-dynamic-items-manager-source';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { AddonCalendarEventsSource } from '@addons/calendar/classes/events-source';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreUrlUtils } from '@services/utils/url';
+import { CoreTime } from '@singletons/time';
 
 /**
  * Page that displays the calendar events for a certain day.
@@ -73,6 +76,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
     protected onlineObserver: Subscription;
     protected filterChangedObserver: CoreEventObserver;
     protected managerUnsubscribe?: () => void;
+    protected logView: () => void;
 
     periodName?: string;
     manager?: CoreSwipeSlidesDynamicItemsManager<PreloadedDay, AddonCalendarDaySlidesItemsManagerSource>;
@@ -186,6 +190,28 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
                 this.isOnline = CoreNetwork.isOnline();
             });
         });
+
+        this.logView = CoreTime.once(() => {
+            const day = this.manager?.getSelectedItem();
+            if (!day) {
+                return;
+            }
+            const params = {
+                course: this.filter.courseId,
+                time: day.moment.unix(),
+            };
+
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
+                ws: 'core_calendar_get_calendar_day_view',
+                name: Translate.instant('addon.calendar.dayviewtitle', { $a: this.periodName }),
+                data: {
+                    ...params,
+                    category: 'calendar',
+                },
+                url: CoreUrlUtils.addParamsToUrl('/calendar/view.php?view=day', params),
+            });
+        });
     }
 
     /**
@@ -209,7 +235,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
             year: CoreNavigator.getRouteNumberParam('year'),
             month: month ? month - 1 : undefined,
             date: CoreNavigator.getRouteNumberParam('day'),
-        }));
+        }).startOf('day'));
         this.manager = new CoreSwipeSlidesDynamicItemsManager(source);
         this.managerUnsubscribe = this.manager.addListener({
             onSelectedItemUpdated: (item) => {
@@ -246,6 +272,8 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
             await this.manager?.getSource().fetchData(this.filter.courseId);
 
             await this.manager?.getSource().load(this.manager?.getSelectedItem());
+
+            this.logView();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.calendar.errorloadevents', true);
         }
@@ -500,6 +528,7 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
     canCreate = false;
 
     protected dayPage: AddonCalendarDayPage;
+    protected sendLog = true;
 
     constructor(page: AddonCalendarDayPage, initialMoment: moment.Moment) {
         super({ moment: initialMoment });
@@ -780,6 +809,7 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
         promises.push(AddonCalendar.invalidateTimeFormat());
 
         this.categories = undefined; // Get categories again.
+        this.sendLog = true;
 
         if (selectedDay) {
             selectedDay.dirty = true;

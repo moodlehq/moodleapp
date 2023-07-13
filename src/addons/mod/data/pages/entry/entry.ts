@@ -36,6 +36,8 @@ import { AddonModDataProvider,
 } from '../../services/data';
 import { AddonModDataHelper } from '../../services/data-helper';
 import { AddonModDataSyncProvider } from '../../services/data-sync';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreTime } from '@singletons/time';
 
 /**
  * Page that displays the view entry page.
@@ -55,9 +57,9 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
     protected entryChangedObserver: CoreEventObserver; // It will observe the changed entry event.
     protected fields: Record<number, AddonModDataField> = {};
     protected fieldsArray: AddonModDataField[] = [];
-    protected logAfterFetch = true;
     protected sortBy = 0;
     protected sortDirection = 'DESC';
+    protected logView: () => void;
 
     moduleId = 0;
     courseId!: number;
@@ -129,6 +131,8 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
                 }
             }
         }, this.siteId);
+
+        this.logView = CoreTime.once(() => this.performLogView());
     }
 
     /**
@@ -219,13 +223,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
                 access: this.access,
             };
 
-            if (this.logAfterFetch) {
-                this.logAfterFetch = false;
-                await CoreUtils.ignoreErrors(AddonModData.logView(this.database.id, this.database.name));
-
-                // Store module viewed because this page also updates recent accessed items block.
-                CoreCourse.storeModuleViewed(this.courseId, this.moduleId);
-            }
+            this.logView();
         } catch (error) {
             if (!refresh) {
                 // Some call failed, retry without using cache since it might be a new activity.
@@ -250,7 +248,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
         this.entryId = undefined;
         this.entry = undefined;
         this.entryLoaded = false;
-        this.logAfterFetch = true;
+        this.logView = CoreTime.once(() => this.performLogView()); // Log again after loading data.
 
         await this.fetchEntryData();
     }
@@ -310,7 +308,6 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
         this.entry = undefined;
         this.entryId = undefined;
         this.entryLoaded = false;
-        this.logAfterFetch = true;
 
         await this.fetchEntryData();
     }
@@ -420,6 +417,28 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
      */
     ratingUpdated(): void {
         AddonModData.invalidateEntryData(this.database!.id, this.entryId!);
+    }
+
+    /**
+     * Log view.
+     */
+    protected async performLogView(): Promise<void> {
+        if (!this.database) {
+            return;
+        }
+
+        await CoreUtils.ignoreErrors(AddonModData.logView(this.database.id));
+
+        // Store module viewed because this page also updates recent accessed items block.
+        CoreCourse.storeModuleViewed(this.courseId, this.moduleId);
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM,
+            ws: 'mod_data_view_database',
+            name: this.database.name,
+            data: { id: this.entryId, databaseid: this.database.id, category: 'data' },
+            url: `/mod/data/view.php?d=${this.database.id}&rid=${this.entryId}`,
+        });
     }
 
     /**

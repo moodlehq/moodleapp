@@ -24,6 +24,8 @@ import { CoreUser, CoreUserParticipant, CoreUserData } from '@features/user/serv
 import { CoreUtils } from '@services/utils/utils';
 import { CoreUserParticipantsSource } from '@features/user/classes/participants-source';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { Translate } from '@singletons';
 
 /**
  * Page that displays the list of course participants.
@@ -195,7 +197,15 @@ class CoreUserParticipantsManager extends CoreListItemsManager<CoreUserParticipa
      * @inheritdoc
      */
     protected async logActivity(): Promise<void> {
-        await CoreUser.logParticipantsView(this.getSource().COURSE_ID);
+        await CoreUtils.ignoreErrors(CoreUser.logParticipantsView(this.getSource().COURSE_ID));
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
+            ws: 'core_user_view_user_list',
+            name: Translate.instant('core.user.participants'),
+            data: { courseid: this.getSource().COURSE_ID, category: 'user' },
+            url: `/user/index.php?id=${this.getSource().COURSE_ID}`,
+        });
     }
 
 }

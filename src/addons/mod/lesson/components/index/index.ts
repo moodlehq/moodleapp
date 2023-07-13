@@ -66,7 +66,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
     @Input() action?: string; // The "action" to display first.
 
     component = AddonModLessonProvider.COMPONENT;
-    moduleName = 'lesson';
+    pluginName = 'lesson';
 
     lesson?: AddonModLessonLessonWSData; // The lesson.
     selectedTab?: number; // The initial selected tab.
@@ -372,7 +372,16 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             return;
         }
 
-        await AddonModLesson.logViewLesson(this.lesson.id, this.password, this.lesson.name);
+        await CoreUtils.ignoreErrors(AddonModLesson.logViewLesson(this.lesson.id, this.password));
+    }
+
+    /**
+     * Call analytics.
+     */
+    protected callAnalyticsLogEvent(): void {
+        this.analyticsLogEvent('mod_lesson_view_lesson', {
+            url: this.selectedTab === 1 ? `/mod/lesson/report.php?id=${this.module.id}&action=reportoverview` : undefined,
+        });
     }
 
     /**
@@ -435,19 +444,29 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
      * First tab selected.
      */
     indexSelected(): void {
+        const tabHasChanged = this.selectedTab !== 0;
         this.selectedTab = 0;
+
+        if (tabHasChanged) {
+            this.callAnalyticsLogEvent();
+        }
     }
 
     /**
      * Reports tab selected.
      */
     reportsSelected(): void {
+        const tabHasChanged = this.selectedTab !== 1;
         this.selectedTab = 1;
 
         if (!this.groupInfo) {
             this.fetchReportData().catch((error) => {
                 CoreDomUtils.showErrorModalDefault(error, 'Error getting report.');
             });
+        }
+
+        if (tabHasChanged) {
+            this.callAnalyticsLogEvent();
         }
     }
 

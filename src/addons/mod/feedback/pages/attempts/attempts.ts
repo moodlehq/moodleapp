@@ -25,6 +25,8 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { AddonModFeedbackAttemptItem, AddonModFeedbackAttemptsSource } from '../../classes/feedback-attempts-source';
 import { AddonModFeedbackWSAnonAttempt, AddonModFeedbackWSAttempt } from '../../services/feedback';
+import { CoreTime } from '@singletons/time';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 /**
  * Page that displays feedback attempts.
@@ -41,8 +43,25 @@ export class AddonModFeedbackAttemptsPage implements AfterViewInit, OnDestroy {
     fetchFailed = false;
     courseId?: number;
 
+    protected logView: () => void;
+
     constructor(protected route: ActivatedRoute) {
         this.promisedAttempts = new CorePromisedValue();
+
+        this.logView = CoreTime.once(() => {
+            const source = this.attempts?.getSource();
+            if (!source || !source.feedback) {
+                return;
+            }
+
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
+                ws: 'mod_feedback_get_responses_analysis',
+                name: source.feedback.name,
+                data: { feedbackid: source.feedback.id, category: 'feedback' },
+                url: `/mod/feedback/show_entries.php?id=${source.CM_ID}`,
+            });
+        });
     }
 
     get attempts(): AddonModFeedbackAttemptsManager | null {
@@ -112,6 +131,8 @@ export class AddonModFeedbackAttemptsPage implements AfterViewInit, OnDestroy {
 
             await attempts.getSource().loadFeedback();
             await attempts.load();
+
+            this.logView();
         } catch (error) {
             this.fetchFailed = true;
 

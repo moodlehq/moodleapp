@@ -34,7 +34,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
 
     @Input() group?: number; // Group ID the component belongs to.
 
-    moduleName?: string; // Raw module name to be translated. It will be translated on init.
+    moduleName = ''; // Translated module name. Calculated from pluginName.
 
     protected syncObserver?: CoreEventObserver; // It will observe the sync auto event.
     protected syncEventName?: string; // Auto sync event name.
@@ -54,7 +54,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
         await super.ngOnInit();
 
         this.hasOffline = false;
-        this.moduleName = CoreCourse.translateModuleName(this.moduleName || '');
+        this.moduleName = CoreCourse.translateModuleName(this.pluginName || this.moduleName || '');
 
         if (this.syncEventName) {
             // Refresh data if this discussion is synchronized automatically.

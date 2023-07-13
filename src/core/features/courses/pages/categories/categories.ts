@@ -21,6 +21,8 @@ import { CoreCategoryData, CoreCourseListItem, CoreCourses, CoreCoursesProvider 
 import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreTime } from '@singletons/time';
 
 /**
  * Page that displays a list of categories and the courses in the current category if any.
@@ -50,6 +52,7 @@ export class CoreCoursesCategoriesPage implements OnInit, OnDestroy {
     protected siteUpdatedObserver: CoreEventObserver;
     protected downloadEnabledObserver: CoreEventObserver;
     protected isDestroyed = false;
+    protected logView: () => void;
 
     constructor() {
         this.title = Translate.instant('core.courses.categories');
@@ -77,6 +80,16 @@ export class CoreCoursesCategoriesPage implements OnInit, OnDestroy {
 
         this.downloadEnabledObserver = CoreEvents.on(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, (data) => {
             this.downloadEnabled = (this.downloadCourseEnabled || this.downloadCoursesEnabled) && data.enabled;
+        });
+
+        this.logView = CoreTime.once(() => {
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
+                ws: 'core_course_get_categories',
+                name: this.title,
+                data: { categoryid: this.categoryId, category: 'course' },
+                url: '/course/index.php' + (this.categoryId > 0 ? `?categoryid=${this.categoryId}` : ''),
+            });
         });
     }
 
@@ -138,6 +151,8 @@ export class CoreCoursesCategoriesPage implements OnInit, OnDestroy {
                     !this.isDestroyed && CoreDomUtils.showErrorModalDefault(error, 'core.courses.errorloadcourses', true);
                 }
             }
+
+            this.logView();
         } catch (error) {
             !this.isDestroyed && CoreDomUtils.showErrorModalDefault(error, 'core.courses.errorloadcategories', true);
         }

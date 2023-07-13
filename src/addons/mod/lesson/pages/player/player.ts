@@ -54,6 +54,7 @@ import {
 import { AddonModLessonOffline } from '../../services/lesson-offline';
 import { AddonModLessonSync } from '../../services/lesson-sync';
 import { CoreFormFields, CoreForms } from '@singletons/form';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 /**
  * Page that allows attempting and reviewing a lesson.
@@ -446,6 +447,8 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
                 this.reviewPageId = Number(params.pageid);
             }
         }
+
+        this.logPageLoaded(AddonModLessonProvider.LESSON_EOL, Translate.instant('addon.mod_lesson.congratulations'));
     }
 
     /**
@@ -615,6 +618,44 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
         } else {
             this.showRetake = false;
         }
+
+        this.logPageLoaded(pageId, data.page?.title ?? '');
+    }
+
+    /**
+     * Log page loaded.
+     *
+     * @param pageId Page ID.
+     */
+    protected logPageLoaded(pageId: number, title: string): void {
+        if (!this.lesson) {
+            return;
+        }
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM,
+            ws: 'mod_lesson_get_page_data',
+            name: this.lesson.name + ': ' + title,
+            data: { id: this.lesson.id, pageid: pageId, category: 'lesson' },
+            url: `/mod/lesson/view.php?id=${this.lesson.id}&pageid=${pageId}`,
+        });
+    }
+
+    /**
+     * Log continue page.
+     */
+    protected logContinuePageLoaded(): void {
+        if (!this.lesson) {
+            return;
+        }
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM,
+            ws: 'mod_lesson_process_page',
+            name: this.lesson.name + ': ' + Translate.instant('addon.mod_lesson.continue'),
+            data: { id: this.lesson.id, category: 'lesson' },
+            url: '/mod/lesson/continue.php',
+        });
     }
 
     /**
@@ -715,6 +756,8 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
                     pageId: result.newpageid,
                 });
             }
+
+            this.logContinuePageLoaded();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error processing page');
         } finally {

@@ -24,6 +24,9 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { AddonBadgesUserBadgesSource } from '@addons/badges/classes/user-badges-source';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreTime } from '@singletons/time';
+import { Translate } from '@singletons';
 
 /**
  * Page that displays the list of calendar events.
@@ -39,6 +42,8 @@ export class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
 
     @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
 
+    protected logView: () => void;
+
     constructor() {
         let courseId = CoreNavigator.getRouteNumberParam('courseId') ?? 0; // Use 0 for site badges.
         const userId = CoreNavigator.getRouteNumberParam('userId') ?? CoreSites.getCurrentSiteUserId();
@@ -52,6 +57,16 @@ export class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
             CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(AddonBadgesUserBadgesSource, [courseId, userId]),
             AddonBadgesUserBadgesPage,
         );
+
+        this.logView = CoreTime.once(() => {
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
+                ws: 'core_badges_view_user_badges',
+                name: Translate.instant('addon.badges.badges'),
+                data: { courseId: this.badges.getSource().COURSE_ID, category: 'badges' },
+                url: '/badges/mybadges.php',
+            });
+        });
     }
 
     /**
@@ -95,6 +110,8 @@ export class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestroy {
 
         try {
             await this.badges.reload();
+
+            this.logView();
         } catch (message) {
             CoreDomUtils.showErrorModalDefault(message, 'Error loading badges');
 

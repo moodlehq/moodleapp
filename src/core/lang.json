@@ -248,6 +248,7 @@
     "play": "Play",
     "previous": "Previous",
     "proceed": "Proceed",
+    "publicprofile": "Public profile",
     "pulltorefresh": "Pull to refresh",
     "qrscanner": "QR scanner",
     "quotausage": "You have currently used {{$a.used}} of your {{$a.total}} limit.",

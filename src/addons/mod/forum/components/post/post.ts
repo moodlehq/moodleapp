@@ -52,6 +52,7 @@ import { CoreForms } from '@singletons/form';
 import { CoreFileEntry } from '@services/file-helper';
 import { AddonModForumSharedPostFormData } from '../../pages/discussion/discussion';
 import { CoreDom } from '@singletons/dom';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -141,6 +142,9 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
      * Deletes an online post.
      */
     async deletePost(): Promise<void> {
+        // Log analytics even if the user cancels for consistency with LMS.
+        this.analyticsLogEvent('mod_forum_delete_post', `/mod/forum/post.php?delete=${this.post.id}`);
+
         try {
             await CoreDomUtils.showDeleteConfirm('addon.mod_forum.deletesure');
 
@@ -290,6 +294,8 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
         }
 
         this.scrollToForm();
+
+        this.analyticsLogEvent('mod_forum_add_discussion_post', `/mod/forum/post.php?reply=${this.post.id}`);
     }
 
     /**
@@ -314,6 +320,8 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             );
 
             this.scrollToForm();
+
+            this.analyticsLogEvent('mod_forum_update_discussion_post', `/mod/forum/post.php?edit=${this.post.id}`);
         } catch {
             // Cancelled.
         }
@@ -552,6 +560,26 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             this.elementRef.nativeElement,
             '#addon-forum-reply-edit-form-' + this.uniqueId,
         );
+    }
+
+    /**
+     * Log analytics event.
+     *
+     * @param wsName WS name.
+     * @param url URL.
+     */
+    protected analyticsLogEvent(wsName: string, url: string): void {
+        if (this.post.id <= 0) {
+            return;
+        }
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM,
+            ws: wsName,
+            name: this.post.subject,
+            data: { id: this.post.id, forumid: this.forum.id, category: 'forum' },
+            url,
+        });
     }
 
 }

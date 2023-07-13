@@ -35,6 +35,9 @@ import { CoreCourses } from '@features/courses/services/courses';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { CoreUserParticipantsSource } from '@features/user/classes/participants-source';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
+import { CoreTime } from '@singletons/time';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { Translate } from '@singletons';
 
 @Component({
     selector: 'page-core-user-profile',
@@ -48,7 +51,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
     protected site!: CoreSite;
     protected obsProfileRefreshed: CoreEventObserver;
     protected subscription?: Subscription;
-    protected fetchSuccess = false;
+    protected logView: (user: CoreUserProfile) => void;
 
     userLoaded = false;
     isLoadingHandlers = false;
@@ -72,6 +75,29 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
             this.user.email = data.user.email;
             this.user.address = CoreUserHelper.formatAddress('', data.user.city, data.user.country);
         }, CoreSites.getCurrentSiteId());
+
+        this.logView = CoreTime.once(async (user) => {
+            try {
+                await CoreUser.logView(this.userId, this.courseId, user.fullname);
+            } catch (error) {
+                this.isDeleted = error?.errorcode === 'userdeleted' || error?.errorcode === 'wsaccessuserdeleted';
+                this.isSuspended = error?.errorcode === 'wsaccessusersuspended';
+                this.isEnrolled = error?.errorcode !== 'notenrolledprofile';
+            }
+            let extraParams = '';
+            if (this.userId !== CoreSites.getCurrentSiteUserId()) {
+                const isCourseProfile = this.courseId && this.courseId !== CoreSites.getCurrentSiteHomeId();
+                extraParams = `?id=${this.userId}` + (isCourseProfile ? `&course=${this.courseId}` : '');
+            }
+
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM,
+                ws: 'core_user_view_user_profile',
+                name: user.fullname + ': ' + Translate.instant('core.publicprofile'),
+                data: { id: this.userId, courseid: this.courseId || undefined, category: 'user' },
+                url: `/user/profile.php${extraParams}`,
+            });
+        });
     }
 
     /**
@@ -151,18 +177,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
                 this.isLoadingHandlers = !CoreUserDelegate.areHandlersLoaded(user.id, context, this.courseId);
             });
 
-            if (!this.fetchSuccess) {
-                this.fetchSuccess = true;
-
-                try {
-                    await CoreUser.logView(this.userId, this.courseId, this.user.fullname);
-                } catch (error) {
-                    this.isDeleted = error?.errorcode === 'userdeleted' || error?.errorcode === 'wsaccessuserdeleted';
-                    this.isSuspended = error?.errorcode === 'wsaccessusersuspended';
-                    this.isEnrolled = error?.errorcode !== 'notenrolledprofile';
-                }
-            }
-
+            this.logView(user);
         } catch (error) {
             // Error is null for deleted users, do not show the modal.
             CoreDomUtils.showErrorModal(error);

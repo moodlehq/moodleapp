@@ -39,6 +39,8 @@ import {
     AddonModGlossaryProvider,
     GLOSSARY_ENTRY_UPDATED,
 } from '../../services/glossary';
+import { CoreTime } from '@singletons/time';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 /**
  * Page that displays a glossary entry.
@@ -70,7 +72,19 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
     courseId!: number;
     cmId!: number;
 
-    constructor(@Optional() protected splitView: CoreSplitViewComponent, protected route: ActivatedRoute) {}
+    protected logView: () => void;
+
+    constructor(@Optional() protected splitView: CoreSplitViewComponent, protected route: ActivatedRoute) {
+        this.logView = CoreTime.once(async () => {
+            if (!this.onlineEntry || !this.glossary || !this.componentId) {
+                return;
+            }
+
+            await CoreUtils.ignoreErrors(AddonModGlossary.logEntryView(this.onlineEntry.id, this.componentId));
+
+            this.analyticsLogEvent('mod_glossary_get_entry_by_id', `/mod/glossary/showentry.php?eid=${this.onlineEntry.id}`);
+        });
+    }
 
     get entry(): AddonModGlossaryEntry | AddonModGlossaryOfflineEntry | undefined {
         return this.onlineEntry ?? this.offlineEntry;
@@ -128,12 +142,6 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
         try {
             if (onlineEntryId) {
                 await this.loadOnlineEntry(onlineEntryId);
-
-                if (!this.glossary || !this.componentId) {
-                    return;
-                }
-
-                await CoreUtils.ignoreErrors(AddonModGlossary.logEntryView(onlineEntryId, this.componentId, this.glossary?.name));
             } else if (offlineEntryTimeCreated) {
                 await this.loadOfflineEntry(offlineEntryTimeCreated);
             }
@@ -161,6 +169,12 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
      * Delete entry.
      */
     async deleteEntry(): Promise<void> {
+        // Log analytics even if the user cancels for consistency with LMS.
+        this.analyticsLogEvent(
+            'mod_glossary_delete_entry',
+            `/mod/glossary/deleteentry.php?id=${this.glossary?.id}&mode=delete&entry=${this.onlineEntry?.id}`,
+        );
+
         const glossaryId = this.glossary?.id;
         const cancelled = await CoreUtils.promiseFails(
             CoreDomUtils.showConfirm(Translate.instant('addon.mod_glossary.areyousuredelete')),
@@ -250,6 +264,8 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
             this.canEdit = canUpdateEntries && !!result.permissions?.canupdate;
 
             await this.loadGlossary();
+
+            this.logView();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.mod_glossary.errorloadingentry', true);
         }
@@ -319,6 +335,26 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
         }
 
         AddonModGlossary.invalidateEntry(this.onlineEntry.id);
+    }
+
+    /**
+     * Log analytics event.
+     *
+     * @param wsName WS name.
+     * @param url URL.
+     */
+    protected analyticsLogEvent(wsName: string, url: string): void {
+        if (!this.onlineEntry || !this.glossary) {
+            return;
+        }
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM,
+            ws: wsName,
+            name: this.onlineEntry.concept,
+            data: { id: this.onlineEntry.id, glossaryid: this.glossary.id, category: 'glossary' },
+            url,
+        });
     }
 
 }

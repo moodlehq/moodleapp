@@ -44,7 +44,7 @@ import {
 export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {
 
     component = AddonModBBBService.COMPONENT;
-    moduleName = 'bigbluebuttonbn';
+    pluginName = 'bigbluebuttonbn';
     bbb?: AddonModBBBData;
     groupInfo?: CoreGroupInfo;
     groupId = 0;
@@ -226,7 +226,9 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
             return; // Shouldn't happen.
         }
 
-        await AddonModBBB.logView(this.bbb.id, this.bbb.name);
+        await CoreUtils.ignoreErrors(AddonModBBB.logView(this.bbb.id));
+
+        this.analyticsLogEvent('mod_bigbluebuttonbn_view_bigbluebuttonbn');
     }
 
     /**

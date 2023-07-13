@@ -27,6 +27,7 @@ import {
     AddonCompetency,
     AddonCompetencyDataForPlanPageCompetency,
     AddonCompetencyDataForCourseCompetenciesPageCompetency,
+    AddonCompetencyProvider,
 } from '@addons/competency/services/competency';
 import { CoreNavigator } from '@services/navigator';
 import { IonRefresher } from '@ionic/angular';
@@ -38,6 +39,9 @@ import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/
 import { AddonCompetencyPlanCompetenciesSource } from '@addons/competency/classes/competency-plan-competencies-source';
 import { ActivatedRouteSnapshot } from '@angular/router';
 import { AddonCompetencyCourseCompetenciesSource } from '@addons/competency/classes/competency-course-competencies-source';
+import { CoreTime } from '@singletons/time';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreUrlUtils } from '@services/utils/url';
 
 /**
  * Page that displays the competency information.
@@ -58,9 +62,11 @@ export class AddonCompetencyCompetencyPage implements OnInit, OnDestroy {
     contextLevel?: string;
     contextInstanceId?: number;
 
-    protected fetchSuccess = false;
+    protected logView: () => void;
 
     constructor() {
+        this.logView = CoreTime.once(() => this.performLogView());
+
         try {
             const planId = CoreNavigator.getRouteNumberParam('planId');
 
@@ -156,31 +162,7 @@ export class AddonCompetencyCompetencyPage implements OnInit, OnDestroy {
                 }
             });
 
-            if (!this.fetchSuccess) {
-                this.fetchSuccess = true;
-                const name = this.competency.competency.competency.shortname;
-
-                if (source instanceof AddonCompetencyPlanCompetenciesSource) {
-                    this.planStatus && await CoreUtils.ignoreErrors(
-                        AddonCompetency.logCompetencyInPlanView(
-                            source.PLAN_ID,
-                            this.requireCompetencyId(),
-                            this.planStatus,
-                            name,
-                            source.user?.id,
-                        ),
-                    );
-                } else {
-                    await CoreUtils.ignoreErrors(
-                        AddonCompetency.logCompetencyInCourseView(
-                            source.COURSE_ID,
-                            this.requireCompetencyId(),
-                            name,
-                            source.USER_ID,
-                        ),
-                    );
-                }
-            }
+            this.logView();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error getting competency data.');
         }
@@ -286,6 +268,73 @@ export class AddonCompetencyCompetencyPage implements OnInit, OnDestroy {
             || competency.usercompetencysummary.usercompetency;
 
         return competency.usercompetencysummary;
+    }
+
+    /**
+     * Log view.
+     */
+    protected async performLogView(): Promise<void> {
+        if (!this.competency) {
+            return;
+        }
+
+        const source = this.competencies.getSource();
+        const compId = this.requireCompetencyId();
+        const name = this.competency.competency.competency.shortname;
+        const userId = source.user?.id;
+
+        if (source instanceof AddonCompetencyPlanCompetenciesSource) {
+            if (!this.planStatus) {
+                return;
+            }
+
+            await CoreUtils.ignoreErrors(
+                AddonCompetency.logCompetencyInPlanView(source.PLAN_ID, compId, this.planStatus, name, userId),
+            );
+
+            const wsName = this.planStatus === AddonCompetencyProvider.STATUS_COMPLETE
+                ? 'core_competency_user_competency_plan_viewed'
+                : 'core_competency_user_competency_viewed_in_plan';
+
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM,
+                ws: wsName,
+                name,
+                data: {
+                    id: compId,
+                    category: 'competency',
+                    planid: source.PLAN_ID,
+                    planstatus: this.planStatus,
+                    userid: userId,
+                },
+                url: CoreUrlUtils.addParamsToUrl('/admin/tool/lp/user_competency_in_plan.php', {
+                    planid: source.PLAN_ID,
+                    userid: userId,
+                    competencyid: compId,
+                }),
+            });
+
+            return;
+        }
+
+        await CoreUtils.ignoreErrors(AddonCompetency.logCompetencyInCourseView(source.COURSE_ID, compId, name, source.USER_ID));
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.VIEW_ITEM,
+            ws: 'core_competency_user_competency_viewed_in_course',
+            name,
+            data: {
+                id: compId,
+                category: 'competency',
+                courseid: source.COURSE_ID,
+                userid: userId,
+            },
+            url: CoreUrlUtils.addParamsToUrl('/admin/tool/lp/user_competency_in_course.php', {
+                courseid: source.COURSE_ID,
+                competencyid: compId,
+                userid: userId,
+            }),
+        });
     }
 
 }

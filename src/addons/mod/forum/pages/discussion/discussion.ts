@@ -51,6 +51,7 @@ import {
 import { AddonModForumHelper } from '../../services/forum-helper';
 import { AddonModForumOffline } from '../../services/forum-offline';
 import { AddonModForumSync, AddonModForumSyncProvider } from '../../services/forum-sync';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 type SortType = 'flat-newest' | 'flat-oldest' | 'nested';
 
@@ -562,19 +563,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
 
             if (forceMarkAsRead || (hasUnreadPosts && this.trackPosts)) {
                 // Add log in Moodle and mark unread posts as readed.
-                AddonModForum.logDiscussionView(this.discussionId, this.forumId || -1, this.forum.name).catch(() => {
-                    // Ignore errors.
-                }).finally(() => {
-                    if (!this.courseId || !this.cmId) {
-                        return;
-                    }
-
-                    // Trigger mark read posts.
-                    CoreEvents.trigger(AddonModForumProvider.MARK_READ_EVENT, {
-                        courseId: this.courseId,
-                        moduleId: this.cmId,
-                    }, CoreSites.getCurrentSiteId());
-                });
+                this.logDiscussionView(forceMarkAsRead);
             }
         }
     }
@@ -852,6 +841,35 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
         }
 
         return posts;
+    }
+
+    /**
+     * Log discussion as viewed. This will also mark the posts as read.
+     *
+     * @param logAnalytics Whether to log analytics too or not.
+     */
+    protected async logDiscussionView(logAnalytics = false): Promise<void> {
+        await CoreUtils.ignoreErrors(AddonModForum.logDiscussionView(this.discussionId, this.forumId || -1));
+
+        if (logAnalytics) {
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM,
+                ws: 'mod_forum_view_forum_discussion',
+                name: this.startingPost?.subject ?? this.forum.name ?? '',
+                data: { id: this.discussionId, forumid: this.forumId, category: 'forum' },
+                url: `/mod/forum/discuss.php?d=${this.discussionId}` + (this.postId ? `#p${this.postId}` : ''),
+            });
+        }
+
+        if (!this.courseId || !this.cmId) {
+            return;
+        }
+
+        // Trigger mark read posts.
+        CoreEvents.trigger(AddonModForumProvider.MARK_READ_EVENT, {
+            courseId: this.courseId,
+            moduleId: this.cmId,
+        }, CoreSites.getCurrentSiteId());
     }
 
 }

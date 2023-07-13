@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
-import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { CoreTagItem } from '@features/tag/services/tag';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
@@ -104,8 +103,6 @@ export class AddonBlogProvider {
      * @returns Promise to be resolved when done.
      */
     async logView(filter: AddonBlogFilter = {}, siteId?: string): Promise<CoreStatusWithWarningsWSResponse> {
-        CorePushNotifications.logViewListEvent('blog', 'core_blog_view_entries', filter, siteId);
-
         const site = await CoreSites.getSite(siteId);
 
         const data: AddonBlogViewEntriesWSParams = {

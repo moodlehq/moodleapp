@@ -57,7 +57,7 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
    @ViewChild(AddonModAssignSubmissionComponent) submissionComponent?: AddonModAssignSubmissionComponent;
 
     component = AddonModAssignProvider.COMPONENT;
-    moduleName = 'assign';
+    pluginName = 'assign';
 
     assign?: AddonModAssignAssign; // The assign object.
     canViewAllSubmissions = false; // Whether the user can view all submissions.
@@ -230,14 +230,20 @@ export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityCo
             return; // Shouldn't happen.
         }
 
-        await AddonModAssign.logView(this.assign.id, this.assign.name);
+        await CoreUtils.ignoreErrors(AddonModAssign.logView(this.assign.id));
+
+        this.analyticsLogEvent('mod_assign_view_assign');
 
         if (this.canViewAllSubmissions) {
             // User can see all submissions, log grading view.
-            CoreUtils.ignoreErrors(AddonModAssign.logGradingView(this.assign.id, this.assign.name));
+            await CoreUtils.ignoreErrors(AddonModAssign.logGradingView(this.assign.id));
+
+            this.analyticsLogEvent('mod_assign_view_grading_table', { sendUrl: false });
         } else if (this.canViewOwnSubmission) {
             // User can only see their own submission, log view the user submission.
-            CoreUtils.ignoreErrors(AddonModAssign.logSubmissionView(this.assign.id, this.assign.name));
+            await CoreUtils.ignoreErrors(AddonModAssign.logSubmissionView(this.assign.id));
+
+            this.analyticsLogEvent('mod_assign_view_submission_status', { sendUrl: false });
         }
     }
 

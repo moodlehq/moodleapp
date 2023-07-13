@@ -44,6 +44,8 @@ import { AddonModForumDiscussionsSwipeManager } from '../../classes/forum-discus
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { AddonModForumDiscussionsSource } from '../../classes/forum-discussions-source';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
+import { CoreTime } from '@singletons/time';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 type NewDiscussionData = {
     subject: string;
@@ -105,8 +107,19 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
     protected originalData?: Partial<NewDiscussionData>;
     protected forceLeave = false;
     protected initialGroupId?: number;
+    protected logView: () => void;
 
-    constructor(protected route: ActivatedRoute, @Optional() protected splitView: CoreSplitViewComponent) {}
+    constructor(protected route: ActivatedRoute, @Optional() protected splitView: CoreSplitViewComponent) {
+        this.logView = CoreTime.once(() => {
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM,
+                ws: 'mod_forum_add_discussion',
+                name: Translate.instant('addon.mod_forum.addanewdiscussion'),
+                data: { id: this.forumId, category: 'forum' },
+                url: '/mod/forum/post.php',
+            });
+        });
+    }
 
     /**
      * @inheritdoc
@@ -309,6 +322,8 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
             }
 
             this.showForm = true;
+
+            this.logView();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.mod_forum.errorgetgroups', true);
 

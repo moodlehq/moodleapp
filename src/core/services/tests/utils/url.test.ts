@@ -65,6 +65,17 @@ describe('CoreUrlUtilsProvider', () => {
         expect(url).toEqual(originalUrl);
     });
 
+    it('doesn\'t add undefined or null params', () => {
+        const originalUrl = 'https://moodle.org';
+        const url = urlUtils.addParamsToUrl(originalUrl, {
+            foo: undefined,
+            bar: null,
+            baz: 1,
+        });
+
+        expect(url).toEqual('https://moodle.org?baz=1');
+    });
+
     it('adds anchor to URL', () => {
         const originalUrl = 'https://moodle.org';
         const params = {

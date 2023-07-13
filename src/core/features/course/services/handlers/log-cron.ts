@@ -44,7 +44,7 @@ export class CoreCourseLogCronHandlerService implements CoreCronHandler {
 
         const site = await CoreSites.getSite(siteId);
 
-        return CoreCourse.logView(site.getSiteHomeId(), undefined, site.getId(), site.getInfo()?.sitename);
+        return CoreCourse.logView(site.getSiteHomeId(), undefined, site.getId());
     }
 
     /**

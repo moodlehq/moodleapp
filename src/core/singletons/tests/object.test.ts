@@ -16,6 +16,22 @@ import { CoreObject } from '@singletons/object';
 
 describe('CoreObject singleton', () => {
 
+    it('consumes object keys', () => {
+        const object = {
+            foo: 'a',
+            bar: 'b',
+            baz: 'c',
+        };
+
+        const fooValue = CoreObject.consumeKey(object, 'foo');
+        const bazValue = CoreObject.consumeKey(object, 'baz');
+
+        expect(fooValue).toEqual('a');
+        expect(bazValue).toEqual('c');
+        expect(object.bar).toEqual('b');
+        expect(Object.keys(object)).toEqual(['bar']);
+    });
+
     it('compares two values, checking all subproperties if needed', () => {
         expect(CoreObject.deepEquals(1, 1)).toBe(true);
         expect(CoreObject.deepEquals(1, 2)).toBe(false);

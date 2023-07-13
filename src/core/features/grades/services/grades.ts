@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreSites } from '@services/sites';
-import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { makeSingleton } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreWSExternalWarning } from '@services/ws';
@@ -358,34 +357,16 @@ export class CoreGradesProvider {
      *
      * @param courseId Course ID.
      * @param userId User ID.
-     * @param name Course name. If not set, it will be calculated.
      * @returns Promise resolved when done.
      */
-    async logCourseGradesView(courseId: number, userId: number, name?: string): Promise<void> {
+    async logCourseGradesView(courseId: number, userId: number): Promise<void> {
         userId = userId || CoreSites.getCurrentSiteUserId();
-
-        const wsName = 'gradereport_user_view_grade_report';
-
-        if (!name) {
-            // eslint-disable-next-line promise/catch-or-return
-            CoreCourses.getUserCourse(courseId, true)
-                .catch(() => ({}))
-                .then(course => CorePushNotifications.logViewEvent(
-                    courseId,
-                    'fullname' in course ? course.fullname : '',
-                    'grades',
-                    wsName,
-                    { userid: userId },
-                ));
-        } else {
-            CorePushNotifications.logViewEvent(courseId, name, 'grades', wsName, { userid: userId });
-        }
 
         const site = CoreSites.getCurrentSite();
 
         const params: CoreGradesGradereportViewGradeReportWSParams = { courseid: courseId, userid: userId };
 
-        await site?.write(wsName, params);
+        await site?.write('gradereport_user_view_grade_report', params);
     }
 
     /**
@@ -402,8 +383,6 @@ export class CoreGradesProvider {
         const params: CoreGradesGradereportViewGradeReportWSParams = {
             courseid: courseId,
         };
-
-        CorePushNotifications.logViewListEvent('grades', 'gradereport_overview_view_grade_report', params);
 
         const site = CoreSites.getCurrentSite();
 

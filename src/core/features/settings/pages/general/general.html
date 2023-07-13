@@ -76,8 +76,8 @@
         </ion-item>
         <ion-item class="ion-text-wrap" *ngIf="analyticsSupported">
             <ion-label>
-                <p class="item-heading">{{ 'core.settings.enablefirebaseanalytics' | translate }}</p>
-                <p>{{ 'core.settings.enablefirebaseanalyticsdescription' | translate }}</p>
+                <p class="item-heading">{{ 'core.settings.enableanalytics' | translate }}</p>
+                <p>{{ 'core.settings.enableanalyticsdescription' | translate }}</p>
             </ion-label>
             <ion-toggle [(ngModel)]="analyticsEnabled" (ionChange)="analyticsEnabledChanged($event)"></ion-toggle>
         </ion-item>

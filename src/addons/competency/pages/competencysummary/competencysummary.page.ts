@@ -20,6 +20,8 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { ADDON_COMPETENCY_SUMMARY_PAGE } from '@addons/competency/competency.module';
+import { CoreTime } from '@singletons/time';
+import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 
 /**
  * Page that displays the competency summary.
@@ -36,7 +38,30 @@ export class AddonCompetencyCompetencySummaryPage implements OnInit {
     contextLevel?: ContextLevel;
     contextInstanceId?: number;
 
-    protected fetchSuccess = false; // Whether a fetch was finished successfully.
+    protected logView: () => void;
+
+    constructor() {
+        this.logView = CoreTime.once(async () => {
+            if (!this.competency) {
+                return;
+            }
+
+            await CoreUtils.ignoreErrors(
+                AddonCompetency.logCompetencyView(this.competencyId, this.competency.competency.shortname),
+            );
+
+            CoreAnalytics.logEvent({
+                type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
+                ws: 'core_competency_competency_viewed',
+                name: this.competency.competency.shortname,
+                data: {
+                    competencyId: this.competencyId,
+                    category: 'competency',
+                },
+                url: `/admin/tool/lp/user_competency.php?id=${this.competencyId}`,
+            });
+        });
+    }
 
     /**
      * @inheritdoc
@@ -77,10 +102,7 @@ export class AddonCompetencyCompetencySummaryPage implements OnInit {
 
             this.competency = result.competency;
 
-            if (!this.fetchSuccess) {
-                this.fetchSuccess = true;
-                CoreUtils.ignoreErrors(AddonCompetency.logCompetencyView(this.competencyId, this.competency.competency.shortname));
-            }
+            this.logView();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error getting competency summary data.');
         }

@@ -48,7 +48,7 @@ import { AddonModChoicePrefetchHandler } from '../../services/handlers/prefetch'
 export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {
 
     component = AddonModChoiceProvider.COMPONENT;
-    moduleName = 'choice';
+    pluginName = 'choice';
 
     choice?: AddonModChoiceChoice;
     options: AddonModChoiceOption[] = [];
@@ -321,7 +321,9 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
             return; // Shouldn't happen.
         }
 
-        await AddonModChoice.logView(this.choice.id, this.choice.name);
+        await AddonModChoice.logView(this.choice.id);
+
+        this.analyticsLogEvent('mod_choice_view_choice');
     }
 
     /**
@@ -386,6 +388,8 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
                 this.checkCompletion();
             }
 
+            this.analyticsLogEvent('mod_choice_view_choice', { data: { notify: 'choicesaved' } });
+
             await this.dataUpdated(online);
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'addon.mod_choice.cannotsubmit', true);
@@ -411,6 +415,8 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
             await AddonModChoice.deleteResponses(this.choice!.id, this.choice!.name, this.courseId);
 
             this.content?.scrollToTop();
+
+            this.analyticsLogEvent('mod_choice_view_choice', { data: { action: 'delchoice' } });
 
             // Refresh the data. Don't call dataUpdated because deleting an answer doesn't mark the choice as outdated.
             await this.refreshContent(false);

@@ -1020,23 +1020,19 @@ export class AddonModGlossaryProvider {
      *
      * @param glossaryId Glossary ID.
      * @param mode The mode in which the glossary was viewed.
-     * @param name Name of the glossary.
      * @param siteId Site ID. If not defined, current site.
      */
-    async logView(glossaryId: number, mode: string, name?: string, siteId?: string): Promise<void> {
+    async logView(glossaryId: number, mode: string, siteId?: string): Promise<void> {
         const params: AddonModGlossaryViewGlossaryWSParams = {
             id: glossaryId,
             mode: mode,
         };
 
-        await CoreCourseLogHelper.logSingle(
+        await CoreCourseLogHelper.log(
             'mod_glossary_view_glossary',
             params,
             AddonModGlossaryProvider.COMPONENT,
             glossaryId,
-            name,
-            'glossary',
-            { mode },
             siteId,
         );
     }
@@ -1046,22 +1042,18 @@ export class AddonModGlossaryProvider {
      *
      * @param entryId Entry ID.
      * @param glossaryId Glossary ID.
-     * @param name Name of the glossary.
      * @param siteId Site ID. If not defined, current site.
      */
-    async logEntryView(entryId: number, glossaryId: number, name?: string, siteId?: string): Promise<void> {
+    async logEntryView(entryId: number, glossaryId: number, siteId?: string): Promise<void> {
         const params: AddonModGlossaryViewEntryWSParams = {
             id: entryId,
         };
 
-        await CoreCourseLogHelper.logSingle(
+        await CoreCourseLogHelper.log(
             'mod_glossary_view_entry',
             params,
             AddonModGlossaryProvider.COMPONENT,
             glossaryId,
-            name,
-            'glossary',
-            { entryid: entryId },
             siteId,
         );
     }
