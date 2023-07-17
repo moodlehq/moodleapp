@@ -516,6 +516,12 @@ ion-alert {
     .alert-message {
         user-select: text;
         flex-shrink: 0;
+
+        ion-card {
+            margin: 0;
+            margin-top: 10px;
+        }
+
     }
 }
 
