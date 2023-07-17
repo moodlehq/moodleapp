@@ -93,6 +93,13 @@ export class CoreBlockSideBlocksComponent implements OnInit {
 
             this.blocks = [];
         }
+
+        this.blocks = this.blocks.filter(block =>
+            block.name !== 'html' ||
+            (
+                block.name === 'html' &&
+                !!block.contents?.content.trim().replace(/(\r\n|\n|\r)/, '').length
+            ));
     }
 
     /**
