@@ -919,6 +919,7 @@
   "addon.mod_quiz.stateoverdue": "quiz",
   "addon.mod_quiz.stateoverduedetails": "quiz",
   "addon.mod_quiz.status": "quiz",
+  "addon.mod_quiz.submission_confirmation_unanswered": "quiz",
   "addon.mod_quiz.submitallandfinish": "quiz",
   "addon.mod_quiz.summaryofattempt": "quiz",
   "addon.mod_quiz.summaryofattempts": "quiz",
