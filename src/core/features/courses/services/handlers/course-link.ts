@@ -18,15 +18,13 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
-import { CoreCourseAnyCourseData, CoreCourses, CoreCoursesProvider, CoreEnrolledCourseData } from '../courses';
+import { CoreCourses } from '../courses';
 import { CoreLogger } from '@singletons/logger';
-import { makeSingleton, Translate } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { Params } from '@angular/router';
-import { CoreError } from '@classes/errors/error';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreTextUtils } from '@services/utils/text';
-import { CoreIonLoadingElement } from '@classes/ion-loading';
+import { CoreNavigator } from '@services/navigator';
 
 /**
  * Handler to treat links to course view or enrol (except site home).
@@ -76,7 +74,7 @@ export class CoreCoursesCourseLinkHandlerService extends CoreContentLinksHandler
         return [{
             action: (siteId): void => {
                 siteId = siteId || CoreSites.getCurrentSiteId();
-                if (siteId == CoreSites.getCurrentSiteId()) {
+                if (siteId === CoreSites.getCurrentSiteId()) {
                     // Check if we already are in the course index page.
                     if (CoreCourse.currentViewIsCourse(courseId)) {
                         // Current view is this course, just select the contents tab.
@@ -119,209 +117,45 @@ export class CoreCoursesCourseLinkHandlerService extends CoreContentLinksHandler
      * @returns Promise resolved when done.
      */
     protected async actionOpen(courseId: number, url: string, pageParams: Params): Promise<void> {
-        const modal = await CoreDomUtils.showModalLoading();
-        let course: CoreCourseAnyCourseData | { id: number } | undefined;
-
-        // Check if user is enrolled in the course.
-        try {
-            course = await CoreCourses.getUserCourse(courseId);
-        } catch {
-            course = await this.checkSelfUserCanSelfEnrolOrAccess(courseId, url, modal);
-        }
-
-        // Check if we need to retrieve the course.
-        if (!course) {
-            try {
-                const data = await CoreCourseHelper.getCourse(courseId);
-                course = data.course;
-            } catch {
-                // Cannot get course, return a "fake".
-                course = { id: courseId };
-            }
-        }
-
-        modal.dismiss();
-
-        // Now open the course.
-        CoreCourseHelper.openCourse(course, { params: pageParams });
-    }
-
-    /**
-     * Check if the user can self enrol or access the course.
-     *
-     * @param courseId Course ID.
-     * @param url Treated URL.
-     * @param modal Modal, to dismiss when needed.
-     * @returns The course after self enrolling or undefined if the user has access but is not enrolled.
-     */
-    protected async checkSelfUserCanSelfEnrolOrAccess(
-        courseId: number,
-        url: string,
-        modal: CoreIonLoadingElement,
-    ): Promise<CoreEnrolledCourseData | undefined> {
         const isEnrolUrl = !!url.match(/(\/enrol\/index\.php)|(\/course\/enrol\.php)/);
+        if (isEnrolUrl) {
+            this.navigateCourseSummary(courseId, pageParams);
 
-        if (!isEnrolUrl) {
-            // Not an enrol URL, check if the user can access the course (e.g. guest access).
-            const canAccess = await this.canAccess(courseId);
-            if (canAccess) {
-                return;
-            }
+            return;
         }
 
-        // User cannot access the course or it's an enrol URL. Check if can self enrol.
-        const canSelfEnrol = await this.canSelfEnrol(courseId);
-
-        if (!canSelfEnrol) {
-            if (isEnrolUrl) {
-                // Cannot self enrol, check if the user can access the course (e.g. guest access).
-                const canAccess = await this.canAccess(courseId);
-                if (canAccess) {
-                    return;
-                }
-            }
-
-            // Cannot self enrol and cannot access. Show error and allow the user to open the link in browser.
-            modal.dismiss();
-            const notEnrolledMessage = Translate.instant('core.courses.notenroled');
-            const body = CoreTextUtils.buildSeveralParagraphsMessage(
-                [notEnrolledMessage, Translate.instant('core.confirmopeninbrowser')],
-            );
-
-            try {
-                await CoreDomUtils.showConfirm(body);
-
-                CoreSites.getCurrentSite()?.openInBrowserWithAutoLogin(url, undefined, { showBrowserWarning: false });
-            } catch {
-                // User cancelled.
-            }
-
-            throw new CoreError(notEnrolledMessage);
-        }
-
-        // The user can self enrol. If it's not a enrolment URL we'll ask for confirmation.
-        modal.dismiss();
-
-        if (!isEnrolUrl) {
-            await CoreDomUtils.showConfirm(Translate.instant('core.courses.confirmselfenrol'));
-        }
-
-        try {
-            return await this.selfEnrol(courseId);
-        } catch (error) {
-            if (error) {
-                CoreDomUtils.showErrorModal(error);
-            }
-
-            throw error;
-        }
-    }
-
-    /**
-     * Check if user can access the course.
-     *
-     * @param courseId Course ID.
-     * @returns Promise resolved with boolean: whether user can access the course.
-     */
-    protected canAccess(courseId: number): Promise<boolean> {
-        return CoreUtils.promiseWorks(CoreCourse.getSections(courseId, false, true));
-    }
-
-    /**
-     * Check if a user can be "automatically" self enrolled in a course.
-     *
-     * @param courseId Course ID.
-     * @returns Promise resolved with boolean: whether the user can be enrolled in a course.
-     */
-    protected async canSelfEnrol(courseId: number): Promise<boolean> {
-        try {
-            // Check that the course has self enrolment enabled.
-            const methods = await CoreCourses.getCourseEnrolmentMethods(courseId);
-
-            let isSelfEnrolEnabled = false;
-            let instances = 0;
-            methods.forEach((method) => {
-                if (method.type == 'self' && CoreUtils.isTrueOrOne(method.status)) {
-                    isSelfEnrolEnabled = true;
-                    instances++;
-                }
-            });
-
-            return isSelfEnrolEnabled && instances === 1;
-        } catch {
-            return false;
-        }
-    }
-
-    /**
-     * Try to self enrol a user in a course.
-     *
-     * @param courseId Course ID.
-     * @param password Password.
-     * @returns Promise resolved when the user is enrolled, rejected otherwise.
-     */
-    protected async selfEnrol(courseId: number, password?: string): Promise<CoreEnrolledCourseData | undefined> {
         const modal = await CoreDomUtils.showModalLoading();
 
-        try {
-            await CoreCourses.selfEnrol(courseId, password);
+        // Check if user is enrolled in the course.
+        const hasAccess = await CoreCourseHelper.userHasAccessToCourse(courseId);
 
-            try {
-                // Sometimes the list of enrolled courses takes a while to be updated. Wait for it.
-                return await this.waitForEnrolled(courseId, true);
-            } finally {
-                modal.dismiss();
-            }
-        } catch (error) {
-            modal.dismiss();
+        const guestInfo = await CoreCourseHelper.courseUsesGuestAccessInfo(courseId);
+        pageParams.isGuest = guestInfo.guestAccess;
 
-            if (error && error.errorcode === CoreCoursesProvider.ENROL_INVALID_KEY) {
-                // Invalid password. Allow the user to input password.
-                const title = Translate.instant('core.courses.selfenrolment');
-                let body = ' '; // Empty message.
-                const placeholder = Translate.instant('core.courses.password');
+        if (hasAccess && !guestInfo.guestAccess && !guestInfo.passwordRequired) {
+            // Direct access.
+            const course = await CoreUtils.ignoreErrors(CoreCourses.getUserCourse(courseId), { id: courseId });
 
-                if (password !== undefined) {
-                    // The user attempted a password. Show an error message.
-                    body = CoreTextUtils.getErrorMessageFromError(error) || body;
-                }
+            CoreCourseHelper.openCourse(course, pageParams);
+        } else {
+            this.navigateCourseSummary(courseId, pageParams);
 
-                password = await CoreDomUtils.showPrompt(body, title, placeholder);
-
-                await this.selfEnrol(courseId, password);
-            } else {
-                throw error;
-            }
         }
+
+        modal.dismiss();
     }
 
     /**
-     * Wait for the user to be enrolled in a course.
+     * Navigate course summary.
      *
-     * @param courseId The course ID.
-     * @param first If it's the first call (true) or it's a recursive call (false).
-     * @returns Promise resolved when enrolled or timeout.
+     * @param courseId Course ID.
+     * @param pageParams Params to send to the new page.
      */
-    protected async waitForEnrolled(courseId: number, first?: boolean): Promise<CoreEnrolledCourseData | undefined> {
-        if (first) {
-            this.waitStart = Date.now();
-        }
-
-        // Check if user is enrolled in the course.
-        await CoreUtils.ignoreErrors(CoreCourses.invalidateUserCourses());
-        try {
-            return await CoreCourses.getUserCourse(courseId);
-        } catch {
-            // Not enrolled, wait a bit and try again.
-            if (Date.now() - this.waitStart > 60000) {
-                // Max time reached, stop.
-                return;
-            }
-
-            await CoreUtils.wait(5000);
-
-            return this.waitForEnrolled(courseId);
-        }
+    protected navigateCourseSummary(courseId: number, pageParams: Params): void {
+        CoreNavigator.navigateToSitePath(
+            `/course/${courseId}/summary`,
+            { params: pageParams },
+        );
     }
 
 }
