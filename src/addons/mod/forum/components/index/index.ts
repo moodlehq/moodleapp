@@ -57,6 +57,8 @@ import { AddonModForumDiscussionItem, AddonModForumDiscussionsSource } from '../
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CorePromisedValue } from '@classes/promised-value';
+import { CoreNavigator } from '@services/navigator';
+import { FORUM_SEARCH_PAGE_NAME } from '@addons/mod/forum/forum.module';
 
 /**
  * Component that displays a forum entry page.
@@ -330,6 +332,22 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         this.ratingSyncObserver && this.ratingSyncObserver.off();
         this.sourceUnsubscribe && this.sourceUnsubscribe();
         this.discussions?.destroy();
+    }
+
+    /**
+     * Open search page.
+     */
+    async openSearch(): Promise<void> {
+        if (!this.forum) {
+            return;
+        }
+
+        await CoreNavigator.navigateToSitePath(FORUM_SEARCH_PAGE_NAME, {
+            params: {
+                courseId: this.courseId,
+                forumId: this.forum.id,
+            },
+        });
     }
 
     /**

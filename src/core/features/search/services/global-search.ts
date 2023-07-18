@@ -80,6 +80,7 @@ export interface CoreSearchGlobalSearchFilters {
     searchAreaCategoryIds?: string[];
     searchAreaIds?: string[];
     courseIds?: number[];
+    contextIds?: number[];
 }
 
 /**
@@ -130,7 +131,7 @@ export class CoreSearchGlobalSearchService {
         const params: CoreSearchGetResultsWSParams = {
             query,
             page,
-            filters: await this.prepareWSFilters(filters),
+            filters: await this.prepareAdvancedWSFilters(filters),
         };
         const preSets = CoreSites.getReadingStrategyPreSets(CoreSitesReadingStrategy.PREFER_NETWORK);
 
@@ -158,7 +159,7 @@ export class CoreSearchGlobalSearchService {
         const site = CoreSites.getRequiredCurrentSite();
         const params: CoreSearchGetTopResultsWSParams = {
             query,
-            filters: await this.prepareWSFilters(filters),
+            filters: await this.prepareAdvancedWSFilters(filters),
         };
         const preSets = CoreSites.getReadingStrategyPreSets(CoreSitesReadingStrategy.PREFER_NETWORK);
 
@@ -210,7 +211,7 @@ export class CoreSearchGlobalSearchService {
         const site = CoreSites.getRequiredCurrentSite();
         const params: CoreSearchViewResultsWSParams = {
             query,
-            filters: await this.prepareWSFilters(filters),
+            filters: await this.prepareBasicWSFilters(filters),
         };
 
         await site.write<CoreSearchViewResultsWSResponse>('core_search_view_results', params);
@@ -273,17 +274,18 @@ export class CoreSearchGlobalSearchService {
      */
     protected filtersYieldEmptyResults(filters: CoreSearchGlobalSearchFilters): boolean {
         return filters.courseIds?.length === 0
+            || filters.contextIds?.length === 0
             || filters.searchAreaIds?.length === 0
             || filters.searchAreaCategoryIds?.length === 0;
     }
 
     /**
-     * Prepare search filters before sending to WS.
+     * Prepare basic search filters before sending to WS.
      *
      * @param filters App filters.
-     * @returns WS filters.
+     * @returns Basic WS filters.
      */
-    protected async prepareWSFilters(filters: CoreSearchGlobalSearchFilters): Promise<CoreSearchBasicWSFilters> {
+    protected async prepareBasicWSFilters(filters: CoreSearchGlobalSearchFilters): Promise<CoreSearchBasicWSFilters> {
         const wsFilters: CoreSearchBasicWSFilters = {};
 
         if (filters.courseIds) {
@@ -306,6 +308,22 @@ export class CoreSearchGlobalSearchService {
                     return filters.searchAreaCategoryIds?.includes(category.id);
                 })
                 .map(({ id }) => id);
+        }
+
+        return wsFilters;
+    }
+
+    /**
+     * Prepare advanced search filters before sending to WS.
+     *
+     * @param filters App filters.
+     * @returns Advanced WS filters.
+     */
+    protected async prepareAdvancedWSFilters(filters: CoreSearchGlobalSearchFilters): Promise<CoreSearchAdvancedWSFilters> {
+        const wsFilters: CoreSearchAdvancedWSFilters = await this.prepareBasicWSFilters(filters);
+
+        if (filters.contextIds) {
+            wsFilters.contextids = filters.contextIds;
         }
 
         return wsFilters;

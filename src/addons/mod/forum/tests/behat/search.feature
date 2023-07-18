@@ -28,6 +28,8 @@ Feature: Test Forum Search
       | forum2  | Initial discussion 2 | Initial discussion 2 | Initial discussion message 2 |
       | forum3  | Initial discussion 3 | Initial discussion 3 | Initial discussion message 3 |
 
+  # TODO test single forum search (lacking generators for post search results)
+
   Scenario: Search in side block
     Given global search expects the query "message" and will return:
       | type     | idnumber |
