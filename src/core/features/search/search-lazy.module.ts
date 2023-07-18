@@ -19,7 +19,6 @@ import { CoreSearchGlobalSearchPage } from './pages/global-search/global-search'
 import { CoreSearchComponentsModule } from '@features/search/components/components.module';
 import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { CoreSearchGlobalSearchResultComponent } from '@features/search/components/global-search-result/global-search-result';
 
 /**
  * Build module routes.
@@ -42,7 +41,6 @@ function buildRoutes(injector: Injector): Routes {
     exports: [RouterModule],
     declarations: [
         CoreSearchGlobalSearchPage,
-        CoreSearchGlobalSearchResultComponent,
     ],
     providers: [
         {

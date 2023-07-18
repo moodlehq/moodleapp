@@ -78,6 +78,7 @@ export type CoreSearchGlobalSearchSearchArea = {
 
 export interface CoreSearchGlobalSearchFilters {
     searchAreaCategoryIds?: string[];
+    searchAreaIds?: string[];
     courseIds?: number[];
 }
 
@@ -116,10 +117,11 @@ export class CoreSearchGlobalSearchService {
         query: string,
         filters: CoreSearchGlobalSearchFilters,
         page: number,
-    ): Promise<{ results: CoreSearchGlobalSearchResult[]; canLoadMore: boolean }> {
+    ): Promise<{ results: CoreSearchGlobalSearchResult[]; total: number; canLoadMore: boolean }> {
         if (this.filtersYieldEmptyResults(filters)) {
             return {
                 results: [],
+                total: 0,
                 canLoadMore: false,
             };
         }
@@ -136,6 +138,7 @@ export class CoreSearchGlobalSearchService {
 
         return {
             results: await Promise.all((results ?? []).map(result => this.formatWSResult(result))),
+            total: totalcount,
             canLoadMore: totalcount > (page + 1) * CORE_SEARCH_GLOBAL_SEARCH_PAGE_LENGTH,
         };
     }
@@ -269,7 +272,9 @@ export class CoreSearchGlobalSearchService {
      * @returns Whether the given filters will return 0 results.
      */
     protected filtersYieldEmptyResults(filters: CoreSearchGlobalSearchFilters): boolean {
-        return filters.courseIds?.length === 0 || filters.searchAreaCategoryIds?.length === 0;
+        return filters.courseIds?.length === 0
+            || filters.searchAreaIds?.length === 0
+            || filters.searchAreaCategoryIds?.length === 0;
     }
 
     /**
@@ -285,11 +290,21 @@ export class CoreSearchGlobalSearchService {
             wsFilters.courseids = filters.courseIds;
         }
 
+        if (filters.searchAreaIds) {
+            wsFilters.areaids = filters.searchAreaIds;
+        }
+
         if (filters.searchAreaCategoryIds) {
             const searchAreas = await this.getSearchAreas();
 
             wsFilters.areaids = searchAreas
-                .filter(({ category }) => filters.searchAreaCategoryIds?.includes(category.id))
+                .filter(({ id, category }) => {
+                    if (filters.searchAreaIds && !filters.searchAreaIds.includes(id)) {
+                        return false;
+                    }
+
+                    return filters.searchAreaCategoryIds?.includes(category.id);
+                })
                 .map(({ id }) => id);
         }
 

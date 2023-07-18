@@ -12,23 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule } from '@angular/core';
-
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreSearchBoxComponent } from './search-box/search-box';
-import { CoreSearchGlobalSearchResultComponent } from '@features/search/components/global-search-result/global-search-result';
+import { AddonModForumSearchPage } from '@addons/mod/forum/pages/search/search';
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
+import { CoreSearchComponentsModule } from '@features/search/components/components.module';
+
+const routes: Routes = [{
+    path: '',
+    component: AddonModForumSearchPage,
+}];
 
 @NgModule({
-    declarations: [
-        CoreSearchBoxComponent,
-        CoreSearchGlobalSearchResultComponent,
-    ],
     imports: [
+        RouterModule.forChild(routes),
         CoreSharedModule,
+        CoreSearchComponentsModule,
+        CoreMainMenuComponentsModule,
     ],
-    exports: [
-        CoreSearchBoxComponent,
-        CoreSearchGlobalSearchResultComponent,
+    declarations: [
+        AddonModForumSearchPage,
     ],
 })
-export class CoreSearchComponentsModule {}
+export class AddonModForumSearchLazyModule {}

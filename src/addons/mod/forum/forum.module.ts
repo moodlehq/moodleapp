@@ -52,7 +52,13 @@ export const ADDON_MOD_FORUM_SERVICES: Type<unknown>[] = [
     AddonModForumSyncProvider,
 ];
 
+export const FORUM_SEARCH_PAGE_NAME = 'forum/search';
+
 const mainMenuRoutes: Routes = [
+    {
+        path: FORUM_SEARCH_PAGE_NAME,
+        loadChildren: () => import('./forum-search-lazy.module').then(m => m.AddonModForumSearchLazyModule),
+    },
     {
         path: `${AddonModForumModuleHandlerService.PAGE_NAME}/discussion/:discussionId`,
         loadChildren: () => import('./forum-discussion-lazy.module').then(m => m.AddonModForumDiscussionLazyModule),

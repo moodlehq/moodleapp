@@ -59,6 +59,7 @@
     "removefromfavourites": "Unstar this discussion",
     "reply": "Reply",
     "replyplaceholder": "Write your reply...",
+    "searchresults": "Search results: {{$a}}",
     "subject": "Subject",
     "tagarea_forum_posts": "Forum posts",
     "thisforumhasduedate": "The due date for posting to this forum is {{$a}}.",
