@@ -37,6 +37,7 @@ interface Args {
     module: 'forum-activity' | 'forum-post' | 'assign' | 'none';
     courseContext: boolean;
     userContext: boolean;
+    showCourse: boolean;
 }
 
 export default <Meta<Args>> {
@@ -79,6 +80,7 @@ export default <Meta<Args>> {
         module: 'none',
         courseContext: false,
         userContext: false,
+        showCourse: true,
     },
     parameters: {
         design: {
@@ -88,7 +90,7 @@ export default <Meta<Args>> {
     },
 };
 
-const Template = story<Args>(({ image, courseContext, userContext, module, ...args }) => {
+const Template = story<Args>(({ image, courseContext, userContext, module, showCourse, ...args }) => {
     const result: CoreSearchGlobalSearchResult = {
         ...args,
         id: 1,
@@ -126,7 +128,7 @@ const Template = story<Args>(({ image, courseContext, userContext, module, ...ar
 
     return {
         component: CoreSearchGlobalSearchResultComponent,
-        props: { result },
+        props: { result, showCourse },
     };
 });
 

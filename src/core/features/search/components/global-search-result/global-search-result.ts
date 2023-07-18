@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
-import { CoreSearchGlobalSearchResult } from '@features/search/services/global-search';
+import { CoreSearchGlobalSearchResult, CoreSearchGlobalSearchResultContext } from '@features/search/services/global-search';
 
 @Component({
     selector: 'core-search-global-search-result',
@@ -23,6 +23,9 @@ import { CoreSearchGlobalSearchResult } from '@features/search/services/global-s
 export class CoreSearchGlobalSearchResultComponent implements OnChanges {
 
     @Input() result!: CoreSearchGlobalSearchResult;
+    @Input() showCourse?: boolean;
+
+    renderedContext: CoreSearchGlobalSearchResultContext | null = null;
     renderedIcon: string | null = null;
 
     @Output() onClick = new EventEmitter();
@@ -31,7 +34,23 @@ export class CoreSearchGlobalSearchResultComponent implements OnChanges {
      * @inheritdoc
      */
     ngOnChanges(): void {
+        this.renderedContext = this.computeRenderedContext();
         this.renderedIcon = this.computeRenderedIcon();
+    }
+
+    /**
+     * Calculate the value of the context to render.
+     *
+     * @returns Rendered context.
+     */
+    private computeRenderedContext(): CoreSearchGlobalSearchResultContext | null {
+        const context = this.result.context ?? {};
+
+        if (this.showCourse === false) {
+            delete context.courseName;
+        }
+
+        return Object.keys(context).length > 0 ? context : null;
     }
 
     /**
