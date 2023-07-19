@@ -39,7 +39,6 @@ import { CoreColors } from '@singletons/colors';
 import { CorePath } from '@singletons/path';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
-import { CoreCourse } from '@features/course/services/course';
 import { CorePasswordModalResponse } from '@components/password-modal/password-modal';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
@@ -316,32 +315,40 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
         const guestInstanceId = await this.guestInstanceId;
         if (this.useGuestAccess && this.guestAccessPasswordRequired && guestInstanceId) {
             // Check if the user has access to the course as guest with a previous sent password.
-            let validated = await CoreUtils.promiseWorks(
-                CoreCourse.getSections(this.courseId, true, true, { getFromCache: false, emergencyCache: false }, undefined, false),
-            );
+            let validated = await CoreCourseHelper.userHasAccessToCourse(this.courseId);
 
             if (!validated) {
                 try {
-                    const validatePassword = async (password: string): Promise<CorePasswordModalResponse> => {
-                        const response = await CoreCourses.validateGuestAccessPassword(guestInstanceId, password);
+                    type ValidatorResponse = CorePasswordModalResponse & { cancel?: boolean };
+                    const validatePassword = async (password: string): Promise<ValidatorResponse> => {
+                        try {
+                            const response = await CoreCourses.validateGuestAccessPassword(guestInstanceId, password);
 
-                        validated = response.validated;
-                        let error = response.hint;
-                        if (!validated && !error) {
-                            error = 'core.course.guestaccess_passwordinvalid';
+                            validated = response.validated;
+                            let error = response.hint;
+                            if (!validated && !error) {
+                                error = 'core.course.guestaccess_passwordinvalid';
+                            }
+
+                            return {
+                                password, validated, error,
+                            };
+                        } catch {
+                            this.refreshData();
+
+                            return {
+                                password,
+                                cancel: true,
+                            };
                         }
-
-                        return {
-                            password, validated, error,
-                        };
                     };
 
-                    const response = await CoreDomUtils.promptPassword({
+                    const response = await CoreDomUtils.promptPassword<ValidatorResponse>({
                         title: 'core.course.guestaccess',
                         validator: validatePassword,
                     });
 
-                    if (!response.validated) {
+                    if (!response.validated || response.cancel) {
                         return;
                     }
                 } catch {

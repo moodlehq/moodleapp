@@ -1887,11 +1887,11 @@ export class CoreDomUtilsProvider {
      * @param passwordParams Params to show the modal.
      * @returns Entered password, error and validation.
      */
-    async promptPassword(passwordParams?: CorePasswordModalParams): Promise<CorePasswordModalResponse> {
+    async promptPassword<T extends CorePasswordModalResponse>(passwordParams?: CorePasswordModalParams): Promise<T> {
         const { CorePasswordModalComponent } =
             await import('@/core/components/password-modal/password-modal.module');
 
-        const modalData = await CoreDomUtils.openModal<CorePasswordModalResponse>(
+        const modalData = await CoreDomUtils.openModal<T>(
             {
                 cssClass: 'core-password-modal',
                 showBackdrop: true,
