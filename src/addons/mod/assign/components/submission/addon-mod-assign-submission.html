@@ -200,13 +200,21 @@
                                         {{ 'addon.mod_assign.editsubmission' | translate }}
                                     </ion-button>
                                 </ng-container>
-                                <ion-item class="core-danger-item ion-text-wrap" *ngIf="(unsupportedEditPlugins
-                                    && unsupportedEditPlugins.length && !showErrorStatementEdit)|| showErrorStatementEdit">
+                                <ion-item class="core-danger-item ion-text-wrap"
+                                    *ngIf="(unsupportedEditPlugins.length && !showErrorStatementEdit)|| showErrorStatementEdit">
                                     <ion-label>
                                         <ng-container
                                             *ngIf="unsupportedEditPlugins && unsupportedEditPlugins.length && !showErrorStatementEdit">
                                             <p>{{ 'addon.mod_assign.erroreditpluginsnotsupported' | translate }}</p>
-                                            <p *ngFor="let name of unsupportedEditPlugins">{{ name }}</p>
+                                            <ul>
+                                                <li *ngFor="let name of unsupportedEditPlugins">{{ name }}</li>
+                                            </ul>
+                                            <ion-button expand="block" *ngIf="submissionUrl" [href]="submissionUrl" core-link
+                                                [showBrowserWarning]="false">
+                                                {{ 'core.openinbrowser' | translate }}
+                                                <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true"></ion-icon>
+                                            </ion-button>
+
                                         </ng-container>
                                         <ng-container *ngIf="showErrorStatementEdit">
                                             <p>{{ 'addon.mod_assign.cannoteditduetostatementsubmission' | translate }}</p>
