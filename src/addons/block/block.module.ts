@@ -41,6 +41,7 @@ import { AddonBlockSiteMainMenuModule } from './sitemainmenu/sitemainmenu.module
 import { AddonBlockStarredCoursesModule } from './starredcourses/starredcourses.module';
 import { AddonBlockTagsModule } from './tags/tags.module';
 import { AddonBlockTimelineModule } from './timeline/timeline.module';
+import { AddonBlockGlobalSearchModule } from '@addons/block/globalsearch/globalsearch.module';
 
 @NgModule({
     imports: [
@@ -55,6 +56,7 @@ import { AddonBlockTimelineModule } from './timeline/timeline.module';
         AddonBlockCommentsModule,
         AddonBlockCompletionStatusModule,
         AddonBlockCourseListModule,
+        AddonBlockGlobalSearchModule,
         AddonBlockGlossaryRandomModule,
         AddonBlockHtmlModule,
         AddonBlockLearningPlansModule,

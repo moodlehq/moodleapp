@@ -28,6 +28,7 @@ import {
     CORE_SEARCH_GLOBAL_SEARCH_FILTERS_UPDATED,
     CoreSearchGlobalSearch,
 } from '@features/search/services/global-search';
+import { CoreNavigator } from '@services/navigator';
 
 @Component({
     selector: 'page-core-search-global-search',
@@ -46,9 +47,14 @@ export class CoreSearchGlobalSearchPage implements OnInit, OnDestroy {
     ngOnInit(): void {
         const site = CoreSites.getRequiredCurrentSite();
         const searchBanner = site.config?.searchbanner?.trim() ?? '';
+        const courseId = CoreNavigator.getRouteNumberParam('courseId');
 
         if (CoreUtils.isTrueOrOne(site.config?.searchbannerenable) && searchBanner.length > 0) {
             this.searchBanner = searchBanner;
+        }
+
+        if (courseId) {
+            this.resultsSource.setFilters({ courseIds: [courseId] });
         }
 
         this.filtersObserver = CoreEvents.on(

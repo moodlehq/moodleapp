@@ -129,3 +129,19 @@ Feature: Test Global Search
     When I press the more menu button in the app
     And I press "Global search" in the app
     Then I should find "Search indexing is under maintentance!" in the app
+
+  Scenario: Open from side block
+    Given global search expects the query "message" and will return:
+      | type     | idnumber |
+      | activity | page01   |
+    And the following "blocks" exist:
+      | blockname    | contextlevel | reference |
+      | globalsearch | Course       | C1        |
+    And I entered the course "Course 1" as "student1" in the app
+    When I press "Open block drawer" in the app
+    And I press "Global search" in the app
+    Then I should find "What are you searching for?" in the app
+
+    When I press "Filter" in the app
+    Then "C1" should be selected in the app
+    But "C2" should not be selected in the app
