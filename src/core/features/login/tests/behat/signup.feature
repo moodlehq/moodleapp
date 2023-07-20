@@ -125,6 +125,7 @@ Feature: Test signup in app
       | datetime | birthday    | Birthday            | 1        | 1      | 1900                | 2040   | 0      |             |
       | datetime | time        | Date and time       | 0        | 1      | 1900                | 2040   | 1      |             |
       | textarea | description | Describe yourself   | 0        | 1      |                     |        |        | Sample text |
+      | social   | website     | url                 | 0        | 1      | url                 |        |        |             |
       | text     | beverage    | Favourite beverage  | 0        | 0      |                     |        |        |             |
 
     When I launch the app
@@ -139,6 +140,7 @@ Feature: Test signup in app
     And I should find "Date and time" in the app
     And I should find "Describe yourself" in the app
     And the field "Describe yourself" matches value "Sample text" in the app
+    And I should find "Web page" in the app
     But I should not find "Favourite beverage" in the app
 
     When I set the following fields to these values in the app:
@@ -150,6 +152,7 @@ Feature: Test signup in app
       | Last name | Test |
       | City/town | Barcelona |
       | Country | Spain |
+      | Web page | https://moodle.com |
     And I press "Create my new account" in the app
     Then I should find "Required" in the app
 
@@ -179,3 +182,4 @@ Feature: Test signup in app
     And I should find "1 January 1990" in the app
     And I should find "1 January 2010, 11:45 AM" in the app
     And I should find "This is my description" in the app
+    And I should find "https://moodle.com" in the app

@@ -8,8 +8,9 @@ Feature: Test basic usage of user features
 
   Scenario: Complete missing fields
     Given the following "custom profile fields" exist:
-      | datatype | shortname  | name           | required |
-      | text     | food       | Favourite food | 1        |
+      | datatype | shortname  | name           | required | param1 |
+      | text     | food       | Favourite food | 1        |        |
+      | social   | website    | url            | 1        | url    |
     When I enter the app
     And I log in as "student1"
     Then I should find "Complete your profile" in the app
@@ -42,6 +43,7 @@ Feature: Test basic usage of user features
     And I set the field "password" to "student1"
     And I click on "Log in" "button"
     And I set the field "Favourite food" to "Pasta"
+    And I set the field "Web page" to "https://moodle.com"
     And I click on "Update profile" "button"
     Then I should see "Changes saved"
 
@@ -53,11 +55,29 @@ Feature: Test basic usage of user features
     Then I should find "Acceptance test site" in the app
 
   Scenario: View profile
-    Given I entered the app as "student1"
-    When I press the user menu button in the app
+    Given the following "custom profile fields" exist:
+      | datatype | shortname  | name           | required | param1 |
+      | text     | food       | Favourite food | 1        |        |
+      | social   | website    | url            | 1        | url    |
+    And I entered the app as "student1"
+    And I press "Complete profile" in the app
+    And I switch to the browser tab opened by the app
+    And I set the field "username" to "student1"
+    And I set the field "password" to "student1"
+    And I click on "Log in" "button"
+    And I set the field "Favourite food" to "Pasta"
+    And I set the field "Web page" to "https://moodle.com"
+    When I click on "Update profile" "button"
+    Then I should see "Changes saved"
+
+    When I close the browser tab opened by the app
+    And I press "Reconnect" in the app
+    And I press the user menu button in the app
     And I press "Student" in the app
     Then I should find "student1@example.com" in the app
     And I should find "Student Student" in the app
+    And I should find "Pasta" in the app
+    And I should find "https://moodle.com" in the app
     And the UI should match the snapshot
 
   @lms_from4.2

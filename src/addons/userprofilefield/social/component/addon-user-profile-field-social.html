@@ -1,0 +1,28 @@
+<!-- Render (no edit). -->
+<ion-item *ngIf="!edit && field && field.name">
+    <ion-label>
+        <p class="item-heading">
+            <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
+                [courseId]="courseId" [wsNotFiltered]="true">
+            </core-format-text>
+        </p>
+        <p>
+            <core-format-text [text]="value" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"
+                [wsNotFiltered]="valueNotFiltered">
+            </core-format-text>
+        </p>
+    </ion-label>
+</ion-item>
+
+<!-- Edit. -->
+<ion-item *ngIf="edit && field && field.shortname && form" class="ion-text-wrap" [formGroup]="form">
+    <ion-label position="stacked">
+        <span [core-mark-required]="required">
+            <core-format-text [text]="field.name" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
+                [courseId]="courseId" [wsNotFiltered]="true">
+            </core-format-text>
+        </span>
+    </ion-label>
+    <ion-input type="text" [formControlName]="modelName" [placeholder]="field.name"></ion-input>
+    <core-input-errors [control]="form.controls[modelName]"></core-input-errors>
+</ion-item>
