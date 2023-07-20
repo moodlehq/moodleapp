@@ -16,13 +16,15 @@ import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSite, CoreSiteWSPreSets, WSObservable } from '@classes/site';
 import { makeSingleton } from '@singletons';
-import { CoreStatusWithWarningsWSResponse, CoreWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
+import { CoreWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { CoreEvents } from '@singletons/events';
-import { CoreWSError } from '@classes/errors/wserror';
 import { CoreCourseAnyCourseDataWithExtraInfoAndOptions, CoreCourseWithImageAndColor } from './courses-helper';
 import { asyncObservable, firstValueFrom, ignoreErrors, zipIncludingComplete } from '@/core/utils/rxjs';
 import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { AddonEnrolGuest, AddonEnrolGuestInfo } from '@addons/enrol/guest/services/guest';
+import { AddonEnrolSelf } from '@addons/enrol/self/services/self';
+import { CoreEnrol, CoreEnrolEnrolmentInfo, CoreEnrolEnrolmentMethod } from '@features/enrol/services/enrol';
 
 const ROOT_CACHE_KEY = 'mmCourses:';
 
@@ -309,33 +311,13 @@ export class CoreCoursesProvider {
     /**
      * Get the enrolment methods from a course.
      *
-     * @param id ID of the course.
+     * @param courseId ID of the course.
      * @param siteId Site ID. If not defined, use current site.
      * @returns Promise resolved with the methods.
+     * @deprecated since 4.3. Use CoreEnrol.getSupportedCourseEnrolmentMethods instead.
      */
-    async getCourseEnrolmentMethods(id: number, siteId?: string): Promise<CoreCourseEnrolmentMethod[]> {
-        const site = await CoreSites.getSite(siteId);
-
-        const params: CoreEnrolGetCourseEnrolmentMethodsWSParams = {
-            courseid: id,
-        };
-        const preSets = {
-            cacheKey: this.getCourseEnrolmentMethodsCacheKey(id),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
-        };
-
-        return site.read<CoreEnrolGetCourseEnrolmentMethodsWSResponse>
-        ('core_enrol_get_course_enrolment_methods', params, preSets);
-    }
-
-    /**
-     * Get cache key for get course enrolment methods WS call.
-     *
-     * @param id Course ID.
-     * @returns Cache key.
-     */
-    protected getCourseEnrolmentMethodsCacheKey(id: number): string {
-        return ROOT_CACHE_KEY + 'enrolmentmethods:' + id;
+    async getCourseEnrolmentMethods(courseId: number, siteId?: string): Promise<CoreEnrolEnrolmentMethod[]> {
+        return CoreEnrol.getSupportedCourseEnrolmentMethods(courseId, { siteId });
     }
 
     /**
@@ -344,70 +326,10 @@ export class CoreCoursesProvider {
      * @param instanceId Guest instance ID.
      * @param siteId Site ID. If not defined, use current site.
      * @returns Promise resolved when the info is retrieved.
+     * @deprecated since 4.3 use AddonEnrolGuest.getCourseGuestEnrolmentInfo instead.
      */
-    async getCourseGuestEnrolmentInfo(instanceId: number, siteId?: string): Promise<CoreCourseEnrolmentGuestMethod> {
-        const site = await CoreSites.getSite(siteId);
-        const params: EnrolGuestGetInstanceInfoWSParams = {
-            instanceid: instanceId,
-        };
-        const preSets: CoreSiteWSPreSets = {
-            cacheKey: this.getCourseGuestEnrolmentInfoCacheKey(instanceId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
-        };
-        const response = await site.read<EnrolGuestGetInstanceInfoWSResponse>('enrol_guest_get_instance_info', params, preSets);
-
-        return response.instanceinfo;
-    }
-
-    /**
-     * Get cache key for get course guest enrolment methods WS call.
-     *
-     * @param instanceId Guest instance ID.
-     * @returns Cache key.
-     */
-    protected getCourseGuestEnrolmentInfoCacheKey(instanceId: number): string {
-        return ROOT_CACHE_KEY + 'guestinfo:' + instanceId;
-    }
-
-    /**
-     * Check if guest password validation WS is available on the current site.
-     *
-     * @returns Whether guest password validation WSget courses by field is available.
-     */
-    isValidateGuestAccessPasswordAvailable(): boolean {
-        return CoreSites.wsAvailableInCurrentSite('enrol_guest_validate_password');
-    }
-
-    /**
-     * Perform password validation of guess access.
-     *
-     * @param enrolmentInstanceId Instance id of guest enrolment plugin.
-     * @param password Course Password.
-     * @returns Wether the password is valid.
-     */
-    async validateGuestAccessPassword(
-        enrolmentInstanceId: number,
-        password: string,
-    ): Promise<EnrolGuestValidatePasswordWSResponse> {
-        const site = CoreSites.getCurrentSite();
-
-        if (!site) {
-            return {
-                validated: false,
-            };
-        }
-        const preSets: CoreSiteWSPreSets = {
-            getFromCache: false,
-            saveToCache: false,
-            emergencyCache: false,
-        };
-
-        const params: EnrolGuestValidatePasswordWSParams = {
-            instanceid: enrolmentInstanceId,
-            password,
-        };
-
-        return await site.read<EnrolGuestValidatePasswordWSResponse>('enrol_guest_validate_password', params, preSets);
+    async getCourseGuestEnrolmentInfo(instanceId: number, siteId?: string): Promise<AddonEnrolGuestInfo> {
+        return AddonEnrolGuest.getGuestEnrolmentInfo(instanceId, siteId);
     }
 
     /**
@@ -1116,14 +1038,13 @@ export class CoreCoursesProvider {
     /**
      * Invalidates get course enrolment methods WS call.
      *
-     * @param id Course ID.
+     * @param courseId Course ID.
      * @param siteId Site Id. If not defined, use current site.
      * @returns Promise resolved when the data is invalidated.
+     * @deprecated since 4.3, use CoreEnrol.invalidateCourseEnrolmentMethods instead.
      */
-    async invalidateCourseEnrolmentMethods(id: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.getSite(siteId);
-
-        await site.invalidateWsCacheForKey(this.getCourseEnrolmentMethodsCacheKey(id));
+    async invalidateCourseEnrolmentMethods(courseId: number, siteId?: string): Promise<void> {
+        return CoreEnrol.invalidateCourseEnrolmentMethods(courseId, siteId);
     }
 
     /**
@@ -1132,11 +1053,10 @@ export class CoreCoursesProvider {
      * @param instanceId Guest instance ID.
      * @param siteId Site Id. If not defined, use current site.
      * @returns Promise resolved when the data is invalidated.
+     * @deprecated since 4.3, use CoreEnrolDelegate.invalidate instead.
      */
     async invalidateCourseGuestEnrolmentInfo(instanceId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.getSite(siteId);
-
-        await site.invalidateWsCacheForKey(this.getCourseGuestEnrolmentInfoCacheKey(instanceId));
+        return AddonEnrolGuest.invalidateGuestEnrolmentInfo(instanceId, siteId);
     }
 
     /**
@@ -1271,16 +1191,6 @@ export class CoreCoursesProvider {
     }
 
     /**
-     * Check if WS to retrieve guest enrolment data is available.
-     *
-     * @returns Whether guest WS is available.
-     * @deprecated since app 3.9.5
-     */
-    isGuestWSAvailable(): boolean {
-        return true;
-    }
-
-    /**
      * Report a dashboard or my courses page view event.
      *
      * @param page Page to view.
@@ -1339,42 +1249,10 @@ export class CoreCoursesProvider {
      * @param siteId Site ID. If not defined, use current site.
      * @returns Promise resolved if the user is enrolled. If the password is invalid, the promise is rejected
      *         with an object with errorcode = CoreCoursesProvider.ENROL_INVALID_KEY.
+     * @deprecated since 4.3, use CoreEnrolDelegate.enrol instead.
      */
     async selfEnrol(courseId: number, password: string = '', instanceId?: number, siteId?: string): Promise<boolean> {
-
-        const site = await CoreSites.getSite(siteId);
-
-        const params: EnrolSelfEnrolUserWSParams = {
-            courseid: courseId,
-            password: password,
-        };
-        if (instanceId) {
-            params.instanceid = instanceId;
-        }
-
-        const response = await site.write<CoreStatusWithWarningsWSResponse>('enrol_self_enrol_user', params);
-
-        if (!response) {
-            throw Error('WS enrol_self_enrol_user failed');
-        }
-
-        if (response.status) {
-            return true;
-        }
-
-        if (response.warnings && response.warnings.length) {
-            // Invalid password warnings.
-            const warning = response.warnings.find((warning) =>
-                warning.warningcode == '2' || warning.warningcode == '3' || warning.warningcode == '4');
-
-            if (warning) {
-                throw new CoreWSError({ errorcode: CoreCoursesProvider.ENROL_INVALID_KEY, message: warning.message });
-            } else {
-                throw new CoreWSError(response.warnings[0]);
-            }
-        }
-
-        throw Error('WS enrol_self_enrol_user failed without warnings');
+        return AddonEnrolSelf.selfEnrol(courseId, password, instanceId, siteId);
     }
 
     /**
@@ -1824,49 +1702,18 @@ export type CoreCourseUserAdminOrNavOptionIndexed = {
 };
 
 /**
- * Params of core_enrol_get_course_enrolment_methods WS.
- */
-type CoreEnrolGetCourseEnrolmentMethodsWSParams = {
-    courseid: number; // Course id.
-};
-
-/**
- * Data returned by core_enrol_get_course_enrolment_methods WS.
- */
-type CoreEnrolGetCourseEnrolmentMethodsWSResponse = CoreCourseEnrolmentMethod[];
-
-/**
  * Course enrolment basic info.
+ *
+ * @deprecated since 4.3 use CoreEnrolEnrolmentInfo instead.
  */
-export type CoreCourseEnrolmentInfo = {
-    id: number; // Id of course enrolment instance.
-    courseid: number; // Id of course.
-    type: string; // Type of enrolment plugin.
-    name: string; // Name of enrolment plugin.
-};
+export type CoreCourseEnrolmentInfo = CoreEnrolEnrolmentInfo;
 
 /**
  * Course enrolment method.
+ *
+ * @deprecated since 4.3 use CoreEnrolEnrolmentMethod instead.
  */
-export type CoreCourseEnrolmentMethod = CoreCourseEnrolmentInfo & {
-    wsfunction?: string; // Webservice function to get more information.
-    status: string; // Status of enrolment plugin. True if successful, else error message or false.
-};
-
-/**
- * Params of enrol_guest_get_instance_info WS.
- */
-type EnrolGuestGetInstanceInfoWSParams = {
-    instanceid: number; // Instance id of guest enrolment plugin.
-};
-
-/**
- * Data returned by enrol_guest_get_instance_info WS.
- */
-export type EnrolGuestGetInstanceInfoWSResponse = {
-    instanceinfo: CoreCourseEnrolmentGuestMethod;
-    warnings?: CoreWSExternalWarning[];
-};
+export type CoreCourseEnrolmentMethod = CoreEnrolEnrolmentMethod;
 
 /**
  * Params of core_course_get_recent_courses WS.
@@ -1886,23 +1733,6 @@ export type CoreCourseGetRecentCoursesOptions = CoreSitesCommonWSOptions & {
     limit?: number; // Result set limit.
     offset?: number; // Result set offset.
     sort?: string; // Sort string.
-};
-
-/**
- * Course guest enrolment method.
- */
-export type CoreCourseEnrolmentGuestMethod = CoreCourseEnrolmentInfo & {
-    passwordrequired: boolean; // Is a password required?
-    status: boolean; // Is the enrolment enabled?
-};
-
-/**
- * Params of enrol_self_enrol_user WS.
- */
-type EnrolSelfEnrolUserWSParams = {
-    courseid: number; // Id of the course.
-    password?: string; // Enrolment key.
-    instanceid?: number; // Instance id of self enrolment plugin.
 };
 
 /**
@@ -1926,23 +1756,6 @@ export type CoreCourseAnyCourseData = CoreEnrolledCourseData | CoreCourseSearche
 export type CoreCourseAnyCourseDataWithOptions = CoreCourseAnyCourseData & {
     navOptions?: CoreCourseUserAdminOrNavOptionIndexed;
     admOptions?: CoreCourseUserAdminOrNavOptionIndexed;
-};
-
-/**
- * Params of enrol_guest_validate_password WS.
- */
-type EnrolGuestValidatePasswordWSParams = {
-    instanceid: number; // instance id of guest enrolment plugin
-    password: string; // the course password
-};
-
-/**
- * Data returned by enrol_guest_get_instance_info WS.
- */
-export type EnrolGuestValidatePasswordWSResponse = {
-    validated: boolean; // Whether the password was successfully validated
-    hint?: string; // Password hint (if enabled)
-    warnings?: CoreWSExternalWarning[];
 };
 
 /**

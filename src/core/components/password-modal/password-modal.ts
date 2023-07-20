@@ -61,7 +61,12 @@ export class CorePasswordModalComponent {
             ModalController.dismiss(response);
         }
 
-        this.error = response.error;
+        if (typeof response.error === 'string') {
+            this.error = response.error;
+        } else if (response.error) {
+            ModalController.dismiss(response.error);
+        }
+
     }
 
     /**

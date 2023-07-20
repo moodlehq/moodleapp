@@ -357,7 +357,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
      *
      * @param course The course object.
      * @param refresh True if it should refresh the list.
-     * @param isGuest Whether it's guest.
+     * @param isGuest Whether user is using an ACCESS_GUEST enrolment method.
      * @param navOptions Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
      * @param admOptions Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
      * @returns Promise resolved with array of handlers.
@@ -379,7 +379,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
      *
      * @param course The course object.
      * @param refresh True if it should refresh the list.
-     * @param isGuest Whether it's guest.
+     * @param isGuest Whether user is using an ACCESS_GUEST enrolment method.
      * @param navOptions Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
      * @param admOptions Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
      * @returns Promise resolved with array of handlers.
@@ -402,7 +402,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
      * @param menu If true, gets menu handlers; false, gets tab handlers
      * @param course The course object.
      * @param refresh True if it should refresh the list.
-     * @param isGuest Whether it's guest.
+     * @param isGuest Whether user is using an ACCESS_GUEST enrolment method.
      * @param navOptions Course navigation options for current user. See CoreCoursesProvider.getUserNavigationOptions.
      * @param admOptions Course admin options for current user. See CoreCoursesProvider.getUserAdministrationOptions.
      * @returns Promise resolved with array of handlers.

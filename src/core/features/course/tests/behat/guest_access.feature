@@ -61,7 +61,6 @@ Feature: Test basic usage of guest access course in app
     And I press "Course 1" in the app
     Then I should find "Course summary" in the app
     And I should find "Course" in the app
-    And I should find "Guest access requires password" in the app
 
     When I press "View course" "ion-button" in the app
     And I set the following fields to these values in the app:

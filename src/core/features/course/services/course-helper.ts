@@ -74,6 +74,8 @@ import { CoreCourseWithImageAndColor } from '@features/courses/services/courses-
 import { CoreCourseSummaryPage } from '../pages/course-summary/course-summary.page';
 import { CoreRemindersPushNotificationData } from '@features/reminders/services/reminders';
 import { CoreLocalNotifications } from '@services/local-notifications';
+import { AddonEnrolGuest } from '@addons/enrol/guest/services/guest';
+import { CoreEnrol } from '@features/enrol/services/enrol';
 
 /**
  * Prefetch info of a module.
@@ -622,19 +624,16 @@ export class CoreCourseHelperProvider {
             }
 
             // Check if guest access is enabled.
-            const enrolmentMethods = await CoreCourses.getCourseEnrolmentMethods(courseId, siteId);
-
-            const method = enrolmentMethods.find((method) => method.type === 'guest');
-
-            if (!method) {
+            const enrolmentMethods = await CoreEnrol.getSupportedCourseEnrolmentMethods(courseId, { type: 'guest', siteId });
+            if (!enrolmentMethods) {
                 return { guestAccess: false };
             }
 
-            const info = await CoreCourses.getCourseGuestEnrolmentInfo(method.id);
+            const info = await AddonEnrolGuest.getGuestEnrolmentInfo(enrolmentMethods[0].id);
 
             // Don't allow guest access if it requires a password and it's available.
             return {
-                guestAccess: info.status && (!info.passwordrequired || CoreCourses.isValidateGuestAccessPasswordAvailable()),
+                guestAccess: info.status && (!info.passwordrequired || AddonEnrolGuest.isValidateGuestAccessPasswordAvailable()),
                 passwordRequired: info.passwordrequired,
             };
         } catch {
@@ -2151,7 +2150,7 @@ export type CoreCoursePrefetchCourseOptions = {
     sections?: CoreCourseWSSection[]; // List of course sections.
     courseHandlers?: CoreCourseOptionsHandlerToDisplay[]; // List of course handlers.
     menuHandlers?: CoreCourseOptionsMenuHandlerToDisplay[]; // List of course menu handlers.
-    isGuest?: boolean; // Whether the user is guest.
+    isGuest?: boolean; // Whether the user is using an ACCESS_GUEST enrolment method.
 };
 
 /**

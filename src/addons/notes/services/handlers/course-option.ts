@@ -47,8 +47,8 @@ export class AddonNotesCourseOptionHandlerService implements CoreCourseOptionsHa
         accessData: CoreCourseAccess,
         navOptions?: CoreCourseUserAdminOrNavOptionIndexed,
     ): Promise<boolean> {
-        if (accessData && accessData.type == CoreCourseProvider.ACCESS_GUEST) {
-            return false; // Not enabled for guests.
+        if (accessData && accessData.type === CoreCourseProvider.ACCESS_GUEST) {
+            return false; // Not enabled for guest access.
         }
 
         if (navOptions && navOptions.notes !== undefined) {
