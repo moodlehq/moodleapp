@@ -496,7 +496,7 @@
   "addon.mod_chat.nosessionsfound": "local_moodlemobileapp",
   "addon.mod_chat.saidto": "chat",
   "addon.mod_chat.send": "chat",
-  "addon.mod_chat.sessionstart": "chat",
+  "addon.mod_chat.sessionstartsin": "chat",
   "addon.mod_chat.showincompletesessions": "local_moodlemobileapp",
   "addon.mod_chat.talk": "chat",
   "addon.mod_chat.viewreport": "chat",

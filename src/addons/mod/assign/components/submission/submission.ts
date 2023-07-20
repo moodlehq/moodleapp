@@ -127,6 +127,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
     canSaveGrades = false; // Whether the user can save the grades.
     allowAddAttempt = false; // Allow adding a new attempt when grading.
     gradeUrl?: string; // URL to grade in browser.
+    submissionUrl?: string; // URL to add/edit a submission in browser.
     isPreviousAttemptEmpty = true; // Whether the previous attempt contains an empty submission.
     showDates = false; // Whether to show some dates.
     timeLimitFinished = false; // Whether there is a time limit and it finished, so the user will submit late.
@@ -793,6 +794,12 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
      */
     protected async loadUnsupportedPlugins(): Promise<void> {
         this.unsupportedEditPlugins = await AddonModAssign.getUnsupportedEditPlugins(this.userSubmission?.plugins || []);
+
+        if (this.unsupportedEditPlugins && !this.submissionUrl) {
+            const mod = await CoreCourse.getModule(this.moduleId, this.courseId, undefined, true);
+            this.submissionUrl = `${mod.url}&action=editsubmission`;
+        }
+
     }
 
     /**
