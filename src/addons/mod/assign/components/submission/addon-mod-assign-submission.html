@@ -205,7 +205,8 @@
                                     <ion-label>
                                         <ng-container
                                             *ngIf="unsupportedEditPlugins && unsupportedEditPlugins.length && !showErrorStatementEdit">
-                                            <p>{{ 'addon.mod_assign.erroreditpluginsnotsupported' | translate }}</p>
+                                            <p class="ion-padding-horizontal">
+                                                {{ 'addon.mod_assign.erroreditpluginsnotsupported' | translate }}</p>
                                             <ul>
                                                 <li *ngFor="let name of unsupportedEditPlugins">{{ name }}</li>
                                             </ul>
