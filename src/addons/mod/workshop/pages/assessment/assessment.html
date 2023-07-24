@@ -66,7 +66,7 @@
                         {{ 'addon.mod_workshop.assessmentweight' | translate }}
                     </span>
                 </ion-label>
-                <ion-select formControlName="weight" required="true" interface="action-sheet"
+                <ion-select formControlName="weight" required="true" interface="action-sheet" [cancelText]="'core.cancel' | translate"
                     [interfaceOptions]="{header: 'addon.mod_workshop.assessmentweight' | translate}">
                     <ion-select-option *ngFor="let w of weights" [value]="w">{{ w }}</ion-select-option>
                 </ion-select>
@@ -79,7 +79,7 @@
             </ion-item>
             <ion-item class="ion-text-wrap" *ngIf="access?.canoverridegrades">
                 <ion-label position="stacked">{{ 'addon.mod_workshop.gradinggradeover' | translate }}</ion-label>
-                <ion-select formControlName="grade" interface="action-sheet"
+                <ion-select formControlName="grade" interface="action-sheet" [cancelText]="'core.cancel' | translate"
                     [interfaceOptions]="{header: 'addon.mod_workshop.gradinggradeover' | translate}">
                     <ion-select-option *ngFor="let grade of evaluationGrades" [value]="grade.value">
                         {{grade.label}}

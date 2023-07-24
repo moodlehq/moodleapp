@@ -16,7 +16,7 @@
                 <p class="item-heading">{{ 'core.settings.language' | translate }}</p>
             </ion-label>
             <ion-select [(ngModel)]="selectedLanguage" (ionChange)="languageChanged($event)" interface="action-sheet"
-                [interfaceOptions]="{header: 'core.settings.language' | translate}">
+                [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'core.settings.language' | translate}">
                 <ion-select-option *ngFor="let entry of languages" [value]="entry.code">{{ entry.name }}</ion-select-option>
             </ion-select>
         </ion-item>
@@ -41,7 +41,8 @@
                 <p *ngIf="colorSchemeDisabled" class="text-danger">{{ 'core.settings.forcedsetting' | translate }}</p>
             </ion-label>
             <ion-select [(ngModel)]="selectedScheme" (ionChange)="colorSchemeChanged($event)" interface="action-sheet"
-                [disabled]="colorSchemeDisabled" [interfaceOptions]="{header: 'core.settings.colorscheme' | translate}">
+                [cancelText]="'core.cancel' | translate" [disabled]="colorSchemeDisabled"
+                [interfaceOptions]="{header: 'core.settings.colorscheme' | translate}">
                 <ion-select-option *ngFor="let scheme of colorSchemes" [value]="scheme">
                     {{ 'core.settings.colorscheme-' + scheme | translate }}</ion-select-option>
             </ion-select>

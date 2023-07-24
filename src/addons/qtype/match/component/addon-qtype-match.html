@@ -17,6 +17,7 @@
         </ion-label>
         <ion-select id="{{row.id}}" [name]="row.name" [(ngModel)]="row.selected" interface="action-sheet"
             [attr.aria-labelledby]="'addon-qtype-match-question-' + row.id" [disabled]="row.disabled"
+            [cancelText]="'core.cancel' | translate"
             [ngClass]="{'addon-qtype-match-correct': row.isCorrect === 1,'addon-qtype-match-incorrect': row.isCorrect === 0}">
             <ion-select-option *ngFor="let option of row.options" [value]="option.value">
                 {{option.label}}

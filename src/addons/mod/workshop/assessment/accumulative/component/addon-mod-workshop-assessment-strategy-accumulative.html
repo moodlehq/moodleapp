@@ -14,7 +14,8 @@
                 </span>
             </ion-label>
             <ion-select [interfaceOptions]="{header: 'addon.mod_workshop_assessment_accumulative.dimensiongradefor' |
-                    translate : {'$a': field.dimtitle }}" [(ngModel)]="selectedValues[n].grade" interface="action-sheet">
+                    translate : {'$a': field.dimtitle }}" [(ngModel)]="selectedValues[n].grade" [cancelText]="'core.cancel' | translate"
+                interface="action-sheet">
                 <ion-select-option *ngFor="let grade of field.grades" [value]="grade.value">{{grade.label}}</ion-select-option>
             </ion-select>
             <core-input-errors *ngIf="fieldErrors['grade_' + n]" [errorText]="fieldErrors['grade_' + n]">

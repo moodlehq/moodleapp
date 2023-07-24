@@ -49,7 +49,7 @@
                     <ion-label>{{ 'addon.mod_forum.group' | translate }}</ion-label>
                     <ion-select [(ngModel)]="newDiscussion.groupId" [disabled]="newDiscussion.postToAllGroups" interface="action-sheet"
                         name="groupid" [interfaceOptions]="{header: 'addon.mod_forum.group' | translate}"
-                        (ionChange)="calculateGroupName()">
+                        [cancelText]="'core.cancel' | translate" (ionChange)="calculateGroupName()">
                         <ion-select-option *ngFor="let group of groups" [value]="group.id">
                             <core-format-text [text]="group.name" contextLevel="course" [contextInstanceId]="courseId"
                                 [wsNotFiltered]="true"></core-format-text>
