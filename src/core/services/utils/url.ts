@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreLang } from '@services/lang';
+import { CoreLang, CoreLangFormat } from '@services/lang';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreConstants } from '@/core/constants';
 import { makeSingleton } from '@singletons';
@@ -260,7 +260,7 @@ export class CoreUrlUtilsProvider {
         }
 
         try {
-            let lang = await CoreLang.getCurrentLanguage();
+            let lang = await CoreLang.getCurrentLanguage(CoreLangFormat.LMS);
             lang = CoreLang.getParentLanguage() || lang;
 
             return docsUrl.replace('/en/', '/' + lang + '/');

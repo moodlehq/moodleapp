@@ -42,7 +42,7 @@ import { CorePlatform } from '@services/platform';
 import { CoreSiteError, CoreSiteErrorOptions } from '@classes/errors/siteerror';
 import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
 import { CoreSites } from '@services/sites';
-import { CoreLang } from './lang';
+import { CoreLang, CoreLangFormat } from './lang';
 
 /**
  * This service allows performing WS calls and download/upload files.
@@ -445,7 +445,7 @@ export class CoreWSProvider {
             args: this.convertValuesToString(data),
         }];
 
-        const lang = await CoreLang.getCurrentLanguage();
+        const lang = await CoreLang.getCurrentLanguage(CoreLangFormat.LMS);
 
         // The info= parameter has no function. It is just to help with debugging.
         // We call it info to match the parameter name use by Moodle's AMD ajax module.
