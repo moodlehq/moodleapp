@@ -173,8 +173,8 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
      *
      * @param text The new text.
      */
-    onDefinitionChange(text: string): void {
-        this.data.definition = text;
+    onDefinitionChange(text?: string | null): void {
+        this.data.definition = text ?? '';
     }
 
     /**

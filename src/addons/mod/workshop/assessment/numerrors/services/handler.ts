@@ -112,9 +112,7 @@ export class AddonModWorkshopAssessmentStrategyNumErrorsHandlerService implement
                     hasErrors = true;
                 }
 
-                if (currentValues[idx].peercomment) {
-                    data['peercomment__idx_' + idx] = currentValues[idx].peercomment;
-                }
+                data['peercomment__idx_' + idx] = currentValues[idx].peercomment ?? '';
 
                 data['gradeid__idx_' + idx] = parseInt(form.current[idx].gradeid, 10) || 0;
                 data['dimensionid__idx_' + idx] = parseInt(field.dimensionid, 10);

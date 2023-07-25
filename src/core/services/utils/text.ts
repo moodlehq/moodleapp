@@ -332,7 +332,7 @@ export class CoreTextUtilsProvider {
      * @param text Text to count.
      * @returns Number of words.
      */
-    countWords(text: string): number {
+    countWords(text?: string | null): number {
         if (!text || typeof text != 'string') {
             return 0;
         }
