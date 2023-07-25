@@ -55,7 +55,7 @@
         <param name="ios-package" onload="true" value="CDVStatusBar" />
     </feature>
     <platform name="android">
-        <preference name="AndroidWindowSplashScreenAnimatedIcon" value="resources/android/icon-foreground.png" />
+        <preference name="AndroidWindowSplashScreenAnimatedIcon" value="resources/android/android-splash.xml" />
         <preference name="AndroidWindowSplashScreenBackground" value="#FFFFFF" />
         <preference name="AndroidWindowSplashScreenIconBackgroundColor" value="#FFFFFF" />
         <resource-file src="MainActivity.java" target="app/src/main/java/com/moodle/moodlemobile/MainActivity.java" />
