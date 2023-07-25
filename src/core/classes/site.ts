@@ -42,7 +42,7 @@ import { CoreWSError } from '@classes/errors/wserror';
 import { CoreLogger } from '@singletons/logger';
 import { Translate } from '@singletons';
 import { CoreIonLoadingElement } from './ion-loading';
-import { CoreLang } from '@services/lang';
+import { CoreLang, CoreLangFormat } from '@services/lang';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { asyncInstance, AsyncInstance } from '../utils/async-instance';
 import { CoreDatabaseTable } from './database/database-table';
@@ -970,7 +970,7 @@ export class CoreSite {
         // Moodle uses underscore instead of dash.
         data = {
             ...data,
-            moodlewssettinglang: (preSets.lang ?? await CoreLang.getCurrentLanguage()).replace('-', '_'),
+            moodlewssettinglang: CoreLang.formatLanguage(preSets.lang ?? await CoreLang.getCurrentLanguage(), CoreLangFormat.LMS),
         };
 
         try {

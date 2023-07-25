@@ -14,7 +14,7 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 
-import { CoreLang } from '@services/lang';
+import { CoreLang, CoreLangFormat } from '@services/lang';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CorePath } from '@singletons/path';
@@ -52,7 +52,7 @@ export class CoreRecaptchaComponent implements OnInit {
      * Initialize the lang property.
      */
     protected async initLang(): Promise<void> {
-        this.lang = await CoreLang.getCurrentLanguage();
+        this.lang = await CoreLang.getCurrentLanguage(CoreLangFormat.LMS);
     }
 
     /**

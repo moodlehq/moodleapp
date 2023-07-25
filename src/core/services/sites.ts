@@ -62,7 +62,7 @@ import { asyncInstance, AsyncInstance } from '../utils/async-instance';
 import { CoreConfig } from './config';
 import { CoreNetwork } from '@services/network';
 import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
-import { CoreLang } from '@services/lang';
+import { CoreLang, CoreLangFormat } from '@services/lang';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 export const CORE_SITE_CURRENT_SITE_ID_CONFIG = 'current_site_id';
@@ -419,7 +419,7 @@ export class CoreSitesProvider {
         siteUrl = CoreUrlUtils.removeUrlParams(siteUrl);
 
         try {
-            const lang = await CoreLang.getCurrentLanguage();
+            const lang = await CoreLang.getCurrentLanguage(CoreLangFormat.LMS);
 
             data = await Http.post(`${siteUrl}/login/token.php?lang=${lang}`, { appsitecheck: 1 })
                 .pipe(timeout(CoreWS.getRequestTimeout()))
@@ -484,7 +484,7 @@ export class CoreSitesProvider {
         }
 
         service = service || CoreConstants.CONFIG.wsservice;
-        const lang = await CoreLang.getCurrentLanguage();
+        const lang = await CoreLang.getCurrentLanguage(CoreLangFormat.LMS);
         const params = {
             username,
             password,

@@ -20,7 +20,7 @@ import { CoreCourseAnyModuleData } from '@features/course/services/course';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreApp } from '@services/app';
 import { CoreFilepool } from '@services/filepool';
-import { CoreLang } from '@services/lang';
+import { CoreLang, CoreLangFormat } from '@services/lang';
 import { CoreSites } from '@services/sites';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
@@ -81,7 +81,7 @@ export class CoreSitePluginsProvider {
         args = args || {};
         site = site || CoreSites.getCurrentSite();
 
-        const lang = await CoreLang.getCurrentLanguage();
+        const lang = await CoreLang.getCurrentLanguage(CoreLangFormat.LMS);
 
         const defaultArgs: CoreSitePluginsDefaultArgs = {
             userid: <number> args.userid ?? site?.getUserId(),
