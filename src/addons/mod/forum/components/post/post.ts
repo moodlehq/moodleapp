@@ -332,8 +332,8 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
      *
      * @param text The new text.
      */
-    onMessageChange(text: string): void {
-        this.formData.message = text;
+    onMessageChange(text?: string | null): void {
+        this.formData.message = text ?? '';
     }
 
     /**

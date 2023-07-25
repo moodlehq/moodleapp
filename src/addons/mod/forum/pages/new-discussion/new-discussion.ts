@@ -511,8 +511,8 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
      *
      * @param text The new text.
      */
-    onMessageChange(text: string): void {
-        this.newDiscussion.message = text;
+    onMessageChange(text?: string | null): void {
+        this.newDiscussion.message = text ?? '';
     }
 
     /**
