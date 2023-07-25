@@ -296,6 +296,7 @@
                                 <p class="item-heading">{{ 'addon.mod_assign.grade' | translate }}</p>
                             </ion-label>
                             <ion-select [(ngModel)]="grade.grade" interface="action-sheet" [disabled]="grade.disabled"
+                                [cancelText]="'core.cancel' | translate"
                                 [interfaceOptions]="{header: 'addon.mod_assign.grade' | translate}">
                                 <ion-select-option *ngFor="let grade of grade.scale" [value]="grade.value">
                                     {{grade.label}}
@@ -309,7 +310,8 @@
                                 <p class="item-heading">{{ outcome.name }}</p>
                             </ion-label>
                             <ion-select *ngIf="canSaveGrades && outcome.itemNumber" [(ngModel)]="outcome.selectedId"
-                                interface="action-sheet" [disabled]="gradeInfo!.disabled" [interfaceOptions]="{header: outcome.name }">
+                                interface="action-sheet" [disabled]="gradeInfo!.disabled" [cancelText]="'core.cancel' | translate"
+                                [interfaceOptions]="{header: outcome.name }">
                                 <ion-select-option *ngFor="let grade of outcome.options" [value]="grade.value">
                                     {{grade.label}}
                                 </ion-select-option>

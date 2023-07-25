@@ -12,7 +12,7 @@
             <ng-container *ngIf="groupInfo.visibleGroups">{{'core.groupsvisible' | translate }}</ng-container>
         </ion-label>
         <ion-select [(ngModel)]="selected" (ionChange)="selectedChange.emit(selected)" interface="action-sheet"
-            [interfaceOptions]="{header: 'core.group' | translate}">
+            [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'core.group' | translate}">
             <ion-select-option *ngFor="let group of groupInfo.groups" [value]=" group.id">
                 <core-format-text [text]="group.name" contextLevel="course" [contextInstanceId]="courseId" [wsNotFiltered]="true">
                 </core-format-text>

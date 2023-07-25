@@ -43,7 +43,7 @@
                 </ion-label>
                 <p *ngIf="eventTypes.length == 1" slot="end">{{eventTypes[0].name | translate }}</p>
                 <ion-select *ngIf="eventTypes.length > 1" formControlName="eventtype" interface="action-sheet"
-                    [interfaceOptions]="{header: 'addon.calendar.eventkind' | translate}">
+                    [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'addon.calendar.eventkind' | translate}">
                     <ion-select-option *ngFor="let type of eventTypes" [value]="type.value">
                         {{ type.name | translate }}
                     </ion-select-option>
@@ -56,7 +56,7 @@
                     <p class="item-heading" [core-mark-required]="true">{{ 'core.category' | translate }}</p>
                 </ion-label>
                 <ion-select formControlName="categoryid" interface="action-sheet" [placeholder]="'core.noselection' | translate"
-                    [interfaceOptions]="{header: 'core.category' | translate}">
+                    [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'core.category' | translate}">
                     <ion-select-option *ngFor="let category of categories" [value]="category.id">
                         {{ category.name }}
                     </ion-select-option>
@@ -69,7 +69,7 @@
                     <p class="item-heading" [core-mark-required]="true">{{ 'core.course' | translate }}</p>
                 </ion-label>
                 <ion-select formControlName="courseid" interface="action-sheet" [placeholder]="'core.noselection' | translate"
-                    [interfaceOptions]="{header: 'core.course' | translate}">
+                    [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'core.course' | translate}">
                     <ion-select-option *ngFor="let course of courses" [value]="course.id">{{ course.fullname }}</ion-select-option>
                 </ion-select>
             </ion-item>
@@ -82,7 +82,8 @@
                         <p class="item-heading" [core-mark-required]="true">{{ 'core.course' | translate }}</p>
                     </ion-label>
                     <ion-select formControlName="groupcourseid" interface="action-sheet" [placeholder]="'core.noselection' | translate"
-                        (ionChange)="groupCourseSelected()" [interfaceOptions]="{header: 'core.course' | translate}">
+                        [cancelText]="'core.cancel' | translate" (ionChange)="groupCourseSelected()"
+                        [interfaceOptions]="{header: 'core.course' | translate}">
                         <ion-select-option *ngFor="let course of courses" [value]="course.id">
                             {{ course.fullname }}
                         </ion-select-option>
@@ -100,7 +101,7 @@
                         <p class="item-heading" [core-mark-required]="true">{{ 'core.group' | translate }}</p>
                     </ion-label>
                     <ion-select formControlName="groupid" interface="action-sheet" [placeholder]="'core.noselection' | translate"
-                        [interfaceOptions]="{header: 'core.group' | translate}">
+                        [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'core.group' | translate}">
                         <ion-select-option *ngFor="let group of groups" [value]="group.id">{{ group.name }}</ion-select-option>
                     </ion-select>
                 </ion-item>

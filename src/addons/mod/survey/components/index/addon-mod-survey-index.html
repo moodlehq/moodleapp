@@ -68,7 +68,8 @@
                             <ion-col class="ion-hide-md-up" size="5">
                                 <ion-select class="ion-padding" [(ngModel)]="answers[question.name]" [required]="question.required"
                                     [attr.aria-labelledby]="'addon-mod_survey-'+question.name" interface="action-sheet"
-                                    [name]="question.name" [interfaceOptions]="{header: question.text}">
+                                    [name]="question.name" [cancelText]="'core.cancel' | translate"
+                                    [interfaceOptions]="{header: question.text}">
                                     <ion-select-option value="-1" selected disabled>{{ 'core.choose' | translate }}</ion-select-option>
                                     <ion-select-option *ngFor="let option of question.optionsArray; let value=index;" [value]="value +1">
                                         {{option}}
@@ -90,7 +91,7 @@
                         <ion-col size="5">
                             <ion-select class="ion-padding" [(ngModel)]="answers[question.name]" [required]="question.required"
                                 [attr.aria-labelledby]="'addon-mod_survey-'+question.name" interface="action-sheet" [name]="question.name"
-                                [interfaceOptions]="{header: question.text}">
+                                [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: question.text}">
                                 <ion-select-option [value]="question.required ? '-1' : '0'" selected [disabled]="question.required">
                                     {{ 'core.choose' | translate }}
                                 </ion-select-option>

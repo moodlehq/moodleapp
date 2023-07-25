@@ -54,7 +54,8 @@
                         <ion-label position="stacked">
                             <span core-mark-required="true">{{ 'core.wheredoyoulive' | translate }}</span>
                         </ion-label>
-                        <ion-select name="country" formControlName="country" [placeholder]="'core.login.selectacountry' | translate">
+                        <ion-select name="country" formControlName="country" [cancelText]="'core.cancel' | translate"
+                            [okText]="'core.ok' | translate" [placeholder]="'core.login.selectacountry' | translate">
                             <ion-select-option value="">{{ 'core.login.selectacountry' | translate }}</ion-select-option>
                             <ion-select-option *ngFor="let country of countries" [value]="country.code">{{country.name}}</ion-select-option>
                         </ion-select>
@@ -160,8 +161,8 @@
                     </ion-item>
                     <ion-item class="ion-text-wrap">
                         <ion-label position="stacked">{{ 'core.user.country' | translate }}</ion-label>
-                        <ion-select name="country" formControlName="country" [placeholder]="'core.login.selectacountry' | translate">
-
+                        <ion-select name="country" formControlName="country" [placeholder]="'core.login.selectacountry' | translate"
+                            [cancelText]="'core.cancel' | translate" [okText]="'core.ok' | translate">
                             <ion-select-option value="">{{ 'core.login.selectacountry' | translate }}</ion-select-option>
                             <ion-select-option *ngFor="let country of countries" [value]="country.code">{{country.name}}</ion-select-option>
                         </ion-select>

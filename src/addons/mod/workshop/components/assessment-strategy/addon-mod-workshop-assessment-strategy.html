@@ -45,7 +45,7 @@
                         {{ 'addon.mod_workshop.assessmentweight' | translate }}
                     </span>
                 </ion-label>
-                <ion-select [(ngModel)]="weight" interface="action-sheet" name="weight"
+                <ion-select [(ngModel)]="weight" interface="action-sheet" name="weight" [cancelText]="'core.cancel' | translate"
                     [interfaceOptions]="{header: 'addon.mod_workshop.assessmentweight' | translate}">
                     <ion-select-option *ngFor="let w of weights" [value]="w">{{w}}</ion-select-option>
                 </ion-select>
