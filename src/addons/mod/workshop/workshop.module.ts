@@ -23,27 +23,35 @@ import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { AddonModWorkshopAssessmentStrategyModule } from './assessment/assessment.module';
 import { AddonModWorkshopComponentsModule } from './components/components.module';
-import { AddonWorkshopAssessmentStrategyDelegateService } from './services/assessment-strategy-delegate';
 import { ADDON_MOD_WORKSHOP_OFFLINE_SITE_SCHEMA } from './services/database/workshop';
 import { AddonModWorkshopIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModWorkshopListLinkHandler } from './services/handlers/list-link';
 import { AddonModWorkshopModuleHandler } from './services/handlers/module';
-import { AddonModWorkshopProvider } from './services/workshop';
-import { AddonModWorkshopHelperProvider } from './services/workshop-helper';
-import { AddonModWorkshopOfflineProvider } from './services/workshop-offline';
-import { AddonModWorkshopSyncProvider } from './services/workshop-sync';
 import { ADDON_MOD_WORKSHOP_COMPONENT, ADDON_MOD_WORKSHOP_PAGE_NAME } from '@addons/mod/workshop/constants';
 import { getCronHandlerInstance } from '@addons/mod/workshop/services/handlers/sync-cron';
 import { getPrefetchHandlerInstance } from '@addons/mod/workshop/services/handlers/prefetch';
 
-// List of providers (without handlers).
-export const ADDON_MOD_WORKSHOP_SERVICES: Type<unknown>[] = [
-    AddonModWorkshopProvider,
-    AddonModWorkshopOfflineProvider,
-    AddonModWorkshopSyncProvider,
-    AddonModWorkshopHelperProvider,
-    AddonWorkshopAssessmentStrategyDelegateService,
-];
+/**
+ * Get workshop services.
+ *
+ * @returns Workshop services.
+ */
+export async function getWorkshopServices(): Promise<Type<unknown>[]> {
+    const { AddonModWorkshopProvider } = await import('@addons/mod/workshop/services/workshop');
+    const { AddonModWorkshopOfflineProvider } = await import('@addons/mod/workshop/services/workshop-offline');
+    const { AddonModWorkshopSyncProvider } = await import('@addons/mod/workshop/services/workshop-sync');
+    const { AddonModWorkshopHelperProvider } = await import('@addons/mod/workshop/services/workshop-helper');
+    const { AddonWorkshopAssessmentStrategyDelegateService } =
+        await import('@addons/mod/workshop/services/assessment-strategy-delegate');
+
+    return [
+        AddonModWorkshopProvider,
+        AddonModWorkshopOfflineProvider,
+        AddonModWorkshopSyncProvider,
+        AddonModWorkshopHelperProvider,
+        AddonWorkshopAssessmentStrategyDelegateService,
+    ];
+}
 
 const routes: Routes = [
     {

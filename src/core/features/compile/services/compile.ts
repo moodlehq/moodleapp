@@ -149,7 +149,7 @@ import { ADDON_MOD_SCORM_SERVICES } from '@addons/mod/scorm/scorm.module';
 import { ADDON_MOD_SURVEY_SERVICES } from '@addons/mod/survey/survey.module';
 import { ADDON_MOD_URL_SERVICES } from '@addons/mod/url/url.module';
 import { ADDON_MOD_WIKI_SERVICES } from '@addons/mod/wiki/wiki.module';
-import { ADDON_MOD_WORKSHOP_SERVICES } from '@addons/mod/workshop/workshop.module';
+import { getWorkshopServices } from '@addons/mod/workshop/workshop.module';
 import { ADDON_NOTES_SERVICES } from '@addons/notes/notes.module';
 import { ADDON_NOTIFICATIONS_SERVICES } from '@addons/notifications/notifications.module';
 import { ADDON_PRIVATEFILES_SERVICES } from '@addons/privatefiles/privatefiles.module';
@@ -317,7 +317,6 @@ export class CoreCompileProvider {
             ...ADDON_MOD_SURVEY_SERVICES,
             ...ADDON_MOD_URL_SERVICES,
             ...ADDON_MOD_WIKI_SERVICES,
-            ...ADDON_MOD_WORKSHOP_SERVICES,
             ...ADDON_NOTES_SERVICES,
             ...ADDON_NOTIFICATIONS_SERVICES,
             ...ADDON_PRIVATEFILES_SERVICES,
@@ -386,6 +385,19 @@ export class CoreCompileProvider {
         CORE_ERRORS_CLASSES.forEach((classDef) => {
             instance[classDef.name] = classDef;
         });
+    }
+
+    /**
+     * Get lazy libraries to inject.
+     *
+     * @returns Lazy libraries.
+     */
+    async getLazyLibraries(): Promise<Type<unknown>[]> {
+        const ADDON_MOD_WORKSHOP_SERVICES = await getWorkshopServices();
+
+        return [
+            ...ADDON_MOD_WORKSHOP_SERVICES,
+        ];
     }
 
     /**
