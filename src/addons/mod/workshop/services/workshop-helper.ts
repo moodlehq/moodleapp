@@ -29,7 +29,6 @@ import {
     AddonModWorkshopExampleMode,
     AddonModWorkshopPhase,
     AddonModWorkshopUserOptions,
-    AddonModWorkshopProvider,
     AddonModWorkshopData,
     AddonModWorkshop,
     AddonModWorkshopSubmissionData,
@@ -42,6 +41,7 @@ import {
     AddonModWorkshopGetAssessmentFormFieldsParsedData,
 } from './workshop';
 import { AddonModWorkshopOffline, AddonModWorkshopOfflineSubmission } from './workshop-offline';
+import { ADDON_MOD_WORKSHOP_COMPONENT } from '@addons/mod/workshop/constants';
 
 /**
  * Helper to gather some common functions for workshop.
@@ -293,7 +293,7 @@ export class AddonModWorkshopHelperProvider {
             return this.storeSubmissionFiles(workshopId, files, siteId);
         }
 
-        return CoreFileUploader.uploadOrReuploadFiles(files, AddonModWorkshopProvider.COMPONENT, workshopId, siteId);
+        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_WORKSHOP_COMPONENT, workshopId, siteId);
     }
 
     /**
@@ -403,7 +403,7 @@ export class AddonModWorkshopHelperProvider {
             return this.storeAssessmentFiles(workshopId, assessmentId, files, siteId);
         }
 
-        return CoreFileUploader.uploadOrReuploadFiles(files, AddonModWorkshopProvider.COMPONENT, workshopId, siteId);
+        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_WORKSHOP_COMPONENT, workshopId, siteId);
     }
 
     /**

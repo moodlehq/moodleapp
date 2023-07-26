@@ -27,13 +27,14 @@ import { AddonWorkshopAssessmentStrategyDelegateService } from './services/asses
 import { ADDON_MOD_WORKSHOP_OFFLINE_SITE_SCHEMA } from './services/database/workshop';
 import { AddonModWorkshopIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModWorkshopListLinkHandler } from './services/handlers/list-link';
-import { AddonModWorkshopModuleHandler, AddonModWorkshopModuleHandlerService } from './services/handlers/module';
-import { AddonModWorkshopPrefetchHandler } from './services/handlers/prefetch';
-import { AddonModWorkshopSyncCronHandler } from './services/handlers/sync-cron';
+import { AddonModWorkshopModuleHandler } from './services/handlers/module';
 import { AddonModWorkshopProvider } from './services/workshop';
 import { AddonModWorkshopHelperProvider } from './services/workshop-helper';
 import { AddonModWorkshopOfflineProvider } from './services/workshop-offline';
 import { AddonModWorkshopSyncProvider } from './services/workshop-sync';
+import { ADDON_MOD_WORKSHOP_COMPONENT, ADDON_MOD_WORKSHOP_PAGE_NAME } from '@addons/mod/workshop/constants';
+import { getCronHandlerInstance } from '@addons/mod/workshop/services/handlers/sync-cron';
+import { getPrefetchHandlerInstance } from '@addons/mod/workshop/services/handlers/prefetch';
 
 // List of providers (without handlers).
 export const ADDON_MOD_WORKSHOP_SERVICES: Type<unknown>[] = [
@@ -46,7 +47,7 @@ export const ADDON_MOD_WORKSHOP_SERVICES: Type<unknown>[] = [
 
 const routes: Routes = [
     {
-        path: AddonModWorkshopModuleHandlerService.PAGE_NAME,
+        path: ADDON_MOD_WORKSHOP_PAGE_NAME,
         loadChildren: () => import('./workshop-lazy.module').then(m => m.AddonModWorkshopLazyModule),
     },
 ];
@@ -68,12 +69,12 @@ const routes: Routes = [
             multi: true,
             useValue: () => {
                 CoreCourseModuleDelegate.registerHandler(AddonModWorkshopModuleHandler.instance);
-                CoreCourseModulePrefetchDelegate.registerHandler(AddonModWorkshopPrefetchHandler.instance);
-                CoreCronDelegate.register(AddonModWorkshopSyncCronHandler.instance);
+                CoreCourseModulePrefetchDelegate.registerHandler(getPrefetchHandlerInstance());
+                CoreCronDelegate.register(getCronHandlerInstance());
                 CoreContentLinksDelegate.registerHandler(AddonModWorkshopIndexLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModWorkshopListLinkHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(AddonModWorkshopProvider.COMPONENT);
+                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_WORKSHOP_COMPONENT);
             },
         },
     ],
