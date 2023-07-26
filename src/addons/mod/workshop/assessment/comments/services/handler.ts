@@ -12,113 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {
-    AddonModWorkshopAssessmentStrategyFieldErrors,
-} from '@addons/mod/workshop/components/assessment-strategy/assessment-strategy';
+import { asyncInstance } from '@/core/utils/async-instance';
 import { AddonWorkshopAssessmentStrategyHandler } from '@addons/mod/workshop/services/assessment-strategy-delegate';
 import {
-    AddonModWorkshopGetAssessmentFormDefinitionData,
-    AddonModWorkshopGetAssessmentFormFieldsParsedData,
-} from '@addons/mod/workshop/services/workshop';
-import { Injectable, Type } from '@angular/core';
-import { makeSingleton, Translate } from '@singletons';
-import { CoreFormFields } from '@singletons/form';
-import { AddonModWorkshopAssessmentStrategyCommentsComponent } from '../component/comments';
+    ADDON_MOD_WORKSHOP_ASSESSMENT_STRATEGY_COMMENTS_NAME,
+    ADDON_MOD_WORKSHOP_ASSESSMENT_STRATEGY_COMMENTS_STRATEGY_NAME,
+} from '@addons/mod/workshop/assessment/constants';
 
-/**
- * Handler for comments assessment strategy plugin.
- */
-@Injectable({ providedIn: 'root' })
-export class AddonModWorkshopAssessmentStrategyCommentsHandlerService implements AddonWorkshopAssessmentStrategyHandler {
+export class AddonModWorkshopAssessmentStrategyCommentsHandlerService {
 
-    name = 'AddonModWorkshopAssessmentStrategyComments';
-    strategyName = 'comments';
-
-    /**
-     * @inheritdoc
-     */
-    async isEnabled(): Promise<boolean> {
-        return true;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    getComponent(): Type<unknown> {
-        return AddonModWorkshopAssessmentStrategyCommentsComponent;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    async getOriginalValues(
-        form: AddonModWorkshopGetAssessmentFormDefinitionData,
-    ): Promise<AddonModWorkshopGetAssessmentFormFieldsParsedData[]> {
-        const originalValues: AddonModWorkshopGetAssessmentFormFieldsParsedData[] = [];
-
-        form.fields.forEach((field, n) => {
-            field.dimtitle = Translate.instant('addon.mod_workshop_assessment_comments.dimensionnumber', { $a: field.number });
-
-            if (!form.current[n]) {
-                form.current[n] = {};
-            }
-
-            originalValues[n] = {};
-            originalValues[n].peercomment = form.current[n].peercomment || '';
-            originalValues[n].number = field.number; // eslint-disable-line id-blacklist
-        });
-
-        return originalValues;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    hasDataChanged(
-        originalValues: AddonModWorkshopGetAssessmentFormFieldsParsedData[],
-        currentValues: AddonModWorkshopGetAssessmentFormFieldsParsedData[],
-    ): boolean {
-        for (const x in originalValues) {
-            if (originalValues[x].peercomment != currentValues[x].peercomment) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    async prepareAssessmentData(
-        currentValues: AddonModWorkshopGetAssessmentFormFieldsParsedData[],
-        form: AddonModWorkshopGetAssessmentFormDefinitionData,
-    ): Promise<CoreFormFields> {
-        const data: CoreFormFields = {};
-        const errors: AddonModWorkshopAssessmentStrategyFieldErrors = {};
-        let hasErrors = false;
-
-        form.fields.forEach((field, idx) => {
-            if (idx < form.dimenssionscount) {
-                if (currentValues[idx].peercomment) {
-                    data['peercomment__idx_' + idx] = currentValues[idx].peercomment;
-                } else {
-                    errors['peercomment_' + idx] = Translate.instant('core.err_required');
-                    hasErrors = true;
-                }
-
-                data['gradeid__idx_' + idx] = parseInt(form.current[idx].gradeid, 10) || 0;
-                data['dimensionid__idx_' + idx] = parseInt(field.dimensionid, 10);
-            }
-        });
-
-        if (hasErrors) {
-            throw errors;
-        }
-
-        return data;
-    }
+    name = ADDON_MOD_WORKSHOP_ASSESSMENT_STRATEGY_COMMENTS_NAME;
+    strategyName = ADDON_MOD_WORKSHOP_ASSESSMENT_STRATEGY_COMMENTS_STRATEGY_NAME;
 
 }
-export const AddonModWorkshopAssessmentStrategyCommentsHandler =
-    makeSingleton(AddonModWorkshopAssessmentStrategyCommentsHandlerService);
+
+/**
+ * Get assessment strategy handler instance.
+ *
+ * @returns Assessment strategy handler.
+ */
+export function getAssessmentStrategyHandlerInstance(): AddonWorkshopAssessmentStrategyHandler {
+    const lazyHandler = asyncInstance(async () => {
+        const { AddonModWorkshopAssessmentStrategyCommentsHandler } = await import('./handler-lazy');
+
+        return AddonModWorkshopAssessmentStrategyCommentsHandler.instance;
+    });
+
+    lazyHandler.setEagerInstance(new AddonModWorkshopAssessmentStrategyCommentsHandlerService());
+
+    return lazyHandler;
+}

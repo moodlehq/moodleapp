@@ -13,15 +13,11 @@
 // limitations under the License.
 
 import { APP_INITIALIZER, NgModule } from '@angular/core';
-import { AddonModWorkshopAssessmentStrategyAccumulativeComponent } from './component/accumulative';
-import { AddonModWorkshopAssessmentStrategyAccumulativeHandler } from './services/handler';
 import { AddonWorkshopAssessmentStrategyDelegate } from '../../services/assessment-strategy-delegate';
 import { CoreSharedModule } from '@/core/shared.module';
+import { getAssessmentStrategyHandlerInstance } from '@addons/mod/workshop/assessment/accumulative/services/handler';
 
 @NgModule({
-    declarations: [
-        AddonModWorkshopAssessmentStrategyAccumulativeComponent,
-    ],
     imports: [
         CoreSharedModule,
     ],
@@ -30,14 +26,9 @@ import { CoreSharedModule } from '@/core/shared.module';
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
-                AddonWorkshopAssessmentStrategyDelegate.registerHandler(
-                    AddonModWorkshopAssessmentStrategyAccumulativeHandler.instance,
-                );
+                AddonWorkshopAssessmentStrategyDelegate.registerHandler(getAssessmentStrategyHandlerInstance());
             },
         },
-    ],
-    exports: [
-        AddonModWorkshopAssessmentStrategyAccumulativeComponent,
     ],
 })
 export class AddonModWorkshopAssessmentStrategyAccumulativeModule {}

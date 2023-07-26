@@ -111,7 +111,7 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
         this.data.moduleId = this.workshop.coursemodule;
         this.data.courseId = this.workshop.course;
 
-        this.componentClass = AddonWorkshopAssessmentStrategyDelegate.getComponentForPlugin(this.strategy);
+        this.componentClass = await AddonWorkshopAssessmentStrategyDelegate.getComponentForPlugin(this.strategy);
         if (this.componentClass) {
             this.overallFeedkback = this.workshop.overallfeedbackmode != AddonModWorkshopOverallFeedbackMode.DISABLED;
             this.overallFeedkbackRequired =
