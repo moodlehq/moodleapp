@@ -149,14 +149,13 @@ import { ADDON_MOD_SCORM_SERVICES } from '@addons/mod/scorm/scorm.module';
 import { ADDON_MOD_SURVEY_SERVICES } from '@addons/mod/survey/survey.module';
 import { ADDON_MOD_URL_SERVICES } from '@addons/mod/url/url.module';
 import { ADDON_MOD_WIKI_SERVICES } from '@addons/mod/wiki/wiki.module';
-import { getWorkshopServices } from '@addons/mod/workshop/workshop.module';
+import { getWorkshopComponentModules, getWorkshopServices } from '@addons/mod/workshop/workshop.module';
 import { ADDON_NOTES_SERVICES } from '@addons/notes/notes.module';
 import { ADDON_NOTIFICATIONS_SERVICES } from '@addons/notifications/notifications.module';
 import { ADDON_PRIVATEFILES_SERVICES } from '@addons/privatefiles/privatefiles.module';
 
 // Import some addon modules that define components, directives and pipes. Only import the important ones.
 import { AddonModAssignComponentsModule } from '@addons/mod/assign/components/components.module';
-import { AddonModWorkshopComponentsModule } from '@addons/mod/workshop/components/components.module';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
 
@@ -180,7 +179,10 @@ export class CoreCompileProvider {
         CoreSharedModule, CoreCourseComponentsModule, CoreCoursesComponentsModule, CoreUserComponentsModule,
         CoreCourseDirectivesModule, CoreQuestionComponentsModule, AddonModAssignComponentsModule,
         CoreBlockComponentsModule, CoreEditorComponentsModule, CoreSearchComponentsModule, CoreSitePluginsDirectivesModule,
-        AddonModWorkshopComponentsModule,
+    ];
+
+    protected readonly LAZY_IMPORTS = [
+        getWorkshopComponentModules,
     ];
 
     constructor(protected injector: Injector, compilerFactory: JitCompilerFactory) {
@@ -205,7 +207,9 @@ export class CoreCompileProvider {
         // Create the component using the template and the class.
         const component = Component({ template })(componentClass);
 
+        const lazyImports = await Promise.all(this.LAZY_IMPORTS.map(getModules => getModules()));
         const imports = [
+            ...CoreArray.flatten(lazyImports),
             ...this.IMPORTS,
             ...extraImports,
         ];

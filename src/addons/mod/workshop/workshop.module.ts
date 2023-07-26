@@ -21,8 +21,7 @@ import { CoreCourseModulePrefetchDelegate } from '@features/course/services/modu
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreCronDelegate } from '@services/cron';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { AddonModWorkshopAssessmentStrategyModule } from './assessment/assessment.module';
-import { AddonModWorkshopComponentsModule } from './components/components.module';
+import { AddonModWorkshopAssessmentStrategyModule } from '@addons/mod/workshop/assessment/assessment.module';
 import { ADDON_MOD_WORKSHOP_OFFLINE_SITE_SCHEMA } from './services/database/workshop';
 import { AddonModWorkshopIndexLinkHandler } from './services/handlers/index-link';
 import { AddonModWorkshopListLinkHandler } from './services/handlers/list-link';
@@ -53,6 +52,17 @@ export async function getWorkshopServices(): Promise<Type<unknown>[]> {
     ];
 }
 
+/**
+ * Get workshop component modules.
+ *
+ * @returns Workshop component modules.
+ */
+export async function getWorkshopComponentModules(): Promise<unknown[]> {
+    const { AddonModWorkshopComponentsModule } = await import('@addons/mod/workshop/components/components.module');
+
+    return [AddonModWorkshopComponentsModule];
+}
+
 const routes: Routes = [
     {
         path: ADDON_MOD_WORKSHOP_PAGE_NAME,
@@ -63,7 +73,6 @@ const routes: Routes = [
 @NgModule({
     imports: [
         CoreMainMenuTabRoutingModule.forChild(routes),
-        AddonModWorkshopComponentsModule,
         AddonModWorkshopAssessmentStrategyModule,
     ],
     providers: [
