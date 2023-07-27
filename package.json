@@ -77,7 +77,7 @@
     "@ionic-native/web-intent": "^5.36.0",
     "@ionic-native/zip": "^5.36.0",
     "@ionic/angular": "^5.9.4",
-    "@moodlehq/cordova-plugin-camera": "6.0.0-moodle.1",
+    "@moodlehq/cordova-plugin-camera": "6.0.0-moodle.2",
     "@moodlehq/cordova-plugin-file-transfer": "1.7.1-moodle.5",
     "@moodlehq/cordova-plugin-inappbrowser": "5.0.0-moodle.3",
     "@moodlehq/cordova-plugin-intent": "2.2.0-moodle.2",
