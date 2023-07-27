@@ -79,11 +79,13 @@ export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
         });
 
         this.logView = CoreTime.once(async () => {
+            await CoreUtils.ignoreErrors(CoreCourses.logView('my'));
+
             CoreAnalytics.logEvent({
-                type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
-                ws: 'core_enrol_get_users_courses',
+                type: CoreAnalyticsEventType.VIEW_ITEM,
+                ws: 'core_my_view_page',
                 name: Translate.instant('core.courses.mycourses'),
-                data: { category: 'course' },
+                data: { category: 'course', page: 'my' },
                 url: '/my/courses.php',
             });
         });
