@@ -302,7 +302,7 @@ core-rich-text-editor .core-rte-editor {
 
     input[type=radio],
     input[type=checkbox] {
-        position: relative;
+        position: relative !important;
 
         --color: var(--text-color);
         --color-checked: var(--color);
@@ -358,6 +358,9 @@ core-rich-text-editor .core-rte-editor {
         top: 2px;
     }
 
+    .form-check-inline .form-check-input {
+        flex-shrink: 0;
+    }
 
     // Atto styles
     // -------------------------
@@ -436,6 +439,14 @@ core-rich-text-editor .core-rte-editor {
     // Bootstrap 4 Styles
     // -------------------------
 
+    // _reboot.scss
+    fieldset {
+        min-width: 0;
+        padding: 0;
+        margin: 0;
+        border: 0;
+    }
+
     // _media.scss
     .media {
         display: flex;
@@ -480,6 +491,44 @@ core-rich-text-editor .core-rte-editor {
         .alert-#{$color-name} p {
             color: var(--color-base);
         }
+    }
+
+    // _forms.scss
+    .form-check {
+        position: relative;
+        display: block;
+        padding-left: 1.25rem;
+    }
+
+    .form-check-input {
+        position: absolute;
+        margin-top: .3rem;
+        margin-left: -1.25rem;
+
+        &[disabled] ~ .form-check-label,
+        &:disabled ~ .form-check-label {
+            color: $gray-600;
+        }
+
+    }
+
+    .form-check-label {
+        margin-bottom: 0;
+    }
+
+    .form-check-inline {
+        display: inline-flex;
+        align-items: center;
+        padding-left: 0;
+        margin-right: .75rem;
+
+        .form-check-input {
+            position: static;
+            margin-top: 0;
+            margin-right: .3125rem;
+            margin-left: 0;
+        }
+
     }
 
     // utilities/_align.scss
