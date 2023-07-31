@@ -174,6 +174,7 @@ export class AddonBlockTimelineProvider {
         const data: AddonCalendarGetActionEventsByTimesortWSParams = {
             timesortfrom,
             limitnum,
+            limittononsuspendedevents: true,
         };
         if (afterEventId) {
             data.aftereventid = afterEventId;
