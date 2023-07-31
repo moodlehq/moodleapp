@@ -1033,11 +1033,29 @@ export class CoreUtilsProvider {
             // Error, use the original path.
         }
 
-        try {
+        const openFile = async (mimetype?: string) => {
             if (this.shouldOpenWithDialog(options)) {
                 await FileOpener.showOpenWithDialog(path, mimetype || '');
             } else {
                 await FileOpener.open(path, mimetype || '');
+            }
+        };
+
+        try {
+            try {
+                await openFile(mimetype);
+            } catch (error) {
+                if (!extension || !error || Number(error.status) !== 9) {
+                    throw error;
+                }
+
+                // Cannot open mimetype. Check if there is a deprecated mimetype for the extension.
+                const deprecatedMimetype = CoreMimetypeUtils.getDeprecatedMimeType(extension);
+                if (!deprecatedMimetype || deprecatedMimetype === mimetype) {
+                    throw error;
+                }
+
+                await openFile(deprecatedMimetype);
             }
         } catch (error) {
             this.logger.error('Error opening file ' + path + ' with mimetype ' + mimetype);
