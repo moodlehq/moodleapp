@@ -118,3 +118,12 @@
 .core-login-default-icon {
     filter: grayscale(100%);
 }
+.site-list .item {
+    border: 1px solid var(--gray-300);
+    .item-inner {
+        border-bottom: none;
+    }
+}
+.site-list .item:first-child {
+    border-bottom: none;
+}

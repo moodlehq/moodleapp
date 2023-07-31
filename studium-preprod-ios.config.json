@@ -1,0 +1,51 @@
+{
+    "app_id": "ca.umontreal.studiump",
+    "appname": "StudiUM Mobile",
+    "versioncode": 41100,
+    "versionname": "4.1.1",
+    "cache_update_frequency_usually": 420000,
+    "cache_update_frequency_often": 1200000,
+    "cache_update_frequency_sometimes": 3600000,
+    "cache_update_frequency_rarely": 43200000,
+    "default_lang": "fr",
+    "languages": {
+        "en": "English",
+        "fr": "Français"
+    },
+    "wsservice": "moodle_mobile_app",
+    "defaultZoomLevel": "none",
+    "zoomlevels": {
+        "none": 100,
+        "medium": 110,
+        "high": 120
+    },
+    "customurlscheme": "studiummobile",
+    "siteurl": [{"name": "StudiUM", "url": "https://studium.umontreal.ca/"}, {"name": "StudiUM formation continue", "url": "https://studiumfc-pre-prod.ena.umontreal.ca/"}],
+    "sitename": "",
+    "multisitesdisplay": "radio",
+    "sitefindersettings": {},
+    "onlyallowlistedsites": false,
+    "skipssoconfirmation": false,
+    "forcedefaultlanguage": false,
+    "privacypolicy": "https:\/\/studium.umontreal.ca\/admin\/tool\/policy\/viewall.php?returnurl=https%3A%2F%2Fstudium.umontreal.ca%2Fmy%2Findex.php",
+    "notificoncolor": "#006bb6",
+    "enableanalytics": false,
+    "enableonboarding": true,
+    "forceColorScheme": "",
+    "forceLoginLogo": false,
+    "ioswebviewscheme": "studiumappfs",
+    "appstores": {
+        "android": "ca.umontreal.studiumprod",
+        "ios": "id1380735206"
+    },
+    "wsrequestqueuelimit": 10,
+    "wsrequestqueuedelay": 100,
+    "calendarreminderdefaultvalue": 3600,
+    "toastDurations": {
+        "short": 2000,
+        "long": 3500,
+        "sticky": 0
+    },
+    "disableTokenFile": false,
+    "docurl": "https://studium.umontreal.ca/mod/page/view.php?id=4792674"
+}

@@ -332,6 +332,11 @@ export class CoreConstants {
     static readonly DONT_SHOW_EXACT_ALARMS_WARNING = 'CoreDontShowScheduleExactWarning';
     static readonly EXACT_ALARMS_WARNING_DISPLAYED = 'CoreScheduleExactWarningModalDisplayed';
 
+    // StudiUM site.
+    static readonly STUDIUM = 'studium';
+    static readonly STUDIUMFC = 'studiumfc';
+    static readonly CURRENT_STUDIUM_SITE = 'currentstudiumsite';
+
     // Config & environment constants.
     static readonly CONFIG = { ...envJson.config } as unknown as EnvironmentConfig; // Data parsed from config.json files.
     static readonly BUILD = envJson.build as unknown as EnvironmentBuild; // Build info.

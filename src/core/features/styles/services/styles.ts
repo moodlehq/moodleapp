@@ -22,6 +22,9 @@ import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { Md5 } from 'ts-md5';
 import { CoreLogger } from '../../../singletons/logger';
+import { CoreConstants } from '@/core/constants';
+import { CoreConfig } from '@services/config';
+import { CoreDomUtils } from '@services/utils/dom';
 
 /**
  * Interface that all style handlers must implement.
@@ -117,6 +120,7 @@ export class CoreStylesService {
                 if (data.siteId == CoreSites.getCurrentSiteId()) {
                     this.unloadTmpStyles();
                     this.enableSiteStyles(data.siteId);
+                    this.setStudiumCurrentSite(data.siteurl);
                 }
             } catch (error) {
                 this.logger.error('Error adding styles for new site', error);
@@ -136,11 +140,16 @@ export class CoreStylesService {
         CoreEvents.on(CoreEvents.LOGIN, (data) => {
             this.unloadTmpStyles();
             this.enableSiteStyles(data.siteId);
+            const currentsite = CoreSites.getCurrentSite();
+            if (currentsite !== undefined) {
+                this.setStudiumCurrentSite(currentsite.getURL());
+            }
         });
 
         // Disable added styles on logout.
         CoreEvents.on(CoreEvents.LOGOUT, () => {
             this.clear();
+            this.setStudiumDefaultSite();
         });
 
         // Remove site styles when a site is deleted.
@@ -157,6 +166,7 @@ export class CoreStylesService {
                 return;
             }
 
+            this.setStudiumCurrentSite(data.config.httpswwwroot);
             this.loadTmpStyles(data.config).catch((error) => {
                 this.logger.error('Error loading tmp styles', error);
             });
@@ -168,6 +178,8 @@ export class CoreStylesService {
                 // The tmp styles have been added for a site we've logged into, so we'll wait for the final
                 // site styles to be loaded before removing the tmp styles so there is no blink effect.
                 return;
+            } else {
+                this.setStudiumDefaultSite();
             }
 
             // User didn't access the site, unload tmp styles and site styles if any.
@@ -202,6 +214,33 @@ export class CoreStylesService {
                 document.head.appendChild(styleEl);
             }
         });
+    }
+
+    /**
+     * Set StudiUM current site.
+     *
+     * @param url Site url.
+     */
+    protected setStudiumCurrentSite(url: string): void {
+        let currentsite = CoreConstants.STUDIUM;
+        const currentLangRegEx = new RegExp('(.*' + CoreConstants.STUDIUMFC + '.*)', 'g');
+        if (url.match(currentLangRegEx)) {
+            currentsite = CoreConstants.STUDIUMFC;
+        }
+        CoreDomUtils.toggleModeClass(CoreConstants.STUDIUM, false);
+        CoreDomUtils.toggleModeClass(CoreConstants.STUDIUMFC, false);
+        CoreDomUtils.toggleModeClass(currentsite, true);
+        CoreConfig.set(CoreConstants.CURRENT_STUDIUM_SITE, currentsite);
+    }
+
+    /**
+     * Set StudiUM default site.
+     *
+     */
+    setStudiumDefaultSite(): void {
+        CoreDomUtils.toggleModeClass(CoreConstants.STUDIUM, true);
+        CoreDomUtils.toggleModeClass(CoreConstants.STUDIUMFC, false);
+        CoreConfig.set(CoreConstants.CURRENT_STUDIUM_SITE, CoreConstants.STUDIUM);
     }
 
     /**

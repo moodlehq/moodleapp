@@ -1,14 +1,14 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="50003" id="com.moodle.moodlemobile" ios-CFBundleVersion="5.0.0.3" version="5.0.0" versionCode="50003" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Moodle</name>
-    <description>Moodle official app</description>
-    <author email="mobile@moodle.com" href="http://moodle.com">Moodle Mobile team</author>
+<widget android-versionCode="50003" id="ca.umontreal.studiumprod" ios-CFBundleVersion="5.0.0.3" version="5.0.0" versionCode="50003" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>StudiUM mobile</name>
+    <description>StudiUM mobile se connecte aux plateformes d'apprentissage en ligne StudiUM et StudiUM FC de l'Université de Montréal.</description>
+    <author email="studium-soutien@umontreal.ca" href="https://studium.umontreal.ca">Université de Montréal – Montréal</author>
     <content src="index.html" />
     <access origin="*" />
     <access launch-external="yes" origin="tel:*" />
     <access launch-external="yes" origin="mailto:*" />
     <access launch-external="yes" origin="geo:*" />
-    <allow-navigation href="moodleappfs:*" />
+    <allow-navigation href="studiumappfs:*" />
     <allow-navigation href="cdvfile:*" />
     <allow-navigation href="content:*" />
     <allow-navigation href="data:*" />
@@ -28,7 +28,7 @@
     <preference name="UIWebViewBounce" value="false" />
     <preference name="DisallowOverscroll" value="true" />
     <preference name="prerendered-icon" value="true" />
-    <preference name="AppendUserAgent" value="MoodleMobile 5.0.0 (50003)" />
+    <preference name="AppendUserAgent" value="studiummobile" />
     <preference name="BackupWebStorage" value="none" />
     <preference name="ScrollEnabled" value="true" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
@@ -45,7 +45,7 @@
     <preference name="CustomURLSchemePluginClearsAndroidIntent" value="true" />
     <preference name="deployment-target" value="13.0" />
     <preference name="iosPersistentFileLocation" value="Compatibility" />
-    <preference name="iosScheme" value="moodleappfs" />
+    <preference name="iosScheme" value="studiumappfs" />
     <preference name="WKWebViewOnly" value="true" />
     <preference name="WKFullScreenEnabled" value="true" />
     <preference name="AndroidXEnabled" value="true" />

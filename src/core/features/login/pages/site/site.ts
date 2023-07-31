@@ -52,6 +52,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreCountries } from '@singletons/countries';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreStyles } from '@features/styles/services/styles';
 
 /**
  * Site (url) chooser when adding a new site.
@@ -152,6 +153,7 @@ export default class CoreLoginSitePage implements OnInit {
         }, 1000);
 
         this.showKeyboard = !!CoreNavigator.getRouteBooleanParam('showKeyboard');
+        CoreStyles.setStudiumDefaultSite();
     }
 
     /**
@@ -163,6 +165,9 @@ export default class CoreLoginSitePage implements OnInit {
         const availableSites = await CoreLoginHelper.getAvailableSites();
         this.fixedSites = this.extendCoreLoginSiteInfo(<CoreLoginSiteInfoExtended[]> availableSites);
         this.siteSelector = 'list'; // In case it's not defined
+        if (CoreConstants.CONFIG.multisitesdisplay === 'radio') {
+            this.siteSelector = 'radio';
+        }
 
         // Do not show images if none are set.
         if (!this.fixedSites.some((site) => !!site.imageurl)) {

@@ -8,14 +8,54 @@
  * Light Theme
  * -------------------------------------------
  */
-:root {
-
+:root.studiumfc {
+    --primary: #368558;
+    --ion-color-primary: #368558;
+    --ion-color-primary-rgb: 54,133,88;
+    --ion-color-primary-contrast: #ffffff;
+    --ion-color-primary-contrast-rgb: 255,255,255;
+    --ion-color-primary-shade: #30754d;
+    --ion-color-primary-tint: #4a9169;
 }
-
+.core-login-site-logo-studium {
+    background-image: url(/assets/img/logo_login_studium.svg);
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: 90%;
+    height: 120px;
+    margin: 5px auto;
+}
+.core-login-site-logo-studium.usermenu {
+    height: 70px;
+    width: 70%;
+}
+.studiumfc .core-login-site-logo-studium {
+    background-image: url(/assets/img/logo_login_studiumfc.svg);
+}
+.login-logo-light {
+    display: block;
+}
+.login-logo-dark {
+    display: none;
+}
 /*
  * Dark Theme
  * -------------------------------------------
  */
-:root.dark {
-
+:root.dark.studiumfc {
+    --ion-color-primary-tint: #dfeade;
+    .core-login-site-logo-studium {
+        background-image: url(/assets/img/logo_login_studiumfc_dark.svg);
+    }
+}
+:root.dark.studium {
+    .core-login-site-logo-studium {
+        background-image: url(/assets/img/logo_login_studium_dark.svg);
+    }
+    .login-logo-dark {
+        display: block;
+    }
+    .login-logo-light {
+        display: none;
+    }
 }
