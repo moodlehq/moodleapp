@@ -343,41 +343,18 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      * @param subwiki Subwiki.
      */
     protected async fetchSubwikiPages(subwiki: AddonModWikiSubwiki): Promise<void> {
-        const subwikiPages = await AddonModWiki.getSubwikiPages(subwiki.wikiid, {
-            groupId: subwiki.groupid,
-            userId: subwiki.userid,
-            cmId: this.module.id,
-        });
+        const subwikiPages = subwiki.id <= 0 ?
+            [] :
+            await AddonModWiki.getSubwikiPages(subwiki.wikiid, {
+                groupId: subwiki.groupid,
+                userId: subwiki.userid,
+                cmId: this.module.id,
+            });
 
-        if (!this.currentPage) {
-            if (!this.pageTitle) {
-                // No page specified, search first page.
-                const firstPage = subwikiPages.find((page) => page.firstpage );
-                if (firstPage) {
-                    this.currentPage = firstPage.id;
-                    this.pageTitle = firstPage.title;
-                }
-            } else {
-                // Got the page title but not its ID. Search the page.
-                const page = subwikiPages.find((page) => page.title === this.pageTitle );
-                if (page) {
-                    this.currentPage = page.id;
-                }
-            }
-        }
+        this.setCurrentPage(subwikiPages);
 
         // Now get the offline pages.
         const dbPages = await AddonModWikiOffline.getSubwikiNewPages(subwiki.id, subwiki.wikiid, subwiki.userid, subwiki.groupid);
-
-        // If no page specified, search page title in the offline pages.
-        if (!this.currentPage) {
-            const searchTitle = this.pageTitle ? this.pageTitle : this.wiki?.firstpagetitle ?? '';
-            const pageExists = dbPages.some((page) => page.title == searchTitle);
-
-            if (pageExists) {
-                this.pageTitle = searchTitle;
-            }
-        }
 
         this.subwikiPages = AddonModWiki.sortPagesByTitle(
             (<(AddonModWikiSubwikiPage | AddonModWikiPageDBRecord)[]> subwikiPages).concat(dbPages),
@@ -387,6 +364,32 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
         if (!this.currentPage && !this.pageTitle && this.subwikiPages.length > 0) {
             throw new CoreError();
         }
+    }
+
+    /**
+     * Set current page if needed.
+     *
+     * @param subwikiPages List of subwiki pages.
+     */
+    setCurrentPage(subwikiPages: AddonModWikiSubwikiPage[]): void {
+        if (this.currentPage) {
+            return; // Already set, nothing to do.
+        }
+
+        if (this.pageTitle) {
+            // Got the page title but not its ID. Search the page.
+            const page = subwikiPages.find((page) => page.title === this.pageTitle);
+            if (page) {
+                this.currentPage = page.id;
+            }
+
+            return;
+        }
+
+        // No page specified, search first page.
+        const firstPage = subwikiPages.find((page) => page.firstpage);
+        this.currentPage = firstPage?.id;
+        this.pageTitle = firstPage?.title ?? this.wiki?.firstpagetitle;
     }
 
     /**
@@ -710,7 +713,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      * @returns Whether there is any subwiki selected.
      */
     protected isAnySubwikiSelected(): boolean {
-        return this.subwikiData.subwikiSelected > 0 || this.subwikiData.userSelected > 0 || this.subwikiData.groupSelected > 0;
+        return this.subwikiData.subwikiSelected !== 0 || this.subwikiData.userSelected > 0 || this.subwikiData.groupSelected > 0;
     }
 
     /**
@@ -752,7 +755,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      * @param groupId Group ID of the subwiki to select.
      */
     protected setSelectedWiki(subwikiId: number | undefined, userId: number | undefined, groupId: number | undefined): void {
-        this.subwikiData.subwikiSelected = AddonModWikiOffline.convertToPositiveNumber(subwikiId);
+        this.subwikiData.subwikiSelected = subwikiId ?? 0;
         this.subwikiData.userSelected = AddonModWikiOffline.convertToPositiveNumber(userId);
         this.subwikiData.groupSelected = AddonModWikiOffline.convertToPositiveNumber(groupId);
     }
@@ -800,7 +803,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
         }
 
         const sameSubwiki = this.currentSubwiki &&
-            ((this.currentSubwiki.id && this.currentSubwiki.id === editedPageData.subwikiId) ||
+            ((this.currentSubwiki.id > 0 && this.currentSubwiki.id === editedPageData.subwikiId) ||
             (this.currentSubwiki.userid === editedPageData.userId && this.currentSubwiki.groupid === editedPageData.groupId));
 
         if (sameSubwiki && editedPageData.pageTitle === this.pageTitle) {
@@ -1024,7 +1027,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                             candidateSubwikiId = subwiki.id;
                         }
                     } else if (subwiki.groupid > 0) {
-                        // Check if it's a current user' group.
+                        // Check if it's a current user's group.
                         if (showMyGroupsLabel) {
                             candidateSubwikiId = subwiki.id;
                         }
