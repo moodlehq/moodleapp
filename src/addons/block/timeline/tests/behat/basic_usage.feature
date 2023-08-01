@@ -91,3 +91,27 @@ Feature: Timeline block.
       | assign   | C1     | newassign | New Assignment | ##tomorrow## |
     And I pull to refresh in the app
     Then I should find "New Assignment" in the app
+
+  @lms_from4.0
+  Scenario: Search
+    Given I entered the app as "student1"
+    Then I should find "Assignment 00" within "Timeline" "ion-card" in the app
+
+    When I set the field "Search by activity type or name" to "thisdoesntexist" in the app
+    And I press "Search" in the app
+    Then I should find "No activities require action" in the app
+    But I should not find "Assignment 00" within "Timeline" "ion-card" in the app
+
+    When I press "Clear search" in the app
+    Then I should find "Assignment 00" within "Timeline" "ion-card" in the app
+
+    When I press "Sort by" in the app
+    And I press "Sort by courses" in the app
+    Then I should find "Course 1" in the app
+    And I should find "Assignment 02" within "Timeline" "ion-card" in the app
+
+    When I set the field "Search by activity type or name" to "thisdoesntexist" in the app
+    And I press "Search" in the app
+    Then I should find "No activities require action" in the app
+    But I should not find "Course 1" in the app
+    And I should not find "Assignment 02" within "Timeline" "ion-card" in the app
