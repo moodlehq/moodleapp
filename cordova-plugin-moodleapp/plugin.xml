@@ -13,4 +13,14 @@
         </config-file>
         <source-file src="src/android/SystemUI.java" target-dir="src/com/moodle/moodlemobile" />
     </platform>
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="SecureStorage">
+                <param name="ios-package" value="SecureStorage" />
+            </feature>
+        </config-file>
+
+        <header-file src="src/ios/SecureStorage.h" />
+        <source-file src="src/ios/SecureStorage.m" />
+    </platform>
 </plugin>
