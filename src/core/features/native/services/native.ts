@@ -32,7 +32,7 @@ export class CoreNativeService {
      * @returns Plugin instance.
      */
     plugin<Plugin extends keyof MoodleAppPlugins>(plugin: Plugin): AsyncInstance<MoodleAppPlugins[Plugin]> | null {
-        if (!CorePlatform.isAndroid()) {
+        if (!CorePlatform.isMobile()) {
             return null;
         }
 

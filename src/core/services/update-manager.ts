@@ -89,6 +89,10 @@ export class CoreUpdateManagerProvider {
             promises.push(this.upgradeFontSizeNames());
         }
 
+        if (versionCode >= 43000 && versionApplied < 43000 && versionApplied > 0) {
+            promises.push(CoreSites.moveTokensToSecureStorage());
+        }
+
         try {
             await Promise.all(promises);
 
