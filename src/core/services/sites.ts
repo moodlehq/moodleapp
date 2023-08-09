@@ -65,6 +65,7 @@ import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest
 import { CoreLang, CoreLangFormat } from '@services/lang';
 import { CoreNative } from '@features/native/services/native';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
+import { CoreAutoLogoutType, CoreAutoLogout } from '@features/autologout/services/autologout';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 export const CORE_SITE_CURRENT_SITE_ID_CONFIG = 'current_site_id';
@@ -1461,6 +1462,8 @@ export class CoreSitesProvider {
      * @returns Promise resolved if a session is restored.
      */
     async restoreSession(): Promise<void> {
+        await this.handleAutoLogout();
+
         if (this.sessionRestored) {
             return Promise.reject(new CoreError('Session already restored.'));
         }
@@ -1475,6 +1478,30 @@ export class CoreSitesProvider {
         } catch {
             // No current session.
         }
+    }
+
+    /**
+     * Handle auto logout by checking autologout type and time if its required.
+     */
+    async handleAutoLogout(): Promise<void> {
+        await CoreUtils.ignoreErrors(( async () => {
+            const siteId = await this.getStoredCurrentSiteId();
+            const site = await this.getSite(siteId);
+            const autoLogoutType = Number(site.getStoredConfig('tool_mobile_autologout'));
+            const autoLogoutTime = Number(site.getStoredConfig('tool_mobile_autologouttime'));
+
+            if (autoLogoutType === CoreAutoLogoutType.NEVER || !site.id) {
+                return;
+            }
+
+            if (autoLogoutType === CoreAutoLogoutType.CUSTOM) {
+                await CoreAutoLogout.handleSessionClosed(autoLogoutTime, site);
+
+                return;
+            }
+
+            await CoreAutoLogout.handleAppClosed(site);
+        })());
     }
 
     /**
