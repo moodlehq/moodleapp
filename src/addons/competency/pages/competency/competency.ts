@@ -31,6 +31,7 @@ import { CoreNavigator } from '@services/navigator';
 import { ContextLevel } from '@/core/constants';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { ADDON_COMPETENCY_SUMMARY_PAGE, AddonCompetencyLearningPlanStatus } from '@addons/competency/constants';
+import { CoreText } from '@singletons/text';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { AddonCompetencyPlanCompetenciesSource } from '@addons/competency/classes/competency-plan-competencies-source';
@@ -160,7 +161,7 @@ export default class AddonCompetencyCompetencyPage implements OnInit, OnDestroy 
             this.competency.evidence.forEach((evidence) => {
                 if (evidence.descidentifier) {
                     const key = `addon.competency.${evidence.descidentifier}`;
-                    evidence.description = Translate.instant(key, { $a: evidence.desca });
+                    evidence.description = Translate.instant(key, { $a: CoreText.parseJSON(evidence.desca, null) });
                 }
             });
 

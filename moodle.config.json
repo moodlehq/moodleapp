@@ -20,7 +20,7 @@
         "high": 120
     },
     "customurlscheme": "studiummobile",
-    "siteurl": [{"name": "StudiUM", "url": "https://studium.umontreal.ca/"}, {"name": "StudiUM formation continue", "url": "https://studiumfc-pre-prod.ena.umontreal.ca/"}],
+    "siteurl": [{"name": "StudiUM PP", "url": "https://studium-pre-prod.ena.umontreal.ca/"}, {"name": "StudiUM formation continue PP", "url": "https://studiumfc-pre-prod.ena.umontreal.ca/"}],
     "sitename": "",
     "multisitesdisplay": "radio",
     "sitefindersettings": {},

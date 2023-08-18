@@ -140,7 +140,10 @@
                             <ion-badge color="dark">{{ evidence.gradename }}</ion-badge>
                         </p>
                         <p class="ion-margin-top" *ngIf="evidence.description">{{ evidence.description }}</p>
-                        <blockquote *ngIf="evidence.note">{{ evidence.note }}</blockquote>
+                        <blockquote *ngIf="evidence.note">
+                            <core-format-text [text]="evidence.note" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId">
+                            </core-format-text>
+                        </blockquote>
                     </ion-label>
                 </ion-item>
             </ion-card>

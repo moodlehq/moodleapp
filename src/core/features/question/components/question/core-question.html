@@ -1,7 +1,7 @@
 <!-- Question contents. -->
 <core-dynamic-component *ngIf="showQuestion" [component]="componentClass" [data]="data" class="core-question-{{question?.slot}}">
     <!-- This content will only be shown if there's no component to render the question. -->
-    <p class="ion-padding">{{ 'core.question.errorquestionnotsupported' | translate:{$a: question?.type} }}</p>
+    <p class="ion-padding ion-text-wrap">{{ 'core.question.errorquestionnotsupported' | translate:{$a: question?.type} }}</p>
 </core-dynamic-component>
 
 <!-- Sequence check input. -->
