@@ -24,6 +24,8 @@ import { AddonModChatSessionFormatted, AddonModChatSessionsSource } from '../../
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreTime } from '@singletons/time';
 import { Translate } from '@singletons';
+import { AddonModChat } from '@addons/mod/chat/services/chat';
+import { CoreUtils } from '@services/utils/utils';
 
 /**
  * Page that displays list of chat sessions.
@@ -41,8 +43,10 @@ export class AddonModChatSessionsPage implements OnInit, AfterViewInit, OnDestro
     protected logView: () => void;
 
     constructor() {
-        this.logView = CoreTime.once(() => {
+        this.logView = CoreTime.once(async () => {
             const source = this.sessions.getSource();
+
+            await CoreUtils.ignoreErrors(AddonModChat.logViewSessions(this.sessions.getSource().CM_ID));
 
             CoreAnalytics.logEvent({
                 type: CoreAnalyticsEventType.VIEW_ITEM_LIST,

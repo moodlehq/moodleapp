@@ -226,14 +226,28 @@ export class CoreLangProvider {
      *
      * @returns Promise resolved with the current language.
      */
-    async getCurrentLanguage(): Promise<string> {
-        if (this.currentLanguage !== undefined) {
-            return this.currentLanguage;
+    async getCurrentLanguage(format?: CoreLangFormat): Promise<string> {
+        if (this.currentLanguage === undefined) {
+            this.currentLanguage = await this.detectLanguage();
         }
 
-        this.currentLanguage = await this.detectLanguage();
+        return format ? this.formatLanguage(this.currentLanguage, format) : this.currentLanguage;
+    }
 
-        return this.currentLanguage;
+    /**
+     * Update a language code to the given format.
+     *
+     * @param lang Language code.
+     * @param format Format to use.
+     * @returns Formatted language code.
+     */
+    formatLanguage(lang: string, format: CoreLangFormat): string {
+        switch (format) {
+            case CoreLangFormat.App:
+                return lang.replace('_', '-');
+            case CoreLangFormat.LMS:
+                return lang.replace('-', '_');
+        }
     }
 
     /**
@@ -567,6 +581,11 @@ export class CoreLangProvider {
 }
 
 export const CoreLang = makeSingleton(CoreLangProvider);
+
+export const enum CoreLangFormat {
+    LMS = 'lms',
+    App = 'app'
+}
 
 /**
  * Language code. E.g. 'au', 'es', etc.

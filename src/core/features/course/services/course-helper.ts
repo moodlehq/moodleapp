@@ -1941,6 +1941,24 @@ export class CoreCourseHelperProvider {
     }
 
     /**
+     * Check if user can access the course.
+     *
+     * @param courseId Course ID.
+     * @returns Promise resolved with boolean: whether user can access the course.
+     */
+    async userHasAccessToCourse(courseId: number): Promise<boolean> {
+        if (CoreNetwork.isOnline()) {
+            return CoreUtils.promiseWorks(
+                CoreCourse.getSections(courseId, true, true, { getFromCache: false, emergencyCache: false }, undefined, false),
+            );
+        } else {
+            return CoreUtils.promiseWorks(
+                CoreCourse.getSections(courseId, true, true, { getCacheUsingCacheKey: true }, undefined, false),
+            );
+        }
+    }
+
+    /**
      * Delete course files.
      *
      * @param courseId Course id.

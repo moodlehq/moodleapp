@@ -252,29 +252,32 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
         const courseIds = courses.map(course => course.id);
         const gracePeriod = await this.getCoursesGracePeriod();
         const courseEvents = await AddonBlockTimeline.getActionEventsByCourses(courseIds, search ?? '');
+        const sectionObservables = courses
+            .filter(
+                course =>
+                    !course.hidden &&
+                !CoreCoursesHelper.isPastCourse(course, gracePeriod.after) &&
+                !CoreCoursesHelper.isFutureCourse(course, gracePeriod.after, gracePeriod.before) &&
+                courseEvents[course.id].events.length > 0,
+            )
+            .map(course => {
+                const section = new AddonBlockTimelineSection(
+                    search,
+                    overdue,
+                    dateRange,
+                    course,
+                    courseEvents[course.id].events,
+                    courseEvents[course.id].canLoadMore,
+                );
 
-        return combineLatest(
-            courses
-                .filter(
-                    course =>
-                        !course.hidden &&
-                        !CoreCoursesHelper.isPastCourse(course, gracePeriod.after) &&
-                        !CoreCoursesHelper.isFutureCourse(course, gracePeriod.after, gracePeriod.before) &&
-                        courseEvents[course.id].events.length > 0,
-                )
-                .map(course => {
-                    const section = new AddonBlockTimelineSection(
-                        search,
-                        overdue,
-                        dateRange,
-                        course,
-                        courseEvents[course.id].events,
-                        courseEvents[course.id].canLoadMore,
-                    );
+                return section.data$.pipe(map(({ events }) => events.length > 0 ? section : null));
+            });
 
-                    return section.data$.pipe(map(({ events }) => events.length > 0 ? section : null));
-                }),
-        ).pipe(
+        if (sectionObservables.length === 0) {
+            return of([]);
+        }
+
+        return combineLatest(sectionObservables).pipe(
             map(sections => sections.filter(
                 (section: AddonBlockTimelineSection | null): section is AddonBlockTimelineSection => !!section,
             )),

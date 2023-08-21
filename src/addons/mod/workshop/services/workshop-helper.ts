@@ -19,7 +19,7 @@ import { FileEntry } from '@ionic-native/file/ngx';
 import { CoreFile } from '@services/file';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
-import { CoreTextUtils } from '@services/utils/text';
+import { CoreTextUtils, CoreTextFormat } from '@services/utils/text';
 import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreFormFields } from '@singletons/form';
@@ -531,6 +531,7 @@ export class AddonModWorkshopHelperProvider {
             (await AddonWorkshopAssessmentStrategyDelegate.prepareAssessmentData(workshop.strategy ?? '', selectedValues, form)) ||
             {};
         data.feedbackauthor = feedbackText;
+        data.feedbackauthorformat = CoreTextFormat.FORMAT_HTML;
         data.feedbackauthorattachmentsid = attachmentsId;
         data.nodims = form.dimenssionscount;
 

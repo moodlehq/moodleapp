@@ -144,7 +144,6 @@ Feature: Test basic usage of one course in app
 
     When I press the back button in the app
     And I press "Test wiki name" in the app
-    And I press "OK" in the app
     Then the header should be "Test wiki name" in the app
 
     When I press the back button in the app
@@ -199,7 +198,6 @@ Feature: Test basic usage of one course in app
 
     When I press the back button in the app
     And I press "Test wiki name" in the app
-    And I press "OK" in the app
     Then the header should be "Test wiki name" in the app
 
     When I press the back button in the app

@@ -31,9 +31,9 @@ interface MimeTypeInfo {
     type: string;
     icon?: string;
     groups?: string[];
-
     // eslint-disable-next-line id-blacklist
     string?: string;
+    deprecated?: string; // Deprecated mimetype name.
 }
 
 interface MimeTypeGroupInfo {
@@ -392,6 +392,18 @@ export class CoreMimetypeUtilsProvider {
         if (this.extToMime[extension] && this.extToMime[extension].type) {
             return this.extToMime[extension].type;
         }
+    }
+
+    /**
+     * Get the deprecated mimetype of an extension. Returns undefined if not found or no deprecated mimetype.
+     *
+     * @param extension Extension.
+     * @returns Deprecated mimetype.
+     */
+    getDeprecatedMimeType(extension: string): string | undefined {
+        extension = this.cleanExtension(extension);
+
+        return this.extToMime[extension]?.deprecated;
     }
 
     /**

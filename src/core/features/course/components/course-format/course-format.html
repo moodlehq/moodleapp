@@ -84,7 +84,7 @@
                     </ion-badge>
                 </div>
                 <div *ngIf="section.availabilityinfo">
-                    <ion-chip>
+                    <ion-chip class="clickable">
                         <ion-icon name="fas-lock" [attr.aria-label]="'core.restricted' | translate"></ion-icon>
                         <ion-label>
                             <core-format-text [text]=" section.availabilityinfo" contextLevel="course" [contextInstanceId]="course.id">

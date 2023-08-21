@@ -1281,6 +1281,18 @@ export class CoreCoursesProvider {
     }
 
     /**
+     * Report a dashboard or my courses page view event.
+     *
+     * @param page Page to view.
+     */
+    async logView(page: 'my' | 'dashboard'): Promise<void> {
+        const site = CoreSites.getRequiredCurrentSite();
+        const params: CoreMyViewPageWSParams = { page };
+
+        await site.write('core_my_view_page', params);
+    }
+
+    /**
      * Search courses.
      *
      * @param text Text to search.
@@ -1927,4 +1939,11 @@ export type EnrolGuestValidatePasswordWSResponse = {
     validated: boolean; // Whether the password was successfully validated
     hint?: string; // Password hint (if enabled)
     warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Params of core_my_view_page WS.
+ */
+type CoreMyViewPageWSParams = {
+    page: 'my' | 'dashboard'; // My page to trigger a view event.
 };

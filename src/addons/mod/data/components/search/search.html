@@ -26,7 +26,7 @@
             <ion-item class="ion-text-wrap">
                 <ion-label position="stacked">{{ 'core.sortby' | translate }}</ion-label>
                 <ion-select interface="action-sheet" name="sortBy" formControlName="sortBy" [placeholder]="'core.sortby' | translate"
-                    [interfaceOptions]="{header: 'core.sortby' | translate}">
+                    [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'core.sortby' | translate}">
                     <optgroup *ngIf="fieldsArray.length" label="{{ 'addon.mod_data.fields' | translate }}">
                         <ion-select-option *ngFor="let field of fieldsArray" [value]="field.id">{{field.name}}</ion-select-option>
                     </optgroup>

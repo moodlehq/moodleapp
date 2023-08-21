@@ -68,6 +68,7 @@
     "stateoverdue": "Overdue",
     "stateoverduedetails": "Must be submitted by {{$a}}",
     "status": "Status",
+    "submission_confirmation_unanswered": "Questions without a response: {{$a}}",
     "submitallandfinish": "Submit all and finish",
     "summaryofattempt": "Summary of attempt",
     "summaryofattempts": "Summary of your previous attempts",

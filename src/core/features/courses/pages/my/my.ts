@@ -79,11 +79,13 @@ export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
         });
 
         this.logView = CoreTime.once(async () => {
+            await CoreUtils.ignoreErrors(CoreCourses.logView('my'));
+
             CoreAnalytics.logEvent({
-                type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
-                ws: 'core_enrol_get_users_courses',
+                type: CoreAnalyticsEventType.VIEW_ITEM,
+                ws: 'core_my_view_page',
                 name: Translate.instant('core.courses.mycourses'),
-                data: { category: 'course' },
+                data: { category: 'course', page: 'my' },
                 url: '/my/courses.php',
             });
         });
@@ -109,6 +111,8 @@ export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
      * @param firstLoad Whether it's the first load.
      */
     protected async loadContent(firstLoad = false): Promise<void> {
+        this.loadedBlock = undefined;
+
         const loadWatcher = this.loadsManager.startPageLoad(this, !!firstLoad);
         const available = await CoreCoursesDashboard.isAvailable();
         const disabled = await CoreCourses.isMyCoursesDisabled();

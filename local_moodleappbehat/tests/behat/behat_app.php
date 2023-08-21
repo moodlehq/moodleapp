@@ -270,6 +270,26 @@ class behat_app extends behat_app_helper {
     }
 
     /**
+     * Wait for a BBB room to start.
+     *
+     * @When I wait for the BigBlueButton room to start
+     */
+    public function i_wait_bbb_room_to_start() {
+        $windowNames = $this->getSession()->getWindowNames();
+
+        $this->getSession()->switchToWindow(array_pop($windowNames));
+        $this->spin(function($context) {
+            $joinmodal = $context->getSession()->getPage()->find('css', 'div[role="dialog"][aria-label="How would you like to join the audio?"]');
+
+            if ($joinmodal) {
+                return true;
+            }
+
+            throw new DriverException('BBB room not started');
+        }, false, 30);
+    }
+
+    /**
      * Check if elements are selected in the app.
      *
      * @Then /^(".+") should( not)? be selected in the app$/
@@ -646,24 +666,46 @@ class behat_app extends behat_app_helper {
     /**
      * Performs a pull to refresh gesture.
      *
-     * @When I pull to refresh in the app
+     * @When /^I pull to refresh (?:until I find (".+") )?in the app$/
      * @throws DriverException If the gesture is not available
      */
-    public function i_pull_to_refresh_in_the_app() {
-        $this->spin(function() {
-            $result = $this->runtime_js('pullToRefresh()');
+    public function i_pull_to_refresh_in_the_app(?string $locator = null) {
+        $timeout = 0;
+        $startTime = time();
 
-            if ($result !== 'OK') {
-                throw new DriverException('Error pulling to refresh - ' . $result);
+        if (!is_null($locator)) {
+            $timeout = 60;
+            $locator = $this->parse_element_locator($locator);
+        }
+
+        do {
+            $this->spin(function() {
+                $result = $this->runtime_js('pullToRefresh()');
+
+                if ($result !== 'OK') {
+                    throw new DriverException('Error pulling to refresh - ' . $result);
+                }
+
+                return true;
+            });
+
+            $this->wait_for_pending_js();
+
+            // Wait for UI to settle after refreshing.
+            $this->getSession()->wait(300);
+
+            if (is_null($locator)) {
+                return;
             }
 
-            return true;
-        });
+            $result = $this->runtime_js("find($locator)");
 
-        $this->wait_for_pending_js();
+            if ($result === 'OK') {
+                return;
+            }
+        } while ($timeout > (time() - $startTime));
 
-        // Wait for UI to settle after refreshing.
-        $this->getSession()->wait(300);
+        throw new DriverException('Error finding element after PTR - ' . $result);
     }
 
     /**

@@ -1124,6 +1124,14 @@ export class AddonModScormProvider {
             currentScorm.warningMessage = warning?.message;
         }
 
+        if (response.options) {
+            const scormOptions = CoreUtils.objectToKeyValueMap(response.options, 'name', 'value');
+
+            if (scormOptions.scormstandard) {
+                currentScorm.scormStandard = Number(scormOptions.scormstandard);
+            }
+        }
+
         currentScorm.moduleurl = options.moduleUrl;
 
         return currentScorm;
@@ -1865,8 +1873,17 @@ export type AddonModScormGetScormsByCoursesWSParams = {
  * Data returned by mod_scorm_get_scorms_by_courses WS.
  */
 export type AddonModScormGetScormsByCoursesWSResponse = {
+    options?: AddonModScormOptions[]; // @since v4.3. Scorm options
     scorms: AddonModScormScormWSData[];
     warnings?: CoreWSExternalWarning[];
+};
+
+/**
+ * Scorm options returned by mod_scorm_get_scorms_by_courses WS.
+ */
+export type AddonModScormOptions = {
+    name: string;
+    value: string;
 };
 
 /**
@@ -1931,6 +1948,7 @@ export type AddonModScormScormWSData = {
 export type AddonModScormScorm = AddonModScormScormWSData & {
     warningMessage?: string;
     moduleurl?: string;
+    scormStandard?: number;
 };
 
 /**

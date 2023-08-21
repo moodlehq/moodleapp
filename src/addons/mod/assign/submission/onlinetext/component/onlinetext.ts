@@ -111,7 +111,7 @@ export class AddonModAssignSubmissionOnlineTextComponent extends AddonModAssignS
      *
      * @param text The new text.
      */
-    onChange(text: string): void {
+    onChange(text?: string | null): void {
         // Count words if needed.
         if (this.wordLimitEnabled) {
             // Cancel previous wait.

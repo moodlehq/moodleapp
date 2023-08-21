@@ -48,12 +48,17 @@ export class AddonModChatSessionMessagesPage implements OnInit {
     protected logView: () => void;
 
     constructor() {
-        this.logView = CoreTime.once(() => {
+        this.logView = CoreTime.once(async () => {
+            await CoreUtils.ignoreErrors(AddonModChat.logViewSessions(this.cmId, {
+                start: this.sessionStart,
+                end: this.sessionEnd,
+            }));
+
             CoreAnalytics.logEvent({
-                type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
+                type: CoreAnalyticsEventType.VIEW_ITEM,
                 ws: 'mod_chat_view_sessions',
                 name: Translate.instant('addon.mod_chat.messages'),
-                data: { chatid: this.chatId, category: 'chat' },
+                data: { chatid: this.chatId, category: 'chat', start: this.sessionStart, end: this.sessionEnd },
                 url: `/mod/chat/report.php?id=${this.cmId}&start=${this.sessionStart}&end=${this.sessionEnd}`,
             });
         });

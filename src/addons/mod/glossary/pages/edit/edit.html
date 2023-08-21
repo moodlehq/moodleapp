@@ -32,7 +32,7 @@
                     {{ 'addon.mod_glossary.categories' | translate }}
                 </ion-label>
                 <ion-select [(ngModel)]="data.categories" multiple="true" interface="action-sheet"
-                    [placeholder]="'addon.mod_glossary.categories' | translate" name="categories"
+                    [placeholder]="'addon.mod_glossary.categories' | translate" name="categories" [cancelText]="'core.cancel' | translate"
                     [interfaceOptions]="{header: 'addon.mod_glossary.categories' | translate}">
                     <ion-select-option *ngFor="let category of categories" [value]="category.id">
                         {{ category.name }}

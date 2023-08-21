@@ -34,10 +34,7 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
     component = AddonModChatProvider.COMPONENT;
     pluginName = 'chat';
     chat?: AddonModChatChat;
-    chatInfo?: {
-        date: string;
-        fromnow: string;
-    };
+    chatTime?: string;
 
     constructor(
         protected content?: IonContent,
@@ -62,17 +59,11 @@ export class AddonModChatIndexComponent extends CoreCourseModuleMainActivityComp
         this.chat = await AddonModChat.getChat(this.courseId, this.module.id);
 
         this.description = this.chat.intro;
-        const now = CoreTimeUtils.timestamp();
-        const span = (this.chat.chattime || 0) - now;
+        const chatTimeSeconds = (this.chat.chattime || 0) - CoreTimeUtils.timestamp();
 
-        if (this.chat.chattime && this.chat.schedule && span > 0) {
-            this.chatInfo = {
-                date: CoreTimeUtils.userDate(this.chat.chattime * 1000),
-                fromnow: CoreTime.formatTime(span),
-            };
-        } else {
-            this.chatInfo = undefined;
-        }
+        this.chatTime = this.chat.schedule && chatTimeSeconds > 0
+            ? CoreTime.formatTime(chatTimeSeconds)
+            : undefined;
 
         this.dataRetrieved.emit(this.chat);
     }

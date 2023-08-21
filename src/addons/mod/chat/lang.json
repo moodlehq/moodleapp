@@ -22,7 +22,7 @@
     "nosessionsfound": "No sessions found",
     "saidto": "said to",
     "send": "Send",
-    "sessionstart": "The next chat session will start on {{$a.date}}, ({{$a.fromnow}} from now)",
+    "sessionstartsin": "The next chat session will start {{$a}} from now.",
     "showincompletesessions": "Show incomplete sessions",
     "talk": "Talk",
     "viewreport": "Past sessions"

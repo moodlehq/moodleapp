@@ -118,7 +118,7 @@
             </ion-item>
             <ion-item class="ion-text-wrap">
                 <ion-label position="stacked">{{ 'addon.mod_workshop.gradeover' | translate }}</ion-label>
-                <ion-select formControlName="grade" interface="action-sheet"
+                <ion-select formControlName="grade" interface="action-sheet" [cancelText]="'core.cancel' | translate"
                     [interfaceOptions]="{header: 'addon.mod_workshop.gradeover' | translate}">
                     <ion-select-option *ngFor="let grade of evaluationGrades" [value]="grade.value">
                         {{grade.label}}

@@ -127,6 +127,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
     canSaveGrades = false; // Whether the user can save the grades.
     allowAddAttempt = false; // Allow adding a new attempt when grading.
     gradeUrl?: string; // URL to grade in browser.
+    submissionUrl?: string; // URL to add/edit a submission in browser.
     isPreviousAttemptEmpty = true; // Whether the previous attempt contains an empty submission.
     showDates = false; // Whether to show some dates.
     timeLimitFinished = false; // Whether there is a time limit and it finished, so the user will submit late.
@@ -218,14 +219,19 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
 
         const time = CoreTimeUtils.timestamp();
         const timeLimitEnabled = this.assign.timelimit && submissionStarted;
-        const dueDateReached = this.assign.duedate > 0 && this.assign.duedate - time <= 0;
+
+        // Define duedate as latest between due date and extension - which is a possibility...
+        const extensionDuedate = response.lastattempt?.extensionduedate;
+        const duedate = extensionDuedate ? Math.max(this.assign.duedate, extensionDuedate) : this.assign.duedate;
+        const dueDateReached = duedate > 0 && duedate - time <= 0;
+
         const timeLimitEnabledBeforeDueDate = timeLimitEnabled && !dueDateReached;
 
         if (this.userSubmission && this.userSubmission.status === AddonModAssignSubmissionStatusValues.SUBMITTED) {
             // Submitted, display the relevant early/late message.
             const lateCalculation = this.userSubmission.timemodified -
                 (timeLimitEnabledBeforeDueDate ? this.userSubmission.timecreated : 0);
-            const lateThreshold = timeLimitEnabledBeforeDueDate ? this.assign.timelimit || 0 : this.assign.duedate;
+            const lateThreshold = timeLimitEnabledBeforeDueDate ? this.assign.timelimit || 0 : duedate;
             const earlyString = timeLimitEnabledBeforeDueDate ? 'submittedundertime' : 'submittedearly';
             const lateString = timeLimitEnabledBeforeDueDate ? 'submittedovertime' : 'submittedlate';
             const onTime = lateCalculation <= lateThreshold;
@@ -244,7 +250,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
             const submissionsEnabled = response.lastattempt?.submissionsenabled || response.gradingsummary?.submissionsenabled;
             this.timeRemaining = Translate.instant(
                 'addon.mod_assign.' + (submissionsEnabled ? 'overdue' : 'duedatereached'),
-                { $a: CoreTime.formatTime(time - this.assign.duedate) },
+                { $a: CoreTime.formatTime(time - duedate) },
             );
             this.timeRemainingClass = 'overdue';
             this.timeLimitFinished = true;
@@ -262,7 +268,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
         }
 
         // Assignment is not overdue, and no submission has been made. Just display the due date.
-        this.timeRemaining = CoreTime.formatTime(this.assign.duedate - time);
+        this.timeRemaining = CoreTime.formatTime(duedate - time);
         this.timeRemainingClass = 'timeremaining';
     }
 
@@ -788,6 +794,12 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
      */
     protected async loadUnsupportedPlugins(): Promise<void> {
         this.unsupportedEditPlugins = await AddonModAssign.getUnsupportedEditPlugins(this.userSubmission?.plugins || []);
+
+        if (this.unsupportedEditPlugins && !this.submissionUrl) {
+            const mod = await CoreCourse.getModule(this.moduleId, this.courseId, undefined, true);
+            this.submissionUrl = `${mod.url}&action=editsubmission`;
+        }
+
     }
 
     /**

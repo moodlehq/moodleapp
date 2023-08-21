@@ -704,6 +704,7 @@ export class CoreCourseProvider {
             course: courseId,
             section: sectionId,
             completiondata: completionData,
+            availabilityinfo: this.treatAvailablityInfo(module.availabilityinfo),
         };
     }
 
@@ -998,6 +999,7 @@ export class CoreCourseProvider {
                     // Add course to all modules.
                     return sections.map((section) => ({
                         ...section,
+                        availabilityinfo: this.treatAvailablityInfo(section.availabilityinfo),
                         modules: section.modules.map((module) => this.addAdditionalModuleData(module, courseId, section.id)),
                     }));
                 }),
@@ -1553,6 +1555,21 @@ export class CoreCourseProvider {
             courseId: courseId,
             status: status,
         }, siteId);
+    }
+
+    /**
+     * Treat availability info HTML.
+     *
+     * @param availabilityInfo HTML to treat.
+     * @returns Treated HTML.
+     */
+    protected treatAvailablityInfo(availabilityInfo?: string): string | undefined {
+        if (!availabilityInfo) {
+            return availabilityInfo;
+        }
+
+        // Remove "Show more" option in 4.2 or older sites.
+        return CoreDomUtils.removeElementFromHtml(availabilityInfo, 'li[data-action="showmore"]');
     }
 
 }

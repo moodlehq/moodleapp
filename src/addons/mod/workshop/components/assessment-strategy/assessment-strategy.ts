@@ -403,8 +403,8 @@ export class AddonModWorkshopAssessmentStrategyComponent implements OnInit, OnDe
      *
      * @param text The new text.
      */
-    onFeedbackChange(text: string): void {
-        this.feedbackText = text;
+    onFeedbackChange(text?: string | null): void {
+        this.feedbackText = text ?? '';
     }
 
     /**
