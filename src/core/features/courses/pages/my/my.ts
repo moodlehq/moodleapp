@@ -111,6 +111,8 @@ export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
      * @param firstLoad Whether it's the first load.
      */
     protected async loadContent(firstLoad = false): Promise<void> {
+        this.loadedBlock = undefined;
+
         const loadWatcher = this.loadsManager.startPageLoad(this, !!firstLoad);
         const available = await CoreCoursesDashboard.isAvailable();
         const disabled = await CoreCourses.isMyCoursesDisabled();
