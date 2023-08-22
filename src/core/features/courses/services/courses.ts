@@ -1287,6 +1287,10 @@ export class CoreCoursesProvider {
      */
     async logView(page: 'my' | 'dashboard'): Promise<void> {
         const site = CoreSites.getRequiredCurrentSite();
+        if (!site.wsAvailable('core_my_view_page')) {
+            return;
+        }
+
         const params: CoreMyViewPageWSParams = { page };
 
         await site.write('core_my_view_page', params);
