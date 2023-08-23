@@ -47,6 +47,7 @@ import { CORE_CONTENTLINKS_SERVICES } from '@features/contentlinks/contentlinks.
 import { CORE_COURSE_SERVICES } from '@features/course/course.module';
 import { CORE_COURSES_SERVICES } from '@features/courses/courses.module';
 import { CORE_EDITOR_SERVICES } from '@features/editor/editor.module';
+import { CORE_ENROL_SERVICES } from '@features/enrol/enrol.module';
 import { CORE_NATIVE_SERVICES } from '@features/native/native.module';
 import { CORE_FILEUPLOADER_SERVICES } from '@features/fileuploader/fileuploader.module';
 import { CORE_FILTER_SERVICES } from '@features/filter/filter.module';
@@ -269,6 +270,7 @@ export class CoreCompileProvider {
             ...CORE_COURSE_SERVICES,
             ...CORE_COURSES_SERVICES,
             ...CORE_EDITOR_SERVICES,
+            ...CORE_ENROL_SERVICES,
             ...CORE_FILEUPLOADER_SERVICES,
             ...CORE_FILTER_SERVICES,
             ...CORE_GRADES_SERVICES,
