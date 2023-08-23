@@ -622,9 +622,12 @@ export class CoreTextUtilsProvider {
             return true;
         }
 
-        this.template.innerHTML = content;
+        this.template.innerHTML = content.trim().replace(/(\r\n|\n|\r)/g, '');
+        const tags = this.template.content.querySelectorAll(
+            'img, audio, video, object, iframe, canvas, svg, input, select, textarea, frame, embed',
+        );
 
-        return this.template.content.textContent == '' && this.template.content.querySelector('img, object, hr') === null;
+        return this.template.content.textContent === '' && tags.length === 0;
     }
 
     /**
