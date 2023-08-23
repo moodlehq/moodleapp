@@ -21,6 +21,7 @@ import { CoreBlockComponent } from '../block/block';
 import { CoreUtils } from '@services/utils/utils';
 import { IonRefresher } from '@ionic/angular';
 import { CoreCoursesDashboard } from '@features/courses/services/dashboard';
+import { CoreTextUtils } from '@services/utils/text';
 
 /**
  * Component that displays the list of side blocks.
@@ -95,11 +96,7 @@ export class CoreBlockSideBlocksComponent implements OnInit {
         }
 
         this.blocks = this.blocks.filter(block =>
-            block.name !== 'html' ||
-            (
-                block.name === 'html' &&
-                !!block.contents?.content.trim().replace(/(\r\n|\n|\r)/, '').length
-            ));
+            block.name !== 'html' || (block.contents && !CoreTextUtils.htmlIsBlank(block.contents.content)));
     }
 
     /**
