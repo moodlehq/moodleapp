@@ -74,8 +74,8 @@ import { CoreCourseWithImageAndColor } from '@features/courses/services/courses-
 import { CoreCourseSummaryPage } from '../pages/course-summary/course-summary.page';
 import { CoreRemindersPushNotificationData } from '@features/reminders/services/reminders';
 import { CoreLocalNotifications } from '@services/local-notifications';
-import { AddonEnrolGuest } from '@addons/enrol/guest/services/guest';
 import { CoreEnrol } from '@features/enrol/services/enrol';
+import { CoreEnrolAction, CoreEnrolDelegate } from '@features/enrol/services/enrol-delegate';
 
 /**
  * Prefetch info of a module.
@@ -594,22 +594,26 @@ export class CoreCourseHelperProvider {
     }
 
     /**
-     * Check whether a course is accessed using guest access and if it requires password to enter.
+     * Check whether a course is accessed using guest access and if it requires user input to enter.
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved with guestAccess and passwordRequired booleans.
+     * @returns Data about guest access info.
      */
     async courseUsesGuestAccessInfo(
         courseId: number,
         siteId?: string,
-    ): Promise<{guestAccess: boolean; passwordRequired?: boolean}> {
+    ): Promise<CoreCourseGuestAccessInfo> {
+        const accessData: CoreCourseGuestAccessInfo = {
+            guestAccess: false,
+        };
+
         try {
             try {
                 // Check if user is enrolled. If enrolled, no guest access.
                 await CoreCourses.getUserCourse(courseId, false, siteId);
 
-                return { guestAccess: false };
+                return accessData;
             } catch {
                 // Ignore errors.
             }
@@ -618,26 +622,35 @@ export class CoreCourseHelperProvider {
                 // The user is not enrolled in the course. Use getCourses to see if it's an admin/manager and can see the course.
                 await CoreCourses.getCourse(courseId, siteId);
 
-                return { guestAccess: false };
+                return accessData;
             } catch {
                 // Ignore errors.
             }
 
             // Check if guest access is enabled.
-            const enrolmentMethods = await CoreEnrol.getSupportedCourseEnrolmentMethods(courseId, { type: 'guest', siteId });
+            const enrolmentMethods = await CoreEnrol.getSupportedCourseEnrolmentMethods(courseId, {
+                action: CoreEnrolAction.GUEST,
+                siteId,
+            });
+
             if (!enrolmentMethods) {
-                return { guestAccess: false };
+                return accessData;
             }
 
-            const info = await AddonEnrolGuest.getGuestEnrolmentInfo(enrolmentMethods[0].id);
+            const results = await Promise.all(enrolmentMethods.map(method => CoreEnrolDelegate.canAccess(method)));
 
-            // Don't allow guest access if it requires a password and it's available.
-            return {
-                guestAccess: info.status && (!info.passwordrequired || AddonEnrolGuest.isValidateGuestAccessPasswordAvailable()),
-                passwordRequired: info.passwordrequired,
-            };
+            results.forEach(result => {
+                accessData.guestAccess = accessData.guestAccess || result.canAccess;
+                if (accessData.requiresUserInput !== false && result.canAccess) {
+                    accessData.requiresUserInput = result.requiresUserInput ?? accessData.requiresUserInput;
+                }
+            });
+
+            accessData.passwordRequired = accessData.requiresUserInput; // For backwards compatibility.
+
+            return accessData;
         } catch {
-            return { guestAccess: false };
+            return accessData;
         }
     }
 
@@ -2191,4 +2204,16 @@ export type CoreCourseNavigateToModuleOptions = CoreCourseNavigateToModuleCommon
 export type CoreCourseOpenModuleOptions = {
     sectionId?: number; // Section the module belongs to.
     modNavOptions?: CoreNavigationOptions; // Navigation options to open the module, including params to pass to the module.
+};
+
+/**
+ * Result of courseUsesGuestAccessInfo.
+ */
+export type CoreCourseGuestAccessInfo = {
+    guestAccess: boolean; // Whether guest access is enabled for a course.
+    requiresUserInput?: boolean; // Whether the first guest access enrolment method requires user input.
+    /**
+     * @deprecated since 4.3. Use requiresUserInput instead.
+     */
+    passwordRequired?: boolean;
 };

@@ -231,7 +231,7 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
         if (!this.canAccessCourse) {
             // The user is not an admin/manager. Check if we can provide guest access to the course.
             const promises = this.guestEnrolInstances.map(async (method) => {
-                const canAccess = await CoreEnrolDelegate.canAccess(method);
+                const { canAccess } = await CoreEnrolDelegate.canAccess(method);
                 if (canAccess) {
                     this.canAccessCourse = true;
                 }

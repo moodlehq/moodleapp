@@ -13,7 +13,12 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreEnrolAction, CoreEnrolGuestHandler, CoreEnrolInfoIcon } from '@features/enrol/services/enrol-delegate';
+import {
+    CoreEnrolAction,
+    CoreEnrolCanAccessData,
+    CoreEnrolGuestHandler,
+    CoreEnrolInfoIcon,
+} from '@features/enrol/services/enrol-delegate';
 import { makeSingleton } from '@singletons';
 import { AddonEnrolGuest } from './guest';
 import { CorePasswordModalResponse } from '@components/password-modal/password-modal';
@@ -66,10 +71,13 @@ export class AddonEnrolGuestHandlerService implements CoreEnrolGuestHandler {
     /**
      * @inheritdoc
      */
-    async canAccess(method: CoreEnrolEnrolmentMethod): Promise<boolean> {
+    async canAccess(method: CoreEnrolEnrolmentMethod): Promise<CoreEnrolCanAccessData> {
         const info = await AddonEnrolGuest.getGuestEnrolmentInfo(method.id);
 
-        return info.status && (!info.passwordrequired || AddonEnrolGuest.isValidateGuestAccessPasswordAvailable());
+        return {
+            canAccess: info.status && (!info.passwordrequired || AddonEnrolGuest.isValidateGuestAccessPasswordAvailable()),
+            requiresUserInput: info.passwordrequired,
+        };
     }
 
     /**

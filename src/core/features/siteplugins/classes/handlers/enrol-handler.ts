@@ -14,7 +14,12 @@
 
 import { CoreLogger } from '@singletons/logger';
 import { CoreSitePluginsBaseHandler } from './base-handler';
-import { CoreEnrolAction, CoreEnrolHandler, CoreEnrolInfoIcon } from '@features/enrol/services/enrol-delegate';
+import {
+    CoreEnrolAction,
+    CoreEnrolCanAccessData,
+    CoreEnrolHandler,
+    CoreEnrolInfoIcon,
+} from '@features/enrol/services/enrol-delegate';
 import { CoreSitePluginsContent, CoreSitePluginsEnrolHandlerData } from '@features/siteplugins/services/siteplugins';
 
 /**
@@ -61,9 +66,9 @@ export class CoreSitePluginsEnrolHandler extends CoreSitePluginsBaseHandler impl
     /**
      * @inheritdoc
      */
-    async canAccess(): Promise<boolean> {
+    async canAccess(): Promise<CoreEnrolCanAccessData> {
         // To be overridden.
-        return false;
+        return { canAccess: false };
     }
 
     /**

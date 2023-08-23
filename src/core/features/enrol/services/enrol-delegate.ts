@@ -89,9 +89,9 @@ export interface CoreEnrolGuestHandler extends CoreEnrolHandler {
      * Check if the user can access to the course.
      *
      * @param method Course enrolment method.
-     * @returns Whether the user can access.
+     * @returns Access info.
      */
-    canAccess(method: CoreEnrolEnrolmentMethod): Promise<boolean>;
+    canAccess(method: CoreEnrolEnrolmentMethod): Promise<CoreEnrolCanAccessData>;
 
     /**
      * Validates the access to a course
@@ -100,7 +100,6 @@ export interface CoreEnrolGuestHandler extends CoreEnrolHandler {
      * @returns Whether the user has validated the access to the course.
      */
     validateAccess(method: CoreEnrolEnrolmentMethod): Promise<boolean>;
-
 }
 
 /**
@@ -110,6 +109,14 @@ export interface CoreEnrolInfoIcon {
     label: string;
     icon: string;
     className?: string;
+}
+
+/**
+ * Data about course access using a GUEST enrolment method.
+ */
+export interface CoreEnrolCanAccessData {
+    canAccess: boolean; // Whether the user can access the course using this enrolment method.
+    requiresUserInput?: boolean; // Whether the user needs to input some data to access the course using this enrolment method.
 }
 
 /**
@@ -193,16 +200,16 @@ export class CoreEnrolDelegateService extends CoreDelegate<CoreEnrolHandler> {
      * Check if the user can access to the course.
      *
      * @param method Course enrolment method.
-     * @returns Whether the user can access.
+     * @returns Access data.
      */
-    async canAccess(method: CoreEnrolEnrolmentMethod): Promise<boolean> {
-        const canAccess = await this.executeFunctionOnEnabled<boolean>(
+    async canAccess(method: CoreEnrolEnrolmentMethod): Promise<CoreEnrolCanAccessData> {
+        const canAccess = await this.executeFunctionOnEnabled<CoreEnrolCanAccessData>(
             method.type,
             'canAccess',
             [method],
         );
 
-        return !!canAccess;
+        return canAccess ?? { canAccess: false };
     }
 
     /**
