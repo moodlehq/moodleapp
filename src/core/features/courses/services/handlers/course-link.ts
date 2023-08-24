@@ -132,7 +132,7 @@ export class CoreCoursesCourseLinkHandlerService extends CoreContentLinksHandler
         const guestInfo = await CoreCourseHelper.courseUsesGuestAccessInfo(courseId);
         pageParams.isGuest = guestInfo.guestAccess;
 
-        if (hasAccess && !guestInfo.guestAccess && !guestInfo.passwordRequired) {
+        if (hasAccess && !guestInfo.guestAccess && !guestInfo.requiresUserInput) {
             // Direct access.
             const course = await CoreUtils.ignoreErrors(CoreCourses.getUserCourse(courseId), { id: courseId });
 

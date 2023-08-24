@@ -60,6 +60,7 @@ import { CorePlatform } from '@services/platform';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreLang } from '@services/lang';
 import { CorePasswordModalParams, CorePasswordModalResponse } from '@components/password-modal/password-modal';
+import { CoreWSError } from '@classes/errors/wserror';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -1903,6 +1904,8 @@ export class CoreDomUtilsProvider {
 
         if (modalData === undefined) {
             throw new CoreCanceledError();
+        } else if (modalData instanceof CoreWSError) {
+            throw modalData;
         }
 
         return modalData;

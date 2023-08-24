@@ -20,6 +20,7 @@ import { AddonBlogModule } from './blog/blog.module';
 import { AddonCalendarModule } from './calendar/calendar.module';
 import { AddonCompetencyModule } from './competency/competency.module';
 import { AddonCourseCompletionModule } from './coursecompletion/coursecompletion.module';
+import { AddonEnrolModule } from './enrol/enrol.module';
 import { AddonFilterModule } from './filter/filter.module';
 import { AddonMessageOutputModule } from './messageoutput/messageoutput.module';
 import { AddonMessagesModule } from './messages/messages.module';
@@ -42,6 +43,7 @@ import { AddonUserProfileFieldModule } from './userprofilefield/userprofilefield
         AddonCalendarModule,
         AddonCompetencyModule,
         AddonCourseCompletionModule,
+        AddonEnrolModule,
         AddonFilterModule,
         AddonMessageOutputModule,
         AddonMessagesModule,

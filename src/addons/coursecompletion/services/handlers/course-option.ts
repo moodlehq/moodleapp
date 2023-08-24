@@ -43,8 +43,8 @@ export class AddonCourseCompletionCourseOptionHandlerService implements CoreCour
      * @inheritdoc
      */
     async isEnabledForCourse(courseId: number, accessData: CoreCourseAccess): Promise<boolean> {
-        if (accessData && accessData.type == CoreCourseProvider.ACCESS_GUEST) {
-            return false; // Not enabled for guests.
+        if (accessData && accessData.type === CoreCourseProvider.ACCESS_GUEST) {
+            return false; // Not enabled for guest access.
         }
 
         const courseEnabled = await AddonCourseCompletion.isPluginViewEnabledForCourse(courseId);

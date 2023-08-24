@@ -57,7 +57,7 @@
 
                     <span *ngIf="(layout == 'list' || layout == 'listwithenrol') && !isEnrolled" class="core-course-enrol-icons">
                         <ion-icon *ngFor="let icon of enrolmentIcons" color="medium" [name]="icon.icon" [title]="icon.label | translate"
-                            [attr.aria-label]="icon.label | translate">
+                            [attr.aria-label]="icon.label | translate" [ngClass]="[icon.className]">
                         </ion-icon>
                     </span>
 

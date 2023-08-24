@@ -26,6 +26,7 @@ import { CoreEventCourseStatusChanged, CoreEventObserver, CoreEvents } from '@si
 import { CoreCourseListItem, CoreCourses, CoreCoursesProvider } from '../../services/courses';
 import { CoreCoursesHelper, CoreEnrolledCourseDataWithExtraInfoAndOptions } from '../../services/courses-helper';
 import { CoreCoursesCourseOptionsMenuComponent } from '../course-options-menu/course-options-menu';
+import { CoreEnrolHelper } from '@features/enrol/services/enrol-helper';
 
 /**
  * This directive is meant to display an item for a list of courses.
@@ -98,33 +99,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
             this.initPrefetchCourse();
 
         } else if ('enrollmentmethods' in this.course) {
-            this.enrolmentIcons = [];
-
-            this.course.enrollmentmethods.forEach((instance) => {
-                if (instance === 'self') {
-                    this.enrolmentIcons.push({
-                        label: 'core.courses.selfenrolment',
-                        icon: 'fas-key',
-                    });
-                } else if (instance === 'guest') {
-                    this.enrolmentIcons.push({
-                        label: 'core.courses.allowguests',
-                        icon: 'fas-unlock',
-                    });
-                } else if (instance === 'paypal' || instance === 'fee') {
-                    this.enrolmentIcons.push({
-                        label: 'core.courses.otherenrolments',
-                        icon: 'fas-up-right-from-square',
-                    });
-                }
-            });
-
-            if (this.enrolmentIcons.length == 0) {
-                this.enrolmentIcons.push({
-                    label: 'core.courses.notenrollable',
-                    icon: 'fas-lock',
-                });
-            }
+            this.enrolmentIcons = await CoreEnrolHelper.getEnrolmentIcons(this.course.enrollmentmethods, this.course.id);
         }
     }
 
