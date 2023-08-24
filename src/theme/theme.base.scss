@@ -699,8 +699,6 @@ body.core-iframe-fullscreen ion-router-outlet {
     --ion-safe-area-right: 0px;
 
     .modal-wrapper {
-        @include margin-horizontal(var(--modal-lateral-margin), null);
-
         position: absolute;
         @include position(0 !important, 0 !important, 0 !important, unset !important);
         display: block;
@@ -716,6 +714,14 @@ body.core-iframe-fullscreen ion-router-outlet {
 
     .modal-shadow {
         display: none;
+    }
+}
+
+html:not([dir="rtl"]) {
+    .core-modal-lateral {
+        .modal-wrapper {
+            @include margin-horizontal(var(--modal-lateral-margin), null);
+        }
     }
 }
 
