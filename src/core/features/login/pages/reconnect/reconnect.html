@@ -21,10 +21,6 @@
     <core-loading [hideUntil]="!showLoading">
         <div class="list-item-limited-width">
             <div class="ion-text-wrap ion-text-center ion-margin-bottom" [ngClass]="{'item-avatar-center': showUserAvatar}">
-                <!-- Show user avatar. -->
-                <core-user-avatar class="large-avatar" *ngIf="showUserAvatar" [user]="siteInfo" [linkProfile]="false"
-                    [siteId]="siteId"></core-user-avatar>
-
                 <div class="core-login-site-logo" *ngIf="!showUserAvatar">
                     <!-- Show site logo or a default image. -->
                     <img *ngIf="logoUrl" [src]="logoUrl" role="presentation" onError="this.src='assets/img/login_logo.png'" alt="">
@@ -35,6 +31,13 @@
                     <core-format-text [text]="siteInfo?.siteName" [filter]="false"></core-format-text>
                 </p>
                 <p class="core-siteurl">{{siteUrl}}</p>
+
+                <!-- Show user avatar. -->
+                <core-user-avatar class="large-avatar" *ngIf="showUserAvatar" [user]="siteInfo" [linkProfile]="false"
+                    [siteId]="siteId"></core-user-avatar>
+                <p *ngIf="siteInfo?.fullname" class="core-login-fullname">
+                    <core-format-text [text]="siteInfo?.fullname" [filter]="false"></core-format-text>
+                </p>
 
                 <ion-card *ngIf="!isLoggedOut" class="core-danger-card core-login-reconnect-warning">
                     <ion-item>
@@ -50,13 +53,9 @@
                     <div [innerHTML]="exceededAttemptsHTML" (click)="exceededAttemptsClicked($event)"></div>
                 </core-login-exceeded-attempts>
             </div>
-            <form *ngIf="!isOAuth" [formGroup]="credForm" (ngSubmit)="login($event)" class="core-login-form" #reconnectForm>
-                <ion-item class="ion-text-wrap core-username item-interactive">
-                    <ion-label>
-                        <p>{{username}}</p>
-                    </ion-label>
-                </ion-item>
-                <ion-item class="ion-margin-bottom" *ngIf="!isBrowserSSO">
+
+            <form *ngIf="!isBrowserSSO" [formGroup]="credForm" (ngSubmit)="login($event)" class="core-login-form" #reconnectForm>
+                <ion-item class="ion-margin-bottom">
                     <ion-label class="sr-only">{{ 'core.login.password' | translate }}</ion-label>
                     <core-show-password name="password">
                         <ion-input class="core-ioninput-password" name="password" type="password"
@@ -65,22 +64,22 @@
                         </ion-input>
                     </core-show-password>
                 </ion-item>
-                <ion-button *ngIf="!isBrowserSSO" type="submit" expand="block" [disabled]="!credForm.valid"
-                    class="ion-margin core-login-login-button ion-text-wrap">
-                    {{ 'core.login.loginbutton' | translate }}
-                </ion-button>
-
-                <ion-button expand="block" *ngIf="isBrowserSSO" (click)="openBrowserSSO()"
+                <ion-button type="submit" expand="block" [disabled]="!credForm.valid"
                     class="ion-margin core-login-login-button ion-text-wrap">
                     {{ 'core.login.loginbutton' | translate }}
                 </ion-button>
 
                 <!-- Forgotten password option. -->
-                <ion-button *ngIf="showForgottenPassword && !isOAuth" expand="block" fill="clear"
+                <ion-button *ngIf="showForgottenPassword && !isBrowserSSO" expand="block" fill="clear"
                     class="core-login-forgotten-password core-button-as-link ion-text-wrap" (click)="forgottenPassword()">
                     {{ 'core.login.forgotten' | translate }}
                 </ion-button>
             </form>
+
+            <ion-button expand="block" *ngIf="isBrowserSSO" (click)="openBrowserSSO()"
+                class="ion-margin core-login-login-button ion-text-wrap">
+                {{ 'core.login.loginbutton' | translate }}
+            </ion-button>
 
             <!-- Additional Login methods -->
             <core-login-methods *ngIf="siteConfig" [siteConfig]="siteConfig" [reconnect]="true" [siteUrl]="siteUrl"

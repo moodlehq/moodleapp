@@ -50,7 +50,6 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
     showForgottenPassword = true;
     showUserAvatar = false;
     isBrowserSSO = false;
-    isOAuth = false;
     isLoggedOut: boolean;
     siteId!: string;
     siteInfo?: CoreSiteBasicInfo;
@@ -118,9 +117,6 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             this.username = site.infos.username;
             this.supportConfig = new CoreUserAuthenticatedSupportConfig(site);
 
-            // If login was OAuth we should only reach this page if the OAuth method ID has changed.
-            this.isOAuth = site.isOAuth();
-
             const availableSites = await CoreLoginHelper.getAvailableSites();
 
             // Show logo instead of avatar if it's a fixed site.
@@ -185,7 +181,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             CoreEvents.trigger(CoreEvents.LOGIN_SITE_CHECKED, { config: this.siteConfig });
         }
 
-        this.isBrowserSSO = !this.isOAuth && CoreLoginHelper.isSSOLoginNeeded(this.siteConfig.typeoflogin);
+        this.isBrowserSSO = CoreLoginHelper.isSSOLoginNeeded(this.siteConfig.typeoflogin);
 
         await CoreSites.checkApplication(this.siteConfig);
 
