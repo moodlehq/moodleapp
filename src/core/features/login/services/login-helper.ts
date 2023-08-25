@@ -975,6 +975,7 @@ export class CoreLoginHelperProvider {
             } else {
                 if (currentSite.isOAuth()) {
                     // User authenticated using an OAuth method. Check if it's still valid.
+                    // @TODO Why disabledFeatures is not checked here?
                     const identityProviders = this.getValidIdentityProviders(result.config);
                     const providerToUse = identityProviders.find((provider) => {
                         const params = CoreUrlUtils.extractUrlParams(provider.url);

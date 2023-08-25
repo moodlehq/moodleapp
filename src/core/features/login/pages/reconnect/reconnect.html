@@ -83,37 +83,11 @@
                     class="core-login-forgotten-password core-button-as-link ion-text-wrap" (click)="forgottenPassword()">
                     {{ 'core.login.forgotten' | translate }}
                 </ion-button>
-
-                <div class="ion-text-center ion-padding core-login-site-qrcode-separator">{{ 'core.login.or' | translate }}</div>
-
-                <!-- Login methods -->
-                <core-login-methods></core-login-methods>
-
-                <ng-container *ngIf="showScanQR && !isBrowserSSO">
-                    <ion-button expand="block" fill="outline" class="ion-margin core-login-site-qrcode"
-                        (click)="showInstructionsAndScanQR()">
-                        <ion-icon slot="start" name="fas-qrcode" aria-hidden="true"></ion-icon>
-                        {{ 'core.scanqr' | translate }}
-                    </ion-button>
-                </ng-container>
             </form>
 
-
-
-            <!-- Identity providers. -->
-            <ion-list *ngIf="identityProviders?.length" class="ion-padding-top core-login-identity-providers">
-                <ion-item class="ion-text-wrap">
-                    <ion-label>
-                        <h2 class="item-heading">{{ 'core.login.potentialidps' | translate }}</h2>
-                    </ion-label>
-                </ion-item>
-                <ion-button [fill]="'outline'" *ngFor="let provider of identityProviders"
-                    class="ion-text-wrap ion-margin core-oauth-provider" (click)="oauthClicked(provider)" [attr.aria-label]="provider.name"
-                    expand="block">
-                    <img *ngIf="provider.iconurl" [src]="provider.iconurl" alt="" width="32" height="32" slot="start" aria-hidden="true">
-                    <ion-label>{{ provider.name }}</ion-label>
-                </ion-button>
-            </ion-list>
+            <!-- Additional Login methods -->
+            <core-login-methods *ngIf="siteConfig" [siteConfig]="siteConfig" [reconnect]="true" [siteUrl]="siteUrl"
+                [redirectData]="redirectData"></core-login-methods>
 
             <!-- If OAuth, display cancel button since the form isn't displayed. -->
             <ion-list *ngIf="isOAuth">

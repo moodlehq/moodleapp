@@ -21,7 +21,7 @@ import { CoreSiteBasicInfo, CoreSites, CoreSitesReadingStrategy } from '@service
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
-import { CoreSite, CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@classes/site';
+import { CoreSite, CoreSitePublicConfigResponse } from '@classes/site';
 import { CoreEvents } from '@singletons/events';
 import { CoreError } from '@classes/errors/error';
 import { CoreNavigator, CoreRedirectPayload } from '@services/navigator';
@@ -46,9 +46,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
 
     credForm: FormGroup;
     siteUrl!: string;
-    username!: string;
     logoUrl?: string;
-    identityProviders?: CoreSiteIdentityProvider[];
     showForgottenPassword = true;
     showUserAvatar = false;
     isBrowserSSO = false;
@@ -61,12 +59,13 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
     reconnectAttempts = 0;
     supportConfig?: CoreUserSupportConfig;
     exceededAttemptsHTML?: SafeHtml | string | null;
+    siteConfig?: CoreSitePublicConfigResponse;
+    redirectData?: CoreRedirectPayload;
 
-    protected siteConfig?: CoreSitePublicConfigResponse;
     protected viewLeft = false;
     protected eventThrown = false;
-    protected redirectData?: CoreRedirectPayload;
     protected loginSuccessful = false;
+    protected username = '';
 
     constructor(
         protected fb: FormBuilder,
@@ -127,7 +126,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             // Show logo instead of avatar if it's a fixed site.
             this.showUserAvatar = !availableSites.length;
 
-            this.checkSiteConfig(site);
+            await this.checkSiteConfig(site);
 
             this.showLoading = false;
         } catch (error) {
@@ -175,9 +174,6 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             return;
         }
 
-        const disabledFeatures = CoreLoginHelper.getDisabledFeatures(this.siteConfig);
-
-        this.identityProviders = CoreLoginHelper.getValidIdentityProviders(this.siteConfig, disabledFeatures);
         this.showForgottenPassword = !CoreLoginHelper.isForgottenPasswordDisabled(this.siteConfig);
         this.exceededAttemptsHTML = CoreLoginHelper.buildExceededAttemptsHTML(
             !!this.supportConfig?.canContactSupport(),
@@ -190,12 +186,6 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
         }
 
         this.isBrowserSSO = !this.isOAuth && CoreLoginHelper.isSSOLoginNeeded(this.siteConfig.typeoflogin);
-
-        this.showScanQR = CoreLoginHelper.displayQRInSiteScreen();
-
-        if (!this.showScanQR) {
-            this.showScanQR = await CoreLoginHelper.displayQRInCredentialsScreen(this.siteConfig.tool_mobile_qrcodetype);
-        }
 
         await CoreSites.checkApplication(this.siteConfig);
 
@@ -322,39 +312,6 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             this.siteConfig.launchurl,
             this.redirectData,
         );
-    }
-
-    /**
-     * An OAuth button was clicked.
-     *
-     * @param provider The provider that was clicked.
-     */
-    oauthClicked(provider: CoreSiteIdentityProvider): void {
-        const result = CoreLoginHelper.openBrowserForOAuthLogin(
-            this.siteUrl,
-            provider,
-            this.siteConfig?.launchurl,
-            this.redirectData,
-        );
-
-        if (!result) {
-            CoreDomUtils.showErrorModal('Invalid data.');
-        }
-    }
-
-    /**
-     * Show instructions and scan QR code.
-     *
-     * @returns Promise resolved when done.
-     */
-    async showInstructionsAndScanQR(): Promise<void> {
-        try {
-            await CoreLoginHelper.showScanQRInstructions();
-
-            await CoreLoginHelper.scanQR();
-        } catch {
-            // Ignore errors.
-        }
     }
 
     /**

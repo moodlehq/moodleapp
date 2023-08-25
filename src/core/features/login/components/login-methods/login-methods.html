@@ -1,7 +1,33 @@
-<ng-container *ngIf="loginMethods?.length">
+<div *ngIf="loginMethods.length || identityProviders.length || showScanQR"
+    class="ion-text-center ion-padding core-login-site-qrcode-separator">
+    {{ 'core.login.or' | translate }}
+</div>
+
+<div class="core-login-methods" *ngIf="loginMethods.length">
     <ion-button [fill]="'outline'" class="ion-text-wrap ion-margin" *ngFor="let method of loginMethods" (click)="method.action()"
         [attr.aria-label]="method.name" expand="block">
         <ion-icon *ngIf="method.icon" [name]="method.icon" slot="start"></ion-icon>
         <ion-label>{{ method.name }}</ion-label>
     </ion-button>
+</div>
+
+<ng-container *ngIf="showScanQR">
+    <ion-button expand="block" fill="outline" class="ion-margin core-login-site-qrcode" (click)="showInstructionsAndScanQR()">
+        <ion-icon slot="start" name="fas-qrcode" aria-hidden="true"></ion-icon>
+        {{ 'core.scanqr' | translate }}
+    </ion-button>
 </ng-container>
+
+<!-- Identity providers. -->
+<ion-list *ngIf="identityProviders.length" class="ion-padding-top core-login-identity-providers">
+    <ion-item class="ion-text-wrap">
+        <ion-label>
+            <h2 class="item-heading">{{ 'core.login.potentialidps' | translate }}</h2>
+        </ion-label>
+    </ion-item>
+    <ion-button [fill]="'outline'" *ngFor="let provider of identityProviders" class="ion-text-wrap ion-margin core-oauth-provider"
+        (click)="oauthClicked(provider)" [attr.aria-label]="provider.name" expand="block">
+        <img *ngIf="provider.iconurl" [src]="provider.iconurl" alt="" width="32" height="32" slot="start" aria-hidden="true">
+        <ion-label>{{ provider.name }}</ion-label>
+    </ion-button>
+</ion-list>

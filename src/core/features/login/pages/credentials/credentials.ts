@@ -24,7 +24,7 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreConstants } from '@/core/constants';
 import { Translate } from '@singletons';
-import { CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@classes/site';
+import { CoreSitePublicConfigResponse } from '@classes/site';
 import { CoreEvents } from '@singletons/events';
 import { CoreNavigator } from '@services/navigator';
 import { CoreForms } from '@singletons/form';
@@ -53,7 +53,6 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     logoUrl?: string;
     authInstructions?: string;
     canSignup?: boolean;
-    identityProviders?: CoreSiteIdentityProvider[];
     pageLoaded = false;
     isBrowserSSO = false;
     showForgottenPassword = true;
@@ -206,7 +205,6 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             this.showScanQR = await CoreLoginHelper.displayQRInCredentialsScreen(this.siteConfig.tool_mobile_qrcodetype);
 
             const disabledFeatures = CoreLoginHelper.getDisabledFeatures(this.siteConfig);
-            this.identityProviders = CoreLoginHelper.getValidIdentityProviders(this.siteConfig, disabledFeatures);
             this.canSignup = this.siteConfig.registerauth == 'email' &&
                     !CoreLoginHelper.isEmailSignupDisabled(this.siteConfig, disabledFeatures);
             this.showForgottenPassword = !CoreLoginHelper.isForgottenPasswordDisabled(this.siteConfig, disabledFeatures);
@@ -222,7 +220,6 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
         } else {
             this.authInstructions = undefined;
             this.canSignup = false;
-            this.identityProviders = [];
         }
     }
 
@@ -330,32 +327,6 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     }
 
     /**
-     * An OAuth button was clicked.
-     *
-     * @param provider The provider that was clicked.
-     */
-    oauthClicked(provider: CoreSiteIdentityProvider): void {
-        if (!CoreLoginHelper.openBrowserForOAuthLogin(this.siteUrl, provider, this.siteConfig?.launchurl)) {
-            CoreDomUtils.showErrorModal('Invalid data.');
-        }
-    }
-
-    /**
-     * Show instructions and scan QR code.
-     *
-     * @returns Promise resolved when done.
-     */
-    async showInstructionsAndScanQR(): Promise<void> {
-        try {
-            await CoreLoginHelper.showScanQRInstructions();
-
-            await CoreLoginHelper.scanQR();
-        } catch {
-            // Ignore errors.
-        }
-    }
-
-    /**
      * Open email signup page.
      */
     openEmailSignup(): void {
@@ -370,7 +341,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     }
 
     /**
-     * View destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.viewLeft = true;
