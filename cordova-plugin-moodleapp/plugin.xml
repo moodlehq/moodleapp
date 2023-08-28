@@ -10,8 +10,12 @@
             <feature name="SystemUI">
                 <param name="android-package" value="com.moodle.moodlemobile.SystemUI"/>
             </feature>
+            <feature name="SecureStorage">
+                <param name="android-package" value="com.moodle.moodlemobile.SecureStorage"/>
+            </feature>
         </config-file>
         <source-file src="src/android/SystemUI.java" target-dir="src/com/moodle/moodlemobile" />
+        <source-file src="src/android/SecureStorage.java" target-dir="src/com/moodle/moodlemobile" />
     </platform>
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
