@@ -1,0 +1,15 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-title />
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="closeModal()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon slot="icon-only" name="fas-times" aria-hidden="true" />
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding-horizontal">
+    <core-loading [hideUntil]="loaded">
+        <p [innerHTML]="'addon.block_myoverview.filterhelp' + trimsuffix | translate"></p>
+    </core-loading>
+</ion-content>

@@ -5,16 +5,22 @@
     "aria:list": "Switch to list view",
     "browseallcourses": "Browse all courses",
     "favourites": "Starred",
+    "filterhelp": "<strong>All:</strong> Allows to visualize all your courses, except those you choose to hide from your view (see explanations below).<br><br>The filters <strong>\"In progress\"</strong>, <strong>\"Future\"</strong>, <strong>\"Past\"</strong>, are based on the date of the beginning and the end of the course, which are set in the course parameters.<br><br><strong>Starred:</strong> Allows to visualize all courses you indicated as \"favorite\" with the feature \"Star this course\" from your list of courses.<br><br><strong>Hidden:</strong> Allows to visualize all courses you indicated as \"hidden\" with the feature \"Hide from view\" from your list of courses. (These hidden courses are visible only if you choose \"Hidden\" item in your filter).",
+    "filterhelptrimester": "<strong>All:</strong> Allows to visualize all your courses, except those you choose to hide from your view (see explanations below).<br><br>The filters <strong>\"Trimester(s) in progress\"</strong>, <strong>\"Future Trimesters\"</strong>, <strong>\"Past Trimesters\"</strong>, are based on the date of the beginning and the end of the course, which are set in the course parameters in StudiUM. The courses are created with the following dates by default:<br><br>- Winter: January 1 - April 30 <br><br>- Summer: May 2 - August 31 <br><br>- Fall: August 22 - December 31 <br><br><strong>Starred:</strong> Allows to visualize all courses you indicated as \"favorite\" with the feature \"Star this course\" from your list of courses. <br><br><strong>Hidden:</strong> Allows to visualize all courses you indicated as \"hidden\" with the feature \"Hide from view\" from your list of courses. (These hidden courses are visible only if you choose \"Hidden\" item in your filter).",
     "future": "Future",
+    "futuretrimester": "Future Trimesters",
     "hiddencourses": "Removed from view",
     "inprogress": "In progress",
+    "inprogresstrimester": "Trimester(s) in progress",
     "lastaccessed": "Last accessed",
     "nocoursesenrolled": "You are currently not enrolled in any courses.",
     "nocoursesenrolleddescription": "Browse all available courses below and start learning.",
     "noresult": "Your search didn't match any courses.",
     "noresultdescription": "Try adjusting your filters or browse all courses below.",
     "past": "Past",
+    "pasttrimester": "Past Trimesters",
     "pluginname": "Course overview",
     "shortname": "Short name",
-    "title": "Course name"
+    "title": "Course name",
+    "trimester": "Trimester"
 }

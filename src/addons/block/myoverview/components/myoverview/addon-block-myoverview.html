@@ -40,14 +40,14 @@
                 <ion-select-option class="ion-text-wrap"
                     [class.core-select-option-border-bottom]="!filters.show.past && !filters.show.future" value="inprogress"
                     *ngIf="filters.show.inprogress">
-                    {{ 'addon.block_myoverview.inprogress' | translate }}
+                    {{ 'addon.block_myoverview.inprogress' + sort.trimsuffix | translate }}
                 </ion-select-option>
                 <ion-select-option class="ion-text-wrap" [class.core-select-option-border-bottom]="!filters.show.past" value="future"
                     *ngIf="filters.show.future">
-                    {{ 'addon.block_myoverview.future' | translate }}
+                    {{ 'addon.block_myoverview.future' + sort.trimsuffix | translate }}
                 </ion-select-option>
                 <ion-select-option class="ion-text-wrap core-select-option-border-bottom" value="past" *ngIf="filters.show.past">
-                    {{ 'addon.block_myoverview.past' | translate }}
+                    {{ 'addon.block_myoverview.past' + sort.trimsuffix | translate }}
                 </ion-select-option>
                 <ng-container *ngIf="filters.show.custom">
                     <ng-container *ngFor="let customOption of filters.customFilters; let index = index; let last = last">
@@ -64,6 +64,13 @@
             </core-combobox>
         </ion-col>
         <ion-col>
+            <ion-buttons>
+                <ion-button fill="clear" (click)="showHelp()" [attr.aria-label]="'core.help' | translate" slot="end">
+                    <ion-icon slot="icon-only" name="help-circle-outline" aria-hidden="true" size="large"></ion-icon>
+                </ion-button>
+            </ion-buttons>
+        </ion-col>
+        <ion-col>
             <!-- Filter courses. -->
             <ion-searchbar class="ion-hide-md-down" [(ngModel)]="textFilter" (ionInput)="filterTextChanged($event.target)"
                 (ionCancel)="filterTextChanged($event.target)" [placeholder]="'core.courses.filtermycourses' | translate" />
@@ -71,6 +78,9 @@
         <ion-col size="auto" *ngIf="sort.enabled">
             <core-combobox [label]="'core.sortby' | translate" [selection]="sort.selected" (onChange)="sortCourses($event)"
                 icon="fas-arrow-down-short-wide" class="no-border">
+                <ion-select-option class="ion-text-wrap" value="trimester">
+                    {{'addon.block_myoverview.trimester' | translate}}
+                </ion-select-option>
                 <ion-select-option class="ion-text-wrap" value="fullname">
                     {{'addon.block_myoverview.title' | translate}}
                 </ion-select-option>

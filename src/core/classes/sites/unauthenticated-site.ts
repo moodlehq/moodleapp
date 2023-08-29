@@ -494,6 +494,9 @@ export type CoreSiteInfoResponse = {
     limitconcurrentlogins?: number; // @since 4.0. Number of concurrent sessions allowed.
     usersessionscount?: number; // @since 4.0. Number of active sessions for current user. Only if limitconcurrentlogins is used.
     policyagreed?: number; // @since 4.4. Whether user accepted all the policies.
+    cansortbytrimester?: boolean;
+    programscateid?: string;
+
 };
 
 /**
