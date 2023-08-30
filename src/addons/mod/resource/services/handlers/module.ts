@@ -20,7 +20,6 @@ import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/course/services/module-delegate';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreFileHelper } from '@services/file-helper';
-import { CoreSites } from '@services/sites';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
@@ -229,9 +228,6 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
             return;
         }
 
-        if (CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.0')) {
-            return CoreCourse.getModuleIconSrc(module.modname, module.modicon);
-        }
         let mimetypeIcon = '';
 
         if (module.contentsinfo) {
