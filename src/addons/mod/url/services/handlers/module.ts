@@ -187,7 +187,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
     iconIsShape(module?: CoreCourseModuleData | undefined, modicon?: string | undefined): boolean | undefined {
         const iconUrl = module?.modicon ?? modicon;
 
-        return !iconUrl?.startsWith('assets/img/files/');
+        return !iconUrl?.startsWith('assets/img/files_legacy/') && !iconUrl?.endsWith('.png');
     }
 
     /**
