@@ -115,7 +115,7 @@ export class CoreFileComponent implements OnInit, OnDestroy {
                 this.observer = CoreEvents.on(eventName, () => {
                     this.calculateState();
                 });
-            } catch (error) {
+            } catch {
                 // File not downloadable.
             }
         }

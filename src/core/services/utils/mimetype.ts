@@ -26,6 +26,7 @@ import extToMime from '@/assets/exttomime.json';
 import mimeToExt from '@/assets/mimetoext.json';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreUrl } from '@singletons/url';
+import { CoreSites } from '@services/sites';
 
 interface MimeTypeInfo {
     type: string;
@@ -282,7 +283,11 @@ export class CoreMimetypeUtilsProvider {
      * @returns The path to a folder icon.
      */
     getFolderIcon(): string {
-        return 'assets/img/files/folder-64.png';
+        if (CoreSites.getCurrentSite() === undefined || CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.0')) {
+            return 'assets/img/files/folder.svg';
+        }
+
+        return 'assets/img/files_legacy/folder-64.png';
     }
 
     /**
@@ -292,7 +297,11 @@ export class CoreMimetypeUtilsProvider {
      * @returns The icon path.
      */
     getFileIconForType(type: string): string {
-        return 'assets/img/files/' + type + '-64.png';
+        if (CoreSites.getCurrentSite() === undefined || CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.0')) {
+            return 'assets/img/files/' + type + '.svg';
+        }
+
+        return 'assets/img/files_legacy/' + type + '-64.png';
     }
 
     /**
