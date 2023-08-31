@@ -40,6 +40,8 @@ export class CoreBlockSideBlocksButtonComponent implements OnInit, OnDestroy {
         component: CoreBlockSideBlocksTourComponent,
         side: CoreUserToursSide.Start,
         alignment: CoreUserToursAlignment.Center,
+        after: 'user-menu',
+        afterTimeout: 1000,
         getFocusedElement: nativeButton => {
             const innerButton = Array.from(nativeButton.shadowRoot?.children ?? []).find(child => child.tagName === 'BUTTON');
 
