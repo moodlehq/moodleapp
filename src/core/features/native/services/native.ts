@@ -23,7 +23,7 @@ import { AsyncInstance, asyncInstance } from '@/core/utils/async-instance';
 @Injectable({ providedIn: 'root' })
 export class CoreNativeService {
 
-    private plugins: Partial<Record<keyof MoodleAppPlugins, AsyncInstance<unknown>>> = {};
+    private plugins: Partial<Record<keyof MoodleAppPlugins, AsyncInstance>> = {};
 
     /**
      * Get a native plugin instance.

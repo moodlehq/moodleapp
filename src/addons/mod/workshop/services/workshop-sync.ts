@@ -28,7 +28,6 @@ import { CoreEvents } from '@singletons/events';
 import { AddonModWorkshop,
     AddonModWorkshopAction,
     AddonModWorkshopData,
-    AddonModWorkshopProvider,
     AddonModWorkshopSubmissionType,
 } from './workshop';
 import { AddonModWorkshopHelper } from './workshop-helper';
@@ -38,6 +37,7 @@ import { AddonModWorkshopOffline,
     AddonModWorkshopOfflineEvaluateSubmission,
     AddonModWorkshopOfflineSubmission,
 } from './workshop-offline';
+import { ADDON_MOD_WORKSHOP_COMPONENT } from '@addons/mod/workshop/constants';
 
 /**
  * Service to sync workshops.
@@ -136,7 +136,7 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider<AddonModW
         }
 
         // Verify that workshop isn't blocked.
-        if (CoreSync.isBlocked(AddonModWorkshopProvider.COMPONENT, workshopId, siteId)) {
+        if (CoreSync.isBlocked(ADDON_MOD_WORKSHOP_COMPONENT, workshopId, siteId)) {
             this.logger.debug(`Cannot sync workshop '${workshopId}' because it is blocked.`);
 
             throw new CoreSyncBlockedError(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
@@ -163,7 +163,7 @@ export class AddonModWorkshopSyncProvider extends CoreSyncBaseProvider<AddonModW
         };
 
         // Sync offline logs.
-        await CoreUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(AddonModWorkshopProvider.COMPONENT, workshopId, siteId));
+        await CoreUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(ADDON_MOD_WORKSHOP_COMPONENT, workshopId, siteId));
 
         // Get offline submissions to be sent.
         const syncs = await Promise.all([

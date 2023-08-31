@@ -13,11 +13,11 @@
 // limitations under the License.
 
 import { CoreConstants, ModPurpose } from '@/core/constants';
+import { ADDON_MOD_WORKSHOP_PAGE_NAME } from '@addons/mod/workshop/constants';
 import { Injectable, Type } from '@angular/core';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
-import { AddonModWorkshopIndexComponent } from '../../components/index';
 
 /**
  * Handler to support workshop modules.
@@ -25,11 +25,9 @@ import { AddonModWorkshopIndexComponent } from '../../components/index';
 @Injectable({ providedIn: 'root' })
 export class AddonModWorkshopModuleHandlerService extends CoreModuleHandlerBase implements CoreCourseModuleHandler {
 
-    static readonly PAGE_NAME = 'mod_workshop';
-
     name = 'AddonModWorkshop';
     modName = 'workshop';
-    protected pageName = AddonModWorkshopModuleHandlerService.PAGE_NAME;
+    protected pageName = ADDON_MOD_WORKSHOP_PAGE_NAME;
 
     supportedFeatures = {
         [CoreConstants.FEATURE_GROUPS]: true,
@@ -47,6 +45,8 @@ export class AddonModWorkshopModuleHandlerService extends CoreModuleHandlerBase 
      * @inheritdoc
      */
     async getMainComponent(): Promise<Type<unknown>> {
+        const { AddonModWorkshopIndexComponent } = await import('@addons/mod/workshop/components/index');
+
         return AddonModWorkshopIndexComponent;
     }
 

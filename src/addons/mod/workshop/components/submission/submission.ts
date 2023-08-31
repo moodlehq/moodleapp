@@ -19,9 +19,7 @@ import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { AddonModWorkshopSubmissionPage } from '../../pages/submission/submission';
-import { AddonModWorkshopModuleHandlerService } from '../../services/handlers/module';
 import {
-    AddonModWorkshopProvider,
     AddonModWorkshopPhase,
     AddonModWorkshopData,
     AddonModWorkshopGetWorkshopAccessInformationWSResponse,
@@ -32,6 +30,7 @@ import {
     AddonModWorkshopSubmissionDataWithOfflineData,
 } from '../../services/workshop-helper';
 import { AddonModWorkshopOffline } from '../../services/workshop-offline';
+import { ADDON_MOD_WORKSHOP_COMPONENT, ADDON_MOD_WORKSHOP_PAGE_NAME } from '@addons/mod/workshop/constants';
 
 /**
  * Component that displays workshop submission.
@@ -51,7 +50,7 @@ export class AddonModWorkshopSubmissionComponent implements OnInit {
     @Input() assessment?: AddonModWorkshopSubmissionAssessmentWithFormData;
     @Input() summary = false;
 
-    component = AddonModWorkshopProvider.COMPONENT;
+    component = ADDON_MOD_WORKSHOP_COMPONENT;
     componentId?: number;
     userId: number;
     loaded = false;
@@ -128,7 +127,7 @@ export class AddonModWorkshopSubmissionComponent implements OnInit {
             };
 
             CoreNavigator.navigateToSitePath(
-                AddonModWorkshopModuleHandlerService.PAGE_NAME + `/${this.courseId}/${this.module.id}/${this.submission.id}`,
+                `${ADDON_MOD_WORKSHOP_PAGE_NAME}/${this.courseId}/${this.module.id}/${this.submission.id}`,
                 { params },
             );
 

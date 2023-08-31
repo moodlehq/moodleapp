@@ -25,7 +25,6 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { Subscription } from 'rxjs';
-import { AddonModWorkshopModuleHandlerService } from '../../services/handlers/module';
 import {
     AddonModWorkshopProvider,
     AddonModWorkshopPhase,
@@ -53,6 +52,7 @@ import {
     AddonModWorkshopSyncResult,
 } from '../../services/workshop-sync';
 import { AddonModWorkshopPhaseInfoComponent } from '../phase/phase';
+import { ADDON_MOD_WORKSHOP_COMPONENT, ADDON_MOD_WORKSHOP_PAGE_NAME } from '@addons/mod/workshop/constants';
 
 /**
  * Component that displays a workshop index page.
@@ -65,7 +65,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
 
     @Input() group = 0;
 
-    component = AddonModWorkshopProvider.COMPONENT;
+    component = ADDON_MOD_WORKSHOP_COMPONENT;
     pluginName = 'workshop';
 
     workshop?: AddonModWorkshopData;
@@ -379,7 +379,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
 
             const submissionId = this.submission?.id || 0;
             CoreNavigator.navigateToSitePath(
-                AddonModWorkshopModuleHandlerService.PAGE_NAME + `/${this.courseId}/${this.module.id}/${submissionId}/edit`,
+                `${ADDON_MOD_WORKSHOP_PAGE_NAME}/${this.courseId}/${this.module.id}/${submissionId}/edit`,
                 { params },
             );
 

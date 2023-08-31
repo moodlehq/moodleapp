@@ -49,6 +49,7 @@ import { AddonModWorkshopOffline } from '../../services/workshop-offline';
 import { AddonModWorkshopSyncProvider, AddonModWorkshopAutoSyncData } from '../../services/workshop-sync';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreTime } from '@singletons/time';
+import { ADDON_MOD_WORKSHOP_COMPONENT } from '@addons/mod/workshop/constants';
 
 /**
  * Page that displays a workshop submission.
@@ -99,7 +100,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
     };
 
     protected hasOffline = false;
-    protected component = AddonModWorkshopProvider.COMPONENT;
+    protected component = ADDON_MOD_WORKSHOP_COMPONENT;
     protected forceLeave = false;
     protected obsAssessmentSaved: CoreEventObserver;
     protected syncObserver: CoreEventObserver;

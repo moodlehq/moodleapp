@@ -12,32 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { asyncInstance } from '@/core/utils/async-instance';
+import { ADDON_MOD_WORKSHOP_SYNC_CRON_NAME } from '@addons/mod/workshop/constants';
 import { CoreCronHandler } from '@services/cron';
-import { makeSingleton } from '@singletons';
-import { AddonModWorkshopSync } from '../workshop-sync';
 
-/**
- * Synchronization cron handler.
- */
-@Injectable({ providedIn: 'root' })
-export class AddonModWorkshopSyncCronHandlerService implements CoreCronHandler {
+export class AddonModWorkshopSyncCronHandlerService {
 
-    name = 'AddonModWorkshopSyncCronHandler';
-
-    /**
-     * @inheritdoc
-     */
-    execute(siteId?: string, force?: boolean): Promise<void> {
-        return AddonModWorkshopSync.syncAllWorkshops(siteId, force);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    getInterval(): number {
-        return AddonModWorkshopSync.syncInterval;
-    }
+    name = ADDON_MOD_WORKSHOP_SYNC_CRON_NAME;
 
 }
-export const AddonModWorkshopSyncCronHandler = makeSingleton(AddonModWorkshopSyncCronHandlerService);
+
+/**
+ * Get cron handler instance.
+ *
+ * @returns Cron handler.
+ */
+export function getCronHandlerInstance(): CoreCronHandler {
+    const lazyHandler = asyncInstance(async () => {
+        const { AddonModWorkshopSyncCronHandler } = await import('./sync-cron-lazy');
+
+        return AddonModWorkshopSyncCronHandler.instance;
+    });
+
+    lazyHandler.setEagerInstance(new AddonModWorkshopSyncCronHandlerService());
+
+    return lazyHandler;
+}

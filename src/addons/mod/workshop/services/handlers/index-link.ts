@@ -15,7 +15,8 @@
 import { Injectable } from '@angular/core';
 import { CoreContentLinksModuleIndexHandler } from '@features/contentlinks/classes/module-index-handler';
 import { makeSingleton } from '@singletons';
-import { AddonModWorkshopProvider } from '../workshop';
+import { ADDON_MOD_WORKSHOP_COMPONENT } from '@addons/mod/workshop/constants';
+
 /**
  * Handler to treat links to workshop.
  */
@@ -25,7 +26,7 @@ export class AddonModWorkshopIndexLinkHandlerService extends CoreContentLinksMod
     name = 'AddonModWorkshopLinkHandler';
 
     constructor() {
-        super(AddonModWorkshopProvider.COMPONENT, 'workshop', 'w');
+        super(ADDON_MOD_WORKSHOP_COMPONENT, 'workshop', 'w');
     }
 
 }

@@ -41,6 +41,7 @@ import {
 import { AddonModWorkshopHelper, AddonModWorkshopSubmissionDataWithOfflineData } from '../../services/workshop-helper';
 import { AddonModWorkshopOffline } from '../../services/workshop-offline';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { ADDON_MOD_WORKSHOP_COMPONENT } from '@addons/mod/workshop/constants';
 
 /**
  * Page that displays the workshop edit submission.
@@ -59,7 +60,7 @@ export class AddonModWorkshopEditSubmissionPage implements OnInit, OnDestroy, Ca
     submission?: AddonModWorkshopSubmissionDataWithOfflineData;
 
     loaded = false;
-    component = AddonModWorkshopProvider.COMPONENT;
+    component = ADDON_MOD_WORKSHOP_COMPONENT;
     componentId!: number;
     editForm: FormGroup; // The form group.
     editorExtraParams: Record<string, unknown> = {}; // Extra params to identify the draft.

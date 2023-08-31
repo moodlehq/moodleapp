@@ -212,14 +212,14 @@ export class CoreCronDelegateService {
      * @param name Handler's name.
      * @returns Handler's interval.
      */
-    protected getHandlerInterval(name: string): number {
+    protected async getHandlerInterval(name: string): Promise<number> {
         if (this.handlers[name] === undefined) {
             // Invalid, return default.
             return CoreCronDelegateService.DEFAULT_INTERVAL;
         }
 
         // Don't allow intervals lower than the minimum.
-        const handlerInterval = this.handlers[name].getInterval?.();
+        const handlerInterval = await this.handlers[name].getInterval?.();
 
         if (!handlerInterval) {
             return CoreCronDelegateService.DEFAULT_INTERVAL;
@@ -365,8 +365,7 @@ export class CoreCronDelegateService {
         if (!timeToNextExecution) {
             // Get last execution time to check when do we need to execute it.
             const lastExecution = await this.getHandlerLastExecutionTime(name);
-
-            const interval = this.getHandlerInterval(name);
+            const interval = await this.getHandlerInterval(name);
 
             timeToNextExecution = lastExecution + interval - Date.now();
         }
@@ -486,7 +485,7 @@ export interface CoreCronHandler {
      *
      * @returns Interval time (in milliseconds).
      */
-    getInterval?(): number;
+    getInterval?(): number | Promise<number>;
 
     /**
      * Check whether the process uses network or not. True if not defined.
