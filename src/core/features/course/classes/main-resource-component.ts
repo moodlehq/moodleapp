@@ -493,7 +493,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * Log activity view in analytics.
      *
      * @param wsName Name of the WS used.
-     * @param data Other data to send.
+     * @param options Other data to send.
      * @returns Promise resolved when done.
      */
     async analyticsLogEvent(

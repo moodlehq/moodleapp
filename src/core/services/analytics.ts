@@ -21,6 +21,7 @@ import { CoreSites } from './sites';
 import { CoreConfig, CoreConfigProvider } from './config';
 import { CoreConstants } from '../constants';
 import { CoreUrlUtils } from './utils/url';
+import { CoreTextUtils } from '@services/utils/text';
 
 /**
  * Helper service to support analytics.
@@ -77,6 +78,11 @@ export class CoreAnalyticsService extends CoreDelegate<CoreAnalyticsHandler> {
             ...event,
             siteId: site.getId(),
         };
+
+        if (treatedEvent.type === CoreAnalyticsEventType.VIEW_ITEM || treatedEvent.type === CoreAnalyticsEventType.VIEW_ITEM_LIST) {
+            treatedEvent.name = CoreTextUtils.cleanTags(treatedEvent.name);
+        }
+
         if ('url' in treatedEvent && treatedEvent.url) {
             if (!CoreUrlUtils.isAbsoluteURL(treatedEvent.url)) {
                 treatedEvent.url = site.createSiteUrl(treatedEvent.url);
