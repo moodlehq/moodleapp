@@ -716,6 +716,16 @@ export class AddonStorageManagerCourseStoragePage implements OnInit, OnDestroy {
     }
 
     /**
+     * Check if the provided section can be downloaded.
+     *
+     * @param section Section to check.
+     * @returns Can be downloaded or not.
+     */
+    canDownloadSection(section: AddonStorageManagerCourseSection): boolean {
+        return section.modules.some(module => module.modname !== 'label');
+    }
+
+    /**
      * Toggle expand status.
      *
      * @param event Event object.

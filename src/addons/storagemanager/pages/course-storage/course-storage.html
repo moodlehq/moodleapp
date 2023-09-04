@@ -19,7 +19,10 @@
 
         <ion-card class="wholecourse">
             <ion-card-header>
-                <ion-card-title>{{ title }}</ion-card-title>
+                <ion-card-title>
+                    <core-format-text [text]="title" contextLevel="course" [contextInstanceId]="courseId">
+                    </core-format-text>
+                </ion-card-title>
                 <ion-item class="size ion-text-wrap ion-no-padding">
                     <ion-label>
                         <p class="item-heading ion-text-wrap">{{ 'addon.storagemanager.totaldownloads' | translate }}</p>
@@ -77,7 +80,7 @@
                         </ion-label>
                         <div class="storage-buttons" slot="end"
                             *ngIf="(!section.calculatingSize && section.totalSize > 0) || downloadEnabled">
-                            <div *ngIf="downloadEnabled" slot="end" class="core-button-spinner">
+                            <div *ngIf="downloadEnabled && canDownloadSection(section)" slot="end" class="core-button-spinner">
                                 <core-download-refresh *ngIf="!section.isDownloading && section.downloadStatus != statusDownloaded"
                                     [status]="section.downloadStatus" [enabled]="true" (action)="prefecthSection(section)"
                                     [loading]="section.isDownloading || section.isCalculating" [canTrustDownload]="true">
@@ -126,9 +129,9 @@
 
                                 <div class="storage-buttons" slot="end">
                                     <core-download-refresh *ngIf="downloadEnabled && module.handlerData?.showDownloadButton &&
-                                        module.downloadStatus != statusDownloaded" [status]="module.downloadStatus" [enabled]="true"
-                                        [canTrustDownload]="true" [loading]="module.spinner || module.handlerData.spinner"
-                                        (action)="prefetchModule(module)">
+                                        module.downloadStatus != statusDownloaded && module.modname !== 'label'"
+                                        [status]="module.downloadStatus" [enabled]="true" [canTrustDownload]="true"
+                                        [loading]="module.spinner || module.handlerData.spinner" (action)="prefetchModule(module)">
                                     </core-download-refresh>
                                     <ion-button fill="clear" (click)="deleteForModule($event, module, section)"
                                         *ngIf="!module.calculatingSize && module.totalSize > 0" color="danger">
@@ -136,7 +139,8 @@
                                             [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate: { name: module.name }">
                                         </ion-icon>
                                     </ion-button>
-                                    <p *ngIf="!downloadEnabled || !module.handlerData?.showDownloadButton" class="sr-only">
+                                    <p *ngIf="(!downloadEnabled || !module.handlerData?.showDownloadButton) && module.modname === 'label'"
+                                        class="sr-only">
                                         {{ 'core.notdownloadable' | translate }}
                                     </p>
                                 </div>
