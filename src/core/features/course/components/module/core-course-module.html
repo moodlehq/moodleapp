@@ -18,8 +18,11 @@
                     </core-format-text>
                     <ion-icon name="fas-lock" *ngIf="module.visible === 0 || module.uservisible === false"
                         [attr.aria-label]="'core.restricted' | translate"></ion-icon>
-                    <ion-icon *ngIf="prefetchStatusIcon$ | async as prefetchStatusIcon" [name]="prefetchStatusIcon" color="success"
-                        [attr.aria-label]="((prefetchStatusText$ | async) || '') | translate"></ion-icon>
+                    <ng-container *ngIf="module.modname !== 'label'">
+                        <ion-icon *ngIf="prefetchStatusIcon$ | async as prefetchStatusIcon" [name]="prefetchStatusIcon" color="success"
+                            [attr.aria-label]="((prefetchStatusText$ | async) || '') | translate">
+                        </ion-icon>
+                    </ng-container>
                 </p>
 
                 <div class="core-module-additional-info">
