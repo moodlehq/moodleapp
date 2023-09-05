@@ -278,8 +278,7 @@ export class CoreStylesService {
             this.disableStyleElement(style, true);
         });
 
-        // Set StatusBar properties.
-        CoreApp.setStatusBarColor();
+        CoreApp.setSystemUIColors();
     }
 
     /**
@@ -341,7 +340,7 @@ export class CoreStylesService {
                 this.disableStyleElementByName(siteId, sourceName, false);
             }
 
-            CoreApp.setStatusBarColor();
+            CoreApp.setSystemUIColors();
         }
     }
 
@@ -371,8 +370,7 @@ export class CoreStylesService {
         }));
 
         if (!disabled) {
-            // Set StatusBar properties.
-            CoreApp.setStatusBarColor();
+            CoreApp.setSystemUIColors();
         }
     }
 
@@ -390,7 +388,7 @@ export class CoreStylesService {
             await this.setStyle(CoreStylesService.TMP_SITE_ID, handler, false, config);
         }));
 
-        CoreApp.setStatusBarColor();
+        CoreApp.setSystemUIColors();
     }
 
     /**
@@ -438,7 +436,7 @@ export class CoreStylesService {
             }
             delete this.stylesEls[siteId];
 
-            CoreApp.setStatusBarColor();
+            CoreApp.setSystemUIColors();
         }
     }
 

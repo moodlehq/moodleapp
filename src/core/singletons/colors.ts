@@ -206,4 +206,23 @@ export class CoreColors {
         return CoreColors.getColorHex(color);
     }
 
+    /**
+     * Get the bottom page current background color. Bottom bar if shown or page background otherwise.
+     *
+     * @returns Color in hex format.
+     */
+    static getBottomPageBackgroundColor(): string {
+        const element = document.querySelector('ion-tabs.placement-bottom:not(.tabshidden) ion-tab-bar.mainmenu-tabs');
+        let color: string;
+
+        if (element) {
+            color = getComputedStyle(element).getPropertyValue('--background').trim();
+        } else {
+            // Fallback, it won't always work.
+            color = getComputedStyle(document.body).getPropertyValue('--ion-background-color').trim();
+        }
+
+        return CoreColors.getColorHex(color);
+    }
+
 }

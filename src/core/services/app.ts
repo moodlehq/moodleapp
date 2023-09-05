@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 
 import { CoreDB } from '@services/db';
-import { CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
 
 import { makeSingleton, Keyboard, StatusBar } from '@singletons';
@@ -31,6 +31,7 @@ import { CorePromisedValue } from '@classes/promised-value';
 import { Subscription } from 'rxjs';
 import { CorePlatform } from '@services/platform';
 import { CoreNetwork, CoreNetworkConnection } from '@services/network';
+import { CoreMainMenuProvider } from '@features/mainmenu/services/mainmenu';
 
 /**
  * Factory to provide some global functionalities, like access to the global app database.
@@ -56,9 +57,14 @@ export class CoreAppProvider {
     protected keyboardClosing = false;
     protected redirect?: CoreRedirectData;
     protected schemaVersionsTable = asyncInstance<CoreDatabaseTable<SchemaVersionsDBEntry, 'name'>>();
+    protected mainMenuListener?: CoreEventObserver;
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreAppProvider');
+        if (CorePlatform.isAndroid()) {
+            this.mainMenuListener =
+                CoreEvents.on(CoreMainMenuProvider.MAIN_MENU_VISIBILITY_UPDATED, () => this.setAndroidNavigationBarColor());
+        }
     }
 
     /**
@@ -200,7 +206,7 @@ export class CoreAppProvider {
      * @returns Store URL.
      */
     getAppStoreUrl(storesConfig: CoreStoreConfig): string | undefined {
-        if (this.isIOS() && storesConfig.ios) {
+        if (CorePlatform.isIOS() && storesConfig.ios) {
             return 'itms-apps://itunes.apple.com/app/' + storesConfig.ios;
         }
 
@@ -619,6 +625,14 @@ export class CoreAppProvider {
     }
 
     /**
+     * Set System UI Colors.
+     */
+    setSystemUIColors(): void {
+        this.setStatusBarColor();
+        this.setAndroidNavigationBarColor();
+    }
+
+    /**
      * Set StatusBar color depending on platform.
      *
      * @param color RGB color to use as status bar background. If not set the css variable will be read.
@@ -635,16 +649,7 @@ export class CoreAppProvider {
 
         this.logger.debug(`Set status bar color ${color}`);
 
-        const useLightText = CoreColors.isWhiteContrastingBetter(color);
-
-        // styleDefault will use white text on iOS when darkmode is on. Force the background to black.
-        if (this.isIOS() && !useLightText && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            StatusBar.backgroundColorByHexString('#000000');
-            StatusBar.styleLightContent();
-        } else {
-            StatusBar.backgroundColorByHexString(color);
-            useLightText ? StatusBar.styleLightContent() : StatusBar.styleDefault();
-        }
+        StatusBar.backgroundColorByHexString(color);
     }
 
     /**
@@ -682,6 +687,26 @@ export class CoreAppProvider {
             // No installed version yet.
             return 0;
         }
+    }
+
+    /**
+     * Set NavigationBar color for Android
+     *
+     * @param color RGB color to use as background. If not set the css variable will be read.
+     */
+    protected setAndroidNavigationBarColor(color?: string): void {
+        if (!CorePlatform.isAndroid()) {
+            return;
+        }
+
+        if (!color) {
+            // Get the default color to change it.
+            color = CoreColors.getBottomPageBackgroundColor();
+        }
+
+        this.logger.debug(`Set navigation bar color ${color}`);
+
+        (<any> window).StatusBar.navigationBackgroundColorByHexString(color);
     }
 
 }

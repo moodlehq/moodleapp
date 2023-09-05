@@ -465,7 +465,7 @@ export class CoreSettingsHelperProvider {
             CoreDomUtils.toggleModeClass('dark', enable, { includeLegacy: true });
             this.darkModeObservable.next(enable);
 
-            CoreApp.setStatusBarColor();
+            CoreApp.setSystemUIColors();
         }
     }
 
