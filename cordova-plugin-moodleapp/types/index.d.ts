@@ -12,13 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { SystemUI } from '../src/ts/plugins/SystemUI';
 import { SecureStorage } from '../src/ts/plugins/SecureStorage';
 
 declare global {
 
     interface MoodleAppPlugins {
-        systemUI: SystemUI;
         secureStorage: SecureStorage;
     }
 
