@@ -22,10 +22,14 @@ const { resolve } = require('path');
 
 const bundle = readFileSync(resolve(__dirname, '../www/index.js')).toString();
 const template = readFileSync(resolve(__dirname, './templates/cordova-plugin.js')).toString();
+const pluginsPath = resolve(__dirname, '../../plugins/');
 const platformsPath = resolve(__dirname, '../../platforms/');
 const filePaths = [
+    resolve(pluginsPath, 'cordova-plugin-moodleapp/www/index.js'),
     resolve(platformsPath, 'android/app/src/main/assets/www/plugins/cordova-plugin-moodleapp/www/index.js'),
     resolve(platformsPath, 'android/platform_www/plugins/cordova-plugin-moodleapp/www/index.js'),
+    resolve(platformsPath, 'ios/platform_www/plugins/cordova-plugin-moodleapp/www/index.js'),
+    resolve(platformsPath, 'ios/www/plugins/cordova-plugin-moodleapp/www/index.js'),
 ];
 const pluginIndex = template
     .replace('[[PLUGIN_NAME]]', 'cordova-plugin-moodleapp.moodleapp')
