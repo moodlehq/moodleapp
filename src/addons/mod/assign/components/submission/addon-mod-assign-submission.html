@@ -1,7 +1,7 @@
 <core-loading [hideUntil]="loaded">
     <div class="list-item-limited-width">
         <!-- Time limit is over. -->
-        <ion-card *ngIf="timeLimitFinished" class="core-danger-card">
+        <ion-card *ngIf="timeLimitFinished && (canEdit || canSubmit)" class="core-danger-card">
             <ion-item class="ion-text-wrap">
                 <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
