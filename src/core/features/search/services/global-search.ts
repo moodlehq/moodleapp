@@ -84,6 +84,21 @@ export class CoreSearchGlobalSearchService {
     private static readonly SEARCH_AREAS_CACHE_KEY = 'CoreSearchGlobalSearch:SearchAreas';
 
     /**
+     * Check whether global search is enabled or not.
+     *
+     * @returns Whether global search is enabled or not.
+     */
+    async isEnabled(siteId?: string): Promise<boolean> {
+        const site = siteId
+            ? await CoreSites.getSite(siteId)
+            : CoreSites.getRequiredCurrentSite();
+
+        return !site?.isFeatureDisabled('CoreNoDelegate_GlobalSearch')
+            && site?.wsAvailable('core_search_get_results') // @since 4.3
+            && site?.canUseAdvancedFeature('enableglobalsearch');
+    }
+
+    /**
      * Get results.
      *
      * @param query Search query.

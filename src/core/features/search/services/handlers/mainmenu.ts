@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { makeSingleton } from '@singletons';
 import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@features/mainmenu/services/mainmenu-delegate';
-import { CoreSites } from '@services/sites';
+import { CoreSearchGlobalSearch } from '@features/search/services/global-search';
 
 export const CORE_SEARCH_PAGE_NAME = 'search';
 
@@ -32,11 +32,7 @@ export class CoreSearchMainMenuHandlerService implements CoreMainMenuHandler {
      * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
-        const site = CoreSites.getRequiredCurrentSite();
-
-        return !site.isFeatureDisabled('CoreNoDelegate_GlobalSearch')
-            && site.wsAvailable('core_search_get_results')
-            && site.canUseAdvancedFeature('enableglobalsearch');
+        return CoreSearchGlobalSearch.isEnabled();
     }
 
     /**

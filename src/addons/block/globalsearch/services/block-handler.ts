@@ -18,8 +18,8 @@ import { CoreBlockOnlyTitleComponent } from '@features/block/components/only-tit
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
 import { makeSingleton } from '@singletons';
 import { CoreCourseBlock } from '@features/course/services/course';
-import { CoreSites } from '@services/sites';
 import { CORE_SEARCH_PAGE_NAME } from '@features/search/services/handlers/mainmenu';
+import { CoreSearchGlobalSearch } from '@features/search/services/global-search';
 
 /**
  * Block handler.
@@ -34,11 +34,7 @@ export class AddonBlockGlobalSearchHandlerService extends CoreBlockBaseHandler {
      * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
-        const site = CoreSites.getRequiredCurrentSite();
-
-        return !site.isFeatureDisabled('CoreNoDelegate_GlobalSearch')
-            && site.wsAvailable('core_search_get_results')
-            && site.canUseAdvancedFeature('enableglobalsearch');
+        return CoreSearchGlobalSearch.isEnabled();
     }
 
     /**

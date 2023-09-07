@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSearchGlobalSearchResultsSource } from '@features/search/classes/global-search-results-source';
 import { CoreSites } from '@services/sites';
@@ -28,17 +28,20 @@ import {
     CoreSearchGlobalSearch,
 } from '@features/search/services/global-search';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSearchBoxComponent } from '@features/search/components/search-box/search-box';
 
 @Component({
     selector: 'page-core-search-global-search',
     templateUrl: 'global-search.html',
 })
-export class CoreSearchGlobalSearchPage implements OnInit, OnDestroy {
+export class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, AfterViewInit {
 
     loadMoreError: string | null = null;
     searchBanner: string | null = null;
     resultsSource = new CoreSearchGlobalSearchResultsSource('', {});
     private filtersObserver?: CoreEventObserver;
+
+    @ViewChild(CoreSearchBoxComponent) searchBox?: CoreSearchBoxComponent;
 
     /**
      * @inheritdoc
@@ -60,6 +63,21 @@ export class CoreSearchGlobalSearchPage implements OnInit, OnDestroy {
             CORE_SEARCH_GLOBAL_SEARCH_FILTERS_UPDATED,
             filters => this.resultsSource.setFilters(filters),
         );
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngAfterViewInit(): void {
+        const query = CoreNavigator.getRouteParam('query');
+
+        if (query) {
+            if (this.searchBox) {
+                this.searchBox.searchText = query;
+            }
+
+            this.search(query);
+        }
     }
 
     /**
