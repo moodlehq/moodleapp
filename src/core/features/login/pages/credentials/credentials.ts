@@ -217,7 +217,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             return;
         }
 
-        CoreLoginHelper.confirmAndOpenBrowserForSSOLogin(
+        CoreLoginHelper.openBrowserForSSOLogin(
             this.siteCheck.siteUrl,
             this.siteCheck.code,
             this.siteCheck.service,

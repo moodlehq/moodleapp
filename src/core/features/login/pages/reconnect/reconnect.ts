@@ -301,7 +301,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             return;
         }
 
-        CoreLoginHelper.confirmAndOpenBrowserForSSOLogin(
+        CoreLoginHelper.openBrowserForSSOLogin(
             this.siteUrl,
             this.siteConfig.typeoflogin,
             undefined,

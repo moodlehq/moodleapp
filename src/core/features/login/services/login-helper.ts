@@ -141,7 +141,7 @@ export class CoreLoginHelperProvider {
     }
 
     /**
-     * Show a confirm modal if needed and open a browser to perform SSO login.
+     * Open a browser to perform SSO login.
      *
      * @param siteUrl URL of the site where the SSO login will be performed.
      * @param typeOfLogin CoreConstants.LOGIN_SSO_CODE or CoreConstants.LOGIN_SSO_INAPP_CODE.
@@ -149,6 +149,7 @@ export class CoreLoginHelperProvider {
      * @param launchUrl The URL to open for SSO. If not defined, default tool mobile launch URL will be used.
      * @param redirectData Data of the path/url to open once authenticated. If not defined, site initial page.
      * @returns Promise resolved when done or if user cancelled.
+     * @deprecated since 4.3. Use openBrowserForSSOLogin instead.
      */
     async confirmAndOpenBrowserForSSOLogin(
         siteUrl: string,
@@ -157,18 +158,6 @@ export class CoreLoginHelperProvider {
         launchUrl?: string,
         redirectData?: CoreRedirectPayload,
     ): Promise<void> {
-        // Show confirm only if it's needed. Treat "false" (string) as false to prevent typing errors.
-        const showConfirmation = this.shouldShowSSOConfirm(typeOfLogin);
-
-        if (showConfirmation) {
-            try {
-                await CoreDomUtils.showConfirm(Translate.instant('core.login.logininsiterequired'));
-            } catch {
-                // User canceled, stop.
-                return;
-            }
-        }
-
         this.openBrowserForSSOLogin(siteUrl, typeOfLogin, service, launchUrl, redirectData);
     }
 
@@ -978,10 +967,11 @@ export class CoreLoginHelperProvider {
      *
      * @param typeOfLogin CoreConstants.LOGIN_SSO_CODE or CoreConstants.LOGIN_SSO_INAPP_CODE.
      * @returns True if confirm modal should be shown, false otherwise.
+     * @deprecated since 4.3 Not used anymore.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     shouldShowSSOConfirm(typeOfLogin: number): boolean {
-        return !this.isSSOEmbeddedBrowser(typeOfLogin) &&
-            (!CoreConstants.CONFIG.skipssoconfirmation || String(CoreConstants.CONFIG.skipssoconfirmation) === 'false');
+        return false;
     }
 
     /**

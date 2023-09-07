@@ -390,7 +390,6 @@ export class CoreCustomURLSchemesProvider {
      * @returns Promise resolved when done.
      */
     protected async goToAddSite(data: CoreCustomURLSchemesParams, siteCheck: CoreSiteCheckResponse): Promise<void> {
-        const ssoNeeded = CoreLoginHelper.isSSOLoginNeeded(siteCheck.code);
         const pageParams = {
             username: data.username,
             urlToOpen: data.redirect,
@@ -401,28 +400,17 @@ export class CoreCustomURLSchemesProvider {
             // Ask the user before changing site.
             await CoreDomUtils.showConfirm(Translate.instant('core.contentlinks.confirmurlothersite'));
 
-            if (!ssoNeeded) {
-                const willReload = await CoreSites.logoutForRedirect(CoreConstants.NO_SITE_ID, {
-                    redirectPath: '/login/credentials',
-                    redirectOptions: { params: pageParams },
-                });
+            const willReload = await CoreSites.logoutForRedirect(CoreConstants.NO_SITE_ID, {
+                redirectPath: '/login/credentials',
+                redirectOptions: { params: pageParams },
+            });
 
-                if (willReload) {
-                    return;
-                }
+            if (willReload) {
+                return;
             }
         }
 
-        if (ssoNeeded) {
-            CoreLoginHelper.confirmAndOpenBrowserForSSOLogin(
-                siteCheck.siteUrl,
-                siteCheck.code,
-                siteCheck.service,
-                siteCheck.config?.launchurl,
-            );
-        } else {
-            await CoreNavigator.navigateToLoginCredentials(pageParams);
-        }
+        await CoreNavigator.navigateToLoginCredentials(pageParams);
     }
 
     /**
