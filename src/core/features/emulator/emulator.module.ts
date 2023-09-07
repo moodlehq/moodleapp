@@ -42,6 +42,8 @@ import { MediaCaptureMock } from './services/media-capture';
 import { ZipMock } from './services/zip';
 import { CorePlatform } from '@services/platform';
 import { CoreLocalNotifications } from '@services/local-notifications';
+import { CoreNative } from '@features/native/services/native';
+import { SecureStorageMock } from '@features/emulator/classes/SecureStorage';
 
 /**
  * This module handles the emulation of Cordova plugins in browser and desktop.
@@ -101,12 +103,14 @@ import { CoreLocalNotifications } from '@services/local-notifications';
         },
         {
             provide: APP_INITIALIZER,
-            useFactory: () => () => {
+            useValue: async () => {
                 if (CorePlatform.is('cordova')) {
                     return;
                 }
 
-                return CoreEmulatorHelper.load();
+                CoreNative.registerBrowserMock('secureStorage', new SecureStorageMock());
+
+                await CoreEmulatorHelper.load();
             },
             multi: true,
         },

@@ -24,6 +24,7 @@ import { AsyncInstance, asyncInstance } from '@/core/utils/async-instance';
 export class CoreNativeService {
 
     private plugins: Partial<Record<keyof MoodleAppPlugins, AsyncInstance>> = {};
+    private mocks: Partial<Record<keyof MoodleAppPlugins, MoodleAppPlugins[keyof MoodleAppPlugins]>> = {};
 
     /**
      * Get a native plugin instance.
@@ -31,20 +32,31 @@ export class CoreNativeService {
      * @param plugin Plugin name.
      * @returns Plugin instance.
      */
-    plugin<Plugin extends keyof MoodleAppPlugins>(plugin: Plugin): AsyncInstance<MoodleAppPlugins[Plugin]> | null {
-        if (!CorePlatform.isMobile()) {
-            return null;
-        }
-
+    plugin<Plugin extends keyof MoodleAppPlugins>(plugin: Plugin): AsyncInstance<MoodleAppPlugins[Plugin]> {
         if (!(plugin in this.plugins)) {
             this.plugins[plugin] = asyncInstance(async () => {
                 await CorePlatform.ready();
 
-                return window.cordova?.MoodleApp?.[plugin];
+                const instance = CorePlatform.isMobile() ? window.cordova?.MoodleApp?.[plugin] : this.mocks[plugin];
+                if (!instance) {
+                    throw new Error(`Plugin ${plugin} not found.`);
+                }
+
+                return instance;
             });
         }
 
         return this.plugins[plugin] as AsyncInstance<MoodleAppPlugins[Plugin]>;
+    }
+
+    /**
+     * Register a mock to use in browser instead of the native plugin implementation.
+     *
+     * @param plugin Plugin name.
+     * @param instance Instance to use.
+     */
+    registerBrowserMock<Plugin extends keyof MoodleAppPlugins>(plugin: Plugin, instance: MoodleAppPlugins[Plugin]): void {
+        this.mocks[plugin] = instance;
     }
 
 }

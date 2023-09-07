@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { SecureStorage } from '../src/ts/plugins/SecureStorage';
+import { SecureStorage as SecureStorageImpl } from '../src/ts/plugins/SecureStorage';
 
 declare global {
 
     interface MoodleAppPlugins {
-        secureStorage: SecureStorage;
+        secureStorage: SecureStorageImpl;
     }
 
     interface Cordova {
@@ -25,3 +25,5 @@ declare global {
     }
 
 }
+
+export type SecureStorage = InstanceType<typeof SecureStorageImpl>;
