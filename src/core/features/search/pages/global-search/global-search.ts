@@ -14,7 +14,6 @@
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreSearchGlobalSearchResultsSource } from '@features/search/classes/global-search-results-source';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
@@ -136,7 +135,7 @@ export class CoreSearchGlobalSearchPage implements OnInit, OnDestroy {
      * @param result Result to visit.
      */
     async visitResult(result: CoreSearchGlobalSearchResult): Promise<void> {
-        await CoreContentLinksHelper.handleLink(result.url);
+        await CoreSites.visitLink(result.url);
     }
 
     /**

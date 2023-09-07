@@ -64,6 +64,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
 import { CoreLang, CoreLangFormat } from '@services/lang';
 import { CoreNative } from '@features/native/services/native';
+import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 export const CORE_SITE_CURRENT_SITE_ID_CONFIG = 'current_site_id';
@@ -705,6 +706,39 @@ export class CoreSitesProvider {
      */
     determineService(): string {
         return CoreConstants.CONFIG.wsservice;
+    }
+
+    /**
+     * Visit a site link.
+     *
+     * @param url URL to handle.
+     * @param options Behaviour options.
+     * @param options.siteId Site Id.
+     * @param options.username Username related with the URL. E.g. in 'http://myuser@m.com', url would be 'http://m.com' and
+     *                 the username 'myuser'. Don't use it if you don't want to filter by username.
+     * @param options.checkRoot Whether to check if the URL is the root URL of a site.
+     * @param options.openBrowserRoot Whether to open in browser if it's root URL and it belongs to current site.
+     */
+    async visitLink(
+        url: string,
+        options: {
+            siteId?: string;
+            username?: string;
+            checkRoot?: boolean;
+            openBrowserRoot?: boolean;
+        } = {},
+    ): Promise<void> {
+        const treated = await CoreContentLinksHelper.handleLink(url, options.username, options.checkRoot, options.openBrowserRoot);
+
+        if (treated) {
+            return;
+        }
+
+        const site = options.siteId
+            ? await CoreSites.getSite(options.siteId)
+            : CoreSites.getCurrentSite();
+
+        await site?.openInBrowserWithAutoLogin(url);
     }
 
     /**

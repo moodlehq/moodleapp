@@ -21,7 +21,6 @@ import {
 } from '../../services/recentlyaccesseditems';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreUtils } from '@services/utils/utils';
 
 /**
@@ -88,10 +87,7 @@ export class AddonBlockRecentlyAccessedItemsComponent extends CoreBlockBaseCompo
         const modal = await CoreDomUtils.showModalLoading();
 
         try {
-            const treated = await CoreContentLinksHelper.handleLink(url);
-            if (!treated) {
-                return CoreSites.getCurrentSite()?.openInBrowserWithAutoLogin(url);
-            }
+            await CoreSites.visitLink(url);
         } finally {
             modal.dismiss();
         }

@@ -14,7 +14,6 @@
 
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CoreSite } from '@classes/site';
-import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreCourse, CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CanLeave } from '@guards/can-leave';
@@ -428,11 +427,7 @@ export class AddonModFeedbackFormPage implements OnInit, OnDestroy, CanLeave {
         const modal = await CoreDomUtils.showModalLoading();
 
         try {
-            const treated = await CoreContentLinksHelper.handleLink(this.siteAfterSubmit);
-
-            if (!treated) {
-                await this.currentSite.openInBrowserWithAutoLogin(this.siteAfterSubmit);
-            }
+            await CoreSites.visitLink(this.siteAfterSubmit, { siteId: this.currentSite.id });
         } finally {
             modal.dismiss();
         }
