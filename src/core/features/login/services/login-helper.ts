@@ -52,11 +52,6 @@ export const GET_STARTED_URL = 'https://moodle.com';
 @Injectable({ providedIn: 'root' })
 export class CoreLoginHelperProvider {
 
-    /**
-     * @deprecated since 3.9.5.
-     */
-    static readonly OPEN_COURSE = 'open_course';
-
     static readonly ONBOARDING_DONE = 'onboarding_done';
     static readonly FAQ_URL_IMAGE_HTML = '<img src="assets/img/login/faq_url.png" role="presentation" alt="">';
     static readonly FAQ_QRCODE_IMAGE_HTML = '<img src="assets/img/login/faq_qrcode.png" role="presentation" alt="">';
@@ -468,41 +463,6 @@ export class CoreLoginHelperProvider {
     }
 
     /**
-     * Open a page that doesn't belong to any site.
-     *
-     * @param page Page to open.
-     * @param params Params of the page.
-     * @returns Promise resolved when done.
-     * @deprecated since 3.9.5. Use CoreNavigator.navigateToLoginCredentials instead.
-     */
-    async goToNoSitePage(page: string, params?: Params): Promise<void> {
-        await CoreNavigator.navigateToLoginCredentials(params);
-    }
-
-    /**
-     * Go to the initial page of a site depending on 'userhomepage' setting.
-     *
-     * @param navCtrlUnused Deprecated param.
-     * @param page Name of the page to load after loading the main page.
-     * @param params Params to pass to the page.
-     * @param options Navigation options.
-     * @param url URL to open once the main menu is loaded.
-     * @returns Promise resolved when done.
-     * @deprecated since 3.9.5. Use CoreNavigator.navigateToSiteHome or CoreNavigator.navigateToSitePath instead.
-     */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async goToSiteInitialPage(navCtrlUnused?: unknown, page?: string, params?: any, options?: any, url?: string): Promise<void> {
-        await CoreNavigator.navigateToSiteHome({
-            ...options,
-            params: <CoreRedirectPayload> {
-                redirectPath: page,
-                redirectOptions: { params },
-                urlToOpen: url,
-            },
-        });
-    }
-
-    /**
      * Convenient helper to handle authentication in the app using a token received by SSO login. If it's a new account,
      * the site is stored and the user is authenticated. If the account already exists, update its token.
      *
@@ -653,17 +613,6 @@ export class CoreLoginHelperProvider {
      */
     isSSOLoginNeeded(code: number): boolean {
         return code == CoreConstants.LOGIN_SSO_CODE || code == CoreConstants.LOGIN_SSO_INAPP_CODE;
-    }
-
-    /**
-     * Load a certain page in the main menu page.
-     *
-     * @param page Name of the page to load.
-     * @param params Params to pass to the page.
-     * @deprecated since 3.9.5. Use CoreNavigator.navigateToSitepath instead.
-     */
-    loadPageInMainMenu(page: string, params?: Params): void {
-        CoreNavigator.navigateToSitePath(page, { params });
     }
 
     /**
@@ -867,19 +816,6 @@ export class CoreLoginHelperProvider {
         }));
 
         return loginUrl;
-    }
-
-    /**
-     * Redirect to a new page, setting it as the root page and loading the right site if needed.
-     *
-     * @param page Name of the page to load.
-     * @param params Params to pass to the page.
-     * @param siteId Site to load. If not defined, current site.
-     * @returns Promise resolved when done.
-     * @deprecated since 3.9.5. Use CoreNavigator.navigateToSitePath instead.
-     */
-    async redirect(page: string, params?: Params, siteId?: string): Promise<void> {
-        await CoreNavigator.navigateToSitePath(page, { params, siteId });
     }
 
     /**
