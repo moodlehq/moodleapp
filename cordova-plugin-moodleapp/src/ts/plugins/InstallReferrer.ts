@@ -12,16 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { InstallReferrer } from './plugins/InstallReferrer';
-import { SecureStorage } from './plugins/SecureStorage';
+/**
+ * Allows retrieving install referrer data.
+ * https://developer.android.com/google/play/installreferrer
+ */
+export class InstallReferrer {
 
-const api: MoodleAppPlugins = {
-    secureStorage: new SecureStorage(),
-    installReferrer: new InstallReferrer(),
+    /**
+     * Get referrer data.
+     *
+     * @returns Referrer data.
+     */
+    async getReferrer(): Promise<InstallReferrerResult> {
+        return new Promise((resolve, reject) => {
+            cordova.exec(resolve, reject, 'InstallReferrer', 'getReferrer', []);
+        });
+    }
+
+}
+
+export type InstallReferrerResult = {
+    referrer: string;
+    clickTime: number;
+    appInstallTime: number;
+    instantExperienceLaunched: boolean;
 };
-
-// This is necessary to work around the default transpilation behavior,
-// which would wrap exported modules into UMD methods. Check out the
-// fixBundle method in the /scripts/build.js file for more details.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-(window as any).cordovaModule = api;

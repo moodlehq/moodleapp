@@ -30,9 +30,13 @@ export class CoreNativeService {
      * Get a native plugin instance.
      *
      * @param plugin Plugin name.
-     * @returns Plugin instance.
+     * @returns Plugin instance, null if plugin is not supported for current platform.
      */
-    plugin<Plugin extends keyof MoodleAppPlugins>(plugin: Plugin): AsyncInstance<MoodleAppPlugins[Plugin]> {
+    plugin<Plugin extends keyof MoodleAppPlugins>(plugin: Plugin): AsyncInstance<MoodleAppPlugins[Plugin]> | null {
+        if (plugin === 'installReferrer' && !CorePlatform.isAndroid()) {
+            return null;
+        }
+
         if (!(plugin in this.plugins)) {
             this.plugins[plugin] = asyncInstance(async () => {
                 await CorePlatform.ready();

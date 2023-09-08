@@ -20,7 +20,7 @@
         <div class="ion-text-center ion-padding ion-margin-bottom core-login-site-logo" [class.hidden]="hasSites || enteredSiteUrl">
             <img src="assets/img/login_logo.png" class="avatar-full login-logo" role="presentation" alt="">
         </div>
-        <form [formGroup]="siteForm" (ngSubmit)="connect($event, siteForm.value.siteUrl)" *ngIf="!fixedSites && siteForm" #siteFormEl>
+        <form [formGroup]="siteForm" (ngSubmit)="connect(siteForm.value.siteUrl, $event)" *ngIf="!fixedSites && siteForm" #siteFormEl>
             <!-- Form to input the site URL if there are no fixed sites. -->
             <ng-container *ngIf=" siteSelector=='url'">
                 <ion-item>
@@ -48,7 +48,7 @@
                             <h2 class="item-heading">{{ 'core.login.selectsite' | translate }}</h2>
                         </ion-label>
                     </ion-item>
-                    <ion-item button *ngIf="enteredSiteUrl" (click)="connect($event, enteredSiteUrl.url)"
+                    <ion-item button *ngIf="enteredSiteUrl" (click)="connect(enteredSiteUrl.url, $event)"
                         [attr.aria-label]="'core.login.connect' | translate" detail="true" class="core-login-entered-site">
                         <ion-thumbnail slot="start" aria-hidden="true">
                             <ion-icon name="fas-pen" aria-hidden="true"></ion-icon>
@@ -120,7 +120,7 @@
 
 <!-- Template site selector. -->
 <ng-template #sitelisting let-site="site">
-    <ion-item button (click)="connect($event, site.url, site)" [ngClass]="site.className" [attr.aria-label]="site.name" detail="true">
+    <ion-item button (click)="connect(site.url, $event, site)" [ngClass]="site.className" [attr.aria-label]="site.name" detail="true">
         <ion-thumbnail *ngIf="siteFinderSettings.displayimage" slot="start">
             <img [src]="site.imageurl" *ngIf="site.imageurl" onError="this.src='assets/icon/icon.png'" alt="" role="presentation">
             <img src="assets/icon/icon.png" *ngIf="!site.imageurl" class="core-login-default-icon" alt="" role="presentation">
