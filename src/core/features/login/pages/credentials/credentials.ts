@@ -60,6 +60,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     supportConfig?: CoreUserSupportConfig;
     exceededAttemptsHTML?: SafeHtml | string | null;
     siteConfig?: CoreSitePublicConfigResponse;
+    siteCheckError = '';
 
     protected siteCheck?: CoreSiteCheckResponse;
     protected eventThrown = false;
@@ -103,7 +104,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             password: ['', Validators.required],
         });
 
-        await this.checkSite(this.siteUrl);
+        await this.checkSite();
 
         if (CorePlatform.isIOS() && !this.isBrowserSSO) {
             // Make iOS auto-fill work. The field that isn't focused doesn't get updated, do it manually.
@@ -143,18 +144,17 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
      * Get site config and check if it requires SSO login.
      * This should be used only if a fixed URL is set, otherwise this check is already performed in CoreLoginSitePage.
      *
-     * @param siteUrl Site URL to check.
      * @returns Promise resolved when done.
      */
-    protected async checkSite(siteUrl: string): Promise<void> {
+    async checkSite(): Promise<void> {
         this.pageLoaded = false;
 
         // If the site is configured with http:// protocol we force that one, otherwise we use default mode.
-        const protocol = siteUrl.indexOf('http://') === 0 ? 'http://' : undefined;
+        const protocol = this.siteUrl.indexOf('http://') === 0 ? 'http://' : undefined;
 
         try {
             if (!this.siteCheck) {
-                this.siteCheck = await CoreSites.checkSite(siteUrl, protocol);
+                this.siteCheck = await CoreSites.checkSite(this.siteUrl, protocol);
             }
 
             this.siteUrl = this.siteCheck.siteUrl;
@@ -162,9 +162,13 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 
             await this.treatSiteConfig();
 
+            this.siteCheckError = '';
+
             // Check if user needs to authenticate in a browser.
             this.isBrowserSSO = CoreLoginHelper.isSSOLoginNeeded(this.siteCheck.code);
         } catch (error) {
+            this.siteCheckError = CoreDomUtils.getErrorMessage(error) || 'Error loading site';
+
             CoreDomUtils.showErrorModal(error);
         } finally {
             this.pageLoaded = true;
