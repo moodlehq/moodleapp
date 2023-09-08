@@ -19,7 +19,7 @@ import { debounceTime } from 'rxjs/operators';
 
 import { CoreApp } from '@services/app';
 import { CoreNetwork } from '@services/network';
-import { CoreSites } from '@services/sites';
+import { CoreSiteCheckResponse, CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreConstants } from '@/core/constants';
@@ -48,7 +48,6 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 
     credForm!: FormGroup;
     siteUrl!: string;
-    siteChecked = false;
     siteName?: string;
     logoUrl?: string;
     authInstructions?: string;
@@ -60,8 +59,9 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     loginAttempts = 0;
     supportConfig?: CoreUserSupportConfig;
     exceededAttemptsHTML?: SafeHtml | string | null;
+    siteConfig?: CoreSitePublicConfigResponse;
 
-    protected siteConfig?: CoreSitePublicConfigResponse;
+    protected siteCheck?: CoreSiteCheckResponse;
     protected eventThrown = false;
     protected viewLeft = false;
     protected siteId?: string;
@@ -77,10 +77,19 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
      */
     async ngOnInit(): Promise<void> {
         try {
-            this.siteUrl = CoreNavigator.getRequiredRouteParam<string>('siteUrl');
+            this.siteCheck = CoreNavigator.getRouteParam<CoreSiteCheckResponse>('siteCheck');
+            if (this.siteCheck?.siteUrl) {
+                this.siteUrl = this.siteCheck.siteUrl;
+            } else {
+                this.siteUrl = CoreNavigator.getRequiredRouteParam<string>('siteUrl');
+            }
+
+            if (this.siteCheck?.config) {
+                this.siteConfig = this.siteCheck.config;
+            }
+
             this.siteName = CoreNavigator.getRouteParam('siteName');
             this.logoUrl = !CoreConstants.CONFIG.forceLoginLogo && CoreNavigator.getRouteParam('logoUrl') || undefined;
-            this.siteConfig = CoreNavigator.getRouteParam<CoreSitePublicConfigResponse>('siteConfig');
             this.urlToOpen = CoreNavigator.getRouteParam('urlToOpen');
             this.supportConfig = this.siteConfig && new CoreUserGuestSupportConfig(this.siteConfig);
         } catch (error) {
@@ -94,21 +103,9 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             password: ['', Validators.required],
         });
 
-        if (this.siteConfig) {
-            this.treatSiteConfig();
-        }
+        await this.checkSite(this.siteUrl);
 
-        const isSingleFixedSite = await CoreLoginHelper.isSingleFixedSite();
-
-        if (isSingleFixedSite || !this.siteConfig) {
-            // Fixed URL or not siteConfig retrieved from params, we need to check if it uses browser SSO login.
-            this.checkSite(this.siteUrl, true);
-        } else {
-            this.siteChecked = true;
-            this.pageLoaded = true;
-        }
-
-        if (CorePlatform.isIOS()) {
+        if (CorePlatform.isIOS() && !this.isBrowserSSO) {
             // Make iOS auto-fill work. The field that isn't focused doesn't get updated, do it manually.
             // Debounce it to prevent triggering this function too often when the user is typing.
             this.valueChangeSubscription = this.credForm.valueChanges.pipe(debounceTime(1000)).subscribe((changes) => {
@@ -147,46 +144,26 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
      * This should be used only if a fixed URL is set, otherwise this check is already performed in CoreLoginSitePage.
      *
      * @param siteUrl Site URL to check.
-     * @param onInit Whether the check site is done when initializing the page.
      * @returns Promise resolved when done.
      */
-    protected async checkSite(siteUrl: string, onInit = false): Promise<void> {
+    protected async checkSite(siteUrl: string): Promise<void> {
         this.pageLoaded = false;
 
         // If the site is configured with http:// protocol we force that one, otherwise we use default mode.
         const protocol = siteUrl.indexOf('http://') === 0 ? 'http://' : undefined;
 
         try {
-            const result = await CoreSites.checkSite(siteUrl, protocol);
-
-            this.siteChecked = true;
-            this.siteUrl = result.siteUrl;
-
-            this.siteConfig = result.config;
-            this.treatSiteConfig();
-
-            if (CoreLoginHelper.isSSOLoginNeeded(result.code)) {
-                // SSO. User needs to authenticate in a browser.
-                this.isBrowserSSO = true;
-
-                if (this.showScanQR && onInit) {
-                    // Don't open browser automatically, let the user view the scan QR button.
-                    return;
-                }
-
-                // Check that there's no SSO authentication ongoing and the view hasn't changed.
-                if (!CoreApp.isSSOAuthenticationOngoing() && !this.viewLeft) {
-                    CoreLoginHelper.confirmAndOpenBrowserForSSOLogin(
-                        result.siteUrl,
-                        result.code,
-                        result.service,
-                        result.config?.launchurl,
-                    );
-                }
-            } else {
-                this.isBrowserSSO = false;
+            if (!this.siteCheck) {
+                this.siteCheck = await CoreSites.checkSite(siteUrl, protocol);
             }
 
+            this.siteUrl = this.siteCheck.siteUrl;
+            this.siteConfig = this.siteCheck.config;
+
+            await this.treatSiteConfig();
+
+            // Check if user needs to authenticate in a browser.
+            this.isBrowserSSO = CoreLoginHelper.isSSOLoginNeeded(this.siteCheck.code);
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
         } finally {
@@ -198,29 +175,54 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
      * Treat the site configuration (if it exists).
      */
     protected async treatSiteConfig(): Promise<void> {
-        if (this.siteConfig) {
-            this.siteName = this.siteConfig.sitename;
-            this.logoUrl = CoreLoginHelper.getLogoUrl(this.siteConfig);
-            this.authInstructions = this.siteConfig.authinstructions || Translate.instant('core.login.loginsteps');
-            this.showScanQR = await CoreLoginHelper.displayQRInCredentialsScreen(this.siteConfig.tool_mobile_qrcodetype);
-
-            const disabledFeatures = CoreLoginHelper.getDisabledFeatures(this.siteConfig);
-            this.canSignup = this.siteConfig.registerauth == 'email' &&
-                    !CoreLoginHelper.isEmailSignupDisabled(this.siteConfig, disabledFeatures);
-            this.showForgottenPassword = !CoreLoginHelper.isForgottenPasswordDisabled(this.siteConfig, disabledFeatures);
-            this.exceededAttemptsHTML = CoreLoginHelper.buildExceededAttemptsHTML(
-                !!this.supportConfig?.canContactSupport(),
-                this.showForgottenPassword,
-            );
-
-            if (!this.eventThrown && !this.viewLeft) {
-                this.eventThrown = true;
-                CoreEvents.trigger(CoreEvents.LOGIN_SITE_CHECKED, { config: this.siteConfig });
-            }
-        } else {
+        if (!this.siteConfig) {
             this.authInstructions = undefined;
             this.canSignup = false;
+
+            return;
         }
+
+        this.siteName = this.siteConfig.sitename;
+        this.logoUrl = CoreLoginHelper.getLogoUrl(this.siteConfig);
+        this.authInstructions = this.siteConfig.authinstructions || Translate.instant('core.login.loginsteps');
+        this.showScanQR = await CoreLoginHelper.displayQRInCredentialsScreen(this.siteConfig.tool_mobile_qrcodetype);
+
+        const disabledFeatures = CoreLoginHelper.getDisabledFeatures(this.siteConfig);
+        this.canSignup = this.siteConfig.registerauth == 'email' &&
+                    !CoreLoginHelper.isEmailSignupDisabled(this.siteConfig, disabledFeatures);
+        this.showForgottenPassword = !CoreLoginHelper.isForgottenPasswordDisabled(this.siteConfig, disabledFeatures);
+        this.exceededAttemptsHTML = CoreLoginHelper.buildExceededAttemptsHTML(
+            !!this.supportConfig?.canContactSupport(),
+            this.showForgottenPassword,
+        );
+
+        if (!this.eventThrown && !this.viewLeft) {
+            this.eventThrown = true;
+            CoreEvents.trigger(CoreEvents.LOGIN_SITE_CHECKED, { config: this.siteConfig });
+        }
+    }
+
+    /**
+     * Tries to authenticate the user using the browser.
+     *
+     * @param e Event.
+     * @returns Promise resolved when done.
+     */
+    async openBrowserSSO(e?: Event): Promise<void> {
+        e?.preventDefault();
+        e?.stopPropagation();
+
+        // Check that there's no SSO authentication ongoing and the view hasn't changed.
+        if (CoreApp.isSSOAuthenticationOngoing() || this.viewLeft || !this.siteCheck) {
+            return;
+        }
+
+        CoreLoginHelper.confirmAndOpenBrowserForSSOLogin(
+            this.siteCheck.siteUrl,
+            this.siteCheck.code,
+            this.siteCheck.service,
+            this.siteCheck.config?.launchurl,
+        );
     }
 
     /**
@@ -230,10 +232,8 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
      * @returns Promise resolved when done.
      */
     async login(e?: Event): Promise<void> {
-        if (e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
+        e?.preventDefault();
+        e?.stopPropagation();
 
         CoreApp.closeKeyboard();
 
@@ -241,18 +241,6 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
         const siteUrl = this.siteUrl;
         const username = this.credForm.value.username;
         const password = this.credForm.value.password;
-
-        if (!this.siteChecked || this.isBrowserSSO) {
-            // Site wasn't checked (it failed) or a previous check determined it was SSO. Let's check again.
-            await this.checkSite(siteUrl);
-
-            if (!this.isBrowserSSO && this.siteChecked) {
-                // Site doesn't use browser SSO, throw app's login again.
-                return this.login();
-            }
-
-            return;
-        }
 
         if (!username) {
             CoreDomUtils.showErrorModal('core.login.usernamerequired', true);

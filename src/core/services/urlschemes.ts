@@ -386,16 +386,15 @@ export class CoreCustomURLSchemesProvider {
      * Go to page to add a site, or open a browser if SSO.
      *
      * @param data URL data.
-     * @param checkResponse Result of checkSite.
+     * @param siteCheck Result of checkSite.
      * @returns Promise resolved when done.
      */
-    protected async goToAddSite(data: CoreCustomURLSchemesParams, checkResponse: CoreSiteCheckResponse): Promise<void> {
-        const ssoNeeded = CoreLoginHelper.isSSOLoginNeeded(checkResponse.code);
+    protected async goToAddSite(data: CoreCustomURLSchemesParams, siteCheck: CoreSiteCheckResponse): Promise<void> {
+        const ssoNeeded = CoreLoginHelper.isSSOLoginNeeded(siteCheck.code);
         const pageParams = {
-            siteUrl: checkResponse.siteUrl,
             username: data.username,
             urlToOpen: data.redirect,
-            siteConfig: checkResponse.config,
+            siteCheck,
         };
 
         if (CoreSites.isLoggedIn()) {
@@ -416,10 +415,10 @@ export class CoreCustomURLSchemesProvider {
 
         if (ssoNeeded) {
             CoreLoginHelper.confirmAndOpenBrowserForSSOLogin(
-                checkResponse.siteUrl,
-                checkResponse.code,
-                checkResponse.service,
-                checkResponse.config?.launchurl,
+                siteCheck.siteUrl,
+                siteCheck.code,
+                siteCheck.service,
+                siteCheck.config?.launchurl,
             );
         } else {
             await CoreNavigator.navigateToLoginCredentials(pageParams);

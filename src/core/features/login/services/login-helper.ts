@@ -924,9 +924,8 @@ export class CoreLoginHelperProvider {
     async sessionExpired(data: CoreEventSessionExpiredData & CoreEventSiteData): Promise<void> {
         const siteId = data?.siteId;
         const currentSite = CoreSites.getCurrentSite();
-        const siteUrl = currentSite?.getURL();
 
-        if (!currentSite || !siteUrl) {
+        if (!currentSite) {
             return;
         }
 
@@ -947,85 +946,20 @@ export class CoreLoginHelperProvider {
 
         try {
             // Check authentication method.
-            const result = await CoreSites.checkSite(siteUrl);
-
-            if (this.isSSOLoginNeeded(result.code)) {
-                // SSO. User needs to authenticate in a browser. Check if we need to display a message.
-                if (!CoreApp.isSSOAuthenticationOngoing() && !this.waitingForBrowser) {
-                    try {
-                        if (this.shouldShowSSOConfirm(result.code)) {
-                            await CoreDomUtils.showConfirm(Translate.instant('core.login.' +
-                                (currentSite.isLoggedOut() ? 'loggedoutssodescription' : 'reconnectssodescription')));
-                        }
-
-                        this.waitForBrowser();
-
-                        this.openBrowserForSSOLogin(
-                            result.siteUrl,
-                            result.code,
-                            result.service,
-                            result.config?.launchurl,
-                            redirectData,
-                        );
-                    } catch (error) {
-                        // User cancelled, logout him.
-                        CoreSites.logout();
-                    }
-                }
-            } else {
-                if (currentSite.isOAuth()) {
-                    // User authenticated using an OAuth method. Check if it's still valid.
-                    // @TODO Why disabledFeatures is not checked here?
-                    const identityProviders = this.getValidIdentityProviders(result.config);
-                    const providerToUse = identityProviders.find((provider) => {
-                        const params = CoreUrlUtils.extractUrlParams(provider.url);
-
-                        return Number(params.id) == currentSite.getOAuthId();
-                    });
-
-                    if (providerToUse) {
-                        if (!CoreApp.isSSOAuthenticationOngoing() && !this.waitingForBrowser) {
-                            // Open browser to perform the OAuth.
-                            const confirmMessage = Translate.instant('core.login.' +
-                                    (currentSite.isLoggedOut() ? 'loggedoutssodescription' : 'reconnectssodescription'));
-
-                            try {
-                                await CoreDomUtils.showConfirm(confirmMessage);
-
-                                this.waitForBrowser();
-                                CoreSites.unsetCurrentSite(); // Unset current site to make authentication work fine.
-
-                                this.openBrowserForOAuthLogin(
-                                    siteUrl,
-                                    providerToUse,
-                                    result.config?.launchurl,
-                                    redirectData,
-                                );
-                            } catch (error) {
-                                // User cancelled, logout him.
-                                CoreSites.logout();
-                            }
-                        }
-
-                        return;
-                    }
+            const info = currentSite.getInfo();
+            if (info !== undefined && info.username !== undefined) {
+                // If current page is already reconnect, stop.
+                if (CoreNavigator.isCurrent('/login/reconnect')) {
+                    return;
                 }
 
-                const info = currentSite.getInfo();
-                if (info !== undefined && info.username !== undefined) {
-                    // If current page is already reconnect, stop.
-                    if (CoreNavigator.isCurrent('/login/reconnect')) {
-                        return;
-                    }
-
-                    await CoreUtils.ignoreErrors(CoreNavigator.navigate('/login/reconnect', {
-                        params: {
-                            siteId,
-                            ...redirectData,
-                        },
-                        reset: true,
-                    }));
-                }
+                await CoreUtils.ignoreErrors(CoreNavigator.navigate('/login/reconnect', {
+                    params: {
+                        siteId,
+                        ...redirectData,
+                    },
+                    reset: true,
+                }));
             }
         } catch (error) {
             // Error checking site.

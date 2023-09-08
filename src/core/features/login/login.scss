@@ -99,6 +99,11 @@
             display: none;
         }
     }
+
+    p.core-login-inbrowser {
+        font-size: 12px;
+    }
+
 }
 
 :host-context(html.dark) {
