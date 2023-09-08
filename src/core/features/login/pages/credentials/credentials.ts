@@ -159,6 +159,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 
             this.siteUrl = this.siteCheck.siteUrl;
             this.siteConfig = this.siteCheck.config;
+            this.supportConfig = this.siteConfig && new CoreUserGuestSupportConfig(this.siteConfig);
 
             await this.treatSiteConfig();
 
