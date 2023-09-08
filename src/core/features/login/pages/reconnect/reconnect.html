@@ -1,7 +1,9 @@
 <ion-header>
     <ion-toolbar>
         <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+            <ion-button fill="clear" (click)="cancel($event)" [attr.aria-label]="'core.back' | translate" class="ion-back-button">
+                <ion-icon ios="chevron-back" md="arrow-back-sharp" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
         </ion-buttons>
 
         <ion-title>
@@ -63,15 +65,10 @@
                         </ion-input>
                     </core-show-password>
                 </ion-item>
-                <div class="adaptable-buttons-row-reverse">
-                    <ion-button *ngIf="!isBrowserSSO" type="submit" expand="block" [disabled]="!credForm.valid"
-                        class="ion-margin core-login-login-button ion-text-wrap">
-                        {{ 'core.login.loginbutton' | translate }}
-                    </ion-button>
-                    <ion-button expand="block" fill="outline" (click)="cancel($event)" class="ion-margin ion-text-wrap">
-                        {{ 'core.login.cancel' | translate }}
-                    </ion-button>
-                </div>
+                <ion-button *ngIf="!isBrowserSSO" type="submit" expand="block" [disabled]="!credForm.valid"
+                    class="ion-margin core-login-login-button ion-text-wrap">
+                    {{ 'core.login.loginbutton' | translate }}
+                </ion-button>
 
                 <ion-button expand="block" *ngIf="isBrowserSSO" (click)="openBrowserSSO()"
                     class="ion-margin core-login-login-button ion-text-wrap">
@@ -89,12 +86,6 @@
             <core-login-methods *ngIf="siteConfig" [siteConfig]="siteConfig" [reconnect]="true" [siteUrl]="siteUrl"
                 [redirectData]="redirectData"></core-login-methods>
 
-            <!-- If OAuth, display cancel button since the form isn't displayed. -->
-            <ion-list *ngIf="isOAuth">
-                <ion-button expand="block" class="ion-margin" fill="outline" (click)="cancel($event)">
-                    {{ 'core.login.cancel' | translate }}
-                </ion-button>
-            </ion-list>
         </div>
     </core-loading>
 </ion-content>
