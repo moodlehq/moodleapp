@@ -173,6 +173,11 @@ ion-header {
             display: none;
         }
 
+        // Style fake back button like the original ones.
+        ion-button.ion-back-button {
+            width: 48px !important;
+        }
+
         .button.button-clear.button-has-icon-only,
         .button.button-solid.button-has-icon-only {
             width: var(--a11y-min-target-size);
@@ -897,10 +902,7 @@ img.large-avatar,
     height: var(--core-large-avatar-size);
     max-width: var(--core-large-avatar-size);
     max-height: var(--core-large-avatar-size);
-    margin-bottom: 10px;
     border-radius: 50%;
-    padding: 4px;
-    border: 1px solid var(--stroke);
     background-color: transparent;
 }
 

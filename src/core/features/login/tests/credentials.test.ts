@@ -22,6 +22,7 @@ import { CoreSites } from '@services/sites';
 import { Http } from '@singletons';
 import { of } from 'rxjs';
 import { CoreLoginHelper } from '../services/login-helper';
+import { CoreConstants } from '@/core/constants';
 
 describe('Credentials page', () => {
 
@@ -54,6 +55,28 @@ describe('Credentials page', () => {
                 maintenancemessage: '',
                 typeoflogin: 1,
             }),
+            checkSite: async () => ({
+                code: 0,
+                siteUrl,
+                service: CoreConstants.CONFIG.wsservice,
+                config: ({
+                    wwwroot: siteUrl,
+                    httpswwwroot: siteUrl,
+                    sitename: 'Example Campus',
+                    guestlogin: 0,
+                    rememberusername: 0,
+                    authloginviaemail: 0,
+                    registerauth: '',
+                    forgottenpasswordurl: '',
+                    authinstructions: '',
+                    authnoneenabled: 0,
+                    enablewebservices: 1,
+                    enablemobilewebservice: 1,
+                    maintenanceenabled: 0,
+                    maintenancemessage: '',
+                    typeoflogin: 1,
+                }),
+            }),
         });
 
         mockSingleton(CoreLoginHelper, { getAvailableSites: async () => [{ url: siteUrl, name: 'Example Campus' }] });
@@ -72,6 +95,30 @@ describe('Credentials page', () => {
     });
 
     it('suggests contacting support after multiple failed attempts', async () => {
+
+        const siteCheck = {
+            code: 0,
+            siteUrl,
+            service: CoreConstants.CONFIG.wsservice,
+            config: ({
+                wwwroot: siteUrl,
+                httpswwwroot: siteUrl,
+                sitename: 'Example Campus',
+                guestlogin: 0,
+                rememberusername: 0,
+                authloginviaemail: 0,
+                registerauth: '',
+                forgottenpasswordurl: '',
+                authinstructions: '',
+                authnoneenabled: 0,
+                enablewebservices: 1,
+                enablemobilewebservice: 1,
+                maintenanceenabled: 0,
+                maintenancemessage: '',
+                typeoflogin: 1,
+                supportpage: '',
+            }),
+        };
         // Arrange.
         mockSingleton(CoreSites, {
             getUserToken: () => {
@@ -80,12 +127,13 @@ describe('Credentials page', () => {
                     errorcode: 'invalidlogin',
                 });
             },
+            checkSite: async () => (siteCheck),
         });
 
         mockSingleton(CoreLoginHelper, { getAvailableSites: async () => [] });
 
         const fixture = await renderPageComponent(CoreLoginCredentialsPage, {
-            routeParams: { siteUrl, siteConfig: { supportpage: '' } },
+            routeParams: { siteUrl, siteCheck },
             imports: [CoreSharedModule, CoreLoginComponentsModule],
         });
 

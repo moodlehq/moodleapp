@@ -52,11 +52,6 @@ export const GET_STARTED_URL = 'https://moodle.com';
 @Injectable({ providedIn: 'root' })
 export class CoreLoginHelperProvider {
 
-    /**
-     * @deprecated since 3.9.5.
-     */
-    static readonly OPEN_COURSE = 'open_course';
-
     static readonly ONBOARDING_DONE = 'onboarding_done';
     static readonly FAQ_URL_IMAGE_HTML = '<img src="assets/img/login/faq_url.png" role="presentation" alt="">';
     static readonly FAQ_QRCODE_IMAGE_HTML = '<img src="assets/img/login/faq_qrcode.png" role="presentation" alt="">';
@@ -141,7 +136,7 @@ export class CoreLoginHelperProvider {
     }
 
     /**
-     * Show a confirm modal if needed and open a browser to perform SSO login.
+     * Open a browser to perform SSO login.
      *
      * @param siteUrl URL of the site where the SSO login will be performed.
      * @param typeOfLogin CoreConstants.LOGIN_SSO_CODE or CoreConstants.LOGIN_SSO_INAPP_CODE.
@@ -149,6 +144,7 @@ export class CoreLoginHelperProvider {
      * @param launchUrl The URL to open for SSO. If not defined, default tool mobile launch URL will be used.
      * @param redirectData Data of the path/url to open once authenticated. If not defined, site initial page.
      * @returns Promise resolved when done or if user cancelled.
+     * @deprecated since 4.3. Use openBrowserForSSOLogin instead.
      */
     async confirmAndOpenBrowserForSSOLogin(
         siteUrl: string,
@@ -157,18 +153,6 @@ export class CoreLoginHelperProvider {
         launchUrl?: string,
         redirectData?: CoreRedirectPayload,
     ): Promise<void> {
-        // Show confirm only if it's needed. Treat "false" (string) as false to prevent typing errors.
-        const showConfirmation = this.shouldShowSSOConfirm(typeOfLogin);
-
-        if (showConfirmation) {
-            try {
-                await CoreDomUtils.showConfirm(Translate.instant('core.login.logininsiterequired'));
-            } catch {
-                // User canceled, stop.
-                return;
-            }
-        }
-
         this.openBrowserForSSOLogin(siteUrl, typeOfLogin, service, launchUrl, redirectData);
     }
 
@@ -479,41 +463,6 @@ export class CoreLoginHelperProvider {
     }
 
     /**
-     * Open a page that doesn't belong to any site.
-     *
-     * @param page Page to open.
-     * @param params Params of the page.
-     * @returns Promise resolved when done.
-     * @deprecated since 3.9.5. Use CoreNavigator.navigateToLoginCredentials instead.
-     */
-    async goToNoSitePage(page: string, params?: Params): Promise<void> {
-        await CoreNavigator.navigateToLoginCredentials(params);
-    }
-
-    /**
-     * Go to the initial page of a site depending on 'userhomepage' setting.
-     *
-     * @param navCtrlUnused Deprecated param.
-     * @param page Name of the page to load after loading the main page.
-     * @param params Params to pass to the page.
-     * @param options Navigation options.
-     * @param url URL to open once the main menu is loaded.
-     * @returns Promise resolved when done.
-     * @deprecated since 3.9.5. Use CoreNavigator.navigateToSiteHome or CoreNavigator.navigateToSitePath instead.
-     */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async goToSiteInitialPage(navCtrlUnused?: unknown, page?: string, params?: any, options?: any, url?: string): Promise<void> {
-        await CoreNavigator.navigateToSiteHome({
-            ...options,
-            params: <CoreRedirectPayload> {
-                redirectPath: page,
-                redirectOptions: { params },
-                urlToOpen: url,
-            },
-        });
-    }
-
-    /**
      * Convenient helper to handle authentication in the app using a token received by SSO login. If it's a new account,
      * the site is stored and the user is authenticated. If the account already exists, update its token.
      *
@@ -664,17 +613,6 @@ export class CoreLoginHelperProvider {
      */
     isSSOLoginNeeded(code: number): boolean {
         return code == CoreConstants.LOGIN_SSO_CODE || code == CoreConstants.LOGIN_SSO_INAPP_CODE;
-    }
-
-    /**
-     * Load a certain page in the main menu page.
-     *
-     * @param page Name of the page to load.
-     * @param params Params to pass to the page.
-     * @deprecated since 3.9.5. Use CoreNavigator.navigateToSitepath instead.
-     */
-    loadPageInMainMenu(page: string, params?: Params): void {
-        CoreNavigator.navigateToSitePath(page, { params });
     }
 
     /**
@@ -881,19 +819,6 @@ export class CoreLoginHelperProvider {
     }
 
     /**
-     * Redirect to a new page, setting it as the root page and loading the right site if needed.
-     *
-     * @param page Name of the page to load.
-     * @param params Params to pass to the page.
-     * @param siteId Site to load. If not defined, current site.
-     * @returns Promise resolved when done.
-     * @deprecated since 3.9.5. Use CoreNavigator.navigateToSitePath instead.
-     */
-    async redirect(page: string, params?: Params, siteId?: string): Promise<void> {
-        await CoreNavigator.navigateToSitePath(page, { params, siteId });
-    }
-
-    /**
      * Request a password reset.
      *
      * @param siteUrl URL of the site.
@@ -924,9 +849,8 @@ export class CoreLoginHelperProvider {
     async sessionExpired(data: CoreEventSessionExpiredData & CoreEventSiteData): Promise<void> {
         const siteId = data?.siteId;
         const currentSite = CoreSites.getCurrentSite();
-        const siteUrl = currentSite?.getURL();
 
-        if (!currentSite || !siteUrl) {
+        if (!currentSite) {
             return;
         }
 
@@ -947,84 +871,20 @@ export class CoreLoginHelperProvider {
 
         try {
             // Check authentication method.
-            const result = await CoreSites.checkSite(siteUrl);
-
-            if (this.isSSOLoginNeeded(result.code)) {
-                // SSO. User needs to authenticate in a browser. Check if we need to display a message.
-                if (!CoreApp.isSSOAuthenticationOngoing() && !this.waitingForBrowser) {
-                    try {
-                        if (this.shouldShowSSOConfirm(result.code)) {
-                            await CoreDomUtils.showConfirm(Translate.instant('core.login.' +
-                                (currentSite.isLoggedOut() ? 'loggedoutssodescription' : 'reconnectssodescription')));
-                        }
-
-                        this.waitForBrowser();
-
-                        this.openBrowserForSSOLogin(
-                            result.siteUrl,
-                            result.code,
-                            result.service,
-                            result.config?.launchurl,
-                            redirectData,
-                        );
-                    } catch (error) {
-                        // User cancelled, logout him.
-                        CoreSites.logout();
-                    }
-                }
-            } else {
-                if (currentSite.isOAuth()) {
-                    // User authenticated using an OAuth method. Check if it's still valid.
-                    const identityProviders = this.getValidIdentityProviders(result.config);
-                    const providerToUse = identityProviders.find((provider) => {
-                        const params = CoreUrlUtils.extractUrlParams(provider.url);
-
-                        return Number(params.id) == currentSite.getOAuthId();
-                    });
-
-                    if (providerToUse) {
-                        if (!CoreApp.isSSOAuthenticationOngoing() && !this.waitingForBrowser) {
-                            // Open browser to perform the OAuth.
-                            const confirmMessage = Translate.instant('core.login.' +
-                                    (currentSite.isLoggedOut() ? 'loggedoutssodescription' : 'reconnectssodescription'));
-
-                            try {
-                                await CoreDomUtils.showConfirm(confirmMessage);
-
-                                this.waitForBrowser();
-                                CoreSites.unsetCurrentSite(); // Unset current site to make authentication work fine.
-
-                                this.openBrowserForOAuthLogin(
-                                    siteUrl,
-                                    providerToUse,
-                                    result.config?.launchurl,
-                                    redirectData,
-                                );
-                            } catch (error) {
-                                // User cancelled, logout him.
-                                CoreSites.logout();
-                            }
-                        }
-
-                        return;
-                    }
+            const info = currentSite.getInfo();
+            if (info !== undefined && info.username !== undefined) {
+                // If current page is already reconnect, stop.
+                if (CoreNavigator.isCurrent('/login/reconnect')) {
+                    return;
                 }
 
-                const info = currentSite.getInfo();
-                if (info !== undefined && info.username !== undefined) {
-                    // If current page is already reconnect, stop.
-                    if (CoreNavigator.isCurrent('/login/reconnect')) {
-                        return;
-                    }
-
-                    await CoreUtils.ignoreErrors(CoreNavigator.navigate('/login/reconnect', {
-                        params: {
-                            siteId,
-                            ...redirectData,
-                        },
-                        reset: true,
-                    }));
-                }
+                await CoreUtils.ignoreErrors(CoreNavigator.navigate('/login/reconnect', {
+                    params: {
+                        siteId,
+                        ...redirectData,
+                    },
+                    reset: true,
+                }));
             }
         } catch (error) {
             // Error checking site.
@@ -1043,10 +903,11 @@ export class CoreLoginHelperProvider {
      *
      * @param typeOfLogin CoreConstants.LOGIN_SSO_CODE or CoreConstants.LOGIN_SSO_INAPP_CODE.
      * @returns True if confirm modal should be shown, false otherwise.
+     * @deprecated since 4.3 Not used anymore.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     shouldShowSSOConfirm(typeOfLogin: number): boolean {
-        return !this.isSSOEmbeddedBrowser(typeOfLogin) &&
-            (!CoreConstants.CONFIG.skipssoconfirmation || String(CoreConstants.CONFIG.skipssoconfirmation) === 'false');
+        return false;
     }
 
     /**
