@@ -1,8 +1,8 @@
 {
     "app_id": "ca.umontreal.studiumprod",
     "appname": "StudiUM Mobile",
-    "versioncode": 41100,
-    "versionname": "4.1.1",
+    "versioncode": 42000,
+    "versionname": "4.2.0",
     "cache_update_frequency_usually": 420000,
     "cache_update_frequency_often": 1200000,
     "cache_update_frequency_sometimes": 3600000,
@@ -20,8 +20,7 @@
         "high": 120
     },
     "customurlscheme": "studiummobile",
-    "siteurl": [{"name": "StudiUM", "url": "https://studium.umontreal.ca/"}, {"name": "StudiUM formation continue", "url": "https://studiumfc.umontreal.ca/"}],
-    "sitename": "",
+    "sites": [{"name": "StudiUM", "url": "https://studium.umontreal.ca/"}, {"name": "StudiUM formation continue", "url": "https://studiumfc.umontreal.ca/"}],
     "multisitesdisplay": "radio",
     "sitefindersettings": {},
     "onlyallowlistedsites": false,

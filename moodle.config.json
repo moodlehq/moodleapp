@@ -20,8 +20,7 @@
         "high": 120
     },
     "customurlscheme": "studiummobile",
-    "siteurl": [{"name": "StudiUM PP", "url": "https://studium-pre-prod.ena.umontreal.ca/"}, {"name": "StudiUM formation continue PP", "url": "https://studiumfc-pre-prod.ena.umontreal.ca/"}],
-    "sitename": "",
+    "sites": [{"name": "StudiUM", "url": "https://studium.umontreal.ca/"}, {"name": "StudiUM formation continue", "url": "https://studiumfc.umontreal.ca/"}],
     "multisitesdisplay": "radio",
     "sitefindersettings": {},
     "onlyallowlistedsites": false,
@@ -33,10 +32,10 @@
     "forceColorScheme": "",
     "forceLoginLogo": false,
     "showTopLogo": "hidden",
-    "ioswebviewscheme": "moodleappfs",
+    "ioswebviewscheme": "studiumappfs",
     "appstores": {
-        "android": "com.moodle.moodlemobile",
-        "ios": "id633359593"
+        "android": "ca.umontreal.studiumprod",
+        "ios": "id1380735206"
     },
     "wsrequestqueuelimit": 10,
     "wsrequestqueuedelay": 100,
