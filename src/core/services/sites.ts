@@ -63,6 +63,7 @@ import { CoreConfig } from './config';
 import { CoreNetwork } from '@services/network';
 import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
 import { CoreLang, CoreLangFormat } from '@services/lang';
+import { CoreNative } from '@features/native/services/native';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 export const CORE_SITE_CURRENT_SITE_ID_CONFIG = 'current_site_id';
@@ -821,16 +822,22 @@ export class CoreSitesProvider {
         config?: CoreSiteConfig,
         oauthId?: number,
     ): Promise<void> {
-        await this.sitesTable.insert({
+        const promises: Promise<unknown>[] = [];
+        const site: SiteDBEntry = {
             id,
             siteUrl,
-            token,
+            token: '',
             info: info ? JSON.stringify(info) : undefined,
-            privateToken,
+            privateToken: '',
             config: config ? JSON.stringify(config) : undefined,
             loggedOut: 0,
             oauthId,
-        });
+        };
+
+        promises.push(this.sitesTable.insert(site));
+        promises.push(this.storeTokensInSecureStorage(id, token, privateToken));
+
+        await Promise.all(promises);
     }
 
     /**
@@ -1058,14 +1065,13 @@ export class CoreSitesProvider {
         // Site DB deleted, now delete the app from the list of sites.
         delete this.sites[siteId];
 
-        try {
-            await this.sitesTable.deleteByPrimaryKey({ id: siteId });
-        } catch (err) {
-            // DB remove shouldn't fail, but we'll go ahead even if it does.
-        }
+        // DB remove shouldn't fail, but we'll go ahead even if it does.
+        await CoreUtils.ignoreErrors(this.sitesTable.deleteByPrimaryKey({ id: siteId }));
 
         // Site deleted from sites list, now delete the folder.
         await site.deleteFolder();
+
+        await CoreUtils.ignoreErrors(CoreNative.plugin('secureStorage').deleteCollection(siteId));
 
         CoreEvents.trigger(CoreEvents.SITE_DELETED, site, siteId);
     }
@@ -1107,7 +1113,7 @@ export class CoreSitesProvider {
         // Retrieve and create the site.
         let record: SiteDBEntry;
         try {
-            record = await this.sitesTable.getOneByPrimaryKey({ id: siteId });
+            record = await this.loadSiteTokens(await this.sitesTable.getOneByPrimaryKey({ id: siteId }));
         } catch {
             throw new CoreError('SiteId not found.');
         }
@@ -1144,7 +1150,7 @@ export class CoreSitesProvider {
      * @returns Promise resolved with the site.
      */
     async getSiteByUrl(siteUrl: string): Promise<CoreSite> {
-        const data = await this.sitesTable.getOne({ siteUrl });
+        const data = await this.loadSiteTokens(await this.sitesTable.getOne({ siteUrl }));
 
         return this.addSiteFromSiteListEntry(data);
     }
@@ -1491,14 +1497,17 @@ export class CoreSitesProvider {
         site.privateToken = privateToken;
         site.setLoggedOut(false); // Token updated means the user authenticated again, not logged out anymore.
 
-        await this.sitesTable.update(
-            {
-                token,
-                privateToken,
-                loggedOut: 0,
-            },
-            { id: siteId },
-        );
+        const promises: Promise<unknown>[] = [];
+        const newData: Partial<SiteDBEntry> = {
+            token: '',
+            privateToken: '',
+            loggedOut: 0,
+        };
+
+        promises.push(this.sitesTable.update(newData, { id: siteId }));
+        promises.push(this.storeTokensInSecureStorage(siteId, token, privateToken));
+
+        await Promise.all(promises);
     }
 
     /**
@@ -1601,6 +1610,8 @@ export class CoreSitesProvider {
             const ids: string[] = [];
 
             await Promise.all(siteEntries.map(async (site) => {
+                site = await this.loadSiteTokens(site);
+
                 await this.addSiteFromSiteListEntry(site);
 
                 if (this.sites[site.id].containsUrl(url)) {
@@ -1960,6 +1971,80 @@ export class CoreSitesProvider {
         );
 
         return this.schemasTables[siteId];
+    }
+
+    /**
+     * Move all tokens stored in DB to a secure storage.
+     */
+    async moveTokensToSecureStorage(): Promise<void> {
+        const sites = await this.sitesTable.getMany();
+
+        await Promise.all(sites.map(async site => {
+            if (!site.token && !site.privateToken) {
+                return; // Tokens are empty, no need to treat them.
+            }
+
+            try {
+                await this.storeTokensInSecureStorage(site.id, site.token, site.privateToken);
+            } catch {
+                this.logger.error('Error storing tokens in secure storage for site ' + site.id);
+            }
+        }));
+
+        // Remove tokens from DB even if they couldn't be stored in secure storage.
+        await this.sitesTable.update({ token: '', privateToken: '' });
+    }
+
+    /**
+     * Get tokens from secure storage.
+     *
+     * @param siteId Site ID.
+     * @returns Stored tokens.
+     */
+    protected async getTokensFromSecureStorage(siteId: string): Promise<{ token: string; privateToken?: string }> {
+        const result = await CoreNative.plugin('secureStorage').get(['token', 'privateToken'], siteId);
+
+        return {
+            token: result?.token ?? '',
+            privateToken: result?.privateToken ?? undefined,
+        };
+    }
+
+    /**
+     * Store tokens in secure storage.
+     *
+     * @param siteId Site ID.
+     * @param token Site token.
+     * @param privateToken Site private token.
+     */
+    protected async storeTokensInSecureStorage(
+        siteId: string,
+        token: string,
+        privateToken?: string,
+    ): Promise<void> {
+        await CoreNative.plugin('secureStorage').store({
+            token: token,
+            privateToken: privateToken ?? '',
+        }, siteId);
+    }
+
+    /**
+     * Given a site, load its tokens if needed.
+     *
+     * @param site Site data.
+     * @returns Site with tokens loaded.
+     */
+    protected async loadSiteTokens(site: SiteDBEntry): Promise<SiteDBEntry> {
+        if (site.token) {
+            return site;
+        }
+
+        const tokens = await this.getTokensFromSecureStorage(site.id);
+
+        return {
+            ...site,
+            ...tokens,
+        };
     }
 
 }

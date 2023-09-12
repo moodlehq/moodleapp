@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { SystemUI } from './plugins/SystemUI';
+import { SecureStorage } from './plugins/SecureStorage';
 
 const api: MoodleAppPlugins = {
-    systemUI: new SystemUI(),
+    secureStorage: new SecureStorage(),
 };
 
 // This is necessary to work around the default transpilation behavior,
