@@ -11,7 +11,7 @@ h1 {
 .core-modulename {
     text-transform: uppercase;
     core-mod-icon {
-        padding: 3px;
+        --padding: 3px;
         --size: 10px;
         margin: 0;
     }
