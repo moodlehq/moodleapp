@@ -29,12 +29,14 @@ export class CoreEnrolService {
 
     /**
      * Get the enrolment methods from a course.
+     * Please notice that this function will only return methods that implement get_enrol_info, it won't return all
+     * enrolment methods in a course.
      *
      * @param courseId ID of the course.
      * @param siteId Site ID. If not defined, use current site.
      * @returns Promise resolved with the methods.
      */
-    protected async getCourseEnrolmentMethods(courseId: number, siteId?: string): Promise<CoreEnrolEnrolmentMethod[]> {
+    async getCourseEnrolmentMethods(courseId: number, siteId?: string): Promise<CoreEnrolEnrolmentMethod[]> {
         const site = await CoreSites.getSite(siteId);
 
         const params: CoreEnrolGetCourseEnrolmentMethodsWSParams = {
@@ -50,6 +52,8 @@ export class CoreEnrolService {
 
     /**
      * Get the enrolment methods from a course that are enabled and supported by the app.
+     * Please notice that this function will only return methods that implement get_enrol_info, it won't return all
+     * enrolment methods in a course.
      *
      * @param courseId ID of the course.
      * @param options Options.

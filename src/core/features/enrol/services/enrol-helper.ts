@@ -75,10 +75,12 @@ export class CoreEnrolHelperService {
      * Get enrolment methods divided by type.
      *
      * @param courseId Course Id.
+     * @param allMethodTypes List of enrolment methods returned by getCourseByField.
      * @returns Enrolment info divided by types.
      */
-    async getEnrolmentsByType(courseId: number): Promise<CoreEnrolmentsByType> {
-        const enrolmentMethods = await CoreEnrol.getSupportedCourseEnrolmentMethods(courseId);
+    async getEnrolmentsByType(courseId: number, allMethodTypes?: string[]): Promise<CoreEnrolmentsByType> {
+        // Don't use getSupportedCourseEnrolmentMethods to treat unsupported methods and methods with disabled status.
+        const enrolmentMethods = await CoreEnrol.getCourseEnrolmentMethods(courseId);
 
         const self: CoreEnrolEnrolmentMethod[] = [];
         const guest: CoreEnrolEnrolmentMethod[] = [];
@@ -106,6 +108,17 @@ export class CoreEnrolHelperService {
                     hasNotSupported = true;
                     break;
             }
+        });
+
+        // Now treat the methods returned by getCourseByField but not by getCourseEnrolmentMethods.
+        allMethodTypes?.forEach(type => {
+            if (enrolmentMethods.some(method => method.type === type)) {
+                return; // Already treated.
+            }
+
+            const action = CoreEnrolDelegate.getEnrolmentAction(type);
+            hasBrowser = hasBrowser || action === CoreEnrolAction.BROWSER;
+            hasNotSupported = hasNotSupported || action === CoreEnrolAction.NOT_SUPPORTED;
         });
 
         return {
