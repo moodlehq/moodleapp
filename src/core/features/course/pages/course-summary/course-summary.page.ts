@@ -211,18 +211,20 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
             }
         }
 
-        await this.getEnrolmentInfo();
+        await this.getEnrolmentInfo(courseByField?.enrollmentmethods);
     }
 
     /**
-     * Get course enrolment methods.
+     * Get course enrolment info.
+     *
+     * @param enrolmentMethods Enrolment methods.
      */
-    protected async getEnrolmentInfo(): Promise<void> {
+    protected async getEnrolmentInfo(enrolmentMethods?: string[]): Promise<void> {
         if (this.isEnrolled) {
             return;
         }
 
-        const enrolByType = await CoreEnrolHelper.getEnrolmentsByType(this.courseId);
+        const enrolByType = await CoreEnrolHelper.getEnrolmentsByType(this.courseId, enrolmentMethods);
 
         this.hasBrowserEnrolments = enrolByType.hasBrowser;
         this.selfEnrolInstances = enrolByType.self;
