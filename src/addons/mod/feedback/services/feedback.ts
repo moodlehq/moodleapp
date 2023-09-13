@@ -358,7 +358,7 @@ export class AddonModFeedbackProvider {
     async getAttempt(
         feedbackId: number,
         attemptId: number,
-        options: CoreCourseCommonModWSOptions = {},
+        options: AddonModFeedbackGroupOptions = {},
         previous?: AddonModFeedbackGetAttemptPreviousData,
     ): Promise<AddonModFeedbackWSAttempt | AddonModFeedbackWSAnonAttempt> {
         options.siteId = options.siteId || CoreSites.getCurrentSiteId();
@@ -370,7 +370,6 @@ export class AddonModFeedbackProvider {
 
         const responses = await this.getResponsesAnalysis(feedbackId, {
             page: previous.page,
-            groupId: 0,
             ...options, // Include all options.
         });
 

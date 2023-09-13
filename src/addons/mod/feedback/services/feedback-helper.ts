@@ -198,7 +198,7 @@ export class AddonModFeedbackHelperProvider {
             });
 
             await CoreNavigator.navigateToSitePath(
-                AddonModFeedbackModuleHandlerService.PAGE_NAME + `/${module.course}/${module.id}/attempt/${attempt.id}`,
+                AddonModFeedbackModuleHandlerService.PAGE_NAME + `/${module.course}/${module.id}/attempts/${attempt.id}`,
                 {
                     params: {
                         feedbackId: module.instance,
