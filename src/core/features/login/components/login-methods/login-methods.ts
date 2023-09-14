@@ -31,6 +31,7 @@ export class CoreLoginMethodsComponent implements OnInit {
     @Input() siteConfig?: CoreSitePublicConfigResponse;
     @Input() redirectData?: CoreRedirectPayload;
 
+    isBrowserSSO  = false;
     showScanQR  = false;
     loginMethods: CoreLoginMethod[] = [];
     identityProviders: CoreSiteIdentityProvider[] = [];
@@ -50,9 +51,14 @@ export class CoreLoginMethodsComponent implements OnInit {
         }
 
         if (this.siteConfig) {
-            const disabledFeatures = CoreLoginHelper.getDisabledFeatures(this.siteConfig);
+            this.isBrowserSSO = CoreLoginHelper.isSSOLoginNeeded(this.siteConfig.typeoflogin);
 
-            this.identityProviders = CoreLoginHelper.getValidIdentityProviders(this.siteConfig, disabledFeatures);
+            if (!this.isBrowserSSO) {
+                // Identity providers won't be shown if login on browser.
+                const disabledFeatures = CoreLoginHelper.getDisabledFeatures(this.siteConfig);
+
+                this.identityProviders = CoreLoginHelper.getValidIdentityProviders(this.siteConfig, disabledFeatures);
+            }
 
             if (this.reconnect) {
                 this.showScanQR = CoreLoginHelper.displayQRInSiteScreen();
