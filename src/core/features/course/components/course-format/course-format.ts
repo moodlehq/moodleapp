@@ -94,7 +94,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         id: 'course-index',
         component: CoreCourseCourseIndexTourComponent,
         side: CoreUserToursSide.Top,
-        alignment: CorePlatform.isRTL ? CoreUserToursAlignment.Start : CoreUserToursAlignment.End,
+        alignment: CorePlatform.isRTL && CorePlatform.isIOS() ? CoreUserToursAlignment.Start : CoreUserToursAlignment.End,
         getFocusedElement: nativeButton => {
             const innerButton = Array.from(nativeButton.shadowRoot?.children ?? []).find(child => child.tagName === 'BUTTON');
 
