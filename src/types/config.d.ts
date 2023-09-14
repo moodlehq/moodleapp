@@ -46,6 +46,7 @@ export interface EnvironmentConfig {
     multisitesdisplay: CoreLoginSiteSelectorListMethod;
     sitefindersettings: Partial<CoreLoginSiteFinderSettings>;
     onlyallowlistedsites: boolean;
+    skipssoconfirmation: boolean;
     forcedefaultlanguage: boolean;
     privacypolicy: string;
     notificoncolor: string;

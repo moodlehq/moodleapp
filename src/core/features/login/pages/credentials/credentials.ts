@@ -106,6 +106,10 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 
         await this.checkSite();
 
+        if (this.isBrowserSSO && CoreLoginHelper.shouldSkipCredentialsScreenOnSSO()) {
+            this.openBrowserSSO();
+        }
+
         if (CorePlatform.isIOS() && !this.isBrowserSSO) {
             // Make iOS auto-fill work. The field that isn't focused doesn't get updated, do it manually.
             // Debounce it to prevent triggering this function too often when the user is typing.

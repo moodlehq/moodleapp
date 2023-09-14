@@ -903,11 +903,19 @@ export class CoreLoginHelperProvider {
      *
      * @param typeOfLogin TypeOfLogin.BROWSER or TypeOfLogin.EMBEDDED.
      * @returns True if confirm modal should be shown, false otherwise.
-     * @deprecated since 4.3 Not used anymore.
+     * @deprecated since 4.3 Not used anymore. See shouldSkipCredentialsScreenOnSSO.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     shouldShowSSOConfirm(typeOfLogin: TypeOfLogin): boolean {
-        return false;
+        return !this.isSSOEmbeddedBrowser(typeOfLogin) && !this.shouldSkipCredentialsScreenOnSSO();
+    }
+
+    /**
+     * Check if we can skip credentials page.
+     *
+     * @returns If true, the browser should be opened without the user prompt.
+     */
+    shouldSkipCredentialsScreenOnSSO(): boolean {
+        return String(CoreConstants.CONFIG.skipssoconfirmation) === 'true';
     }
 
     /**
