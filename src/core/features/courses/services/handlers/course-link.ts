@@ -69,6 +69,12 @@ export class CoreCoursesCourseLinkHandlerService extends CoreContentLinksHandler
 
         if (!isNaN(sectionNumber)) {
             pageParams.sectionNumber = sectionNumber;
+        } else {
+            const matches = url.match(/#inst(\d+)/);
+
+            if (matches && matches[1]) {
+                pageParams.blockInstanceId = parseInt(matches[1], 10);
+            }
         }
 
         return [{
@@ -136,7 +142,7 @@ export class CoreCoursesCourseLinkHandlerService extends CoreContentLinksHandler
             // Direct access.
             const course = await CoreUtils.ignoreErrors(CoreCourses.getUserCourse(courseId), { id: courseId });
 
-            CoreCourseHelper.openCourse(course, pageParams);
+            CoreCourseHelper.openCourse(course, { params: pageParams });
         } else {
             this.navigateCourseSummary(courseId, pageParams);
 

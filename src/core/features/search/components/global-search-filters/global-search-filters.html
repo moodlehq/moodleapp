@@ -1,0 +1,58 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-title>
+            <h1>{{ 'core.search.filterheader' | translate }}</h1>
+        </ion-title>
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="close()" [attr.aria-label]="'core.close' | translate">
+                <ion-icon name="fas-xmark" slot="icon-only" aria-hidden=true></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true">
+    <ion-refresher slot="fixed" (ionRefresh)="refreshFilters($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}"></ion-refresher-content>
+    </ion-refresher>
+    <ion-list>
+        <ng-container *ngIf="searchAreaCategories.length > 0">
+            <core-spacer></core-spacer>
+            <ion-item class="ion-text-wrap help">
+                <ion-label>
+                    {{ 'core.search.filtercategories' | translate }}
+                </ion-label>
+            </ion-item>
+            <ion-item class="ion-text-wrap">
+                <ion-label>{{ 'core.search.allcategories' | translate }}</ion-label>
+                <ion-checkbox slot="end" [(ngModel)]="allSearchAreaCategories" [indeterminate]="allSearchAreaCategories === null"
+                    (ionChange)="allSearchAreaCategoriesUpdated()"></ion-checkbox>
+            </ion-item>
+            <ion-item class="ion-text-wrap" *ngFor="let searchAreaCategory of searchAreaCategories">
+                <ion-label>
+                    <core-format-text [text]="searchAreaCategory.name"></core-format-text>
+                </ion-label>
+                <ion-checkbox slot="end" [(ngModel)]="searchAreaCategory.checked"
+                    (ionChange)="onSearchAreaCategoryInputChanged(searchAreaCategory)"></ion-checkbox>
+            </ion-item>
+        </ng-container>
+        <ng-container *ngIf="courses.length > 0">
+            <core-spacer></core-spacer>
+            <ion-item class="ion-text-wrap help">
+                <ion-label>
+                    {{ 'core.search.filtercourses' | translate }}
+                </ion-label>
+            </ion-item>
+            <ion-item class="ion-text-wrap">
+                <ion-label>{{ 'core.search.allcourses' | translate }}</ion-label>
+                <ion-checkbox slot="end" [(ngModel)]="allCourses" [indeterminate]="allCourses === null" (ionChange)="allCoursesUpdated()">
+                </ion-checkbox>
+            </ion-item>
+            <ion-item class="ion-text-wrap" *ngFor="let course of courses">
+                <ion-label>
+                    <core-format-text [text]="course.shortname"></core-format-text>
+                </ion-label>
+                <ion-checkbox slot="end" [(ngModel)]="course.checked" (ionChange)="onCourseInputChanged(course)"></ion-checkbox>
+            </ion-item>
+        </ng-container>
+    </ion-list>
+</ion-content>

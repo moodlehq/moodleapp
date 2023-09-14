@@ -1,0 +1,90 @@
+:host ion-item {
+    --core-global-search-result-image-size: 40px;
+    --core-global-search-result-title-color: var(--text);
+    --core-global-search-result-content-color: var(--gray-700);
+    --core-global-search-result-context-color: var(--gray-600);
+    --core-global-search-result-icon-size: 16px;
+    --mod-icon-filter: brightness(0);
+
+    h3 {
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        color: var(--core-global-search-result-title-color);
+
+        core-mod-icon {
+            --size: var(--core-global-search-result-icon-size);
+            --filter: var(--mod-icon-filter);
+
+            margin-inline-end: var(--spacing-2);
+            margin-top: 0px;
+            margin-bottom: 0px;
+            padding: 0px;
+            background: transparent;
+        }
+
+        ion-icon, .result-icon {
+            width: var(--core-global-search-result-icon-size);
+            height: var(--core-global-search-result-icon-size);
+
+            margin-inline-end: var(--spacing-2);
+        }
+
+    }
+
+    core-user-avatar {
+        --core-avatar-size: var(--core-global-search-result-image-size);
+
+        margin-top: var(--spacing-3);
+        margin-bottom: var(--spacing-3);
+    }
+
+    core-course-image {
+        --core-image-size: var(--core-global-search-result-image-size);
+
+        margin-top: var(--spacing-3);
+        margin-bottom: var(--spacing-3);
+    }
+
+    ion-label {
+
+        core-format-text {
+            color: var(--core-global-search-result-content-color);
+
+            @supports (-webkit-line-clamp: 2) {
+                white-space: normal;
+                overflow: hidden;
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 2;
+            }
+
+        }
+
+        .result-context {
+            display: flex;
+            justify-items: center;
+            align-items: center;
+            color: var(--core-global-search-result-context-color);
+            margin-top: var(--spacing-2);
+            font-size: 12px;
+
+            ion-icon {
+                margin-inline-end: var(--spacing-1);
+            }
+
+            + .result-context {
+                margin-inline-start: var(--spacing-4);
+            }
+
+        }
+
+    }
+
+}
+
+:host-context(html.dark) ion-item {
+    --core-global-search-result-content-color: var(--gray-400);
+    --core-global-search-result-context-color: var(--gray-500);
+    --mod-icon-filter: brightness(0) invert(1);
+}

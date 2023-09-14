@@ -2747,6 +2747,8 @@ export const enum CoreSiteConfigSupportAvailability {
  */
 export type CoreSiteConfig = Record<string, string> & {
     supportavailability?: string; // String representation of CoreSiteConfigSupportAvailability.
+    searchbanner?: string; // Search banner text.
+    searchbannerenable?: string; // Whether search banner is enabled.
 };
 
 /**

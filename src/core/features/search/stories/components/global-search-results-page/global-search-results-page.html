@@ -1,0 +1,18 @@
+<ion-app>
+    <ion-header>
+        <ion-toolbar>
+            <ion-title>
+                <h1>Search Results</h1>
+            </ion-title>
+        </ion-toolbar>
+    </ion-header>
+    <ion-content class="limited-width">
+        <div>
+            <core-search-box></core-search-box>
+            <ion-list>
+                <core-search-global-search-result *ngFor="let result of results" [result]="result" (onClick)="resultClicked(result.title)">
+                </core-search-global-search-result>
+            </ion-list>
+        </div>
+    </ion-content>
+</ion-app>

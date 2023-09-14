@@ -1,0 +1,21 @@
+:host {
+    --help-text-color: var(--gray-700);
+
+    ion-item.help {
+        color: var(--help-text-color);
+
+        ion-label {
+            margin-bottom: 0;
+        }
+
+    }
+
+    ion-item:not(.help) {
+        font-size: 16px;
+    }
+
+}
+
+:host-context(html.dark) {
+    --help-text-color: var(--gray-400);
+}

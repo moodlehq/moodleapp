@@ -45,6 +45,7 @@ describe('Site Home link handlers', () => {
         expect(CoreNavigator.navigateToSitePath).toHaveBeenCalledWith('/home/site', {
             siteId,
             preferCurrentTab: false,
+            params: {},
         });
     });
 

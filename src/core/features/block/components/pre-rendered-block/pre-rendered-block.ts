@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { OnInit, Component } from '@angular/core';
+import { OnInit, Component, HostBinding } from '@angular/core';
 import { CoreBlockBaseComponent } from '../../classes/base-block-component';
 
 /**
@@ -25,6 +25,8 @@ import { CoreBlockBaseComponent } from '../../classes/base-block-component';
 export class CoreBlockPreRenderedComponent extends CoreBlockBaseComponent implements OnInit {
 
     courseId?: number;
+
+    @HostBinding('attr.id') id?: string;
 
     constructor() {
         super('CoreBlockPreRenderedComponent');
@@ -39,6 +41,8 @@ export class CoreBlockPreRenderedComponent extends CoreBlockBaseComponent implem
         this.courseId = this.contextLevel == 'course' ? this.instanceId : undefined;
 
         this.fetchContentDefaultError = 'Error getting ' + this.block.contents?.title + ' data.';
+
+        this.id = `block-${this.block.instanceid}`;
     }
 
 }

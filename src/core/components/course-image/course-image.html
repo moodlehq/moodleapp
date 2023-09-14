@@ -1,0 +1,5 @@
+<ion-icon *ngIf="!course.courseimage" name="fas-graduation-cap" slot="start" aria-hidden="true">
+</ion-icon>
+<ion-avatar *ngIf="course.courseimage" slot="start">
+    <img [src]="course.courseimage" core-external-content alt="" (error)="loadFallbackCourseIcon()" />
+</ion-avatar>

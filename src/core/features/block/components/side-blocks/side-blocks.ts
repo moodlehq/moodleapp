@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChildren, Input, OnInit, QueryList } from '@angular/core';
+import { Component, ViewChildren, Input, OnInit, QueryList, ElementRef } from '@angular/core';
 import { ModalController } from '@singletons';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourse, CoreCourseBlock } from '@features/course/services/course';
@@ -22,6 +22,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { IonRefresher } from '@ionic/angular';
 import { CoreCoursesDashboard } from '@features/courses/services/dashboard';
 import { CoreTextUtils } from '@services/utils/text';
+import { CoreDom } from '@singletons/dom';
 
 /**
  * Component that displays the list of side blocks.
@@ -35,6 +36,7 @@ export class CoreBlockSideBlocksComponent implements OnInit {
 
     @Input() contextLevel!: string;
     @Input() instanceId!: number;
+    @Input() initialBlockInstanceId?: number;
     @Input() myDashboardPage?: string;
 
     @ViewChildren(CoreBlockComponent) blocksComponents?: QueryList<CoreBlockComponent>;
@@ -42,12 +44,16 @@ export class CoreBlockSideBlocksComponent implements OnInit {
     loaded = false;
     blocks: CoreCourseBlock[] = [];
 
+    constructor(protected elementRef: ElementRef<HTMLElement>) {}
+
     /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         this.loadContent().finally(() => {
             this.loaded = true;
+
+            this.focusInitialBlock();
         });
     }
 
@@ -117,6 +123,22 @@ export class CoreBlockSideBlocksComponent implements OnInit {
      */
     closeModal(): void {
         ModalController.dismiss();
+    }
+
+    /**
+     * Focus the initial block, if any.
+     */
+    private async focusInitialBlock(): Promise<void> {
+        if (!this.initialBlockInstanceId) {
+            return;
+        }
+
+        const selector = '#block-' + this.initialBlockInstanceId;
+
+        await CoreUtils.waitFor(() => !!this.elementRef.nativeElement.querySelector(selector));
+        await CoreUtils.wait(200);
+
+        CoreDom.scrollToElement(this.elementRef.nativeElement, selector, { addYAxis: -10 });
     }
 
 }

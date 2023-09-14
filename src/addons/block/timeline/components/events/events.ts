@@ -16,7 +16,6 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreEnrolledCourseDataWithOptions } from '@features/courses/services/courses-helper';
 import { AddonBlockTimelineDayEvents } from '@addons/block/timeline/classes/section';
 
@@ -54,10 +53,7 @@ export class AddonBlockTimelineEventsComponent {
         const modal = await CoreDomUtils.showModalLoading();
 
         try {
-            const treated = await CoreContentLinksHelper.handleLink(url);
-            if (!treated) {
-                return CoreSites.getRequiredCurrentSite().openInBrowserWithAutoLogin(url);
-            }
+            await CoreSites.visitLink(url);
         } finally {
             modal.dismiss();
         }

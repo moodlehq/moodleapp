@@ -3,4 +3,9 @@ import '!style-loader!css-loader!sass-loader!./styles.scss';
 
 export const parameters = {
     layout: 'centered',
+    darkMode: {
+        darkClass: 'dark',
+        classTarget: 'html',
+        stylePreview: true,
+    },
 };

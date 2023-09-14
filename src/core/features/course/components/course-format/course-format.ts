@@ -52,6 +52,7 @@ import { CoreDom } from '@singletons/dom';
 import { CoreUserTourDirectiveOptions } from '@directives/user-tour';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CorePlatform } from '@services/platform';
+import { CoreBlockSideBlocksComponent } from '@features/block/components/side-blocks/side-blocks';
 
 /**
  * Component to display course contents using a certain format. If the format isn't found, use default one.
@@ -76,6 +77,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     @Input() sections: CoreCourseSectionToDisplay[] = []; // List of course sections.
     @Input() initialSectionId?: number; // The section to load first (by ID).
     @Input() initialSectionNumber?: number; // The section to load first (by number).
+    @Input() initialBlockInstanceId?: number; // The instance to focus.
     @Input() moduleId?: number; // The module ID to scroll to. Must be inside the initial selected section.
     @Input() isGuest?: boolean; // If user is accessing using an ACCESS_GUEST enrolment method.
 
@@ -298,16 +300,26 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             // Always load "All sections" to display the section title. If it isn't there just load the section.
             this.loaded = true;
             this.sectionChanged(sections[0]);
-        } else if (this.initialSectionId || this.initialSectionNumber) {
+        } else if (this.initialSectionId || this.initialSectionNumber !== undefined) {
             // We have an input indicating the section ID to load. Search the section.
             const section = sections.find((section) =>
-                section.id == this.initialSectionId || (section.section && section.section == this.initialSectionNumber));
+                section.id == this.initialSectionId ||
+                    (section.section !== undefined && section.section == this.initialSectionNumber));
 
             // Don't load the section if it cannot be viewed by the user.
             if (section && this.canViewSection(section)) {
                 this.loaded = true;
                 this.sectionChanged(section);
             }
+        } else if (this.initialBlockInstanceId && this.displayBlocks && this.hasBlocks) {
+            CoreDomUtils.openSideModal({
+                component: CoreBlockSideBlocksComponent,
+                componentProps: {
+                    contextLevel: 'course',
+                    instanceId: this.course.id,
+                    initialBlockInstanceId: this.initialBlockInstanceId,
+                },
+            });
         }
 
         if (!this.loaded) {
@@ -666,8 +678,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
             CoreCourse.logView(this.course.id, sectionNumber),
         );
 
-        let extraParams = sectionNumber ? `&section=${sectionNumber}` : '';
-        if (firstLoad && sectionNumber) {
+        let extraParams = sectionNumber !== undefined ? `&section=${sectionNumber}` : '';
+        if (firstLoad && sectionNumber !== undefined) {
             // If course is configured to show all sections in one page, don't include section in URL in first load.
             const courseDisplay = 'courseformatoptions' in this.course &&
                 this.course.courseformatoptions?.find(option => option.name === 'coursedisplay');

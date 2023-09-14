@@ -1,0 +1,22 @@
+<ion-app>
+    <ion-header>
+        <ion-toolbar>
+            <ion-title>
+                <h1>Course Cards</h1>
+            </ion-title>
+        </ion-toolbar>
+    </ion-header>
+    <ion-content>
+        <ion-card *ngFor="let course of courses">
+            <div class="course-image-wrapper">
+                <core-course-image [course]="course" [fill]="true"></core-course-image>
+            </div>
+            <ion-card-header>
+                <ion-card-title>{{ course.shortname }}</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+                {{ course.summary }}
+            </ion-card-content>
+        </ion-card>
+    </ion-content>
+</ion-app>

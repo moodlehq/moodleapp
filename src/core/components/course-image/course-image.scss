@@ -1,0 +1,65 @@
+@import "~theme/globals";
+
+:host {
+    --core-image-radius: var(--core-courseimage-radius);
+    --core-image-size: 60px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--course-color, white);
+    border-radius: var(--core-image-radius);
+
+    @for $i from 0 to length($core-course-image-background) {
+        &.course-color-#{$i} {
+            --course-color: var(--core-course-color-#{$i});
+            --course-color-tint: var(--core-course-color-#{$i}-tint);
+        }
+    }
+
+    ion-icon {
+        --padding: 12px;
+
+        padding: var(--padding);
+        font-size: calc(var(--core-image-size) - var(--padding) * 2);
+        color: var(--course-color-tint);
+    }
+
+    ion-avatar {
+        --border-radius: var(--core-image-radius);
+        width: var(--core-image-size);
+        height: var(--core-image-size);
+
+        img {
+           background: transparent;
+        }
+
+    }
+
+    img[src$=".svg"] {
+        min-width: 100%;
+    }
+
+    &.fill-container {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+
+        --core-image-radius: 0px;
+        --core-image-size: 100%;
+
+        ion-icon {
+            opacity: 0.5;
+            width: 80px;
+            height: 80px;
+        }
+
+    }
+
+}
+
+:host-context(ion-item) {
+    @include margin(6px, 8px, 6px, 0px);
+}

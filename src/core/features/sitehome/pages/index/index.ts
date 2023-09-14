@@ -14,7 +14,7 @@
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
-import { Params } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 
 import { CoreSite, CoreSiteConfig } from '@classes/site';
 import { CoreCourse, CoreCourseWSSection } from '@features/course/services/course';
@@ -31,6 +31,7 @@ import { CoreBlockHelper } from '@features/block/services/block-helper';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreBlockSideBlocksComponent } from '@features/block/components/side-blocks/side-blocks';
 
 /**
  * Page that displays site home index.
@@ -58,7 +59,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     protected updateSiteObserver: CoreEventObserver;
     protected logView: () => void;
 
-    constructor() {
+    constructor(protected route: ActivatedRoute) {
         // Refresh the enabled flags if site is updated.
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
             this.searchEnabled = !CoreCourses.isSearchCoursesDisabledInSite();
@@ -102,6 +103,10 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
         this.loadContent().finally(() => {
             this.dataLoaded = true;
         });
+
+        this.openFocusedInstance();
+
+        this.route.queryParams.subscribe(() => this.openFocusedInstance());
     }
 
     /**
@@ -224,6 +229,24 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.updateSiteObserver.off();
+    }
+
+    /**
+     * Check whether there is a focused instance in the page parameters and open it.
+     */
+    private openFocusedInstance() {
+        const blockInstanceId = CoreNavigator.getRouteNumberParam('blockInstanceId');
+
+        if (blockInstanceId) {
+            CoreDomUtils.openSideModal({
+                component: CoreBlockSideBlocksComponent,
+                componentProps: {
+                    contextLevel: 'course',
+                    instanceId: this.siteHomeId,
+                    initialBlockInstanceId: blockInstanceId,
+                },
+            });
+        }
     }
 
 }
