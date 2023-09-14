@@ -26,7 +26,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlParams, CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
-import { CoreSite, CoreSiteIdentityProvider, CoreSitePublicConfigResponse, CoreSiteQRCodeType } from '@classes/site';
+import { CoreSite, CoreSiteIdentityProvider, CoreSitePublicConfigResponse, CoreSiteQRCodeType, TypeOfLogin } from '@classes/site';
 import { CoreError } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
 import { DomSanitizer, makeSingleton, Translate } from '@singletons';
@@ -139,7 +139,7 @@ export class CoreLoginHelperProvider {
      * Open a browser to perform SSO login.
      *
      * @param siteUrl URL of the site where the SSO login will be performed.
-     * @param typeOfLogin CoreConstants.LOGIN_SSO_CODE or CoreConstants.LOGIN_SSO_INAPP_CODE.
+     * @param typeOfLogin TypeOfLogin.BROWSER or TypeOfLogin.EMBEDDED.
      * @param service The service to use. If not defined, core service will be used.
      * @param launchUrl The URL to open for SSO. If not defined, default tool mobile launch URL will be used.
      * @param redirectData Data of the path/url to open once authenticated. If not defined, site initial page.
@@ -148,7 +148,7 @@ export class CoreLoginHelperProvider {
      */
     async confirmAndOpenBrowserForSSOLogin(
         siteUrl: string,
-        typeOfLogin: number,
+        typeOfLogin: TypeOfLogin,
         service?: string,
         launchUrl?: string,
         redirectData?: CoreRedirectPayload,
@@ -601,8 +601,8 @@ export class CoreLoginHelperProvider {
      * @param code Code to check.
      * @returns True if embedded browser, false othwerise.
      */
-    isSSOEmbeddedBrowser(code: number): boolean {
-        return code == CoreConstants.LOGIN_SSO_INAPP_CODE;
+    isSSOEmbeddedBrowser(code: TypeOfLogin): boolean {
+        return code == TypeOfLogin.EMBEDDED;
     }
 
     /**
@@ -611,8 +611,8 @@ export class CoreLoginHelperProvider {
      * @param code Code to check.
      * @returns True if SSO login is needed, false othwerise.
      */
-    isSSOLoginNeeded(code: number): boolean {
-        return code == CoreConstants.LOGIN_SSO_CODE || code == CoreConstants.LOGIN_SSO_INAPP_CODE;
+    isSSOLoginNeeded(code: TypeOfLogin): boolean {
+        return code == TypeOfLogin.BROWSER || code == TypeOfLogin.EMBEDDED;
     }
 
     /**
@@ -656,14 +656,14 @@ export class CoreLoginHelperProvider {
      * Open a browser to perform SSO login.
      *
      * @param siteUrl URL of the site where the SSO login will be performed.
-     * @param typeOfLogin CoreConstants.LOGIN_SSO_CODE or CoreConstants.LOGIN_SSO_INAPP_CODE.
+     * @param typeOfLogin TypeOfLogin.BROWSER or TypeOfLogin.EMBEDDED.
      * @param service The service to use. If not defined, core service will be used.
      * @param launchUrl The URL to open for SSO. If not defined, default tool mobile launch URL will be used.
      * @param redirectData Data of the path/url to open once authenticated. If not defined, site initial page.
      */
     openBrowserForSSOLogin(
         siteUrl: string,
-        typeOfLogin: number,
+        typeOfLogin: TypeOfLogin,
         service?: string,
         launchUrl?: string,
         redirectData?: CoreRedirectPayload,
@@ -901,12 +901,12 @@ export class CoreLoginHelperProvider {
     /**
      * Check if a confirm should be shown to open a SSO authentication.
      *
-     * @param typeOfLogin CoreConstants.LOGIN_SSO_CODE or CoreConstants.LOGIN_SSO_INAPP_CODE.
+     * @param typeOfLogin TypeOfLogin.BROWSER or TypeOfLogin.EMBEDDED.
      * @returns True if confirm modal should be shown, false otherwise.
      * @deprecated since 4.3 Not used anymore.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    shouldShowSSOConfirm(typeOfLogin: number): boolean {
+    shouldShowSSOConfirm(typeOfLogin: TypeOfLogin): boolean {
         return false;
     }
 
