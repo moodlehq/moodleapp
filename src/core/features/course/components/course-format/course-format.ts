@@ -51,7 +51,6 @@ import { CoreCourseCourseIndexTourComponent } from '../course-index-tour/course-
 import { CoreDom } from '@singletons/dom';
 import { CoreUserTourDirectiveOptions } from '@directives/user-tour';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { CorePlatform } from '@services/platform';
 import { CoreBlockSideBlocksComponent } from '@features/block/components/side-blocks/side-blocks';
 
 /**
@@ -96,7 +95,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         id: 'course-index',
         component: CoreCourseCourseIndexTourComponent,
         side: CoreUserToursSide.Top,
-        alignment: CorePlatform.isRTL ? CoreUserToursAlignment.Start : CoreUserToursAlignment.End,
+        alignment: CoreUserToursAlignment.End,
         getFocusedElement: nativeButton => {
             const innerButton = Array.from(nativeButton.shadowRoot?.children ?? []).find(child => child.tagName === 'BUTTON');
 
