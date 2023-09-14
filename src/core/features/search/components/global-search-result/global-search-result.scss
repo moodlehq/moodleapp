@@ -3,6 +3,7 @@
     --core-global-search-result-title-color: var(--text);
     --core-global-search-result-content-color: var(--gray-700);
     --core-global-search-result-context-color: var(--gray-600);
+    --core-global-search-result-icon-size: 16px;
     --mod-icon-filter: brightness(0);
 
     h3 {
@@ -12,7 +13,7 @@
         color: var(--core-global-search-result-title-color);
 
         core-mod-icon {
-            --size: 16px;
+            --size: var(--core-global-search-result-icon-size);
             --filter: var(--mod-icon-filter);
 
             margin-inline-end: var(--spacing-2);
@@ -22,9 +23,9 @@
             background: transparent;
         }
 
-        ion-icon {
-            width: 16px;
-            height: 16px;
+        ion-icon, .result-icon {
+            width: var(--core-global-search-result-icon-size);
+            height: var(--core-global-search-result-icon-size);
 
             margin-inline-end: var(--spacing-2);
         }
@@ -61,6 +62,9 @@
         }
 
         .result-context {
+            display: flex;
+            justify-items: center;
+            align-items: center;
             color: var(--core-global-search-result-context-color);
             margin-top: var(--spacing-2);
             font-size: 12px;

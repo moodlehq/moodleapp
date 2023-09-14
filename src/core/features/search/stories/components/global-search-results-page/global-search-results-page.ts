@@ -83,6 +83,30 @@ export class CoreSearchGlobalSearchResultsPageComponent {
                 area: 'post',
             },
         },
+        {
+            id: 6,
+            url: '',
+            title: 'Side block',
+            context: {
+                courseName: 'Moodle Site',
+            },
+            component: {
+                name: 'block_html',
+                iconurl: 'https://master.mm.moodledemo.net/theme/image.php?theme=boost&component=core&image=e%2Fanchor',
+            },
+        },
+        {
+            id: 7,
+            url: '',
+            title: 'Course section',
+            context: {
+                courseName: 'Course 101',
+            },
+            component: {
+                name: 'core_course',
+                iconurl: 'https://master.mm.moodledemo.net/theme/image.php?theme=boost&component=core&image=i%2Fsection',
+            },
+        },
     ];
 
     /**

@@ -44,6 +44,7 @@ export type CoreSearchGlobalSearchResult = {
     content?: string;
     context?: CoreSearchGlobalSearchResultContext;
     module?: CoreSearchGlobalSearchResultModule;
+    component?: CoreSearchGlobalSearchResultComponent;
     course?: CoreCourseListItem;
     user?: CoreUserWithAvatar;
 };
@@ -57,6 +58,11 @@ export type CoreSearchGlobalSearchResultModule = {
     name: string;
     iconurl: string;
     area: string;
+};
+
+export type CoreSearchGlobalSearchResultComponent = {
+    name: string;
+    iconurl: string;
 };
 
 export type CoreSearchGlobalSearchSearchAreaCategory = {
@@ -225,8 +231,8 @@ export class CoreSearchGlobalSearchService {
             const user = await CoreUser.getProfile(wsResult.itemid);
 
             result.user = user;
-        } else if (wsResult.componentname === 'core_course') {
-            const course = await CoreCourses.getCourse(wsResult.itemid);
+        } else if (wsResult.componentname === 'core_course' && wsResult.areaname === 'course') {
+            const course = await CoreCourses.getCourseByField('id', wsResult.itemid);
 
             result.course = course;
         } else {
@@ -237,12 +243,19 @@ export class CoreSearchGlobalSearchService {
                 };
             }
 
-            if (wsResult.iconurl && wsResult.componentname.startsWith('mod_')) {
-                result.module = {
-                    name: wsResult.componentname.substring(4),
-                    iconurl: wsResult.iconurl,
-                    area: wsResult.areaname,
-                };
+            if (wsResult.iconurl) {
+                if (wsResult.componentname.startsWith('mod_')) {
+                    result.module = {
+                        name: wsResult.componentname.substring(4),
+                        iconurl: wsResult.iconurl,
+                        area: wsResult.areaname,
+                    };
+                } else {
+                    result.component = {
+                        name: wsResult.componentname,
+                        iconurl: wsResult.iconurl,
+                    };
+                }
             }
         }
 

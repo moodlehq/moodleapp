@@ -74,7 +74,7 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
                 if (data.sectionId) {
                     this.contentsTab.pageParams.sectionId = data.sectionId;
                 }
-                if (data.sectionNumber) {
+                if (data.sectionNumber !== undefined) {
                     this.contentsTab.pageParams.sectionNumber = data.sectionNumber;
                 }
 
@@ -162,12 +162,13 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
             course: this.course,
             sectionId: CoreNavigator.getRouteNumberParam('sectionId'),
             sectionNumber: CoreNavigator.getRouteNumberParam('sectionNumber'),
+            blockInstanceId: CoreNavigator.getRouteNumberParam('blockInstanceId'),
             isGuest: this.isGuest,
         };
 
         if (this.module) {
             this.contentsTab.pageParams.moduleId = this.module.id;
-            if (!this.contentsTab.pageParams.sectionId && !this.contentsTab.pageParams.sectionNumber) {
+            if (!this.contentsTab.pageParams.sectionId && this.contentsTab.pageParams.sectionNumber === undefined) {
                 // No section specified, use module section.
                 this.contentsTab.pageParams.sectionId = this.module.section;
             }

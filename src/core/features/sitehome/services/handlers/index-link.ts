@@ -22,6 +22,7 @@ import { makeSingleton } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSiteHomeHomeHandlerService } from './sitehome-home';
 import { CoreMainMenuHomeHandlerService } from '@features/mainmenu/services/handlers/mainmenu';
+import { Params } from '@angular/router';
 
 /**
  * Handler to treat links to site home index.
@@ -36,7 +37,14 @@ export class CoreSiteHomeIndexLinkHandlerService extends CoreContentLinksHandler
     /**
      * @inheritdoc
      */
-    getActions(): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
+    getActions(siteIds: string[], url: string): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
+        const pageParams: Params = {};
+        const matches = url.match(/#inst(\d+)/);
+
+        if (matches && matches[1]) {
+            pageParams.blockInstanceId = parseInt(matches[1], 10);
+        }
+
         return [{
             action: (siteId: string): void => {
                 CoreNavigator.navigateToSitePath(
@@ -44,6 +52,7 @@ export class CoreSiteHomeIndexLinkHandlerService extends CoreContentLinksHandler
                     {
                         preferCurrentTab: false,
                         siteId,
+                        params: pageParams,
                     },
                 );
             },
