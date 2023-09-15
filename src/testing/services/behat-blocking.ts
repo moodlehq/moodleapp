@@ -236,15 +236,27 @@ export class TestingBehatBlockingService {
             NgZone.run(() => {
                 const index = requestIndex++;
                 const key = 'httprequest-' + index;
+                const isAsync = args[2] !== false;
 
                 try {
-                // Add to the list of pending requests.
+                    // Add to the list of pending requests.
                     TestingBehatBlocking.block(key);
 
                     // Detect when it finishes and remove it from the list.
-                    this.addEventListener('loadend', () => {
-                        TestingBehatBlocking.unblock(key);
-                    });
+                    if (isAsync) {
+                        this.addEventListener('loadend', () => {
+                            TestingBehatBlocking.unblock(key);
+                        });
+                    } else {
+                        const realSend = this.send;
+                        this.send = (...args) => {
+                            try {
+                                return realSend.apply(this, args);
+                            } finally {
+                                TestingBehatBlocking.unblock(key);
+                            }
+                        };
+                    }
 
                     return realOpen.apply(this, args);
                 } catch (error) {
