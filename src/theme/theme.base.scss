@@ -704,6 +704,8 @@ body.core-iframe-fullscreen ion-router-outlet {
     --ion-safe-area-right: 0px;
 
     .modal-wrapper {
+        @include margin-horizontal(var(--modal-lateral-margin), null);
+
         position: absolute;
         @include position(0 !important, 0 !important, 0 !important, unset !important);
         display: block;
@@ -719,14 +721,6 @@ body.core-iframe-fullscreen ion-router-outlet {
 
     .modal-shadow {
         display: none;
-    }
-}
-
-html:not([dir="rtl"]) {
-    .core-modal-lateral {
-        .modal-wrapper {
-            @include margin-horizontal(var(--modal-lateral-margin), null);
-        }
     }
 }
 
@@ -1338,6 +1332,25 @@ ion-fab[core-fab] {
     ion-fab-button::part(close-icon) {
         display: none;
     }
+}
+
+// The following 4 selectors can probably be removed after Ionic migration to 7+
+ion-fab.fab-horizontal-start {
+    left: calc(10px + var(--ion-safe-area-right, 0px));
+}
+
+[dir=rtl] ion-fab.fab-horizontal-start {
+    right: calc(10px + var(--ion-safe-area-right, 0px));
+    left: unset
+}
+
+ion-fab.fab-horizontal-end {
+    right: calc(10px + var(--ion-safe-area-right, 0px));
+}
+
+[dir=rtl] ion-fab.fab-horizontal-end {
+    left: calc(10px + var(--ion-safe-area-right, 0px));
+    right: unset
 }
 
 ion-content.has-collapsible-footer ion-fab {
