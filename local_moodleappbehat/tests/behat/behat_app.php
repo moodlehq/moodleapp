@@ -336,7 +336,7 @@ class behat_app extends behat_app_helper {
 
         // Note there are two 'Log in' texts visible (the title and the button) so we have to use
         // a 'near' value here.
-        $this->i_press_in_the_app('"Log in" near "Forgotten"');
+        $this->i_press_in_the_app('"Log in" "ion-button"');
 
         // Wait until the main page appears.
         $this->spin(

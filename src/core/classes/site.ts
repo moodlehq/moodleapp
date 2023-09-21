@@ -2771,7 +2771,7 @@ export type CoreSitePublicConfigResponse = {
     maintenancemessage: string; // Maintenance message.
     logourl?: string; // The site logo URL.
     compactlogourl?: string; // The site compact logo URL.
-    typeoflogin: number; // The type of login. 1 for app, 2 for browser, 3 for embedded.
+    typeoflogin: TypeOfLogin; // The type of login. 1 for app, 2 for browser, 3 for embedded.
     launchurl?: string; // SSO login launch URL.
     mobilecssurl?: string; // Mobile custom CSS theme.
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -2868,4 +2868,13 @@ export type WSObservable<T> = Observable<T>;
 enum OngoingRequestType {
     STANDARD = 0,
     UPDATE_IN_BACKGROUND = 1,
+}
+
+/**
+ * The type of login. 1 for app, 2 for browser, 3 for embedded.
+ */
+export enum TypeOfLogin {
+    APP = 1,
+    BROWSER = 2, // SSO in browser window is required.
+    EMBEDDED = 3, // SSO in embedded browser is required.
 }

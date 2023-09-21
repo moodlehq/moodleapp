@@ -2074,7 +2074,7 @@
   "core.login.findyoursite": "local_moodlemobileapp",
   "core.login.firsttime": "moodle",
   "core.login.forcepasswordchangenotice": "moodle",
-  "core.login.forgotten": "moodle",
+  "core.login.forgotaccount": "moodle",
   "core.login.help": "moodle",
   "core.login.instructions": "auth",
   "core.login.invalidaccount": "local_moodlemobileapp",
