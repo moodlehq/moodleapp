@@ -11,7 +11,7 @@
         </ion-button>
     </core-navbar-buttons>
 
-    <iframe #iframe class="core-iframe" [ngStyle]="{'width': iframeWidth, 'height': iframeHeight}" [src]="safeUrl"
+    <iframe #iframe class="core-iframe" [attr.id]="id" [ngStyle]="{'width': iframeWidth, 'height': iframeHeight}" [src]="safeUrl"
         [attr.allowfullscreen]="allowFullscreen ? 'allowfullscreen' : null" [class.core-iframe-loading]="loading">
     </iframe>
 
