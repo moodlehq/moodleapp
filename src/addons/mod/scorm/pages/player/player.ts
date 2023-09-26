@@ -426,6 +426,11 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (<any> window).API = this.dataModel;
         } else {
+            // Changing SCO. First unload the existing SCO to make sure the callback to send the data has been called.
+            this.src = '';
+
+            await CoreUtils.nextTick();
+
             // Load the SCO in the existing model.
             this.dataModel.loadSco(sco.id);
         }
@@ -436,7 +441,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
         this.calculateNavigationItems(sco.id);
 
         // Load the SCO source.
-        this.loadScoSrc(sco);
+        this.src = await AddonModScorm.getScoSrc(this.scorm, sco);
 
         if (sco.scormtype == 'asset') {
             // Mark the asset as completed.
@@ -444,25 +449,6 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
         }
 
         this.logEvent(sco.id);
-    }
-
-    /**
-     * Load SCO src.
-     *
-     * @param sco SCO to load.
-     * @returns Promise resolved when done.
-     */
-    protected async loadScoSrc(sco: AddonModScormScoWithData): Promise<void> {
-        const src = await AddonModScorm.getScoSrc(this.scorm, sco);
-
-        if (src == this.src) {
-            // Re-loading same page. Set it to empty and then re-set the src in the next digest so it detects it has changed.
-            this.src = '';
-
-            await CoreUtils.nextTick();
-        }
-
-        this.src = src;
     }
 
     /**
