@@ -18,7 +18,13 @@ import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { SITE_SCHEMA as FILEPOOL_SITE_SCHEMA } from './filepool';
 import { SITE_SCHEMA as SITES_SITE_SCHEMA } from './sites';
 import { SITE_SCHEMA as SYNC_SITE_SCHEMA } from './sync';
+import { SITE_SCHEMA as STORAGE_SITE_SCHEMA } from './storage';
 
+/**
+ * Give database providers.
+ *
+ * @returns database providers
+ */
 export function getDatabaseProviders(): Provider[] {
     return [{
         provide: CORE_SITE_SCHEMAS,
@@ -26,6 +32,7 @@ export function getDatabaseProviders(): Provider[] {
             FILEPOOL_SITE_SCHEMA,
             SITES_SITE_SCHEMA,
             SYNC_SITE_SCHEMA,
+            STORAGE_SITE_SCHEMA,
         ],
         multi: true,
     }];

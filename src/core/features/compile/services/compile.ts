@@ -158,6 +158,7 @@ import { ADDON_PRIVATEFILES_SERVICES } from '@addons/privatefiles/privatefiles.m
 import { AddonModAssignComponentsModule } from '@addons/mod/assign/components/components.module';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
+import { CoreAutoLogoutService } from '@features/autologout/services/autologout';
 
 /**
  * Service to provide functionalities regarding compiling dynamic HTML and Javascript.
@@ -268,6 +269,7 @@ export class CoreCompileProvider {
     injectLibraries(instance: any, extraProviders: Type<unknown>[] = []): void {
         const providers = [
             ...CORE_SERVICES,
+            CoreAutoLogoutService,
             ...CORE_BLOCK_SERVICES,
             ...CORE_COMMENTS_SERVICES,
             ...CORE_CONTENTLINKS_SERVICES,
