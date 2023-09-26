@@ -150,11 +150,7 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
             }
         }
 
-        if (!mainFile) {
-            return;
-        }
-
-        const icon = AddonModUrl.guessIcon(mainFile.fileurl);
+        const icon = mainFile? AddonModUrl.guessIcon(mainFile.fileurl) : undefined;
 
         // Calculate the icon to use.
         return CoreCourse.getModuleIconSrc(module.modname, module.modicon, icon);
