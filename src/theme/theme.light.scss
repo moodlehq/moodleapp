@@ -67,11 +67,11 @@ html {
     --core-input-stroke: var(--gray-500);
     --core-input-text: var(--dark);
     --core-input-background: var(--ion-background-color);
-    --core-input-radius: var(--small-radius);
+    --core-input-radius: var(--radius-xs);
     --core-input-border-width: 1px;
 
     --module-icon-size: 24px;
-    --module-icon-radius: var(--medium-radius);
+    --module-icon-radius: var(--sm-radius);
 
     --list-item-max-width: 768px;
 
@@ -82,7 +82,7 @@ html {
 
     --loader-background-color: rgba(0, 0, 0, .1);
     --loader-shine: 251, 251, 251;
-    --loader-radius: var(--small-radius);
+    --loader-radius: var(--radius-xs);
     --loader-display: block;
 
     --drop-shadow-color: 0, 0, 0, 0.5;
@@ -96,7 +96,7 @@ html {
     --ion-card-color: var(--text-color);
     --ion-card-vertical-margin: 10px;
     --ion-card-horizontal-margin: 10px;
-    --ion-card-radius: var(--medium-radius);
+    --ion-card-radius: var(--radius-sm);
     --ion-card-border-width: 1px;
     --ion-card-border-color: var(--stroke);
     ion-card {
@@ -333,7 +333,7 @@ html {
     --core-avatar-radius: 50%;
 
     --core-courseimage-on-course-size: 72px;
-    --core-courseimage-radius: var(--medium-radius);
+    --core-courseimage-radius: var(--radius-sm);
 
     --core-navigation-background: var(--contrast-background);
 

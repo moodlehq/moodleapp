@@ -166,7 +166,7 @@ ion-header {
             --color: var(--core-header-buttons-color);
             --background: var(--core-header-buttons-background);
             --ion-toolbar-color: var(--core-header-buttons-color);
-            --border-radius: var(--huge-radius);
+            --border-radius: var(--radius-xl);
             --primary: var(--core-header-buttons-color);
         }
         ion-back-button::part(text) {
@@ -376,7 +376,7 @@ ion-button:not(.button-has-icon-only):not(.button-small) > ion-icon {
 }
 
 ion-button.button.button-clear.button-has-icon-only {
-    --border-radius: var(--huge-radius);
+    --border-radius: var(--radius-xl);
 }
 
 ion-button.button.button-clear {
@@ -498,7 +498,7 @@ ion-alert .alert-button.timed-button{
 }
 
 ion-alert {
-    --border-radius: var(--huge-radius);
+    --border-radius: var(--radius-xl);
 
     &.md, &.ios {
         --max-width: 80%;
@@ -531,7 +531,7 @@ ion-alert {
 }
 
 ion-loading {
-    --border-radius: var(--huge-radius);
+    --border-radius: var(--radius-xl);
 
     .loading-wrapper {
         border-radius: var(--border-radius) !important;
@@ -741,7 +741,7 @@ body.core-iframe-fullscreen ion-router-outlet {
 }
 
 .core-password-modal {
-    --border-radius: var(--medium-radius);
+    --border-radius: var(--radius-sm);
     --min-width: auto;
     --min-height: 300px;
     --width: 384px;
@@ -837,6 +837,7 @@ body.core-iframe-fullscreen ion-router-outlet {
         --border-width: 0;
 
         --border-color: var(--color-tint);
+        --border-radius: var(--radius-sm);
         --background: var(--color-tint);
         --color: var(--color-shade);
 
@@ -978,7 +979,7 @@ ion-action-sheet.md {
     }
 
     .action-sheet-group:first-child {
-        border-radius: var(--big-radius) var(--big-radius) 0 0;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     }
 
     .action-sheet-group-cancel {
@@ -1125,7 +1126,7 @@ ion-select-popover {
 ion-badge {
     line-height: 1.1;
     padding: 2px 8px;
-    border-radius: var(--big-radius);
+    border-radius: var(--radius-lg);
 }
 
 ion-chip,

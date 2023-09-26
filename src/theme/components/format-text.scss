@@ -74,7 +74,7 @@ core-format-text {
         position: absolute;
         @include position(null, 10px, 10px, null);
         color: var(--ion-text-color);
-        border-radius: var(--huge-radius);
+        border-radius: var(--radius-xl);
         background-color: var(--core-format-text-viewer-icon-background);
         display: flex;
 
@@ -284,7 +284,7 @@ core-rich-text-editor .core-rte-editor {
         border: 1px solid var(--gray-500);
         background: var(--contrast-background);
         padding: 6px 8px;
-        border-radius: var(--small-radius);
+        border-radius: var(--radius-xs);
         margin-left: 2px;
         margin-right: 2px;
         margin-bottom: 10px;

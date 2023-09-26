@@ -10,10 +10,21 @@ html {
     --font-size-normal: 14px;
 
     // Radiuses
-    --small-radius: 4px;
-    --medium-radius: 8px;
-    --big-radius: 16px;
-    --huge-radius: 24px;
+    --radius-none: 0px;
+    --radius-xs: 4px;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --radius-round: 50%;
+
+    /** @deprecated since 4.3 **/
+    --small-radius: var(--radius-xs);
+    --medium-radius: var(--radius-sm);
+    --big-radius: var(--radius-lg);
+    --huge-radius: var(--radius-xl);
+
+
 
     // A11y
     --a11y-min-target-size: 44px;
