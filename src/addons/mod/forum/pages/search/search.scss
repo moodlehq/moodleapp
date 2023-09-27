@@ -1,0 +1,15 @@
+:host {
+    --results-count-text-color: var(--gray-700);
+
+    .results-count {
+        color: var(--results-count-text-color);
+        min-height: 0px;
+        margin: 8px 16px;
+        font-size: 14px;
+    }
+
+}
+
+:host-context(html.dark) {
+    --results-count-text-color: var(--gray-400);
+}

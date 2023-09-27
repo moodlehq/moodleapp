@@ -28,6 +28,7 @@ export class CoreSearchGlobalSearchResultsSource extends CorePaginatedItemsManag
     private query: string;
     private filters: CoreSearchGlobalSearchFilters;
     private pagesLoaded = 0;
+    private totalResults?: number;
     private topResultsIds?: number[];
 
     constructor(query: string, filters: CoreSearchGlobalSearchFilters) {
@@ -94,6 +95,15 @@ export class CoreSearchGlobalSearchResultsSource extends CorePaginatedItemsManag
     }
 
     /**
+     * Get total results with the given filter.
+     *
+     * @returns Total results.
+     */
+    getTotalResults(): number | null {
+        return this.totalResults ?? null;
+    }
+
+    /**
      * @inheritdoc
      */
     async reload(): Promise<void> {
@@ -107,6 +117,7 @@ export class CoreSearchGlobalSearchResultsSource extends CorePaginatedItemsManag
      */
     reset(): void {
         this.pagesLoaded = 0;
+        delete this.totalResults;
         delete this.topResultsIds;
 
         super.reset();
@@ -129,6 +140,8 @@ export class CoreSearchGlobalSearchResultsSource extends CorePaginatedItemsManag
         }
 
         const pageResults = await CoreSearchGlobalSearch.getResults(this.query, this.filters, page);
+
+        this.totalResults = pageResults.total;
 
         results.push(...pageResults.results.filter(result => !this.topResultsIds?.includes(result.id)));
 

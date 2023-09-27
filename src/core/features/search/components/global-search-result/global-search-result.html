@@ -11,14 +11,14 @@
             <core-format-text [text]="result.title"></core-format-text>
         </h3>
         <core-format-text *ngIf="result.content && !result.course && !result.user" [text]="result.content"></core-format-text>
-        <div *ngIf="result.context" class="flex-row">
-            <div *ngIf="result.context.courseName" class="result-context">
+        <div *ngIf="renderedContext" class="flex-row">
+            <div *ngIf="renderedContext.courseName" class="result-context">
                 <ion-icon name="fas-graduation-cap" aria-hidden="true"></ion-icon>
-                <core-format-text [text]="result.context.courseName"></core-format-text>
+                <core-format-text [text]="renderedContext.courseName"></core-format-text>
             </div>
-            <div *ngIf="result.context.userName" class="result-context">
+            <div *ngIf="renderedContext.userName" class="result-context">
                 <ion-icon name="fas-user" aria-hidden="true"></ion-icon>
-                <span>{{ 'core.search.resultby' | translate: { $a: result.context.userName } }}</span>
+                <span>{{ 'core.search.resultby' | translate: { $a: renderedContext.userName } }}</span>
             </div>
         </div>
     </ion-label>

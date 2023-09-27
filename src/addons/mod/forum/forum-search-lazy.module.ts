@@ -12,28 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreSharedModule } from '@/core/shared.module';
+import { AddonModForumSearchPage } from '@addons/mod/forum/pages/search/search';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-
-import { AddonModForumComponentsModule } from '@addons/mod/forum/components/components.module';
-import { CanLeaveGuard } from '@guards/can-leave';
-import { CoreSharedModule } from '@/core/shared.module';
-import { AddonModForumDiscussionPage } from '@addons/mod/forum/pages/discussion/discussion';
+import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
+import { CoreSearchComponentsModule } from '@features/search/components/components.module';
 
 const routes: Routes = [{
     path: '',
-    component: AddonModForumDiscussionPage,
-    canDeactivate: [CanLeaveGuard],
+    component: AddonModForumSearchPage,
 }];
 
 @NgModule({
     imports: [
         RouterModule.forChild(routes),
         CoreSharedModule,
-        AddonModForumComponentsModule,
+        CoreSearchComponentsModule,
+        CoreMainMenuComponentsModule,
     ],
     declarations: [
-        AddonModForumDiscussionPage,
+        AddonModForumSearchPage,
     ],
 })
-export class AddonModForumDiscussionLazyModule {}
+export class AddonModForumSearchLazyModule {}

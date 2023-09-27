@@ -52,10 +52,16 @@ export const ADDON_MOD_FORUM_SERVICES: Type<unknown>[] = [
     AddonModForumSyncProvider,
 ];
 
+export const FORUM_SEARCH_PAGE_NAME = 'forum/search';
+
 const mainMenuRoutes: Routes = [
     {
+        path: FORUM_SEARCH_PAGE_NAME,
+        loadChildren: () => import('./forum-search-lazy.module').then(m => m.AddonModForumSearchLazyModule),
+    },
+    {
         path: `${AddonModForumModuleHandlerService.PAGE_NAME}/discussion/:discussionId`,
-        loadChildren: () => import('./forum-discussion-lazy.module').then(m => m.AddonForumDiscussionLazyModule),
+        loadChildren: () => import('./forum-discussion-lazy.module').then(m => m.AddonModForumDiscussionLazyModule),
         data: { swipeEnabled: false },
     },
     {
@@ -66,12 +72,12 @@ const mainMenuRoutes: Routes = [
         [
             {
                 path: `${COURSE_CONTENTS_PATH}/${AddonModForumModuleHandlerService.PAGE_NAME}/new/:timeCreated`,
-                loadChildren: () => import('./forum-new-discussion-lazy.module').then(m => m.AddonForumNewDiscussionLazyModule),
+                loadChildren: () => import('./forum-new-discussion-lazy.module').then(m => m.AddonModForumNewDiscussionLazyModule),
                 data: { discussionsPathPrefix: `${AddonModForumModuleHandlerService.PAGE_NAME}/` },
             },
             {
                 path: `${COURSE_CONTENTS_PATH}/${AddonModForumModuleHandlerService.PAGE_NAME}/:discussionId`,
-                loadChildren: () => import('./forum-discussion-lazy.module').then(m => m.AddonForumDiscussionLazyModule),
+                loadChildren: () => import('./forum-discussion-lazy.module').then(m => m.AddonModForumDiscussionLazyModule),
                 data: { discussionsPathPrefix: `${AddonModForumModuleHandlerService.PAGE_NAME}/` },
             },
         ],
@@ -83,12 +89,12 @@ const courseContentsRoutes: Routes = conditionalRoutes(
     [
         {
             path: `${AddonModForumModuleHandlerService.PAGE_NAME}/new/:timeCreated`,
-            loadChildren: () => import('./forum-new-discussion-lazy.module').then(m => m.AddonForumNewDiscussionLazyModule),
+            loadChildren: () => import('./forum-new-discussion-lazy.module').then(m => m.AddonModForumNewDiscussionLazyModule),
             data: { discussionsPathPrefix: `${AddonModForumModuleHandlerService.PAGE_NAME}/` },
         },
         {
             path: `${AddonModForumModuleHandlerService.PAGE_NAME}/:discussionId`,
-            loadChildren: () => import('./forum-discussion-lazy.module').then(m => m.AddonForumDiscussionLazyModule),
+            loadChildren: () => import('./forum-discussion-lazy.module').then(m => m.AddonModForumDiscussionLazyModule),
             data: { discussionsPathPrefix: `${AddonModForumModuleHandlerService.PAGE_NAME}/` },
         },
     ],

@@ -42,6 +42,7 @@ import { AddonBlockStarredCoursesModule } from './starredcourses/starredcourses.
 import { AddonBlockTagsModule } from './tags/tags.module';
 import { AddonBlockTimelineModule } from './timeline/timeline.module';
 import { AddonBlockGlobalSearchModule } from '@addons/block/globalsearch/globalsearch.module';
+import { AddonBlockSearchForumsModule } from '@addons/block/searchforums/searchforums.module';
 
 @NgModule({
     imports: [
@@ -68,6 +69,7 @@ import { AddonBlockGlobalSearchModule } from '@addons/block/globalsearch/globals
         AddonBlockRecentlyAccessedCoursesModule,
         AddonBlockRecentlyAccessedItemsModule,
         AddonBlockRssClientModule,
+        AddonBlockSearchForumsModule,
         AddonBlockSelfCompletionModule,
         AddonBlockSiteMainMenuModule,
         AddonBlockStarredCoursesModule,

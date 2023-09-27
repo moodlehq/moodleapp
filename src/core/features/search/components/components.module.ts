@@ -16,16 +16,19 @@ import { NgModule } from '@angular/core';
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSearchBoxComponent } from './search-box/search-box';
+import { CoreSearchGlobalSearchResultComponent } from '@features/search/components/global-search-result/global-search-result';
 
 @NgModule({
     declarations: [
         CoreSearchBoxComponent,
+        CoreSearchGlobalSearchResultComponent,
     ],
     imports: [
         CoreSharedModule,
     ],
     exports: [
         CoreSearchBoxComponent,
+        CoreSearchGlobalSearchResultComponent,
     ],
 })
 export class CoreSearchComponentsModule {}

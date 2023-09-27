@@ -29,15 +29,15 @@ const mobileRoutes: Routes = [
     },
     {
         path: ':courseId/:cmId/new/:timeCreated',
-        loadChildren: () => import('./forum-new-discussion-lazy.module').then(m => m.AddonForumNewDiscussionLazyModule),
+        loadChildren: () => import('./forum-new-discussion-lazy.module').then(m => m.AddonModForumNewDiscussionLazyModule),
     },
     {
         path: ':courseId/:cmId/:discussionId',
-        loadChildren: () => import('./forum-discussion-lazy.module').then(m => m.AddonForumDiscussionLazyModule),
+        loadChildren: () => import('./forum-discussion-lazy.module').then(m => m.AddonModForumDiscussionLazyModule),
     },
     {
         path: 'discussion/:discussionId', // Only for discussion link handling.
-        loadChildren: () => import('./forum-discussion-lazy.module').then(m => m.AddonForumDiscussionLazyModule),
+        loadChildren: () => import('./forum-discussion-lazy.module').then(m => m.AddonModForumDiscussionLazyModule),
     },
 ];
 
@@ -48,11 +48,11 @@ const tabletRoutes: Routes = [
         children: [
             {
                 path: 'new/:timeCreated',
-                loadChildren: () => import('./forum-new-discussion-lazy.module').then(m => m.AddonForumNewDiscussionLazyModule),
+                loadChildren: () => import('./forum-new-discussion-lazy.module').then(m => m.AddonModForumNewDiscussionLazyModule),
             },
             {
                 path: ':discussionId',
-                loadChildren: () => import('./forum-discussion-lazy.module').then(m => m.AddonForumDiscussionLazyModule),
+                loadChildren: () => import('./forum-discussion-lazy.module').then(m => m.AddonModForumDiscussionLazyModule),
             },
         ],
     },
