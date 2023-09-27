@@ -1121,10 +1121,10 @@
     "url": "http://twitter.com/alexiskofman",
     "licenseFile": "LICENSE"
   },
-  "cordova-plugin-advanced-http@3.3.1": {
+  "@moodlehq/cordova-plugin-advanced-http@3.3.1": {
     "licenses": "MIT",
-    "repository": "https://github.com/silkimen/cordova-plugin-advanced-http",
-    "publisher": "Wymsee",
+    "repository": "https://github.com/moodlemobile/cordova-plugin-advanced-http",
+    "publisher": "Moodle Mobile Team",
     "licenseFile": "LICENSE"
   },
   "cordova-plugin-androidx-adapter@1.1.3": {
