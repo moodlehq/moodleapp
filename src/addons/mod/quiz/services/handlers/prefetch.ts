@@ -231,7 +231,7 @@ export class AddonModQuizPrefetchHandlerService extends CoreCourseActivityPrefet
 
         const quiz = await AddonModQuiz.getQuiz(courseId, module.id, { siteId });
 
-        if (quiz.allowofflineattempts !== 1 || quiz.hasquestions === 0) {
+        if (!AddonModQuiz.isQuizOffline(quiz) || quiz.hasquestions === 0) {
             return false;
         }
 
