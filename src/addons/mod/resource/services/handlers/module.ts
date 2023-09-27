@@ -223,6 +223,15 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
     /**
      * @inheritdoc
      */
+    async manualCompletionAlwaysShown(module: CoreCourseModuleData): Promise<boolean> {
+        const hideButton = await this.hideOpenButton(module);
+
+        return !hideButton;
+    }
+
+    /**
+     * @inheritdoc
+     */
     getIconSrc(module?: CoreCourseModuleData): string | undefined {
         if (!module) {
             return;

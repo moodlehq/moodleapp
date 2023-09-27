@@ -1,0 +1,17 @@
+:host {
+    display: block;
+    margin: var(--margin, 4px);
+
+    ion-button {
+        margin: 0px;
+    }
+
+    ion-button.button-solid.ion-color-success::part(native){
+        background: var(--ion-color-tint);
+        color: var(--ion-color-shade);
+    }
+
+    ion-button.button-outline::part(native){
+        border-color: var(--gray-400);
+    }
+}

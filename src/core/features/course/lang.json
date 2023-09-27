@@ -12,6 +12,7 @@
     "completion_manual:aria:markdone": "Mark {{$a}} as done",
     "completion_manual:done": "Done",
     "completion_manual:markdone": "Mark as done",
+    "completionmenuitem": "Completion",
     "completion_setby:auto:done": "Done: {{$a.condition}} (set by {{$a.setby}})",
     "completion_setby:auto:todo": "To do: {{$a.condition}} (set by {{$a.setby}})",
     "completion_setby:manual:done": "{{$a.activityname}} is marked by {{$a.setby}} as done. Press to undo.",
@@ -54,6 +55,7 @@
     "relativedatessubmissionduedatebefore": "{{$a.datediffstr}} before course start",
     "section": "Section",
     "startdate": "Course start date",
+    "studentsmust": "Students must",
     "thisweek": "This week",
     "todo": "To do",
     "tour_navigation_course_index_student_content": "Browse through activities and track your progress.",
@@ -61,5 +63,6 @@
     "useactivityonbrowser": "You can still use it using your device's web browser.",
     "viewcourse": "View course",
     "warningmanualcompletionmodified": "The manual completion of an activity was modified on the site.",
+    "youmust": "You must",
     "warningofflinemanualcompletiondeleted": "Some offline manual completion of course '{{name}}' has been deleted. {{error}}"
 }

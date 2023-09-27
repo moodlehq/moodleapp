@@ -56,10 +56,10 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
 
     modNameTranslated = '';
     hasInfo = false;
+    hasCompletion = false; // Whether activity has completion to be shown.
     showManualCompletion = false; // Whether to show manual completion when completion conditions are disabled.
     prefetchStatusIcon$ = new BehaviorSubject<string>(''); // Module prefetch status icon.
     prefetchStatusText$ = new BehaviorSubject<string>(''); // Module prefetch status text.
-    autoCompletionTodo = false;
     moduleHasView = true;
 
     protected prefetchHandler?: CoreCourseModulePrefetchHandler;
@@ -78,7 +78,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
         this.showLegacyCompletion = this.showLegacyCompletion ??
             CoreConstants.CONFIG.uselegacycompletion ??
             !site.isVersionGreaterEqualThan('3.11');
-        this.checkShowManualCompletion();
+        this.checkShowCompletion();
 
         if (!this.module.handlerData) {
             return;
@@ -87,18 +87,10 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
         this.module.handlerData.a11yTitle = this.module.handlerData.a11yTitle ?? this.module.handlerData.title;
         this.moduleHasView = CoreCourse.moduleHasView(this.module);
 
-        const completionStatus = this.showCompletionConditions && this.module.completiondata?.isautomatic &&
-            this.module.completiondata.tracking == CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_AUTOMATIC
-            ? this.module.completiondata.state
-            : undefined;
-
-        this.autoCompletionTodo = completionStatus == CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE ||
-            completionStatus == CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE_FAIL;
-
         this.hasInfo = !!(
             this.module.description ||
             (this.showActivityDates && this.module.dates && this.module.dates.length) ||
-            (this.autoCompletionTodo && !this.showLegacyCompletion) ||
+            (this.hasCompletion && !this.showLegacyCompletion) ||
             (this.module.availabilityinfo)
         );
 
@@ -160,9 +152,14 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     /**
      * Check whether manual completion should be shown.
      */
-    protected async checkShowManualCompletion(): Promise<void> {
+    protected async checkShowCompletion(): Promise<void> {
         this.showManualCompletion = this.showCompletionConditions ||
             await CoreCourseModuleDelegate.manualCompletionAlwaysShown(this.module);
+
+        this.hasCompletion = !!this.module.completiondata && this.module.uservisible &&
+            (!this.module.completiondata.isautomatic || (this.module.completiondata.details?.length || 0) > 0) &&
+            (this.showCompletionConditions || this.showManualCompletion);
+
     }
 
     /**

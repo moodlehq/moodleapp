@@ -389,6 +389,27 @@ ion-button.button.button-outline {
     --border-radius: var(--core-input-radius);
 }
 
+ion-button .select-icon {
+    margin: var(--icon-margin);
+    width: 19px;
+    height: 19px;
+    position: relative;
+
+    .select-icon-inner {
+        left: 5px;
+        top: 50%;
+        margin-top: -2px;
+        position: absolute;
+        width: 0px;
+        height: 0px;
+        color: currentcolor;
+        pointer-events: none;
+        border-top: 5px solid;
+        border-right: 5px solid transparent;
+        border-left: 5px solid transparent;
+    }
+}
+
 [role="button"],
 .clickable {
     cursor: pointer;
@@ -463,10 +484,9 @@ div.core-iframe-network-error {
     left: -15%;
 }
 
-ion-alert.core-nohead {
-    .alert-head {
-        padding-bottom: 0;
-    }
+ion-alert.core-nohead .alert-head,
+ion-alert .alert-head:empty {
+    padding-bottom: 0;
 }
 
 @keyframes scaleFrom0 {
@@ -1130,7 +1150,7 @@ ion-badge {
 }
 
 ion-chip,
-ion-button.chip {
+ion-button.button.chip {
     line-height: 1.1;
     font-size: 12px;
     min-height: 24px;
@@ -1149,7 +1169,11 @@ ion-button.chip {
     }
 }
 
-ion-button.chip {
+ion-button.button.chip {
+    --border-radius: var(--radius-md);
+    min-height: 32px;
+    font-size: 14px;
+
     ion-icon[slot=start] {
         @include margin(0, 8px, 0, 0);
     }
@@ -1840,13 +1864,34 @@ video::-webkit-media-text-track-display {
     white-space: normal !important;
 }
 
-ion-modal.core-modal-no-background {
-    --background: transparent;
-    --box-shadow: none !important;
-    pointer-events: none;
+ion-modal {
+    .modal-wrapper {
+        --border-radius: var(--modal-radius);
+    }
 
-    ion-backdrop {
-        display: none;
+    &.core-modal-lateral,
+    &.core-modal-fullscreen {
+        --modal-radius: 0px;
+    }
+
+    &.core-modal-no-background {
+        --background: transparent;
+        --box-shadow: none !important;
+        pointer-events: none;
+
+        ion-backdrop {
+            display: none;
+        }
+    }
+}
+
+ion-popover {
+    .popover-wrapper .popover-content {
+        border-radius: var(--modal-radius);
+    }
+    &.md {
+        margin-top: 2px;
+        margin-bottom: 2px;
     }
 }
 

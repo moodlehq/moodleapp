@@ -1,0 +1,22 @@
+:host {
+    h2, div {
+        font-size: 16px;
+    }
+    h2 {
+        margin-top: 0px;
+        margin-bottom: 8px;
+        line-height: 27px;
+    }
+    ion-list {
+        line-height: 32px;
+    }
+
+    ion-icon {
+        width: 24px;
+        vertical-align: middle;
+    }
+
+    ion-icon.completion_dot {
+        font-size: 4px;
+    }
+}
