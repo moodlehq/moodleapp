@@ -1524,7 +1524,9 @@ export class AddonModQuizProvider {
      */
     isQuizOffline(quiz: AddonModQuizQuizWSData): boolean {
         // Don't allow downloading the quiz if offline is disabled to prevent wasting a lot of data when opening it.
-        return !!quiz.allowofflineattempts && !CoreSites.getCurrentSite()?.isOfflineDisabled();
+        return !!quiz.allowofflineattempts
+            && !this.isNavigationSequential(quiz)
+            && !CoreSites.getCurrentSite()?.isOfflineDisabled();
     }
 
     /**
