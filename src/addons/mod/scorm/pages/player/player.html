@@ -21,7 +21,7 @@
 </ion-header>
 <ion-content>
     <core-loading [hideUntil]="loaded">
-        <core-iframe *ngIf="loaded && src" [src]="src" [iframeWidth]="scormWidth" [iframeHeight]="scormHeight"
+        <core-iframe *ngIf="loaded" id="scorm_object" [src]="src" [iframeWidth]="scormWidth" [iframeHeight]="scormHeight"
             [showFullscreenOnToolbar]="true" [autoFullscreenOnRotate]="true">
         </core-iframe>
 

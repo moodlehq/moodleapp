@@ -42,6 +42,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
 
     @ViewChild('iframe') iframe?: ElementRef;
     @Input() src?: string;
+    @Input() id: string | null = null;
     @Input() iframeWidth?: string;
     @Input() iframeHeight?: string;
     @Input() allowFullscreen?: boolean | string;
@@ -160,10 +161,10 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
             return;
         }
 
-        let url = changes.src.currentValue;
+        let url = this.src;
 
-        if (!CoreUrlUtils.isLocalFileUrl(url)) {
-            url = CoreUrlUtils.getYoutubeEmbedUrl(changes.src.currentValue) || changes.src.currentValue;
+        if (url && !CoreUrlUtils.isLocalFileUrl(url)) {
+            url = CoreUrlUtils.getYoutubeEmbedUrl(url) || url;
             this.displayHelp = CoreIframeUtils.shouldDisplayHelpForUrl(url);
 
             const currentSite = CoreSites.getCurrentSite();
@@ -181,7 +182,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
             await CoreIframeUtils.fixIframeCookies(url);
         }
 
-        this.safeUrl = DomSanitizer.bypassSecurityTrustResourceUrl(CoreFile.convertFileSrc(url));
+        this.safeUrl = DomSanitizer.bypassSecurityTrustResourceUrl(url ? CoreFile.convertFileSrc(url) : '');
 
         // Now that the URL has been set, initialize the iframe. Wait for the iframe to the added to the DOM.
         setTimeout(() => {
