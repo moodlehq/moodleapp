@@ -50,12 +50,14 @@ export class AddonModFeedbackAttemptPage implements OnInit, OnDestroy {
     loaded = false;
 
     protected attemptId: number;
+    protected groupId?: number;
     protected logView: () => void;
 
     constructor() {
         this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
         this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
         this.attemptId = CoreNavigator.getRequiredRouteNumberParam('attemptId');
+        this.groupId = CoreNavigator.getRouteNumberParam('groupId');
 
         const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(
             AddonModFeedbackAttemptsSource,
@@ -113,7 +115,10 @@ export class AddonModFeedbackAttemptPage implements OnInit, OnDestroy {
         try {
             this.feedback = await AddonModFeedback.getFeedback(this.courseId, this.cmId);
 
-            const attempt = await AddonModFeedback.getAttempt(this.feedback.id, this.attemptId, { cmId: this.cmId });
+            const attempt = await AddonModFeedback.getAttempt(this.feedback.id, this.attemptId, {
+                cmId: this.cmId,
+                groupId: this.groupId,
+            });
 
             if (this.isAnonAttempt(attempt)) {
                 this.anonAttempt = attempt;
