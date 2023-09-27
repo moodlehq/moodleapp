@@ -631,6 +631,9 @@ export class CoreLoginHelperProvider {
         redirectData?: CoreRedirectPayload,
     ): boolean {
         launchUrl = launchUrl || siteUrl + '/admin/tool/mobile/launch.php';
+
+        this.logger.debug('openBrowserForOAuthLogin launchUrl:', launchUrl);
+
         if (!provider || !provider.url) {
             return false;
         }
@@ -669,6 +672,8 @@ export class CoreLoginHelperProvider {
         redirectData?: CoreRedirectPayload,
     ): void {
         const loginUrl = this.prepareForSSOLogin(siteUrl, service, launchUrl, redirectData);
+
+        this.logger.debug('openBrowserForSSOLogin loginUrl:', loginUrl);
 
         if (this.isSSOEmbeddedBrowser(typeOfLogin)) {
             CoreUtils.openInApp(loginUrl, {
