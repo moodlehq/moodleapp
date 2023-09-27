@@ -260,7 +260,7 @@ export class CoreUtilsProvider {
         try {
             const response = await this.timeoutPromise(window.fetch(url, initOptions), CoreWS.getRequestTimeout());
 
-            return !!response && response.redirected;
+            return response.redirected;
         } catch (error) {
             if (error.timeout && controller) {
                 // Timeout, abort the request.
@@ -1547,14 +1547,14 @@ export class CoreUtilsProvider {
      * @param time Number of milliseconds of the timeout.
      * @returns Promise with the timeout.
      */
-    timeoutPromise<T>(promise: Promise<T>, time: number): Promise<T | void> {
+    timeoutPromise<T>(promise: Promise<T>, time: number): Promise<T> {
         return new Promise((resolve, reject): void => {
             let timedOut = false;
-            const resolveBeforeTimeout = () => {
+            const resolveBeforeTimeout = (value: T) => {
                 if (timedOut) {
                     return;
                 }
-                resolve();
+                resolve(value);
             };
             const timeout = setTimeout(
                 () => {

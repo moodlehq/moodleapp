@@ -46,6 +46,7 @@ import { CoreUserSupportConfig } from '@features/user/classes/support/support-co
 import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
 import { CoreLoginError } from '@classes/errors/loginerror';
 import { CorePlatform } from '@services/platform';
+import { CoreReferrer } from '@services/referrer';
 
 /**
  * Site (url) chooser when adding a new site.
@@ -98,8 +99,21 @@ export class CoreLoginSitePage implements OnInit {
 
         if (sites.length) {
             url = await this.initSiteSelector();
-        } else if (CoreConstants.CONFIG.enableonboarding && !CorePlatform.isIOS()) {
-            this.initOnboarding();
+        } else {
+            url = await this.consumeInstallReferrerUrl() ?? '';
+
+            const showOnboarding = CoreConstants.CONFIG.enableonboarding && !CorePlatform.isIOS();
+
+            if (url) {
+                this.connect(url);
+
+                if (showOnboarding) {
+                    // Don't display onboarding in this case, and don't display it again later.
+                    CoreConfig.set(CoreLoginHelperProvider.ONBOARDING_DONE, 1);
+                }
+            } else if (showOnboarding) {
+                this.initOnboarding();
+            }
         }
 
         this.showScanQR = CoreLoginHelper.displayQRInSiteScreen();
@@ -148,6 +162,26 @@ export class CoreLoginSitePage implements OnInit {
         this.filteredSites = this.fixedSites;
 
         return this.fixedSites[0].url;
+    }
+
+    /**
+     * Consume install referrer URL.
+     *
+     * @returns Referrer URL, undefined if no URL to use.
+     */
+    protected async consumeInstallReferrerUrl(): Promise<string | undefined> {
+        const url = await CoreUtils.ignoreErrors(CoreUtils.timeoutPromise(CoreReferrer.consumeInstallReferrerUrl(), 1000));
+        if (!url) {
+            return;
+        }
+
+        const hasSites = (await CoreUtils.ignoreErrors(CoreSites.getSites(), [])).length > 0;
+        if (hasSites) {
+            // There are sites stored already, don't use the referrer URL since it's an update or a backup was restored.
+            return;
+        }
+
+        return url;
     }
 
     /**
@@ -241,14 +275,14 @@ export class CoreLoginSitePage implements OnInit {
     /**
      * Try to connect to a site.
      *
-     * @param e Event.
      * @param url The URL to connect to.
+     * @param e Event (if any).
      * @param foundSite The site clicked, if any, from the found sites list.
      * @returns Promise resolved when done.
      */
-    async connect(e: Event, url: string, foundSite?: CoreLoginSiteInfoExtended): Promise<void> {
-        e.preventDefault();
-        e.stopPropagation();
+    async connect(url: string, e?: Event, foundSite?: CoreLoginSiteInfoExtended): Promise<void> {
+        e?.preventDefault();
+        e?.stopPropagation();
 
         CoreApp.closeKeyboard();
 
@@ -540,7 +574,7 @@ export class CoreLoginSitePage implements OnInit {
             // Put the text in the field (if present).
             this.siteForm.controls.siteUrl.setValue(text);
 
-            this.connect(new Event('click'), text);
+            this.connect(text);
         } else {
             CoreDomUtils.showErrorModal('core.errorurlschemeinvalidsite', true);
         }

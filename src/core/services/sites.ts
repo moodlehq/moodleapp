@@ -1106,7 +1106,7 @@ export class CoreSitesProvider {
         // Site deleted from sites list, now delete the folder.
         await site.deleteFolder();
 
-        await CoreUtils.ignoreErrors(CoreNative.plugin('secureStorage').deleteCollection(siteId));
+        await CoreUtils.ignoreErrors(CoreNative.plugin('secureStorage')?.deleteCollection(siteId));
 
         CoreEvents.trigger(CoreEvents.SITE_DELETED, site, siteId);
     }
@@ -2063,7 +2063,7 @@ export class CoreSitesProvider {
      * @returns Stored tokens.
      */
     protected async getTokensFromSecureStorage(siteId: string): Promise<{ token: string; privateToken?: string }> {
-        const result = await CoreNative.plugin('secureStorage').get(['token', 'privateToken'], siteId);
+        const result = await CoreNative.plugin('secureStorage')?.get(['token', 'privateToken'], siteId);
 
         return {
             token: result?.token ?? '',
@@ -2083,7 +2083,7 @@ export class CoreSitesProvider {
         token: string,
         privateToken?: string,
     ): Promise<void> {
-        await CoreNative.plugin('secureStorage').store({
+        await CoreNative.plugin('secureStorage')?.store({
             token: token,
             privateToken: privateToken ?? '',
         }, siteId);
