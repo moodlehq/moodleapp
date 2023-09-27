@@ -72,7 +72,7 @@
                     <p>{{ 'addon.calendar.type' + event.formattedType | translate }}</p>
                 </ion-label>
             </ion-item>
-            <ion-item class="ion-text-wrap" *ngIf="courseName" [href]="courseUrl" core-link capture="true">
+            <ion-item class="ion-text-wrap" *ngIf="courseName" [href]="courseUrl" core-link capture="true" detail="true">
                 <ion-label>
                     <p class="item-heading">{{ 'core.course' | translate}}</p>
                     <p>
