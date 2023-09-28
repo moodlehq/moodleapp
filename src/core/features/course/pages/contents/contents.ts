@@ -357,6 +357,10 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
      * @returns Promise resolved when done.
      */
     protected async showLoadingAndRefresh(sync = false, invalidateData = true): Promise<void> {
+        // Try to keep current scroll position.
+        const scrollElement = await CoreUtils.ignoreErrors(this.content?.getScrollElement());
+        const scrollTop = scrollElement?.scrollTop ?? -1;
+
         this.updatingData = true;
         this.changeDetectorRef.detectChanges();
 
@@ -371,6 +375,11 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
         } finally {
             this.updatingData = false;
             this.changeDetectorRef.detectChanges();
+
+            if (scrollTop > 0) {
+                await CoreUtils.nextTick();
+                this.content?.scrollToPoint(0, scrollTop, 0);
+            }
         }
     }
 
