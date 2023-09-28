@@ -5,7 +5,9 @@
         </ion-buttons>
         <ion-title>
             <h1 *ngIf="competency">
-                {{ competency.competency.shortname }} <small>{{ competency.competency.idnumber }}</small>
+                <core-format-text [text]="competency.competency.shortname" [contextLevel]="contextLevel"
+                    [contextInstanceId]="contextInstanceId">
+                </core-format-text> <small>{{ competency.competency.idnumber }}</small>
             </h1>
         </ion-title>
     </ion-toolbar>
@@ -26,11 +28,16 @@
             <ion-item class="ion-text-wrap">
                 <ion-label>
                     <p class="item-heading">{{ 'addon.competency.path' | translate }}</p>
-                    <p>{{ competency.comppath.framework.name }}
+                    <p>
+                        <core-format-text [text]="competency.comppath.framework.name" [contextLevel]="contextLevel"
+                            [contextInstanceId]="contextInstanceId">
+                        </core-format-text>
                         <ng-container *ngFor="let ancestor of competency.comppath.ancestors">
                             &nbsp;/&nbsp;
                             <button class="as-link" (click)="openCompetencySummary(ancestor.id)">
-                                {{ ancestor.name }}
+                                <core-format-text [text]="ancestor.name" [contextLevel]="contextLevel"
+                                    [contextInstanceId]="contextInstanceId">
+                                </core-format-text>
                             </button>
                         </ng-container>
                     </p>

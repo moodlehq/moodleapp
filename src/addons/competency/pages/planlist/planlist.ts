@@ -41,14 +41,12 @@ export class AddonCompetencyPlanListPage implements AfterViewInit, OnDestroy {
     protected logView: () => void;
 
     constructor() {
-        const userId = CoreNavigator.getRouteNumberParam('userId');
+        const userId = CoreNavigator.getRouteNumberParam('userId') ?? CoreSites.getCurrentSiteUserId();
         const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(AddonCompetencyPlansSource, [userId]);
 
         this.plans = new CoreListItemsManager(source, AddonCompetencyPlanListPage);
 
         this.logView = CoreTime.once(async () => {
-            const userId = source.USER_ID ?? CoreSites.getCurrentSiteId();
-
             CoreAnalytics.logEvent({
                 type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
                 ws: 'tool_lp_data_for_plans_page',

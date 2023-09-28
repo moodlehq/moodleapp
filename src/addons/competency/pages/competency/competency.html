@@ -5,7 +5,9 @@
         </ion-buttons>
         <ion-title>
             <h1 *ngIf="competency">
-                {{ competency.competency.competency.shortname }} <small>{{ competency.competency.competency.idnumber }}</small>
+                <core-format-text [text]="competency.competency.competency.shortname" [contextLevel]="contextLevel"
+                    [contextInstanceId]="contextInstanceId">
+                </core-format-text> <small>{{ competency.competency.competency.idnumber }}</small>
             </h1>
         </ion-title>
     </ion-toolbar>
@@ -37,18 +39,28 @@
                     <p class="item-heading">{{ 'addon.competency.path' | translate }}</p>
                     <p>
                         <a *ngIf="competency.competency.comppath.showlinks" [href]="competencyFrameworkUrl" core-link>
-                            {{ competency.competency.comppath.framework.name }}
+                            <core-format-text [text]="competency.competency.comppath.framework.name" [contextLevel]="contextLevel"
+                                [contextInstanceId]="contextInstanceId">
+                            </core-format-text>
                         </a>
                         <ng-container *ngIf="!competency.competency.comppath.showlinks">
-                            {{ competency.competency.comppath.framework.name }}
+                            <core-format-text [text]="competency.competency.comppath.framework.name" [contextLevel]="contextLevel"
+                                [contextInstanceId]="contextInstanceId">
+                            </core-format-text>
                         </ng-container>
                         &nbsp;/&nbsp;
                         <ng-container *ngFor="let ancestor of competency.competency.comppath.ancestors">
                             <button *ngIf="competency.competency.comppath.showlinks" (click)="openCompetencySummary(ancestor.id)"
                                 class="as-link">
-                                {{ ancestor.name }}
+                                <core-format-text [text]="ancestor.name" [contextLevel]="contextLevel"
+                                    [contextInstanceId]="contextInstanceId">
+                                </core-format-text>
                             </button>
-                            <ng-container *ngIf="!competency.competency.comppath.showlinks">{{ ancestor.name }}</ng-container>
+                            <ng-container *ngIf="!competency.competency.comppath.showlinks">
+                                <core-format-text [text]="ancestor.name" [contextLevel]="contextLevel"
+                                    [contextInstanceId]="contextInstanceId">
+                                </core-format-text>
+                            </ng-container>
                             <ng-container *ngIf="!ancestor.last">&nbsp;/&nbsp;</ng-container>
                         </ng-container>
                     </p>
@@ -63,7 +75,9 @@
                     <ng-container *ngIf="competency.competency.hasrelatedcompetencies">
                         <p *ngFor="let relatedcomp of competency.competency.relatedcompetencies">
                             <button (click)="openCompetencySummary(relatedcomp.id)" class="as-link">
-                                {{ relatedcomp.shortname }} - {{ relatedcomp.idnumber }}
+                                <core-format-text [text]="relatedcomp.shortname" [contextLevel]="contextLevel"
+                                    [contextInstanceId]="contextInstanceId">
+                                </core-format-text> - {{ relatedcomp.idnumber }}
                             </button>
                         </p>
                     </ng-container>

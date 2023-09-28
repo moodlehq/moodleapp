@@ -21,7 +21,10 @@
                 <ion-item class="ion-text-wrap" *ngFor="let plan of plans.items" [attr.aria-label]="plan.name" (click)="plans.select(plan)"
                     [attr.aria-current]="plans.getItemAriaCurrent(plan)" button detail="true">
                     <ion-label>
-                        <p class="item-heading">{{ plan.name }}</p>
+                        <p class="item-heading">
+                            <core-format-text [text]="plan.name" contextLevel="user" [contextInstanceId]="plan.userid">
+                            </core-format-text>
+                        </p>
                         <p *ngIf="plan.duedate > 0">
                             {{ 'addon.competency.duedate' | translate }}:&nbsp;
                             {{ plan.duedate * 1000 | coreFormatDate :'strftimedatetimeshort' }}

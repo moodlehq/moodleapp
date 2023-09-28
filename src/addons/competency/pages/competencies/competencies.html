@@ -4,7 +4,10 @@
             <ion-back-button [text]="'core.back' | translate"></ion-back-button>
         </ion-buttons>
         <ion-title>
-            <h1>{{ title }}</h1>
+            <h1>
+                <core-format-text [text]="title" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId">
+                </core-format-text>
+            </h1>
         </ion-title>
     </ion-toolbar>
 </ion-header>
@@ -19,7 +22,11 @@
                     [attr.aria-label]="competency.competency.shortname" (click)="competencies.select(competency)"
                     [attr.aria-current]="competencies.getItemAriaCurrent(competency)" button detail="true">
                     <ion-label>
-                        <p class="item-heading">{{ competency.competency.shortname }} <em>{{competency.competency.idnumber}}</em></p>
+                        <p class="item-heading">
+                            <core-format-text [text]="competency.competency.shortname" [contextLevel]="contextLevel"
+                                [contextInstanceId]="contextInstanceId">
+                            </core-format-text> <em>{{competency.competency.idnumber}}</em>
+                        </p>
                     </ion-label>
                     <ion-badge slot="end" *ngIf="competency.usercompetency"
                         [color]="competency.usercompetency.proficiency ? 'success' : 'danger'">
