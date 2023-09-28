@@ -50,7 +50,8 @@
                         <core-format-text clean="true" [text]="criteria.details.requirement" [filter]="false"></core-format-text>
                     </p>
                 </ion-label>
-                <strong slot="end">{{ criteria.status }}</strong>
+                <strong slot="end" *ngIf="criteria.complete">{{ 'core.yes' | translate }}</strong>
+                <strong slot="end" *ngIf="!criteria.complete">{{ 'core.no' | translate }}</strong>
             </ion-item>
             <ion-item class="ion-hide-md-down ion-text-wrap">
                 <ion-label>
@@ -64,7 +65,7 @@
                     </ion-row>
                     <ion-row *ngFor="let criteria of completion.completions">
                         <ion-col>
-                            <core-format-text clean="true" [text]="criteria.title" [filter]="false"></core-format-text>
+                            <core-format-text clean="true" [text]="criteria.details.type" [filter]="false"></core-format-text>
                         </ion-col>
                         <ion-col>
                             <core-format-text clean="true" [text]="criteria.details.criteria" [filter]="false"></core-format-text>
@@ -75,7 +76,8 @@
                         <ion-col>
                             <core-format-text [text]="criteria.details.status" [filter]="false"></core-format-text>
                         </ion-col>
-                        <ion-col>{{ criteria.status }}</ion-col>
+                        <ion-col *ngIf="criteria.complete">{{ 'core.yes' | translate }}</ion-col>
+                        <ion-col *ngIf="!criteria.complete">{{ 'core.no' | translate }}</ion-col>
                         <ion-col *ngIf="criteria.timecompleted">
                             {{ criteria.timecompleted * 1000 | coreFormatDate :'strftimedatetimeshort' }}
                         </ion-col>
