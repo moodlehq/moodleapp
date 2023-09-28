@@ -39,7 +39,8 @@
                     <p class="item-heading">{{ 'addon.competency.competenciesmostoftennotproficientincourse' | translate }}</p>
                     <p *ngFor="let comp of courseCompetencies.statistics.leastproficient">
                         <button class="as-link" (click)="openCompetencySummary(comp.id)">
-                            {{ comp.shortname }} - {{ comp.idnumber }}
+                            <core-format-text [text]="comp.shortname" contextLevel="course" [contextInstanceId]="courseId">
+                            </core-format-text> - {{ comp.idnumber }}
                         </button>
                     </p>
                 </ion-label>
@@ -67,7 +68,8 @@
                     [attr.aria-label]="competency.competency.shortname" detail="true" button>
                     <ion-label>
                         <p class="item-heading">
-                            {{competency.competency.shortname}} <em>{{competency.competency.idnumber}}</em>
+                            <core-format-text [text]="competency.competency.shortname" contextLevel="course" [contextInstanceId]="courseId">
+                            </core-format-text> <em>{{competency.competency.idnumber}}</em>
                         </p>
                     </ion-label>
                     <ion-badge slot="end" *ngIf="competency.usercompetencycourse && competency.usercompetencycourse.gradename"
@@ -87,18 +89,26 @@
                             <p>
                                 <a *ngIf="competency.comppath.showlinks" [href]="getCompetencyFrameworkUrl(competency)" core-link
                                     [title]="competency.comppath.framework.name">
-                                    {{ competency.comppath.framework.name }}
+                                    <core-format-text [text]="competency.comppath.framework.name" contextLevel="course"
+                                        [contextInstanceId]="courseId">
+                                    </core-format-text>
                                 </a>
                                 <ng-container *ngIf="!competency.comppath.showlinks">
-                                    {{ competency.comppath.framework.name }}
+                                    <core-format-text [text]="competency.comppath.framework.name" contextLevel="course"
+                                        [contextInstanceId]="courseId">
+                                    </core-format-text>
                                 </ng-container>
                                 &nbsp;/&nbsp;
                                 <ng-container *ngFor="let ancestor of competency.comppath.ancestors">
                                     <button class="as-link" *ngIf="competency.comppath.showlinks"
                                         (click)="openCompetencySummary(ancestor.id)">
-                                        {{ ancestor.name }}
+                                        <core-format-text [text]="ancestor.name" contextLevel="course" [contextInstanceId]="courseId">
+                                        </core-format-text>
                                     </button>
-                                    <ng-container *ngIf="!competency.comppath.showlinks">{{ ancestor.name }}</ng-container>
+                                    <ng-container *ngIf="!competency.comppath.showlinks">
+                                        <core-format-text [text]="ancestor.name" contextLevel="course" [contextInstanceId]="courseId">
+                                        </core-format-text>
+                                    </ng-container>
                                     <ng-container *ngIf="!ancestor.last">&nbsp;/&nbsp;</ng-container>
                                 </ng-container>
                             </p>
