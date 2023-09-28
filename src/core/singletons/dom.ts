@@ -22,6 +22,8 @@ import { CoreEventObserver } from '@singletons/events';
  */
 export class CoreDom {
 
+    static fontSizeZoom: number | null = null;
+
     // Avoid creating singleton instances.
     private constructor() {
         // Nothing to do.
@@ -577,6 +579,38 @@ export class CoreDom {
 
             element.classList.add('clickable');
         }
+    }
+
+    /**
+     * Get CSS property value from computed styles.
+     *
+     * @param styles Computed styles.
+     * @param property Property name.
+     * @returns Property CSS value (may not be the same as the computed value).
+     */
+    static getCSSPropertyValue(styles: CSSStyleDeclaration, property: string): string {
+        const value = styles.getPropertyValue(property);
+
+        if (property === 'font-size') {
+            if (this.fontSizeZoom === null) {
+                const baseFontSize = 20;
+                const span = document.createElement('span');
+                span.style.opacity = '0';
+                span.style.fontSize = `${baseFontSize}px`;
+
+                document.body.append(span);
+
+                this.fontSizeZoom = baseFontSize / Number(getComputedStyle(span).fontSize.slice(0, -2));
+
+                span.remove();
+            }
+
+            if (this.fontSizeZoom !== 1) {
+                return `calc(${this.fontSizeZoom} * ${value})`;
+            }
+        }
+
+        return value;
     }
 
 }
