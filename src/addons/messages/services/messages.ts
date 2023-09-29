@@ -2485,7 +2485,7 @@ export class AddonMessagesProvider {
 
         if (response && response[0] && response[0].msgid === -1) {
             // There was an error, and it should be translated already.
-            throw new CoreError(response[0].errormessage);
+            throw new CoreWSError({ message: response[0].errormessage, errorcode: 'sendmessageerror' });
         }
 
         try {
