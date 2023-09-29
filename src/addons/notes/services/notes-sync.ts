@@ -231,7 +231,7 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider<AddonNotesSyncR
 
             result.warnings = errors.map((error) =>
                 Translate.instant('addon.notes.warningnotenotsent', {
-                    course: 'fullname' in course ? course.fullname : courseId,
+                    course: 'fullname' in course ? course.fullname : courseId, // @deprecated since 4.3.
                     error: error,
                 }));
         }
