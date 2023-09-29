@@ -961,6 +961,10 @@ ion-card {
     display: inline !important;
 }
 
+.section-summary core-format-text img {
+    border-radius: var(--radius-lg);
+}
+
 ion-list.core-course-module-list-wrapper,
 .list-item-limited-width,
 .core-course-module-list-wrapper,
