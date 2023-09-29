@@ -93,20 +93,20 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
                     modal.dismiss();
                 }
             },
-            buttons: [{
+            button: {
                 hidden: true, // Hide it until we calculate if it should be displayed or not.
                 icon: 'fas-link',
                 label: 'core.openmodinbrowser',
                 action: (event: Event, module: CoreCourseModuleData, courseId: number): void => {
                     openUrl(module, courseId);
                 },
-            }],
+            },
         };
 
         const hideButton = await CoreUtils.ignoreErrors(this.hideLinkButton(module));
 
-        if (handlerData.buttons && hideButton !== undefined) {
-            handlerData.buttons[0].hidden = hideButton;
+        if (handlerData.button && hideButton !== undefined) {
+            handlerData.button.hidden = hideButton;
         }
 
         try {

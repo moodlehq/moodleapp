@@ -29,17 +29,18 @@
         <core-course-module-info [module]="module" [courseId]="courseId" [description]="module.description" [component]="module.modname"
             [componentId]="module.id" [expandDescription]="true" [showAvailabilityInfo]="true" (completionChanged)="onCompletionChange()"
             [showManualCompletion]="showManualCompletion">
-            <div class="core-module-additional-info" title>
-                <ion-chip *ngIf="module.handlerData?.extraBadge" [color]="module.handlerData?.extraBadgeColor"
-                    class="ion-text-wrap ion-text-start" [outline]="true">
-                    <ion-label><span [innerHTML]="module.handlerData?.extraBadge"></span></ion-label>
-                </ion-chip>
+
+            <div class="core-module-additional-info">
+                <p *ngIf="module.handlerData?.extraBadge" class="ion-text-wrap" [innerHTML]="module.handlerData?.extraBadge">
+                </p>
 
                 <!-- Hidden badges -->
-                <ion-badge color="warning" *ngIf="module.visible === 0" class="ion-text-wrap">
+                <ion-badge color="secondary" *ngIf="module.visible === 0" class="ion-text-wrap">
+                    <ion-icon name="far-eye-slash" aria-hidden="true"></ion-icon>
                     {{ 'core.course.hiddenfromstudents' | translate }}
                 </ion-badge>
-                <ion-badge color="warning" *ngIf="module.visible !== 0 && module.isStealth" class="ion-text-wrap">
+                <ion-badge color="secondary" *ngIf="module.visible !== 0 && module.isStealth" class="ion-text-wrap">
+                    <ion-icon name="fas-low-vision" aria-hidden="true"></ion-icon>
                     {{ 'core.course.hiddenoncoursepage' | translate }}
                 </ion-badge>
             </div>

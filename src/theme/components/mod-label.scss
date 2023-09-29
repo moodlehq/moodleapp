@@ -1,8 +1,16 @@
-.item.core-course-module-handler.addon-mod-label-handler {
+.core-course-module-handler.addon-mod-label-handler {
     align-items: center !important;
     cursor: auto !important;
 
     &:hover {
         opacity: 1;
+    }
+
+    .activity-title {
+        display: flex;
+        flex-direction: column;
+        .item-heading {
+            order: 2;
+        }
     }
 }

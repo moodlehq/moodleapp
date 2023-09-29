@@ -59,7 +59,7 @@ export class AddonModLtiModuleHandlerService extends CoreModuleHandlerBase imple
     ): Promise<CoreCourseModuleHandlerData> {
         const data = await super.getData(module, courseId, sectionId, forCoursePage);
         data.showDownloadButton = false;
-        data.buttons = [{
+        data.button = {
             icon: 'fas-up-right-from-square',
             label: 'addon.mod_lti.launchactivity',
             action: (event: Event, module: CoreCourseModuleData, courseId: number): void => {
@@ -68,7 +68,7 @@ export class AddonModLtiModuleHandlerService extends CoreModuleHandlerBase imple
 
                 CoreCourse.storeModuleViewed(courseId, module.id);
             },
-        }];
+        };
 
         return data;
     }

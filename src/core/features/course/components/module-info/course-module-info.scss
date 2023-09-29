@@ -10,14 +10,14 @@
 
     core-mod-icon {
         align-self: flex-start;
-        --padding: 12px;
+        --padding: 4px;
+        @include margin-horizontal(null, 8px);
     }
 
     h1 ion-icon {
         color: var(--medium);
         @include margin-horizontal(8px, null);
         font-size: 80%;
-
     }
 
     .core-module-info-box {

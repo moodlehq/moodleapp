@@ -156,6 +156,8 @@ export interface CoreCourseModuleHandlerData {
 
     /**
      * The color of the extra badge. Default: primary.
+     *
+     * @deprecated since 4.3 Not used anymore.
      */
     extraBadgeColor?: CoreIonicColorNames;
 
@@ -168,8 +170,15 @@ export interface CoreCourseModuleHandlerData {
 
     /**
      * The buttons to display in the module item.
+     *
+     * @deprecated since 4.3 Use button instead. It will only display the first.
      */
     buttons?: CoreCourseModuleHandlerButton[];
+
+    /**
+     * The button to display in the module item.
+     */
+    button?: CoreCourseModuleHandlerButton;
 
     /**
      * Whether to display a spinner where the download button is displayed. The module icon, title, etc. will be displayed.

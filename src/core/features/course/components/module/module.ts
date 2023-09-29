@@ -21,8 +21,8 @@ import {
     CoreCourseSection,
     CoreCourseHelper,
 } from '@features/course/services/course-helper';
-import { CoreCourse, CoreCourseModuleCompletionStatus, CoreCourseModuleCompletionTracking } from '@features/course/services/course';
-import { CoreCourseModuleDelegate, CoreCourseModuleHandlerButton } from '@features/course/services/module-delegate';
+import { CoreCourse } from '@features/course/services/course';
+import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import {
     CoreCourseModulePrefetchDelegate,
     CoreCourseModulePrefetchHandler,
@@ -55,7 +55,6 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     @HostBinding('class.indented') indented = false;
 
     modNameTranslated = '';
-    hasInfo = false;
     hasCompletion = false; // Whether activity has completion to be shown.
     showManualCompletion = false; // Whether to show manual completion when completion conditions are disabled.
     prefetchStatusIcon$ = new BehaviorSubject<string>(''); // Module prefetch status icon.
@@ -86,13 +85,6 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
 
         this.module.handlerData.a11yTitle = this.module.handlerData.a11yTitle ?? this.module.handlerData.title;
         this.moduleHasView = CoreCourse.moduleHasView(this.module);
-
-        this.hasInfo = !!(
-            this.module.description ||
-            (this.showActivityDates && this.module.dates && this.module.dates.length) ||
-            (this.hasCompletion && !this.showLegacyCompletion) ||
-            (this.module.availabilityinfo)
-        );
 
         if (this.module.handlerData?.showDownloadButton) {
             const status = await CoreCourseModulePrefetchDelegate.getModuleStatus(this.module, this.module.course);
@@ -177,9 +169,9 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
      * Function called when a button is clicked.
      *
      * @param event Click event.
-     * @param button The clicked button.
      */
-    buttonClicked(event: Event, button: CoreCourseModuleHandlerButton): void {
+    buttonClicked(event: Event): void {
+        const button = this.module.handlerData?.button ?? this.module.handlerData?.buttons?.[0];
         if (!button || !button.action) {
             return;
         }
