@@ -3669,8 +3669,9 @@ export type AddonMessagesReadChangedEventData = {
 export type AddonMessagesNewMessagedEventData = {
     conversationId?: number;
     userId?: number;
-    message: string;
+    message?: string; // If undefined it means the conversation has no messages, e.g. last message was deleted.
     timecreated: number;
+    userFrom?: AddonMessagesConversationMember;
     isfavourite: boolean;
     type?: number;
 };
