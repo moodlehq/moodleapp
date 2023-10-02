@@ -306,19 +306,6 @@ export class CoreCourseLogHelperProvider {
      * @param componentId Component ID.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when done.
-     * @deprecated since 3.9.5. Please use syncActivity instead.
-     */
-    syncIfNeeded(component: string, componentId: number, siteId?: string): Promise<void> {
-        return this.syncActivity(component, componentId, siteId);
-    }
-
-    /**
-     * Sync the offline saved activity logs.
-     *
-     * @param component Component name.
-     * @param componentId Component ID.
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when done.
      */
     async syncActivity(component: string, componentId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

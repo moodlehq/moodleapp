@@ -23,7 +23,6 @@ import { Locutus } from '@singletons/locutus';
 import { CoreViewerTextComponent } from '@features/viewer/components/text/text';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreDomUtils } from './dom';
-import { CoreText } from '@singletons/text';
 import { CoreUrl } from '@singletons/url';
 import { AlertButton } from '@ionic/angular';
 import { CorePath } from '@singletons/path';
@@ -474,43 +473,6 @@ export class CoreTextUtilsProvider {
     }
 
     /**
-     * Shows a text on a new page.
-     *
-     * @param title Title of the new state.
-     * @param text Content of the text to be expanded.
-     * @param component Component to link the embedded files to.
-     * @param componentId An ID to use in conjunction with the component.
-     * @param files List of files to display along with the text.
-     * @param filter Whether the text should be filtered.
-     * @param contextLevel The context level.
-     * @param instanceId The instance ID related to the context.
-     * @param courseId Course ID the text belongs to. It can be used to improve performance with filters.
-     * @returns Promise resolved when done.
-     * @deprecated since 3.8.3. Please use viewText instead.
-     */
-    expandText(
-        title: string,
-        text: string,
-        component?: string,
-        componentId?: string | number,
-        files?: CoreWSFile[],
-        filter?: boolean,
-        contextLevel?: string,
-        instanceId?: number,
-        courseId?: number,
-    ): Promise<void> {
-        return this.viewText(title, text, {
-            component,
-            componentId,
-            files,
-            filter,
-            contextLevel,
-            instanceId,
-            courseId,
-        });
-    }
-
-    /**
      * Formats a text, in HTML replacing new lines by correct html new lines.
      *
      * @param text Text to format.
@@ -718,17 +680,6 @@ export class CoreTextUtilsProvider {
         }
 
         throw new CoreError('JSON cannot be parsed and not default value has been provided') ;
-    }
-
-    /**
-     * Remove ending slash from a path or URL.
-     *
-     * @param text Text to treat.
-     * @returns Treated text.
-     * @deprecated since 3.9.5. Use CoreText instead.
-     */
-    removeEndingSlash(text?: string): string {
-        return CoreText.removeEndingSlash(text);
     }
 
     /**

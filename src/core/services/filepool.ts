@@ -2844,27 +2844,6 @@ export class CoreFilepoolProvider {
      *
      * @param url File online URL.
      * @param size File size.
-     * @returns Promise resolved if should download before open, rejected otherwise.
-     * @deprecated since 3.9.5. Please use shouldDownloadFileBeforeOpen instead.
-     */
-    async shouldDownloadBeforeOpen(url: string, size: number): Promise<void> {
-        if (size >= 0 && size <= CoreFilepoolProvider.DOWNLOAD_THRESHOLD) {
-            // The file is small, download it.
-            return;
-        }
-
-        const mimetype = await CoreUtils.getMimeTypeFromUrl(url);
-        // If the file is streaming (audio or video) we reject.
-        if (CoreMimetypeUtils.isStreamedMimetype(mimetype)) {
-            throw new CoreError('File is audio or video.');
-        }
-    }
-
-    /**
-     * Convenience function to check if a file should be downloaded before opening it.
-     *
-     * @param url File online URL.
-     * @param size File size.
      * @param options Options.
      * @returns Promise resolved with boolean: whether file should be downloaded before opening it.
      * @description

@@ -209,31 +209,6 @@ export class CoreSettingsHelperProvider {
     }
 
     /**
-     * Get a certain processor from a list of processors.
-     *
-     * @param processors List of processors.
-     * @param name Name of the processor to get.
-     * @param fallback True to return first processor if not found, false to not return any. Defaults to true.
-     * @deprecated since 3.9.5. This function has been moved to AddonNotificationsHelperProvider.
-     */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    getProcessor(processors: unknown[], name: string, fallback: boolean = true): void {
-        return;
-    }
-
-    /**
-     * Return the components and notifications that have a certain processor.
-     *
-     * @param processorName Name of the processor to filter.
-     * @param components Array of components.
-     * @returns Filtered components.
-     * @deprecated since 3.9.5. This function has been moved to AddonNotificationsHelperProvider.
-     */
-    getProcessorComponents(processorName: string, components: unknown[]): unknown[] {
-        return components;
-    }
-
-    /**
      * Get the synchronization promise of a site.
      *
      * @param siteId ID of the site.

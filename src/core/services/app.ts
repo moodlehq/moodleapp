@@ -190,16 +190,6 @@ export class CoreAppProvider {
     }
 
     /**
-     * Get an ID for a main menu.
-     *
-     * @returns Main menu ID.
-     * @deprecated since 3.9.5. No longer supported.
-     */
-    getMainMenuId(): number {
-        return 0;
-    }
-
-    /**
      * Get app store URL.
      *
      * @param storesConfig Config params to send the user to the right place.
@@ -232,16 +222,6 @@ export class CoreAppProvider {
     }
 
     /**
-     * Checks if the app is running in a 64 bits desktop environment (not browser).
-     *
-     * @returns false.
-     * @deprecated since 3.9.5 Desktop support has been removed.
-     */
-    is64Bits(): boolean {
-        return false;
-    }
-
-    /**
      * Checks if the app is running in an Android mobile or tablet device.
      *
      * @returns Whether the app is running in an Android mobile or tablet device.
@@ -249,16 +229,6 @@ export class CoreAppProvider {
      */
     isAndroid(): boolean {
         return CorePlatform.isAndroid();
-    }
-
-    /**
-     * Checks if the app is running in a desktop environment (not browser).
-     *
-     * @returns false.
-     * @deprecated since 3.9.5 Desktop support has been removed.
-     */
-    isDesktop(): boolean {
-        return false;
     }
 
     /**
@@ -296,36 +266,6 @@ export class CoreAppProvider {
      */
     isKeyboardVisible(): boolean {
         return this.isKeyboardShown;
-    }
-
-    /**
-     * Check if the app is running in a Linux environment.
-     *
-     * @returns false.
-     * @deprecated since 3.9.5 Desktop support has been removed.
-     */
-    isLinux(): boolean {
-        return false;
-    }
-
-    /**
-     * Check if the app is running in a Mac OS environment.
-     *
-     * @returns false.
-     * @deprecated since 3.9.5 Desktop support has been removed.
-     */
-    isMac(): boolean {
-        return false;
-    }
-
-    /**
-     * Check if the main menu is open.
-     *
-     * @returns Whether the main menu is open.
-     * @deprecated since 3.9.5. No longer supported.
-     */
-    isMainMenuOpen(): boolean {
-        return false;
     }
 
     /**
@@ -375,16 +315,6 @@ export class CoreAppProvider {
      */
     isWifi(): boolean {
         return CoreNetwork.isWifi();
-    }
-
-    /**
-     * Check if the app is running in a Windows environment.
-     *
-     * @returns false.
-     * @deprecated since 3.9.5 Desktop support has been removed.
-     */
-    isWindows(): boolean {
-        return false;
     }
 
     /**
@@ -610,21 +540,6 @@ export class CoreAppProvider {
     }
 
     /**
-     * Register a back button action.
-     * This function is deprecated and no longer works. You should now use Ionic events directly, please see:
-     * https://ionicframework.com/docs/developing/hardware-back-button
-     *
-     * @param callback Called when the back button is pressed.
-     * @param priority Priority.
-     * @returns A function that, when called, will unregister the back button action.
-     * @deprecated since 3.9.5
-     */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    registerBackButtonAction(callback: () => boolean, priority = 0): () => boolean {
-        return () => false;
-    }
-
-    /**
      * Set System UI Colors.
      */
     setSystemUIColors(): void {
@@ -650,15 +565,6 @@ export class CoreAppProvider {
         this.logger.debug(`Set status bar color ${color}`);
 
         StatusBar.backgroundColorByHexString(color);
-    }
-
-    /**
-     * Reset StatusBar color if any was set.
-     *
-     * @deprecated since 3.9.5. Use setStatusBarColor passing the color of the new statusbar color, or no color to reset.
-     */
-    resetStatusBarColor(): void {
-        this.setStatusBarColor();
     }
 
     /**
