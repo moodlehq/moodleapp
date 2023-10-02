@@ -179,21 +179,4 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
         await CoreFilepool.setPackagePreviousStatus(siteId, this.component, id);
     }
 
-    /**
-     * Set previous status and return a rejected promise.
-     *
-     * @param id Unique identifier per component.
-     * @param error Error to throw.
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Rejected promise.
-     * @deprecated since 3.9.5. Use setPreviousStatus instead.
-     */
-    async setPreviousStatusAndReject(id: number, error?: Error, siteId?: string): Promise<never> {
-        siteId = siteId || CoreSites.getCurrentSiteId();
-
-        await CoreFilepool.setPackagePreviousStatus(siteId, this.component, id);
-
-        throw error;
-    }
-
 }

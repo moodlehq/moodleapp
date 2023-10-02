@@ -20,7 +20,7 @@ import { AddonModAssignSubmissionDelegate } from '@addons/mod/assign/services/su
 import { AddonModQuizAccessRuleDelegate } from '@addons/mod/quiz/services/access-rules-delegate';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreError } from '@classes/errors/error';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreSiteWSPreSets } from '@classes/site';
 import { CoreBlockDelegate } from '@features/block/services/block-delegate';
 import { CoreCompile } from '@features/compile/services/compile';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
@@ -294,17 +294,6 @@ export class CoreSitePluginsHelperProvider {
     }
 
     /**
-     * Fetch site plugins.
-     *
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when done. Returns the list of plugins to load.
-     * @deprecated since 3.9.5. The function was moved to CoreSitePlugins.getPlugins.
-     */
-    async fetchSitePlugins(siteId?: string): Promise<CoreSitePluginsPlugin[]> {
-        return CoreSitePlugins.getPlugins(siteId);
-    }
-
-    /**
      * Given an addon name, return the prefix to add to its string keys.
      *
      * @param addon Name of the addon (plugin.addon).
@@ -327,18 +316,6 @@ export class CoreSitePluginsHelperProvider {
      */
     protected getPrefixedString(addon: string, key: string): string {
         return this.getPrefixForStrings(addon) + key;
-    }
-
-    /**
-     * Check if a certain plugin is a site plugin and it's enabled in a certain site.
-     *
-     * @param plugin Data of the plugin.
-     * @param site Site affected.
-     * @returns Whether it's a site plugin and it's enabled.
-     * @deprecated since 3.9.5. The function was moved to CoreSitePlugins.isSitePluginEnabled.
-     */
-    isSitePluginEnabled(plugin: CoreSitePluginsPlugin, site: CoreSite): boolean {
-        return CoreSitePlugins.isSitePluginEnabled(plugin, site);
     }
 
     /**

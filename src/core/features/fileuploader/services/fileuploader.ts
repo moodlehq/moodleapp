@@ -446,17 +446,6 @@ export class CoreFileUploaderProvider {
     }
 
     /**
-     * Mark files as offline.
-     *
-     * @param files Files to mark as offline.
-     * @returns Files marked as offline.
-     * @deprecated since 3.9.5. Now stored files no longer have an offline property.
-     */
-    markOfflineFiles(files: FileEntry[]): FileEntry[] {
-        return files;
-    }
-
-    /**
      * Parse filetypeList to get the list of allowed mimetypes and the data to render information.
      *
      * @param filetypeList Formatted string list where the mimetypes can be checked.

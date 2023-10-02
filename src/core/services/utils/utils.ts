@@ -24,7 +24,6 @@ import { CoreWS } from '@services/ws';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreTextUtils } from '@services/utils/text';
-import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Clipboard, InAppBrowser, FileOpener, WebIntent, QRScanner, Translate, NgZone } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreViewerQRScannerComponent } from '@features/viewer/components/qr-scanner/qr-scanner';
@@ -382,18 +381,6 @@ export class CoreUtilsProvider {
 
         // Show toast using ionicLoading.
         CoreDomUtils.showToast('core.copiedtoclipboard', true);
-    }
-
-    /**
-     * Create a "fake" WS error for local errors.
-     *
-     * @param message The message to include in the error.
-     * @param needsTranslate If the message needs to be translated.
-     * @returns Fake WS error.
-     * @deprecated since 3.9.5. Just create the error directly.
-     */
-    createFakeWSError(message: string, needsTranslate?: boolean): CoreWSError {
-        return CoreWS.createFakeWSError(message, needsTranslate);
     }
 
     /**

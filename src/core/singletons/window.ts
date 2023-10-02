@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
-import { NavController } from '@ionic/angular';
 import { CoreConfig } from '@services/config';
 
 import { CoreFileHelper } from '@services/file-helper';
@@ -23,20 +22,6 @@ import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { Translate } from '@singletons';
 import { CoreConstants } from '../constants';
-
-/**
- * Options for the open function.
- *
- * @deprecated since 3.9.5
- */
-export type CoreWindowOpenOptions = {
-    /**
-     * NavController to use when opening the link in the app.
-     *
-     * @deprecated since 3.9.5
-     */
-    navCtrl?: NavController;
-};
 
 /**
  * Singleton with helper functions for windows.

@@ -71,28 +71,6 @@ export const enum CoreFileFormat {
 @Injectable({ providedIn: 'root' })
 export class CoreFileProvider {
 
-    // Formats to read a file.
-    /**
-     * @deprecated since 3.9.5, use CoreFileFormat directly.
-     */
-    static readonly FORMATTEXT = CoreFileFormat.FORMATTEXT;
-    /**
-     * @deprecated since 3.9.5, use CoreFileFormat directly.
-     */
-    static readonly FORMATDATAURL = CoreFileFormat.FORMATDATAURL;
-    /**
-     * @deprecated since 3.9.5, use CoreFileFormat directly.
-     */
-    static readonly FORMATBINARYSTRING = CoreFileFormat.FORMATBINARYSTRING;
-    /**
-     * @deprecated since 3.9.5, use CoreFileFormat directly.
-     */
-    static readonly FORMATARRAYBUFFER = CoreFileFormat.FORMATARRAYBUFFER;
-    /**
-     * @deprecated since 3.9.5, use CoreFileFormat directly.
-     */
-    static readonly FORMATJSON = CoreFileFormat.FORMATJSON;
-
     // Folders.
     static readonly SITESFOLDER = 'sites';
     static readonly TMPFOLDER = 'tmp';

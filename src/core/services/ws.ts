@@ -209,23 +209,6 @@ export class CoreWSProvider {
     }
 
     /**
-     * Create a "fake" WS error for local errors.
-     *
-     * @param message The message to include in the error.
-     * @param needsTranslate If the message needs to be translated.
-     * @param translateParams Translation params, if needed.
-     * @returns Fake WS error.
-     * @deprecated since 3.9.5. Just create the error directly.
-     */
-    createFakeWSError(message: string, needsTranslate?: boolean, translateParams?: {[name: string]: string}): CoreError {
-        if (needsTranslate) {
-            message = Translate.instant(message, translateParams);
-        }
-
-        return new CoreError(message);
-    }
-
-    /**
      * It will check if response has failed and throw the propper error.
      *
      * @param response WS response.

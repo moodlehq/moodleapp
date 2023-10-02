@@ -612,7 +612,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
         let lastOnlineWasFinished = false;
 
         // Sync offline logs.
-        await CoreUtils.ignoreErrors(CoreCourseLogHelper.syncIfNeeded(AddonModScormProvider.COMPONENT, scorm.id, siteId));
+        await CoreUtils.ignoreErrors(CoreCourseLogHelper.syncActivity(AddonModScormProvider.COMPONENT, scorm.id, siteId));
 
         // Get attempts data. We ignore cache for online attempts, so this call will fail if offline or server down.
         const attemptsData = await AddonModScorm.getAttemptCount(scorm.id, {

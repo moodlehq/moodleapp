@@ -239,20 +239,6 @@ export interface CoreCourseModuleHandlerButton {
     hidden?: boolean;
 
     /**
-     * The name of the button icon to use in iOS instead of "icon".
-     *
-     * @deprecated since 3.9.5. Now the icon must be the same for all platforms.
-     */
-    iosIcon?: string;
-
-    /**
-     * The name of the button icon to use in MaterialDesign instead of "icon".
-     *
-     * @deprecated since 3.9.5. Now the icon must be the same for all platforms.
-     */
-    mdIcon?: string;
-
-    /**
      * Action to perform when the button is clicked.
      *
      * @param event The click event.

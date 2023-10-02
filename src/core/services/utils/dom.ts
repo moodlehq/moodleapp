@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, SimpleChange, ElementRef, KeyValueChanges } from '@angular/core';
+import { Injectable, SimpleChange, KeyValueChanges } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { ModalOptions, PopoverOptions, AlertOptions, AlertButton, TextFieldTypes, getMode, ToastOptions } from '@ionic/core';
 import { Md5 } from 'ts-md5';
@@ -43,7 +43,6 @@ import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreBSTooltipComponent } from '@components/bs-tooltip/bs-tooltip';
 import { CoreViewerImageComponent } from '@features/viewer/components/image/image';
-import { CoreFormFields, CoreForms } from '../../singletons/form';
 import { CoreModalLateralTransitionEnter, CoreModalLateralTransitionLeave } from '@classes/modal-lateral-transition';
 import { CoreZoomLevel } from '@features/settings/services/settings-helper';
 import { CoreSites } from '@services/sites';
@@ -227,16 +226,6 @@ export class CoreDomUtilsProvider {
     }
 
     /**
-     * Create a "cancelled" error. These errors won't display an error message in showErrorModal functions.
-     *
-     * @returns The error object.
-     * @deprecated since 3.9.5. Just create the error directly.
-     */
-    createCanceledError(): CoreCanceledError {
-        return new CoreCanceledError('');
-    }
-
-    /**
      * Given a list of changes for a component input detected by a KeyValueDiffers, create an object similar to the one
      * passed to the ngOnChanges functions.
      *
@@ -393,17 +382,6 @@ export class CoreDomUtilsProvider {
         if (selected) {
             return selected.innerHTML;
         }
-    }
-
-    /**
-     * Get the data from a form. It will only collect elements that have a name.
-     *
-     * @param form The form to get the data from.
-     * @returns Object with the data. The keys are the names of the inputs.
-     * @deprecated since 3.9.5. Function has been moved to CoreForms.
-     */
-    getDataFromForm(form: HTMLFormElement): CoreFormFields {
-        return CoreForms.getDataFromForm(form);
     }
 
     /**
@@ -648,11 +626,6 @@ export class CoreDomUtilsProvider {
             errorMessage = error;
         }
 
-        if (errorMessage == CoreConstants.DONT_SHOW_ERROR) {
-            // The error shouldn't be shown, stop.
-            return null;
-        }
-
         let message = CoreTextUtils.decodeHTML(needsTranslate ? Translate.instant(errorMessage) : errorMessage);
 
         if (extraInfo) {
@@ -815,16 +788,6 @@ export class CoreDomUtilsProvider {
     }
 
     /**
-     * Check if rich text editor is supported in the platform.
-     *
-     * @returns Whether it's supported.
-     * @deprecated since 3.9.5
-     */
-    isRichTextEditorSupported(): boolean {
-        return true;
-    }
-
-    /**
      * Move children from one HTMLElement to another.
      *
      * @param oldParent The old parent.
@@ -980,44 +943,6 @@ export class CoreDomUtilsProvider {
         });
 
         return element.innerHTML;
-    }
-
-    /**
-     * Scroll to somehere in the content.
-     *
-     * @param content Content to scroll.
-     * @param x The x-value to scroll to.
-     * @param y The y-value to scroll to.
-     * @param duration Duration of the scroll animation in milliseconds.
-     * @returns Returns a promise which is resolved when the scroll has completed.
-     * @deprecated since 3.9.5. Use directly the IonContent class.
-     */
-    scrollTo(content: IonContent, x: number, y: number, duration = 0): Promise<void> {
-        return content.scrollToPoint(x, y, duration);
-    }
-
-    /**
-     * Scroll to Bottom of the content.
-     *
-     * @param content Content to scroll.
-     * @param duration Duration of the scroll animation in milliseconds.
-     * @returns Returns a promise which is resolved when the scroll has completed.
-     * @deprecated since 3.9.5. Use directly the IonContent class.
-     */
-    scrollToBottom(content: IonContent, duration = 0): Promise<void> {
-        return content.scrollToBottom(duration);
-    }
-
-    /**
-     * Scroll to Top of the content.
-     *
-     * @param content Content to scroll.
-     * @param duration Duration of the scroll animation in milliseconds.
-     * @returns Returns a promise which is resolved when the scroll has completed.
-     * @deprecated since 3.9.5. Use directly the IonContent class.
-     */
-    scrollToTop(content: IonContent, duration = 0): Promise<void> {
-        return content.scrollToTop(duration);
     }
 
     /**
@@ -2039,29 +1964,6 @@ export class CoreDomUtilsProvider {
         el.parentNode?.insertBefore(wrapper, el);
         // Now move the element into the wrapper.
         wrapper.appendChild(el);
-    }
-
-    /**
-     * Trigger form cancelled event.
-     *
-     * @param formRef Form element.
-     * @param siteId The site affected. If not provided, no site affected.
-     * @deprecated since 3.9.5. Function has been moved to CoreForms.
-     */
-    triggerFormCancelledEvent(formRef: ElementRef | HTMLFormElement | undefined, siteId?: string): void {
-        CoreForms.triggerFormCancelledEvent(formRef, siteId);
-    }
-
-    /**
-     * Trigger form submitted event.
-     *
-     * @param formRef Form element.
-     * @param online Whether the action was done in offline or not.
-     * @param siteId The site affected. If not provided, no site affected.
-     * @deprecated since 3.9.5. Function has been moved to CoreForms.
-     */
-    triggerFormSubmittedEvent(formRef: ElementRef | HTMLFormElement | undefined, online?: boolean, siteId?: string): void {
-        CoreForms.triggerFormSubmittedEvent(formRef, online, siteId);
     }
 
     /**
