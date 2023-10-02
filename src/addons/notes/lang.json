@@ -10,5 +10,5 @@
     "personalnotes": "Personal notes",
     "publishstate": "Context",
     "sitenotes": "Site notes",
-    "warningnotenotsent": "Couldn't add note(s) to course {{course}}. {{error}}"
+    "warningnotenotsent": "Couldn't add or delete note(s). {{error}}"
 }

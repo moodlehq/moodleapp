@@ -185,7 +185,7 @@
             <p *ngIf="conversation.subname">
                 <core-format-text [text]="conversation.subname" contextLevel="system" [contextInstanceId]="0"></core-format-text>
             </p>
-            <p class="addon-message-last-message">
+            <p *ngIf="conversation.lastmessage !== undefined" class="addon-message-last-message">
                 <span *ngIf="conversation.sentfromcurrentuser" class="addon-message-last-message-user">
                     {{ 'addon.messages.you' | translate }}
                 </span>

@@ -89,7 +89,7 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
                         });
                     } else if (discussion.message) {
                         // An existing discussion has a new message, update the last message.
-                        discussion.message.message = data.message;
+                        discussion.message.message = data.message ?? '';
                         discussion.message.timecreated = data.timecreated;
                     }
                 }

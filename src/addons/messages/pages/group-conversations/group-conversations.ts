@@ -112,7 +112,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
         this.newMessagesObserver = CoreEvents.on(
             AddonMessagesProvider.NEW_MESSAGE_EVENT,
             (data) => {
-            // Check if the new message belongs to the option that is currently expanded.
+                // Check if the new message belongs to the option that is currently expanded.
                 const expandedOption = this.getExpandedOption();
                 const messageOption = this.getConversationOption(data);
 
@@ -124,7 +124,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
                 const conversation = this.findConversation(data.conversationId, data.userId, expandedOption);
 
                 if (conversation === undefined) {
-                // Probably a new conversation, refresh the list.
+                    // Probably a new conversation, refresh the list.
                     this.loaded = false;
                     this.refreshData().finally(() => {
                         this.loaded = true;
@@ -132,19 +132,34 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
 
                     return;
                 }
-                if (conversation.lastmessage != data.message || conversation.lastmessagedate != data.timecreated / 1000) {
+
+                if (data.message === undefined) {
+                    conversation.lastmessage = undefined;
+                    conversation.lastmessagedate = undefined;
+                    conversation.sentfromcurrentuser = undefined;
+
+                    return;
+                }
+
+                if (conversation.lastmessage !== data.message || conversation.lastmessagedate !== data.timecreated / 1000) {
                     const isNewer = data.timecreated / 1000 > (conversation.lastmessagedate || 0);
 
                     // An existing conversation has a new message, update the last message.
                     conversation.lastmessage = data.message;
                     conversation.lastmessagedate = data.timecreated / 1000;
+                    if (data.userFrom) {
+                        conversation.sentfromcurrentuser = data.userFrom.id === this.currentUserId;
+                        if (conversation.type === AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP) {
+                            conversation.members[0] = data.userFrom;
+                        }
+                    }
 
                     // Sort the affected list.
                     const option = this.getConversationOption(conversation);
                     option.conversations = AddonMessages.sortConversations(option.conversations || []);
 
                     if (isNewer) {
-                    // The last message is newer than the previous one, scroll to top to keep viewing the conversation.
+                        // The last message is newer than the previous one, scroll to top to keep viewing the conversation.
                         this.content?.scrollToTop();
                     }
                 }
