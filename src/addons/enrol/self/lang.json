@@ -1,7 +1,7 @@
 {
-    "pluginname": "Self enrolment",
     "confirmselfenrol": "Are you sure you want to enrol yourself in this course?",
     "errorselfenrol": "An error occurred while self enrolling.",
     "nopassword": "No enrolment key required.",
-    "password": "Enrolment key"
+    "password": "Enrolment key",
+    "pluginname": "Self enrolment"
 }

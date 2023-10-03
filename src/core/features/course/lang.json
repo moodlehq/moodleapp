@@ -12,11 +12,11 @@
     "completion_manual:aria:markdone": "Mark {{$a}} as done",
     "completion_manual:done": "Done",
     "completion_manual:markdone": "Mark as done",
-    "completionmenuitem": "Completion",
     "completion_setby:auto:done": "Done: {{$a.condition}} (set by {{$a.setby}})",
     "completion_setby:auto:todo": "To do: {{$a.condition}} (set by {{$a.setby}})",
     "completion_setby:manual:done": "{{$a.activityname}} is marked by {{$a.setby}} as done. Press to undo.",
     "completion_setby:manual:markdone": "{{$a.activityname}} is marked by {{$a.setby}} as not done. Press to mark as done.",
+    "completionmenuitem": "Completion",
     "completionrequirements": "Completion requirements for {{$a}}",
     "confirmdownload": "You are about to download {{size}}.{{availableSpace}} Are you sure you want to continue?",
     "confirmdownloadunknownsize": "It was not possible to calculate the size of the download.{{availableSpace}} Are you sure you want to continue?",
@@ -63,6 +63,6 @@
     "useactivityonbrowser": "You can still use it using your device's web browser.",
     "viewcourse": "View course",
     "warningmanualcompletionmodified": "The manual completion of an activity was modified on the site.",
-    "youmust": "You must",
-    "warningofflinemanualcompletiondeleted": "Some offline manual completion of course '{{name}}' has been deleted. {{error}}"
+    "warningofflinemanualcompletiondeleted": "Some offline manual completion of course '{{name}}' has been deleted. {{error}}",
+    "youmust": "You must"
 }
