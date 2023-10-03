@@ -147,7 +147,10 @@ export class CoreCourseModuleCompletionLegacyComponent extends CoreCourseModuleC
             return;
         }
 
-        await CoreCourseHelper.changeManualCompletion(this.completion, event);
+        event.stopPropagation();
+        event.preventDefault();
+
+        await CoreCourseHelper.changeManualCompletion(this.completion);
 
         CoreEvents.trigger(CoreEvents.MANUAL_COMPLETION_CHANGED, { completion: this.completion });
     }

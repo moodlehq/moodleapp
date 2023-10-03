@@ -2012,12 +2012,10 @@ export class CoreCourseHelperProvider {
      * Completion clicked.
      *
      * @param completion The completion.
-     * @param event The click event.
      * @returns Promise resolved with the result.
      */
     async changeManualCompletion(
         completion: CoreCourseModuleCompletionData,
-        event?: Event,
     ): Promise<CoreStatusWithWarningsWSResponse | void> {
         if (!completion) {
             return;
@@ -2027,9 +2025,6 @@ export class CoreCourseHelperProvider {
             completion.tracking !== CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_MANUAL) {
             return;
         }
-
-        event?.preventDefault();
-        event?.stopPropagation();
 
         const modal = await CoreDomUtils.showModalLoading();
         completion.state = completion.state === CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE

@@ -1,14 +1,13 @@
 :host {
-    min-width: var(--a11y-min-target-size);
-    min-height: var(--a11y-min-target-size);
+    display: contents;
     --size: 30px;
 
     img {
-        padding: 5px;
+        padding: 2px;
         width: var(--size);
         vertical-align: middle;
         max-width: none;
-        margin: 7px;
+        margin: 4px;
     }
 
     ion-button {
@@ -16,5 +15,11 @@
         --padding-start: 0px;
         --padding-end: 0px;
         --padding-bottom: 0px;
+        margin: 0;
+        --a11y-target-min-size: 32px;
+        width: var(--a11y-target-min-size);
+        height: var(--a11y-target-min-size);
+        min-width: var(--a11y-target-min-size);
+        min-height: var(--a11y-target-min-size);;
     }
 }

@@ -11,12 +11,12 @@
             position: absolute;
             right: -4px;
             bottom: -4px;
-            padding: 0.2rem;
+            --padding: 0.2rem;
         }
 
         .core-avatar-extra-img {
             background: var(--background-color);
-            border-radius: var(--medium-radius);
+            border-radius: var(--radius-sm);
             img {
                 max-width: var(--extra-icon-size);
                 max-height: var(--extra-icon-size);
@@ -39,7 +39,7 @@
         }
         padding: 0.7rem;
         background: var(--background-color);
-        border-radius: var(--small-radius);
+        border-radius: var(--radius-xs);
     }
 
     .core-notification-icon {

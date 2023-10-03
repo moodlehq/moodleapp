@@ -73,14 +73,14 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
 
         const handlerData = await super.getData(module, courseId, sectionId, forCoursePage);
         handlerData.updateStatus = (status) => {
-            if (!handlerData.buttons) {
+            if (!handlerData.button) {
                 return;
             }
 
-            handlerData.buttons[0].hidden = status !== CoreConstants.DOWNLOADED ||
+            handlerData.button.hidden = status !== CoreConstants.DOWNLOADED ||
                 AddonModResourceHelper.isDisplayedInIframe(module);
         };
-        handlerData.buttons = [{
+        handlerData.button = {
             hidden: true,
             icon: openWithPicker ? 'fas-share-from-square' : 'fas-file',
             label: module.name + ': ' + Translate.instant(openWithPicker ? 'core.openwith' : 'addon.mod_resource.openthefile'),
@@ -92,7 +92,7 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
                     CoreCourse.storeModuleViewed(courseId, module.id);
                 }
             },
-        }];
+        };
 
         this.getResourceData(module, courseId, handlerData).then((extra) => {
             handlerData.extraBadge = extra;
@@ -144,11 +144,11 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
 
         // Check if the button needs to be shown or not.
         promises.push(this.hideOpenButton(module).then((hideOpenButton) => {
-            if (!handlerData.buttons) {
+            if (!handlerData.button) {
                 return;
             }
 
-            handlerData.buttons[0].hidden = hideOpenButton;
+            handlerData.button.hidden = hideOpenButton;
 
             return;
         }));
@@ -166,58 +166,70 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
 
         await Promise.all(promises);
 
-        const extra: string[] = [];
-
         if (module.contentsinfo) {
             // No need to use the list of files.
-            extra.push(CoreTextUtils.cleanTags(module.afterlink));
-        } else if (module.contents && module.contents[0]) {
-            const files = module.contents;
-            const file = files[0];
+            return CoreTextUtils.cleanTags(module.afterlink);
+        }
 
-            if (options.showsize) {
-                const size = options.filedetails
-                    ? options.filedetails.size
-                    : files.reduce((result, file) => result + (file.filesize || 0), 0);
+        if (!module.contents || !module.contents[0]) {
+            return '';
+        }
 
-                extra.push(CoreTextUtils.bytesToSize(size, 1));
-            }
+        const extra: string[] = [];
+        const files = module.contents;
+        const mainFile = files[0];
 
-            if (options.showtype) {
-                // We should take it from options.filedetails.size if available but it's already translated.
-                extra.push(CoreMimetypeUtils.getMimetypeDescription(file));
-            }
+        if (options.showsize) {
+            const size = options.filedetails
+                ? options.filedetails.size
+                : files.reduce((result, file) => result + (file.filesize || 0), 0);
 
-            if (options.showdate) {
-                const timecreated = 'timecreated' in file ? file.timecreated : 0;
+            extra.push(CoreTextUtils.bytesToSize(size, 1));
+        }
 
-                if (options.filedetails && options.filedetails.modifieddate) {
-                    extra.push(Translate.instant(
-                        'addon.mod_resource.modifieddate',
-                        { $a: CoreTimeUtils.userDate(options.filedetails.modifieddate * 1000, 'core.strftimedatetimeshort') },
-                    ));
-                } else if (options.filedetails && options.filedetails.uploadeddate) {
-                    extra.push(Translate.instant(
-                        'addon.mod_resource.uploadeddate',
-                        { $a: CoreTimeUtils.userDate(options.filedetails.uploadeddate * 1000, 'core.strftimedatetimeshort') },
-                    ));
-                } else if ((file.timemodified || 0) > timecreated + CoreConstants.SECONDS_MINUTE * 5) {
-                    /* Modified date may be up to several minutes later than uploaded date just because
-                        teacher did not submit the form promptly. Give teacher up to 5 minutes to do it. */
-                    extra.push(Translate.instant(
-                        'addon.mod_resource.modifieddate',
-                        { $a: CoreTimeUtils.userDate((file.timemodified || 0) * 1000, 'core.strftimedatetimeshort') },
-                    ));
-                } else {
-                    extra.push(Translate.instant(
-                        'addon.mod_resource.uploadeddate',
-                        { $a: CoreTimeUtils.userDate(timecreated * 1000, 'core.strftimedatetimeshort') },
-                    ));
-                }
+        if (options.showtype) {
+            // We should take it from options.filedetails.size if available but it's already translated.
+            extra.push(CoreMimetypeUtils.getMimetypeDescription(mainFile));
+        }
+
+        if (options.showdate) {
+            const timecreated = 'timecreated' in mainFile ? mainFile.timecreated : 0;
+
+            if (options.filedetails && options.filedetails.modifieddate) {
+                extra.push(Translate.instant(
+                    'addon.mod_resource.modifieddate',
+                    { $a: CoreTimeUtils.userDate(options.filedetails.modifieddate * 1000, 'core.strftimedatetimeshort') },
+                ));
+            } else if (options.filedetails && options.filedetails.uploadeddate) {
+                extra.push(Translate.instant(
+                    'addon.mod_resource.uploadeddate',
+                    { $a: CoreTimeUtils.userDate(options.filedetails.uploadeddate * 1000, 'core.strftimedatetimeshort') },
+                ));
+            } else if ((mainFile.timemodified || 0) > timecreated + CoreConstants.SECONDS_MINUTE * 5) {
+                /* Modified date may be up to several minutes later than uploaded date just because
+                    teacher did not submit the form promptly. Give teacher up to 5 minutes to do it. */
+                extra.push(Translate.instant(
+                    'addon.mod_resource.modifieddate',
+                    { $a: CoreTimeUtils.userDate((mainFile.timemodified || 0) * 1000, 'core.strftimedatetimeshort') },
+                ));
+            } else {
+                extra.push(Translate.instant(
+                    'addon.mod_resource.uploadeddate',
+                    { $a: CoreTimeUtils.userDate(timecreated * 1000, 'core.strftimedatetimeshort') },
+                ));
             }
         }
 
-        return extra.join(' ');
+        return extra.join(' · ');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async manualCompletionAlwaysShown(module: CoreCourseModuleData): Promise<boolean> {
+        const hideButton = await this.hideOpenButton(module);
+
+        return !hideButton;
     }
 
     /**

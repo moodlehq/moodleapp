@@ -21,7 +21,6 @@ import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/
 import { CoreConstants, ModPurpose } from '@/core/constants';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
-import { CoreIonicColorNames } from '@singletons/colors';
 
 /**
  * Handler to support forum modules.
@@ -57,7 +56,6 @@ export class AddonModForumModuleHandlerService extends CoreModuleHandlerBase imp
         const data = await super.getData(module, courseId);
 
         if ('afterlink' in module && !!module.afterlink) {
-            data.extraBadgeColor = undefined;
             const match = />(\d+)[^<]+/.exec(module.afterlink);
             data.extraBadge = match ? Translate.instant('addon.mod_forum.unreadpostsnumber', { $a : match[1] }) : '';
         } else {
@@ -113,7 +111,6 @@ export class AddonModForumModuleHandlerService extends CoreModuleHandlerBase imp
         }
 
         data.extraBadge = Translate.instant('core.loading');
-        data.extraBadgeColor = CoreIonicColorNames.DARK;
 
         try {
             // Handle unread posts.
@@ -122,7 +119,6 @@ export class AddonModForumModuleHandlerService extends CoreModuleHandlerBase imp
                 siteId,
             });
 
-            data.extraBadgeColor = undefined;
             data.extraBadge = forum.unreadpostscount
                 ? Translate.instant(
                     'addon.mod_forum.unreadpostsnumber',
@@ -131,7 +127,6 @@ export class AddonModForumModuleHandlerService extends CoreModuleHandlerBase imp
                 : '';
         } catch {
             // Ignore errors.
-            data.extraBadgeColor = undefined;
             data.extraBadge = '';
         }
     }

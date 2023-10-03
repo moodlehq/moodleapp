@@ -30,6 +30,7 @@ import { CoreCourseModuleNavigationComponent } from './module-navigation/module-
 import { CoreCourseModuleSummaryComponent } from './module-summary/module-summary';
 import { CoreCourseCourseIndexTourComponent } from './course-index-tour/course-index-tour';
 import { CoreRemindersComponentsModule } from '@features/reminders/components/components.module';
+import { CoreCourseModuleCompletionDetailsComponent } from './module-completion-details/module-completion-details';
 
 @NgModule({
     declarations: [
@@ -46,6 +47,7 @@ import { CoreRemindersComponentsModule } from '@features/reminders/components/co
         CoreCourseUnsupportedModuleComponent,
         CoreCourseModuleNavigationComponent,
         CoreCourseModuleSummaryComponent,
+        CoreCourseModuleCompletionDetailsComponent,
     ],
     imports: [
         CoreBlockComponentsModule,
@@ -66,6 +68,7 @@ import { CoreRemindersComponentsModule } from '@features/reminders/components/co
         CoreCourseUnsupportedModuleComponent,
         CoreCourseModuleNavigationComponent,
         CoreCourseModuleSummaryComponent,
+        CoreCourseModuleCompletionDetailsComponent,
     ],
 })
 export class CoreCourseComponentsModule {}

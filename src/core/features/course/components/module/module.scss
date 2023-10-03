@@ -1,73 +1,148 @@
 @import "~theme/globals";
 
 :host {
-    --horizontal-margin: 10px;
-    --vertical-margin: 10px;
+    --horizontal-margin: 12px;
+    --vertical-margin: 12px;
+    --card-padding: 16px;
 
     ion-card {
         margin: var(--vertical-margin) var(--horizontal-margin);
     }
 
     ion-item {
-        --padding-start: 12px;
+        --padding-start: var(--card-padding);
+        --inner-padding-end: var(--card-padding);
+        ion-label {
+            margin-top: var(--card-padding);
+            margin-bottom: var(--card-padding);
+            &>:last-child {
+                margin-bottom: 0px;
+            }
+        }
     }
 
-    ion-item.core-module-main-item {
+    .activity-main {
         --min-height: 52px;
+        display: flex;
+        flex-direction: row;
 
-        .core-module-title .item-heading ion-icon {
-            @include margin-horizontal(8px, null);
-            vertical-align: middle;
+        core-mod-icon {
+            margin-top: 0px;
+            margin-bottom: 0px;
+            --module-icon-padding: 4px;
+            --module-icon-radius: var(--radius-xs);
+
+            @include margin-horizontal(null, 8px);
+            align-self: self-start;
         }
 
-        .core-module-buttons,
-        .buttons.core-module-buttons {
+        .activity-title {
+            flex-grow: 1;
+            align-self: center;
+            @include margin-horizontal(null, var(--card-padding));
+
+            .item-heading ion-icon {
+                @include margin-horizontal(8px, null);
+                vertical-align: middle;
+            }
+        }
+
+        .core-module-buttons {
+            align-self: self-start;
             margin: 0;
-        }
 
-        .core-module-buttons,
-        .core-module-buttons-more {
             display: flex;
             flex-flow: row;
             align-items: center;
             z-index: 1;
             justify-content: space-around;
             align-content: center;
-        }
 
-        .core-module-buttons core-course-module-completion,
-        .core-module-buttons-more button {
-            cursor: pointer;
-            pointer-events: auto;
-        }
+            ion-button.core-module-button-more {
+                cursor: pointer;
+                pointer-events: auto;
+                margin: 0px 8px;
+                --a11y-target-min-size: 32px;
+                width: var(--a11y-target-min-size);
+                height: var(--a11y-target-min-size);
+                min-width: var(--a11y-target-min-size);
+                min-height: var(--a11y-target-min-size);
+                --padding-start: 0px;
+                --padding-end: 0px;
+                ion-icon {
+                    font-size: 20px;
+                }
+            }
 
-        .core-module-buttons core-course-module-completion {
-            text-align: center;
+            core-course-module-completion {
+                --margin: 0px;
+            }
         }
 
         .core-module-additional-info {
             display: flex;
             align-items: center;
             flex-wrap: wrap;
+            margin-top: 4px;
+            margin-bottom: 4px;
+
+            ion-badge {
+                @include margin-horizontal(null, 4px);
+                font-size: 12px;
+                font-weight: normal;
+            }
         }
     }
 
-    .core-course-module-info {
-        .core-module-dates-availabilityinfo {
-            background: var(--light);
-            border-radius: var(--small-radius);
-            padding: 8px;
-        }
+    .core-module-description ::ng-deep img {
+        border-radius: var(--radius-lg);
+    }
 
-        .core-module-dates + .core-module-availabilityinfo {
-            border-top: 1px solid var(--stroke);
-            padding-top: 8px;
-        }
+    core-course-module-completion {
+        --margin: 8px 0px;
+    }
 
+    .activity-dates {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+
+        core-reminders-date {
+          --display-icon: none;
+        }
+    }
+
+    .activity-description-availabilityinfo,
+    .activity-extrabadges {
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px solid var(--stroke);
+    }
+
+    .activity-extrabadges {
+        color: var(--gray-700);
+    }
+
+    .activity-description-availabilityinfo {
         .core-module-availabilityinfo {
-            font-size: 90%;
-            ::ng-deep  ul {
-                margin-top: 0.5em;
+            background: var(--gray-300);
+            border-radius: var(--radius-sm);
+            margin-top: 8px;
+            padding: 8px;
+            font-size: 14px;
+            line-height: 120%;
+
+            ::ng-deep ul {
+                margin-top: 8px;
+                margin-bottom: 0px;
+
+                li {
+                    margin-bottom: 4px;
+                }
+            }
+
+            ion-icon {
+                @include margin-horizontal(null, 8px);
             }
         }
     }
@@ -77,19 +152,6 @@
         text-align: center;
         padding-top: 10px;
         clear: both;
-    }
-
-    .core-module-main-item + .core-course-module-info ion-label {
-        margin-top: 0px;
-    }
-
-    .core-module-availabilityinfo  ion-icon,
-    .core-module-dates ion-icon {
-        @include margin-horizontal(null, 8px);
-    }
-
-    .core-course-module-info ::ng-deep core-course-module-completion .core-module-automatic-completion-conditions .completioninfo.completion_complete {
-        display: none;
     }
 
     .core-course-last-module-viewed {
@@ -102,14 +164,25 @@
         }
     }
 
+    @include media-breakpoint-down(md) {
+        .core-module-buttons core-course-module-completion {
+            display: none;
+        }
+    }
+
+    @include media-breakpoint-up(md) {
+        core-course-module-completion.activity-extra {
+            display: none;
+        }
+    }
+
     &.indented ion-card {
         border: none;
-        border-radius: 0;
-        margin-inline-start: calc(var(--horizontal-margin) + 1rem);
+        --ion-card-radius: 0;
+        @include margin-horizontal(calc(var(--horizontal-margin) + 1rem), null);
     }
 
     &.indented + ::ng-deep core-course-module.indented ion-card {
         border-top: 1px solid var(--border-color);
     }
-
 }

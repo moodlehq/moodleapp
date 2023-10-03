@@ -1,70 +1,45 @@
-<ng-container *ngIf="completion">
-    <ng-container *ngIf="showCompletionConditions && completion.isautomatic">
-        <div *ngIf="mode == 'full'" class="core-module-automatic-completion-conditions" role="list"
-            [attr.aria-label]="'core.course.completionrequirements' | translate:{ $a: moduleName }">
+<ng-container *ngIf="showCompletionInfo && completion">
+    <ng-container *ngIf="completion.istrackeduser">
+        <ng-container *ngIf="completion.isautomatic">
+            <ion-button class="completioninfo completion_incomplete ion-text-wrap chip" *ngIf="!completed" fill="outline"
+                (click)="completionClicked($event)">
+                {{ 'core.course.todo' | translate }}
+                <div class="select-icon" role="presentation" aria-hidden="true">
+                    <div class="select-icon-inner"></div>
+                </div>
+            </ion-button>
 
-            <ng-container *ngIf="completion.istrackeduser">
-                <ng-container *ngFor="let rule of details">
-                    <ion-chip *ngIf="rule.statuscomplete" color="success" role="listitem" [attr.aria-label]="rule.accessibleDescription"
-                        class="completioninfo completion_complete">
-                        <ion-icon name="fas-check" aria-hidden="true"></ion-icon>
-                        <ion-label>
-                            <strong>{{ 'core.course.completion_automatic:done' | translate }}</strong>
-                            {{ rule.rulevalue.description }}
-                        </ion-label>
-                    </ion-chip>
+            <ion-button class="completioninfo completion_complete ion-text-wrap chip" color="success" (click)="completionClicked($event)"
+                *ngIf="completed">
+                <ion-icon name="fas-check" slot="start" aria-hidden="true"></ion-icon>
+                {{'core.course.done' | translate }}
+                <div class="select-icon" role="presentation" aria-hidden="true">
+                    <div class="select-icon-inner"></div>
+                </div>
+            </ion-button>
+        </ng-container>
 
-                    <ion-chip *ngIf="rule.statuscompletefail" color="danger" role="listitem" [attr.aria-label]="rule.accessibleDescription"
-                        class="completioninfo completion_fail">
-                        <ion-icon name="fas-xmark" aria-hidden="true"></ion-icon>
-                        <ion-label>
-                            <strong>{{ 'core.course.completion_automatic:failed' | translate }}</strong>
-                            {{ rule.rulevalue.description }}
-                        </ion-label>
-                    </ion-chip>
-
-                    <ion-chip *ngIf="rule.statusincomplete" color="secondary" role="listitem" [attr.aria-label]="rule.accessibleDescription"
-                        class="completioninfo completion_incomplete">
-                        <ion-icon name="fas-pen-to-square" aria-hidden="true"></ion-icon>
-                        <ion-label>
-                            <strong>{{ 'core.course.completion_automatic:todo' | translate }}</strong>
-                            {{ rule.rulevalue.description }}
-                        </ion-label>
-                    </ion-chip>
-                </ng-container>
-            </ng-container>
-
-            <ng-container *ngIf="!completion.istrackeduser">
-                <ion-chip *ngFor="let rule of details" role="listitem" class="core-module-completion-todo">
-                    <ion-icon name="fas-pen-to-square" aria-hidden="true"></ion-icon>
-                    <ion-label>
-                        <strong>{{ 'core.course.completion_automatic:todo' | translate }}</strong>
-                        {{ rule.rulevalue.description }}
-                    </ion-label>
-                </ion-chip>
-            </ng-container>
-        </div>
-
-        <ng-container *ngIf="mode == 'basic' && completion.istrackeduser">
-            <ion-chip class="completioninfo completion_incomplete" *ngIf="completionStatus === 0" color="secondary">
-                <ion-icon name="fas-pen-to-square" aria-hidden="true"></ion-icon>
-                <ion-label>
-                    {{ 'core.course.todo' | translate }}
-                </ion-label>
-            </ion-chip>
-            <ion-chip class="completioninfo completion_complete" *ngIf="completionStatus === 1 || completionStatus === 2" color="success">
-                <ion-icon name="fas-check" aria-hidden="true"></ion-icon>
-                <ion-label>{{'core.course.done' | translate }}</ion-label>
-            </ion-chip>
-            <ion-chip class="completioninfo completion_fail" *ngIf="completionStatus === 3" color="danger">
-                <ion-icon name="fas-xmark" aria-hidden="true"></ion-icon>
-                <ion-label>{{'core.course.failed' | translate }}</ion-label>
-            </ion-chip>
+        <ng-container *ngIf="!completion.isautomatic">
+            <ion-button *ngIf="completed" color="success" [attr.aria-label]="accessibleDescription" (click)="completionClicked($event)"
+                class="completioninfo completion_complete ion-text-wrap chip">
+                <ion-icon name="fas-check" slot="start" aria-hidden="true"></ion-icon>
+                {{ 'core.course.completion_manual:done' | translate }}
+                <ion-icon *ngIf="completion.offline" name="fas-arrows-rotate"
+                    [attr.aria-label]="'core.course.manualcompletionnotsynced' | translate" slot="end"></ion-icon>
+            </ion-button>
+            <ion-button *ngIf="!completed" fill="outline" [attr.aria-label]="accessibleDescription" (click)="completionClicked($event)"
+                class="completioninfo completion_incomplete ion-text-wrap chip">
+                {{ 'core.course.completion_manual:markdone' | translate }}
+                <ion-icon *ngIf="completion.offline" name="fas-arrows-rotate"
+                    [attr.aria-label]="'core.course.manualcompletionnotsynced' | translate" slot="end"></ion-icon>
+            </ion-button>
         </ng-container>
     </ng-container>
 
-
-    <core-course-module-manual-completion *ngIf="showManualCompletion" [completion]="completion" [moduleName]="moduleName"
-        (completionChanged)="completionChanged.emit($event)" [mode]="mode">
-    </core-course-module-manual-completion>
+    <ion-button *ngIf="!completion.istrackeduser" fill="outline" class="ion-text-wrap chip" (click)="completionClicked($event)">
+        {{ 'core.course.completionmenuitem' | translate }}
+        <div class="select-icon" role="presentation" aria-hidden="true">
+            <div class="select-icon-inner"></div>
+        </div>
+    </ion-button>
 </ng-container>

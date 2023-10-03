@@ -17,7 +17,7 @@
     }
 
     .sheet-modal--wrapper {
-        border-radius: var(--big-radius) var(--big-radius) 0 0;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
         @include padding(24px, 16px, 24px, 16px);
 
         background-color: var(--ion-overlay-background-color, var(--ion-background-color, #fff));

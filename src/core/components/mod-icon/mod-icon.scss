@@ -2,10 +2,11 @@
 
 :host {
     display: inline-block;
-    --size: var(--module-icon-size);
+    --size: var(--module-icon-size, 24px);
+    --padding: var(--module-icon-padding, 8px);
+    --icon-radius: var(--module-icon-radius, var(--radius-xs));
     --margin-end: 0px;
     --margin-vertical: 0px;
-    --icon-radius: var(--small-radius);
     --filter: brightness(0) invert(1);
 
     margin-top: var(--margin-vertical);
@@ -13,7 +14,7 @@
     @include margin-horizontal(null, var(--margin-end));
 
     border-radius: var(--icon-radius);
-    padding: 0.7rem;
+    padding: var(--padding);
     background-color: $gray-100;
     line-height: var(--size);
 
@@ -57,5 +58,4 @@ img {
 :host-context(ion-card ion-item) {
     --margin-vertical: 12px;
     --margin-end: 12px;
-    --icon-radius: var(--module-icon-radius);
 }

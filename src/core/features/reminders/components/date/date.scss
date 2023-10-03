@@ -3,6 +3,8 @@
 :host {
     display: flex;
     flex-direction: row;
+    margin-top: 8px;
+    @include margin-horizontal(null, 8px);
 }
 
 div {
@@ -12,10 +14,7 @@ div {
     align-self: center;
 
     ion-icon {
+        display: var(--display-icon, inline-block);
         @include margin-horizontal(0px, 4px);
     }
-}
-
-core-reminders-date + :host  {
-    margin-top: 12px;
 }

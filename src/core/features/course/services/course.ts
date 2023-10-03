@@ -81,6 +81,9 @@ export enum CoreCourseModuleCompletionStatus {
     COMPLETION_COMPLETE_FAIL = 3,
 }
 
+/**
+ * @deprecated since 4.3 Not used anymore.
+ */
 export enum CoreCourseCompletionMode {
     FULL = 'full',
     BASIC = 'basic',

@@ -96,7 +96,7 @@
             <ion-badge *ngIf="section.highlighted && highlighted" slot="end">{{highlighted}}</ion-badge>
         </ion-item-divider>
 
-        <ion-item class="ion-text-wrap" *ngIf="section.summary">
+        <ion-item class="ion-text-wrap section-summary" *ngIf="section.summary">
             <ion-label>
                 <core-format-text [text]="section.summary" contextLevel="course" [contextInstanceId]="course.id">
                 </core-format-text>

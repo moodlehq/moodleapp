@@ -1,0 +1,44 @@
+<!-- Completion criterias. -->
+<div class="ion-padding">
+    <!-- Dialog header. -->
+    <h2 *ngIf="isTrackedUser">{{ 'core.course.youmust' | translate }}</h2>
+    <h2 *ngIf="!isTrackedUser">{{ 'core.course.studentsmust' | translate }}</h2>
+
+    <ion-list role="list">
+        <ng-container *ngFor="let rule of completionDetails">
+            <!-- Show completion status and description to tracked users. -->
+
+            <ng-container *ngIf="isTrackedUser">
+                <div *ngIf="rule.statusComplete" role="listitem" [attr.aria-label]="rule.accessibleDescription" class="text-success">
+                    <ion-icon name="fas-check" aria-hidden="true"></ion-icon>
+                    <span class="sr-only">{{ 'core.course.completion_automatic:done' | translate }}</span>
+                    {{ rule.rulevalue.description }}
+                </div>
+
+                <div *ngIf="rule.statusCompleteFail" role="listitem" [attr.aria-label]="rule.accessibleDescription" class="text-danger">
+                    <ion-icon name="fas-xmark" aria-hidden="true"></ion-icon>
+                    <span class="sr-only">{{ 'core.course.completion_automatic:failed' | translate }}</span>
+                    {{ rule.rulevalue.description }}
+                </div>
+
+                <div *ngIf="rule.statusIncomplete" role="listitem" [attr.aria-label]="rule.accessibleDescription">
+                    <ion-icon name="fas-circle" class="completion_dot" aria-hidden="true"></ion-icon>
+                    <span class="sr-only">{{ 'core.course.completion_automatic:todo' | translate }}</span>
+                    {{ rule.rulevalue.description }}
+                </div>
+            </ng-container>
+
+            <!-- Show only description (without status) to non-tracked users. -->
+            <div *ngIf="!isTrackedUser" role="listitem" [attr.aria-label]="rule.accessibleDescription">
+                <ion-icon name="fas-circle" class="completion_dot" aria-hidden="true"></ion-icon>
+                {{ rule.rulevalue.description }}
+            </div>
+        </ng-container>
+
+        <!-- Show also manual completion description in the list to non-tracked users. -->
+        <div *ngIf="isManual && !isTrackedUser" role="listitem" class="core-module-completion-todo">
+            <ion-icon name="fas-circle" class="completion_dot" aria-hidden="true"></ion-icon>
+            {{ 'core.course.completion_manual:markdone' | translate }}
+        </div>
+    </ion-list>
+</div>
