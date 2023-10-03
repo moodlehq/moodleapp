@@ -53,6 +53,7 @@ export const GET_STARTED_URL = 'https://moodle.com';
 export class CoreLoginHelperProvider {
 
     static readonly ONBOARDING_DONE = 'onboarding_done';
+    static readonly FAQ_QRCODE_INFO_DONE = 'qrcode_info_done';
     static readonly FAQ_URL_IMAGE_HTML = '<img src="assets/img/login/faq_url.png" role="presentation" alt="">';
     static readonly FAQ_QRCODE_IMAGE_HTML = '<img src="assets/img/login/faq_qrcode.png" role="presentation" alt="">';
 
@@ -1221,26 +1222,33 @@ export class CoreLoginHelperProvider {
      * @returns Promise resolved if the user accepts to scan QR.
      */
     async showScanQRInstructions(): Promise<void> {
-        await new Promise<void>((resolve, reject) => {
-            CoreDomUtils.showAlertWithOptions({
-                header: Translate.instant('core.login.faqwhereisqrcode'),
-                message: Translate.instant(
-                    'core.login.faqwhereisqrcodeanswer',
-                    { $image: CoreLoginHelperProvider.FAQ_QRCODE_IMAGE_HTML },
-                ),
-                buttons: [
-                    {
-                        text: Translate.instant('core.cancel'),
-                        role: 'cancel',
-                        handler: () => reject(new CoreCanceledError()),
-                    },
-                    {
-                        text: Translate.instant('core.next'),
-                        handler: () => resolve(),
-                    },
-                ],
-            });
-        });
+        const dontShowWarning = await CoreConfig.get(CoreLoginHelperProvider.FAQ_QRCODE_INFO_DONE, 0);
+        if (dontShowWarning) {
+            return;
+        }
+
+        const message = Translate.instant(
+            'core.login.faqwhereisqrcodeanswer',
+            { $image: '<div class="text-center">'+ CoreLoginHelperProvider.FAQ_QRCODE_IMAGE_HTML + '</div>' },
+        );
+        const header = Translate.instant('core.login.faqwhereisqrcode');
+
+        try {
+            const dontShowAgain = await CoreDomUtils.showPrompt(
+                message,
+                header,
+                Translate.instant('core.dontshowagain'),
+                'checkbox',
+                { okText: Translate.instant('core.next'), cancelText: Translate.instant('core.cancel') },
+            );
+
+            if (dontShowAgain) {
+                CoreConfig.set(CoreLoginHelperProvider.FAQ_QRCODE_INFO_DONE, 1);
+            }
+        } catch {
+            // User canceled.
+            throw new CoreCanceledError('');
+        }
     }
 
     /**

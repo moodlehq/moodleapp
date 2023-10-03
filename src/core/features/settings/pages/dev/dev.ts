@@ -165,6 +165,7 @@ export class CoreSettingsDevPage implements OnInit {
         await CoreUserTours.resetTours();
 
         await CoreConfig.delete(CoreLoginHelperProvider.ONBOARDING_DONE);
+        await CoreConfig.delete(CoreLoginHelperProvider.FAQ_QRCODE_INFO_DONE);
 
         CoreDomUtils.showToast('User tours have been reseted');
     }
