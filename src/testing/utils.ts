@@ -34,6 +34,7 @@ import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DefaultUrlSerializer, UrlSerializer } from '@angular/router';
 import { CoreUtils, CoreUtilsProvider } from '@services/utils/utils';
+import { Equal } from '@/core/utils/types';
 
 abstract class WrapperComponent<U> {
 
@@ -420,4 +421,13 @@ export function mockTranslate(translations: Record<string, string> = {}): void {
                 : applyReplacements(translations[key] ?? key);
         },
     });
+}
+
+export function expectSameTypes<A, B>(equal: Equal<A, B>): () => void {
+    return () => expect(equal).toBe(true);
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function expectAnyType<T>(): () => void {
+    return () => expect(true).toBe(true);
 }

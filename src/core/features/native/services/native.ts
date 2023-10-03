@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { makeSingleton } from '@singletons';
 import { CorePlatform } from '@services/platform';
-import { AsyncInstance, asyncInstance } from '@/core/utils/async-instance';
+import { AsyncInstance, AsyncObject, asyncInstance } from '@/core/utils/async-instance';
 
 /**
  * Native plugin manager.
@@ -23,7 +23,7 @@ import { AsyncInstance, asyncInstance } from '@/core/utils/async-instance';
 @Injectable({ providedIn: 'root' })
 export class CoreNativeService {
 
-    private plugins: Partial<Record<keyof MoodleAppPlugins, AsyncInstance>> = {};
+    private plugins: Partial<Record<keyof MoodleAppPlugins, AsyncInstance<AsyncObject>>> = {};
     private mocks: Partial<Record<keyof MoodleAppPlugins, MoodleAppPlugins[keyof MoodleAppPlugins]>> = {};
 
     /**
