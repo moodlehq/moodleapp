@@ -154,13 +154,15 @@ function generate_local_module_file {
 
     print_title "Generating $APPMODULENAME..."
 
+    gulp
+
     module_translations=''
 
     keys=$(jq -r 'map_values(select(contains("local_moodlemobileapp"))) | keys[]' langindex.json)
     for key in $keys; do
         # Check if already parsed.
         translation=$(jq -r .\""$key"\" "$LANG_PATH"/en.json)
-        if [ -z "$translation" ]; then
+        if [ -z "$translation" ] || [ "$translation" == 'null' ]; then
             echo "Key $key not translated!"
             continue
         fi

@@ -119,7 +119,7 @@
     "sitenotallowed": "This site is no longer available.",
     "sitepolicynotagreederror": "Site policy not agreed.",
     "siteurl": "Site URL",
-    "siteurlrequired": "Site URL required i.e <i>http://www.yourmoodlesite.org</i>",
+    "siteurlrequired": "Site URL required i.e <i>https://campus.example.edu</i>",
     "startsignup": "Create new account",
     "stillcantconnect": "Still can't connect?",
     "supplyinfo": "More details",
