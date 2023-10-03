@@ -19,6 +19,11 @@
 export type Constructor<T> = { new(...args: any[]): T };
 
 /**
+ * Helper type to infer whether two types are exactly the same.
+ */
+export type Equal<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? true : false;
+
+/**
  * Helper type to flatten complex types.
  */
 export type Pretty<T> = T extends infer U ? {[K in keyof U]: U[K]} : never;
