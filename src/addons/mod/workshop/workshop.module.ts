@@ -27,8 +27,8 @@ import { AddonModWorkshopIndexLinkHandler } from './services/handlers/index-link
 import { AddonModWorkshopListLinkHandler } from './services/handlers/list-link';
 import { AddonModWorkshopModuleHandler } from './services/handlers/module';
 import { ADDON_MOD_WORKSHOP_COMPONENT, ADDON_MOD_WORKSHOP_PAGE_NAME } from '@addons/mod/workshop/constants';
-import { getCronHandlerInstance } from '@addons/mod/workshop/services/handlers/sync-cron';
-import { getPrefetchHandlerInstance } from '@addons/mod/workshop/services/handlers/prefetch';
+import { AddonModWorkshopPrefetchHandler } from '@addons/mod/workshop/services/handlers/prefetch-lazy';
+import { AddonModWorkshopSyncCronHandler } from '@addons/mod/workshop/services/handlers/sync-cron-lazy';
 
 /**
  * Get workshop services.
@@ -85,9 +85,13 @@ const routes: Routes = [
             provide: APP_INITIALIZER,
             multi: true,
             useValue: () => {
+                // TODO use async instances
+                // CoreCourseModulePrefetchDelegate.registerHandler(getPrefetchHandlerInstance());
+                // CoreCronDelegate.register(getCronHandlerInstance());
+
                 CoreCourseModuleDelegate.registerHandler(AddonModWorkshopModuleHandler.instance);
-                CoreCourseModulePrefetchDelegate.registerHandler(getPrefetchHandlerInstance());
-                CoreCronDelegate.register(getCronHandlerInstance());
+                CoreCourseModulePrefetchDelegate.registerHandler(AddonModWorkshopPrefetchHandler.instance);
+                CoreCronDelegate.register(AddonModWorkshopSyncCronHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModWorkshopIndexLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(AddonModWorkshopListLinkHandler.instance);
 
