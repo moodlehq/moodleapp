@@ -39,7 +39,8 @@
         <ion-label>
             <p>
                 <ion-icon name="fas-circle-info" aria-hidden="true"></ion-icon>
-                <core-format-text [text]="'core.reportbuilder.filtersapplied' | translate: { $a: reportUrl }" [filter]="false">
+                <core-format-text [text]="'core.reportbuilder.filtersapplied' | translate: { $a: reportUrl }" [filter]="false"
+                    [captureLinks]="false">
                 </core-format-text>
             </p>
         </ion-label>

@@ -359,7 +359,7 @@ export class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave {
     async save(): Promise<void> {
         const values = this.pageForm.value;
         const title = values.title;
-        let text = values.text;
+        let text = values.text ?? '';
 
         const modal = await CoreDomUtils.showModalLoading('core.sending', true);
 
