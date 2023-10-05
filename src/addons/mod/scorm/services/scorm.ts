@@ -119,17 +119,22 @@ export class AddonModScormProvider {
 
         switch (scorm.whatgrade) {
             case AddonModScormProvider.FIRSTATTEMPT:
-                return onlineAttempts[1] ? onlineAttempts[1].grade : -1;
+                return onlineAttempts[1] ? onlineAttempts[1].score : -1;
 
             case AddonModScormProvider.LASTATTEMPT: {
-                // Search the last attempt number.
-                let max = 0;
-                Object.keys(onlineAttempts).forEach((attemptNumber) => {
-                    max = Math.max(Number(attemptNumber), max);
-                });
+                // Search the last completed attempt number.
+                let lastCompleted = 0;
+                for (const attemptNumber in onlineAttempts) {
+                    if (onlineAttempts[attemptNumber].hasCompletedPassedSCO) {
+                        lastCompleted = Math.max(onlineAttempts[attemptNumber].num, lastCompleted);
+                    }
+                }
 
-                if (max > 0) {
-                    return onlineAttempts[max].grade;
+                if (lastCompleted > 0) {
+                    return onlineAttempts[lastCompleted].score;
+                } else if (onlineAttempts[1]) {
+                    // If no completed attempt found, use the first attempt for consistency with LMS.
+                    return onlineAttempts[1].score;
                 }
 
                 return -1;
@@ -139,7 +144,7 @@ export class AddonModScormProvider {
                 // Search the highest grade.
                 let grade = 0;
                 for (const attemptNumber in onlineAttempts) {
-                    grade = Math.max(onlineAttempts[attemptNumber].grade, grade);
+                    grade = Math.max(onlineAttempts[attemptNumber].score, grade);
                 }
 
                 return grade;
@@ -151,7 +156,7 @@ export class AddonModScormProvider {
                 let total = 0;
 
                 for (const attemptNumber in onlineAttempts) {
-                    sumGrades += onlineAttempts[attemptNumber].grade;
+                    sumGrades += onlineAttempts[attemptNumber].score;
                     total++;
                 }
 
@@ -589,8 +594,8 @@ export class AddonModScormProvider {
     }
 
     /**
-     * Get the grade for a certain SCORM and attempt.
-     * Based on Moodle's scorm_grade_user_attempt.
+     * Get the grade data for a certain attempt.
+     * Mostly based on Moodle's scorm_grade_user_attempt.
      *
      * @param scorm SCORM.
      * @param attempt Attempt number.
@@ -598,7 +603,12 @@ export class AddonModScormProvider {
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved with the grade. If the attempt hasn't reported grade/completion, it will be -1.
      */
-    async getAttemptGrade(scorm: AddonModScormScorm, attempt: number, offline?: boolean, siteId?: string): Promise<number> {
+    async getAttemptGrade(
+        scorm: AddonModScormScorm,
+        attempt: number,
+        offline?: boolean,
+        siteId?: string,
+    ): Promise<AddonModScormAttemptGrade> {
         const attemptScore = {
             scos: 0,
             values: 0,
@@ -654,7 +664,11 @@ export class AddonModScormProvider {
                 score = attemptScore.max; // Remote Learner GRADEHIGHEST is default.
         }
 
-        return score;
+        return {
+            num: attempt,
+            score,
+            hasCompletedPassedSCO: attemptScore.scos > 0,
+        };
     }
 
     /**
@@ -2052,11 +2066,12 @@ export type AddonModScormOrganization = {
 };
 
 /**
- * Grade for an attempt.
+ * Grade data for an attempt.
  */
 export type AddonModScormAttemptGrade = {
     num: number;
-    grade: number;
+    score: number;
+    hasCompletedPassedSCO: boolean; // Whether it has at least 1 SCO with status completed or passed.
 };
 
 /**
