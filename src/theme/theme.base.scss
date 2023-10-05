@@ -1869,13 +1869,15 @@ video::-webkit-media-text-track-display {
 }
 
 ion-modal {
-    .modal-wrapper {
-        --border-radius: var(--modal-radius);
+    &.show-modal {
+        @media only screen and (min-width: 768px) and (min-height: 600px) {
+            --border-radius: var(--modal-radius);
+        }
     }
 
     &.core-modal-lateral,
     &.core-modal-fullscreen {
-        --modal-radius: 0px;
+        --border-radius: 0px;
     }
 
     &.core-modal-no-background {
