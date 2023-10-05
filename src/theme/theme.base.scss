@@ -1236,6 +1236,7 @@ ion-chip {
 
 ion-searchbar {
     height: var(--height) !important;
+    --border-radius: var(--radius-xs);
 
     .searchbar-input-container {
         color: var(--color) !important;
@@ -1243,6 +1244,8 @@ ion-searchbar {
     }
 
     .searchbar-input {
+        --border-radius: var(--radius-xs);
+
         height: var(--height) !important;
         border: 1px solid var(--border-color) !important;
         box-shadow: none !important;
