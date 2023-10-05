@@ -75,7 +75,6 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
             }
 
             this.user.email = data.user.email;
-            this.user.address = CoreUserHelper.formatAddress('', data.user.city, data.user.country);
         }, CoreSites.getCurrentSiteId());
     }
 
@@ -117,8 +116,6 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
 
             this.user = user;
             this.title = user.fullname;
-
-            this.user.address = CoreUserHelper.formatAddress('', user.city, user.country);
 
             this.fillTimezone();
 

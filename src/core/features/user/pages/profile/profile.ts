@@ -74,7 +74,6 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
             }
 
             this.user.email = data.user.email;
-            this.user.address = CoreUserHelper.formatAddress('', data.user.city, data.user.country);
         }, CoreSites.getCurrentSiteId());
 
         this.logView = CoreTime.once(async (user) => {
@@ -151,7 +150,6 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
         try {
             const user = await CoreUser.getProfile(this.userId, this.courseId);
 
-            user.address = CoreUserHelper.formatAddress('', user.city, user.country);
             this.rolesFormatted = 'roles' in user ? CoreUserHelper.formatRoleList(user.roles) : '';
 
             this.user = user;

@@ -1631,7 +1631,6 @@
   "core.course.warningmanualcompletionmodified": "local_moodlemobileapp",
   "core.course.warningofflinemanualcompletiondeleted": "local_moodlemobileapp",
   "core.course.youmust": "completion",
-  "core.coursedetails": "moodle",
   "core.coursenogroups": "local_moodlemobileapp",
   "core.courses.addtofavourites": "block_myoverview",
   "core.courses.aria:coursecategory": "course",
