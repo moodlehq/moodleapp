@@ -46,6 +46,5 @@ Feature: Test Forum Search
 
     When I set the field "Search" to "message" in the app
     And I press "Search" "button" in the app
-    Then I should find "Search results: 2" in the app
-    And I should find "Test forum 1" in the app
+    Then I should find "Test forum 1" in the app
     And I should find "Test forum 2" in the app

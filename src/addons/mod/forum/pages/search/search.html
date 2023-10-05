@@ -23,10 +23,6 @@
         <core-search-box (onSubmit)="search($event)" (onClear)="clearSearch()" [placeholder]="'core.search' | translate"
             [searchLabel]="'core.search' | translate" [autoFocus]="true" [searchArea]="searchAreaId"></core-search-box>
 
-        <div *ngIf="!resultsSource.isEmpty()" class="results-count">
-            {{ 'addon.mod_forum.searchresults' | translate: { $a: resultsSource.getTotalResults() } }}
-        </div>
-
         <ion-list *ngIf="resultsSource.isLoaded()">
             <core-search-global-search-result *ngFor="let result of resultsSource.getItems()" [result]="result" [showCourse]="false"
                 (onClick)="visitResult(result)">
