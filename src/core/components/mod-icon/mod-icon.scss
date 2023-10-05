@@ -27,6 +27,12 @@
         }
     }
 
+    &.other {
+        img {
+            filter: var(--filter);
+        }
+    }
+
 }
 
 img {
