@@ -1899,6 +1899,10 @@ ion-popover {
         margin-top: 2px;
         margin-bottom: 2px;
     }
+    // Never show backdrop on popovers
+    ion-backdrop {
+        background: transparent;
+    }
 }
 
 /*

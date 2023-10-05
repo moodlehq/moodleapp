@@ -2191,7 +2191,7 @@ export const CoreDomUtils = makeSingleton(CoreDomUtilsProvider);
 /**
  * Options for the openPopover function.
  */
-export type OpenPopoverOptions = PopoverOptions & {
+export type OpenPopoverOptions = Omit<PopoverOptions, 'showBackdrop'> & {
     waitForDismissCompleted?: boolean;
 };
 
