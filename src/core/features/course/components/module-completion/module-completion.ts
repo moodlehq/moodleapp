@@ -139,7 +139,6 @@ export class CoreCourseModuleCompletionComponent
                 componentProps: {
                     completion: this.completion,
                 },
-                showBackdrop: true,
                 event: { target } as Event,
             });
         } else {

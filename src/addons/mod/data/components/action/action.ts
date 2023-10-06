@@ -203,7 +203,6 @@ export class AddonModDataActionComponent implements OnInit {
         await CoreDomUtils.openPopover({
             component: AddonModDataActionsMenuComponent,
             componentProps: { items },
-            showBackdrop: true,
             id: 'actionsmenu-popover',
             event,
         });

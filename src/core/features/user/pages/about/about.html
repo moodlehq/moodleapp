@@ -14,7 +14,7 @@
     </ion-refresher>
     <core-loading [hideUntil]="userLoaded">
         <ion-list *ngIf="user">
-            <ion-item class="ion-text-center core-user-profile-maininfo ion-text-wrap" lines="full">
+            <ion-item class="ion-text-center core-user-profile-maininfo ion-text-wrap" [lines]="user.description ? null : 'full'">
                 <core-user-avatar [user]="user" [userId]="user.id" [linkProfile]="false" [checkOnline]="!canChangeProfilePicture">
                     <ion-button class="edit-avatar" *ngIf="canChangeProfilePicture" (click)="changeProfilePicture()"
                         [attr.aria-label]="'core.user.newpicture' | translate" fill="clear">
@@ -23,8 +23,14 @@
                 </core-user-avatar>
                 <ion-label>
                     <h2>{{ user.fullname }}</h2>
-                    <p *ngIf="user.address">
-                        <ion-icon name="fas-location-dot" [attr.aria-hidden]="true"></ion-icon> {{ user.address }}
+                </ion-label>
+            </ion-item>
+
+            <ion-item class="ion-text-wrap" *ngIf="user.description" lines="full">
+                <ion-label>
+                    <p>
+                        <core-format-text [text]="user.description" contextLevel="user" [contextInstanceId]="user.id">
+                        </core-format-text>
                     </p>
                 </ion-label>
             </ion-item>
@@ -32,7 +38,7 @@
             <ion-item-group *ngIf="hasContact">
                 <ion-item-divider>
                     <ion-label>
-                        <p class="item-heading">{{ 'core.user.contact' | translate}}</p>
+                        <h3>{{ 'core.user.contact' | translate}}</h3>
                     </ion-label>
                 </ion-item-divider>
                 <ion-item class="ion-text-wrap" *ngIf="user.email">
@@ -41,6 +47,24 @@
                         <p><a class="core-anchor" href="mailto:{{user.email}}" core-link auto-login="no" [showBrowserWarning]="false">
                                 {{ user.email }}
                             </a></p>
+                    </ion-label>
+                </ion-item>
+                <ion-item class="ion-text-wrap" *ngIf="user.country">
+                    <ion-label>
+                        <p class="item-heading">{{ 'core.user.country' | translate}}</p>
+                        <p>{{ user.country }}</p>
+                    </ion-label>
+                </ion-item>
+                <ion-item class="ion-text-wrap" *ngIf="user.city">
+                    <ion-label>
+                        <p class="item-heading">{{ 'core.user.city' | translate}}</p>
+                        <p>{{ user.city }}</p>
+                    </ion-label>
+                </ion-item>
+                <ion-item class="ion-text-wrap" *ngIf="displayTimezone && user.timezone">
+                    <ion-label>
+                        <p class="item-heading">{{ 'core.timezone' | translate}}</p>
+                        <p>{{ user.timezone }}</p>
                     </ion-label>
                 </ion-item>
                 <ion-item class="ion-text-wrap" *ngIf="user.phone1">
@@ -59,31 +83,9 @@
                             </a></p>
                     </ion-label>
                 </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="user.city">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.user.city' | translate}}</p>
-                        <p>{{ user.city }}</p>
-                    </ion-label>
-                </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="user.country">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.user.country' | translate}}</p>
-                        <p>{{ user.country }}</p>
-                    </ion-label>
-                </ion-item>
-                <ion-item class="ion-text-wrap" *ngIf="displayTimezone && user.timezone">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.timezone' | translate}}</p>
-                        <p>{{ user.timezone }}</p>
-                    </ion-label>
-                </ion-item>
+
+
                 <ng-container *ngIf="canShowDepartment">
-                    <ion-item class="ion-text-wrap" *ngIf="user.idnumber">
-                        <ion-label>
-                            <p class="item-heading">{{ 'core.user.idnumber' | translate }}</p>
-                            <p>{{ user.idnumber }}</p>
-                        </ion-label>
-                    </ion-item>
                     <ion-item class="ion-text-wrap" *ngIf="user.institution">
                         <ion-label>
                             <p class="item-heading">{{ 'core.user.institution' | translate }}</p>
@@ -96,12 +98,18 @@
                             <p>{{ user.department }}</p>
                         </ion-label>
                     </ion-item>
+                    <ion-item class="ion-text-wrap" *ngIf="user.idnumber">
+                        <ion-label>
+                            <p class="item-heading">{{ 'core.user.idnumber' | translate }}</p>
+                            <p>{{ user.idnumber }}</p>
+                        </ion-label>
+                    </ion-item>
                 </ng-container>
             </ion-item-group>
             <ion-item-group *ngIf="hasDetails">
                 <ion-item-divider>
                     <ion-label>
-                        <p class="item-heading">{{ 'core.userdetails' | translate}}</p>
+                        <h3>{{ 'core.userdetails' | translate}}</h3>
                     </ion-label>
                 </ion-item-divider>
                 <ion-item class="ion-text-wrap" *ngIf="user.url">
@@ -123,21 +131,6 @@
                 <core-user-profile-field *ngFor="let field of user.customfields" [field]="field" contextLevel="course"
                     [contextInstanceId]="courseId" [courseId]="courseId">
                 </core-user-profile-field>
-            </ion-item-group>
-            <ion-item-group *ngIf="user.description">
-                <ion-item-divider>
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.user.description' | translate}}</p>
-                    </ion-label>
-                </ion-item-divider>
-                <ion-item class="ion-text-wrap">
-                    <ion-label>
-                        <p>
-                            <core-format-text [text]="user.description" contextLevel="user" [contextInstanceId]="user.id">
-                            </core-format-text>
-                        </p>
-                    </ion-label>
-                </ion-item>
             </ion-item-group>
         </ion-list>
 

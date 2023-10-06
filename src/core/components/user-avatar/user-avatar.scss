@@ -4,6 +4,9 @@
     position: relative;
     width: var(--core-avatar-size);
     height: var(--core-avatar-size);
+    --contact-status-size: 14px;
+    --margin-end-on-item: 8px;
+    --margin-vertical-on-item: 8px;
 
     img {
         border-radius: var(--core-avatar-radius);
@@ -53,8 +56,8 @@
         position: absolute;
         right: 0;
         bottom: 0;
-        width: 14px;
-        height: 14px;
+        width: var(--contact-status-size);
+        height: var(--contact-status-size);
         border-radius: 50%;
         &.online {
             border: 1px solid white;
@@ -92,7 +95,7 @@
 }
 
 :host-context(ion-item) {
-    @include margin(6px, 8px, 6px, 0px);
+    @include margin(var(--margin-vertical-on-item), var(--margin-end-on-item), var(--margin-vertical-on-item), 0px);
     img {
         min-width: var(--core-avatar-size);
         min-height: var(--core-avatar-size);

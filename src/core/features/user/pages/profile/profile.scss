@@ -1,29 +1,10 @@
 :host {
-
-    .core-user-profile-maininfo::part(native) {
-        flex-direction: column;
-    }
-    ::ng-deep {
-        core-user-avatar {
-            display: block;
-            --core-avatar-size: var(--core-large-avatar-size);
-            height: calc(var(--core-avatar-size) + 16px);
-
-            img {
-                margin: 8px auto;
-            }
-
-            .contact-status {
-                width: 24px !important;
-                height: 24px !important;
-                right: calc(50% - 12px - var(--core-avatar-size) / 2) !important;
-            }
+    core-user-avatar {
+        --core-avatar-size: var(--core-large-avatar-size);
+        --contact-status-size: 24px;
+        --margin-end-on-item: 16px;
+        .contact-status {
+            right: calc(50% - 12px - var(--core-avatar-size) / 2) !important;
         }
     }
-
-}
-
-:host-context([dir="rtl"]) ::ng-deep core-user-avatar .edit-avatar {
-    left: -24px;
-    right: unset;
 }

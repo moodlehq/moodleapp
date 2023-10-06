@@ -1236,6 +1236,7 @@ ion-chip {
 
 ion-searchbar {
     height: var(--height) !important;
+    --border-radius: var(--radius-xs);
 
     .searchbar-input-container {
         color: var(--color) !important;
@@ -1243,6 +1244,8 @@ ion-searchbar {
     }
 
     .searchbar-input {
+        --border-radius: var(--radius-xs);
+
         height: var(--height) !important;
         border: 1px solid var(--border-color) !important;
         box-shadow: none !important;
@@ -1869,13 +1872,15 @@ video::-webkit-media-text-track-display {
 }
 
 ion-modal {
-    .modal-wrapper {
-        --border-radius: var(--modal-radius);
+    &.show-modal {
+        @media only screen and (min-width: 768px) and (min-height: 600px) {
+            --border-radius: var(--modal-radius);
+        }
     }
 
     &.core-modal-lateral,
     &.core-modal-fullscreen {
-        --modal-radius: 0px;
+        --border-radius: 0px;
     }
 
     &.core-modal-no-background {
@@ -1896,6 +1901,10 @@ ion-popover {
     &.md {
         margin-top: 2px;
         margin-bottom: 2px;
+    }
+    // Never show backdrop on popovers
+    ion-backdrop {
+        background: transparent;
     }
 }
 

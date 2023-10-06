@@ -185,7 +185,6 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
                     title: this.title,
                     items: this.items,
                 },
-                showBackdrop: true,
                 id: this.uniqueId,
             });
 

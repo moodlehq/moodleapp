@@ -47,8 +47,8 @@
                     {{ 'core.settings.colorscheme-' + scheme | translate }}</ion-select-option>
             </ion-select>
         </ion-item>
-        <ion-item text-wrap *ngIf="colorSchemes.length > 0 && selectedScheme=='system' && isAndroid" lines="none">
-            <ion-label>
+        <ion-item *ngIf="colorSchemes.length> 0 && selectedScheme=='system' && isAndroid" lines="none">
+            <ion-label class="ion-text-wrap">
                 <p>{{ 'core.settings.colorscheme-system-notice' | translate }}</p>
             </ion-label>
         </ion-item>

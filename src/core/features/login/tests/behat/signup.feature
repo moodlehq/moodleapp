@@ -75,7 +75,8 @@ Feature: Test signup in app
 
     When I press the user menu button in the app
     And I press "User Test" in the app
-    Then I should find "Barcelona, Spain" in the app
+    Then I should find "Barcelona" in the app
+    Then I should find "Spain" in the app
     And I should find "u1@u1.com" in the app
 
   @lms_from3.10
