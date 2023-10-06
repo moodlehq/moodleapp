@@ -101,7 +101,7 @@ export class CoreSearchGlobalSearchService {
             ? await CoreSites.getSite(siteId)
             : CoreSites.getRequiredCurrentSite();
 
-        return !site?.isFeatureDisabled('CoreNoDelegate_GlobalSearch')
+        return !site?.isFeatureDisabled('NoDelegate_GlobalSearch')
             && site?.wsAvailable('core_search_get_results') // @since 4.3
             && site?.canUseAdvancedFeature('enableglobalsearch');
     }

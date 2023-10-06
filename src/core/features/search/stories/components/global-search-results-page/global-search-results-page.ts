@@ -107,6 +107,26 @@ export class CoreSearchGlobalSearchResultsPageComponent {
                 iconurl: 'https://master.mm.moodledemo.net/theme/image.php?theme=boost&component=core&image=i%2Fsection',
             },
         },
+        {
+            id: 8,
+            url: '',
+            title: 'This item has long text everywhere, so make sure that it looks good anyways. ' +
+                'Even if the screen you\'re using is also big, this should still be a problem because this text is *really* long.',
+            content: 'You would normally see lorem ipsum here, but we decided to just write some gibberish here to make it more ' +
+                'real. We all know that lorem ipsum is fabricated text, and even though it serves its purpose, it isn\'t as ' +
+                'engaging as some real, hand-crafted text (not sure why this should be engaging, anyways).',
+            context: {
+                courseName: 'And it\'s not just the title, either. Other things like the Course title also take more than ' +
+                    'you would expect in a normal site (or even not so normal).',
+                userName: 'To top it off, it has a user name as well! What is this madness? Well, at some point you just have to ' +
+                    'get creative. Honestly, I\'m surprised if you\'re even reading this. Kudos to you for being thorough.',
+            },
+            module: {
+                name: 'book',
+                iconurl: 'assets/img/mod/book.svg',
+                area: '',
+            },
+        },
     ];
 
     /**

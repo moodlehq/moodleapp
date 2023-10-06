@@ -11,7 +11,7 @@
             <core-format-text [text]="result.title"></core-format-text>
         </h3>
         <core-format-text *ngIf="result.content && !result.course && !result.user" [text]="result.content"></core-format-text>
-        <div *ngIf="renderedContext" class="flex-row">
+        <div *ngIf="renderedContext" class="result-context-wrapper">
             <div *ngIf="renderedContext.courseName" class="result-context">
                 <ion-icon name="fas-graduation-cap" aria-hidden="true"></ion-icon>
                 <core-format-text [text]="renderedContext.courseName"></core-format-text>

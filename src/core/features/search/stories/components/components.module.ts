@@ -20,13 +20,11 @@ import { CommonModule } from '@angular/common';
 import {
     CoreSearchGlobalSearchResultsPageComponent,
 } from '@features/search/stories/components/global-search-results-page/global-search-results-page';
-import { CoreSearchGlobalSearchResultComponent } from '@features/search/components/global-search-result/global-search-result';
 import { CoreSharedModule } from '@/core/shared.module';
 
 @NgModule({
     declarations: [
         CoreSearchGlobalSearchResultsPageComponent,
-        CoreSearchGlobalSearchResultComponent,
     ],
     imports: [
         CoreSharedModule,
