@@ -112,6 +112,8 @@ export class AddonModResourceIndexComponent extends CoreCourseModuleMainResource
             throw new CoreError(Translate.instant('core.filenotfound'));
         }
 
+        this.module.afterlink = await AddonModResourceHelper.getAfterLinkDetails(this.module, this.courseId);
+
         // Get the resource instance to get the latest name/description and to know if it's embedded.
         const resource = await AddonModResource.getResourceData(this.courseId, this.module.id);
         this.description = resource.intro || '';

@@ -11,6 +11,10 @@
     <!-- Activity info. -->
     <core-course-module-info [module]="module" [courseId]="courseId" [description]="displayDescription && description"
         [component]="component" [componentId]="componentId" (completionChanged)="onCompletionChange()">
+        <div class="addon-mod_resource-afterlink ion-text-wrap" *ngIf="module.afterlink" description>
+            <core-format-text [text]="module.afterlink" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
+            </core-format-text>
+        </div>
     </core-course-module-info>
 
     <ion-card class="core-warning-card" *ngIf="warning">
