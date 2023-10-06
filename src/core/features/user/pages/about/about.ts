@@ -120,11 +120,7 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
 
             this.user.address = CoreUserHelper.formatAddress('', user.city, user.country);
 
-            const serverTimezone = CoreSites.getCurrentSite()?.getStoredConfig('timezone');
-            this.displayTimezone = !!serverTimezone;
-            if (this.displayTimezone && this.user.timezone === USER_PROFILE_SERVER_TIMEZONE) {
-                this.user.timezone = serverTimezone;
-            }
+            this.fillTimezone();
 
             await this.checkUserImageUpdated();
         } catch (error) {
@@ -259,6 +255,30 @@ export class CoreUserAboutPage implements OnInit, OnDestroy {
         }
 
         return avatarUrl;
+    }
+
+    /**
+     * Fill user timezone depending on the server and fix the legacy timezones.
+     */
+    protected fillTimezone(): void {
+        if (!this.user) {
+            return;
+        }
+
+        const serverTimezone = CoreSites.getRequiredCurrentSite().getStoredConfig('timezone');
+        this.displayTimezone = !!serverTimezone;
+
+        if (!this.displayTimezone) {
+            return;
+        }
+
+        if (this.user.timezone === USER_PROFILE_SERVER_TIMEZONE) {
+            this.user.timezone = serverTimezone;
+        }
+
+        if (this.user.timezone) {
+            this.user.timezone = CoreUserHelper.translateLegacyTimezone(this.user.timezone);
+        }
     }
 
     /**
