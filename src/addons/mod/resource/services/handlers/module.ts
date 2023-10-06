@@ -21,12 +21,11 @@ import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '@features/
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { CoreTextUtils } from '@services/utils/text';
-import { CoreTimeUtils } from '@services/utils/time';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModResourceIndexComponent } from '../../components/index';
-import { AddonModResource, AddonModResourceCustomData } from '../resource';
+import { AddonModResource } from '../resource';
 import { AddonModResourceHelper } from '../resource-helper';
+import { CoreUtils } from '@services/utils/utils';
 
 /**
  * Handler to support resource modules.
@@ -94,19 +93,20 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
             },
         };
 
-        this.getResourceData(module, courseId, handlerData).then((extra) => {
-            handlerData.extraBadge = extra;
+        const [hideButton, extraBadge] = await Promise.all([
+            CoreUtils.ignoreErrors(this.hideOpenButton(module)),
+            CoreUtils.ignoreErrors(AddonModResourceHelper.getAfterLinkDetails(module, courseId)),
+        ]);
 
-            return;
-        }).catch(() => {
-            // Ignore errors.
-        });
-
-        try {
-            handlerData.icon = this.getIconSrc(module);
-        } catch {
-            // Ignore errors.
+        // Check if the button needs to be shown or not.
+        if (hideButton !== undefined) {
+            handlerData.button.hidden = hideButton;
         }
+        if (extraBadge !== undefined) {
+            handlerData.extraBadge = extraBadge;
+        }
+
+        handlerData.icon = this.getIconSrc(module);
 
         return handlerData;
     }
@@ -125,102 +125,6 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
         const status = await CoreCourseModulePrefetchDelegate.getModuleStatus(module, module.course);
 
         return status !== CoreConstants.DOWNLOADED || AddonModResourceHelper.isDisplayedInIframe(module);
-    }
-
-    /**
-     * Returns the activity icon and data.
-     *
-     * @param module The module object.
-     * @param courseId The course ID.
-     * @returns Resource data.
-     */
-    protected async getResourceData(
-        module: CoreCourseModuleData,
-        courseId: number,
-        handlerData: CoreCourseModuleHandlerData,
-    ): Promise<string> {
-        const promises: Promise<void>[] = [];
-        let options: AddonModResourceCustomData = {};
-
-        // Check if the button needs to be shown or not.
-        promises.push(this.hideOpenButton(module).then((hideOpenButton) => {
-            if (!handlerData.button) {
-                return;
-            }
-
-            handlerData.button.hidden = hideOpenButton;
-
-            return;
-        }));
-
-        if (module.customdata !== undefined) {
-            options = CoreTextUtils.unserialize(CoreTextUtils.parseJSON(module.customdata));
-        } else {
-            // Get the resource data.
-            promises.push(AddonModResource.getResourceData(courseId, module.id).then((info) => {
-                options = CoreTextUtils.unserialize(info.displayoptions);
-
-                return;
-            }));
-        }
-
-        await Promise.all(promises);
-
-        if (module.contentsinfo) {
-            // No need to use the list of files.
-            return CoreTextUtils.cleanTags(module.afterlink);
-        }
-
-        if (!module.contents || !module.contents[0]) {
-            return '';
-        }
-
-        const extra: string[] = [];
-        const files = module.contents;
-        const mainFile = files[0];
-
-        if (options.showsize) {
-            const size = options.filedetails
-                ? options.filedetails.size
-                : files.reduce((result, file) => result + (file.filesize || 0), 0);
-
-            extra.push(CoreTextUtils.bytesToSize(size, 1));
-        }
-
-        if (options.showtype) {
-            // We should take it from options.filedetails.size if available but it's already translated.
-            extra.push(CoreMimetypeUtils.getMimetypeDescription(mainFile));
-        }
-
-        if (options.showdate) {
-            const timecreated = 'timecreated' in mainFile ? mainFile.timecreated : 0;
-
-            if (options.filedetails && options.filedetails.modifieddate) {
-                extra.push(Translate.instant(
-                    'addon.mod_resource.modifieddate',
-                    { $a: CoreTimeUtils.userDate(options.filedetails.modifieddate * 1000, 'core.strftimedatetimeshort') },
-                ));
-            } else if (options.filedetails && options.filedetails.uploadeddate) {
-                extra.push(Translate.instant(
-                    'addon.mod_resource.uploadeddate',
-                    { $a: CoreTimeUtils.userDate(options.filedetails.uploadeddate * 1000, 'core.strftimedatetimeshort') },
-                ));
-            } else if ((mainFile.timemodified || 0) > timecreated + CoreConstants.SECONDS_MINUTE * 5) {
-                /* Modified date may be up to several minutes later than uploaded date just because
-                    teacher did not submit the form promptly. Give teacher up to 5 minutes to do it. */
-                extra.push(Translate.instant(
-                    'addon.mod_resource.modifieddate',
-                    { $a: CoreTimeUtils.userDate((mainFile.timemodified || 0) * 1000, 'core.strftimedatetimeshort') },
-                ));
-            } else {
-                extra.push(Translate.instant(
-                    'addon.mod_resource.uploadeddate',
-                    { $a: CoreTimeUtils.userDate(timecreated * 1000, 'core.strftimedatetimeshort') },
-                ));
-            }
-        }
-
-        return extra.join(' · ');
     }
 
     /**

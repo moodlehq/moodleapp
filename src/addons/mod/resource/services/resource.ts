@@ -200,12 +200,20 @@ export type AddonModResourceResource = {
 };
 
 export type AddonModResourceCustomData = {
-    showsize?: boolean;
     filedetails?: {
-        size: number;
-        modifieddate: number;
-        uploadeddate: number;
+        isref?: boolean; // If file is a reference the 'size' or 'date' attribute can not be cached.
+        // If showsize is true.
+        size?: number; // Size in bytes.
+        // If showtype is true.
+        type?: string; // Mimetype description (already translated).
+        mimetype?: string; // @since LMS 3.7
+        extension?: string; // @since LMS 4.3
+        // If showdate is true.
+        modifieddate?: number; // Only if file has been modified.
+        uploadeddate?: number; // Only if file has NOT been modified.
+
     };
+    showsize?: boolean;
     showtype?: boolean;
     showdate?: boolean;
     printintro?: boolean;

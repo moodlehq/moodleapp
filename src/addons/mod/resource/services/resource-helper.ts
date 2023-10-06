@@ -27,8 +27,10 @@ import { CoreMimetypeUtils } from '@services/utils/mimetype';
 import { CoreUtilsOpenFileOptions } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CorePath } from '@singletons/path';
-import { AddonModResource, AddonModResourceProvider } from './resource';
+import { AddonModResource, AddonModResourceCustomData, AddonModResourceProvider } from './resource';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreTextUtils } from '@services/utils/text';
+import { CoreTimeUtils } from '@services/utils/time';
 
 /**
  * Service that provides helper functions for resources.
@@ -220,6 +222,117 @@ export class AddonModResourceHelperProvider {
         } finally {
             modal.dismiss();
         }
+    }
+
+    /**
+     * Get resource show options.
+     *
+     * @param module The module object.
+     * @param courseId The course ID.
+     * @returns Resource options.
+     */
+    protected async getModuleOptions(module: CoreCourseModuleData, courseId: number): Promise<AddonModResourceCustomData> {
+        if (module.customdata !== undefined) {
+            const customData: { displayoptions: string } | string = CoreTextUtils.parseJSON(module.customdata);
+            const displayOptions = typeof customData === 'object' ? customData.displayoptions : customData;
+
+            return CoreTextUtils.unserialize(displayOptions);
+        }
+
+        // Get the resource data. Legacy version (from 3.5 to 3.6.6)
+        const info = await AddonModResource.getResourceData(courseId, module.id);
+        const options: AddonModResourceCustomData = CoreTextUtils.unserialize(info.displayoptions);
+
+        if (!module.contents?.[0] || options.filedetails !== undefined) {
+            // Contents attribute should be loaded at this point and it's needed to get mainFile.
+            // Filedetails won't be usually loaded, but if it's there's no need to check mainFile.
+
+            return options;
+        }
+
+        // Fill filedetails checking files in contents.
+        options.filedetails = {};
+
+        const files = module.contents;
+        const mainFile = files[0];
+
+        if (options.showsize) {
+            options.filedetails.size = files.reduce((result, file) => result + (file.filesize || 0), 0);
+        }
+
+        if (options.showtype) {
+            options.filedetails.type = CoreMimetypeUtils.getMimetypeDescription(mainFile);
+        }
+
+        if (options.showdate) {
+            const timecreated = 'timecreated' in mainFile ? mainFile.timecreated : 0;
+
+            if ((mainFile.timemodified || 0) > timecreated + CoreConstants.SECONDS_MINUTE * 5) {
+                /* Modified date may be up to several minutes later than uploaded date just because
+                    teacher did not submit the form promptly. Give teacher up to 5 minutes to do it. */
+                options.filedetails.modifieddate = mainFile.timemodified || 0;
+            } else {
+                options.filedetails.uploadeddate = timecreated;
+            }
+        }
+
+        return options;
+    }
+
+    /**
+     * Get afterlink details to be shown on the activity card.
+     *
+     * @param module The module object.
+     * @param courseId The course ID.
+     * @returns Description string to be shown on the activity card.
+     */
+    async getAfterLinkDetails(
+        module: CoreCourseModuleData,
+        courseId: number,
+    ): Promise<string> {
+        const options = await this.getModuleOptions(module, courseId);
+
+        if (!options.filedetails) {
+            return '';
+        }
+
+        const details = options.filedetails;
+
+        const extra: string[] = [];
+
+        if (options.showsize && details.size) {
+            extra.push(CoreTextUtils.bytesToSize(details.size, 1));
+        }
+
+        if (options.showtype) {
+            // The order of this if conditions should not be changed.
+            if (details.extension) {
+                // From LMS 4.3 onwards only extension is shown.
+                extra.push(details.extension);
+            } else if (details.mimetype) {
+                // Mostly used from 3.7 to 4.2.
+                extra.push(CoreMimetypeUtils.getMimetypeDescription(details.mimetype));
+            } else if (details.type) {
+                // Used on 3.5 and 3.6 where mimetype populated on getModuleOptions using main file.
+                extra.push(details.type); // Already translated.
+            }
+        }
+
+        if (options.showdate) {
+            if (details.modifieddate) {
+                extra.push(Translate.instant(
+                    'addon.mod_resource.modifieddate',
+                    { $a: CoreTimeUtils.userDate(details.modifieddate * 1000, 'core.strftimedatetimeshort') },
+                ));
+            } else if (details.uploadeddate) {
+                extra.push(Translate.instant(
+                    'addon.mod_resource.uploadeddate',
+                    { $a: CoreTimeUtils.userDate(details.uploadeddate * 1000, 'core.strftimedatetimeshort') },
+                ));
+            }
+        }
+
+        return extra.join(' · ');
     }
 
 }
