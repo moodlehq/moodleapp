@@ -26,10 +26,6 @@
                         <strong>{{ 'core.user.roles' | translate}}</strong>{{'core.labelsep' | translate}}
                         {{ rolesFormatted }}
                     </p>
-                    <p *ngIf="userGroups">
-                        <strong>{{ 'core.group' | translate}}</strong>{{'core.labelsep' | translate}}
-                        {{ userGroups }}
-                    </p>
                     <p *ngIf="user.lastaccess !== undefined">
                         <strong>{{ 'core.lastaccess' | translate }}: </strong>
                         <span *ngIf="user.lastaccess">{{ user.lastaccess | coreTimeAgo }}</span>

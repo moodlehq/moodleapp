@@ -53,7 +53,6 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
     protected subscription?: Subscription;
     protected logView: (user: CoreUserProfile) => void;
 
-    userGroups?: string;
     userLoaded = false;
     isLoadingHandlers = false;
     user?: CoreUserProfile;
@@ -133,11 +132,6 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
 
         try {
             await this.fetchUser();
-
-            if (this.courseId && this.user && 'groups' in this.user) {
-                const separator = Translate.instant('core.listsep');
-                this.userGroups = this.user.groups?.map(group => group.name).join(separator + ' ');
-            }
         } finally {
             this.userLoaded = true;
         }
