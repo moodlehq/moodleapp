@@ -275,13 +275,13 @@ class behat_app_helper extends behat_base {
         );
 
         $locator = [
-            'text' => str_replace('\\"', '"', $matches[1]),
+            'text' => $this->transform_time_to_string(str_replace('\\"', '"', $matches[1])),
             'selector' => $matches[2] ?? null,
         ];
 
         if (!empty($matches[3])) {
             $locator[$matches[3]] = (object) [
-                'text' => str_replace('\\"', '"', $matches[4]),
+                'text' => $this->transform_time_to_string(str_replace('\\"', '"', $matches[4])),
                 'selector' => $matches[5] ?? null,
             ];
         }
@@ -607,5 +607,38 @@ EOF;
         }");
 
         $this->getSession()->getDriver()->resizeWindow($width + $offset['x'], $height + $offset['y']);
+    }
+
+    /**
+     * Given a string, search if it contains a time with the ## format and convert it to a timestamp or readable time.
+     * Only allows 1 occurence, if the text contains more than one time sub-string it won't work as expected.
+     * This function is similar to the arg_time_to_string transformation, but it allows the time to be a sub-text of the string.
+     *
+     * @param string $text
+     * @return string Transformed text.
+     */
+    protected function transform_time_to_string(string $text): string {
+        if (!preg_match('/##(.*)##/', $text, $matches)) {
+            // No time found, return the original text.
+            return $text;
+        }
+
+        $timepassed = explode('##', $matches[1]);
+
+        // If not a valid time string, then just return what was passed.
+        if ((($timestamp = strtotime($timepassed[0])) === false)) {
+            return $text;
+        }
+
+        $count = count($timepassed);
+        if ($count === 2) {
+            // If timestamp with specified strftime format, then return formatted date string.
+            return str_replace($matches[0], userdate($timestamp, $timepassed[1]), $text);
+        } else if ($count === 1) {
+            return str_replace($matches[0], $timestamp, $text);
+        } else {
+            // If not a valid time string, then just return what was passed.
+            return $text;
+        }
     }
 }
