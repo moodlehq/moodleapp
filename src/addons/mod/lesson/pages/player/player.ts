@@ -426,6 +426,7 @@ export class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanLeave {
         this.eolData = data.data;
         this.messages = this.messages.concat(data.messages);
         this.processData = undefined;
+        this.endTime = undefined;
 
         CoreEvents.trigger(CoreEvents.ACTIVITY_DATA_SENT, { module: 'lesson' });
 
