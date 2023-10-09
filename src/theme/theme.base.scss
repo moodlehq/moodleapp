@@ -840,6 +840,9 @@ body.core-iframe-fullscreen ion-router-outlet {
 .item-dimmed {
     opacity: 0.7;
     --background: var(--light);
+    ion-item {
+        --background: var(--light);
+    }
 }
 
 // Extra text colors.
