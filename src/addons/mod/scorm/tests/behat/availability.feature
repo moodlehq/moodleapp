@@ -20,6 +20,7 @@ Feature: Test availability options of SCORM activity in app
       | scorm    | C1     | Current SCORM | mod/scorm/tests/packages/singlesco_scorm12.zip | ##yesterday## | ##tomorrow##  |
       | scorm    | C1     | Future SCORM  | mod/scorm/tests/packages/singlesco_scorm12.zip | ##tomorrow##  | ##+2 days##   |
 
+  @lms_from4.1
   Scenario: Only open SCORMs can be played
     Given I entered the course "Course 1" as "student1" in the app
     When I press "Past SCORM" in the app
