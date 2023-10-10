@@ -332,12 +332,13 @@ export class CoreUrlUtilsProvider {
      * @returns Last file without params.
      */
     getLastFileWithoutParams(url: string): string {
-        let filename = url.substring(url.lastIndexOf('/') + 1);
-        if (filename.indexOf('?') != -1) {
-            filename = filename.substring(0, filename.indexOf('?'));
+        const parsedUrl = CoreUrl.parse(url);
+        if (!parsedUrl) {
+            return '';
         }
+        const path = parsedUrl.path ?? '';
 
-        return filename;
+        return path.split('/').pop() ?? '';
     }
 
     /**
@@ -346,6 +347,7 @@ export class CoreUrlUtilsProvider {
      *
      * @param url URL to treat.
      * @returns Protocol, undefined if no protocol found.
+     * @todo Use CoreUrl.parse
      */
     getUrlProtocol(url: string): string | void {
         if (!url) {
@@ -381,6 +383,7 @@ export class CoreUrlUtilsProvider {
      *
      * @param url URL to treat.
      * @returns Username. Undefined if no username found.
+     * @todo Use CoreUrl.parse
      */
     getUsernameFromUrl(url: string): string | undefined {
         if (url.indexOf('@') > -1) {
@@ -430,6 +433,7 @@ export class CoreUrlUtilsProvider {
      *
      * @param url The url to test.
      * @returns Whether the url uses http or https protocol.
+     * @todo Use CoreUrl.parse
      */
     isHttpURL(url: string): boolean {
         return /^https?:\/\/.+/i.test(url);
