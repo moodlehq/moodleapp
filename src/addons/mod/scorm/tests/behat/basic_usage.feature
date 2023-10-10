@@ -223,6 +223,7 @@ Feature: Test basic usage of SCORM activity in app
       | activity | name        | course | idnumber | packagefilepath                                               |
       | scorm    | Basic SCORM | C1     | scorm    | mod/scorm/tests/packages/RuntimeMinimumCalls_SCORM12-mini.zip |
     And I entered the course "Course 1" as "student1" in the app
+    And I change viewport size to "1200x640" in the app
     When I press "Basic SCORM" in the app
     And I press "Enter" in the app
     And I press "Disable fullscreen" in the app
@@ -230,7 +231,7 @@ Feature: Test basic usage of SCORM activity in app
 
     When I open a browser tab with url "$WWWROOT"
     And I log in as "admin"
-    And I am on the "System logs report" page
+    And I navigate to "Reports > Reports > Logs" in site administration
     And I set the field "id" to "Course 1"
     And I set the field "user" to "Student student"
     And I press "Get these logs"

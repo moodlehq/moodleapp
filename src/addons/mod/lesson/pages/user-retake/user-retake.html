@@ -128,7 +128,7 @@
                             <ng-container *ngIf="page.isQuestion">
                                 <!-- Question page, show the right input for the answer. -->
 
-                                <!-- Truefalse or matching. -->
+                                <!-- Truefalse or multichoice. -->
                                 <ion-item class="ion-text-wrap" *ngIf="answer[0].isCheckbox"
                                     [ngClass]="{'addon-mod_lesson-highlight': answer[0].highlight}">
                                     <ion-label>
@@ -138,11 +138,14 @@
                                                 [courseId]="courseId">
                                             </core-format-text>
                                         </p>
-                                        <ion-badge *ngIf="answer[1]" color="dark">
+                                        <ion-badge *ngIf="answer[1]" color="dark" class="addon-mod_lesson-answer-stats">
                                             <core-format-text [component]="component" [componentId]="lesson?.coursemodule"
                                                 [text]="answer[1]" contextLevel="module" [contextInstanceId]="lesson?.coursemodule"
                                                 [courseId]="courseId">
                                             </core-format-text>
+                                        </ion-badge>
+                                        <ion-badge *ngIf="answer[0].successBadge" color="success" class="addon-mod_lesson-answer-success">
+                                            {{ answer[0].successBadge }}
                                         </ion-badge>
                                     </ion-label>
                                     <ion-checkbox [attr.name]="answer[0].name" [ngModel]="answer[0].checked" [disabled]="true" slot="end">

@@ -461,25 +461,28 @@ export class AddonModLessonHelperProvider {
         const element = CoreDomUtils.convertToElement(html);
 
         // Check if it has a checkbox.
-        let input = <HTMLInputElement> element.querySelector('input[type="checkbox"][name*="answer"]');
+        let input = element.querySelector<HTMLInputElement>('input[type="checkbox"][name*="answer"]');
         if (input) {
             // Truefalse or multichoice.
+            const successBadge = element.querySelector<HTMLElement>('.badge.badge-success');
             const data: AddonModLessonCheckboxAnswerData = {
                 isCheckbox: true,
                 checked: !!input.checked,
                 name: input.name,
                 highlight: !!element.querySelector('.highlight'),
                 content: '',
+                successBadge: successBadge?.innerText,
             };
 
             input.remove();
+            successBadge?.remove();
             data.content = element.innerHTML.trim();
 
             return data;
         }
 
         // Check if it has an input text or number.
-        input = <HTMLInputElement> element.querySelector('input[type="number"],input[type="text"]');
+        input = element.querySelector<HTMLInputElement>('input[type="number"],input[type="text"]');
         if (input) {
             // Short answer or numeric.
             return {
@@ -700,6 +703,7 @@ export type AddonModLessonCheckboxAnswerData = {
     name: string;
     highlight: boolean;
     content: string;
+    successBadge?: string;
 };
 
 /**
