@@ -232,7 +232,7 @@ export class CoreIframeUtilsProvider {
      */
     getContentWindowAndDocument(element: CoreFrameElement): { window: Window | null; document: Document | null } {
         const src = 'src' in element ? element.src : element.data;
-        if (!CoreUrlUtils.isLocalFileUrl(src)) {
+        if (src !== 'about:blank' && !CoreUrlUtils.isLocalFileUrl(src)) {
             // No permissions to access the iframe.
             return { window: null, document: null };
         }
