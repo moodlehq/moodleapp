@@ -122,7 +122,7 @@ Feature: Attempt a quiz in app
     Then I should find "Summary of attempt" in the app
 
     When I press "Submit all and finish" in the app
-    And I press "Submit" near "Once you submit" in the app
+    And I press "OK" near "Once you submit" in the app
     Then I should find "Review" in the app
     And I should find "Started on" in the app
     And I should find "State" in the app
@@ -181,7 +181,7 @@ Feature: Attempt a quiz in app
     But I should not find "Not yet answered" in the app
 
     When I press "Submit all and finish" in the app
-    And I press "Submit" in the app
+    And I press "OK" in the app
     Then I should find "Review" in the app
     And I should find "Finished" in the app
     And I should find "Not yet graded" in the app
@@ -201,7 +201,7 @@ Feature: Attempt a quiz in app
     And I press "False" in the app
     And I press "Submit" in the app
     And I press "Submit all and finish" in the app
-    And I press "Submit" in the app
+    And I press "OK" in the app
     Then I should find "Review" in the app
 
     When I replace "/.*/" within "page-addon-mod-quiz-review core-loading > ion-card ion-item:nth-child(1) p:nth-child(2)" with "[Started on date]"

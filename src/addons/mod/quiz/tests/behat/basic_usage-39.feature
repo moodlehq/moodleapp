@@ -113,7 +113,7 @@ Feature: Attempt a quiz in app
     And I should find "Incomplete answer" within "9" "ion-item" in the app
 
     When I press "Submit all and finish" in the app
-    And I press "Submit" in the app
+    And I press "OK" in the app
     Then I should find "Review" in the app
     And I should find "Finished" in the app
     And I should find "Not yet graded" in the app
