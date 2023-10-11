@@ -1,11 +1,22 @@
 name: Release
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Final release or beta'
+        required: true
+        type: choice
+        options:
+        - final
+        - beta
 
 jobs:
   release:
     if: github.repository == 'moodlemobile/moodleapp'
     runs-on: ubuntu-latest
+    env:
+      RELEASE_TYPE: ${{ github.event.inputs.release_type || 'final' }}
 
     steps:
     - uses: actions/checkout@v2
@@ -20,4 +31,4 @@ jobs:
     - name: Create release tags
       env:
         GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
-      run: ./.github/scripts/release.sh
+      run: ./.github/scripts/release.sh $RELEASE_TYPE
