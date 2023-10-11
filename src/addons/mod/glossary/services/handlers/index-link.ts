@@ -28,6 +28,13 @@ export class AddonModGlossaryIndexLinkHandlerService extends CoreContentLinksMod
         super('AddonModGlossary', 'glossary', 'g');
     }
 
+    /**
+     * @inheritdoc
+     */
+    async isEnabled(siteId: string, url: string, params: Record<string, string>): Promise<boolean> {
+        return !params.hook && !params.eid;
+    }
+
 }
 
 export const AddonModGlossaryIndexLinkHandler = makeSingleton(AddonModGlossaryIndexLinkHandlerService);
