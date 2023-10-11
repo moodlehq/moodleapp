@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreUtils } from '@services/utils/utils';
 import { CoreDom } from '@singletons/dom';
 import { CoreEventObserver } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
@@ -148,7 +147,10 @@ export class AddonQtypeDdImageOrTextQuestion {
             }
         }
 
-        await CoreUtils.nextTick();
+        await CoreDom.waitToBeVisible(
+            this.container.querySelector<HTMLElement>('.ddarea') ??
+            this.container,
+        );
 
         // All drag items have been created, position them.
         this.repositionDragsForQuestion();
