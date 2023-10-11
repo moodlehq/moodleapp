@@ -4,7 +4,7 @@
             <core-user-avatar [user]="profile" [courseId]="courseId" [userId]="profile?.id" slot="start">
             </core-user-avatar>
             <ion-label>
-                <h2>
+                <h2 *ngIf="submission.title">
                     <core-format-text [text]="submission.title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
                     </core-format-text>
                 </h2>
@@ -68,7 +68,7 @@
         <core-user-avatar [user]="profile" slot="start" [courseId]="courseId" [userId]="profile?.id">
         </core-user-avatar>
         <ion-label>
-            <h2>
+            <h2 *ngIf="submission.title">
                 <core-format-text [text]="submission.title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId">
                 </core-format-text>
             </h2>

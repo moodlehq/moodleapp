@@ -291,13 +291,13 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
 
         await Promise.all(grades.map(async (grade) => {
             const submission: AddonModWorkshopSubmissionDataWithOfflineData = {
-                id: grade.submissionid,
+                id: grade.submissionid || 0,
                 workshopid: workshop.id,
                 example: false,
                 authorid: grade.userid,
-                timecreated: grade.submissionmodified,
-                timemodified: grade.submissionmodified,
-                title: grade.submissiontitle,
+                timecreated: grade.submissionmodified || 0,
+                timemodified: grade.submissionmodified || 0,
+                title: grade.submissiontitle || '',
                 content: '',
                 contenttrust: 0,
                 attachment: 0,
