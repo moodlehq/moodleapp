@@ -17,7 +17,7 @@
         opacity: 0.5;
     }
 
-    .addon-mod_lesson-answer-success {
-        @include margin-horizontal(4px, null);
+    .addon-mod_lesson-answer-stats {
+        @include margin-horizontal(null, 4px);
     }
 }
