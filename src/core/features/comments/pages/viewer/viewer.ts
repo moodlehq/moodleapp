@@ -222,6 +222,7 @@ export class CoreCommentsViewerPage implements OnInit, OnDestroy {
         comment.showDate = this.showDate(comment, prevComment);
         comment.showUserData = this.showUserData(comment, prevComment);
         comment.showTail = this.showTail(comment, prevComment);
+        comment.delete = comment.delete ?? false; // If this property is undefined, core-message assumes comment can be deleted.
     }
 
     /**

@@ -12,7 +12,8 @@
         <ion-buttons slot="end">
             <ion-button *ngIf="canDeleteComments" slot="end" fill="clear" (click)="toggleDelete()"
                 [attr.aria-label]="'core.toggledelete' | translate">
-                <ion-icon name="fas-pen" slot="icon-only" aria-hidden="true"></ion-icon>
+                <ion-icon *ngIf="!showDelete" name="fas-pen" slot="icon-only" aria-hidden="true"></ion-icon>
+                <ion-icon *ngIf="showDelete" name="fas-check" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
             <core-context-menu>
                 <core-context-menu-item [hidden]="!(commentsLoaded && !hasOffline)" [priority]="100" [content]="'core.refresh' | translate"
