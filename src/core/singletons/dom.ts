@@ -123,8 +123,12 @@ export class CoreDom {
      * @returns True if element is visible inside the DOM.
      */
     static isElementVisible(element: HTMLElement, checkSize = true): boolean {
-        if (checkSize && (element.clientWidth === 0 || element.clientHeight === 0)) {
-            return false;
+        if (checkSize) {
+            const dimensions = element.getBoundingClientRect();
+
+            if (dimensions.width === 0 || dimensions.height === 0) {
+                return false;
+            }
         }
 
         const style = getComputedStyle(element);
