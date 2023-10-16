@@ -21,7 +21,9 @@
 <!-- Question behaviour buttons. -->
 <ion-button *ngFor="let button of question?.behaviourButtons" class="ion-margin-vertical ion-text-wrap" expand="block"
     (click)="buttonClicked.emit(button)" [disabled]="button.disabled">
-    {{ button.value }}
+    <core-format-text [component]="component" [componentId]="componentId" [text]="button.value" [contextLevel]="contextLevel"
+        [contextInstanceId]="contextInstanceId" [courseId]="courseId">
+    </core-format-text>
 </ion-button>
 
 <!-- Question feedback. -->
