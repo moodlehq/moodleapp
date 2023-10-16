@@ -53,9 +53,9 @@ export class CoreCoursesCourseLinkHandlerService extends CoreContentLinksHandler
         params: Params,
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         const courseId = parseInt(params.id, 10);
-        const sectionId = params.sectionid ? parseInt(params.sectionid, 10) : null;
+        const sectionId = params.sectionid ? parseInt(params.sectionid, 10) : undefined;
         const pageParams: Params = {
-            sectionId: sectionId || null,
+            sectionId: sectionId || undefined,
         };
         let sectionNumber = params.section !== undefined ? parseInt(params.section, 10) : NaN;
 
