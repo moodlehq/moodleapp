@@ -12,7 +12,7 @@
 <ion-content class="limited-width">
     <core-loading [hideUntil]="loaded">
         <ion-searchbar [(ngModel)]="textFilter" (ionInput)="filterChanged($event.target)" (ionCancel)="filterChanged($event.target)"
-            [placeholder]="'core.filter' | translate">
+            [placeholder]="'core.filter' | translate" class="ion-margin-top">
         </ion-searchbar>
         <ion-list>
             <ion-item button *ngIf="error" class="ion-text-wrap" [href]="licensesUrl" core-link auto-login="no" detail="false">

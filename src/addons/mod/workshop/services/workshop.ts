@@ -1766,9 +1766,9 @@ export type AddonModWorkshoGradesReportData = {
 
 export type AddonModWorkshopGradesData = {
     userid: number; // The id of the user being displayed in the report.
-    submissionid: number; // Submission id.
-    submissiontitle: string; // Submission title.
-    submissionmodified: number; // Timestamp submission was updated.
+    submissionid?: number; // Submission id.
+    submissiontitle?: string; // Submission title.
+    submissionmodified?: number; // Timestamp submission was updated.
     submissiongrade?: number; // Aggregated grade for the submission.
     gradinggrade?: number; // Computed grade for the assessment.
     submissiongradeover?: number; // Grade for the assessment overrided by the teacher.
