@@ -106,6 +106,11 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
      */
     ngOnInit(): void {
         this.collapsible = !CoreUtils.isFalseOrZero(this.collapsible);
+
+        if (CoreDom.closest(this.collapsedHeader, 'core-tabs-outlet')) {
+            this.collapsible = false;
+        }
+
         this.init();
     }
 
