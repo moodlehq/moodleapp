@@ -145,30 +145,6 @@ export class CoreSearchGlobalSearchService {
     }
 
     /**
-     * Get top results.
-     *
-     * @param query Search query.
-     * @param filters Search filters.
-     * @returns Top search results.
-     */
-    async getTopResults(query: string, filters: CoreSearchGlobalSearchFilters): Promise<CoreSearchGlobalSearchResult[]> {
-        if (this.filtersYieldEmptyResults(filters)) {
-            return [];
-        }
-
-        const site = CoreSites.getRequiredCurrentSite();
-        const params: CoreSearchGetTopResultsWSParams = {
-            query,
-            filters: await this.prepareAdvancedWSFilters(filters),
-        };
-        const preSets = CoreSites.getReadingStrategyPreSets(CoreSitesReadingStrategy.PREFER_NETWORK);
-
-        const { results } = await site.read<CoreSearchGetTopResultsWSResponse>('core_search_get_top_results', params, preSets);
-
-        return await Promise.all((results ?? []).map(result => this.formatWSResult(result)));
-    }
-
-    /**
      * Get available search areas.
      *
      * @returns Search areas.
@@ -359,14 +335,6 @@ type CoreSearchViewResultsWSParams = {
 };
 
 /**
- * Params of core_search_get_top_results WS.
- */
-type CoreSearchGetTopResultsWSParams = {
-    query: string; // The search query.
-    filters?: CoreSearchAdvancedWSFilters; // Filters to apply.
-};
-
-/**
  * Search result returned in WS.
  */
 type CoreSearchWSResult = { // Search results.
@@ -443,11 +411,4 @@ type CoreSearchGetSearchAreasListWSResponse = {
 type CoreSearchViewResultsWSResponse = {
     status: boolean; // Status: true if success.
     warnings?: CoreWSExternalWarning[];
-};
-
-/**
- * Data returned by core_search_get_top_results WS.
- */
-type CoreSearchGetTopResultsWSResponse = {
-    results?: CoreSearchWSResult[];
 };
