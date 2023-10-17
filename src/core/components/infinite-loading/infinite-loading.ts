@@ -22,7 +22,7 @@ const THRESHOLD = .15; // % of the scroll element height that must be close to t
  * Component to show a infinite loading trigger and spinner while more data is being loaded.
  *
  * Usage:
- * <core-infinite-loading [action]="loadingAction" [enabled]="dataLoaded"></core-inifinite-loading>
+ * <core-infinite-loading [action]="loadingAction" [enabled]="dataLoaded"></core-infinite-loading>
  */
 @Component({
     selector: 'core-infinite-loading',
