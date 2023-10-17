@@ -27,9 +27,6 @@ export class CoreSearchGlobalSearchResultsSource extends CorePaginatedItemsManag
 
     private query: string;
     private filters: CoreSearchGlobalSearchFilters;
-    private pagesLoaded = 0;
-    private totalResults?: number;
-    private topResultsIds?: number[];
 
     constructor(query: string, filters: CoreSearchGlobalSearchFilters) {
         super();
@@ -90,62 +87,10 @@ export class CoreSearchGlobalSearchResultsSource extends CorePaginatedItemsManag
     /**
      * @inheritdoc
      */
-    getPagesLoaded(): number {
-        return this.pagesLoaded;
-    }
-
-    /**
-     * Get total results with the given filter.
-     *
-     * @returns Total results.
-     */
-    getTotalResults(): number | null {
-        return this.totalResults ?? null;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    async reload(): Promise<void> {
-        this.pagesLoaded = 0;
-
-        await super.reload();
-    }
-
-    /**
-     * Reset collection data.
-     */
-    reset(): void {
-        this.pagesLoaded = 0;
-        delete this.totalResults;
-        delete this.topResultsIds;
-
-        super.reset();
-    }
-
-    /**
-     * @inheritdoc
-     */
     protected async loadPageItems(page: number): Promise<{ items: CoreSearchGlobalSearchResult[]; hasMoreItems: boolean }> {
-        this.pagesLoaded++;
-
-        const results: CoreSearchGlobalSearchResult[] = [];
-
-        if (page === 0) {
-            const topResults = await CoreSearchGlobalSearch.getTopResults(this.query, this.filters);
-
-            results.push(...topResults);
-
-            this.topResultsIds = topResults.map(result => result.id);
-        }
-
         const pageResults = await CoreSearchGlobalSearch.getResults(this.query, this.filters, page);
 
-        this.totalResults = pageResults.total;
-
-        results.push(...pageResults.results.filter(result => !this.topResultsIds?.includes(result.id)));
-
-        return { items: results, hasMoreItems: pageResults.canLoadMore };
+        return { items: pageResults.results, hasMoreItems: pageResults.canLoadMore };
     }
 
     /**
