@@ -1,8 +1,5 @@
 @mod @mod_quiz @app @javascript
-Feature: Attempt a quiz in app
-  As a student
-  In order to demonstrate what I know
-  I need to be able to attempt quizzes
+Feature: Navigate through a quiz in the app
 
   Background:
     Given the following "courses" exist:
