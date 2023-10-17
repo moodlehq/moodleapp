@@ -50,6 +50,11 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
     @Input() showActivityDates = false; // Whether to show activity dates.
     @Input() showCompletionConditions = false; // Whether to show activity completion conditions.
     @Input() showLegacyCompletion?: boolean; // Whether to show module completion in the old format.
+    @Input() showCompletion = true; // Whether to show module completion.
+    @Input() showAvailability = true; // Whether to show module availability.
+    @Input() showExtra = true; // Whether to show extra badges.
+    @Input() showDownloadStatus = true; // Whether to show download status.
+    @Input() showIndentation = true; // Whether to show indentation
     @Input() isLastViewed = false; // Whether it's the last module viewed in a course.
     @Output() completionChanged = new EventEmitter<CoreCourseModuleCompletionData>(); // Notify when module completion changes.
     @HostBinding('class.indented') indented = false;
@@ -70,14 +75,24 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
      */
     async ngOnInit(): Promise<void> {
         const site = CoreSites.getRequiredCurrentSite();
-        const enableIndentation = await CoreCourse.isCourseIndentationEnabled(site, this.module.course);
 
-        this.indented = enableIndentation && this.module.indent > 0;
+        if (this.showIndentation && this.module.indent > 0) {
+            this.indented = await CoreCourse.isCourseIndentationEnabled(site, this.module.course);
+        } else {
+            this.indented = false;
+        }
         this.modNameTranslated = CoreCourse.translateModuleName(this.module.modname, this.module.modplural);
-        this.showLegacyCompletion = this.showLegacyCompletion ??
-            CoreConstants.CONFIG.uselegacycompletion ??
-            !site.isVersionGreaterEqualThan('3.11');
-        this.checkShowCompletion();
+        if (this.showCompletion) {
+            this.showLegacyCompletion = this.showLegacyCompletion ??
+                CoreConstants.CONFIG.uselegacycompletion ??
+                !site.isVersionGreaterEqualThan('3.11');
+            this.checkShowCompletion();
+        } else {
+            this.showLegacyCompletion = false;
+            this.showCompletionConditions = false;
+            this.showManualCompletion = false;
+            this.hasCompletion = false;
+        }
 
         if (!this.module.handlerData) {
             return;
@@ -86,7 +101,7 @@ export class CoreCourseModuleComponent implements OnInit, OnDestroy {
         this.module.handlerData.a11yTitle = this.module.handlerData.a11yTitle ?? this.module.handlerData.title;
         this.moduleHasView = CoreCourse.moduleHasView(this.module);
 
-        if (this.module.handlerData?.showDownloadButton) {
+        if (this.showDownloadStatus && this.module.handlerData.showDownloadButton) {
             const status = await CoreCourseModulePrefetchDelegate.getModuleStatus(this.module, this.module.course);
             this.updateModuleStatus(status);
 

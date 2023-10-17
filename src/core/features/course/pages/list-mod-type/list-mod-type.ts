@@ -37,7 +37,7 @@ export class CoreCourseListModTypePage implements OnInit {
     sections: CoreCourseSection[] = [];
     title = '';
     loaded = false;
-    courseId?: number;
+    courseId = 0;
 
     protected modName?: string;
     protected archetypes: Record<string, number> = {}; // To speed up the check of modules.
@@ -64,9 +64,16 @@ export class CoreCourseListModTypePage implements OnInit {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.title = CoreNavigator.getRouteParam('title') || '';
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId');
-        this.modName = CoreNavigator.getRouteParam('modName');
+        try {
+            this.title = CoreNavigator.getRouteParam('title') || '';
+            this.courseId = CoreNavigator.getRequiredRouteParam('courseId');
+            this.modName = CoreNavigator.getRequiredRouteParam('modName');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+            CoreNavigator.back();
+
+            return;
+        }
 
         try {
             await this.fetchData();
@@ -95,7 +102,9 @@ export class CoreCourseListModTypePage implements OnInit {
                 }
 
                 section.modules = section.modules.filter((mod) => {
-                    if (!CoreCourseHelper.canUserViewModule(mod, section) || !CoreCourse.moduleHasView(mod)) {
+                    if (!CoreCourseHelper.canUserViewModule(mod, section) ||
+                        !CoreCourse.moduleHasView(mod) ||
+                        mod.visibleoncoursepage === 0) {
                         // Ignore this module.
                         return false;
                     }
@@ -110,11 +119,11 @@ export class CoreCourseListModTypePage implements OnInit {
                             );
                         }
 
-                        if (this.archetypes[mod.modname] == CoreConstants.MOD_ARCHETYPE_RESOURCE) {
+                        if (this.archetypes[mod.modname] === CoreConstants.MOD_ARCHETYPE_RESOURCE) {
                             return true;
                         }
 
-                    } else if (mod.modname == this.modName) {
+                    } else if (mod.modname === this.modName) {
                         return true;
                     }
                 });
@@ -137,7 +146,7 @@ export class CoreCourseListModTypePage implements OnInit {
      * @returns Promise resolved when done.
      */
     async refreshData(refresher: IonRefresher): Promise<void> {
-        await CoreUtils.ignoreErrors(CoreCourse.invalidateSections(this.courseId || 0));
+        await CoreUtils.ignoreErrors(CoreCourse.invalidateSections(this.courseId));
 
         try {
             await this.fetchData();

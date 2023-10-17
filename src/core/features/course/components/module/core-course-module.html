@@ -80,14 +80,14 @@
 
 
                 <!-- Description and restrictions -->
-                <div *ngIf="module.description || module.availabilityinfo" id="activity-{{module.id}}-collapsible"
+                <div *ngIf="module.description || (showAvailability && module.availabilityinfo)" id="activity-{{module.id}}-collapsible"
                     class="ion-text-wrap activity-description-availabilityinfo activity-extra" [collapsible-item]="64">
                     <core-format-text class="core-module-description" *ngIf="module.description" [text]="module.description"
                         contextLevel="module" [contextInstanceId]="module.id" [courseId]="module.course">
                     </core-format-text>
 
                     <!-- Availability info -->
-                    <div *ngIf="module.availabilityinfo" class="core-module-availabilityinfo">
+                    <div *ngIf="showAvailability && module.availabilityinfo" class="core-module-availabilityinfo">
                         <ion-icon name="fas-lock" [attr.aria-label]="'core.restricted' | translate"></ion-icon>
                         <core-format-text [text]="module.availabilityinfo" contextLevel="module" [contextInstanceId]="module.id"
                             [courseId]="module.course">
@@ -95,7 +95,7 @@
                     </div>
                 </div>
 
-                <div *ngIf="module.handlerData.extraBadge" class="ion-text-wrap activity-extrabadges activity-extra"
+                <div *ngIf="showExtra && module.handlerData.extraBadge" class="ion-text-wrap activity-extrabadges activity-extra"
                     [innerHTML]="module.handlerData.extraBadge"></div>
             </ion-label>
 
