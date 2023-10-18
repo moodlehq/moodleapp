@@ -370,7 +370,6 @@ export class CorePushNotificationsProvider {
      * @param itemCategory The item category.
      * @param wsName Name of the WS.
      * @param data Other data to pass to the event.
-     * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when done. This promise is never rejected.
      * @deprecated since 4.3. Use CoreAnalytics.logEvent instead.
      */
@@ -396,7 +395,6 @@ export class CorePushNotificationsProvider {
      * @param itemCategory The item category.
      * @param wsName Name of the WS.
      * @param data Other data to pass to the event.
-     * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when done. This promise is never rejected.
      * @deprecated since 4.3. Use CoreAnalytics.logEvent instead.
      */
