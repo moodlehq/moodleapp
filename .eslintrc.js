@@ -205,6 +205,12 @@ const appConfig = {
         'jsdoc/require-returns-type': 'off',
         'jsdoc/require-param': 'off',
         'jsdoc/check-values': 'off',
+        'jsdoc/check-tag-names': [
+            'warn',
+            {
+                "definedTags": ["deprecatedonmoodle"]
+            },
+        ],
         'jsdoc/check-param-names': [
             'warn',
             {
