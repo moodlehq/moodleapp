@@ -18,6 +18,7 @@ const appConfig = {
         'plugin:@angular-eslint/recommended',
         'plugin:promise/recommended',
         'plugin:jsdoc/recommended',
+        "plugin:deprecation/recommended",
     ],
     parser: '@typescript-eslint/parser',
     parserOptions: {
