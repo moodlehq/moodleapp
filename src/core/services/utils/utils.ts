@@ -1182,6 +1182,7 @@ export class CoreUtilsProvider {
      * @param options Options.
      */
     async openInBrowser(url: string, options: CoreUtilsOpenInBrowserOptions = {}): Promise<void> {
+        // eslint-disable-next-line deprecation/deprecation
         const originaUrl = CoreUrlUtils.unfixPluginfileURL(options.originalUrl ?? options.browserWarningUrl ?? url);
         if (options.showBrowserWarning || options.showBrowserWarning === undefined) {
             try {
@@ -1412,7 +1413,7 @@ export class CoreUtilsProvider {
      * Create a deferred promise that can be resolved or rejected explicitly.
      *
      * @returns The deferred promise.
-     * @deprecated since app 4.1. Use CorePromisedValue instead.
+     * @deprecated since 4.1. Use CorePromisedValue instead.
      */
     promiseDefer<T>(): CorePromisedValue<T> {
         return new CorePromisedValue<T>();
@@ -1924,7 +1925,7 @@ export type CoreUtilsOpenInBrowserOptions = {
     showBrowserWarning?: boolean; // Whether to display a warning before opening in browser. Defaults to true.
     originalUrl?: string; // Original URL to open (in case the URL was treated, e.g. to add a token or an auto-login).
     /**
-     * @deprecated since 4.3, use originalUrl instead.
+     * @deprecated since 4.3. Use originalUrl instead.
      */
     browserWarningUrl?: string;
 };

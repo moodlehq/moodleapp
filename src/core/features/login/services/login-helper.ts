@@ -365,7 +365,7 @@ export class CoreLoginHelperProvider {
      * Get fixed site or sites.
      *
      * @returns Fixed site or list of fixed sites.
-     * @deprecated since 4.2.0. Use CoreConstants.CONFIG.sites or getAvailableSites() instead.
+     * @deprecated since 4.2. Use CoreConstants.CONFIG.sites or getAvailableSites() instead.
      */
     getFixedSites(): string | CoreLoginSiteInfo[] {
         const notStagingSites = CoreConstants.CONFIG.sites.filter(site => !site.staging);
@@ -482,7 +482,7 @@ export class CoreLoginHelperProvider {
      * Check if the app is configured to use several fixed URLs.
      *
      * @returns Whether there are several fixed URLs.
-     * @deprecated 4.2.0 Use CoreConstants.CONFIG.sites.length > 1 instead.
+     * @deprecated since 4.2. Use CoreConstants.CONFIG.sites.length > 1 instead.
      */
     async hasSeveralFixedSites(): Promise<boolean> {
         const sites = await this.getAvailableSites();
@@ -523,7 +523,7 @@ export class CoreLoginHelperProvider {
      * Check if the app is configured to use a fixed URL (only 1).
      *
      * @returns Whether there is 1 fixed URL.
-     * @deprecated 4.2.0 Use isSingleFixedSite instead.
+     * @deprecated since 4.2. Use isSingleFixedSite instead.
      */
     isFixedUrlSet(): boolean {
         return CoreConstants.CONFIG.sites.filter(site => !site.staging).length === 1;
@@ -909,7 +909,7 @@ export class CoreLoginHelperProvider {
      *
      * @param typeOfLogin TypeOfLogin.BROWSER or TypeOfLogin.EMBEDDED.
      * @returns True if confirm modal should be shown, false otherwise.
-     * @deprecated since 4.3 Not used anymore. See shouldSkipCredentialsScreenOnSSO.
+     * @deprecated since 4.3. Not used anymore. See shouldSkipCredentialsScreenOnSSO.
      */
     shouldShowSSOConfirm(typeOfLogin: TypeOfLogin): boolean {
         return !this.isSSOEmbeddedBrowser(typeOfLogin) && !this.shouldSkipCredentialsScreenOnSSO();

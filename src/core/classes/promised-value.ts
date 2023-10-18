@@ -57,7 +57,7 @@ export class CorePromisedValue<T = unknown> extends CorePromise<T> {
 
     /**
      * @returns Promise.
-     * @deprecated since app 4.1. The instance can be directly used as a promise.
+     * @deprecated since 4.1. The instance can be directly used as a promise.
      */
     get promise(): Promise<T> {
         return this;

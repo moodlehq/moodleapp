@@ -97,7 +97,7 @@ export class AddonMessagesProvider {
      * @param userId User ID of the person to add.
      * @param siteId Site ID. If not defined, use current site.
      * @returns Resolved when done.
-     * @deprecated since Moodle 3.6
+     * @deprecatedonmoodle since 3.6
      */
     protected async addContact(userId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -582,7 +582,7 @@ export class AddonMessagesProvider {
      *
      * @param siteId Site ID. If not defined, use current site.
      * @returns Promise resolved with the WS data.
-     * @deprecated since Moodle 3.6
+     * @deprecatedonmoodle since 3.6
      */
     async getAllContacts(siteId?: string): Promise<AddonMessagesGetContactsWSResponse> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -634,7 +634,7 @@ export class AddonMessagesProvider {
      *
      * @param siteId Site ID. If not defined, use current site.
      * @returns Promise resolved with the WS data.
-     * @deprecated since Moodle 3.6
+     * @deprecatedonmoodle since 3.6
      */
     async getContacts(siteId?: string): Promise<AddonMessagesGetContactsWSResponse> {
         const site = await CoreSites.getSite(siteId);
@@ -2120,7 +2120,7 @@ export class AddonMessagesProvider {
      *
      * @param userIdFrom User Id for the sender.
      * @returns Promise resolved with boolean marking success or not.
-     * @deprecated since Moodle 3.6
+     * @deprecatedonmoodle since 3.6
      */
     async markAllMessagesRead(userIdFrom?: number): Promise<boolean> {
         const params: AddonMessagesMarkAllMessagesAsReadWSParams = {
@@ -3049,12 +3049,14 @@ export type AddonMessagesMessagePreferencesNotificationProcessor = {
     lockedmessage?: string; // @since 3.6. Text to display if locked.
     userconfigured: number; // Is configured?.
     enabled?: boolean; // @since 4.0. Processor enabled.
-    loggedin: AddonNotificationsPreferencesNotificationProcessorState; // @deprecated removed on 4.0.
-    loggedoff: AddonNotificationsPreferencesNotificationProcessorState; // @deprecated removed on 4.0.
+    loggedin: AddonNotificationsPreferencesNotificationProcessorState; // @deprecatedonmoodle since 4.0.
+    loggedoff: AddonNotificationsPreferencesNotificationProcessorState; // @deprecatedonmoodle since 4.0.
 };
 
 /**
  * Message discussion (before 3.6).
+ *
+ * @deprecatedonmoodle since 3.6.
  */
 export type AddonMessagesDiscussion = {
     fullname: string; // Full name of the other user in the discussion.

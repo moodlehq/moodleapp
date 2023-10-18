@@ -76,7 +76,7 @@ export class CoreText {
      * @param leftPath Left path.
      * @param rightPath Right path.
      * @returns Concatenated path.
-     * @deprecated since 4.1.0. Please use CorePath.concatenatePaths instead.
+     * @deprecated since 4.1. Use CorePath.concatenatePaths instead.
      */
     static concatenatePaths(leftPath: string, rightPath: string): string {
         return CorePath.concatenatePaths(leftPath, rightPath);

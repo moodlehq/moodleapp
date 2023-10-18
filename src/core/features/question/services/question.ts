@@ -385,7 +385,7 @@ export class CoreQuestionProvider {
         const parsedQuestions: CoreQuestionQuestionParsed[] = questions;
 
         parsedQuestions.forEach((question) => {
-            if (typeof question.questionnumber === 'undefined' && typeof question.number === 'number') {
+            if (question.questionnumber === undefined && typeof question.number === 'number') {
                 question.questionnumber = String(question.number);
             }
 
@@ -603,7 +603,7 @@ export type CoreQuestionQuestionWSData = {
     maxmark?: number; // The maximum mark possible for this question attempt.
     settings?: string; // Question settings (JSON encoded).
 
-    /** @deprecated Since 4.2. Use questionnumber instead. */
+    /** @deprecatedonmoodle since 4.2. Use questionnumber instead. */
     number?: number; // eslint-disable-line id-blacklist
 };
 /**

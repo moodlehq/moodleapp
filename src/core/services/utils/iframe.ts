@@ -32,11 +32,9 @@ import { CoreContentLinksHelper } from '@features/contentlinks/services/contentl
 import { CorePath } from '@singletons/path';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
+import { FrameElement } from '@classes/element-controllers/FrameElementController';
 
-/**
- * Possible types of frame elements.
- */
-type CoreFrameElement = (HTMLIFrameElement | HTMLFrameElement | HTMLObjectElement | HTMLEmbedElement) & {
+type CoreFrameElement = FrameElement & {
     window?: Window;
     getWindow?(): Window;
 };
@@ -64,6 +62,8 @@ export class CoreIframeUtilsProvider {
      * @returns True if frame is online and the app is offline, false otherwise.
      */
     checkOnlineFrameInOffline(element: CoreFrameElement, isSubframe?: boolean): boolean {
+        // @todo Drop frame tag support to avoid deprecation.
+        // eslint-disable-next-line deprecation/deprecation
         const src = 'src' in element ? element.src : element.data;
 
         if (src && src != 'about:blank' && !CoreUrlUtils.isLocalFileUrl(src) && !CoreNetwork.isOnline()) {
@@ -91,7 +91,8 @@ export class CoreIframeUtilsProvider {
             // Reload the frame.
             if ('src' in element) {
                 // eslint-disable-next-line no-self-assign
-                element.src = element.src;
+                element.src = element.src; // eslint-disable-line deprecation/deprecation
+
             } else {
                 // eslint-disable-next-line no-self-assign
                 element.data = element.data;
@@ -231,18 +232,21 @@ export class CoreIframeUtilsProvider {
      * @returns Window and Document.
      */
     getContentWindowAndDocument(element: CoreFrameElement): { window: Window | null; document: Document | null } {
+        // @todo Drop frame tag support to avoid deprecation.
+        // eslint-disable-next-line deprecation/deprecation
         const src = 'src' in element ? element.src : element.data;
         if (src !== 'about:blank' && !CoreUrlUtils.isLocalFileUrl(src)) {
             // No permissions to access the iframe.
             return { window: null, document: null };
         }
 
+        // eslint-disable-next-line deprecation/deprecation
         let contentWindow: Window | null = 'contentWindow' in element ? element.contentWindow : null;
         let contentDocument: Document | null = null;
 
         try {
-            contentDocument = 'contentDocument' in element && element.contentDocument
-                ? element.contentDocument
+            contentDocument = 'contentDocument' in element && element.contentDocument // eslint-disable-line deprecation/deprecation
+                ? element.contentDocument // eslint-disable-line deprecation/deprecation
                 : contentWindow && contentWindow.document;
         } catch {
             // Ignore errors.
@@ -421,8 +425,9 @@ export class CoreIframeUtilsProvider {
         const scheme = CoreUrlUtils.getUrlScheme(url);
         if (!scheme) {
             // It's a relative URL, use the frame src to create the full URL.
+            // @todo Drop frame tag support to avoid deprecation.
             const src = element
-                ? ('src' in element ? element.src : element.data)
+                ? ('src' in element ? element.src : element.data)  // eslint-disable-line deprecation/deprecation
                 : null;
             if (src) {
                 const dirAndFile = CoreFile.getFileAndDirectoryFromPath(src);
@@ -492,7 +497,7 @@ export class CoreIframeUtilsProvider {
             // Scheme suggests it's an external resource.
             event && event.preventDefault();
 
-            const frameSrc = element && ((<HTMLFrameElement> element).src || (<HTMLObjectElement> element).data);
+            const frameSrc = element && ((<HTMLIFrameElement> element).src || (<HTMLObjectElement> element).data);
 
             // If the frame is not local, check the target to identify how to treat the link.
             if (

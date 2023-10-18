@@ -59,7 +59,7 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
      * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
      * @param courseId Course ID related to the URL. Optional but recommended.
      * @returns List of params to pass to navigateToModule / navigateToModuleByInstance.
-     * @deprecated since 4.0
+     * @deprecated since 4.0. Not used anymore.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     getPageParams(url: string, params: Record<string, string>, courseId?: number): Params {
@@ -101,6 +101,7 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
             let modNavOptions = this.getModNavOptions(url, params, siteId, courseId);
             if (!modNavOptions) {
                 // Use the old function, currently deprecated.
+                // eslint-disable-next-line deprecation/deprecation
                 const pageParams = this.getPageParams(url, params, courseId);
                 if (pageParams && Object.keys(pageParams).length > 0) {
                     modNavOptions = { params: pageParams };

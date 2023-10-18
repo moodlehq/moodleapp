@@ -386,6 +386,7 @@ export class CorePushNotificationsProvider {
         data.category = itemCategory;
         data.moodleaction = wsName;
 
+        // eslint-disable-next-line deprecation/deprecation
         return this.logEvent('view_item', data);
     }
 
@@ -407,6 +408,7 @@ export class CorePushNotificationsProvider {
         data.moodleaction = wsName;
         data.category = itemCategory;
 
+        // eslint-disable-next-line deprecation/deprecation
         return this.logEvent('view_item_list', data);
     }
 

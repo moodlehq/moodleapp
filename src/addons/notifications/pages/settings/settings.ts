@@ -332,7 +332,7 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
     }
 
     /**
-     * Page destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         // If there is a pending action to update preferences, execute it right now.
@@ -347,7 +347,7 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
 /**
  * State in notification processor in notification preferences component with some calculated data.
  *
- * @deprecated 4.0
+ * @deprecatedonmoodle since 4.0
  */
 type ProcessorStateFormatted = AddonNotificationsPreferencesNotificationProcessorState & {
     updating?: boolean; // Calculated in the app. Whether the state is being updated.

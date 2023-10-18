@@ -44,7 +44,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
     isLocalUrl = true;
     linkIconWithComponent = false;
 
-    protected legacyIcon = true; // @deprecatedonmoodle since Moodle 3.11.
+    protected legacyIcon = true; // @deprecatedonmoodle since 3.11.
 
     constructor(protected el: ElementRef) { }
 
@@ -122,7 +122,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
 
         let path = assetsPath + 'mod/';
         if (this.legacyIcon) {
-            // @deprecatedonmoodle since Moodle 3.11.
+            // @deprecatedonmoodle since 3.11.
             path = assetsPath + 'mod_legacy/';
         }
 

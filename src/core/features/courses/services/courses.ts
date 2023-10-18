@@ -74,7 +74,7 @@ export class CoreCoursesProvider {
      * Whether current site supports getting course options.
      *
      * @returns Whether current site supports getting course options.
-     * @deprecated since app 4.0
+     * @deprecated since 4.0.
      */
     canGetAdminAndNavOptions(): boolean {
         return true;
@@ -606,7 +606,7 @@ export class CoreCoursesProvider {
      * Check if get courses by field WS is available in a certain site.
      *
      * @returns Whether get courses by field is available.
-     * @deprecated since app 4.0
+     * @deprecated since 4.0.
      */
     isGetCoursesByFieldAvailable(): boolean {
         return true;
@@ -616,7 +616,7 @@ export class CoreCoursesProvider {
      * Check if get courses by field WS is available in a certain site, by site ID.
      *
      * @returns Promise resolved with boolean: whether get courses by field is available.
-     * @deprecated since app 4.0
+     * @deprecated since 4.0.
      */
     async isGetCoursesByFieldAvailableInSite(): Promise<boolean> {
         return true;
@@ -1041,7 +1041,7 @@ export class CoreCoursesProvider {
      * @param courseId Course ID.
      * @param siteId Site Id. If not defined, use current site.
      * @returns Promise resolved when the data is invalidated.
-     * @deprecated since 4.3, use CoreEnrol.invalidateCourseEnrolmentMethods instead.
+     * @deprecated since 4.3 use CoreEnrol.invalidateCourseEnrolmentMethods instead.
      */
     async invalidateCourseEnrolmentMethods(courseId: number, siteId?: string): Promise<void> {
         return CoreEnrol.invalidateCourseEnrolmentMethods(courseId, siteId);
@@ -1053,7 +1053,7 @@ export class CoreCoursesProvider {
      * @param instanceId Guest instance ID.
      * @param siteId Site Id. If not defined, use current site.
      * @returns Promise resolved when the data is invalidated.
-     * @deprecated since 4.3, use CoreEnrolDelegate.invalidate instead.
+     * @deprecated since 4.3 use CoreEnrolDelegate.invalidate instead.
      */
     async invalidateCourseGuestEnrolmentInfo(instanceId: number, siteId?: string): Promise<void> {
         return AddonEnrolGuest.invalidateGuestEnrolmentInfo(instanceId, siteId);
@@ -1249,7 +1249,7 @@ export class CoreCoursesProvider {
      * @param siteId Site ID. If not defined, use current site.
      * @returns Promise resolved if the user is enrolled. If the password is invalid, the promise is rejected
      *         with an object with errorcode = CoreCoursesProvider.ENROL_INVALID_KEY.
-     * @deprecated since 4.3, use CoreEnrolDelegate.enrol instead.
+     * @deprecated since 4.3 use CoreEnrolDelegate.enrol instead.
      */
     async selfEnrol(courseId: number, password: string = '', instanceId?: number, siteId?: string): Promise<boolean> {
         return AddonEnrolSelf.selfEnrol(courseId, password, instanceId, siteId);
@@ -1462,7 +1462,7 @@ export type CoreCourseGetCoursesData = CoreEnrolledCourseBasicData & {
     /**
      * Number of weeks/topics.
      *
-     * @deprecated use courseformatoptions.
+     * @deprecated use courseformatoptions. This attribute is deprecated in moodle since 2.4 but still present.
      */
     numsections?: number;
     maxbytes?: number; // Largest size of file that can be uploaded into the course.
@@ -1470,7 +1470,7 @@ export type CoreCourseGetCoursesData = CoreEnrolledCourseBasicData & {
     /**
      * How the hidden sections in the course are displayed to students.
      *
-     * @deprecated use courseformatoptions.
+     * @deprecated use courseformatoptions. This attribute is deprecated in moodle since 2.4 but still present.
      */
     hiddensections?: number;
     groupmode?: number; // No group, separate, visible.
@@ -1704,14 +1704,14 @@ export type CoreCourseUserAdminOrNavOptionIndexed = {
 /**
  * Course enrolment basic info.
  *
- * @deprecated since 4.3 use CoreEnrolEnrolmentInfo instead.
+ * @deprecated since 4.3. Use CoreEnrolEnrolmentInfo instead.
  */
 export type CoreCourseEnrolmentInfo = CoreEnrolEnrolmentInfo;
 
 /**
  * Course enrolment method.
  *
- * @deprecated since 4.3 use CoreEnrolEnrolmentMethod instead.
+ * @deprecated since 4.3. Use CoreEnrolEnrolmentMethod instead.
  */
 export type CoreCourseEnrolmentMethod = CoreEnrolEnrolmentMethod;
 

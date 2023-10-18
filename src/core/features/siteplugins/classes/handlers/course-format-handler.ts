@@ -40,6 +40,7 @@ export class CoreSitePluginsCourseFormatHandler extends CoreSitePluginsBaseHandl
      */
     displayCourseIndex(): boolean {
         // Use displaysectionselector while is not completely deprecated.
+        // eslint-disable-next-line deprecation/deprecation
         return this.handlerSchema.displaycourseindex ?? this.handlerSchema.displaysectionselector ?? true;
     }
 

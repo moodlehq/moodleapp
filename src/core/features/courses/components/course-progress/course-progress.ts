@@ -36,7 +36,7 @@ import { CoreUser } from '@features/user/services/user';
  * <core-courses-course-progress [course]="course">
  * </core-courses-course-progress>
  *
- * @deprecated since 4.0 Use core-courses-course-list-item instead.
+ * @deprecated since 4.0. Use core-courses-course-list-item instead.
  */
 @Component({
     selector: 'core-courses-course-progress',

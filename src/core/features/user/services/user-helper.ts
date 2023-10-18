@@ -89,7 +89,7 @@ export class CoreUserHelperProvider {
      * @param city City.
      * @param country Country.
      * @returns Formatted address.
-     * @deprecated since 4.3 Not used anymore.
+     * @deprecated since 4.3. Not used anymore.
      */
     formatAddress(address?: string, city?: string, country?: string): string {
         const separator = Translate.instant('core.listsep');

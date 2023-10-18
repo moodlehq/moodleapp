@@ -41,7 +41,7 @@ import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreEnrolHelper } from '@features/enrol/services/enrol-helper';
 import { CoreEnrolDelegate } from '@features/enrol/services/enrol-delegate';
-import { CoreEnrolEnrolmentMethod } from '@features/enrol/services/enrol';
+import { CoreEnrol, CoreEnrolEnrolmentMethod } from '@features/enrol/services/enrol';
 
 /**
  * Page that shows the summary of a course including buttons to enrol and other available options.
@@ -407,8 +407,7 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
         promises.push(CoreCourses.invalidateCourse(this.courseId));
         promises.push(CoreCourseOptionsDelegate.clearAndInvalidateCoursesOptions(this.courseId));
         promises.push(CoreCourses.invalidateCoursesByField('id', this.courseId));
-
-        promises.push(CoreCourses.invalidateCourseEnrolmentMethods(this.courseId));
+        promises.push(CoreEnrol.invalidateCourseEnrolmentMethods(this.courseId));
 
         this.selfEnrolInstances.forEach((method) => {
             promises.push(CoreEnrolDelegate.invalidate(method));

@@ -64,7 +64,7 @@ export class CoreFilterProvider {
      * Returns whether or not WS get available in context is available.
      *
      * @returns Promise resolved with true if ws is available, false otherwise.
-     * @deprecated since app 4.0
+     * @deprecated since 4.0.
      */
     async canGetAvailableInContext(): Promise<boolean> {
         return true;
@@ -74,7 +74,7 @@ export class CoreFilterProvider {
      * Returns whether or not WS get available in context is available in a certain site.
      *
      * @returns Promise resolved with true if ws is available, false otherwise.
-     * @deprecated since app 4.0
+     * @deprecated since 4.0.
      */
     canGetAvailableInContextInSite(): boolean {
         return true;

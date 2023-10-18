@@ -194,7 +194,7 @@ export type AddonBadgesUserBadge = {
         targetframework?: string; // Target framework.
         targetcode?: string; // Target code.
     }[];
-    competencies?: { // @deprecatedonmoodle from 3.7. @since 3.6. In 3.7 it was renamed to alignment.
+    competencies?: { // @deprecatedonmoodle since 3.7. @since 3.6. In 3.7 it was renamed to alignment.
         id?: number; // Alignment id.
         badgeid?: number; // Badge id.
         targetname?: string; // Target name.
