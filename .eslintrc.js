@@ -204,6 +204,13 @@ const appConfig = {
         'jsdoc/require-returns-type': 'off',
         'jsdoc/require-param': 'off',
         'jsdoc/check-values': 'off',
+        'jsdoc/check-param-names': [
+            'warn',
+            {
+                checkDestructured: false,
+                enableFixer: true
+            },
+        ],
         'linebreak-style': [
             'error',
             'unix',
