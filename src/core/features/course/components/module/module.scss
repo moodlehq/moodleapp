@@ -185,4 +185,9 @@
     &.indented + ::ng-deep core-course-module.indented ion-card {
         border-top: 1px solid var(--border-color);
     }
+
+    // Hide download folder icon meanwhile MOBILE-4147 is not solved
+    core-format-text.core-module-description ::ng-deep .description-inner .navitem {
+        display: none;
+    }
 }
