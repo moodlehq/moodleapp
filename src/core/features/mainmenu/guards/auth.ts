@@ -54,7 +54,7 @@ export class CoreMainMenuAuthGuard implements CanLoad, CanActivate {
 
             // Pass redirect data (if any and belongs to same site).
             let redirect = CoreApp.consumeMemoryRedirect();
-            if (!redirect?.timemodified || Date.now() - redirect.timemodified > 20000 || redirect.siteId !== siteId) {
+            if (redirect?.siteId !== siteId) {
                 redirect = null;
             }
 
