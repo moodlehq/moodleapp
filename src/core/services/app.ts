@@ -488,6 +488,11 @@ export class CoreAppProvider {
 
         this.forgetRedirect();
 
+        if (redirect && (!redirect.timemodified || Date.now() - redirect.timemodified > 300000)) {
+            // Redirect data is only valid for 5 minutes, discard it.
+            return null;
+        }
+
         return redirect;
     }
 
