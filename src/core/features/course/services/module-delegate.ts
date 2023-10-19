@@ -169,6 +169,14 @@ export interface CoreCourseModuleHandlerData {
     showDownloadButton?: boolean;
 
     /**
+     * Wether activity has the custom cmlist item flag enabled.
+     *
+     * Activities like label uses this flag to indicate that it should be
+     * displayed as a custom course item instead of a tipical activity card.
+     */
+    hasCustomCmListItem?: boolean;
+
+    /**
      * The buttons to display in the module item.
      *
      * @deprecated since 4.3 Use button instead. It will only display the first.

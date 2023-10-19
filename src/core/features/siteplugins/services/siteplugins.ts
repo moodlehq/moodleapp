@@ -895,6 +895,7 @@ export type CoreSitePluginsCourseModuleHandlerData = CoreSitePluginsHandlerCommo
     supportedfeatures?: Record<string, unknown>;
     manualcompletionalwaysshown?: boolean;
     nolinkhandlers?: boolean;
+    hascustomcmlistitem?: boolean;
 };
 
 /**

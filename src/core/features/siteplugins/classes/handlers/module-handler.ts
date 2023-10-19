@@ -90,6 +90,7 @@ export class CoreSitePluginsModuleHandler extends CoreSitePluginsBaseHandler imp
             icon: CoreCourse.getModuleIconSrc(module.modname, icon),
             class: this.handlerSchema.displaydata?.class,
             showDownloadButton: showDowloadButton !== undefined ? showDowloadButton : hasOffline,
+            hasCustomCmListItem: this.handlerSchema.hascustomcmlistitem ?? false,
         };
 
         if (this.handlerSchema.method) {

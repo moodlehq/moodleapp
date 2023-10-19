@@ -7,6 +7,10 @@
 
     ion-card {
         margin: var(--vertical-margin) var(--horizontal-margin);
+
+        &.activityinline {
+            border: 0px;
+        }
     }
 
     ion-item {
