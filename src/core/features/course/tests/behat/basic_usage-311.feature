@@ -85,20 +85,20 @@ Feature: Test basic usage of one course in app
     And I press "OK" in the app
     And I wait loading to finish in the app
     Then the header should be "Course 1" in the app
+    And I should find "Test forum name" in the app
+    And I should find "Test wiki name" in the app
     And I should find "Choice course 1" in the app
     And I should find "assignment" in the app
-    And I should find "Test forum name" in the app
-    And I should find "Test chat name" in the app
-    And I should find "Web links" in the app
     And I should find "Test external name" in the app
-    And I should find "Test feedback name" in the app
-    And I should find "Test glossary" in the app
-    And I should find "Quiz 1" in the app
     And I should find "Test survey name" in the app
-    And I should find "Test wiki name" in the app
-    And I should find "Test lesson name" in the app
+    And I should find "Test chat name" in the app
+    And I should find "Quiz 1" in the app
     And I should find "Test scorm name" in the app
+    And I should find "Test feedback name" in the app
+    And I should find "Test lesson name" in the app
     And I should find "Test workshop name" in the app
+    And I should not find "Web links" in the app
+    And I should not find "Test glossary" in the app
 
   Scenario: Guest access
     Given I entered the course "Course 1" as "teacher1" in the app
@@ -122,16 +122,16 @@ Feature: Test basic usage of one course in app
 
     When I press "View course" "ion-button" in the app
     Then the header should be "Course 1" in the app
+    And I should find "Test forum name" in the app
+    And I should find "Test wiki name" in the app
     And I should find "Choice course 1" in the app
     And I should find "assignment" in the app
-    And I should find "Test forum name" in the app
-    And I should find "Test chat name" in the app
-    And I should find "Web links" in the app
-    And I should find "Test feedback name" in the app
-    And I should find "Test glossary" in the app
-    And I should find "Quiz 1" in the app
     And I should find "Test survey name" in the app
-    And I should find "Test wiki name" in the app
-    And I should find "Test lesson name" in the app
+    And I should find "Test chat name" in the app
+    And I should find "Quiz 1" in the app
     And I should find "Test scorm name" in the app
+    And I should find "Test feedback name" in the app
+    And I should find "Test lesson name" in the app
     And I should find "Test workshop name" in the app
+    And I should not find "Web links" in the app
+    And I should not find "Test glossary" in the app

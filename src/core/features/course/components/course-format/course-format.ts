@@ -70,7 +70,7 @@ import { CoreBlockSideBlocksComponent } from '@features/block/components/side-bl
 })
 export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
-    static readonly LOAD_MORE_ACTIVITIES = 20; // How many activities should load each time showMoreActivities is called.
+    static readonly LOAD_MORE_ACTIVITIES = 10; // How many activities should load each time showMoreActivities is called.
 
     @Input() course!: CoreCourseAnyCourseData; // The course to render.
     @Input() sections: CoreCourseSectionToDisplay[] = []; // List of course sections.
@@ -89,7 +89,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     allSectionsComponent?: Type<unknown>;
 
     canLoadMore = false;
-    showSectionId = 0;
+    lastShownSectionIndex = 0;
     data: Record<string, unknown> = {}; // Data to pass to the components.
     courseIndexTour: CoreUserTourDirectiveOptions = {
         id: 'course-index',
@@ -514,8 +514,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         } else {
             this.previousSection = undefined;
             this.nextSection = undefined;
-            this.canLoadMore = false;
-            this.showSectionId = 0;
+            this.lastShownSectionIndex = -1;
             this.showMoreActivities();
         }
 
@@ -594,40 +593,22 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
      */
     showMoreActivities(infiniteComplete?: () => void): void {
-        this.canLoadMore = false;
-
-        const sections = this.sections || [];
         let modulesLoaded = 0;
-        let i: number;
-        for (i = this.showSectionId + 1; i < sections.length; i++) {
-            if (!sections[i].hasContent || !sections[i].modules) {
+        while (this.lastShownSectionIndex < this.sections.length - 1 &&
+            modulesLoaded < CoreCourseFormatComponent.LOAD_MORE_ACTIVITIES) {
+            this.lastShownSectionIndex++;
+
+            if (!this.sections[this.lastShownSectionIndex].hasContent || !this.sections[this.lastShownSectionIndex].modules) {
                 continue;
             }
 
-            modulesLoaded += sections[i].modules.reduce((total, module) =>
-                !CoreCourseHelper.isModuleStealth(module, sections[i]) ? total + 1 : total, 0);
-
-            if (modulesLoaded >= CoreCourseFormatComponent.LOAD_MORE_ACTIVITIES) {
-                break;
-            }
+            modulesLoaded += this.sections[this.lastShownSectionIndex].modules.reduce((total, module) =>
+                !CoreCourseHelper.isModuleStealth(module, this.sections[this.lastShownSectionIndex]) ? total + 1 : total, 0);
         }
 
-        this.showSectionId = i;
-        this.canLoadMore = i < sections.length;
+        this.canLoadMore = this.lastShownSectionIndex < this.sections.length - 1;
 
-        if (this.canLoadMore) {
-            // Check if any of the following sections have any content.
-            let thereAreMore = false;
-            for (i++; i < sections.length; i++) {
-                if (sections[i].hasContent && sections[i].modules && sections[i].modules?.length > 0) {
-                    thereAreMore = true;
-                    break;
-                }
-            }
-            this.canLoadMore = thereAreMore;
-        }
-
-        infiniteComplete && infiniteComplete();
+        infiniteComplete?.();
     }
 
     /**

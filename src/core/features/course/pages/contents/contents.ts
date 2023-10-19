@@ -298,7 +298,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
             await this.loadData(true, true);
         } finally {
             // Do not call doRefresh on the format component if the refresher is defined in the format component
-            // to prevent an inifinite loop.
+            // to prevent an infinite loop.
             if (this.displayRefresher && this.formatComponent) {
                 await CoreUtils.ignoreErrors(this.formatComponent.doRefresh(refresher));
             }

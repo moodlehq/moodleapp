@@ -34,10 +34,14 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 })
 export class CoreCourseListModTypePage implements OnInit {
 
+    private static readonly PAGE_LENGTH = 10; // How many activities should load each time showMoreActivities is called.
+
     sections: CoreCourseSection[] = [];
     title = '';
     loaded = false;
-    courseId?: number;
+    courseId = 0;
+    canLoadMore = false;
+    lastShownSectionIndex = -1;
 
     protected modName?: string;
     protected archetypes: Record<string, number> = {}; // To speed up the check of modules.
@@ -64,9 +68,16 @@ export class CoreCourseListModTypePage implements OnInit {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.title = CoreNavigator.getRouteParam('title') || '';
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId');
-        this.modName = CoreNavigator.getRouteParam('modName');
+        try {
+            this.title = CoreNavigator.getRouteParam('title') || '';
+            this.courseId = CoreNavigator.getRequiredRouteParam('courseId');
+            this.modName = CoreNavigator.getRequiredRouteParam('modName');
+        } catch (error) {
+            CoreDomUtils.showErrorModal(error);
+            CoreNavigator.back();
+
+            return;
+        }
 
         try {
             await this.fetchData();
@@ -77,8 +88,6 @@ export class CoreCourseListModTypePage implements OnInit {
 
     /**
      * Fetches the data.
-     *
-     * @returns Resolved when done.
      */
     protected async fetchData(): Promise<void> {
         if (!this.courseId) {
@@ -90,12 +99,14 @@ export class CoreCourseListModTypePage implements OnInit {
             let sections = await CoreCourse.getSections(this.courseId, false, true);
 
             sections = sections.filter((section) => {
-                if (!section.modules) {
+                if (!section.modules.length || section.hiddenbynumsections) {
                     return false;
                 }
 
                 section.modules = section.modules.filter((mod) => {
-                    if (!CoreCourseHelper.canUserViewModule(mod, section) || !CoreCourse.moduleHasView(mod)) {
+                    if (!CoreCourseHelper.canUserViewModule(mod, section) ||
+                        !CoreCourse.moduleHasView(mod) ||
+                        mod.visibleoncoursepage === 0) {
                         // Ignore this module.
                         return false;
                     }
@@ -110,11 +121,11 @@ export class CoreCourseListModTypePage implements OnInit {
                             );
                         }
 
-                        if (this.archetypes[mod.modname] == CoreConstants.MOD_ARCHETYPE_RESOURCE) {
+                        if (this.archetypes[mod.modname] === CoreConstants.MOD_ARCHETYPE_RESOURCE) {
                             return true;
                         }
 
-                    } else if (mod.modname == this.modName) {
+                    } else if (mod.modname === this.modName) {
                         return true;
                     }
                 });
@@ -125,19 +136,39 @@ export class CoreCourseListModTypePage implements OnInit {
             const result = await CoreCourseHelper.addHandlerDataForModules(sections, this.courseId);
 
             this.sections = result.sections;
+
+            this.lastShownSectionIndex = -1;
+            this.showMoreActivities();
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'Error getting data');
         }
     }
 
     /**
+     * Show more activities.
+     *
+     * @param infiniteComplete Infinite scroll complete function. Only used from core-infinite-loading.
+     */
+    showMoreActivities(infiniteComplete?: () => void): void {
+        let modulesLoaded = 0;
+        while (this.lastShownSectionIndex < this.sections.length - 1 && modulesLoaded < CoreCourseListModTypePage.PAGE_LENGTH) {
+            this.lastShownSectionIndex++;
+
+            modulesLoaded += this.sections[this.lastShownSectionIndex].modules.length;
+        }
+
+        this.canLoadMore = this.lastShownSectionIndex < this.sections.length - 1;
+
+        infiniteComplete?.();
+    }
+
+    /**
      * Refresh the data.
      *
      * @param refresher Refresher.
-     * @returns Promise resolved when done.
      */
     async refreshData(refresher: IonRefresher): Promise<void> {
-        await CoreUtils.ignoreErrors(CoreCourse.invalidateSections(this.courseId || 0));
+        await CoreUtils.ignoreErrors(CoreCourse.invalidateSections(this.courseId));
 
         try {
             await this.fetchData();

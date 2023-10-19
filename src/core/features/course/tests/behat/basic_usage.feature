@@ -83,24 +83,32 @@ Feature: Test basic usage of one course in app
   Scenario: View course contents
     When I entered the course "Course 1" as "student1" in the app
     Then the header should be "Course 1" in the app
+    And I should find "Test forum name" in the app
+    And I should find "Test wiki name" in the app
     And I should find "Choice course 1" in the app
     And I should find "assignment" in the app
-    And I should find "Test forum name" in the app
-    And I should find "Test chat name" in the app
-    And I should find "Web links" in the app
     And I should find "Test external name" in the app
-    And I should find "Test feedback name" in the app
-    And I should find "Test glossary" in the app
-    And I should find "Quiz 1" in the app
     And I should find "Test survey name" in the app
-    And I should find "Test wiki name" in the app
-    And I should find "Test lesson name" in the app
+    And I should find "Test chat name" in the app
+    And I should find "Quiz 1" in the app
     And I should find "Test scorm name" in the app
+    And I should find "Test feedback name" in the app
+    And I should find "Test lesson name" in the app
     And I should find "Test workshop name" in the app
+    And I should not find "Web links" in the app
+    And I should not find "Test glossary" in the app
 
     When I set "page-core-course-index .core-course-thumb" styles to "background" "lightblue"
     And I set "page-core-course-index .core-course-thumb img" styles to "display" "none"
     Then the UI should match the snapshot
+
+    # Test infinite scroll on course
+    When I scroll to "Test workshop name" in the app
+    Then I should find "Web links" in the app
+    And I should find "Test glossary" in the app
+
+    # Test Collapsible header
+    And the UI should match the snapshot
 
     When I press "Choice course 1" in the app
     Then the header should be "Choice course 1" in the app
@@ -161,20 +169,20 @@ Feature: Test basic usage of one course in app
   Scenario: View section contents
     When I entered the course "Course 1" as "student1" in the app
     Then the header should be "Course 1" in the app
+    And I should find "Test forum name" in the app
+    And I should find "Test wiki name" in the app
     And I should find "Choice course 1" in the app
     And I should find "assignment" in the app
-    And I should find "Test forum name" in the app
-    And I should find "Test chat name" in the app
-    And I should find "Web links" in the app
     And I should find "Test external name" in the app
-    And I should find "Test feedback name" in the app
-    And I should find "Test glossary" in the app
-    And I should find "Quiz 1" in the app
     And I should find "Test survey name" in the app
-    And I should find "Test wiki name" in the app
-    And I should find "Test lesson name" in the app
+    And I should find "Test chat name" in the app
+    And I should find "Quiz 1" in the app
     And I should find "Test scorm name" in the app
+    And I should find "Test feedback name" in the app
+    And I should find "Test lesson name" in the app
     And I should find "Test workshop name" in the app
+    And I should not find "Web links" in the app
+    And I should not find "Test glossary" in the app
 
     When I press "Course index" in the app
     And I press "General" in the app
@@ -337,20 +345,20 @@ Feature: Test basic usage of one course in app
   Scenario: Navigation between sections using the bottom arrows
     When I entered the course "Course 1" as "student1" in the app
     Then the header should be "Course 1" in the app
+   And I should find "Test forum name" in the app
+    And I should find "Test wiki name" in the app
     And I should find "Choice course 1" in the app
     And I should find "assignment" in the app
-    And I should find "Test forum name" in the app
-    And I should find "Test chat name" in the app
-    And I should find "Web links" in the app
     And I should find "Test external name" in the app
-    And I should find "Test feedback name" in the app
-    And I should find "Test glossary" in the app
-    And I should find "Quiz 1" in the app
     And I should find "Test survey name" in the app
-    And I should find "Test wiki name" in the app
-    And I should find "Test lesson name" in the app
+    And I should find "Test chat name" in the app
+    And I should find "Quiz 1" in the app
     And I should find "Test scorm name" in the app
+    And I should find "Test feedback name" in the app
+    And I should find "Test lesson name" in the app
     And I should find "Test workshop name" in the app
+    And I should not find "Web links" in the app
+    And I should not find "Test glossary" in the app
 
     When I press "Course index" in the app
     And I press "General" in the app
@@ -425,20 +433,20 @@ Feature: Test basic usage of one course in app
     And I press "OK" in the app
     And I wait loading to finish in the app
     Then the header should be "Course 1" in the app
+    And I should find "Test forum name" in the app
+    And I should find "Test wiki name" in the app
     And I should find "Choice course 1" in the app
     And I should find "assignment" in the app
-    And I should find "Test forum name" in the app
-    And I should find "Test chat name" in the app
-    And I should find "Web links" in the app
     And I should find "Test external name" in the app
-    And I should find "Test feedback name" in the app
-    And I should find "Test glossary" in the app
-    And I should find "Quiz 1" in the app
     And I should find "Test survey name" in the app
-    And I should find "Test wiki name" in the app
-    And I should find "Test lesson name" in the app
+    And I should find "Test chat name" in the app
+    And I should find "Quiz 1" in the app
     And I should find "Test scorm name" in the app
+    And I should find "Test feedback name" in the app
+    And I should find "Test lesson name" in the app
     And I should find "Test workshop name" in the app
+    And I should not find "Web links" in the app
+    And I should not find "Test glossary" in the app
 
   Scenario: View blocks on drawer
     Given the following "blocks" exist:
@@ -447,20 +455,20 @@ Feature: Test basic usage of one course in app
       | activity_modules | Course       | C1        | course-view-*   | site-pre      |                                                                                                              |
     And I entered the course "Course 1" as "student1" in the app
     Then the header should be "Course 1" in the app
+    And I should find "Test forum name" in the app
+    And I should find "Test wiki name" in the app
     And I should find "Choice course 1" in the app
     And I should find "assignment" in the app
-    And I should find "Test forum name" in the app
-    And I should find "Test chat name" in the app
-    And I should find "Web links" in the app
     And I should find "Test external name" in the app
-    And I should find "Test feedback name" in the app
-    And I should find "Test glossary" in the app
-    And I should find "Quiz 1" in the app
     And I should find "Test survey name" in the app
-    And I should find "Test wiki name" in the app
-    And I should find "Test lesson name" in the app
+    And I should find "Test chat name" in the app
+    And I should find "Quiz 1" in the app
     And I should find "Test scorm name" in the app
+    And I should find "Test feedback name" in the app
+    And I should find "Test lesson name" in the app
     And I should find "Test workshop name" in the app
+    And I should not find "Web links" in the app
+    And I should not find "Test glossary" in the app
     Then I press "Open block drawer" in the app
     And I should find "HTML title test" in the app
     And I should find "body test" in the app

@@ -1898,10 +1898,12 @@ ion-popover {
     &.md {
         margin-top: 2px;
         margin-bottom: 2px;
-    }
-    // Never show backdrop on popovers
-    ion-backdrop {
-        background: transparent;
+
+        // Never show backdrop on popovers on Android
+        // @todo Apply box shadow on ios and make it transparent too. The main problem is the box arrow.
+        ion-backdrop {
+            background: transparent;
+        }
     }
 }
 
