@@ -49,6 +49,10 @@ export class CoreAutoFocusDirective implements AfterViewInit {
 
         await CoreDom.waitToBeInDOM(this.element);
 
+        // Wait in case there is an animation to enter the page, otherwise the interaction
+        // between the keyboard appearing and the animation causes a visual glitch.
+        await CoreUtils.wait(540);
+
         CoreDomUtils.focusElement(this.element);
 
     }
