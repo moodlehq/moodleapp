@@ -94,7 +94,8 @@
         }
     }
 
-    .core-module-description ::ng-deep img {
+    .core-module-description ::ng-deep img,
+    .activity-title .item-heading core-format-text ::ng-deep img {
         border-radius: var(--radius-lg);
     }
 
