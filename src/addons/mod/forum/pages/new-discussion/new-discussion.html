@@ -43,7 +43,7 @@
             <div *ngIf="advanced" id="addon-mod-forum-new-discussion-advanced">
                 <ion-item *ngIf="showGroups && groupIds.length > 1 && accessInfo.cancanposttomygroups">
                     <ion-label>{{ 'addon.mod_forum.posttomygroups' | translate }}</ion-label>
-                    <ion-toggle [(ngModel)]="newDiscussion.postToAllGroups" name="postallgroups"></ion-toggle>
+                    <ion-toggle [(ngModel)]="newDiscussion.postToAllGroups" name="postallgroups" slot="end"></ion-toggle>
                 </ion-item>
                 <ion-item *ngIf="showGroups" class="core-edit-set-group">
                     <ion-label>{{ 'addon.mod_forum.group' | translate }}</ion-label>
@@ -58,11 +58,11 @@
                 </ion-item>
                 <ion-item>
                     <ion-label>{{ 'addon.mod_forum.discussionsubscription' | translate }}</ion-label>
-                    <ion-toggle [(ngModel)]="newDiscussion.subscribe" name="subscribe"></ion-toggle>
+                    <ion-toggle [(ngModel)]="newDiscussion.subscribe" name="subscribe" slot="end"></ion-toggle>
                 </ion-item>
                 <ion-item *ngIf="canPin">
                     <ion-label>{{ 'addon.mod_forum.discussionpinned' | translate }}</ion-label>
-                    <ion-toggle [(ngModel)]="newDiscussion.pin" name="pin"></ion-toggle>
+                    <ion-toggle [(ngModel)]="newDiscussion.pin" name="pin" slot="end"></ion-toggle>
                 </ion-item>
                 <core-attachments *ngIf="canCreateAttachments && forum && forum.maxattachments > 0" [files]="newDiscussion.files"
                     [maxSize]="forum.maxbytes" [maxSubmissions]="forum.maxattachments" [component]="component" [componentId]="forum.cmid"

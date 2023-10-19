@@ -22,19 +22,20 @@
                 <p class="item-heading">Text direction</p>
                 <p>{{ direction }}</p>
             </ion-label>
-            <ion-toggle [(ngModel)]="rtl" (ionChange)="RTLChanged()"></ion-toggle>
+            <ion-toggle [(ngModel)]="rtl" (ionChange)="RTLChanged()" slot="end"></ion-toggle>
         </ion-item>
         <ion-item class="ion-text-wrap">
             <ion-label>
                 <p class="item-heading">Force safe area margins</p>
             </ion-label>
-            <ion-toggle [(ngModel)]="forceSafeAreaMargins" (ionChange)="safeAreaChanged()"></ion-toggle>
+            <ion-toggle [(ngModel)]="forceSafeAreaMargins" (ionChange)="safeAreaChanged()" slot="end"></ion-toggle>
         </ion-item>
         <ion-item class="ion-text-wrap" *ngIf="stagingSitesCount && enableStagingSites !== undefined">
             <ion-label>
                 <h2>Enable staging sites ({{stagingSitesCount}})</h2>
             </ion-label>
-            <ion-toggle [(ngModel)]="enableStagingSites" (ionChange)="setEnabledStagingSites($event.detail.checked)"></ion-toggle>
+            <ion-toggle [(ngModel)]="enableStagingSites" (ionChange)="setEnabledStagingSites($event.detail.checked)"
+                slot="end"></ion-toggle>
         </ion-item>
         <ng-container *ngIf="siteId">
             <ion-item class="ion-text-wrap">
@@ -42,14 +43,14 @@
                     <p class="item-heading">Enable remote styles <ion-badge>{{remoteStylesCount}}</ion-badge>
                     </p>
                 </ion-label>
-                <ion-toggle [(ngModel)]="remoteStyles" (ionChange)="remoteStylesChanged()"></ion-toggle>
+                <ion-toggle [(ngModel)]="remoteStyles" (ionChange)="remoteStylesChanged()" slot="end"></ion-toggle>
             </ion-item>
             <ion-item class="ion-text-wrap">
                 <ion-label>
                     <p class="item-heading">Enable site plugin styles <ion-badge>{{pluginStylesCount}}</ion-badge>
                     </p>
                 </ion-label>
-                <ion-toggle [(ngModel)]="pluginStyles" (ionChange)="pluginStylesChanged()"></ion-toggle>
+                <ion-toggle [(ngModel)]="pluginStyles" (ionChange)="pluginStylesChanged()" slot="end"></ion-toggle>
             </ion-item>
             <ion-item class="ion-text-wrap" *ngIf="userToursEnabled">
                 <ion-label>

@@ -62,16 +62,16 @@
                 </ion-item-divider>
                 <ion-item class="ion-text-wrap">
                     <ion-label>{{ 'addon.mod_glossary.entryusedynalink' | translate }}</ion-label>
-                    <ion-toggle [(ngModel)]="data.usedynalink" name="usedynalink"></ion-toggle>
+                    <ion-toggle [(ngModel)]="data.usedynalink" name="usedynalink" slot="end"></ion-toggle>
                 </ion-item>
                 <ion-item class="ion-text-wrap">
                     <ion-label>{{ 'addon.mod_glossary.casesensitive' | translate }}</ion-label>
-                    <ion-toggle [disabled]="!data.usedynalink" [(ngModel)]="data.casesensitive" name="casesensitive">
+                    <ion-toggle [disabled]="!data.usedynalink" [(ngModel)]="data.casesensitive" name="casesensitive" slot="end">
                     </ion-toggle>
                 </ion-item>
                 <ion-item class="ion-text-wrap">
                     <ion-label>{{ 'addon.mod_glossary.fullmatch' | translate }}</ion-label>
-                    <ion-toggle [disabled]="!data.usedynalink" [(ngModel)]="data.fullmatch" name="fullmatch"></ion-toggle>
+                    <ion-toggle [disabled]="!data.usedynalink" [(ngModel)]="data.fullmatch" name="fullmatch" slot="end"></ion-toggle>
                 </ion-item>
             </ng-container>
             <ion-button class="ion-margin" expand="block" [disabled]="!data.concept || !data.definition" (click)="save()">
