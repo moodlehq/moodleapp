@@ -18,7 +18,7 @@
     <core-loading [hideUntil]="loaded">
         <ion-item *ngIf="showMyEntriesToggle">
             <ion-label>{{ 'addon.blog.showonlyyourentries' | translate }}</ion-label>
-            <ion-toggle [(ngModel)]="onlyMyEntries" (ionChange)="onlyMyEntriesToggleChanged(onlyMyEntries)"></ion-toggle>
+            <ion-toggle [(ngModel)]="onlyMyEntries" (ionChange)="onlyMyEntriesToggleChanged(onlyMyEntries)" slot="end"></ion-toggle>
         </ion-item>
         <core-empty-box *ngIf="entries && entries.length == 0" icon="far-newspaper" [message]="'addon.blog.noentriesyet' | translate">
         </core-empty-box>

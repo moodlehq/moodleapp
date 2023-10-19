@@ -56,6 +56,7 @@ export class AddonModLabelModuleHandlerService extends CoreModuleHandlerBase imp
             title,
             a11yTitle: '',
             class: 'addon-mod-label-handler',
+            hasCustomCmListItem: true,
         };
     }
 

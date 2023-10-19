@@ -26,7 +26,7 @@
                         <p class="item-heading">{{ handler.title | translate}}</p>
                     </ion-label>
                     <ion-toggle *ngIf="handler.toggle" [(ngModel)]="handler.toggleChecked"
-                        (ionChange)="handler.toggle($event.detail.checked)">
+                        (ionChange)="handler.toggle($event.detail.checked)" slot="end">
                     </ion-toggle>
                 </ion-item>
             </ion-list>

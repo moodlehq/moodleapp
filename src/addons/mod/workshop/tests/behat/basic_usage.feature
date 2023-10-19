@@ -49,13 +49,14 @@ Feature: Test basic usage of workshop activity in app
     Given I entered the workshop activity "workshop" on course "Course 1" as "student1" in the app
     Then I should find "Task to do" within "Submit your work" "ion-item" in the app
 
-    When I press "Edit submission" in the app
+    When I press "Add submission" in the app
     And I set the field "Title" to "The Answer" in the app
     And I set the field "Submission content" to "42" in the app
     And I press "Save" in the app
     Then I should find "Task done" within "Submit your work" "ion-item" in the app
     And I should find "The Answer" in the app
     And I should find "42" in the app
+    And I should find "Edit submission" in the app
 
     Given I entered the workshop activity "workshop" on course "Course 1" as "teacher1" in the app
     When I pull to refresh in the app

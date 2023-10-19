@@ -7,6 +7,10 @@
 
     ion-card {
         margin: var(--vertical-margin) var(--horizontal-margin);
+
+        &.activityinline {
+            border: 0px;
+        }
     }
 
     ion-item {
@@ -94,7 +98,8 @@
         }
     }
 
-    .core-module-description ::ng-deep img {
+    .core-module-description ::ng-deep img,
+    .activity-title .item-heading core-format-text ::ng-deep img {
         border-radius: var(--radius-lg);
     }
 
@@ -184,5 +189,10 @@
 
     &.indented + ::ng-deep core-course-module.indented ion-card {
         border-top: 1px solid var(--border-color);
+    }
+
+    // Hide download folder icon meanwhile MOBILE-4147 is not solved
+    core-format-text.core-module-description ::ng-deep .description-inner .navitem {
+        display: none;
     }
 }

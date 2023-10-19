@@ -45,6 +45,7 @@ export class CoreModuleHandlerBase implements Partial<CoreCourseModuleHandler> {
             title: module.name,
             class: 'addon-mod_' + module.modname + '-handler',
             showDownloadButton: true,
+            hasCustomCmListItem: false,
             action: async (
                 event: Event,
                 module: CoreCourseModuleData,
