@@ -196,3 +196,12 @@
         display: none;
     }
 }
+
+
+:host-context(html.dark) {
+    .activity-description-availabilityinfo {
+        .core-module-availabilityinfo {
+            background: var(--gray-800);
+        }
+    }
+}
