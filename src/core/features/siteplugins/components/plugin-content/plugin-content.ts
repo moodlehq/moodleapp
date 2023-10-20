@@ -22,6 +22,7 @@ import { CoreSitePlugins, CoreSitePluginsContent, CoreSitePluginsProvider } from
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreEvents } from '@singletons/events';
+import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 
 /**
  * Component to render a site plugin content.
@@ -236,6 +237,19 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
      */
     updateModuleCourseContent(cmId: number, alreadyFetched?: boolean): void {
         CoreEvents.trigger(CoreSitePluginsProvider.UPDATE_COURSE_CONTENT, { cmId, alreadyFetched });
+    }
+
+    /**
+     * Update this content stored in the app's cache. This function will not reload the view, it will only update the data stored
+     * in the device so it's updated for the next usage. If you want to update the view, please use refreshContent.
+     */
+    async updateCachedContent(): Promise<void> {
+        await CoreSitePlugins.getContent(
+            this.component,
+            this.method,
+            this.args,
+            CoreSites.getReadingStrategyPreSets(CoreSitesReadingStrategy.ONLY_NETWORK),
+        );
     }
 
 }
