@@ -77,6 +77,13 @@ html.dark {
         }
     }
 
+    ion-popover,
+    ion-popover ion-content {
+        --background: var(--gray-800);
+        --ion-item-background: var(--background);
+        --ion-background-color: var(--background);
+    }
+
     --core-link-color: var(--info-tint);
 
     --core-header-toolbar-background:   var(--gray-900);
