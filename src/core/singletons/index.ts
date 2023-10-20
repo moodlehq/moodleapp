@@ -142,6 +142,8 @@ export function makeSingleton<Service extends object = object>( // eslint-disabl
                 throw new Error('Can\'t resolve a singleton instance without an injector');
             }
 
+            // @todo Check type to avoid deprecation.
+            // eslint-disable-next-line deprecation/deprecation
             const instance = injector.get(injectionToken);
 
             singleton.setInstance(instance);

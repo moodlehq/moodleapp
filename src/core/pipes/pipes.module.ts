@@ -34,6 +34,7 @@ import { CoreToLocaleStringPipe } from './to-locale-string';
         CoreNoTagsPipe,
         CoreSecondsToHMSPipe,
         CoreTimeAgoPipe,
+        // eslint-disable-next-line deprecation/deprecation
         CoreToLocaleStringPipe,
     ],
     exports: [
@@ -45,6 +46,7 @@ import { CoreToLocaleStringPipe } from './to-locale-string';
         CoreNoTagsPipe,
         CoreSecondsToHMSPipe,
         CoreTimeAgoPipe,
+        // eslint-disable-next-line deprecation/deprecation
         CoreToLocaleStringPipe,
     ],
 })

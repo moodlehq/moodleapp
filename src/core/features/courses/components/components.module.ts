@@ -22,6 +22,7 @@ import { CoreCoursesCourseOptionsMenuComponent } from './course-options-menu/cou
 @NgModule({
     declarations: [
         CoreCoursesCourseListItemComponent,
+        // eslint-disable-next-line deprecation/deprecation
         CoreCoursesCourseProgressComponent,
         CoreCoursesCourseOptionsMenuComponent,
     ],
@@ -30,6 +31,7 @@ import { CoreCoursesCourseOptionsMenuComponent } from './course-options-menu/cou
     ],
     exports: [
         CoreCoursesCourseListItemComponent,
+        // eslint-disable-next-line deprecation/deprecation
         CoreCoursesCourseProgressComponent,
         CoreCoursesCourseOptionsMenuComponent,
     ],

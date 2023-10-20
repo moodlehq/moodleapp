@@ -104,7 +104,6 @@ export class AddonModLtiHelperProvider {
      * @param courseId Course ID.
      * @param module Module.
      * @param ltiId LTI id.
-     * @param name Name of the lti.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when done.
      */

@@ -36,7 +36,7 @@ export class CoreEmptyBoxComponent {
     @Input() flipIconRtl = false; // Whether to flip the icon in RTL. Defaults to false.
 
     /**
-     * @deprecated not used anymore.
+     * @deprecated since 4.0. Not used anymore.
      */
     @Input() inline = false;
 

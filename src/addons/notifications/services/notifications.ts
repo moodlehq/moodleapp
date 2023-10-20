@@ -496,14 +496,14 @@ export type AddonNotificationsPreferencesNotificationProcessor = {
     lockedmessage?: string; // @since 3.6. Text to display if locked.
     userconfigured: number; // Is configured?.
     enabled?: boolean; // @since 4.0. Processor enabled.
-    loggedin: AddonNotificationsPreferencesNotificationProcessorState; // @deprecated removed on 4.0.
-    loggedoff: AddonNotificationsPreferencesNotificationProcessorState; // @deprecated removed on 4.0.
+    loggedin: AddonNotificationsPreferencesNotificationProcessorState; // @deprecatedonmoodle since 4.0.
+    loggedoff: AddonNotificationsPreferencesNotificationProcessorState; // @deprecatedonmoodle since 4.0.
 };
 
 /**
  * State in notification processor in notification preferences component.
  *
- * @deprecated removed on 4.0.
+ * @deprecatedonmoodle since 4.0
  */
 export type AddonNotificationsPreferencesNotificationProcessorState = {
     name: 'loggedoff' | 'loggedin'; // Name.

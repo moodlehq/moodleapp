@@ -370,7 +370,6 @@ export class CorePushNotificationsProvider {
      * @param itemCategory The item category.
      * @param wsName Name of the WS.
      * @param data Other data to pass to the event.
-     * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when done. This promise is never rejected.
      * @deprecated since 4.3. Use CoreAnalytics.logEvent instead.
      */
@@ -387,6 +386,7 @@ export class CorePushNotificationsProvider {
         data.category = itemCategory;
         data.moodleaction = wsName;
 
+        // eslint-disable-next-line deprecation/deprecation
         return this.logEvent('view_item', data);
     }
 
@@ -396,7 +396,6 @@ export class CorePushNotificationsProvider {
      * @param itemCategory The item category.
      * @param wsName Name of the WS.
      * @param data Other data to pass to the event.
-     * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when done. This promise is never rejected.
      * @deprecated since 4.3. Use CoreAnalytics.logEvent instead.
      */
@@ -409,6 +408,7 @@ export class CorePushNotificationsProvider {
         data.moodleaction = wsName;
         data.category = itemCategory;
 
+        // eslint-disable-next-line deprecation/deprecation
         return this.logEvent('view_item_list', data);
     }
 

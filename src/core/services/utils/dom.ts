@@ -106,7 +106,7 @@ export class CoreDomUtilsProvider {
      * @param element DOM Element.
      * @param selector Selector to search.
      * @returns Closest ancestor.
-     * @deprecated since app 4.0 Not needed anymore since it's supported on both Android and iOS. Use closest instead.
+     * @deprecated since 4.0. Not needed anymore since it's supported on both Android and iOS. Use closest instead.
      */
     closest(element: Element | undefined | null, selector: string): Element | null {
         return element?.closest(selector) ?? null;
@@ -404,7 +404,7 @@ export class CoreDomUtilsProvider {
      * @param useBorder Whether to use borders to calculate the measure.
      * @param innerMeasure If inner measure is needed: padding, margin or borders will be substracted.
      * @returns Height in pixels.
-     * @deprecated since app 4.0 Use getBoundingClientRect.height instead.
+     * @deprecated since 4.0 Use getBoundingClientRect.height instead.
      */
     getElementHeight(
         element: HTMLElement,
@@ -413,6 +413,7 @@ export class CoreDomUtilsProvider {
         useBorder?: boolean,
         innerMeasure?: boolean,
     ): number {
+        // eslint-disable-next-line deprecation/deprecation
         return this.getElementMeasure(element, false, usePadding, useMargin, useBorder, innerMeasure);
     }
 
@@ -426,7 +427,7 @@ export class CoreDomUtilsProvider {
      * @param useBorder Whether to use borders to calculate the measure.
      * @param innerMeasure If inner measure is needed: padding, margin or borders will be substracted.
      * @returns Measure in pixels.
-     * @deprecated since app 4.0 Use getBoundingClientRect.height or width instead.
+     * @deprecated since 4.0. Use getBoundingClientRect.height or width instead.
      */
     getElementMeasure(
         element: HTMLElement,
@@ -499,7 +500,7 @@ export class CoreDomUtilsProvider {
      * @param useBorder Whether to use borders to calculate the measure.
      * @param innerMeasure If inner measure is needed: padding, margin or borders will be substracted.
      * @returns Width in pixels.
-     * @deprecated since app 4.0 Use getBoundingClientRect.width instead.
+     * @deprecated since 4.0. Use getBoundingClientRect.width instead.
      */
     getElementWidth(
         element: HTMLElement,
@@ -508,6 +509,7 @@ export class CoreDomUtilsProvider {
         useBorder?: boolean,
         innerMeasure?: boolean,
     ): number {
+        // eslint-disable-next-line deprecation/deprecation
         return this.getElementMeasure(element, true, usePadding, useMargin, useBorder, innerMeasure);
     }
 
@@ -518,7 +520,7 @@ export class CoreDomUtilsProvider {
      * @param selector Selector to find the element to gets the position.
      * @param positionParentClass Parent Class where to stop calculating the position. Default inner-scroll.
      * @returns positionLeft, positionTop of the element relative to.
-     * @deprecated since app 4.0. Use CoreDom.getRelativeElementPosition instead.
+     * @deprecated since 4.0. Use CoreDom.getRelativeElementPosition instead.
      */
     getElementXY(element: HTMLElement, selector?: string, positionParentClass = 'inner-scroll'): [number, number] | null {
         if (selector) {
@@ -642,7 +644,7 @@ export class CoreDomUtilsProvider {
      *
      * @param element The root element of the component/directive.
      * @returns The instance, undefined if not found.
-     * @deprecated since 4.0.0. Use CoreDirectivesRegistry instead.
+     * @deprecated since 4.0. Use CoreDirectivesRegistry instead.
      */
     getInstanceByElement<T = unknown>(element: Element): T | undefined {
         return CoreDirectivesRegistry.resolve<T>(element) ?? undefined;
@@ -675,7 +677,7 @@ export class CoreDomUtilsProvider {
      * @param retries Number of retries before giving up.
      * @param retryAfter Milliseconds to wait before retrying if the element wasn't found.
      * @returns Resolved if found, rejected if too many tries.
-     * @deprecated since app 4.0 Use CoreDom.waitToBeInsideElement instead.
+     * @deprecated since 4.0. Use CoreDom.waitToBeInsideElement instead.
      */
     async waitElementToExist(
         findFunction: () => HTMLElement | null,
@@ -691,6 +693,7 @@ export class CoreDomUtilsProvider {
         if (!element) {
             await CoreUtils.wait(retryAfter);
 
+            // eslint-disable-next-line deprecation/deprecation
             return this.waitElementToExist(findFunction, retries - 1);
         }
 
@@ -852,7 +855,7 @@ export class CoreDomUtilsProvider {
      * Remove a component/directive instance using the DOM Element.
      *
      * @param element The root element of the component/directive.
-     * @deprecated since 4.0.0. It's no longer necessary to remove instances.
+     * @deprecated since 4.0. It's no longer necessary to remove instances.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     removeInstanceByElement(element: Element): void {
@@ -863,7 +866,7 @@ export class CoreDomUtilsProvider {
      * Remove a component/directive instance using the ID.
      *
      * @param id The ID to remove.
-     * @deprecated since 4.0.0. It's no longer necessary to remove instances.
+     * @deprecated since 4.0. It's no longer necessary to remove instances.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     removeInstanceById(id: string): void {
@@ -1001,7 +1004,7 @@ export class CoreDomUtilsProvider {
      * @param scrollParentClass Not used anymore.
      * @param duration Duration of the scroll animation in milliseconds.
      * @returns True if the element is found, false otherwise.
-     * @deprecated since app 4.0 Use CoreDom.scrollToElement instead.
+     * @deprecated since 4.0. Use CoreDom.scrollToElement instead.
      */
     scrollToElement(content: IonContent, element: HTMLElement, scrollParentClass?: string, duration?: number): boolean {
         CoreDom.scrollToElement(element, undefined, { duration });
@@ -1018,7 +1021,7 @@ export class CoreDomUtilsProvider {
      * @param scrollParentClass Not used anymore.
      * @param duration Duration of the scroll animation in milliseconds.
      * @returns True if the element is found, false otherwise.
-     * @deprecated since app 4.0 Use CoreDom.scrollToElement instead.
+     * @deprecated since 4.0. Use CoreDom.scrollToElement instead.
      */
     scrollToElementBySelector(
         container: HTMLElement | null,
@@ -1042,7 +1045,7 @@ export class CoreDomUtilsProvider {
      *
      * @param container The element that contains the element that must be scrolled.
      * @returns True if the element is found, false otherwise.
-     * @deprecated since app 4.0 Use CoreDom.scrollToInputError instead.
+     * @deprecated since 4.0. Use CoreDom.scrollToInputError instead.
      */
     scrollToInputError(container: HTMLElement | null): boolean {
         if (!container) {
@@ -1669,7 +1672,7 @@ export class CoreDomUtilsProvider {
      *
      * @param element The root element of the component/directive.
      * @param instance The instance to store.
-     * @deprecated since 4.0.0. Use CoreDirectivesRegistry instead.
+     * @deprecated since 4.0. Use CoreDirectivesRegistry instead.
      */
     storeInstanceByElement(element: Element, instance: unknown): void {
         CoreDirectivesRegistry.register(element, instance);
@@ -2027,7 +2030,7 @@ export class CoreDomUtilsProvider {
     ): void {
         document.documentElement.classList.toggle(className, enable);
 
-        // @deprecated since 4.1
+        // @deprecated since 4.1.
         document.body.classList.toggle(className, enable && options.includeLegacy);
     }
 

@@ -70,7 +70,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
      */
     refreshIcon = CoreConstants.ICON_REFRESH;
     /**
-     * @deprecated since 4.0.. It won't be populated anymore.
+     * @deprecated since 4.0. It won't be populated anymore.
      */
     prefetchStatus?: string;
     /**
@@ -142,6 +142,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
 
         // Get the data for the context menu.
         this.description = this.module.description;
+        // eslint-disable-next-line deprecation/deprecation
         this.externalUrl = this.module.url;
     }
 
@@ -180,7 +181,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
     /**
      * Expand the description.
      *
-     * @deprecated since 4.0
+     * @deprecated since 4.0.
      */
     expandDescription(): void {
         this.openModuleSummary();
@@ -222,7 +223,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
     /**
      * Prefetch the module.
      *
-     * @deprecated since 4.0
+     * @deprecated since 4.0.
      */
     async prefetch(): Promise<void> {
         try {
@@ -242,7 +243,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
     /**
      * Confirm and remove downloaded files.
      *
-     * @deprecated since 4.0
+     * @deprecated since 4.0.
      */
     async removeFiles(): Promise<void> {
         let modal: CoreIonLoadingElement | undefined;

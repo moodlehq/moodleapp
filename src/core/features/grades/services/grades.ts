@@ -346,7 +346,7 @@ export class CoreGradesProvider {
      * Returns whether or not WS Grade Items is available.
      *
      * @returns True if ws is available, false otherwise.
-     * @deprecated since app 4.0
+     * @deprecated since 4.0.
      */
     async isGradeItemsAvailable(): Promise<boolean> {
         return true;

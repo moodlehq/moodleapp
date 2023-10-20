@@ -413,7 +413,7 @@ export class CoreSitesProvider {
      *
      * @param siteUrl URL of the site to check.
      * @returns A promise to be resolved if the site exists.
-     * @deprecated since app 4.0. Now the app calls uses tool_mobile_get_public_config to check if site exists.
+     * @deprecated since 4.0. Now the app calls uses tool_mobile_get_public_config to check if site exists.
      */
     async siteExists(siteUrl: string): Promise<void> {
         let data: CoreSitesLoginTokenResponse;
@@ -703,7 +703,7 @@ export class CoreSitesProvider {
      * Function for determine which service we should use (default or extended plugin).
      *
      * @returns The service shortname.
-     * @deprecated since app 4.0
+     * @deprecated since 4.0.
      */
     determineService(): string {
         return CoreConstants.CONFIG.wsservice;
@@ -2132,7 +2132,9 @@ export type CoreSiteCheckResponse = {
     service: string;
 
     /**
-     * Code of the warning message to show to the user. @deprecated since app 4.0
+     * Code of the warning message to show to the user.
+     *
+     * @deprecated since 4.0.
      */
     warning?: string;
 

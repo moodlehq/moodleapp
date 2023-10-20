@@ -36,7 +36,7 @@ export class CoreDownloadRefreshComponent {
     @Input() enabled = false; // Whether the download is enabled.
     @Input() loading = true; // Force loading status when is not downloading.
     /**
-     * @deprecated since 4.0. It has no effect.
+     * @deprecated since 4.0. Not used anymore.
      */
     @Input() size = ''; // Size of the buttons.
     @Input() canTrustDownload = false; // If false, refresh will be shown if downloaded.

@@ -395,7 +395,7 @@ export class CoreSitePluginsProvider {
      * Check if the get content WS is available.
      *
      * @returns If get content WS is available.
-     * @deprecated since app 4.0
+     * @deprecated since 4.0
      */
     isGetContentAvailable(): boolean {
         return true;
@@ -905,7 +905,7 @@ export type CoreSitePluginsCourseFormatHandlerData = CoreSitePluginsHandlerCommo
     canviewallsections?: boolean;
     displayenabledownload?: boolean;
     /**
-     * @deprecated on 4.0, use displaycourseindex instead.
+     * @deprecated since 4.0. Use displaycourseindex instead.
      */
     displaysectionselector?: boolean;
     displaycourseindex?: boolean;

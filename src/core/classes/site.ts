@@ -1607,8 +1607,9 @@ export class CoreSite {
      * Check if the local_mobile plugin is installed in the Moodle site.
      *
      * @returns Promise resolved when the check is done.
-     * @deprecated since app 4.0
+     * @deprecated since 4.0.
      */
+    // eslint-disable-next-line deprecation/deprecation
     async checkLocalMobilePlugin(): Promise<LocalMobileResponse> {
         // Not used anymore.
         return { code: 0, coreSupported: true };
@@ -1618,7 +1619,7 @@ export class CoreSite {
      * Check if local_mobile has been installed in Moodle.
      *
      * @returns Whether the App is able to use local_mobile plugin for this site.
-     * @deprecated since app 4.0
+     * @deprecated since 4.0.
      */
     checkIfAppUsesLocalMobile(): boolean {
         return false;
@@ -1628,7 +1629,7 @@ export class CoreSite {
      * Check if local_mobile has been installed in Moodle but the app is not using it.
      *
      * @returns Promise resolved it local_mobile was added, rejected otherwise.
-     * @deprecated since app 4.0
+     * @deprecated since 4.0.
      */
     async checkIfLocalMobileInstalledAndNotUsed(): Promise<void> {
         throw new CoreError('Deprecated.');
@@ -2125,7 +2126,7 @@ export class CoreSite {
                 CoreConstants.SECONDS_MINUTE * 6,
             );
 
-            if (CoreTimeUtils.timestamp() - this.lastAutoLogin < timeBetweenRequests) {
+            if (CoreTimeUtils.timestamp() - this.lastAutoLogin < Number(timeBetweenRequests)) {
                 // Not enough time has passed since last auto login.
                 return url;
             }
@@ -2626,7 +2627,7 @@ export type CoreSiteWSPreSets = {
 /**
  * Response of checking local_mobile status.
  *
- * @deprecated since app 4.0
+ * @deprecated since 4.0.
  */
 export type LocalMobileResponse = {
     /**

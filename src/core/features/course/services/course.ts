@@ -855,7 +855,7 @@ export class CoreCourseProvider {
 
         let path = 'assets/img/mod/';
         if (!CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('4.0')) {
-            // @deprecatedonmoodle since Moodle 3.11.
+            // @deprecatedonmoodle since 3.11.
             path = 'assets/img/mod_legacy/';
         }
 
@@ -866,10 +866,10 @@ export class CoreCourseProvider {
     /**
      * Get the section ID a module belongs to.
      *
-     * @deprecated since 4.0.
      * @param moduleId The module ID.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved with the section ID.
+     * @deprecated since 4.0.
      */
     async getModuleSectionId(moduleId: number, siteId?: string): Promise<number> {
         // Try to get the section using getModuleBasicInfo.

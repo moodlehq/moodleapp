@@ -48,7 +48,7 @@ export class CoreRatingProvider {
      * Returns whether the web serivce to add ratings is available.
      *
      * @returns If WS is available.
-     * @deprecated since app 4.0
+     * @deprecated since 4.0.
      */
     isAddRatingWSAvailable(): boolean {
         return true;

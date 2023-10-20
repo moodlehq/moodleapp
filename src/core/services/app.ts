@@ -272,7 +272,7 @@ export class CoreAppProvider {
      * Checks if the app is running in a mobile or tablet device (Cordova).
      *
      * @returns Whether the app is running in a mobile or tablet device.
-     * @deprecated since 4.1. use CorePlatform instead.
+     * @deprecated since 4.1. Use CorePlatform instead.
      */
     isMobile(): boolean {
         return CorePlatform.isMobile();
@@ -291,7 +291,7 @@ export class CoreAppProvider {
      * Returns whether we are online.
      *
      * @returns Whether the app is online.
-     * @deprecated since 4.1.0. Use CoreNetwork instead.
+     * @deprecated since 4.1. Use CoreNetwork instead.
      */
     isOnline(): boolean {
         return CoreNetwork.isOnline();
@@ -301,7 +301,7 @@ export class CoreAppProvider {
      * Check if device uses a limited connection.
      *
      * @returns Whether the device uses a limited connection.
-     * @deprecated since 4.1.0. Use CoreNetwork instead.
+     * @deprecated since 4.1. Use CoreNetwork instead.
      */
     isNetworkAccessLimited(): boolean {
         return CoreNetwork.isNetworkAccessLimited();
@@ -311,7 +311,7 @@ export class CoreAppProvider {
      * Check if device uses a wifi connection.
      *
      * @returns Whether the device uses a wifi connection.
-     * @deprecated since 4.1.0. Use CoreNetwork instead.
+     * @deprecated since 4.1. Use CoreNetwork instead.
      */
     isWifi(): boolean {
         return CoreNetwork.isWifi();
@@ -576,7 +576,7 @@ export class CoreAppProvider {
      * Set value of forceOffline flag. If true, the app will think the device is offline.
      *
      * @param value Value to set.
-     * @deprecated since 4.1.0. Use CoreNetwork.setForceConnectionMode instead.
+     * @deprecated since 4.1. Use CoreNetwork.setForceConnectionMode instead.
      */
     setForceOffline(value: boolean): void {
         CoreNetwork.setForceConnectionMode(value ? CoreNetworkConnection.NONE : CoreNetworkConnection.WIFI);
@@ -617,6 +617,7 @@ export class CoreAppProvider {
 
         this.logger.debug(`Set navigation bar color ${color}`);
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (<any> window).StatusBar.navigationBackgroundColorByHexString(color);
     }
 

@@ -161,7 +161,7 @@ export class CoreTimeUtilsProvider {
      * @param seconds A number of seconds
      * @param precision Number of elements to have in precision.
      * @returns Seconds in a human readable format.
-     * @deprecated since app 4.0. Use CoreTime.formatTime instead.
+     * @deprecated since 4.0. Use CoreTime.formatTime instead.
      */
     formatTime(seconds: number, precision = 2): string {
         return CoreTime.formatTime(seconds, precision);
@@ -172,7 +172,7 @@ export class CoreTimeUtilsProvider {
      *
      * @param duration Seconds
      * @returns Short human readable text.
-     * @deprecated since app 4.0. Use CoreTime.formatTimeShort instead.
+     * @deprecated since 4.0. Use CoreTime.formatTimeShort instead.
      */
     formatTimeShort(duration: number): string {
         return CoreTime.formatTimeShort(duration);
@@ -184,7 +184,7 @@ export class CoreTimeUtilsProvider {
      * @param duration Duration in seconds
      * @param precision Number of elements to have in precision. 0 or undefined to full precission.
      * @returns Duration in a human readable format.
-     * @deprecated since app 4.0. Use CoreTime.formatTime instead.
+     * @deprecated since 4.0. Use CoreTime.formatTime instead.
      */
     formatDuration(duration: number, precision?: number): string {
         return CoreTime.formatTime(duration, precision);
@@ -195,7 +195,7 @@ export class CoreTimeUtilsProvider {
      *
      * @param duration Duration in seconds
      * @returns Duration in a short human readable format.
-     * @deprecated since app 4.0. Use CoreTime.formatTimeShort instead.
+     * @deprecated since 4.0. Use CoreTime.formatTimeShort instead.
      */
     formatDurationShort(duration: number): string {
         return CoreTime.formatTimeShort(duration);

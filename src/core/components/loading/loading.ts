@@ -155,6 +155,7 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
         }
 
         // Event has been deprecated since app 4.0.
+        // eslint-disable-next-line deprecation/deprecation
         CoreEvents.trigger(CoreEvents.CORE_LOADING_CHANGED, <CoreEventLoadingChangedData> {
             loaded,
             uniqueId: this.uniqueId,

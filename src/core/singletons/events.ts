@@ -39,6 +39,7 @@ export interface CoreEventsData {
     [CoreEvents.SITE_ADDED]: CoreEventSiteAddedData;
     [CoreEvents.SITE_DELETED]: CoreSite;
     [CoreEvents.SESSION_EXPIRED]: CoreEventSessionExpiredData;
+    // eslint-disable-next-line deprecation/deprecation
     [CoreEvents.CORE_LOADING_CHANGED]: CoreEventLoadingChangedData;
     [CoreEvents.COURSE_STATUS_CHANGED]: CoreEventCourseStatusChanged;
     [CoreEvents.PACKAGE_STATUS_CHANGED]: CoreEventPackageStatusChanged;
@@ -84,11 +85,7 @@ export class CoreEvents {
     static readonly SITE_UPDATED = 'site_updated';
     static readonly SITE_DELETED = 'site_deleted';
     static readonly COMPLETION_MODULE_VIEWED = 'completion_module_viewed';
-    /**
-     * Deprecated on 4.0 use COMPLETION_CHANGED instead.
-     */
     static readonly MANUAL_COMPLETION_CHANGED = 'manual_completion_changed';
-    static readonly COMPLETION_CHANGED = 'completion_changed';
     static readonly USER_DELETED = 'user_deleted';
     static readonly USER_SUSPENDED = 'user_suspended';
     static readonly USER_NO_LOGIN = 'user_no_login';
@@ -108,7 +105,7 @@ export class CoreEvents {
     static readonly FILE_SHARED = 'file_shared';
     static readonly KEYBOARD_CHANGE = 'keyboard_change';
     /**
-     * @deprecated since app 4.0. Use CoreDirectivesRegistry promises instead.
+     * @deprecated since 4.0. Use CoreDirectivesRegistry promises instead.
      */
     static readonly CORE_LOADING_CHANGED = 'core_loading_changed';
     static readonly ORIENTATION_CHANGE = 'orientation_change';

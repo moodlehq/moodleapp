@@ -646,7 +646,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
      */
     async addReminder(): Promise<void> {
         const formData = this.form.value;
-        const eventTime = CoreTimeUtils.convertToTimestamp(formData.timestart, true);
+        const eventTime = moment(formData.timestart).unix();
 
         const reminderTime = await CoreDomUtils.openPopover<{timeBefore: number}>({
             component: CoreRemindersSetReminderMenuComponent,

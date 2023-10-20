@@ -18,7 +18,6 @@ import { CoreConfig } from '@services/config';
 import { CoreEvents } from '@singletons/events';
 import { CoreLang } from '@services/lang';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { CoreSettingsHelper, CoreColorScheme, CoreZoomLevel } from '../../services/settings-helper';
 import { CoreIframeUtils } from '@services/utils/iframe';
 import { Diagnostic, Translate } from '@singletons';
@@ -250,7 +249,7 @@ export class CoreSettingsGeneralPage {
         ev.stopPropagation();
         ev.preventDefault();
 
-        await CorePushNotifications.enableAnalytics(this.analyticsEnabled);
+        await CoreAnalytics.enableAnalytics(this.analyticsEnabled);
 
         CoreConfig.set(CoreConstants.SETTINGS_ANALYTICS_ENABLED, this.analyticsEnabled ? 1 : 0);
     }

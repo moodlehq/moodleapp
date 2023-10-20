@@ -154,9 +154,7 @@ export class CoreLocalNotificationsProvider {
      * @returns Promise resolved when the notifications are cancelled.
      */
     async cancelSiteNotifications(siteId: string): Promise<void> {
-        if (!this.isAvailable()) {
-            return;
-        } else if (!siteId) {
+        if (!siteId) {
             throw new Error('No site ID supplied.');
         }
 

@@ -105,6 +105,7 @@ export class CoreDirectivesRegistry {
      * Get all directive instances and wait to be ready.
      *
      * @param element Root element.
+     * @param selector If defined, CSS Selector to wait for.
      * @param directiveClass Directive class.
      * @returns Promise resolved when done.
      */

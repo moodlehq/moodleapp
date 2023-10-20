@@ -38,8 +38,10 @@ import { CoreCourseModuleCompletionDetailsComponent } from './module-completion-
         CoreCourseModuleComponent,
         CoreCourseModuleCompletionComponent,
         CoreCourseModuleCompletionLegacyComponent,
+        // eslint-disable-next-line deprecation/deprecation
         CoreCourseModuleDescriptionComponent,
         CoreCourseModuleInfoComponent,
+        // eslint-disable-next-line deprecation/deprecation
         CoreCourseModuleManualCompletionComponent,
         CoreCourseCourseIndexComponent,
         CoreCourseCourseIndexTourComponent,
@@ -59,8 +61,10 @@ import { CoreCourseModuleCompletionDetailsComponent } from './module-completion-
         CoreCourseModuleComponent,
         CoreCourseModuleCompletionComponent,
         CoreCourseModuleCompletionLegacyComponent,
+        // eslint-disable-next-line deprecation/deprecation
         CoreCourseModuleDescriptionComponent,
         CoreCourseModuleInfoComponent,
+        // eslint-disable-next-line deprecation/deprecation
         CoreCourseModuleManualCompletionComponent,
         CoreCourseCourseIndexComponent,
         CoreCourseCourseIndexTourComponent,

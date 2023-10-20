@@ -81,7 +81,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
      * Check if current site can check updates using core_course_check_updates.
      *
      * @returns True if can check updates, false otherwise.
-     * @deprecated since app 4.0
+     * @deprecated since 4.0.
      */
     canCheckUpdates(): boolean {
         return true;
@@ -704,6 +704,8 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
 
         await Promise.all(modules.map(async (module) => {
             const handler = this.getPrefetchHandlerFor(module.modname);
+
+            // eslint-disable-next-line deprecation/deprecation
             if (!handler || (onlyToDisplay && handler.skipListStatus)) {
                 return;
             }
@@ -1366,7 +1368,7 @@ export interface CoreCourseModulePrefetchHandler extends CoreDelegateHandler {
      * If true, this module will be treated as not downloadable when determining the status of a list of modules. The module will
      * still be downloaded when downloading the section/course, it only affects whether the button should be displayed.
      *
-     * @deprecated since app 4.0.
+     * @deprecated since 4.0.
      */
     skipListStatus?: boolean;
 

@@ -18,6 +18,7 @@ const appConfig = {
         'plugin:@angular-eslint/recommended',
         'plugin:promise/recommended',
         'plugin:jsdoc/recommended',
+        "plugin:deprecation/recommended",
     ],
     parser: '@typescript-eslint/parser',
     parserOptions: {
@@ -204,6 +205,19 @@ const appConfig = {
         'jsdoc/require-returns-type': 'off',
         'jsdoc/require-param': 'off',
         'jsdoc/check-values': 'off',
+        'jsdoc/check-tag-names': [
+            'warn',
+            {
+                "definedTags": ["deprecatedonmoodle"]
+            },
+        ],
+        'jsdoc/check-param-names': [
+            'warn',
+            {
+                checkDestructured: false,
+                enableFixer: true
+            },
+        ],
         'linebreak-style': [
             'error',
             'unix',
