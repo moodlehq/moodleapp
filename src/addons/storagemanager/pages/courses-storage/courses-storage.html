@@ -45,7 +45,10 @@
             <ion-item *ngFor="let course of downloadedCourses" class="course" (click)="openCourse(course.id, course.title)" button
                 detail="true">
                 <ion-label class="ion-text-wrap">
-                    <p class="item-heading">{{ course.title }}</p>
+                    <p class="item-heading">
+                        <core-format-text [text]="course.title" contextLevel="course" [contextInstanceId]="course.id" [adaptImg]="false">
+                        </core-format-text>
+                    </p>
                     <p class="item-heading item-heading-secondary" *ngIf="course.isDownloading">
                         {{ 'core.downloading' | translate }}
                     </p>
