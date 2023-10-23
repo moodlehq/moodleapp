@@ -41,14 +41,14 @@ export class AddonBlockGlobalSearchHandlerService extends CoreBlockBaseHandler {
      * @inheritdoc
      */
     getDisplayData(block: CoreCourseBlock, contextLevel: string, instanceId: number): CoreBlockHandlerData | undefined {
+        const isCourseSearch = contextLevel === 'course';
+
         return {
-            title: 'addon.block_globalsearch.pluginname',
+            title: isCourseSearch ? 'core.search' : 'addon.block_globalsearch.pluginname',
             class: 'addon-block-globalsearch',
             component: CoreBlockOnlyTitleComponent,
             link: CORE_SEARCH_PAGE_NAME,
-            linkParams: contextLevel === 'course'
-                ? { courseId: instanceId }
-                : {},
+            linkParams: isCourseSearch ? { courseId: instanceId } : {},
         };
     }
 

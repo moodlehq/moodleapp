@@ -139,9 +139,9 @@ Feature: Test Global Search
       | globalsearch | Course       | C1        |
     And I entered the course "Course 1" as "student1" in the app
     When I press "Open block drawer" in the app
-    And I press "Global search" in the app
+    And I press "Search" in the app
     Then I should find "What are you searching for?" in the app
 
     When I press "Filter" in the app
-    Then "C1" should be selected in the app
-    But "C2" should not be selected in the app
+    Then I should find "Filter results by" in the app
+    But I should not find "Search in" in the app

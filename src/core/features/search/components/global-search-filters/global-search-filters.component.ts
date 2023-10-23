@@ -39,6 +39,7 @@ export class CoreSearchGlobalSearchFiltersComponent implements OnInit {
     allCourses: boolean | null = true;
     courses: Filter<CoreEnrolledCourseData>[] = [];
 
+    @Input() hideCourses?: boolean;
     @Input() filters?: CoreSearchGlobalSearchFilters;
 
     private newFilters: CoreSearchGlobalSearchFilters = {};

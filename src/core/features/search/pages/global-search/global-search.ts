@@ -36,6 +36,7 @@ import { CoreSearchBoxComponent } from '@features/search/components/search-box/s
 })
 export class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, AfterViewInit {
 
+    courseId: number | null = null;
     loadMoreError: string | null = null;
     searchBanner: string | null = null;
     resultsSource = new CoreSearchGlobalSearchResultsSource('', {});
@@ -56,6 +57,7 @@ export class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, AfterViewI
         }
 
         if (courseId) {
+            this.courseId = courseId;
             this.resultsSource.setFilters({ courseIds: [courseId] });
         }
 
@@ -139,7 +141,10 @@ export class CoreSearchGlobalSearchPage implements OnInit, OnDestroy, AfterViewI
 
         await CoreDomUtils.openSideModal<CoreSearchGlobalSearchFilters>({
             component: CoreSearchGlobalSearchFiltersComponent,
-            componentProps: { filters: this.resultsSource.getFilters() },
+            componentProps: {
+                hideCourses: !!this.courseId,
+                filters: this.resultsSource.getFilters(),
+            },
         });
 
         if (!this.resultsSource.hasEmptyQuery() && this.resultsSource.isDirty()) {
