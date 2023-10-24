@@ -35,7 +35,7 @@
                     (ionChange)="onSearchAreaCategoryInputChanged(searchAreaCategory)"></ion-checkbox>
             </ion-item>
         </ng-container>
-        <ng-container *ngIf="courses.length > 0">
+        <ng-container *ngIf="!hideCourses && courses.length > 0">
             <core-spacer></core-spacer>
             <ion-item class="ion-text-wrap help">
                 <ion-label>
