@@ -480,17 +480,23 @@ export class AddonQtypeDdwtosQuestion {
             return;
         }
 
-        await CoreDom.waitToBeInDOM(groupItems[0]);
-
-        let maxWidth = 0;
-        let maxHeight = 0;
-        // Find max height and width.
         groupItems.forEach((item) => {
             item.innerHTML = CoreTextUtils.decodeHTML(item.innerHTML);
         });
-        // Wait to render in order to calculate size.
-        await CoreUtils.nextTick();
 
+        // Wait to render in order to calculate size.
+        if (groupItems[0].parentElement) {
+            // Wait for parent to be visible. We cannot wait for group items because they have visibility hidden.
+            await CoreDom.waitToBeVisible(groupItems[0].parentElement);
+        } else {
+            // Group items should always have a parent, add a fallback just in case.
+            await CoreDom.waitToBeInDOM(groupItems[0]);
+            await CoreUtils.nextTicks(5);
+        }
+
+        // Find max height and width.
+        let maxWidth = 0;
+        let maxHeight = 0;
         groupItems.forEach((item) => {
             maxWidth = Math.max(maxWidth, Math.ceil(item.offsetWidth));
             maxHeight = Math.max(maxHeight, Math.ceil(item.offsetHeight));
