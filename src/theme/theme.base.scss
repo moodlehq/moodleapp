@@ -980,6 +980,7 @@ ion-content.limited-width > :not([slot]) {
 ion-toolbar h1 img.core-bar-button-image,
 ion-toolbar h1 .core-bar-button-image img {
     padding: 4px;
+    --userpicture-padding: 4px;
     width: var(--core-header-toolbar-button-image-size);
     height: var(--core-header-toolbar-button-image-size);
     max-width: var(--core-header-toolbar-button-image-size);

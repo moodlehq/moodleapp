@@ -78,7 +78,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Listen to changes.
+     * @inheritdoc
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         // If something change, update the fields.
@@ -166,7 +166,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Component destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.pictureObserver.off();
