@@ -7,7 +7,6 @@
     --icon-radius: var(--module-icon-radius, var(--radius-xs));
     --margin-end: 0px;
     --margin-vertical: 0px;
-    --filter: brightness(0) invert(1);
 
     margin-top: var(--margin-vertical);
     margin-bottom: var(--margin-vertical);
@@ -22,7 +21,7 @@
         &.#{$type} {
             background-color: var(--activity#{$type});
             img {
-                filter: var(--filter);
+                filter: var(--filter, brightness(0) invert(1));
             }
         }
     }
