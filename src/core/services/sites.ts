@@ -1487,15 +1487,10 @@ export class CoreSitesProvider {
         await CoreUtils.ignoreErrors(( async () => {
             const siteId = await this.getStoredCurrentSiteId();
             const site = await this.getSite(siteId);
-
-            if (!site.isVersionGreaterEqualThan('4.3')) {
-                return;
-            }
-
             const autoLogoutType = Number(site.getStoredConfig('tool_mobile_autologout'));
             const autoLogoutTime = Number(site.getStoredConfig('tool_mobile_autologouttime'));
 
-            if (autoLogoutType === CoreAutoLogoutType.NEVER || !site.id) {
+            if (!autoLogoutType || autoLogoutType === CoreAutoLogoutType.NEVER || !site.id) {
                 return;
             }
 
