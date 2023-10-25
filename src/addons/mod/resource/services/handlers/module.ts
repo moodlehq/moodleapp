@@ -170,14 +170,5 @@ export class AddonModResourceModuleHandlerService extends CoreModuleHandlerBase 
         return AddonModResourceIndexComponent;
     }
 
-    /**
-     * @inheritdoc
-     */
-    iconIsShape(module?: CoreCourseModuleData | undefined, modicon?: string | undefined): boolean | undefined {
-        const iconUrl = module?.modicon ?? modicon;
-
-        return !iconUrl?.startsWith('assets/img/files_legacy/') && !iconUrl?.endsWith('.png');
-    }
-
 }
 export const AddonModResourceModuleHandler = makeSingleton(AddonModResourceModuleHandlerService);

@@ -17,6 +17,7 @@ import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChange } from '@
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreSites } from '@services/sites';
+import { CoreUrlUtils } from '@services/utils/url';
 
 const assetsPath = 'assets/img/';
 const fallbackModName = 'external-tool';
@@ -54,12 +55,7 @@ export class CoreModIconComponent implements OnInit, OnChanges {
     async ngOnInit(): Promise<void> {
         if (!this.modname && this.modicon) {
             // Guess module from the icon url.
-            const matches = this.modicon.match('/theme/image.php/[^/]+/([^/]+)/[-0-9]*/');
-            this.modname = (matches && matches[1]) || '';
-
-            if (this.modname.startsWith('mod_')) {
-                this.modname = this.modname.substring(4);
-            }
+            this.modname = this.getComponentNameFromIconUrl(this.modicon);
         }
 
         this.modNameTranslated = CoreCourse.translateModuleName(this.modname, this.fallbackTranslation);
@@ -105,16 +101,15 @@ export class CoreModIconComponent implements OnInit, OnChanges {
             !!this.modname &&
             !!this.componentId &&
             !this.isLocalUrl &&
-            !this.icon.match('/theme/image.php/[^/]+/' + this.modname + '/[-0-9]*/');
+            this.getComponentNameFromIconUrl(this.icon) != this.modname;
 
-        const iconIsShape = await CoreCourseModuleDelegate.moduleIconIsShape(this.modname, this.icon);
-        this.noFilter = iconIsShape === false;
+        this.noFilter = await this.getIconNoFilter();
     }
 
     /**
      * Icon to load on error.
      */
-    loadFallbackIcon(): void {
+    async loadFallbackIcon(): Promise<void> {
         this.isLocalUrl = true;
         const moduleName = !this.modname || CoreCourse.CORE_MODULES.indexOf(this.modname) < 0
             ? fallbackModName
@@ -127,7 +122,75 @@ export class CoreModIconComponent implements OnInit, OnChanges {
         }
 
         this.icon = path + moduleName + '.svg';
-        this.noFilter = false;
+        this.noFilter = await this.getIconNoFilter();
+    }
+
+    /**
+     * Returns if the icon does not need to be filtered.
+     *
+     * @returns wether the icon does not need to be filtered.
+     */
+    protected async getIconNoFilter(): Promise<boolean> {
+        // Earlier 4.0, icons were never filtered.
+        if (this.legacyIcon) {
+            return true;
+        }
+
+        // No icon or local icon (not legacy), filter it.
+        if (!this.icon || this.isLocalUrl) {
+            return false;
+        }
+
+        // If it's an Moodle Theme icon, check if filtericon is set and use it.
+        if (this.icon && CoreUrlUtils.isThemeImageUrl(this.icon)) {
+            const iconParams = CoreUrlUtils.extractUrlParams(this.icon);
+            if (iconParams['filtericon'] === '1') {
+                return false;
+            }
+
+            // filtericon was introduced in 4.2 and backported to 4.1.3 and 4.0.8.
+            if (this.modname && !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan(['4.0.8', '4.1.3', '4.2'])) {
+                // If version is prior to that, check if the url is a module icon and filter it.
+                if (this.getComponentNameFromIconUrl(this.icon) === this.modname) {
+                    return false;
+                }
+            }
+        }
+
+        // External icons, or non monologo, do not filter.
+        return true;
+    }
+
+    /**
+     * Guesses the mod name form the url.
+     *
+     * @param iconUrl Icon url.
+     * @returns Guessed modname.
+     */
+    protected getComponentNameFromIconUrl(iconUrl: string): string {
+        if (!CoreUrlUtils.isThemeImageUrl(this.icon)) {
+            // Cannot be guessed.
+            return '';
+        }
+
+        const iconParams = CoreUrlUtils.extractUrlParams(iconUrl);
+        let component = iconParams['component'];
+
+        if (!component) {
+            const matches = iconUrl.match('/theme/image.php/[^/]+/([^/]+)/[-0-9]*/');
+            component = (matches && matches[1]) || '';
+        }
+
+        // Some invalid components (others may be added later on).
+        if (component === 'core' || component === 'theme') {
+            return '';
+        }
+
+        if (component.startsWith('mod_')) {
+            component = component.substring(4);
+        }
+
+        return component;
     }
 
 }
