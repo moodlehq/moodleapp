@@ -493,11 +493,16 @@ export class CoreUrlUtilsProvider {
     /**
      * Returns if a URL is a theme image URL.
      *
-     * @param url The URL to test.
+     * @param imageUrl The URL to test.
+     * @param siteUrl The Site Url.
      * @returns Whether the URL is a theme image URL.
      */
-    isThemeImageUrl(url: string): boolean {
-        return url?.indexOf('/theme/image.php') !== -1;
+    isThemeImageUrl(imageUrl: string, siteUrl?: string): boolean {
+        if (siteUrl) {
+            return imageUrl.startsWith(`${siteUrl}/theme/image.php`);
+        }
+
+        return imageUrl?.indexOf('/theme/image.php') !== -1;
     }
 
     /**
