@@ -1100,23 +1100,25 @@ export class AddonModWorkshopProvider {
             const args: string[] = field.name.split('_');
             const name = args[0];
             const idx = args[3];
-            const idy = args[6] || false;
+            const idy = args[6];
+            const idxNumber = parseInt(args[3], 10);
+            const idyNumber = parseInt(args[6], 10);
 
-            if (parseInt(idx, 10) + '' == idx) {
+            if (!isNaN(idxNumber)) {
                 if (!parsedFields[idx]) {
                     parsedFields[idx] = {
-                        number: idx + 1, // eslint-disable-line id-blacklist
+                        number: idxNumber + 1, // eslint-disable-line id-blacklist
                     };
                 }
 
-                if (idy && parseInt(idy, 10) + '' == idy) {
+                if (!isNaN(idyNumber)) {
                     if (!parsedFields[idx].fields) {
                         parsedFields[idx].fields = [];
                     }
 
                     if (!parsedFields[idx].fields[idy]) {
                         parsedFields[idx].fields[idy] = {
-                            number: idy + 1, // eslint-disable-line id-blacklist
+                            number: idyNumber + 1, // eslint-disable-line id-blacklist
                         };
                     }
                     parsedFields[idx].fields[idy][name] = field.value;

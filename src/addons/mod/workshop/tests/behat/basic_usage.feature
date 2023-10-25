@@ -82,7 +82,7 @@ Feature: Test basic usage of workshop activity in app
     Then I should find "Task to do" within "Assess peers" "ion-item" in the app
 
     When I press "The Answer" in the app
-    And I press "Grade for Aspect 01" in the app
+    And I press "Grade for Aspect 1" in the app
     And I press "10 / 10" in the app
     And I press "Save" in the app
     Then I should find "Assessed submission" in the app
