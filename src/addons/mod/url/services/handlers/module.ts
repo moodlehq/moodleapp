@@ -219,15 +219,6 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
     }
 
     /**
-     * @inheritdoc
-     */
-    iconIsShape(module?: CoreCourseModuleData | undefined, modicon?: string | undefined): boolean | undefined {
-        const iconUrl = module?.modicon ?? modicon;
-
-        return !iconUrl?.startsWith('assets/img/files_legacy/') && !iconUrl?.endsWith('.png');
-    }
-
-    /**
      * Log module viewed.
      */
     protected async logView(module: CoreCourseModuleData): Promise<void> {

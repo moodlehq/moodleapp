@@ -27,7 +27,7 @@ import { CoreStatusWithWarningsWSResponse, CoreWSExternalWarning } from '@servic
 import { CoreError } from '@classes/errors/error';
 import { USERS_TABLE_NAME, CoreUserDBRecord } from './database/user';
 import { CoreUserHelper } from './user-helper';
-import { CoreUrl } from '@singletons/url';
+import { CoreUrlUtils } from '@services/utils/url';
 
 const ROOT_CACHE_KEY = 'mmUser:';
 
@@ -671,7 +671,7 @@ export class CoreUserProvider {
             // Do not prefetch when initials are set and image is default.
             if ('firstname' in entry || 'lastname' in entry) {
                 const initials = CoreUserHelper.getUserInitials(entry);
-                if (initials && imageUrl && CoreUrl.parse(imageUrl)?.path === '/theme/image.php') {
+                if (initials && imageUrl && CoreUrlUtils.isThemeImageUrl(imageUrl)) {
                     return;
                 }
             }

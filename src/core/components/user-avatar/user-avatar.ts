@@ -20,8 +20,8 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { USER_PROFILE_PICTURE_UPDATED, CoreUserBasicData } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreNetwork } from '@services/network';
-import { CoreUrl } from '@singletons/url';
 import { CoreUserHelper } from '@features/user/services/user-helper';
+import { CoreUrlUtils } from '@services/utils/url';
 
 /**
  * Component to display a "user avatar".
@@ -78,7 +78,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Listen to changes.
+     * @inheritdoc
      */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         // If something change, update the fields.
@@ -111,7 +111,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
             this.initials = CoreUserHelper.getUserInitials(this.user);
         }
 
-        if (this.initials && this.avatarUrl && CoreUrl.parse(this.avatarUrl)?.path?.startsWith('/theme/image.php')) {
+        if (this.initials && this.avatarUrl && CoreUrlUtils.isThemeImageUrl(this.avatarUrl)) {
             this.avatarUrl = undefined;
         }
 
@@ -166,7 +166,7 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Component destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.pictureObserver.off();

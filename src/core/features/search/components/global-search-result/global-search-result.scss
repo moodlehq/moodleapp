@@ -4,7 +4,6 @@
     --core-global-search-result-content-color: var(--gray-700);
     --core-global-search-result-context-color: var(--gray-600);
     --core-global-search-result-icon-size: 16px;
-    --mod-icon-filter: brightness(0);
 
     h3 {
         font-size: 16px;
@@ -14,7 +13,7 @@
 
         core-mod-icon {
             --size: var(--core-global-search-result-icon-size);
-            --filter: var(--mod-icon-filter);
+            --filter: var(--module-icon-filter);
 
             margin-inline-end: var(--spacing-2);
             margin-top: 0px;
@@ -101,5 +100,4 @@
 :host-context(html.dark) ion-item {
     --core-global-search-result-content-color: var(--gray-400);
     --core-global-search-result-context-color: var(--gray-500);
-    --mod-icon-filter: brightness(0) invert(1);
 }

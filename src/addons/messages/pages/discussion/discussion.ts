@@ -58,7 +58,6 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
     @ViewChild(IonContent) content?: IonContent;
     @ViewChild(CoreInfiniteLoadingComponent) infinite?: CoreInfiniteLoadingComponent;
 
-    siteId: string;
     protected fetching = false;
     protected polling?: number;
     protected logger: CoreLogger;
@@ -79,6 +78,7 @@ export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterView
     conversation?: AddonMessagesConversationFormatted; // The conversation object (if it exists).
     userId?: number; // User ID you're talking to (only if group messaging not enabled or it's a new individual conversation).
     currentUserId: number;
+    siteId: string;
     title?: string;
     showInfo = false;
     conversationImage?: string;

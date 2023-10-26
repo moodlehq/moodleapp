@@ -256,7 +256,7 @@ export class CoreRatingProvider {
 
         const response = await site.read<CoreRatingGetItemRatingsWSResponse>('core_rating_get_item_ratings', params, preSets);
 
-        if (!site.isVersionGreaterEqualThan([' 3.6.5', '3.7.1', '3.8'])) {
+        if (!site.isVersionGreaterEqualThan(['3.6.5', '3.7.1', '3.8'])) {
             // MDL-65042 We need to fetch profiles because the returned profile pictures are incorrect.
             const promises = response.ratings.map((rating: CoreRatingItemRating) =>
                 CoreUser.getProfile(rating.userid, courseId, true, site.id).then((user) => {
@@ -407,7 +407,7 @@ export class CoreRatingProvider {
 
         const ratingsResults = await Promise.all(promises);
 
-        if (!site.isVersionGreaterEqualThan([' 3.6.5', '3.7.1', '3.8'])) {
+        if (!site.isVersionGreaterEqualThan(['3.6.5', '3.7.1', '3.8'])) {
             const ratings: CoreRatingItemRating[] = [].concat.apply([], ratingsResults);
 
             const userIds = ratings.map((rating) => rating.userid);

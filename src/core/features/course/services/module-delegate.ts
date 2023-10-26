@@ -93,6 +93,7 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * @param module Module to get the icon from.
      * @param modicon The mod icon string.
      * @returns Whether the icon should be treated as a shape.
+     * @deprecated since 4.3. Now it uses platform information. This function is not used anymore.
      */
     iconIsShape?(module?: CoreCourseModuleData, modicon?: string): Promise<boolean | undefined> | boolean | undefined;
 
@@ -415,6 +416,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
      * @param modicon The mod icon string.
      * @param module The module to use.
      * @returns Whether the icon should be treated as a shape.
+     * @deprecated since 4.3. Now it uses platform information. This function is not used anymore.
      */
     async moduleIconIsShape(modname: string, modicon?: string, module?: CoreCourseModuleData): Promise<boolean | undefined> {
         return await this.executeFunctionOnEnabled<Promise<boolean>>(modname, 'iconIsShape', [module, modicon]);

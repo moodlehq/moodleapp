@@ -6,7 +6,7 @@
         <ion-title>
             <h1>
                 <img *ngIf="loaded && !otherMember && conversationImage" class="core-bar-button-image" [src]="conversationImage" alt=""
-                    onError="this.src='assets/img/group-avatar.svg'" core-external-content role="presentation" [siteId]="siteId || null">
+                    onError="this.src='assets/img/group-avatar.svg'" core-external-content role="presentation" [siteId]="siteId">
                 <core-user-avatar *ngIf="loaded && otherMember" class="core-bar-button-image" [user]="otherMember" [linkProfile]="false"
                     [checkOnline]="otherMember.showonlinestatus">
                 </core-user-avatar>

@@ -8,7 +8,6 @@
     --even-cell-hover: var(--light);
     --icon-color: var(--gray-500);
     --border-color: var(--stroke);
-    --mod-icon-filter: brightness(0);
 
     .odd {
         --cell-background: var(--odd-cell-background);
@@ -29,7 +28,6 @@
     --even-cell-background: var(--gray-900);
     --even-cell-hover: var(--gray-700);
     --icon-color: var(--gray-200);
-    --mod-icon-filter: brightness(0) invert(1);
 }
 
 .core-grades-table {
@@ -89,7 +87,7 @@
             --padding: 0px;
             --size: 16px;
             background: transparent;
-            --filter: var(--mod-icon-filter);
+            --filter: var(--module-icon-filter);
         }
 
 
