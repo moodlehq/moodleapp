@@ -406,6 +406,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
 
         // Verify that user can see the review.
         const attemptId = this.autoReview.attemptId;
+        this.autoReview = undefined;
 
         if (this.quizAccessInfo?.canreviewmyattempts) {
             try {
@@ -452,7 +453,6 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         // Check if we need to go to review an attempt automatically.
         if (this.autoReview && this.autoReview.synced) {
             promise = this.goToAutoReview();
-            this.autoReview = undefined;
         }
 
         // Refresh data.
@@ -594,7 +594,6 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             if (!this.isDestroyed && this.isCurrentView) {
                 openReview = true;
             }
-            this.autoReview = undefined;
         }
 
         const [options] = await Promise.all([
