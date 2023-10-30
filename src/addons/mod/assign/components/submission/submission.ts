@@ -1089,11 +1089,11 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy, Can
                 // Only show outcomes with info on it, outcomeid could be null if outcomes are disabled on site.
                 gradeInfo.outcomes?.forEach((outcome) => {
                     if (outcome.id == String(grade.outcomeid)) {
-                        outcome.selected = grade.gradeformatted;
+                        // Clean HTML tags, grade can contain an icon.
+                        outcome.selected = CoreTextUtils.cleanTags(grade.gradeformatted || '');
                         outcome.modified = grade.gradedategraded;
                         if (outcome.options) {
-                            outcome.selectedId =
-                                CoreGradesHelper.getGradeValueFromLabel(outcome.options, outcome.selected || '');
+                            outcome.selectedId = CoreGradesHelper.getGradeValueFromLabel(outcome.options, outcome.selected);
                             this.originalGrades.outcomes[outcome.id] = outcome.selectedId;
                             outcome.itemNumber = grade.itemnumber;
                         }
