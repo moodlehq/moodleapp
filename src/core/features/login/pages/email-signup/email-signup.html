@@ -186,7 +186,8 @@
                                 <h2><span [core-mark-required]="true">{{ 'core.login.security_question' | translate }}</span></h2>
                             </ion-label>
                         </ion-item-divider>
-                        <core-recaptcha [publicKey]="settings.recaptchapublickey" [model]="captcha" [siteUrl]="siteUrl"></core-recaptcha>
+                        <core-recaptcha [publicKey]="settings.recaptchapublickey" [model]="captcha" [siteUrl]="siteUrl"
+                            [showRequiredError]="formSubmitClicked"></core-recaptcha>
                     </ng-container>
 
                     <!-- Site policy (if any). -->

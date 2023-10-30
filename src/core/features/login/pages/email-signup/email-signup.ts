@@ -60,6 +60,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
     settingsLoaded = false;
     allRequiredSupported = true;
     signupUrl?: string;
+    formSubmitClicked = false;
     captcha = {
         recaptcharesponse: '',
     };
@@ -264,6 +265,8 @@ export class CoreLoginEmailSignupPage implements OnInit {
     async create(e: Event): Promise<void> {
         e.preventDefault();
         e.stopPropagation();
+
+        this.formSubmitClicked = true;
 
         if (!this.signupForm.valid || (this.settings?.recaptchapublickey && !this.captcha.recaptcharesponse)) {
             // Form not valid. Mark all controls as dirty to display errors.
