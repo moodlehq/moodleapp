@@ -21,13 +21,13 @@
         <div class="list-item-limited-width">
 
             <!-- Site has an unsupported required field. -->
-            <ion-list *ngIf="!allRequiredSupported">
+            <ion-list *ngIf="!allRequiredSupported" class="ion-padding">
                 <ion-item class="ion-text-wrap">
                     <ion-label>
                         {{ 'core.login.signuprequiredfieldnotsupported' | translate }}
                     </ion-label>
                 </ion-item>
-                <ion-button expand="block" class="ion-margin" [href]="signupUrl" core-link autoLogin="no" [showBrowserWarning]="false">
+                <ion-button expand="block" [href]="signupUrl" core-link autoLogin="no" [showBrowserWarning]="false">
                     {{ 'core.openinbrowser' | translate }}
                 </ion-button>
             </ion-list>
@@ -62,9 +62,11 @@
                     </ion-item>
 
                     <!-- Submit button. -->
-                    <ion-button expand="block" class="ion-margin" type="submit" [disabled]="!ageVerificationForm.valid">
-                        {{ 'core.proceed' | translate }}
-                    </ion-button>
+                    <div class="ion-padding">
+                        <ion-button expand="block" type="submit" [disabled]="!ageVerificationForm.valid">
+                            {{ 'core.proceed' | translate }}
+                        </ion-button>
+                    </div>
 
                     <ion-item class="ion-text-wrap">
                         <ion-label>
@@ -214,10 +216,12 @@
                         </ion-item>
                     </ng-container>
 
-                    <!-- Submit button. -->
-                    <ion-button expand="block" class="ion-margin" type="submit">{{ 'core.login.createaccount' | translate }}</ion-button>
-                    <!-- Remove this once Ionic fixes this bug: https://github.com/ionic-team/ionic-framework/issues/19368 -->
-                    <input type="submit" class="core-submit-hidden-enter" />
+                    <div class="ion-padding">
+                        <!-- Submit button. -->
+                        <ion-button expand="block" type="submit">{{ 'core.login.createaccount' | translate }}</ion-button>
+                        <!-- Remove this once Ionic fixes this bug: https://github.com/ionic-team/ionic-framework/issues/19368 -->
+                        <input type="submit" class="core-submit-hidden-enter" />
+                    </div>
                 </form>
             </ng-container>
         </div>
@@ -240,9 +244,11 @@
                     <p *ngIf="supportEmail">{{ supportEmail }}</p>
                 </ion-label>
             </ion-item>
-            <ion-button *ngIf="!supportName && !supportEmail" expand="block" class="ion-margin" (click)="showContactOnSite()">
-                {{ 'core.openinbrowser' | translate }}
-            </ion-button>
+            <div class="ion-padding">
+                <ion-button *ngIf="!supportName && !supportEmail" expand="block" (click)="showContactOnSite()">
+                    {{ 'core.openinbrowser' | translate }}
+                </ion-button>
+            </div>
         </ion-list>
     </div>
 </ion-content>
