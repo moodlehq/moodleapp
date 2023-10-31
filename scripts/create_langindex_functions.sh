@@ -5,6 +5,8 @@
 
 SERVER_URL='https://packaging.moodle.org/'
 
+LANGPACKS_PATH='/tmp/moodle-lang'
+
 # Downloads a file and if it's a zip file, unzip it.
 function download_file {
     local url=$1

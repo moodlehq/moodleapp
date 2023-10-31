@@ -8,6 +8,8 @@ APPMODULENAME='local_moodlemobileapp'
 TOTAL_STRINGS=0
 LANGINDEX_STRINGS=0
 
+LANGPACKS_PATH='/tmp/moodleapp-lang'
+
 function progressbar {
     let _progress=(${1}*100/100*100)/100
     let _done=(${_progress}*4)/10

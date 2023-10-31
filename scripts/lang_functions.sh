@@ -6,7 +6,6 @@
 LANG_PATH='../src/assets/lang'
 SUFFIX='' # Determines suffix of the langpacks to be merged. Ie, using wp will include en.json and en_wp.json
           # (and the later will override the earlier).
-LANGPACKS_PATH='/tmp/moodleapp-lang'
 
 # Get the version of the Moodle App to fetch latest languages.
 function get_app_version {
