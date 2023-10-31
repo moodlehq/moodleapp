@@ -176,6 +176,8 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * @inheritdoc
      */
     ngOnChanges(changes: SimpleChanges): void {
+        super.ngOnChanges(changes);
+
         if (this.loaded && changes.block) {
             // Block was re-fetched, load content.
             this.reloadContent();
