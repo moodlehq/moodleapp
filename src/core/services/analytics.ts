@@ -58,6 +58,29 @@ export class CoreAnalyticsService extends CoreDelegate<CoreAnalyticsHandler> {
     }
 
     /**
+     * Check if analytics is available for the app/site.
+     *
+     * @returns True if available, false otherwise.
+     */
+    async isAnalyticsAvailable(): Promise<boolean> {
+        if (Object.keys(this.enabledHandlers).length > 0) {
+            // There is an enabled handler, analytics is available.
+            return true;
+        }
+
+        // Check if there is a handler that is enabled at app level (enabled handlers are only set when logged in).
+        const enabledList = await Promise.all(Object.values(this.handlers).map(handler => {
+            if (!handler.appLevelEnabled) {
+                return false;
+            }
+
+            return handler.isEnabled();
+        }));
+
+        return enabledList.includes(true);
+    }
+
+    /**
      * Log an event for the current site.
      *
      * @param event Event data.
@@ -107,6 +130,11 @@ export const CoreAnalytics = makeSingleton(CoreAnalyticsService);
  * Interface that all analytics handlers must implement.
  */
 export interface CoreAnalyticsHandler extends CoreDelegateHandler {
+
+    /**
+     * If true it means that the handler is enabled or not for the whole app, it doesn't depend on the site.
+     */
+    appLevelEnabled?: boolean;
 
     /**
      * Log an event.
