@@ -75,7 +75,7 @@
             </ion-label>
             <ion-toggle [(ngModel)]="debugDisplay" (ionChange)="debugDisplayChanged($event)" slot="end"></ion-toggle>
         </ion-item>
-        <ion-item class="ion-text-wrap" *ngIf="analyticsSupported">
+        <ion-item class="ion-text-wrap" *ngIf="analyticsAvailable">
             <ion-label>
                 <p class="item-heading">{{ 'core.settings.enableanalytics' | translate }}</p>
                 <p>{{ 'core.settings.enableanalyticsdescription' | translate }}</p>

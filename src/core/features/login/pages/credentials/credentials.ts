@@ -193,7 +193,6 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 
         this.siteName = this.siteConfig.sitename;
         this.logoUrl = CoreLoginHelper.getLogoUrl(this.siteConfig);
-        this.authInstructions = this.siteConfig.authinstructions || Translate.instant('core.login.loginsteps');
         this.showScanQR = await CoreLoginHelper.displayQRInCredentialsScreen(this.siteConfig.tool_mobile_qrcodetype);
 
         const disabledFeatures = CoreLoginHelper.getDisabledFeatures(this.siteConfig);
@@ -204,6 +203,8 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             !!this.supportConfig?.canContactSupport(),
             this.showForgottenPassword,
         );
+        this.authInstructions = this.siteConfig.authinstructions ||
+            (this.canSignup ? Translate.instant('core.login.loginsteps') : '');
 
         if (!this.eventThrown && !this.viewLeft) {
             this.eventThrown = true;

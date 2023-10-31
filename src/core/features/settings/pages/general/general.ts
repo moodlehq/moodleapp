@@ -44,7 +44,7 @@ export class CoreSettingsGeneralPage {
     selectedZoomLevel = CoreZoomLevel.NONE;
     richTextEditor = true;
     debugDisplay = false;
-    analyticsSupported = false;
+    analyticsAvailable = false;
     analyticsEnabled = false;
     colorSchemes: CoreColorScheme[] = [];
     selectedScheme: CoreColorScheme = CoreColorScheme.LIGHT;
@@ -101,8 +101,8 @@ export class CoreSettingsGeneralPage {
 
         this.debugDisplay = await CoreConfig.get(CoreConstants.SETTINGS_DEBUG_DISPLAY, false);
 
-        this.analyticsSupported = CoreAnalytics.hasHandlers();
-        if (this.analyticsSupported) {
+        this.analyticsAvailable = await CoreAnalytics.isAnalyticsAvailable();
+        if (this.analyticsAvailable) {
             this.analyticsEnabled = await CoreConfig.get(CoreConstants.SETTINGS_ANALYTICS_ENABLED, true);
         }
 
