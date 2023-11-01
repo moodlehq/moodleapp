@@ -34,6 +34,7 @@ import { CoreForms } from '@singletons/form';
 import { CoreRecaptchaComponent } from '@components/recaptcha/recaptcha';
 import { CorePath } from '@singletons/path';
 import { CoreDom } from '@singletons/dom';
+import { CoreConstants } from '@/core/constants';
 
 /**
  * Page to signup using email.
@@ -51,6 +52,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
 
     signupForm: FormGroup;
     siteUrl!: string;
+    isDemoModeSite = false;
     siteConfig?: CoreSitePublicConfigResponse;
     siteName?: string;
     authInstructions = '';
@@ -127,6 +129,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
         }
 
         this.siteUrl = siteUrl;
+        this.isDemoModeSite = CoreLoginHelper.isDemoModeSite(this.siteUrl);
 
         // Fetch the data.
         this.fetchData().finally(() => {
@@ -235,7 +238,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
      */
     protected treatSiteConfig(): boolean {
         if (this.siteConfig?.registerauth == 'email' && !CoreLoginHelper.isEmailSignupDisabled(this.siteConfig)) {
-            this.siteName = this.siteConfig.sitename;
+            this.siteName = this.isDemoModeSite ? CoreConstants.CONFIG.appname : this.siteConfig.sitename;
             this.authInstructions = this.siteConfig.authinstructions;
             this.ageDigitalConsentVerification = this.siteConfig.agedigitalconsentverification;
             this.supportName = this.siteConfig.supportname;

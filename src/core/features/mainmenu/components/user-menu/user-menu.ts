@@ -113,7 +113,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
      * @returns Promise resolved when done.
      */
     protected async loadSiteLogo(currentSite: CoreSite): Promise<void> {
-        if (CoreConstants.CONFIG.forceLoginLogo) {
+        if (CoreConstants.CONFIG.forceLoginLogo || currentSite.isDemoModeSite()) {
             this.siteLogo = 'assets/img/login_logo.png';
             this.siteLogoLoaded = true;
 

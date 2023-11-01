@@ -27,7 +27,7 @@
                     <p>
                         <core-format-text [text]="site.siteName" clean="true" [siteId]="site.id"></core-format-text>
                     </p>
-                    <p>{{site.siteUrl}}</p>
+                    <p *ngIf="!site.isDemoModeSite">{{site.siteUrl}}</p>
                 </ion-label>
             </ion-item>
         </ion-list>

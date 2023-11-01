@@ -374,14 +374,23 @@ export class CoreLoginHelperProvider {
     }
 
     /**
-     * Get Available sites (includes staging sites if are enabled).
+     * Get Available sites (includes staging sites if are enabled). It doesn't include demo mode site.
      *
      * @returns Available sites.
      */
     async getAvailableSites(): Promise<CoreLoginSiteInfo[]> {
         const hasEnabledStagingSites = await CoreSettingsHelper.hasEnabledStagingSites();
 
-        return hasEnabledStagingSites ? CoreConstants.CONFIG.sites : CoreConstants.CONFIG.sites.filter(site => !site.staging);
+        return CoreConstants.CONFIG.sites.filter(site => (!site.staging || hasEnabledStagingSites) && !site.demoMode);
+    }
+
+    /**
+     * Get demo mode site info. This function doesn't check if demo mode is enabled.
+     *
+     * @returns Demo mode site info, undefined if no demo mode site.
+     */
+    getDemoModeSiteInfo(): CoreLoginSiteInfo | undefined {
+        return CoreConstants.CONFIG.sites.find(site => site.demoMode);
     }
 
     /**
@@ -453,6 +462,14 @@ export class CoreLoginHelperProvider {
      * @returns Path and params.
      */
     async getAddSiteRouteInfo(showKeyboard?: boolean): Promise<[string, Params]> {
+        if (CoreConstants.CONFIG.demoMode) {
+            const demoModeSite = this.getDemoModeSiteInfo();
+
+            if (demoModeSite) {
+                return ['/login/credentials', { siteUrl: demoModeSite.url }];
+            }
+        }
+
         const sites = await this.getAvailableSites();
 
         if (sites.length === 1) {
@@ -583,7 +600,10 @@ export class CoreLoginHelperProvider {
         const sites = await this.getAvailableSites();
 
         if (sites.length) {
-            return sites.some((site) => CoreUrl.sameDomainAndPath(siteUrl, site.url));
+            const demoModeSite = this.getDemoModeSiteInfo();
+
+            return sites.some((site) => CoreUrl.sameDomainAndPath(siteUrl, site.url)) ||
+                (!!demoModeSite && CoreUrl.sameDomainAndPath(siteUrl, demoModeSite.url));
         } else if (CoreConstants.CONFIG.multisitesdisplay == 'sitefinder' && CoreConstants.CONFIG.onlyallowlistedsites &&
                 checkSiteFinder) {
             // Call the sites finder to validate the site.
@@ -1495,6 +1515,23 @@ export class CoreLoginHelperProvider {
         const passwordResetsJson = await CoreConfig.get(PASSWORD_RESETS_CONFIG_KEY, '{}');
 
         return CoreTextUtils.parseJSON<Record<string, number>>(passwordResetsJson, {});
+    }
+
+    /**
+     * Check if a URL belongs to the demo mode site.
+     *
+     * @returns Whether the URL belongs to the demo mode site.
+     */
+    isDemoModeSite(url: string): boolean {
+        const demoSiteData = CoreLoginHelper.getDemoModeSiteInfo();
+        if (!demoSiteData) {
+            return false;
+        }
+
+        const demoSiteUrl = CoreTextUtils.addEndingSlash(CoreUrlUtils.removeProtocolAndWWW(demoSiteData.url));
+        url = CoreTextUtils.addEndingSlash(CoreUrlUtils.removeProtocolAndWWW(url));
+
+        return demoSiteUrl.indexOf(url) === 0;
     }
 
 }

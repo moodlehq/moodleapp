@@ -25,8 +25,10 @@
                             <core-format-text [text]="accountsList.currentSite.siteName" clean="true"
                                 [siteId]="accountsList.currentSite.id"></core-format-text>
                         </p>
-                        <p><a [href]="accountsList.currentSite.siteUrl" core-link autoLogin="yes">{{
-                                accountsList.currentSite.siteUrlWithoutProtocol }}</a>
+                        <p *ngIf="!accountsList.currentSite.isDemoModeSite">
+                            <a [href]="accountsList.currentSite.siteUrl" core-link autoLogin="yes">
+                                {{ accountsList.currentSite.siteUrlWithoutProtocol }}
+                            </a>
                         </p>
                     </ion-label>
                 </ion-item-divider>
@@ -46,7 +48,9 @@
                         <p class="item-heading">
                             <core-format-text [text]="sites[0].siteName" clean="true" [siteId]="sites[0].id"></core-format-text>
                         </p>
-                        <p><a [href]="sites[0].siteUrl" core-link autoLogin="no">{{ sites[0].siteUrlWithoutProtocol }}</a></p>
+                        <p *ngIf="!sites[0].isDemoModeSite">
+                            <a [href]="sites[0].siteUrl" core-link autoLogin="no">{{ sites[0].siteUrlWithoutProtocol }}</a>
+                        </p>
                     </ion-label>
                 </ion-item-divider>
 

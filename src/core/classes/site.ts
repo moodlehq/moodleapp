@@ -296,14 +296,18 @@ export class CoreSite {
      * @returns Site name.
      */
     async getSiteName(): Promise<string> {
+        if (this.isDemoModeSite()) {
+            return CoreConstants.CONFIG.appname;
+        }
+
         if (this.infos?.sitename) {
             return this.infos?.sitename;
         }
 
         // Fallback.
-        const isSigleFixedSite = await CoreLoginHelper.isSingleFixedSite();
+        const isSingleFixedSite = await CoreLoginHelper.isSingleFixedSite();
 
-        if (isSigleFixedSite) {
+        if (isSingleFixedSite) {
             const sites = await CoreLoginHelper.getAvailableSites();
 
             return sites[0].name;
@@ -2457,6 +2461,17 @@ export class CoreSite {
             data: options.data,
             timeaccess: options.timeaccess ?? Date.now(),
         });
+    }
+
+    /**
+     * Check if the site is a demo mode site.
+     *
+     * @returns Whether the site is a demo mode site.
+     */
+    isDemoModeSite(): boolean {
+        const demoSiteData = CoreLoginHelper.getDemoModeSiteInfo();
+
+        return this.containsUrl(demoSiteData?.url);
     }
 
 }
