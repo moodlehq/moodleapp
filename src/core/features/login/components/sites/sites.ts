@@ -28,7 +28,6 @@ import { ModalController } from '@singletons';
 @Component({
     selector: 'core-login-sites',
     templateUrl: 'sites.html',
-    styleUrls: ['../../sitelist.scss'],
     animations: [CoreAnimations.SLIDE_IN_OUT, CoreAnimations.SHOW_HIDE],
 })
 export class CoreLoginSitesComponent implements OnInit {
@@ -99,15 +98,14 @@ export class CoreLoginSitesComponent implements OnInit {
     /**
      * Login in a site.
      *
-     * @param event Click event.
-     * @param siteId The site ID.
+     * @param site The site.
      * @returns Promise resolved when done.
      */
-    async login(event: Event, siteId: string): Promise<void> {
-        await this.close(event, true);
+    async login(site: CoreSiteBasicInfo): Promise<void> {
+        await this.close(undefined, true);
 
         // This navigation will logout and navigate to the site home.
-        await CoreNavigator.navigateToSiteHome({ preferCurrentTab: false , siteId });
+        await CoreNavigator.navigateToSiteHome({ preferCurrentTab: false , siteId: site.id });
     }
 
     /**
@@ -122,9 +120,9 @@ export class CoreLoginSitesComponent implements OnInit {
      *
      * @param event Click event.
      */
-    async close(event: Event, closeAll = false): Promise<void> {
-        event.preventDefault();
-        event.stopPropagation();
+    async close(event?: Event, closeAll = false): Promise<void> {
+        event?.preventDefault();
+        event?.stopPropagation();
 
         await ModalController.dismiss(closeAll);
     }

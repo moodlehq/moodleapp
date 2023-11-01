@@ -1541,10 +1541,10 @@ export const CoreLoginHelper = makeSingleton(CoreLoginHelperProvider);
 /**
  * Accounts list for selecting sites interfaces.
  */
-export type CoreAccountsList = {
-    currentSite?: CoreSiteBasicInfo; // If logged in, current site info.
-    sameSite: CoreSiteBasicInfo[]; // If logged in, accounts info on the same site.
-    otherSites: CoreSiteBasicInfo[][]; // Other accounts in other sites.
+export type CoreAccountsList<T extends CoreSiteBasicInfo = CoreSiteBasicInfo> = {
+    currentSite?: T; // If logged in, current site info.
+    sameSite: T[]; // If logged in, accounts info on the same site.
+    otherSites: T[][]; // Other accounts in other sites.
     count: number; // Number of sites.
 };
 

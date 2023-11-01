@@ -20,6 +20,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 
 import { CoreSettingsHelper } from '../../services/settings-helper';
+import { CoreAccountsList } from '@features/login/services/login-helper';
 
 /**
  * Page that displays the space usage settings.
@@ -33,9 +34,10 @@ export class CoreSettingsSpaceUsagePage implements OnInit, OnDestroy {
     loaded = false;
     totalSpaceUsage = 0;
 
-    accountsList: CoreAccountsListWithUsage = {
+    accountsList: CoreAccountsList<CoreSiteBasicInfoWithUsage> = {
         sameSite: [],
         otherSites: [],
+        count: 0,
     };
 
     protected sitesObserver: CoreEventObserver;
@@ -128,6 +130,7 @@ export class CoreSettingsSpaceUsagePage implements OnInit, OnDestroy {
         });
 
         this.accountsList.otherSites = CoreUtils.objectToArray(otherSites);
+        this.accountsList.count = sites.length;
 
         this.totalSpaceUsage = totalSize;
     }
@@ -192,12 +195,3 @@ interface CoreSiteBasicInfoWithUsage extends CoreSiteBasicInfo {
     hasCacheEntries: boolean; // If has cached entries that can be cleared.
     spaceUsage: number; // Space used in this site.
 }
-
-/**
- * Accounts list for selecting sites interfaces.
- */
-type CoreAccountsListWithUsage = {
-    currentSite?: CoreSiteBasicInfoWithUsage; // If logged in, current site info.
-    sameSite: CoreSiteBasicInfoWithUsage[]; // If logged in, accounts info on the same site.
-    otherSites: CoreSiteBasicInfoWithUsage[][]; // Other accounts in other sites.
-};

@@ -17,17 +17,8 @@
                     <p>{{fileName}}</p>
                 </ion-label>
             </ion-item>
-            <ion-item *ngFor="let site of sites" (click)="storeInSite(site.id)" detail="false" button>
-                <core-user-avatar [user]="site" slot="start" [linkProfile]="false" [siteId]="site.id"></core-user-avatar>
-
-                <ion-label>
-                    <p class="item-heading">{{site.fullname}}</p>
-                    <p>
-                        <core-format-text clean="true" [text]="site.siteName" [siteId]="site.id"></core-format-text>
-                    </p>
-                    <p *ngIf="!site.isDemoModeSite">{{site.siteUrl}}</p>
-                </ion-label>
-            </ion-item>
+            <core-sites-list [accountsList]="accountsList" [sitesClickable]="true" (onSiteClicked)="storeInSite($event)">
+            </core-sites-list>
         </ion-list>
     </core-loading>
 </ion-content>

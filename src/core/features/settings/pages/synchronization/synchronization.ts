@@ -32,7 +32,6 @@ import { CoreNavigator } from '@services/navigator';
 @Component({
     selector: 'page-core-app-settings-synchronization',
     templateUrl: 'synchronization.html',
-    styleUrls: ['../../../login/sitelist.scss'],
 })
 export class CoreSettingsSynchronizationPage implements OnInit, OnDestroy {
 
