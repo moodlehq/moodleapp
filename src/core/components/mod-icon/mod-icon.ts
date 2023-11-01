@@ -17,6 +17,7 @@ import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChange } from '@
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreSites } from '@services/sites';
+import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlUtils } from '@services/utils/url';
 
 const assetsPath = 'assets/img/';
@@ -140,6 +141,8 @@ export class CoreModIconComponent implements OnInit, OnChanges {
         if (!this.icon || this.isLocalUrl) {
             return false;
         }
+
+        this.icon = CoreTextUtils.decodeHTMLEntities(this.icon);
 
         // If it's an Moodle Theme icon, check if filtericon is set and use it.
         if (this.icon && CoreUrlUtils.isThemeImageUrl(this.icon)) {
