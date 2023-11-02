@@ -23,14 +23,14 @@ import { CoreAnimations } from '@components/animations';
 import { ModalController } from '@singletons';
 
 /**
- * Component that displays a "splash screen" while the app is being initialized.
+ * Modal that displays a list of sites to be able to enter or delete a site.
  */
 @Component({
-    selector: 'core-login-sites',
-    templateUrl: 'sites.html',
+    selector: 'core-login-sites-modal',
+    templateUrl: 'sites-modal.html',
     animations: [CoreAnimations.SLIDE_IN_OUT, CoreAnimations.SHOW_HIDE],
 })
-export class CoreLoginSitesComponent implements OnInit {
+export class CoreLoginSitesModalComponent implements OnInit {
 
     accountsList: CoreAccountsList = {
         sameSite: [],
