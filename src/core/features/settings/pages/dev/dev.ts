@@ -19,6 +19,7 @@ import { CoreSettingsHelper } from '@features/settings/services/settings-helper'
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CoreUserTours } from '@features/usertours/services/user-tours';
 import { CoreConfig } from '@services/config';
+import { CoreNavigator } from '@services/navigator';
 import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -149,6 +150,13 @@ export class CoreSettingsDevPage implements OnInit {
                 }
             }
         });
+    }
+
+    /**
+     * Open error log.
+     */
+    openErrorLog(): void {
+        CoreNavigator.navigate('error-log');
     }
 
     /**
