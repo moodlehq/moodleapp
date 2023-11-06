@@ -28,6 +28,8 @@ import { CoreFilepoolProviderStub } from '@/storybook/stubs/services/filepool';
 import { CoreFilepoolProvider } from '@services/filepool';
 import { HttpClientStub } from '@/storybook/stubs/services/http';
 import { HttpClient } from '@angular/common/http';
+import { CorePushNotificationsProvider } from '@features/pushnotifications/services/pushnotifications';
+import { CorePushNotificationsProviderStub } from './stubs/services/pushnotifications';
 
 // For translate loader. AoT requires an exported function for factories.
 export class StaticTranslateLoader extends TranslateLoader {
@@ -56,6 +58,7 @@ export class StaticTranslateLoader extends TranslateLoader {
         { provide: CoreSitesProvider, useClass: CoreSitesProviderStub },
         { provide: CoreDbProvider, useClass: CoreDbProviderStub },
         { provide: CoreFilepoolProvider, useClass: CoreFilepoolProviderStub },
+        { provide: CorePushNotificationsProvider, useClass: CorePushNotificationsProviderStub },
         { provide: HttpClient, useClass: HttpClientStub },
         {
             provide: APP_INITIALIZER,

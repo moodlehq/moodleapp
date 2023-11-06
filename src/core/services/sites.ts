@@ -1300,7 +1300,19 @@ export class CoreSitesProvider {
     async getSites(ids?: string[]): Promise<CoreSiteBasicInfo[]> {
         const sites = await this.sitesTable.getMany();
 
+        return this.siteDBRecordsToBasicInfo(sites, ids);
+    }
+
+    /**
+     * Convert sites DB records to site basic info.
+     *
+     * @param sites DB records.
+     * @param ids IDs of sites to return, undefined to return them all.
+     * @returns Sites basic info.
+     */
+    protected siteDBRecordsToBasicInfo(sites: SiteDBEntry[], ids?: string[]): CoreSiteBasicInfo[] {
         const formattedSites: CoreSiteBasicInfo[] = [];
+
         sites.forEach((site) => {
             if (!ids || ids.indexOf(site.id) > -1) {
                 const isDemoModeSite = CoreLoginHelper.isDemoModeSite(site.siteUrl);

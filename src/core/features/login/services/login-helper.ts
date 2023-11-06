@@ -1301,10 +1301,9 @@ export class CoreLoginHelperProvider {
     /**
      * Get the accounts list classified per site.
      *
-     * @param currentSiteId If loggedin, current Site Id.
      * @returns Promise resolved with account list.
      */
-    async getAccountsList(currentSiteId?: string): Promise<CoreAccountsList> {
+    async getAccountsList(): Promise<CoreAccountsList> {
         const sites = await CoreUtils.ignoreErrors(CoreSites.getSortedSites(), [] as CoreSiteBasicInfo[]);
 
         const accountsList: CoreAccountsList = {
@@ -1312,14 +1311,11 @@ export class CoreLoginHelperProvider {
             otherSites: [],
             count: sites.length,
         };
-
+        const currentSiteId = CoreSites.getCurrentSiteId();
         let siteUrl = '';
 
         if (currentSiteId) {
-            const index = sites.findIndex((site) => site.id == currentSiteId);
-
-            accountsList.currentSite = sites.splice(index, 1)[0];
-            siteUrl = accountsList.currentSite.siteUrlWithoutProtocol;
+            siteUrl = sites.find((site) => site.id == currentSiteId)?.siteUrlWithoutProtocol ?? '';
         }
 
         const otherSites: Record<string, CoreSiteBasicInfo[]> = {};
@@ -1328,7 +1324,9 @@ export class CoreLoginHelperProvider {
         await Promise.all(sites.map(async (site) => {
             site.badge = await CoreUtils.ignoreErrors(CorePushNotifications.getSiteCounter(site.id)) || 0;
 
-            if (site.siteUrlWithoutProtocol == siteUrl) {
+            if (site.id === currentSiteId) {
+                accountsList.currentSite = site;
+            } else if (site.siteUrlWithoutProtocol == siteUrl) {
                 accountsList.sameSite.push(site);
             } else {
                 if (!otherSites[site.siteUrlWithoutProtocol]) {

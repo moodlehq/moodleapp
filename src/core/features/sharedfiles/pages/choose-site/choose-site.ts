@@ -18,7 +18,7 @@ import { CoreSharedFilesHelper } from '@features/sharedfiles/services/sharedfile
 import { FileEntry } from '@ionic-native/file/ngx';
 import { CoreFile } from '@services/file';
 import { CoreNavigator } from '@services/navigator';
-import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
+import { CoreSiteBasicInfo } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 
 /**
@@ -94,7 +94,7 @@ export class CoreSharedFilesChooseSitePage implements OnInit {
      * @returns Promise resolved when done.
      */
     protected async loadSites(): Promise<void> {
-        this.accountsList = await CoreLoginHelper.getAccountsList(CoreSites.getCurrentSiteId());
+        this.accountsList = await CoreLoginHelper.getAccountsList();
     }
 
     /**

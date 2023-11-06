@@ -1,0 +1,23 @@
+<ion-app>
+    <ion-content class="limited-width">
+        <core-sites-list *ngIf="accountsList" [accountsList]="accountsList" [sitesClickable]="sitesClickable"
+            [currentSiteClickable]="currentSiteClickable" (onSiteClicked)="siteClicked($event)">
+
+            <ng-template *ngIf="extraText !== 'none'" #siteLabel let-site="site">
+                <p *ngIf="extraText === 'text'">Extra text for user {{ site.fullname }}</p>
+                <ion-badge *ngIf="extraText === 'badge'" color="light">{{ site.badge }} MB</ion-badge>
+            </ng-template>
+
+            <ng-template #siteItem let-site="site">
+                <ion-button *ngIf="extraDetails === 'delete-button'" fill="clear" color="danger" slot="end">
+                    <ion-icon name="fas-trash" slot="icon-only"></ion-icon>
+                </ion-button>
+
+                <ion-badge *ngIf="extraDetails === 'badge'" slot="end">
+                    <span>{{site.badge}}</span>
+                </ion-badge>
+            </ng-template>
+
+        </core-sites-list>
+    </ion-content>
+</ion-app>

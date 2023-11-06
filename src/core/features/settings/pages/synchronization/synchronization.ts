@@ -104,10 +104,8 @@ export class CoreSettingsSynchronizationPage implements OnInit, OnDestroy {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        const currentSiteId = CoreSites.getCurrentSiteId();
-
         try {
-            this.accountsList = await CoreLoginHelper.getAccountsList(currentSiteId);
+            this.accountsList = await CoreLoginHelper.getAccountsList();
         } catch {
             // Ignore errors.
         }

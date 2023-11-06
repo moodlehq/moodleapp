@@ -50,7 +50,7 @@ export class CoreLoginSitesModalComponent implements OnInit {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.accountsList = await CoreLoginHelper.getAccountsList(this.currentSiteId);
+        this.accountsList = await CoreLoginHelper.getAccountsList();
         this.loaded = true;
     }
 
