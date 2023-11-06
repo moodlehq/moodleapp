@@ -52,7 +52,7 @@ class OverrideLangTask {
                 plainid = exp.join('.');
             }
 
-            const component_slashes = component.replace('_', '/');
+            const component_slashes = component.replace(/_/g, '/');
 
             switch (type) {
                 case 'core':
@@ -82,15 +82,15 @@ class OverrideLangTask {
         }
 
         const paths = Object.keys(files);
-        gulp.src(paths, { allowEmpty: true })
+        gulp.src(paths)
             .pipe(slash())
-            .pipe(through(function(destFile) {
+            .pipe(through(function (destFile) {
                 const oldContents = self.readFile(destFile);
                 destFile.contents = self.jsonFile(oldContents, files[destFile.path]);
 
                 this.emit('data', destFile);
             }))
-            .pipe(gulp.dest((data) => data.base, { overwrite: true}))
+            .pipe(gulp.dest((data) => data.base, { overwrite: true }))
             .on('end', done);
     }
 
