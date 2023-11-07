@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { IonRefresher } from '@ionic/angular';
 import { ActivatedRoute, Params } from '@angular/router';
 
 import { CoreSite, CoreSiteConfig } from '@classes/site';
@@ -170,7 +169,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
      *
      * @param refresher Refresher.
      */
-    doRefresh(refresher?: IonRefresher): void {
+    doRefresh(refresher?: HTMLIonRefresherElement): void {
         const promises: Promise<unknown>[] = [];
 
         promises.push(CoreCourse.invalidateSections(this.siteHomeId));

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, Input, OnInit } from '@angular/core';
-import { IonRefresher } from '@ionic/angular';
 import {
     AddonMessagesConversationFormatted,
     AddonMessagesConversationMember,
@@ -116,7 +115,7 @@ export class AddonMessagesConversationInfoComponent implements OnInit {
      * @param refresher Refresher.
      * @returns Promise resolved when done.
      */
-    async refreshData(refresher?: IonRefresher): Promise<void> {
+    async refreshData(refresher?: HTMLIonRefresherElement): Promise<void> {
         const promises: Promise<void>[] = [];
 
         promises.push(AddonMessages.invalidateConversation(this.conversationId));

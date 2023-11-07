@@ -14,7 +14,6 @@
 
 import { Component, OnInit } from '@angular/core';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
-import { IonRefresher } from '@ionic/angular';
 
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -90,7 +89,7 @@ export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
      *
      * @param refresher Refresher.
      */
-    doRefresh(refresher: IonRefresher): void {
+    doRefresh(refresher: HTMLIonRefresherElement): void {
         this.refreshData().finally(() => {
             refresher.complete();
         });

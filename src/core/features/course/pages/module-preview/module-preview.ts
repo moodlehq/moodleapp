@@ -20,7 +20,6 @@ import {
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
-import { IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
@@ -137,7 +136,7 @@ export class CoreCourseModulePreviewPage implements OnInit {
      * @param refresher Refresher.
      * @returns Promise resolved when done.
      */
-    async doRefresh(refresher?: IonRefresher): Promise<void> {
+    async doRefresh(refresher?: HTMLIonRefresherElement): Promise<void> {
 
         await CoreCourse.invalidateModule(this.module.id);
 

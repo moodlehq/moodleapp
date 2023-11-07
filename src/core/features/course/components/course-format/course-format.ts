@@ -39,7 +39,7 @@ import {
 } from '@features/course/services/course-helper';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { IonContent, IonRefresher } from '@ionic/angular';
+import { IonContent } from '@ionic/angular';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreCourseCourseIndexComponent, CoreCourseIndexSectionWithModule } from '../course-index/course-index';
 import { CoreBlockHelper } from '@features/block/services/block-helper';
@@ -567,7 +567,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
      * @param afterCompletionChange Whether the refresh is due to a completion change.
      * @returns Promise resolved when done.
      */
-    async doRefresh(refresher?: IonRefresher, done?: () => void, afterCompletionChange?: boolean): Promise<void> {
+    async doRefresh(refresher?: HTMLIonRefresherElement, done?: () => void, afterCompletionChange?: boolean): Promise<void> {
         const promises = this.dynamicComponents?.map(async (component) => {
             await component.callComponentMethod('doRefresh', refresher, done, afterCompletionChange);
         }) || [];

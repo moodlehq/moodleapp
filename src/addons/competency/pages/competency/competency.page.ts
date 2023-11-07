@@ -30,7 +30,6 @@ import {
     AddonCompetencyProvider,
 } from '@addons/competency/services/competency';
 import { CoreNavigator } from '@services/navigator';
-import { IonRefresher } from '@ionic/angular';
 import { ContextLevel } from '@/core/constants';
 import { CoreUtils } from '@services/utils/utils';
 import { ADDON_COMPETENCY_SUMMARY_PAGE } from '@addons/competency/competency.module';
@@ -173,7 +172,7 @@ export class AddonCompetencyCompetencyPage implements OnInit, OnDestroy {
      *
      * @param refresher Refresher.
      */
-    async refreshCompetency(refresher: IonRefresher): Promise<void> {
+    async refreshCompetency(refresher: HTMLIonRefresherElement): Promise<void> {
         const source = this.competencies.getSource();
 
         await CoreUtils.ignoreErrors(

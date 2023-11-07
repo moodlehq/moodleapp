@@ -14,7 +14,6 @@
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CoreCoursesHelper, CoreEnrolledCourseDataWithExtraInfo } from '@features/courses/services/courses-helper';
-import { IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -215,7 +214,7 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
      *
      * @param refresher Refresher.
      */
-    refreshCourses(refresher: IonRefresher): void {
+    refreshCourses(refresher: HTMLIonRefresherElement): void {
         const promises: Promise<void>[] = [];
 
         if (!this.searchMode) {

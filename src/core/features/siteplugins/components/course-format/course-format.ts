@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnChanges, Input, ViewChild, Output, EventEmitter } from '@angular/core';
-import { IonRefresher } from '@ionic/angular';
 
 import { CoreCourseFormatComponent } from '@features/course/components/course-format/course-format';
 import { CoreCourseModuleCompletionData, CoreCourseSection } from '@features/course/services/course-helper';
@@ -101,7 +100,7 @@ export class CoreSitePluginsCourseFormatComponent implements OnChanges {
      * @param afterCompletionChange Whether the refresh is due to a completion change.
      * @returns Promise resolved when done.
      */
-    async doRefresh(refresher?: IonRefresher, done?: () => void, afterCompletionChange?: boolean): Promise<void> {
+    async doRefresh(refresher?: HTMLIonRefresherElement, done?: () => void, afterCompletionChange?: boolean): Promise<void> {
         await this.content?.refreshContent(afterCompletionChange);
     }
 

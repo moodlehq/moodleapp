@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, ViewChild, OnInit, OnDestroy, forwardRef, ChangeDetectorRef } from '@angular/core';
-import { IonContent, IonRefresher } from '@ionic/angular';
+import { IonContent } from '@ionic/angular';
 
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
@@ -291,7 +291,7 @@ export class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRefreshCon
      * @param refresher Refresher.
      * @returns Promise resolved when done.
      */
-    async doRefresh(refresher?: IonRefresher): Promise<void> {
+    async doRefresh(refresher?: HTMLIonRefresherElement): Promise<void> {
         await CoreUtils.ignoreErrors(this.invalidateData());
 
         try {

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { IonRefresher } from '@ionic/angular';
 import { CoreNetwork } from '@services/network';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
@@ -263,7 +262,7 @@ export class AddonCalendarIndexPage implements OnInit, OnDestroy {
      * @param showErrors Whether to show sync errors to the user.
      * @returns Promise resolved when done.
      */
-    async doRefresh(refresher?: IonRefresher, done?: () => void, showErrors?: boolean): Promise<void> {
+    async doRefresh(refresher?: HTMLIonRefresherElement, done?: () => void, showErrors?: boolean): Promise<void> {
         if (!this.loaded) {
             return;
         }

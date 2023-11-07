@@ -19,7 +19,6 @@ import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreGradesCoursesSource } from '@features/grades/classes/grades-courses-source';
 import { CoreGrades } from '@features/grades/services/grades';
-import { IonRefresher } from '@ionic/angular';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -66,7 +65,7 @@ export class CoreGradesCoursesPage implements OnDestroy, AfterViewInit {
      *
      * @param refresher Refresher.
      */
-    async refreshCourses(refresher: IonRefresher): Promise<void> {
+    async refreshCourses(refresher: HTMLIonRefresherElement): Promise<void> {
         await CoreUtils.ignoreErrors(CoreGrades.invalidateCoursesGradesData());
         await CoreUtils.ignoreErrors(this.courses.reload());
 

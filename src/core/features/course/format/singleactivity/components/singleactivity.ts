@@ -18,7 +18,6 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 import { CoreCourseUnsupportedModuleComponent } from '@features/course/components/unsupported-module/unsupported-module';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
-import { IonRefresher } from '@ionic/angular';
 import { CoreCourseModuleCompletionData, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreCourse } from '@features/course/services/course';
 import type { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
@@ -80,7 +79,7 @@ export class CoreCourseFormatSingleActivityComponent implements OnChanges {
      * @param afterCompletionChange Whether the refresh is due to a completion change.
      * @returns Promise resolved when done.
      */
-    async doRefresh(refresher?: IonRefresher, done?: () => void, afterCompletionChange?: boolean): Promise<void> {
+    async doRefresh(refresher?: HTMLIonRefresherElement, done?: () => void, afterCompletionChange?: boolean): Promise<void> {
         if (afterCompletionChange) {
             // Don't refresh the view after a completion change since completion isn't displayed.
             return;

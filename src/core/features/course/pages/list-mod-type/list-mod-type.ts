@@ -20,7 +20,6 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 import { CoreCourseHelper, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreConstants } from '@/core/constants';
-import { IonRefresher } from '@ionic/angular';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
@@ -167,7 +166,7 @@ export class CoreCourseListModTypePage implements OnInit {
      *
      * @param refresher Refresher.
      */
-    async refreshData(refresher: IonRefresher): Promise<void> {
+    async refreshData(refresher: HTMLIonRefresherElement): Promise<void> {
         await CoreUtils.ignoreErrors(CoreCourse.invalidateSections(this.courseId));
 
         try {

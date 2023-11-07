@@ -15,7 +15,6 @@
 import { CoreConstants } from '@/core/constants';
 import { OnInit, OnDestroy, Input, Output, EventEmitter, Component, Optional, Inject } from '@angular/core';
 import { CoreAnyError } from '@classes/errors/error';
-import { IonRefresher } from '@ionic/angular';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -121,7 +120,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * @param showErrors If show errors to the user of hide them.
      * @returns Promise resolved when done.
      */
-    async doRefresh(refresher?: IonRefresher | null, showErrors = false): Promise<void> {
+    async doRefresh(refresher?: HTMLIonRefresherElement | null, showErrors = false): Promise<void> {
         if (!this.module) {
             // Module can be undefined if course format changes from single activity to weekly/topics.
             return;

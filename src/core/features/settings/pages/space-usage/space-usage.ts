@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { IonRefresher } from '@ionic/angular';
 
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
@@ -152,7 +151,7 @@ export class CoreSettingsSpaceUsagePage implements OnInit, OnDestroy {
      *
      * @param refresher Refresher event.
      */
-    refreshData(refresher?: IonRefresher): void {
+    refreshData(refresher?: HTMLIonRefresherElement): void {
         this.loadSiteData().finally(() => {
             refresher?.complete();
         });

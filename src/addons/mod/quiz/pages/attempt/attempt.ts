@@ -15,7 +15,6 @@
 import { isSafeNumber } from '@/core/utils/types';
 import { Component, OnInit } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import { IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
@@ -75,7 +74,7 @@ export class AddonModQuizAttemptPage implements OnInit {
      *
      * @param refresher Refresher.
      */
-    doRefresh(refresher: IonRefresher): void {
+    doRefresh(refresher: HTMLIonRefresherElement): void {
         this.refreshData().finally(() => {
             refresher.complete();
         });

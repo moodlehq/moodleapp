@@ -18,7 +18,6 @@ import {
     AddonCompetencyDataForCourseCompetenciesPageCompetency,
 } from '@addons/competency/services/competency';
 import { CoreUserProfile } from '@features/user/services/user';
-import { IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { ContextLevel } from '@/core/constants';
@@ -148,7 +147,7 @@ export class AddonCompetencyCourseCompetenciesPage implements OnInit, OnDestroy 
      *
      * @param refresher Refresher.
      */
-    async refreshCourseCompetencies(refresher?: IonRefresher): Promise<void> {
+    async refreshCourseCompetencies(refresher?: HTMLIonRefresherElement): Promise<void> {
         await this.competencies.getSource().invalidateCache();
 
         this.fetchCourseCompetencies().finally(() => {

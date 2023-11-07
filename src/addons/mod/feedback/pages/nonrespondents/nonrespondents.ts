@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { IonRefresher } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -174,7 +173,7 @@ export class AddonModFeedbackNonRespondentsPage implements OnInit {
      *
      * @param refresher Refresher.
      */
-    async refreshFeedback(refresher: IonRefresher): Promise<void> {
+    async refreshFeedback(refresher: HTMLIonRefresherElement): Promise<void> {
         try {
             const promises: Promise<void>[] = [];
 

@@ -24,7 +24,6 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreTag, CoreTagItem } from '@features/tag/services/tag';
-import { IonRefresher } from '@ionic/angular';
 import { CoreNetwork } from '@services/network';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -232,7 +231,7 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
      * @param refresher Refresher.
      * @returns Promise resolved when done.
      */
-    async doRefresh(refresher?: IonRefresher): Promise<void> {
+    async doRefresh(refresher?: HTMLIonRefresherElement): Promise<void> {
         if (this.manager) {
             await CoreUtils.ignoreErrors(Promise.all([
                 this.manager.getSource().invalidateContent(),
