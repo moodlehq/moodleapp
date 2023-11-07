@@ -51,7 +51,7 @@ import { CoreDom } from '@singletons/dom';
 @Component({
     selector: 'page-addon-messages-discussion',
     templateUrl: 'discussion.html',
-    styleUrls: ['discussion.scss'],
+    styleUrls: ['../../../../theme/components/discussion.scss', 'discussion.scss'],
 })
 export class AddonMessagesDiscussionPage implements OnInit, OnDestroy, AfterViewInit {
 

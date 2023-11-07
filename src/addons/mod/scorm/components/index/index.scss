@@ -1,4 +1,4 @@
-@import "~theme/globals";
+@use "theme/globals" as *;
 
 :host {
     .addon-mod_scorm-attempt-summary ion-item > p {

@@ -1,6 +1,6 @@
 /** Format Text - Show more styles. */
 /** Styles of elements inside the directive should be placed in format-text.scss */
-@import "~theme/globals";
+@use "theme/globals.variables" as global;
 
 core-format-text {
     --core-format-text-background: var(--background, var(--ion-item-background));
@@ -42,7 +42,7 @@ core-format-text {
             }
         }
 
-        @if ($core-format-text-never-shorten) {
+        @if (global.$core-format-text-never-shorten) {
             &.collapsible-enabled {
                 --display-toggle: none !important;
                 --collapsible-height: auto !important;
@@ -200,7 +200,7 @@ core-format-text {
 
     .embed-responsive-1by1 {
         &::before {
-            padding-top: percentage(1 / 1);
+            padding-top: percentage(1);
         }
     }
 
@@ -474,7 +474,7 @@ core-rich-text-editor .core-rte-editor {
         font-weight: 400;
     }
 
-    @each $color-name, $unused in $colors {
+    @each $color-name, $unused in global.$colors {
         .alert-#{$color-name} {
             --color-base: var(--#{$color-name});
             color: var(--#{$color-name}-shade);
@@ -504,7 +504,7 @@ core-rich-text-editor .core-rte-editor {
 
         &[disabled] ~ .form-check-label,
         &:disabled ~ .form-check-label {
-            color: $gray-600;
+            color: global.$gray-600;
         }
 
     }
@@ -549,7 +549,7 @@ core-rich-text-editor .core-rte-editor {
     .border-bottom-0 { border-bottom: 0 !important; }
     .border-left-0   { border-left: 0 !important; }
 
-    @each $color-name, $unused in $colors {
+    @each $color-name, $unused in global.$colors {
         .border-#{$color-name} {
             border-color: var(--#{$color-name}) !important;
         }
@@ -633,7 +633,7 @@ core-rich-text-editor .core-rte-editor {
     .font-italic         { font-style: italic !important; }
     .text-white { color: var(--white) !important; }
 
-    @each $color-name, $unused in $colors {
+    @each $color-name, $unused in global.$colors {
         .text-#{$color-name} {
             color: var(--#{$color-name});
         }
@@ -669,7 +669,7 @@ core-rich-text-editor .core-rte-editor {
         background-color: var(--danger);
     }
 
-    @each $color-name, $unused in $colors {
+    @each $color-name, $unused in global.$colors {
         .label-#{$color-name} {
             color: var(--#{$color-name}-contrast);
             background-color: var(--#{$color-name});
@@ -690,7 +690,7 @@ core-rich-text-editor .core-rte-editor {
         }
     }
 
-    @each $color-name, $unused in $colors {
+    @each $color-name, $unused in global.$colors {
         .btn.btn-#{$color-name} {
             --color-base: var(--#{$color-name});
             color: var(--#{$color-name}-shade);

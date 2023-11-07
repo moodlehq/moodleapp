@@ -1,4 +1,4 @@
-@import "~theme/globals";
+@use "theme/globals" as *;
 
 $addon-mod-wiki-toc-level-padding:    12px !default;
 

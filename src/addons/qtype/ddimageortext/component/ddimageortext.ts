@@ -24,7 +24,7 @@ import { AddonQtypeDdImageOrTextQuestion } from '../classes/ddimageortext';
 @Component({
     selector: 'addon-qtype-ddimageortext',
     templateUrl: 'addon-qtype-ddimageortext.html',
-    styleUrls: ['ddimageortext.scss'],
+    styleUrls: ['../../../../core/features/question/question.scss', 'ddimageortext.scss'],
 })
 export class AddonQtypeDdImageOrTextComponent
     extends CoreQuestionBaseComponent<AddonModQuizDdImageOrTextQuestionData>

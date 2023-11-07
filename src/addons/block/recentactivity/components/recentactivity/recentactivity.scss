@@ -1,4 +1,4 @@
-@import "~theme/globals";
+@use "theme/globals" as *;
 
 :host .core-block-content ::ng-deep {
     .activitydate, .activityhead {

@@ -1,4 +1,4 @@
-@import "~theme/globals";
+@use "theme/globals" as *;
 
 :host ::ng-deep ion-item[collapsible] ion-label {
     margin-top: 12px;

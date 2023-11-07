@@ -1,4 +1,4 @@
-@import "~core/features/question/question";
+@use "theme/globals" as *;
 
 // Style ddimageortext content a bit. Almost all these styles are copied from Moodle.
 :host {
