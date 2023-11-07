@@ -24,13 +24,13 @@
             [content]="'core.settings.synchronizenow' | translate" [iconAction]="syncIcon" [closeOnClick]="false"
             (action)="doRefresh(null, $event, true)">
         </core-context-menu-item>
-        <core-context-menu-item [hidden]="sort == 'flat-oldest'" [priority]="500"
+        <core-context-menu-item [hidden]="sort === 'flat-oldest'" [priority]="500"
             [content]="'addon.mod_forum.modeflatoldestfirst' | translate" iconAction="fas-arrow-down" (action)="changeSort('flat-oldest')">
         </core-context-menu-item>
-        <core-context-menu-item [hidden]="sort == 'flat-newest'" [priority]="450"
+        <core-context-menu-item [hidden]="sort === 'flat-newest'" [priority]="450"
             [content]="'addon.mod_forum.modeflatnewestfirst' | translate" iconAction="fas-arrow-up" (action)="changeSort('flat-newest')">
         </core-context-menu-item>
-        <core-context-menu-item [hidden]="sort == 'nested'" [priority]="400" [content]="'addon.mod_forum.modenested' | translate"
+        <core-context-menu-item [hidden]="sort === 'nested'" [priority]="400" [content]="'addon.mod_forum.modenested' | translate"
             iconAction="fas-right-left" (action)="changeSort('nested')">
         </core-context-menu-item>
         <core-context-menu-item [hidden]="!discussion || !discussion.canlock || discussion.locked" [priority]="300"
@@ -102,7 +102,7 @@
             </addon-mod-forum-post>
         </div>
 
-        <ion-card *ngIf="sort != 'nested' && posts.length">
+        <ion-card *ngIf="sort !== 'nested' && posts.length">
             <ng-container *ngFor="let post of posts; first as first">
                 <core-spacer *ngIf="!first"></core-spacer>
                 <addon-mod-forum-post [post]="post" [courseId]="courseId" [discussionId]="discussionId" [component]="component"
@@ -113,7 +113,7 @@
             </ng-container>
         </ion-card>
 
-        <ng-container *ngIf="sort == 'nested' && posts.length">
+        <ng-container *ngIf="sort === 'nested' && posts.length">
             <ng-container *ngFor="let post of posts">
                 <ng-container *ngTemplateOutlet="nestedPosts; context: {post: post}"></ng-container>
             </ng-container>

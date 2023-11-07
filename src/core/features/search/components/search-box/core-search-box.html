@@ -9,7 +9,7 @@
             <ion-icon name="fas-magnifying-glass" slot="icon-only" aria-hidden="true"></ion-icon>
         </ion-button>
         <ion-button *ngIf="showClear" slot="end" fill="clear" [attr.aria-label]="'core.clearsearch' | translate"
-            [disabled]="searched == '' || disabled" (click)="clearForm()">
+            [disabled]="searched === '' || disabled" (click)="clearForm()">
             <ion-icon name="fas-delete-left" slot="icon-only" aria-hidden="true" flip-rtl></ion-icon>
         </ion-button>
     </ion-item>

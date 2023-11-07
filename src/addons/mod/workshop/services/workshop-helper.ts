@@ -391,7 +391,7 @@ export class AddonModWorkshopHelperProvider {
         files: CoreFileEntry[],
         offline: false,
         siteId?: string,
-    ): Promise<number>
+    ): Promise<number>;
     uploadOrStoreAssessmentFiles(
         workshopId: number,
         assessmentId: number,

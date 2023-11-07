@@ -42,7 +42,7 @@ import { CoreTime } from '@singletons/time';
 })
 export class AddonNotesListPage implements OnInit, OnDestroy {
 
-     @ViewChild(IonContent) content?: IonContent;
+    @ViewChild(IonContent) content?: IonContent;
 
     courseId!: number;
     userId?: number;

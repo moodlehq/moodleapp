@@ -1,4 +1,4 @@
-<ng-container *ngIf="!loadingMore && position != 'top'">
+<ng-container *ngIf="!loadingMore && position !== 'top'">
     <div *ngIf="enabled || error" class="ion-padding-horizontal" #bottombutton>
         <ion-button *ngIf="!error" expand="block" (click)="loadMore()" fill="outline">
             {{ 'core.loadmore' | translate }}
@@ -13,7 +13,7 @@
     <ion-infinite-scroll-content></ion-infinite-scroll-content>
 </ion-infinite-scroll>
 
-<ng-container *ngIf="!loadingMore && position == 'top'">
+<ng-container *ngIf="!loadingMore && position === 'top'">
     <div *ngIf="enabled || error" class="ion-padding-horizontal" #topbutton>
         <ion-button *ngIf="!error" expand="block" (click)="loadMore()" fill="outline">
             {{ 'core.loadmore' | translate }}

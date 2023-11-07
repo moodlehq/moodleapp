@@ -51,7 +51,7 @@
             </ion-item>
 
             <!-- Category. -->
-            <ion-item class="ion-text-wrap" *ngIf="typeControl.value == 'category'">
+            <ion-item class="ion-text-wrap" *ngIf="typeControl.value === 'category'">
                 <ion-label>
                     <p class="item-heading" [core-mark-required]="true">{{ 'core.category' | translate }}</p>
                 </ion-label>
@@ -64,7 +64,7 @@
             </ion-item>
 
             <!-- Course. -->
-            <ion-item class="ion-text-wrap" *ngIf="typeControl.value == 'course'">
+            <ion-item class="ion-text-wrap" *ngIf="typeControl.value === 'course'">
                 <ion-label>
                     <p class="item-heading" [core-mark-required]="true">{{ 'core.course' | translate }}</p>
                 </ion-label>
@@ -75,7 +75,7 @@
             </ion-item>
 
             <!-- Group. -->
-            <ng-container *ngIf="typeControl.value == 'group'">
+            <ng-container *ngIf="typeControl.value === 'group'">
                 <!-- Select the course. -->
                 <ion-item class="ion-text-wrap">
                     <ion-label>

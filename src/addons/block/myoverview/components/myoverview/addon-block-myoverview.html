@@ -88,11 +88,11 @@
             </core-combobox>
         </ion-col>
         <ion-col size="auto" *ngIf="isLayoutSwitcherAvailable">
-            <ion-button *ngIf="layout == 'card'" fill="outline" (click)="toggleLayout('list')"
+            <ion-button *ngIf="layout === 'card'" fill="outline" (click)="toggleLayout('list')"
                 [attr.aria-label]="'addon.block_myoverview.aria:list' | translate">
                 <ion-icon slot="icon-only" name="fas-list" aria-hidden="true"></ion-icon>
             </ion-button>
-            <ion-button *ngIf="layout == 'list'" fill="outline" (click)="toggleLayout('card')"
+            <ion-button *ngIf="layout === 'list'" fill="outline" (click)="toggleLayout('card')"
                 [attr.aria-label]="'addon.block_myoverview.aria:card' | translate">
                 <ion-icon slot="icon-only" name="fas-table-cells-large" aria-hidden="true"></ion-icon>
             </ion-button>
@@ -123,7 +123,7 @@
 
     <!-- List of courses. -->
     <div class="safe-area-padding" *ngIf="hasCourses">
-        <ion-grid class="ion-no-padding" [class.core-no-grid]="layout != 'card'" [class.list-item-limited-width]="layout != 'card'">
+        <ion-grid class="ion-no-padding" [class.core-no-grid]="layout !== 'card'" [class.list-item-limited-width]="layout !== 'card'">
             <ion-row class="ion-no-padding">
                 <ion-col *ngFor="let course of filteredCourses" class="ion-no-padding" size="12" size-sm="6" size-md="6" size-lg="4"
                     size-xl="3">

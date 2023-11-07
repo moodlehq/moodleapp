@@ -54,7 +54,7 @@ import { AddonModAssignSubmissionComponent } from '../submission/submission';
 })
 export class AddonModAssignIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 
-   @ViewChild(AddonModAssignSubmissionComponent) submissionComponent?: AddonModAssignSubmissionComponent;
+    @ViewChild(AddonModAssignSubmissionComponent) submissionComponent?: AddonModAssignSubmissionComponent;
 
     component = AddonModAssignProvider.COMPONENT;
     pluginName = 'assign';
