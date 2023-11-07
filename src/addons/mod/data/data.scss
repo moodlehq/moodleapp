@@ -1,4 +1,4 @@
-@import "~theme/globals";
+@use "theme/globals" as *;
 
 /// @prop - The padding for the grid column
 $grid-column-padding:        var(--ion-grid-column-padding, 5px) !default;

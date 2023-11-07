@@ -37,7 +37,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 @Component({
     selector: 'page-addon-mod-chat-chat',
     templateUrl: 'chat.html',
-    styleUrls: ['chat.scss'],
+    styleUrls: ['../../../../../theme/components/discussion.scss', 'chat.scss'],
 })
 export class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave {
 

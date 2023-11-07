@@ -1,4 +1,4 @@
-@import "~theme/globals";
+@use "theme/globals" as *;
 :host {
     --placeholder-color: var(--ion-placeholder-color);
     --toobar-background: var(--white);

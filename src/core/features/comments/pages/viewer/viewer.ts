@@ -51,7 +51,7 @@ import { CoreAnimations } from '@components/animations';
     selector: 'page-core-comments-viewer',
     templateUrl: 'viewer.html',
     animations: [CoreAnimations.SLIDE_IN_OUT],
-    styleUrls: ['viewer.scss'],
+    styleUrls: ['../../../../../theme/components/discussion.scss', 'viewer.scss'],
 })
 export class CoreCommentsViewerPage implements OnInit, OnDestroy {
 

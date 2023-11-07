@@ -1,4 +1,4 @@
-@import "~theme/globals";
+@use "theme/globals" as *;
 
 :host ::ng-deep core-block {
     @include media-breakpoint-up(md) {

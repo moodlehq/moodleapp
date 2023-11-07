@@ -10,26 +10,26 @@
  */
 
 /* Global variables */
-@import "./globals.scss";
+@import "globals.scss";
 
 /* Application styles */
-@import "./theme.light.scss";
-@import "./theme.dark.scss";
-@import "./theme.custom.scss";
-@import "./theme.design-system.scss";
-@import "./theme.base.scss";
+@import "theme.light.scss";
+@import "theme.dark.scss";
+@import "theme.custom.scss";
+@import "theme.design-system.scss";
+@import "theme.base.scss";
 
 /* Components */
-@import "./components/collapsible-header.scss";
-@import "./components/collapsible-item.scss";
-@import "./components/format-text.scss";
-@import "./components/rubrics.scss";
-@import "./components/mod-label.scss";
+@import "components/collapsible-header.scss";
+@import "components/collapsible-item.scss";
+@import "components/format-text.scss";
+@import "components/rubrics.scss";
+@import "components/mod-label.scss";
 @import "../core/components/error-info/error-info.scss";
-@import "./components/videojs.scss";
+@import "components/videojs.scss";
 
 /* Some styles from 3rd party libraries. */
-@import "./bootstrap.scss";
+@import "bootstrap.scss";
 
 /* Core CSS required for Ionic components to work properly */
 @import "~@ionic/angular/css/core.css";
@@ -38,7 +38,7 @@
 @import "~@ionic/angular/css/normalize.css";
 @import "~@ionic/angular/css/structure.css";
 @import "~@ionic/angular/css/typography.css";
-@import '~@ionic/angular/css/display.css';
+@import "~@ionic/angular/css/display.css";
 
 /* Optional CSS utils that can be commented out */
 @import "~@ionic/angular/css/padding.css";

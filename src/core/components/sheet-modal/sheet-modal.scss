@@ -1,4 +1,4 @@
-@import "~theme/globals";
+@use "theme/globals" as *;
 
 :host {
     --backdrop-opacity: var(--ion-backdrop-opacity, 0.4);

@@ -1,4 +1,4 @@
-@import "~theme/globals";
+@use "theme/globals" as *;
 
 .filters-info {
     padding-bottom: 1rem;

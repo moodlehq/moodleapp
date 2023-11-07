@@ -31,7 +31,7 @@ import { CoreTime } from '@singletons/time';
 @Component({
     selector: 'page-addon-mod-chat-session-messages',
     templateUrl: 'session-messages.html',
-    styleUrls: ['session-messages.scss'],
+    styleUrls: ['../../../../../theme/components/discussion.scss', 'session-messages.scss'],
 })
 export class AddonModChatSessionMessagesPage implements OnInit {
 
