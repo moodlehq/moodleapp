@@ -86,8 +86,8 @@
                         [attr.aria-label]="'core.restore' | translate">
                         <ion-icon name="fas-rotate-left" slot="icon-only" aria-hidden="true"></ion-icon>
                     </ion-button>
-                    <ion-button *ngIf="showDelete && !note.deleted && (type != 'personal' || note.usermodified == currentUserId)" slot="end"
-                        fill="clear" [@coreSlideInOut]="'fromRight'" color="danger" (click)="deleteNote($event, note)"
+                    <ion-button *ngIf="showDelete && !note.deleted && (type !== 'personal' || note.usermodified === currentUserId)"
+                        slot="end" fill="clear" [@coreSlideInOut]="'fromRight'" color="danger" (click)="deleteNote($event, note)"
                         [attr.aria-label]="'core.delete' | translate">
                         <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
                     </ion-button>

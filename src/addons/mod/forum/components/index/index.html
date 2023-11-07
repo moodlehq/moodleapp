@@ -18,7 +18,7 @@
 
     <core-loading [hideUntil]="!showLoading && discussions && discussions.loaded">
         <!-- Activity info. -->
-        <core-course-module-info [module]="module" [description]="forum && forum.type != 'single' && description" [component]="component"
+        <core-course-module-info [module]="module" [description]="forum && forum.type !== 'single' && description" [component]="component"
             [componentId]="componentId" [courseId]="courseId" [hasDataToSync]="hasOffline || hasOfflineRatings"
             (completionChanged)="onCompletionChange()">
             <ion-item class="ion-text-wrap">

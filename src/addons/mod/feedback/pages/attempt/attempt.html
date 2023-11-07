@@ -30,8 +30,8 @@
             </ion-item>
             <ng-container *ngIf="items && items.length">
                 <ng-container *ngFor="let item of items">
-                    <core-spacer *ngIf="item.typ == 'pagebreak'"></core-spacer>
-                    <ion-item class="ion-text-wrap" *ngIf="item.typ != 'pagebreak'" [color]="item.dependitem > 0 ? 'light' : ''">
+                    <core-spacer *ngIf="item.typ === 'pagebreak'"></core-spacer>
+                    <ion-item class="ion-text-wrap" *ngIf="item.typ !== 'pagebreak'" [color]="item.dependitem > 0 ? 'light' : ''">
                         <ion-label>
                             <p class="item-heading" *ngIf="item.name" [core-mark-required]="item.required">
                                 <span *ngIf="feedback!.autonumbering && item.itemnumber">{{item.itemnumber}}. </span>

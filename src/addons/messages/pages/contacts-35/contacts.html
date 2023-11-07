@@ -22,10 +22,10 @@
             autocorrect="off" spellcheck="false" lengthCheck="2" [disabled]="!loaded" searchArea="AddonMessagesContacts"></core-search-box>
 
         <core-loading [hideUntil]="loaded" [message]="loadingMessage">
-            <core-empty-box *ngIf="!hasContacts && searchString == ''" icon="fas-address-book"
+            <core-empty-box *ngIf="!hasContacts && searchString === ''" icon="fas-address-book"
                 [message]="'addon.messages.contactlistempty' | translate"></core-empty-box>
 
-            <core-empty-box *ngIf="!hasContacts && searchString != ''" icon="fas-address-book"
+            <core-empty-box *ngIf="!hasContacts && searchString !== ''" icon="fas-address-book"
                 [message]="'addon.messages.nousersfound' | translate"></core-empty-box>
 
             <ion-list *ngFor="let contactType of contactTypes" class="ion-no-margin">

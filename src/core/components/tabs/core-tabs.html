@@ -7,11 +7,11 @@
         </ion-button>
         <ion-slides [options]="slidesOpts" [dir]="direction" role="tablist" [attr.aria-label]="description">
             <ng-container *ngFor="let tab of tabs">
-                <ion-slide *ngIf="tab.enabled" role="presentation" [id]="tab.id! + '-tab'" [class.selected]="selected == tab.id"
+                <ion-slide *ngIf="tab.enabled" role="presentation" [id]="tab.id! + '-tab'" [class.selected]="selected === tab.id"
                     class="{{tab.class}}">
                     <ion-tab-button (click)="selectTab(tab.id, $event)" (keydown)="tabAction.keyDown(tab.id, $event)"
                         (keyup)="tabAction.keyUp(tab.id, $event)" [layout]="layout" role="tab" [attr.aria-controls]="tab.id"
-                        [attr.aria-selected]="selected == tab.id" [tabindex]="selected == tab.id ? 0 : -1">
+                        [attr.aria-selected]="selected === tab.id" [tabindex]="selected === tab.id ? 0 : -1">
                         <ion-icon *ngIf="tab.icon" [name]="tab.icon" aria-hidden="true"></ion-icon>
                         <ion-label>
                             <h2>{{ tab.title | translate}}</h2>

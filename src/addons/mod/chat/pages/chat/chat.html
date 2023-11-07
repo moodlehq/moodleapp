@@ -26,7 +26,7 @@
                 </p>
 
                 <div class="ion-text-center addon-mod_chat-notice" *ngIf="message.special">
-                    <ion-badge class="ion-text-wrap" color="success" *ngIf="message.system && message.message == 'enter'">
+                    <ion-badge class="ion-text-wrap" color="success" *ngIf="message.system && message.message === 'enter'">
                         <span>
                             <ion-icon name="fas-right-to-bracket" aria-hidden="true"></ion-icon>
                             {{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }}
@@ -34,7 +34,7 @@
                         </span>
                     </ion-badge>
 
-                    <ion-badge class="ion-text-wrap" color="danger" *ngIf="message.system && message.message == 'exit'">
+                    <ion-badge class="ion-text-wrap" color="danger" *ngIf="message.system && message.message === 'exit'">
                         <span>
                             <ion-icon name="fas-right-from-bracket" aria-hidden="true"></ion-icon>
                             {{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }}
@@ -42,7 +42,7 @@
                         </span>
                     </ion-badge>
 
-                    <ion-badge class="ion-text-wrap" color="primary" *ngIf="message.beep == 'all'">
+                    <ion-badge class="ion-text-wrap" color="primary" *ngIf="message.beep === 'all'">
                         <span>
                             <ion-icon name="fas-bell" aria-hidden="true"></ion-icon>
                             {{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }}
@@ -60,7 +60,7 @@
                     </ion-badge>
 
                     <ion-badge class="ion-text-wrap" color="light"
-                        *ngIf="message.userid == currentUserId && message.beep && message.beep != 'all'">
+                        *ngIf="message.userid === currentUserId && message.beep && message.beep !== 'all'">
                         <span>
                             <ion-icon name="fas-bell" aria-hidden="true"></ion-icon>
                             {{ message.timestamp * 1000 | coreFormatDate:"strftimetime" }}

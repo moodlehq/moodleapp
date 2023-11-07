@@ -22,14 +22,14 @@ export abstract class CoreUserSupportConfig {
      *
      * @returns Whether the user can contact support.
      */
-    public abstract canContactSupport(): boolean;
+    abstract canContactSupport(): boolean;
 
     /**
      * Get language used in the support page, if any.
      *
      * @returns Support page language.
      */
-    public abstract getSupportPageLang(): string | null;
+    abstract getSupportPageLang(): string | null;
 
     /**
      * Get url to use for contacting support.

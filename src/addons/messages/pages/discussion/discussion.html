@@ -103,17 +103,17 @@
     </ion-fab>
 </ion-content>
 <ion-footer class="footer-adjustable" *ngIf="loaded && (!conversationId || conversation)">
-    <ion-toolbar [color]="footerType == 'message' ? null : 'light'">
-        <p *ngIf="footerType == 'unable'" class="ion-text-center ion-margin-horizontal">
+    <ion-toolbar [color]="footerType === 'message' ? null : 'light'">
+        <p *ngIf="footerType === 'unable'" class="ion-text-center ion-margin-horizontal">
             {{ 'addon.messages.unabletomessage' | translate }}
         </p>
-        <div *ngIf="footerType == 'blocked'" class="ion-padding-horizontal">
+        <div *ngIf="footerType === 'blocked'" class="ion-padding-horizontal">
             <p class="ion-text-center">{{ 'addon.messages.youhaveblockeduser' | translate }}</p>
             <ion-button expand="block" class="ion-text-wrap ion-margin-bottom" (click)="unblockUser()">
                 {{ 'addon.messages.unblockuser' | translate }}
             </ion-button>
         </div>
-        <div *ngIf="footerType == 'requiresContact' && otherMember" class="ion-padding-horizontal">
+        <div *ngIf="footerType === 'requiresContact' && otherMember" class="ion-padding-horizontal">
             <p class="ion-text-center">
                 <strong>{{ 'addon.messages.isnotinyourcontacts' | translate: {$a: otherMember.fullname} }}</strong>
             </p>
@@ -122,7 +122,7 @@
                 {{ 'addon.messages.sendcontactrequest' | translate }}
             </ion-button>
         </div>
-        <div *ngIf="footerType == 'requestReceived' && otherMember" class="ion-padding-horizontal">
+        <div *ngIf="footerType === 'requestReceived' && otherMember" class="ion-padding-horizontal">
             <p class="ion-text-center">{{ 'addon.messages.userwouldliketocontactyou' | translate: {$a: otherMember.fullname} }}</p>
             <ion-button expand="block" class="ion-text-wrap ion-margin-bottom" (click)="confirmContactRequest()">
                 {{ 'addon.messages.acceptandaddcontact' | translate }}
@@ -131,13 +131,13 @@
                 {{ 'addon.messages.decline' | translate }}
             </ion-button>
         </div>
-        <div *ngIf="footerType == 'requestSent' || (footerType == 'message' && requestContactSent)" class="ion-padding-horizontal">
+        <div *ngIf="footerType === 'requestSent' || (footerType === 'message' && requestContactSent)" class="ion-padding-horizontal">
             <p class="ion-text-center"><strong>{{ 'addon.messages.contactrequestsent' | translate }}</strong></p>
             <p class="ion-text-center" *ngIf="otherMember">
                 {{ 'addon.messages.yourcontactrequestpending' | translate: {$a: otherMember.fullname} }}
             </p>
         </div>
-        <core-send-message-form *ngIf="footerType == 'message'" (onSubmit)="sendMessage($event)" [showKeyboard]="showKeyboard"
+        <core-send-message-form *ngIf="footerType === 'message'" (onSubmit)="sendMessage($event)" [showKeyboard]="showKeyboard"
             [placeholder]="'addon.messages.newmessage' | translate"></core-send-message-form>
     </ion-toolbar>
 </ion-footer>

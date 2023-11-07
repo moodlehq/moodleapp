@@ -37,7 +37,7 @@
                             [class.core-grades-grade-clickable]="row.expandable && showSummary" [id]="'grade-'+row.id"
                             *ngIf="row.itemtype !== 'leader'">
                             <ng-container *ngIf="row.itemtype">
-                                <td *ngIf="row.itemtype == 'category'" class="core-grades-table-category" [attr.rowspan]="row.rowspan">
+                                <td *ngIf="row.itemtype === 'category'" class="core-grades-table-category" [attr.rowspan]="row.rowspan">
                                 </td>
                                 <th class="core-grades-table-gradeitem ion-text-start" [attr.colspan]="row.colspan">
                                     <ion-icon *ngIf="row.expandable && showSummary" aria-hidden="true" slot="start" name="fas-chevron-right"

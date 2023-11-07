@@ -29,13 +29,13 @@
                 <ion-icon slot="end" name="fas-up-right-from-square" aria-hidden="true"></ion-icon>
             </ion-item>
             <ion-item class="ion-text-wrap" *ngFor="let task of phase.tasks"
-                [class.item-dimmed]="phase.code != workshopPhase || (task.code == 'submit' && !showSubmit)" (click)="runTask(task)"
+                [class.item-dimmed]="phase.code !== workshopPhase || (task.code === 'submit' && !showSubmit)" (click)="runTask(task)"
                 detail="false" button>
                 <ion-icon slot="start" name="far-circle" *ngIf="task.completed == null"
                     [attr.aria-label]="'addon.mod_workshop.tasktodo' | translate"></ion-icon>
-                <ion-icon slot="start" name="fas-circle-xmark" color="danger" *ngIf="task.completed == ''"
+                <ion-icon slot="start" name="fas-circle-xmark" color="danger" *ngIf="task.completed === ''"
                     [attr.aria-label]="'addon.mod_workshop.taskfail' | translate"></ion-icon>
-                <ion-icon slot="start" name="fas-circle-info" color="info" *ngIf="task.completed == 'info'"
+                <ion-icon slot="start" name="fas-circle-info" color="info" *ngIf="task.completed === 'info'"
                     [attr.aria-label]="'addon.mod_workshop.taskinfo' | translate"></ion-icon>
                 <ion-icon slot="start" name="fas-circle-check" color="success" *ngIf="task.completed == '1'"
                     [attr.aria-label]="'addon.mod_workshop.taskdone' | translate"></ion-icon>
@@ -43,7 +43,7 @@
                     <p class="item-heading ion-text-wrap">{{task.title}}</p>
                     <p *ngIf="task.details" [innerHTML]="task.details"></p>
                 </ion-label>
-                <ion-icon slot="end" *ngIf="task.link && task.code != 'submit'" name="fas-up-right-from-square" aria-hidden="true">
+                <ion-icon slot="end" *ngIf="task.link && task.code !== 'submit'" name="fas-up-right-from-square" aria-hidden="true">
                 </ion-icon>
             </ion-item>
         </ng-container>

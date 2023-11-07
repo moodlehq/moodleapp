@@ -36,15 +36,15 @@
             </ion-spinner>
         </ion-item>
         <ng-container *ngFor="let item of customItems">
-            <ion-item button *ngIf="item.type != 'embedded'" [href]="item.url" [attr.aria-label]="item.label" core-link
-                [capture]="item.type == 'app'" [inApp]="item.type == 'inappbrowser'" class="core-moremenu-customitem" detail="true"
-                [detailIcon]="item.type == 'browser' ? 'open-outline' : 'chevron-forward'">
+            <ion-item button *ngIf="item.type !== 'embedded'" [href]="item.url" [attr.aria-label]="item.label" core-link
+                [capture]="item.type === 'app'" [inApp]="item.type === 'inappbrowser'" class="core-moremenu-customitem" detail="true"
+                [detailIcon]="item.type === 'browser' ? 'open-outline' : 'chevron-forward'">
                 <ion-icon [name]="item.icon" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
                     <p class="item-heading">{{item.label}}</p>
                 </ion-label>
             </ion-item>
-            <ion-item button *ngIf="item.type == 'embedded'" (click)="openItem(item)" [attr.aria-label]="item.label"
+            <ion-item button *ngIf="item.type === 'embedded'" (click)="openItem(item)" [attr.aria-label]="item.label"
                 class="core-moremenu-customitem" detail="true">
                 <ion-icon [name]="item.icon" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>

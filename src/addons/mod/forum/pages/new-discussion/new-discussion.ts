@@ -266,7 +266,6 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
                         CoreSync.blockOperation(AddonModForumProvider.COMPONENT, this.syncId);
                     }
 
-                    // eslint-disable-next-line promise/no-nesting
                     return AddonModForumOffline.instance
                         .getNewDiscussion(this.forumId, this.timeCreated)
                         .then(async (discussion) => {
