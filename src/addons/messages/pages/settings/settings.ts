@@ -25,7 +25,6 @@ import { CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreConstants } from '@/core/constants';
-import { IonRefresher } from '@ionic/angular';
 import { AddonNotificationsPreferencesNotificationProcessorState } from '@addons/notifications/services/notifications';
 import { CorePlatform } from '@services/platform';
 
@@ -251,7 +250,7 @@ export class AddonMessagesSettingsPage implements OnInit, OnDestroy {
      *
      * @param refresher Refresher.
      */
-    refreshPreferences(refresher?: IonRefresher): void {
+    refreshPreferences(refresher?: HTMLIonRefresherElement): void {
         AddonMessages.invalidateMessagePreferences().finally(() => {
             this.fetchPreferences().finally(() => {
                 refresher?.complete();

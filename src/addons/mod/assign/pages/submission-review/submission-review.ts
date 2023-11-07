@@ -18,7 +18,6 @@ import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { CoreCourse } from '@features/course/services/course';
 import { CanLeave } from '@guards/can-leave';
-import { IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -210,7 +209,7 @@ export class AddonModAssignSubmissionReviewPage implements OnInit, OnDestroy, Ca
      *
      * @param refresher Refresher.
      */
-    refreshSubmission(refresher?: IonRefresher): void {
+    refreshSubmission(refresher?: HTMLIonRefresherElement): void {
         this.refreshAllData().finally(() => {
             refresher?.complete();
         });

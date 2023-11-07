@@ -17,7 +17,6 @@ import { CoreDomUtils } from '@services/utils/dom';
 import { AddonCompetencyDataForPlanPageCompetency, AddonCompetencyDataForPlanPageWSResponse } from '../../services/competency';
 import { CoreNavigator } from '@services/navigator';
 import { CoreUserProfile } from '@features/user/services/user';
-import { IonRefresher } from '@ionic/angular';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { AddonCompetencyPlansSource } from '@addons/competency/classes/competency-plans-source';
@@ -111,7 +110,7 @@ export class AddonCompetencyPlanPage implements OnInit, OnDestroy {
      *
      * @param refresher Refresher.
      */
-    async refreshLearningPlan(refresher: IonRefresher): Promise<void> {
+    async refreshLearningPlan(refresher: HTMLIonRefresherElement): Promise<void> {
         await this.competencies.getSource().invalidateCache();
 
         this.fetchLearningPlan().finally(() => {

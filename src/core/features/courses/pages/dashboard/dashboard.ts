@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
-import { IonRefresher } from '@ionic/angular';
 
 import { CoreCourses } from '../../services/courses';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -146,7 +145,7 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
      *
      * @param refresher Refresher.
      */
-    refreshDashboard(refresher: IonRefresher): void {
+    refreshDashboard(refresher: HTMLIonRefresherElement): void {
         const promises: Promise<void>[] = [];
 
         promises.push(CoreCoursesDashboard.invalidateDashboardBlocks());

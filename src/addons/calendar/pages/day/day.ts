@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { IonRefresher } from '@ionic/angular';
 import { CoreNetwork } from '@services/network';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
@@ -301,7 +300,7 @@ export class AddonCalendarDayPage implements OnInit, OnDestroy {
      * @param done Function to call when done.
      * @returns Promise resolved when done.
      */
-    async doRefresh(refresher?: IonRefresher, done?: () => void): Promise<void> {
+    async doRefresh(refresher?: HTMLIonRefresherElement, done?: () => void): Promise<void> {
         if (!this.loaded) {
             return;
         }

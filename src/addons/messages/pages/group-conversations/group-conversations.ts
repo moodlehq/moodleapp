@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { IonContent, IonRefresher } from '@ionic/angular';
+import { IonContent } from '@ionic/angular';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import {
@@ -719,7 +719,7 @@ export class AddonMessagesGroupConversationsPage implements OnInit, OnDestroy {
      * @param refreshUnreadCounts Whether to refresh unread counts.
      * @returns Promise resolved when done.
      */
-    async refreshData(refresher?: IonRefresher, refreshUnreadCounts: boolean = true): Promise<void> {
+    async refreshData(refresher?: HTMLIonRefresherElement, refreshUnreadCounts: boolean = true): Promise<void> {
         // Don't invalidate conversations and so, they always try to get latest data.
         try {
             await AddonMessages.invalidateContactRequestsCountCache(this.siteId);

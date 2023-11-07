@@ -23,7 +23,6 @@ import {
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CoreDomUtils } from '@services/utils/dom';
-import { IonRefresher } from '@ionic/angular';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
 /**
@@ -216,7 +215,7 @@ export class AddonMessagesContactsPage implements OnInit, OnDestroy {
      * @param refresher Refresher.
      * @returns Promise resolved when done.
      */
-    async refreshData(refresher?: IonRefresher): Promise<void> {
+    async refreshData(refresher?: HTMLIonRefresherElement): Promise<void> {
         try {
             if (this.selected == 'confirmed') {
                 // No need to invalidate contacts, we always try to get the latest.

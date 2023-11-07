@@ -31,7 +31,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursecompletion';
-import { IonRefresher, IonSearchbar } from '@ionic/angular';
+import { IonSearchbar } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { PageLoadWatcher } from '@classes/page-load-watcher';
 import { PageLoadsManager } from '@classes/page-loads-manager';
@@ -191,7 +191,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * @param done Function to call when done.
      * @returns Promise resolved when done.
      */
-    async doRefresh(refresher?: IonRefresher, done?: () => void): Promise<void> {
+    async doRefresh(refresher?: HTMLIonRefresherElement, done?: () => void): Promise<void> {
         if (this.loaded) {
             return this.refreshContent().finally(() => {
                 refresher?.complete();

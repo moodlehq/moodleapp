@@ -14,7 +14,6 @@
 
 import { Injectable, Type } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
-import { IonRefresher } from '@ionic/angular';
 
 import { CoreSite } from '@classes/site';
 import { CoreCourseModuleDefaultHandler } from './handlers/default-module';
@@ -234,7 +233,7 @@ export interface CoreCourseModuleMainComponent {
      * @param showErrors If show errors to the user of hide them.
      * @returns Promise resolved when done.
      */
-    doRefresh(refresher?: IonRefresher | null, showErrors?: boolean): Promise<void>;
+    doRefresh(refresher?: HTMLIonRefresherElement | null, showErrors?: boolean): Promise<void>;
 }
 
 /**

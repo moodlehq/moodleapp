@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnDestroy, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
-import { ActionSheetButton, IonRefresher } from '@ionic/angular';
+import { ActionSheetButton } from '@ionic/angular';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -402,7 +402,7 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
      *
      * @param refresher The refresher if this was triggered by a Pull To Refresh.
      */
-    async refreshData(refresher?: IonRefresher): Promise<void> {
+    async refreshData(refresher?: HTMLIonRefresherElement): Promise<void> {
         const promises: Promise<void>[] = [];
 
         promises.push(CoreCourses.invalidateUserCourses());

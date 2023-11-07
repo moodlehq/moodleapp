@@ -19,7 +19,6 @@ import { CoreCourse, CoreCourseBlock } from '@features/course/services/course';
 import { CoreBlockHelper } from '../../services/block-helper';
 import { CoreBlockComponent } from '../block/block';
 import { CoreUtils } from '@services/utils/utils';
-import { IonRefresher } from '@ionic/angular';
 import { CoreCoursesDashboard } from '@features/courses/services/dashboard';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreDom } from '@singletons/dom';
@@ -110,7 +109,7 @@ export class CoreBlockSideBlocksComponent implements OnInit {
      *
      * @param refresher Refresher.
      */
-    async doRefresh(refresher?: IonRefresher): Promise<void> {
+    async doRefresh(refresher?: HTMLIonRefresherElement): Promise<void> {
         await CoreUtils.ignoreErrors(this.invalidateBlocks());
 
         await this.loadContent().finally(() => {

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { IonRefresher } from '@ionic/angular';
 
 import { CoreConfig } from '@services/config';
 import { CoreLocalNotifications } from '@services/local-notifications';
@@ -192,7 +191,7 @@ export class AddonNotificationsSettingsPage implements OnInit, OnDestroy {
      *
      * @param refresher Refresher.
      */
-    async refreshPreferences(refresher?: IonRefresher): Promise<void> {
+    async refreshPreferences(refresher?: HTMLIonRefresherElement): Promise<void> {
         try {
             await CoreUtils.ignoreErrors(AddonNotifications.invalidateNotificationPreferences());
 

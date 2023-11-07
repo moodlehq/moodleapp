@@ -18,7 +18,6 @@ import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { IonRefresher } from '@ionic/angular';
 import { CoreGroupInfo } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -175,7 +174,7 @@ export class AddonModFeedbackAttemptsPage implements AfterViewInit, OnDestroy {
      *
      * @param refresher Refresher.
      */
-    async refreshFeedback(refresher: IonRefresher): Promise<void> {
+    async refreshFeedback(refresher: HTMLIonRefresherElement): Promise<void> {
         const attempts = await this.promisedAttempts;
 
         try {

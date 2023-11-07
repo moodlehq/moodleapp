@@ -20,7 +20,6 @@ import { CoreCourseResourceDownloadResult } from '@features/course/classes/main-
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
-import { IonRefresher } from '@ionic/angular';
 import { CoreNetwork } from '@services/network';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -214,7 +213,7 @@ export class AddonModImscpViewPage implements OnInit {
      * @param refresher Refresher.
      * @returns Promise resolved when done.
      */
-    async doRefresh(refresher?: IonRefresher): Promise<void> {
+    async doRefresh(refresher?: HTMLIonRefresherElement): Promise<void> {
         await CoreUtils.ignoreErrors(Promise.all([
             AddonModImscp.invalidateContent(this.cmId, this.courseId),
             CoreCourseModulePrefetchDelegate.invalidateCourseUpdates(this.courseId), // To detect if IMSCP was updated.

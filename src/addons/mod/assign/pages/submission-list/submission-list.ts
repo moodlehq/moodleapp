@@ -16,7 +16,6 @@ import { Component, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { IonRefresher } from '@ionic/angular';
 import { CoreGroupInfo } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
@@ -208,7 +207,7 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
      *
      * @param refresher Refresher.
      */
-    refreshList(refresher?: IonRefresher): void {
+    refreshList(refresher?: HTMLIonRefresherElement): void {
         this.refreshAllData(true).finally(() => {
             refresher?.complete();
         });

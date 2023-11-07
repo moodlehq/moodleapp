@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { IonRefresher } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
 import {
     AddonMessagesProvider,
@@ -129,7 +128,7 @@ export class AddonMessagesContacts35Page implements OnInit, OnDestroy {
      * @param refresher Refresher.
      * @returns Promise resolved when done.
      */
-    async refreshData(refresher?: IonRefresher): Promise<void> {
+    async refreshData(refresher?: HTMLIonRefresherElement): Promise<void> {
         try {
             if (this.searchString) {
                 // User has searched, update the search.

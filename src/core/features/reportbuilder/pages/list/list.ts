@@ -17,7 +17,6 @@ import { CoreListItemsManager } from '@classes/items-management/list-items-manag
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreReportBuilderReportsSource } from '@features/reportbuilder/classes/reports-source';
 import { CoreReportBuilder, CoreReportBuilderReport, REPORTS_LIST_LIMIT } from '@features/reportbuilder/services/reportbuilder';
-import { IonRefresher } from '@ionic/angular';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -114,7 +113,7 @@ export class CoreReportBuilderListPage implements AfterViewInit, OnDestroy {
      *
      * @param ionRefresher ionRefresher.
      */
-    async refreshReports(ionRefresher?: IonRefresher): Promise<void> {
+    async refreshReports(ionRefresher?: HTMLIonRefresherElement): Promise<void> {
         await CoreUtils.ignoreErrors(CoreReportBuilder.invalidateReportsList());
         await CoreUtils.ignoreErrors(this.fetchReports(true));
         await ionRefresher?.complete();

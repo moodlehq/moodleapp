@@ -20,7 +20,6 @@ import {
     CoreReportBuilderRetrieveReportMapped,
     REPORT_ROWS_LIMIT,
 } from '@features/reportbuilder/services/reportbuilder';
-import { IonRefresher } from '@ionic/angular';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
@@ -170,7 +169,7 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
      *
      * @param ionRefresher ionic refresher.
      */
-    async refreshReport(ionRefresher?: IonRefresher): Promise<void> {
+    async refreshReport(ionRefresher?: HTMLIonRefresherElement): Promise<void> {
         await CoreUtils.ignoreErrors(CoreReportBuilder.invalidateReport());
         this.updateState({ page: 0, canLoadMoreRows: false });
         await CoreUtils.ignoreErrors(this.getReport());

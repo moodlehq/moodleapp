@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
-import { IonRefresher } from '@ionic/angular';
 
 import { CoreSettingsHandlerToDisplay, CoreSettingsPageHandlerToDisplay } from '../../services/settings-delegate';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -140,7 +139,7 @@ export class CoreSitePreferencesPage implements AfterViewInit, OnDestroy {
      *
      * @param refresher Refresher.
      */
-    refreshData(refresher?: IonRefresher): void {
+    refreshData(refresher?: HTMLIonRefresherElement): void {
         this.handlers.getSource().setDirty(true);
         this.fetchData().finally(() => {
             refresher?.complete();

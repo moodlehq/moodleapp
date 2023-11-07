@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
-import { IonRefresher } from '@ionic/angular';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import {
@@ -121,7 +120,7 @@ export class AddonCompetencyCompetenciesPage implements AfterViewInit, OnDestroy
      *
      * @param refresher Refresher.
      */
-    async refreshCompetencies(refresher?: IonRefresher): Promise<void> {
+    async refreshCompetencies(refresher?: HTMLIonRefresherElement): Promise<void> {
         await this.competencies.getSource().invalidateCache();
 
         this.competencies.getSource().setDirty(true);

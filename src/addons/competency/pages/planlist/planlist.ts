@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
-import { IonRefresher } from '@ionic/angular';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreNavigator } from '@services/navigator';
@@ -86,7 +85,7 @@ export class AddonCompetencyPlanListPage implements AfterViewInit, OnDestroy {
      *
      * @param refresher Refresher.
      */
-    async refreshLearningPlans(refresher: IonRefresher): Promise<void> {
+    async refreshLearningPlans(refresher: HTMLIonRefresherElement): Promise<void> {
         await this.plans.getSource().invalidateCache();
 
         this.plans.getSource().setDirty(true);

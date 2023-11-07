@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { IonRefresher } from '@ionic/angular';
 
 import { CoreSitePluginsPluginContentComponent } from '@features/siteplugins/components/plugin-content/plugin-content';
 import { CoreSitePlugins, CoreSitePluginsContent } from '@features/siteplugins/services/siteplugins';
@@ -70,7 +69,7 @@ export class CoreSitePluginsCourseOptionPage implements OnInit {
      *
      * @param refresher Refresher.
      */
-    async refreshData(refresher: IonRefresher): Promise<void> {
+    async refreshData(refresher: HTMLIonRefresherElement): Promise<void> {
         try {
             await this.content?.refreshContent(false);
         } finally {

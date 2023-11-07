@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { IonRefresher } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
@@ -163,7 +162,7 @@ export class CoreCoursesCategoriesPage implements OnInit, OnDestroy {
      *
      * @param refresher Refresher.
      */
-    refreshCategories(refresher?: IonRefresher): void {
+    refreshCategories(refresher?: HTMLIonRefresherElement): void {
         const promises: Promise<void>[] = [];
 
         promises.push(CoreCourses.invalidateUserCourses());

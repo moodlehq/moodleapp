@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { IonRefresher } from '@ionic/angular';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTag } from '@features/tag/services/tag';
 import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
@@ -149,7 +148,7 @@ export class CoreTagIndexPage implements OnInit {
      *
      * @param refresher Refresher.
      */
-    refreshData(refresher?: IonRefresher): void {
+    refreshData(refresher?: HTMLIonRefresherElement): void {
         CoreTag.invalidateTagIndexPerArea(
             this.tagId,
             this.tagName,

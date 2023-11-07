@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit, Type } from '@angular/core';
-import { IonRefresher } from '@ionic/angular';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTag } from '@features/tag/services/tag';
 import { ActivatedRoute } from '@angular/router';
@@ -153,7 +152,7 @@ export class CoreTagIndexAreaPage implements OnInit {
      *
      * @param refresher Refresher.
      */
-    async refreshData(refresher?: IonRefresher): Promise<void> {
+    async refreshData(refresher?: HTMLIonRefresherElement): Promise<void> {
         try {
             await CoreTag.invalidateTagIndexPerArea(
                 this.tagId,

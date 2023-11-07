@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { IonRefresher } from '@ionic/angular';
 
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
@@ -97,7 +96,7 @@ export class AddonModH5PActivityUserAttemptsPage implements OnInit {
      *
      * @param refresher Refresher.
      */
-    doRefresh(refresher: IonRefresher): void {
+    doRefresh(refresher: HTMLIonRefresherElement): void {
         this.refreshData().finally(() => {
             refresher.complete();
         });

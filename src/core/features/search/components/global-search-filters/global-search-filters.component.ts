@@ -22,7 +22,6 @@ import {
 } from '@features/search/services/global-search';
 import { CoreEvents } from '@singletons/events';
 import { ModalController } from '@singletons';
-import { IonRefresher } from '@ionic/angular';
 import { CoreUtils } from '@services/utils/utils';
 
 type Filter<T=unknown> = T & { checked: boolean };
@@ -145,7 +144,7 @@ export class CoreSearchGlobalSearchFiltersComponent implements OnInit {
      *
      * @param refresher Refresher.
      */
-    async refreshFilters(refresher?: IonRefresher): Promise<void> {
+    async refreshFilters(refresher?: HTMLIonRefresherElement): Promise<void> {
         await CoreUtils.ignoreErrors(Promise.all([
             CoreSearchGlobalSearch.invalidateSearchAreas(),
             CoreCourses.invalidateUserCourses(),

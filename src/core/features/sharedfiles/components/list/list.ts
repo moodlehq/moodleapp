@@ -14,7 +14,6 @@
 
 import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 import { FileEntry, DirectoryEntry } from '@ionic-native/file/ngx';
-import { IonRefresher } from '@ionic/angular';
 import { Md5 } from 'ts-md5';
 
 import { CoreSharedFiles } from '@features/sharedfiles/services/sharedfiles';
@@ -82,7 +81,7 @@ export class CoreSharedFilesListComponent implements OnInit, OnDestroy {
      *
      * @param refresher Refresher.
      */
-    refreshFiles(refresher: IonRefresher): void {
+    refreshFiles(refresher: HTMLIonRefresherElement): void {
         this.loadFiles().finally(() => {
             refresher.complete();
         });

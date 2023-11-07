@@ -18,7 +18,6 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreGradesHelper, CoreGradesMenuItem } from '@features/grades/services/grades-helper';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CanLeave } from '@guards/can-leave';
-import { IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
@@ -343,7 +342,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy, CanLea
      *
      * @param refresher Refresher.
      */
-    refreshAssessment(refresher: IonRefresher): void {
+    refreshAssessment(refresher: HTMLIonRefresherElement): void {
         if (this.loaded) {
             this.refreshAllData().finally(() => {
                 refresher?.complete();

@@ -14,7 +14,6 @@
 
 import { Component, OnInit } from '@angular/core';
 import { CoreUser } from '@features/user/services/user';
-import { IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -158,7 +157,7 @@ export class AddonModChatSessionMessagesPage implements OnInit {
      *
      * @param refresher Refresher.
      */
-    async refreshMessages(refresher: IonRefresher): Promise<void> {
+    async refreshMessages(refresher: HTMLIonRefresherElement): Promise<void> {
         try {
             await CoreUtils.ignoreErrors(AddonModChat.invalidateSessionMessages(this.chatId, this.sessionStart, this.groupId));
 

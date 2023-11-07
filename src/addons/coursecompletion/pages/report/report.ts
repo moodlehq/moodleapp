@@ -18,7 +18,6 @@ import {
 } from '@addons/coursecompletion/services/coursecompletion';
 import { Component, OnInit } from '@angular/core';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
-import { IonRefresher } from '@ionic/angular';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
@@ -112,7 +111,7 @@ export class AddonCourseCompletionReportPage implements OnInit {
      *
      * @param refresher Refresher instance.
      */
-    async refreshCompletion(refresher?: IonRefresher): Promise<void> {
+    async refreshCompletion(refresher?: HTMLIonRefresherElement): Promise<void> {
         await AddonCourseCompletion.invalidateCourseCompletion(this.courseId, this.userId).finally(() => {
             this.fetchCompletion().finally(() => {
                 refresher?.complete();

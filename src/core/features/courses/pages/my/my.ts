@@ -22,7 +22,6 @@ import { CoreBlockDelegate } from '@features/block/services/block-delegate';
 import { CoreCourseBlock } from '@features/course/services/course';
 import { CoreCoursesDashboard, CoreCoursesDashboardProvider } from '@features/courses/services/dashboard';
 import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
-import { IonRefresher } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
@@ -181,7 +180,7 @@ export class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirective {
      *
      * @param refresher Refresher.
      */
-    async refresh(refresher?: IonRefresher): Promise<void> {
+    async refresh(refresher?: HTMLIonRefresherElement): Promise<void> {
 
         const promises: Promise<void>[] = [];
 

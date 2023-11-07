@@ -15,7 +15,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ContextLevel } from '@/core/constants';
 import { AddonCompetencySummary, AddonCompetency } from '@addons/competency/services/competency';
-import { IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
@@ -113,7 +112,7 @@ export class AddonCompetencyCompetencySummaryPage implements OnInit {
      *
      * @param refresher Refresher.
      */
-    refreshCompetency(refresher: IonRefresher): void {
+    refreshCompetency(refresher: HTMLIonRefresherElement): void {
         AddonCompetency.invalidateCompetencySummary(this.competencyId).finally(() => {
             this.fetchCompetency().finally(() => {
                 refresher?.complete();
