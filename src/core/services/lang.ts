@@ -349,12 +349,15 @@ export class CoreLangProvider {
     getTranslationTable(lang: string): Promise<Record<string, unknown>> {
         // Create a promise to convert the observable into a promise.
         return new Promise((resolve, reject): void => {
-            const observer = Translate.getTranslation(lang).subscribe((table) => {
-                resolve(table);
-                observer.unsubscribe();
-            }, (err) => {
-                reject(err);
-                observer.unsubscribe();
+            const observer = Translate.getTranslation(lang).subscribe({
+                next: (table) => {
+                    resolve(table);
+                    observer.unsubscribe();
+                },
+                error: (err) => {
+                    reject(err);
+                    observer.unsubscribe();
+                },
             });
         });
     }

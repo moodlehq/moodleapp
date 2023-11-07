@@ -174,6 +174,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         this.lastDraft = this.control?.value;
 
         // Use paragraph on enter.
+        // eslint-disable-next-line deprecation/deprecation
         document.execCommand('DefaultParagraphSeparator', false, 'p');
 
         this.maximizeEditorSize();
@@ -632,6 +633,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
      */
     protected executeCommand({ name: command, parameters }: EditorCommand): void {
         if (parameters == 'block') {
+            // eslint-disable-next-line deprecation/deprecation
             document.execCommand('formatBlock', false, '<' + command + '>');
 
             return;
@@ -641,6 +643,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
             this.toolbarStyles[parameters] = this.toolbarStyles[parameters] == 'true' ? 'false' : 'true';
         }
 
+        // eslint-disable-next-line deprecation/deprecation
         document.execCommand(command, false);
 
         // Modern browsers are using non a11y tags, so replace them.
@@ -1043,6 +1046,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
 
         if (text) {
             this.editorElement?.focus(); // Make sure the editor is focused.
+            // eslint-disable-next-line deprecation/deprecation
             document.execCommand('insertText', false, text);
         }
     }
