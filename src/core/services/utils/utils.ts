@@ -376,7 +376,7 @@ export class CoreUtilsProvider {
             virtualInput.innerHTML = text;
             virtualInput.select();
             virtualInput.setSelectionRange(0, 99999);
-            document.execCommand('copy');
+            document.execCommand('copy'); // eslint-disable-line deprecation/deprecation
         }
 
         // Show toast using ionicLoading.
