@@ -40,6 +40,7 @@ import {
     CoreCoursesMyCoursesMainMenuHandlerService,
 } from './services/handlers/my-courses-mainmenu';
 import { CoreCoursesRequestPushClickHandler } from './services/handlers/request-push-click';
+import { CoreCoursesMyCoursesLinkHandler } from './services/handlers/my-courses-link';
 
 export const CORE_COURSES_SERVICES: Type<unknown>[] = [
     CoreCoursesProvider,
@@ -79,6 +80,7 @@ const routes: Routes = [
                 CoreMainMenuDelegate.registerHandler(CoreCoursesMyCoursesHomeHandler.instance);
                 CoreContentLinksDelegate.registerHandler(CoreCoursesCourseLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(CoreCoursesIndexLinkHandler.instance);
+                CoreContentLinksDelegate.registerHandler(CoreCoursesMyCoursesLinkHandler.instance);
                 CoreContentLinksDelegate.registerHandler(CoreCoursesDashboardLinkHandler.instance);
                 CorePushNotificationsDelegate.registerClickHandler(CoreCoursesEnrolPushClickHandler.instance);
                 CorePushNotificationsDelegate.registerClickHandler(CoreCoursesRequestPushClickHandler.instance);
