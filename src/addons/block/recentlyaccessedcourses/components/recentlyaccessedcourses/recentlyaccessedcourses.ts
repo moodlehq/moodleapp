@@ -30,7 +30,7 @@ import { CoreCourseOptionsDelegate } from '@features/course/services/course-opti
 import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursecompletion';
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreSite } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 
 /**
  * Component to render a recent courses block.

@@ -21,7 +21,7 @@ import { CoreSiteBasicInfo, CoreSites, CoreSitesReadingStrategy } from '@service
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
-import { CoreSite, CoreSitePublicConfigResponse } from '@classes/site';
+import { CoreSite, CoreSitePublicConfigResponse } from '@classes/sites/site';
 import { CoreEvents } from '@singletons/events';
 import { CoreError } from '@classes/errors/error';
 import { CoreNavigator, CoreRedirectPayload } from '@services/navigator';

@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreSite, CoreSiteWSPreSets, WSObservable } from '@classes/site';
+import { CoreSite, CoreSiteWSPreSets, WSObservable } from '@classes/sites/site';
 import { CoreCourseBlock } from '@features/course/services/course';
 import { CoreStatusWithWarningsWSResponse } from '@services/ws';
 import { makeSingleton } from '@singletons';

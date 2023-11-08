@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/site';
+import { CoreSite, CoreSiteWSPreSets } from '@classes/sites/site';
 import { CoreTagItem } from '@features/tag/services/tag';
 import { CoreWSExternalWarning, CoreWSExternalFile, CoreWS } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';

@@ -14,7 +14,7 @@
 
 import { CoreConstants } from '@/core/constants';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { CoreSite, CoreSiteInfo } from '@classes/site';
+import { CoreSite, CoreSiteInfo } from '@classes/sites/site';
 import { CoreFilter } from '@features/filter/services/filter';
 import { CoreLoginSitesModalComponent } from '@features/login/components/sites-modal/sites-modal';
 import { CoreLoginHelper } from '@features/login/services/login-helper';

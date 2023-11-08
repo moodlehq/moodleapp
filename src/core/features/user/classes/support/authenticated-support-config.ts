@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSite, CoreSiteConfigSupportAvailability } from '@classes/site';
+import { CoreSite, CoreSiteConfigSupportAvailability } from '@classes/sites/site';
 import { CoreSites } from '@services/sites';
 import { CoreUserSupportConfig } from './support-config';
 

@@ -21,7 +21,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreCountry, CoreUtils } from '@services/utils/utils';
 import { CoreWS, CoreWSExternalWarning } from '@services/ws';
 import { Translate } from '@singletons';
-import { CoreSitePublicConfigResponse } from '@classes/site';
+import { CoreSitePublicConfigResponse } from '@classes/sites/site';
 import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profile-field-delegate';
 
 import {

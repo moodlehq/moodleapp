@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreSiteWSPreSets, CoreSite } from '@classes/site';
+import { CoreSiteWSPreSets, CoreSite } from '@classes/sites/site';
 import { CoreEnrolEnrolmentInfo } from '@features/enrol/services/enrol';
 import { CoreSites } from '@services/sites';
 import { CoreWSExternalWarning } from '@services/ws';

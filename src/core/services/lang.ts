@@ -22,7 +22,7 @@ import { CoreSubscriptions } from '@singletons/subscriptions';
 import { makeSingleton, Translate, Http } from '@singletons';
 
 import moment from 'moment-timezone';
-import { CoreSite } from '../classes/site';
+import { CoreSite } from '../classes/sites/site';
 import { CorePlatform } from '@services/platform';
 import { AddonFilterMultilangHandler } from '@addons/filter/multilang/services/handlers/multilang';
 import { AddonFilterMultilang2Handler } from '@addons/filter/multilang2/services/handlers/multilang2';

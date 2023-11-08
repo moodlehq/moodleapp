@@ -14,7 +14,7 @@
 
 import { ContextLevel } from '@/core/constants';
 import { Injectable } from '@angular/core';
-import { CoreSiteWSPreSets, CoreSite } from '@classes/site';
+import { CoreSiteWSPreSets, CoreSite } from '@classes/sites/site';
 import { CoreUser } from '@features/user/services/user';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';

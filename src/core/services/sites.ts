@@ -31,7 +31,7 @@ import {
     CoreSiteConfig,
     CoreSitePublicConfigResponse,
     CoreSiteInfoResponse,
-} from '@classes/site';
+} from '@classes/sites/site';
 import { SQLiteDB, SQLiteDBRecordValues, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { CoreError } from '@classes/errors/error';
 import { CoreLoginError, CoreLoginErrorOptions } from '@classes/errors/loginerror';

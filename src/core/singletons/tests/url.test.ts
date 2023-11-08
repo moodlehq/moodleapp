@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { mock } from '@/testing/utils';
-import { CoreSite } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreUrl } from '@singletons/url';
 
 describe('CoreUrl singleton', () => {

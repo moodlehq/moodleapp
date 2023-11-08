@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { mock, mockSingleton } from '@/testing/utils';
-import { CoreSite } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSiteHomeIndexLinkHandlerService } from '@features/sitehome/services/handlers/index-link';

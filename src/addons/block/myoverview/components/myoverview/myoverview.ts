@@ -26,7 +26,7 @@ import { CoreCoursesHelper, CoreEnrolledCourseDataWithExtraInfoAndOptions } from
 import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
-import { CoreSite } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';

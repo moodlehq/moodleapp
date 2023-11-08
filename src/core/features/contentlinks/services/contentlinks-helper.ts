@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreContentLinksDelegate, CoreContentLinksAction } from './contentlinks-delegate';
-import { CoreSite } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { CoreContentLinksChooseSiteModalComponent } from '../components/choose-site-modal/choose-site-modal';

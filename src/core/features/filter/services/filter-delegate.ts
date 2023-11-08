@@ -18,7 +18,7 @@ import { CoreSites } from '@services/sites';
 import { CoreFilterFilter, CoreFilterFormatTextOptions } from './filter';
 import { CoreFilterDefaultHandler } from './handlers/default-filter';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
-import { CoreSite } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { makeSingleton } from '@singletons';
 
 /**

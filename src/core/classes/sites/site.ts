@@ -41,13 +41,13 @@ import { CoreError } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreLogger } from '@singletons/logger';
 import { Translate } from '@singletons';
-import { CoreIonLoadingElement } from './ion-loading';
+import { CoreIonLoadingElement } from '../ion-loading';
 import { CoreLang, CoreLangFormat } from '@services/lang';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { asyncInstance, AsyncInstance } from '../utils/async-instance';
-import { CoreDatabaseTable } from './database/database-table';
-import { CoreDatabaseCachingStrategy } from './database/database-table-proxy';
-import { CoreSilentError } from './errors/silenterror';
+import { asyncInstance, AsyncInstance } from '../../utils/async-instance';
+import { CoreDatabaseTable } from '../database/database-table';
+import { CoreDatabaseCachingStrategy } from '../database/database-table-proxy';
+import { CoreSilentError } from '../errors/silenterror';
 import { CorePromisedValue } from '@classes/promised-value';
 import {
     CONFIG_TABLE,
@@ -59,7 +59,7 @@ import {
 } from '@services/database/sites';
 import { Observable, ObservableInput, ObservedValueOf, OperatorFunction, Subject } from 'rxjs';
 import { finalize, map, mergeMap } from 'rxjs/operators';
-import { firstValueFrom } from '../utils/rxjs';
+import { firstValueFrom } from '../../utils/rxjs';
 import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
 import { CoreLoginHelper } from '@features/login/services/login-helper';

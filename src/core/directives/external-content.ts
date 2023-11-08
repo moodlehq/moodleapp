@@ -30,7 +30,7 @@ import { CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreLogger } from '@singletons/logger';
 import { CoreError } from '@classes/errors/error';
-import { CoreSite } from '@classes/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreConstants } from '../constants';
 import { CoreNetwork } from '@services/network';
