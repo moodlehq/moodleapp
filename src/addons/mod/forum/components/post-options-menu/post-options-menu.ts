@@ -86,7 +86,7 @@ export class AddonModForumPostOptionsMenuComponent implements OnInit {
      */
     protected setOpenInBrowserUrl(): void {
         const site = CoreSites.getRequiredCurrentSite();
-        if (!CoreSites.shouldDisplayInformativeLinks(site)) {
+        if (!site.shouldDisplayInformativeLinks()) {
             return;
         }
 

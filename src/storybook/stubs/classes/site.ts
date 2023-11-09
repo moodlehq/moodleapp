@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSite, CoreSiteConfigResponse, CoreSiteInfo, CoreSiteWSPreSets, WSObservable } from '@classes/sites/site';
+import { CoreSite, CoreSiteConfigResponse, CoreSiteWSPreSets, WSObservable } from '@classes/sites/site';
+import { CoreSiteInfo } from '@classes/sites/unauthenticated-site';
 import { of } from 'rxjs';
 
 export interface CoreSiteFixture {

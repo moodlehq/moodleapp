@@ -101,7 +101,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
         }
 
         this.displayOptions = Object.assign({
-            displayOpenInBrowser: CoreSites.shouldDisplayInformativeLinks(),
+            displayOpenInBrowser: !!CoreSites.getCurrentSite()?.shouldDisplayInformativeLinks(),
             displayDescription: true,
             displayRefresh: true,
             displayPrefetch: true,

@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import { CoreSitePublicConfigResponse } from '@classes/sites/site';
+import { CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-site';
 import { CoreApp } from '@services/app';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';

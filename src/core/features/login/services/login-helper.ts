@@ -26,7 +26,7 @@ import { CoreTextUtils } from '@services/utils/text';
 import { CoreUrlParams, CoreUrlUtils } from '@services/utils/url';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreConstants } from '@/core/constants';
-import { CoreSite, CoreSiteIdentityProvider, CoreSitePublicConfigResponse, CoreSiteQRCodeType, TypeOfLogin } from '@classes/sites/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreError } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
 import { DomSanitizer, makeSingleton, Translate } from '@singletons';
@@ -41,6 +41,12 @@ import { CorePromisedValue } from '@classes/promised-value';
 import { SafeHtml } from '@angular/platform-browser';
 import { CoreLoginError } from '@classes/errors/loginerror';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
+import {
+    CoreSiteIdentityProvider,
+    CoreSitePublicConfigResponse,
+    CoreSiteQRCodeType,
+    TypeOfLogin,
+} from '@classes/sites/unauthenticated-site';
 
 const PASSWORD_RESETS_CONFIG_KEY = 'password-resets';
 
@@ -301,6 +307,7 @@ export class CoreLoginHelperProvider {
      *
      * @param config Site public config.
      * @returns Logo URL.
+     * @deprecated since 4.2. Please use getLogoUrl in a site instance.
      */
     getLogoUrl(config: CoreSitePublicConfigResponse): string | undefined {
         return !CoreConstants.CONFIG.forceLoginLogo && config ? (config.logourl || config.compactlogourl) : undefined;
@@ -1513,23 +1520,6 @@ export class CoreLoginHelperProvider {
         const passwordResetsJson = await CoreConfig.get(PASSWORD_RESETS_CONFIG_KEY, '{}');
 
         return CoreTextUtils.parseJSON<Record<string, number>>(passwordResetsJson, {});
-    }
-
-    /**
-     * Check if a URL belongs to the demo mode site.
-     *
-     * @returns Whether the URL belongs to the demo mode site.
-     */
-    isDemoModeSite(url: string): boolean {
-        const demoSiteData = CoreLoginHelper.getDemoModeSiteInfo();
-        if (!demoSiteData) {
-            return false;
-        }
-
-        const demoSiteUrl = CoreTextUtils.addEndingSlash(CoreUrlUtils.removeProtocolAndWWW(demoSiteData.url));
-        url = CoreTextUtils.addEndingSlash(CoreUrlUtils.removeProtocolAndWWW(url));
-
-        return demoSiteUrl.indexOf(url) === 0;
     }
 
 }

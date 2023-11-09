@@ -63,7 +63,7 @@ export class CoreCourseModulePreviewPage implements OnInit {
             return;
         }
 
-        this.displayOpenInBrowser = CoreSites.shouldDisplayInformativeLinks();
+        this.displayOpenInBrowser = !!CoreSites.getCurrentSite()?.shouldDisplayInformativeLinks();
         this.debouncedUpdateModule = CoreUtils.debounce(() => {
             this.doRefresh();
         }, 10000);

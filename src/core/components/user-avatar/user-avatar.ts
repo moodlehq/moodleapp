@@ -22,7 +22,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreNetwork } from '@services/network';
 import { CoreUserHelper } from '@features/user/services/user-helper';
 import { CoreUrlUtils } from '@services/utils/url';
-import { CoreSiteInfo } from '@classes/site';
+import { CoreSiteInfo } from '@classes/sites/unauthenticated-site';
 
 /**
  * Component to display a "user avatar".

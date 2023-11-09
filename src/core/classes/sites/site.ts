@@ -24,7 +24,6 @@ import {
     CoreWS,
     CoreWSPreSets,
     CoreWSFileUploadOptions,
-    CoreWSAjaxPreSets,
     CoreWSExternalWarning,
     CoreWSUploadFileResult,
     CoreWSPreSetsSplitRequest,
@@ -62,19 +61,9 @@ import { finalize, map, mergeMap } from 'rxjs/operators';
 import { firstValueFrom } from '../../utils/rxjs';
 import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
-import { CoreLoginHelper } from '@features/login/services/login-helper';
-import { CorePath } from '@singletons/path';
 import { CoreErrorLogs } from '@singletons/error-logs';
 import { CoreFilepool } from '@services/filepool';
-
-/**
- * QR Code type enumeration.
- */
-export enum CoreSiteQRCodeType {
-    QR_CODE_DISABLED = 0, // QR code disabled value
-    QR_CODE_URL = 1, // QR code type URL value
-    QR_CODE_LOGIN = 2, // QR code type login value
-}
+import { CoreSiteInfo, CoreSiteInfoResponse, CoreSitePublicConfigResponse, CoreUnauthenticatedSite } from './unauthenticated-site';
 
 // WS that we allow to call even if the site is logged out.
 const ALLOWED_LOGGEDOUT_WS = [
@@ -89,7 +78,7 @@ const ALLOWED_LOGGEDOUT_WS = [
  *
  * @todo Refactor this class to improve "temporary" sites support (not fully authenticated).
  */
-export class CoreSite {
+export class CoreSite extends CoreUnauthenticatedSite {
 
     static readonly REQUEST_QUEUE_FORCE_WS = false; // Use "tool_mobile_call_external_functions" even for calling a single function.
 
@@ -161,8 +150,9 @@ export class CoreSite {
         public config?: CoreSiteConfig,
         public loggedOut?: boolean,
     ) {
+        super(siteUrl);
+
         this.logger = CoreLogger.getInstance('CoreSite');
-        this.siteUrl = CoreUrlUtils.removeUrlParams(this.siteUrl); // Make sure the URL doesn't have params.
 
         this.cacheTable = asyncInstance(() => CoreSites.getSiteTable(WS_CACHE_TABLE, {
             siteId: this.getId(),
@@ -213,15 +203,6 @@ export class CoreSite {
     }
 
     /**
-     * Get site URL.
-     *
-     * @returns Site URL.
-     */
-    getURL(): string {
-        return this.siteUrl;
-    }
-
-    /**
      * Get site token.
      *
      * @returns Site token.
@@ -236,9 +217,7 @@ export class CoreSite {
     }
 
     /**
-     * Get site info.
-     *
-     * @returns Site info.
+     * @inheritdoc
      */
     getInfo(): CoreSiteInfo | undefined {
         return this.infos;
@@ -288,32 +267,6 @@ export class CoreSite {
      */
     getSiteHomeId(): number {
         return this.infos?.siteid || 1;
-    }
-
-    /**
-     * Get site name.
-     *
-     * @returns Site name.
-     */
-    async getSiteName(): Promise<string> {
-        if (this.isDemoModeSite()) {
-            return CoreConstants.CONFIG.appname;
-        }
-
-        if (this.infos?.sitename) {
-            return this.infos?.sitename;
-        }
-
-        // Fallback.
-        const isSingleFixedSite = await CoreLoginHelper.isSingleFixedSite();
-
-        if (isSingleFixedSite) {
-            const sites = await CoreLoginHelper.getAvailableSites();
-
-            return sites[0].name;
-        }
-
-        return '';
     }
 
     /**
@@ -1623,47 +1576,11 @@ export class CoreSite {
     }
 
     /**
-     * Returns a url to link an specific page on the site.
-     *
-     * @param path Path of the url to go to.
-     * @param params Object with the params to add.
-     * @param anchor Anchor text if needed.
-     * @returns URL with params.
-     */
-    createSiteUrl(path: string, params?: Record<string, unknown>, anchor?: string): string {
-        return CoreUrlUtils.addParamsToUrl(CorePath.concatenatePaths(this.siteUrl, path), params, anchor);
-    }
-
-    /**
-     * Check if a URL belongs to this site.
-     *
-     * @param url URL to check.
-     * @returns Whether the URL belongs to this site.
-     */
-    containsUrl(url?: string): boolean {
-        if (!url) {
-            return false;
-        }
-
-        const siteUrl = CoreTextUtils.addEndingSlash(CoreUrlUtils.removeProtocolAndWWW(this.siteUrl));
-        url = CoreTextUtils.addEndingSlash(CoreUrlUtils.removeProtocolAndWWW(url));
-
-        return url.indexOf(siteUrl) == 0;
-    }
-
-    /**
-     * Get the public config of this site.
-     *
-     * @param options Options.
-     * @returns Promise resolved with public config. Rejected with an object if error, see CoreWSProvider.callAjax.
+     * @inheritdoc
      */
     async getPublicConfig(options: { readingStrategy?: CoreSitesReadingStrategy } = {}): Promise<CoreSitePublicConfigResponse> {
         if (!this.db) {
-            if (options.readingStrategy === CoreSitesReadingStrategy.ONLY_CACHE) {
-                throw new CoreError('Cache not available to read public config');
-            }
-
-            return this.requestPublicConfig();
+            return super.getPublicConfig(options);
         }
 
         const method = 'tool_mobile_get_public_config';
@@ -1754,47 +1671,12 @@ export class CoreSite {
     }
 
     /**
-     * Perform a request to the server to get the public config of this site.
+     * Check if GET method is supported for AJAX calls.
      *
-     * @returns Promise resolved with public config.
+     * @returns Whether it's supported.
      */
-    protected async requestPublicConfig(): Promise<CoreSitePublicConfigResponse> {
-        const preSets: CoreWSAjaxPreSets = {
-            siteUrl: this.siteUrl,
-        };
-
-        let config: CoreSitePublicConfigResponse;
-
-        try {
-            config = await CoreWS.callAjax<CoreSitePublicConfigResponse>('tool_mobile_get_public_config', {}, preSets);
-        } catch (error) {
-            if (!error || error.errorcode !== 'codingerror' || (this.getInfo() && !this.isVersionGreaterEqualThan('3.8'))) {
-                throw error;
-            }
-
-            // This error probably means that there is a redirect in the site. Try to use a GET request.
-            preSets.noLogin = true;
-            preSets.useGet = true;
-
-            try {
-                config = await CoreWS.callAjax<CoreSitePublicConfigResponse>('tool_mobile_get_public_config', {}, preSets);
-            } catch (error2) {
-                if (this.getInfo() && this.isVersionGreaterEqualThan('3.8')) {
-                    // GET is supported, return the second error.
-                    throw error2;
-                } else {
-                    // GET not supported or we don't know if it's supported. Return first error.
-                    throw error;
-                }
-            }
-        }
-
-        // Use the wwwroot returned by the server.
-        if (config.httpswwwroot) {
-            this.siteUrl = CoreUrlUtils.removeUrlParams(config.httpswwwroot); // Make sure the URL doesn't have params.
-        }
-
-        return config;
+    protected isAjaxGetSupported(): boolean {
+        return !!this.getInfo() && this.isVersionGreaterEqualThan('3.8');
     }
 
     /**
@@ -2326,35 +2208,6 @@ export class CoreSite {
     }
 
     /**
-     * Check if a URL to a file belongs to the site and uses the pluginfileurl or tokenpluginfileurl endpoints.
-     *
-     * @param url File URL to check.
-     * @returns Whether it's a site file URL.
-     */
-    isSitePluginFileUrl(url: string): boolean {
-        const isPluginFileUrl = CoreUrlUtils.isPluginFileUrl(url) || CoreUrlUtils.isTokenPluginFileUrl(url);
-        if (!isPluginFileUrl) {
-            return false;
-        }
-
-        return this.containsUrl(url);
-    }
-
-    /**
-     * Check if a URL to a file belongs to the site and is a theme image file.
-     *
-     * @param url File URL to check.
-     * @returns Whether it's a site theme image URL.
-     */
-    isSiteThemeImageUrl(url: string): boolean {
-        if (!CoreUrlUtils.isThemeImageUrl(url)) {
-            return false;
-        }
-
-        return this.containsUrl(url);
-    }
-
-    /**
      * Deletes last viewed records based on some conditions.
      *
      * @param conditions Conditions.
@@ -2429,17 +2282,6 @@ export class CoreSite {
             data: options.data,
             timeaccess: options.timeaccess ?? Date.now(),
         });
-    }
-
-    /**
-     * Check if the site is a demo mode site.
-     *
-     * @returns Whether the site is a demo mode site.
-     */
-    isDemoModeSite(): boolean {
-        const demoSiteData = CoreLoginHelper.getDemoModeSiteInfo();
-
-        return this.containsUrl(demoSiteData?.url);
     }
 
 }
@@ -2648,65 +2490,6 @@ type RequestQueueItem<T = any> = {
 };
 
 /**
- * Result of WS core_webservice_get_site_info.
- */
-export type CoreSiteInfoResponse = {
-    sitename: string; // Site name.
-    username: string; // Username.
-    firstname: string; // First name.
-    lastname: string; // Last name.
-    fullname: string; // User full name.
-    lang: string; // Current language.
-    userid: number; // User id.
-    siteurl: string; // Site url.
-    userpictureurl: string; // The user profile picture.
-    functions: {
-        name: string; // Function name.
-        version: string; // The version number of the component to which the function belongs.
-    }[];
-    downloadfiles?: number; // 1 if users are allowed to download files, 0 if not.
-    uploadfiles?: number; // 1 if users are allowed to upload files, 0 if not.
-    release?: string; // Moodle release number.
-    version?: string; // Moodle version number.
-    mobilecssurl?: string; // Mobile custom CSS theme.
-    advancedfeatures?: { // Advanced features availability.
-        name: string; // Feature name.
-        value: number; // Feature value. Usually 1 means enabled.
-    }[];
-    usercanmanageownfiles?: boolean; // True if the user can manage his own files.
-    userquota?: number; // User quota (bytes). 0 means user can ignore the quota.
-    usermaxuploadfilesize?: number; // User max upload file size (bytes). -1 means the user can ignore the upload file size.
-    userhomepage?: CoreSiteInfoUserHomepage; // The default home page for the user.
-    userprivateaccesskey?: string; // Private user access key for fetching files.
-    siteid?: number; // Site course ID.
-    sitecalendartype?: string; // Calendar type set in the site.
-    usercalendartype?: string; // Calendar typed used by the user.
-    userissiteadmin?: boolean; // Whether the user is a site admin or not.
-    theme?: string; // Current theme for the user.
-};
-
-/**
- * Site info, including some calculated data.
- */
-export type CoreSiteInfo = CoreSiteInfoResponse & {
-    functionsByName?: {
-        [name: string]: {
-            name: string; // Function name.
-            version: string; // The version number of the component to which the function belongs.
-        };
-    };
-};
-
-/**
- * Enum constants that define default user home page.
- */
-export enum CoreSiteInfoUserHomepage {
-    HOMEPAGE_SITE = 0, // Site home.
-    HOMEPAGE_MY = 1, // Dashboard.
-    HOMEPAGE_MYCOURSES = 3, // My courses.
-}
-
-/**
  * Result of WS tool_mobile_get_config.
  */
 export type CoreSiteConfigResponse = {
@@ -2718,79 +2501,12 @@ export type CoreSiteConfigResponse = {
 };
 
 /**
- * Possible values for 'supportavailability' config.
- */
-export const enum CoreSiteConfigSupportAvailability {
-    Disabled = 0,
-    Authenticated = 1,
-    Anyone = 2,
-}
-
-/**
  * Site config indexed by name.
  */
 export type CoreSiteConfig = Record<string, string> & {
     supportavailability?: string; // String representation of CoreSiteConfigSupportAvailability.
     searchbanner?: string; // Search banner text.
     searchbannerenable?: string; // Whether search banner is enabled.
-};
-
-/**
- * Result of WS tool_mobile_get_public_config.
- */
-export type CoreSitePublicConfigResponse = {
-    wwwroot: string; // Site URL.
-    httpswwwroot: string; // Site https URL (if httpslogin is enabled).
-    sitename: string; // Site name.
-    guestlogin: number; // Whether guest login is enabled.
-    rememberusername: number; // Values: 0 for No, 1 for Yes, 2 for optional.
-    authloginviaemail: number; // Whether log in via email is enabled.
-    registerauth: string; // Authentication method for user registration.
-    forgottenpasswordurl: string; // Forgotten password URL.
-    authinstructions: string; // Authentication instructions.
-    authnoneenabled: number; // Whether auth none is enabled.
-    enablewebservices: number; // Whether Web Services are enabled.
-    enablemobilewebservice: number; // Whether the Mobile service is enabled.
-    maintenanceenabled: number; // Whether site maintenance is enabled.
-    maintenancemessage: string; // Maintenance message.
-    logourl?: string; // The site logo URL.
-    compactlogourl?: string; // The site compact logo URL.
-    typeoflogin: TypeOfLogin; // The type of login. 1 for app, 2 for browser, 3 for embedded.
-    launchurl?: string; // SSO login launch URL.
-    mobilecssurl?: string; // Mobile custom CSS theme.
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    tool_mobile_disabledfeatures?: string; // Disabled features in the app.
-    identityproviders?: CoreSiteIdentityProvider[]; // Identity providers.
-    country?: string; // Default site country.
-    agedigitalconsentverification?: boolean; // Whether age digital consent verification is enabled.
-    supportname?: string; // Site support contact name (only if age verification is enabled).
-    supportemail?: string; // Site support contact email (only if age verification is enabled).
-    supportavailability?: CoreSiteConfigSupportAvailability;
-    supportpage?: string; // Site support contact url.
-    autolang?: number; // Whether to detect default language from browser setting.
-    lang?: string; // Default language for the site.
-    langmenu?: number; // Whether the language menu should be displayed.
-    langlist?: string; // Languages on language menu.
-    locale?: string; // Sitewide locale.
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    tool_mobile_minimumversion?: string; // Minimum required version to access.
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    tool_mobile_iosappid?: string; // IOS app's unique identifier.
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    tool_mobile_androidappid?: string; // Android app's unique identifier.
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    tool_mobile_setuplink?: string; // App download page.
-    tool_mobile_qrcodetype?: CoreSiteQRCodeType; // eslint-disable-line @typescript-eslint/naming-convention
-    warnings?: CoreWSExternalWarning[];
-};
-
-/**
- * Identity provider.
- */
-export type CoreSiteIdentityProvider = {
-    name: string; // The identity provider name.
-    iconurl: string; // The icon URL for the provider.
-    url: string; // The URL of the provider.
 };
 
 /**
@@ -2852,13 +2568,4 @@ export type WSObservable<T> = Observable<T>;
 enum OngoingRequestType {
     STANDARD = 0,
     UPDATE_IN_BACKGROUND = 1,
-}
-
-/**
- * The type of login. 1 for app, 2 for browser, 3 for embedded.
- */
-export enum TypeOfLogin {
-    APP = 1,
-    BROWSER = 2, // SSO in browser window is required.
-    EMBEDDED = 3, // SSO in embedded browser is required.
 }

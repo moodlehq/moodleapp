@@ -167,7 +167,7 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
 
         const currentSite = CoreSites.getCurrentSite();
         this.isOnline = CoreNetwork.isOnline();
-        this.externalUrl = currentSite && CoreSites.shouldDisplayInformativeLinks(currentSite) ?
+        this.externalUrl = currentSite && currentSite.shouldDisplayInformativeLinks() ?
             currentSite.createSiteUrl('/mod/forum/discuss.php', { d: this.discussionId.toString() }) :
             undefined;
         this.onlineObserver = CoreNetwork.onChange().subscribe(() => {

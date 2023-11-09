@@ -28,6 +28,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CorePlatform } from '@services/platform';
 import { CoreNetwork } from '@services/network';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
+import { CoreSitesFactory } from '@services/sites-factory';
 
 /**
  * Device Info to be shown and copied to clipboard.
@@ -202,7 +203,8 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
 
         this.deviceInfo.siteUrl = currentSite?.getURL() || firstUrl || undefined;
         this.deviceInfo.isPrefixedUrl = !!sites.length;
-        this.displaySiteUrl = !!this.deviceInfo.siteUrl && CoreSites.shouldDisplayInformativeLinks(this.deviceInfo.siteUrl);
+        this.displaySiteUrl = !!this.deviceInfo.siteUrl &&
+            (currentSite ?? CoreSitesFactory.makeUnauthenticatedSite(this.deviceInfo.siteUrl)).shouldDisplayInformativeLinks();
 
         if (fileProvider.isAvailable()) {
             const basepath = await fileProvider.getBasePath();

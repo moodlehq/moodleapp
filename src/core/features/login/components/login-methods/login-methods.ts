@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, Input, OnInit } from '@angular/core';
-import { CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@classes/sites/site';
+import { CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-site';
 import { CoreLoginHelper, CoreLoginMethod } from '@features/login/services/login-helper';
 import { CoreRedirectPayload } from '@services/navigator';
 import { CoreSites } from '@services/sites';

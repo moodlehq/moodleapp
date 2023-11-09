@@ -27,10 +27,7 @@ import { CoreConstants } from '@/core/constants';
 import {
     CoreSite,
     CoreSiteWSPreSets,
-    CoreSiteInfo,
     CoreSiteConfig,
-    CoreSitePublicConfigResponse,
-    CoreSiteInfoResponse,
 } from '@classes/sites/site';
 import { SQLiteDB, SQLiteDBRecordValues, SQLiteDBTableSchema } from '@classes/sqlitedb';
 import { CoreError } from '@classes/errors/error';
@@ -67,6 +64,7 @@ import { CoreNative } from '@features/native/services/native';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreAutoLogoutType, CoreAutoLogout } from '@features/autologout/services/autologout';
 import { CoreCacheManager } from '@services/cache-manager';
+import { CoreSiteInfo, CoreSiteInfoResponse, CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-site';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 export const CORE_SITE_CURRENT_SITE_ID_CONFIG = 'current_site_id';
@@ -273,7 +271,7 @@ export class CoreSitesProvider {
         siteUrl = siteUrl.replace(/^https?:\/\//i, protocol);
 
         // Create a temporary site to fetch site info.
-        let temporarySite = CoreSitesFactory.makeSite(undefined, siteUrl);
+        const temporarySite = CoreSitesFactory.makeUnauthenticatedSite(siteUrl);
         let config: CoreSitePublicConfigResponse | undefined;
 
         try {
@@ -285,7 +283,7 @@ export class CoreSitesProvider {
             }
 
             // Try to add or remove 'www'.
-            temporarySite = CoreSitesFactory.makeSite(undefined, CoreUrlUtils.addOrRemoveWWW(siteUrl));
+            temporarySite.setURL(CoreUrlUtils.addOrRemoveWWW(temporarySite.getURL()));
 
             try {
                 config = await temporarySite.getPublicConfig();
@@ -1243,12 +1241,12 @@ export class CoreSitesProvider {
      * @param ids IDs of sites to return, undefined to return them all.
      * @returns Sites basic info.
      */
-    protected siteDBRecordsToBasicInfo(sites: SiteDBEntry[], ids?: string[]): CoreSiteBasicInfo[] {
+    protected async siteDBRecordsToBasicInfo(sites: SiteDBEntry[], ids?: string[]): Promise<CoreSiteBasicInfo[]> {
         const formattedSites: CoreSiteBasicInfo[] = [];
 
-        sites.forEach((site) => {
+        await Promise.all(sites.map(async (site) => {
             if (!ids || ids.indexOf(site.id) > -1) {
-                const isDemoModeSite = CoreLoginHelper.isDemoModeSite(site.siteUrl);
+                const siteName = await CoreSitesFactory.makeUnauthenticatedSite(site.siteUrl).getSiteName();
                 const siteInfo = site.info ? <CoreSiteInfo> CoreTextUtils.parseJSON(site.info) : undefined;
 
                 const basicInfo: CoreSiteBasicInfo = {
@@ -1259,14 +1257,15 @@ export class CoreSitesProvider {
                     fullname: siteInfo?.fullname,
                     firstname: siteInfo?.firstname,
                     lastname: siteInfo?.lastname,
-                    siteName: isDemoModeSite ? CoreConstants.CONFIG.appname : siteInfo?.sitename,
+                    siteName,
                     userpictureurl: siteInfo?.userpictureurl,
                     siteHomeId: siteInfo?.siteid || 1,
                     loggedOut: !!site.loggedOut,
+                    info: siteInfo,
                 };
                 formattedSites.push(basicInfo);
             }
-        });
+        }));
 
         return formattedSites;
     }
@@ -1666,7 +1665,7 @@ export class CoreSitesProvider {
      * @returns Promise resolved with the public config.
      */
     getSitePublicConfig(siteUrl: string): Promise<CoreSitePublicConfigResponse> {
-        const temporarySite = CoreSitesFactory.makeSite(undefined, siteUrl);
+        const temporarySite = CoreSitesFactory.makeUnauthenticatedSite(siteUrl);
 
         return temporarySite.getPublicConfig();
     }
@@ -2071,30 +2070,6 @@ export class CoreSitesProvider {
         );
     }
 
-    /**
-     * Check whether informative links should be displayed for a certain site, or current site.
-     *
-     * @param siteOrUrl Site instance or site URL. If not defined, current site.
-     * @returns Whether informative links should be displayed.
-     */
-    shouldDisplayInformativeLinks(siteOrUrl?: CoreSite | string): boolean {
-        if (CoreConstants.CONFIG.hideInformativeLinks) {
-            return false;
-        }
-
-        // Don't display informative links for demo sites either.
-        siteOrUrl = siteOrUrl ?? this.getCurrentSite();
-        if (!siteOrUrl) {
-            return true;
-        }
-
-        if (typeof siteOrUrl === 'string') {
-            return !CoreLoginHelper.isDemoModeSite(siteOrUrl);
-        } else {
-            return !siteOrUrl.isDemoModeSite();
-        }
-    }
-
 }
 
 export const CoreSites = makeSingleton(CoreSitesProvider);
@@ -2160,6 +2135,7 @@ export type CoreSiteBasicInfo = {
     badge?: number; // Badge to display in the site.
     siteHomeId?: number; // Site home ID.
     loggedOut: boolean; // If Site is logged out.
+    info?: CoreSiteInfo; // Site info.
 };
 
 /**

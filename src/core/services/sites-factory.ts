@@ -14,7 +14,8 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreSite, CoreSiteConfig, CoreSiteInfo } from '@classes/sites/site';
+import { CoreSite, CoreSiteConfig } from '@classes/sites/site';
+import { CoreUnauthenticatedSite, CoreSiteInfo } from '@classes/sites/unauthenticated-site';
 import { makeSingleton } from '@singletons';
 
 /*
@@ -45,6 +46,16 @@ export class CoreSitesFactoryService {
         loggedOut?: boolean,
     ): CoreSite {
         return new CoreSite(id, siteUrl, token, info, privateToken, config, loggedOut);
+    }
+
+    /**
+     * Create an unauthenticated site instance.
+     *
+     * @param siteUrl Site URL.
+     * @returns Unauthenticated site instance.
+     */
+    makeUnauthenticatedSite(siteUrl: string): CoreUnauthenticatedSite {
+        return new CoreUnauthenticatedSite(siteUrl);
     }
 
 }

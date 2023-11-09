@@ -82,12 +82,12 @@
                     <ion-item class="ion-text-wrap ion-text-center">
                         <ion-label>
                             <!-- If no sitename show big siteurl. -->
-                            <p *ngIf="!siteName && displaySiteUrl" class="ion-padding item-heading">{{siteUrl}}</p>
+                            <p *ngIf="!siteName && displaySiteUrl" class="ion-padding item-heading">{{site.siteUrl}}</p>
                             <!-- If sitename, show big sitename and small siteurl. -->
                             <p *ngIf="siteName" class="ion-padding item-heading">
                                 <core-format-text [text]="siteName" [filter]="false"></core-format-text>
                             </p>
-                            <p *ngIf="siteName && displaySiteUrl">{{siteUrl}}</p>
+                            <p *ngIf="siteName && displaySiteUrl">{{site.siteUrl}}</p>
                         </ion-label>
                     </ion-item>
 
@@ -188,7 +188,7 @@
                                 <h2><span [core-mark-required]="true">{{ 'core.login.security_question' | translate }}</span></h2>
                             </ion-label>
                         </ion-item-divider>
-                        <core-recaptcha [publicKey]="settings.recaptchapublickey" [model]="captcha" [siteUrl]="siteUrl"
+                        <core-recaptcha [publicKey]="settings.recaptchapublickey" [model]="captcha" [siteUrl]="site.siteUrl"
                             [showRequiredError]="formSubmitClicked"></core-recaptcha>
                     </ng-container>
 

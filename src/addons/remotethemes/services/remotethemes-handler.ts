@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreConstants } from '@/core/constants';
-import { CoreSitePublicConfigResponse } from '@classes/sites/site';
+import { CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-site';
 import { CoreFile } from '@services/file';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';

@@ -47,6 +47,7 @@ import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest
 import { CoreLoginError } from '@classes/errors/loginerror';
 import { CorePlatform } from '@services/platform';
 import { CoreReferrer } from '@services/referrer';
+import { CoreSitesFactory } from '@services/sites-factory';
 
 /**
  * Site (url) chooser when adding a new site.
@@ -393,7 +394,6 @@ export class CoreLoginSitePage implements OnInit {
             const pageParams = { siteCheck };
             if (foundSite && !this.fixedSites) {
                 pageParams['siteName'] = foundSite.name;
-                pageParams['logoUrl'] = foundSite.imageurl;
             }
 
             CoreNavigator.navigate('/login/credentials', {
@@ -635,12 +635,8 @@ export class CoreLoginSitePage implements OnInit {
      * @param siteUrl Site URL.
      * @returns Whether to display URL.
      */
-    displaySiteUrl(siteUrl?: string): boolean {
-        if (!siteUrl) {
-            return false;
-        }
-
-        return CoreSites.shouldDisplayInformativeLinks(siteUrl);
+    displaySiteUrl(siteUrl: string): boolean {
+        return CoreSitesFactory.makeUnauthenticatedSite(siteUrl).shouldDisplayInformativeLinks();
     }
 
 }
