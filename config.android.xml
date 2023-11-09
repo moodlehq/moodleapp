@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 
-<widget android-versionCode="42000" id="ca.umontreal.studiumprod" ios-CFBundleVersion="4.2.0.0" version="4.2.0" versionCode="42000" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="42001" id="ca.umontreal.studiumprod" ios-CFBundleVersion="4.2.0.0" version="4.2.0" versionCode="42001" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>StudiUM mobile</name>
     <description>StudiUM mobile se connecte aux plateformes d'apprentissage en ligne StudiUM et StudiUM FC de l'Université de Montréal.</description>
     <author email="studium-soutien@umontreal.ca" href="https://studium.umontreal.ca">Université de Montréal – Montréal</author>
