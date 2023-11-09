@@ -48,7 +48,7 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
         super(elementRef);
 
         this.recording = null;
-        this.media$ = new BehaviorSubject(null);
+        this.media$ = new BehaviorSubject<AudioRecorderMedia | null>(null);
         this.recording$ = this.media$.pipe(
             recorderAudioRecording(),
             shareReplay(),

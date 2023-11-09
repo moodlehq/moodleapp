@@ -348,8 +348,8 @@ export class CoreDatabaseTable<
 
         records.sort((a, b) => {
             for (const [column, direction] of columnsSorting) {
-                const aValue = a[column];
-                const bValue = b[column];
+                const aValue = a[column] ?? 0;
+                const bValue = b[column] ?? 0;
 
                 if (aValue > bValue) {
                     return direction === 'desc' ? -1 : 1;

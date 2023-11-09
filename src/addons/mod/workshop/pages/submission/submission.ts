@@ -513,7 +513,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
             published: boolean;
         } = this.feedbackForm.value;
 
-        inputData.grade = inputData.grade >= 0 ? inputData.grade : '';
+        inputData.grade = Number(inputData.grade) >= 0 ? inputData.grade : '';
         // Add some HTML to the message if needed.
         inputData.text = CoreTextUtils.formatHtmlLines(inputData.text);
 

@@ -35,7 +35,7 @@ export class CoreReportBuilderListPage implements AfterViewInit, OnDestroy {
 
     reports!: CoreListItemsManager<CoreReportBuilderReport, CoreReportBuilderReportsSource>;
 
-    state$: Readonly<BehaviorSubject<CoreReportBuilderListState>> = new BehaviorSubject({
+    state$: Readonly<BehaviorSubject<CoreReportBuilderListState>> = new BehaviorSubject<CoreReportBuilderListState>({
         page: 1,
         perpage: REPORTS_LIST_LIMIT,
         loaded: false,

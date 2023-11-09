@@ -17,6 +17,7 @@ import { CoreSites } from '@services/sites';
 import { CoreTimeUtils } from '@services/utils/time';
 import { makeSingleton } from '@singletons';
 import { COMMENTS_TABLE, COMMENTS_DELETED_TABLE, CoreCommentsDBRecord, CoreCommentsDeletedDBRecord } from './database/comments';
+import { CoreArray } from '@singletons/array';
 
 /**
  * Service to handle offline comments.
@@ -33,11 +34,11 @@ export class CoreCommentsOfflineProvider {
     async getAllComments(siteId?: string): Promise<(CoreCommentsDBRecord | CoreCommentsDeletedDBRecord)[]> {
         const site = await CoreSites.getSite(siteId);
         const results = await Promise.all([
-            site.getDb().getRecords(COMMENTS_TABLE),
-            site.getDb().getRecords(COMMENTS_DELETED_TABLE),
+            site.getDb().getRecords<CoreCommentsDBRecord>(COMMENTS_TABLE),
+            site.getDb().getRecords<CoreCommentsDeletedDBRecord>(COMMENTS_DELETED_TABLE),
         ]);
 
-        return [].concat.apply([], results);
+        return CoreArray.flatten<CoreCommentsDBRecord | CoreCommentsDeletedDBRecord>(results);
     }
 
     /**

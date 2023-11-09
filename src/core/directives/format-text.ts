@@ -464,11 +464,13 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         const audios = Array.from(div.querySelectorAll('audio'));
         const videos = Array.from(div.querySelectorAll('video'));
         const iframes = Array.from(div.querySelectorAll('iframe'));
-        const buttons = Array.from(div.querySelectorAll('.button'));
+        const buttons = Array.from(div.querySelectorAll<HTMLElement>('.button'));
         const icons = Array.from(div.querySelectorAll('i.fa,i.fas,i.far,i.fab'));
-        const elementsWithInlineStyles = Array.from(div.querySelectorAll('*[style]'));
-        const stopClicksElements = Array.from(div.querySelectorAll('button,input,select,textarea'));
-        const frames = Array.from(div.querySelectorAll(CoreIframeUtilsProvider.FRAME_TAGS.join(',').replace(/iframe,?/, '')));
+        const elementsWithInlineStyles = Array.from(div.querySelectorAll<HTMLElement>('*[style]'));
+        const stopClicksElements = Array.from(div.querySelectorAll<HTMLElement>('button,input,select,textarea'));
+        const frames = Array.from(
+            div.querySelectorAll<FrameElement>(CoreIframeUtilsProvider.FRAME_TAGS.join(',').replace(/iframe,?/, '')),
+        );
         const svgImages = Array.from(div.querySelectorAll('image'));
         const promises: Promise<void>[] = [];
 
@@ -560,7 +562,7 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         });
 
         // Handle all kind of frames.
-        const frameControllers = frames.map((frame: FrameElement) => {
+        const frameControllers = frames.map<FrameElementController>((frame) => {
             CoreIframeUtils.treatFrame(frame, false);
 
             return new FrameElementController(frame, !this.disabled);
