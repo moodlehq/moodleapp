@@ -29,8 +29,14 @@
                 <ion-label position="stacked">
                     <p class="item-heading" [core-mark-required]="true">{{ 'core.date' | translate }}</p>
                 </ion-label>
-                <ion-datetime formControlName="timestart" [placeholder]="'core.date' | translate" [displayFormat]="dateFormat"
-                    [max]="maxDate" [min]="minDate" [displayTimezone]="displayTimezone" />
+                <ion-datetime-button datetime="timestart" />
+                <ion-modal [keepContentsMounted]="true">
+                    <ng-template>
+                        <ion-datetime id="timestart" formControlName="timestart" presentation="date-time" [max]="maxDate" [min]="minDate">
+                            <span slot="title">{{'core.date' | translate}}</span>
+                        </ion-datetime>
+                    </ng-template>
+                </ion-modal>
                 <core-input-errors [control]="form.controls.timestart" [errorMessages]="errors" />
             </ion-item>
 
@@ -154,9 +160,15 @@
                     </ion-item>
                     <ion-item *ngIf="form.controls.duration.value === 1">
                         <ion-label position="stacked" />
-                        <ion-datetime formControlName="timedurationuntil" [max]="maxDate" [min]="minDate"
-                            [placeholder]="'addon.calendar.durationuntil' | translate" [displayFormat]="dateFormat"
-                            [displayTimezone]="displayTimezone" />
+                        <ion-datetime-button datetime="timedurationuntil" />
+                        <ion-modal [keepContentsMounted]="true">
+                            <ng-template>
+                                <ion-datetime id="timedurationuntil" formControlName="timedurationuntil" [max]="maxDate" [min]="minDate"
+                                    presentation="date-time">
+                                    <span slot="title">{{'addon.calendar.durationuntil' | translate}}</span>
+                                </ion-datetime>
+                            </ng-template>
+                        </ion-modal>
                     </ion-item>
                     <ion-item>
                         <ion-label>

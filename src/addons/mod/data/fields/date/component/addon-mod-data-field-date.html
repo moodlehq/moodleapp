@@ -1,12 +1,18 @@
-<span *ngIf="inputMode && form" [formGroup]="form">
+<span *ngIf="inputMode && form && searchFields" [formGroup]="form">
     <span *ngIf="editMode" [core-mark-required]="field.required" class="core-mark-required"></span>
-    <ion-datetime [formControlName]="'f_'+field.id" [placeholder]="'core.date' | translate" [max]="maxDate" [min]="minDate"
-        [disabled]="searchMode && !searchFields!['f_'+field.id+'_z']" [displayFormat]="format" [displayTimezone]="displayTimezone" />
+
+    <ion-datetime-button datetime="datetime" />
+    <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+            <ion-datetime id="datetime" [formControlName]="'f_'+field.id" [max]="maxDate" [min]="minDate"
+                [disabled]="searchMode && !searchFields['f_'+field.id+'_z']" presentation="date" />
+        </ng-template>
+    </ion-modal>
     <core-input-errors *ngIf="error && editMode" [control]="form.controls['f_'+field.id]" [errorText]="error" />
 
     <ion-item *ngIf="searchMode">
         <ion-label>{{ 'addon.mod_data.usedate' | translate }}</ion-label>
-        <ion-checkbox slot="end" [formControlName]="'f_'+field.id+'_z'" [(ngModel)]="searchFields!['f_'+field.id+'_z']" />
+        <ion-checkbox slot="end" [formControlName]="'f_'+field.id+'_z'" [(ngModel)]="searchFields['f_'+field.id+'_z']" />
     </ion-item>
 </span>
 

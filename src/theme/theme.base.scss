@@ -518,7 +518,7 @@ ion-alert .alert-button.timed-button{
 }
 
 ion-alert {
-    --border-radius: var(--radius-xl);
+    --border-radius: var(--modal-radius);
 
     &.md, &.ios {
         --max-width: 80%;
@@ -545,7 +545,7 @@ ion-alert {
 }
 
 ion-loading {
-    --border-radius: var(--radius-xl);
+    --border-radius: var(--modal-radius);
 
     .loading-wrapper {
         border-radius: var(--border-radius) !important;
@@ -1917,6 +1917,9 @@ ion-modal {
             --border-radius: var(--modal-radius);
         }
     }
+    &.ion-datetime-button-overlay {
+        --border-radius: var(--modal-radius);
+    }
 
     &.core-modal-lateral,
     &.core-modal-fullscreen {
@@ -1973,4 +1976,11 @@ ion-popover {
  */
 [hidden] {
     display: none !important;
+}
+
+// Ion Datetime
+ion-item.item-label-stacked ion-datetime-button {
+    margin-top: 8px;
+    margin-bottom: 8px;
+    align-self: self-end;
 }

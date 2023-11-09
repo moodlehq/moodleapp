@@ -18,7 +18,12 @@
                 [courseId]="courseId" [wsNotFiltered]="true" />
         </span>
     </ion-label>
-    <ion-datetime [formControlName]="modelName" [placeholder]="'core.choosedots' | translate" [displayFormat]="format" [max]="max"
-        [min]="min" [monthNames]="monthNames" [displayTimezone]="displayTimezone" />
+
+    <ion-datetime-button datetime="datetime" />
+    <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+            <ion-datetime id="datetime" [formControlName]="modelName" [presentation]="ionDateTimePresentation" [max]="max" [min]="min" />
+        </ng-template>
+    </ion-modal>
     <core-input-errors [control]="form.controls[modelName]" />
 </ion-item>

@@ -1,7 +1,8 @@
 :host {
-    width: 100%;
-
+    display: contents;
     .core-input-error-container {
+        width: 100%;
+
         .core-input-error {
             padding: 4px;
             color: var(--danger);
