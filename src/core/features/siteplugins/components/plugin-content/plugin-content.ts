@@ -12,7 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Input, Output, EventEmitter, DoCheck, KeyValueDiffers, ViewChild, KeyValueDiffer } from '@angular/core';
+import {
+    Component,
+    OnInit,
+    Input,
+    Output,
+    EventEmitter,
+    DoCheck,
+    KeyValueDiffers,
+    ViewChild,
+    KeyValueDiffer,
+    HostBinding,
+} from '@angular/core';
 import { Subject } from 'rxjs';
 import { Md5 } from 'ts-md5';
 
@@ -37,7 +48,7 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
     // Get the compile element. Don't set the right type to prevent circular dependencies.
     @ViewChild('compile') compileComponent?: CoreCompileHtmlComponent;
 
-    @Input() component!: string;
+    @HostBinding('class') @Input() component!: string;
     @Input() method!: string;
     @Input() args?: Record<string, unknown>;
     @Input() initResult?: CoreSitePluginsContent | null; // Result of the init WS call of the handler.

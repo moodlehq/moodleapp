@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnChanges, Input, ViewChild, Output, EventEmitter } from '@angular/core';
+import { Component, OnChanges, Input, ViewChild, Output, EventEmitter, HostBinding } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 
 import { CoreCourseFormatComponent } from '@features/course/components/course-format/course-format';
@@ -51,7 +51,7 @@ export class CoreSitePluginsCourseFormatComponent implements OnChanges {
 
     @ViewChild(CoreSitePluginsPluginContentComponent) content?: CoreSitePluginsPluginContentComponent;
 
-    component?: string;
+    @HostBinding('class') component?: string;
     method?: string;
     args?: Record<string, unknown>;
     initResult?: CoreSitePluginsContent | null;
