@@ -301,7 +301,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
         this.data = [];
         this.labels = [];
 
-        this.results = results.map((result: AddonModChoiceResultFormatted) => {
+        this.results = results.map<AddonModChoiceResultFormatted>((result) => {
             if (result.numberofuser > 0) {
                 hasVotes = true;
             }

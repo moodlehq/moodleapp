@@ -994,7 +994,7 @@ export class CoreTextUtilsProvider {
      * @returns Number with leading zeros.
      */
     twoDigits(num: string | number): string {
-        if (num < 10) {
+        if (Number(num) < 10) {
             return '0' + num;
         } else {
             return '' + num; // Convert to string for coherence.

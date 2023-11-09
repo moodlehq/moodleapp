@@ -194,9 +194,9 @@ export class AddonModFeedbackProvider {
             }
 
             // Treat multichoice checkboxes.
-            if (item.typ == 'multichoice' && item.presentation.split(AddonModFeedbackProvider.MULTICHOICE_TYPE_SEP)[0] == 'c') {
+            if (item.typ === 'multichoice' && item.presentation.split(AddonModFeedbackProvider.MULTICHOICE_TYPE_SEP)[0] === 'c') {
 
-                offlineValues[item.id] = offlineValues[item.id].filter((value) => value > 0);
+                offlineValues[item.id] = offlineValues[item.id].filter((value) => Number(value) > 0);
                 item.rawValue = offlineValues[item.id].join(AddonModFeedbackProvider.LINE_SEP);
             } else {
                 item.rawValue = offlineValues[item.id][0];

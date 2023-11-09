@@ -98,7 +98,7 @@ export class AddonEnrolGuestHandlerService implements CoreEnrolGuestHandler {
             return false;
         }
 
-        const validatePassword = async (password: string): Promise<CorePasswordModalResponse> => {
+        const validatePassword = async (password = ''): Promise<CorePasswordModalResponse> => {
             const modal = await CoreDomUtils.showModalLoading('core.loading', true);
 
             try {

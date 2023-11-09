@@ -51,15 +51,16 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
         return this.layout === 'card' || (CoreScreen.isMobile && this.layout === 'adaptative');
     }
 
-    state$: Readonly<BehaviorSubject<CoreReportBuilderReportDetailState>> = new BehaviorSubject({
-        report: null,
-        loaded: false,
-        canLoadMoreRows: true,
-        errorLoadingRows: false,
-        cardviewShowFirstTitle: false,
-        cardVisibleColumns: 1,
-        page: 0,
-    });
+    state$: Readonly<BehaviorSubject<CoreReportBuilderReportDetailState>> =
+        new BehaviorSubject<CoreReportBuilderReportDetailState>({
+            report: null,
+            loaded: false,
+            canLoadMoreRows: true,
+            errorLoadingRows: false,
+            cardviewShowFirstTitle: false,
+            cardVisibleColumns: 1,
+            page: 0,
+        });
 
     source$: Observable<string>;
 

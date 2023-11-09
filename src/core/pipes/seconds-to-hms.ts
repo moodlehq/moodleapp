@@ -41,9 +41,7 @@ export class CoreSecondsToHMSPipe implements PipeTransform {
      * @returns Formatted seconds.
      */
     transform(seconds: string | number, showHours: boolean = true): string {
-        if (!seconds || seconds < 0) {
-            seconds = 0;
-        } else if (typeof seconds == 'string') {
+        if (typeof seconds === 'string') {
             // Convert the value to a number.
             const numberSeconds = parseInt(seconds, 10);
             if (isNaN(numberSeconds)) {
@@ -52,6 +50,8 @@ export class CoreSecondsToHMSPipe implements PipeTransform {
                 return seconds;
             }
             seconds = numberSeconds;
+        } else if (!seconds || seconds < 0) {
+            seconds = 0;
         }
 
         // Don't allow decimals.

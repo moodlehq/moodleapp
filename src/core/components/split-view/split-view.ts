@@ -40,7 +40,7 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
     isNested = false;
     disabledScrollOuterContents: HTMLIonContentElement[] = [];
 
-    private outletRouteSubject: BehaviorSubject<ActivatedRouteSnapshot | null> = new BehaviorSubject(null);
+    private outletRouteSubject = new BehaviorSubject<ActivatedRouteSnapshot | null>(null);
     private subscriptions?: Subscription[];
 
     constructor(private element: ElementRef<HTMLElement>) {}

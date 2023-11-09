@@ -44,7 +44,7 @@ export class AddonBlockTimelineSection {
         this.overdue = overdue;
         this.dateRange = dateRange;
         this.course = course;
-        this.dataSubject$ = new BehaviorSubject({
+        this.dataSubject$ = new BehaviorSubject<AddonBlockTimelineSectionData>({
             events: [],
             lastEventId: canLoadMore,
             canLoadMore: typeof canLoadMore !== 'undefined',
