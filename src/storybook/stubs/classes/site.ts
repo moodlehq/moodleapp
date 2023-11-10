@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSite, CoreSiteConfigResponse, CoreSiteWSPreSets, WSObservable } from '@classes/sites/site';
+import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/candidate-site';
+import { CoreSite, CoreSiteConfigResponse } from '@classes/sites/site';
 import { CoreSiteInfo } from '@classes/sites/unauthenticated-site';
 import { of } from 'rxjs';
 
@@ -26,7 +27,7 @@ export class CoreSiteStub extends CoreSite {
     protected wsStubs: Record<string, unknown> = {};
 
     constructor (fixture: CoreSiteFixture) {
-        super(fixture.id, fixture.info.siteurl, undefined, fixture.info);
+        super(fixture.id, fixture.info.siteurl, '', fixture.info);
 
         this.stubWSResponse<CoreSiteConfigResponse>('tool_mobile_get_config', {
             settings: [],

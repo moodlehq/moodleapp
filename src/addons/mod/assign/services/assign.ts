@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/sites/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreInterceptor } from '@classes/interceptor';
 import { CoreWSExternalWarning, CoreWSExternalFile, CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
@@ -35,6 +35,7 @@ import { AddonModAssignAutoSyncData, AddonModAssignManualSyncData, AddonModAssig
 import { CoreFormFields } from '@singletons/form';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreIonicColorNames } from '@singletons/colors';
+import { CoreSiteWSPreSets } from '@classes/sites/candidate-site';
 
 const ROOT_CACHE_KEY = 'mmaModAssign:';
 

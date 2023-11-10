@@ -29,7 +29,7 @@ import moment from 'moment-timezone';
 import { of } from 'rxjs';
 import { firstValueFrom, zipIncludingComplete } from '@/core/utils/rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { chainRequests, WSObservable } from '@classes/sites/site';
+import { chainRequests, WSObservable } from '@classes/sites/candidate-site';
 
 // Id for a course item representing all courses (for example, for course filters).
 export const ALL_COURSES_ID = -1;

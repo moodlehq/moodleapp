@@ -14,7 +14,8 @@
 
 import { Injectable } from '@angular/core';
 import { CoreWSError } from '@classes/errors/wserror';
-import { CoreSiteWSPreSets, CoreSite } from '@classes/sites/site';
+import { CoreSiteWSPreSets } from '@classes/sites/candidate-site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreCoursesProvider } from '@features/courses/services/courses';
 import { CoreSites } from '@services/sites';
 import { CoreStatusWithWarningsWSResponse } from '@services/ws';

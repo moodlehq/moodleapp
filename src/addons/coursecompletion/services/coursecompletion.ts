@@ -17,12 +17,13 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreCourses } from '@features/courses/services/courses';
-import { CoreSite, CoreSiteWSPreSets, WSObservable } from '@classes/sites/site';
+import { CoreSite  } from '@classes/sites/site';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { asyncObservable, firstValueFrom } from '@/core/utils/rxjs';
 import { map } from 'rxjs/operators';
+import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/candidate-site';
 
 const ROOT_CACHE_KEY = 'mmaCourseCompletion:';
 

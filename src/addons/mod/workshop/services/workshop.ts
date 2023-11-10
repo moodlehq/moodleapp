@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/sites/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreGradesMenuItem } from '@features/grades/services/grades-helper';
@@ -28,6 +28,7 @@ import { CoreFormFields } from '@singletons/form';
 import { AddonModWorkshopOffline } from './workshop-offline';
 import { AddonModWorkshopAutoSyncData, AddonModWorkshopSyncProvider } from './workshop-sync';
 import { ADDON_MOD_WORKSHOP_COMPONENT } from '@addons/mod/workshop/constants';
+import { CoreSiteWSPreSets } from '@classes/sites/candidate-site';
 
 const ROOT_CACHE_KEY = 'mmaModWorkshop:';
 

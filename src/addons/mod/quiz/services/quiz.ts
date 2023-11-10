@@ -17,7 +17,7 @@ import { Injectable } from '@angular/core';
 
 import { CoreError } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/sites/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreGradesFormattedItem, CoreGradesHelper } from '@features/grades/services/grades-helper';
@@ -40,6 +40,7 @@ import { AddonModQuizAccessRuleDelegate } from './access-rules-delegate';
 import { AddonModQuizAttempt } from './quiz-helper';
 import { AddonModQuizOffline, AddonModQuizQuestionsWithAnswers } from './quiz-offline';
 import { AddonModQuizAutoSyncData, AddonModQuizSyncProvider } from './quiz-sync';
+import { CoreSiteWSPreSets } from '@classes/sites/candidate-site';
 
 const ROOT_CACHE_KEY = 'mmaModQuiz:';
 

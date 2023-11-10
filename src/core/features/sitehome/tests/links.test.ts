@@ -30,7 +30,7 @@ describe('Site Home link handlers', () => {
 
         mockSingleton(CoreSites, mock({
             isStoredRootURL: () => Promise.resolve({ siteIds: [siteId] }),
-            getSite: () => Promise.resolve(new CoreSite(siteId, siteUrl)),
+            getSite: () => Promise.resolve(new CoreSite(siteId, siteUrl, '')),
             getSiteIdsFromUrl: () => Promise.resolve([siteId]),
         }));
 

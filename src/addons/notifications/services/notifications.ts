@@ -19,11 +19,12 @@ import { CoreWSExternalWarning } from '@services/ws';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUser, USER_NOREPLY_USER } from '@features/user/services/user';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/sites/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreLogger } from '@singletons/logger';
 import { Translate, makeSingleton } from '@singletons';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { AddonNotificationsPushNotification } from './handlers/push-click';
+import { CoreSiteWSPreSets } from '@classes/sites/candidate-site';
 
 declare module '@singletons/events' {
 

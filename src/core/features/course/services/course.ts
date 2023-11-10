@@ -21,7 +21,7 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreSiteWSPreSets, CoreSite, WSObservable } from '@classes/sites/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreConstants } from '@/core/constants';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
@@ -55,6 +55,7 @@ import { SQLiteDB } from '@classes/sqlitedb';
 import { CorePlatform } from '@services/platform';
 import { asyncObservable, firstValueFrom } from '@/core/utils/rxjs';
 import { map } from 'rxjs/operators';
+import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/candidate-site';
 
 const ROOT_CACHE_KEY = 'mmCourse:';
 

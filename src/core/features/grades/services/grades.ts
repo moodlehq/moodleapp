@@ -18,7 +18,7 @@ import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreWSExternalWarning } from '@services/ws';
-import { CoreSiteWSPreSets } from '@classes/sites/site';
+import { CoreSiteWSPreSets } from '@classes/sites/candidate-site';
 import { CoreError } from '@classes/errors/error';
 import { SafeNumber } from '@/core/utils/types';
 

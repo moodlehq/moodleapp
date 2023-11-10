@@ -26,13 +26,14 @@ import {
 import { CoreUtils } from '@services/utils/utils';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreEvents } from '@singletons/events';
-import { CoreSite, CoreSiteWSPreSets } from '@classes/sites/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { AddonMessagesSyncEvents, AddonMessagesSyncProvider } from './messages-sync';
 import { CoreWSError } from '@classes/errors/wserror';
 import { AddonNotificationsPreferencesNotificationProcessorState } from '@addons/notifications/services/notifications';
+import { CoreSiteWSPreSets } from '@classes/sites/candidate-site';
 
 const ROOT_CACHE_KEY = 'mmaMessages:';
 

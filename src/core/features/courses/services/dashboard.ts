@@ -14,13 +14,14 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreSite, CoreSiteWSPreSets, WSObservable } from '@classes/sites/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreCourseBlock } from '@features/course/services/course';
 import { CoreStatusWithWarningsWSResponse } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { map } from 'rxjs/operators';
 import { asyncObservable, firstValueFrom } from '@/core/utils/rxjs';
+import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/candidate-site';
 
 const ROOT_CACHE_KEY = 'CoreCoursesDashboard:';
 

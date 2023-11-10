@@ -14,7 +14,7 @@
 
 import { ContextLevel } from '@/core/constants';
 import { Injectable } from '@angular/core';
-import { CoreSiteWSPreSets, CoreSite } from '@classes/sites/site';
+import { CoreSite } from '@classes/sites/site';
 import { CoreUser } from '@features/user/services/user';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
@@ -23,6 +23,7 @@ import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreRatingOffline } from './rating-offline';
+import { CoreSiteWSPreSets } from '@classes/sites/candidate-site';
 
 const ROOT_CACHE_KEY = 'CoreRating:';
 

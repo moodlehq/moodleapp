@@ -20,7 +20,7 @@ import { AddonModAssignSubmissionDelegate } from '@addons/mod/assign/services/su
 import { AddonModQuizAccessRuleDelegate } from '@addons/mod/quiz/services/access-rules-delegate';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CoreError } from '@classes/errors/error';
-import { CoreSiteWSPreSets } from '@classes/sites/site';
+import { CoreSiteWSPreSets } from '@classes/sites/candidate-site';
 import { CoreBlockDelegate } from '@features/block/services/block-delegate';
 import { CoreCompile } from '@features/compile/services/compile';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreCandidateSite } from '@classes/sites/candidate-site';
 
 import { CoreSite, CoreSiteConfig } from '@classes/sites/site';
 import { CoreUnauthenticatedSite, CoreSiteInfo } from '@classes/sites/unauthenticated-site';
@@ -37,15 +38,27 @@ export class CoreSitesFactoryService {
      * @returns Site instance.
      */
     makeSite(
-        id: string | undefined,
+        id: string,
         siteUrl: string,
-        token?: string,
+        token: string,
         info?: CoreSiteInfo,
         privateToken?: string,
         config?: CoreSiteConfig,
         loggedOut?: boolean,
     ): CoreSite {
         return new CoreSite(id, siteUrl, token, info, privateToken, config, loggedOut);
+    }
+
+    /**
+     * Create a candidate site instance.
+     *
+     * @param siteUrl Site URL.
+     * @param token Site's WS token.
+     * @param privateToken Private token.
+     * @returns Candidate site instance.
+     */
+    makeCandidateSite(siteUrl: string, token: string, privateToken?: string): CoreCandidateSite {
+        return new CoreCandidateSite(siteUrl, token, privateToken);
     }
 
     /**
