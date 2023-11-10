@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot, NavigationEnd, Params } from '@angular/router';
 
-import { NavigationOptions } from '@ionic/angular/providers/nav-controller';
+import { NavigationOptions } from '@ionic/angular/common/providers/nav-controller';
 
 import { CoreConstants } from '@/core/constants';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -437,8 +437,8 @@ export class CoreNavigatorService {
      *
      * @returns Promise resolved when done.
      */
-    back(): Promise<void> {
-        return NavController.pop();
+    async back(): Promise<void> {
+        await NavController.pop();
     }
 
     /**

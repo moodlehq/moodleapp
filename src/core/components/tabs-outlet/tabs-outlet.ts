@@ -28,7 +28,7 @@ import { Subscription } from 'rxjs';
 import { CoreUtils } from '@services/utils/utils';
 import { Params } from '@angular/router';
 import { CoreNavBarButtonsComponent } from '../navbar-buttons/navbar-buttons';
-import { StackEvent } from '@ionic/angular/directives/navigation/stack-utils';
+import { StackDidChangeEvent } from '@ionic/angular/common/directives/navigation/stack-utils';
 import { CoreNavigator } from '@services/navigator';
 import { CoreTabBase, CoreTabsBaseComponent } from '@classes/tabs';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
@@ -90,7 +90,7 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
             return;
         }
 
-        this.stackEventsSubscription = this.ionTabs.outlet.stackEvents.subscribe(async (stackEvent: StackEvent) => {
+        this.stackEventsSubscription = this.ionTabs.outlet.stackDidChange.subscribe(async (stackEvent: StackDidChangeEvent) => {
             if (!this.isCurrentView) {
                 return;
             }
