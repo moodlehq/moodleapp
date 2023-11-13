@@ -30,7 +30,7 @@
             </ion-item>
             <ion-item button class="core-usermenu-handler ion-text-wrap" *ngIf="siteInfo" lines="full" (click)="openUserProfile($event)"
                 [detail]="true" [attr.aria-label]="'core.user.profile' | translate">
-                <core-user-avatar [user]="siteInfo" [userId]="siteInfo.userid" [linkProfile]="false" slot="start"></core-user-avatar>
+                <core-user-avatar [site]="siteInfo" [userId]="siteInfo.userid" [linkProfile]="false" slot="start"></core-user-avatar>
                 <ion-label>
                     <p class="item-heading">{{ siteInfo.fullname }}</p>
                 </ion-label>

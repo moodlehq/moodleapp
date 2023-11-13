@@ -45,7 +45,7 @@
 
                 <div class="core-login-user">
                     <!-- Show user avatar. -->
-                    <core-user-avatar class="large-avatar" *ngIf="showUserAvatar" [user]="siteInfo" [linkProfile]="false"
+                    <core-user-avatar class="large-avatar" *ngIf="showUserAvatar" [site]="siteInfo" [linkProfile]="false"
                         [siteId]="siteId"></core-user-avatar>
                     <p *ngIf="siteInfo?.fullname" class="core-login-fullname">
                         <core-format-text [text]="siteInfo?.fullname" [filter]="false"></core-format-text>

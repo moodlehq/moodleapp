@@ -94,7 +94,7 @@
 
 <!-- Template to render a site to sync. -->
 <ng-template #siteSync let-site="site">
-    <core-user-avatar [user]="site" slot="start" [linkProfile]="false" [siteId]="site.id"></core-user-avatar>
+    <core-user-avatar [site]="site" slot="start" [linkProfile]="false" [siteId]="site.id"></core-user-avatar>
 
     <ion-label>
         <p class="item-heading">{{site.fullname}}</p>

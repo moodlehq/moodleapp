@@ -35,7 +35,7 @@
                 </ion-item-divider>
 
                 <ion-item [detail]="false">
-                    <core-user-avatar [user]="accountsList.currentSite" slot="start" [linkProfile]="false"
+                    <core-user-avatar [site]="accountsList.currentSite" slot="start" [linkProfile]="false"
                         [siteId]="accountsList.currentSite.id"></core-user-avatar>
 
                     <ion-label>
@@ -73,7 +73,7 @@
 <!-- Template to render a list of sites. -->
 <ng-template #siteList let-sites="sites">
     <ion-item button *ngFor="let site of sites" (click)="login($event, site.id)" [detail]="true">
-        <core-user-avatar [user]="site" slot="start" [linkProfile]="false" [siteId]="site.id"></core-user-avatar>
+        <core-user-avatar [site]="site" slot="start" [linkProfile]="false" [siteId]="site.id"></core-user-avatar>
 
         <ion-label>
             <p class="item-heading">{{site.fullname}}</p>

@@ -69,7 +69,7 @@
 
 <!-- Template to render a site space usage. -->
 <ng-template #siteUsage let-site="site">
-    <core-user-avatar [user]="site" slot="start" [linkProfile]="false" [siteId]="site.id"></core-user-avatar>
+    <core-user-avatar [site]="site" slot="start" [linkProfile]="false" [siteId]="site.id"></core-user-avatar>
 
     <ion-label class="ion-text-wrap">
         <p class="item-heading">{{site.fullname}}</p>
