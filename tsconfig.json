@@ -9,6 +9,8 @@
     "experimentalDecorators": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
+    "forceConsistentCasingInFileNames": true,
+    "useDefineForClassFields": false,
     "module": "esnext",
     "moduleResolution": "node",
     "importHelpers": true,
@@ -32,21 +34,23 @@
         "webpack-env"
     ],
     "paths": {
-      "@addons/*": ["addons/*"],
-      "@classes/*": ["core/classes/*"],
-      "@components/*": ["core/components/*"],
-      "@directives/*": ["core/directives/*"],
-      "@features/*": ["core/features/*"],
-      "@guards/*": ["core/guards/*"],
-      "@pipes/*": ["core/pipes/*"],
-      "@services/*": ["core/services/*"],
-      "@singletons": ["core/singletons/index"],
-      "@singletons/*": ["core/singletons/*"],
-      "@/*": ["*"]
+      "@addons/*": ["./addons/*"],
+      "@classes/*": ["./core/classes/*"],
+      "@components/*": ["./core/components/*"],
+      "@directives/*": ["./core/directives/*"],
+      "@features/*": ["./core/features/*"],
+      "@guards/*": ["./core/guards/*"],
+      "@pipes/*": ["./core/pipes/*"],
+      "@services/*": ["./core/services/*"],
+      "@singletons": ["./core/singletons/index"],
+      "@singletons/*": ["./core/singletons/*"],
+      "@/*": ["./*"]
     }
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
-    "strictInjectionParameters": true
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true
   }
 }
