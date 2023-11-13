@@ -17,7 +17,7 @@
                     <p>{{fileName}}</p>
                 </ion-label>
             </ion-item>
-            <ion-item *ngFor="let site of sites" (click)="storeInSite(site.id)" detail="false" button>
+            <ion-item *ngFor="let site of sites" (click)="storeInSite(site.id)" [detail]="false" button>
                 <core-user-avatar [user]="site" slot="start" [linkProfile]="false" [siteId]="site.id"></core-user-avatar>
 
                 <ion-label>

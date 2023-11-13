@@ -25,7 +25,7 @@
                             <h2>{{ 'addon.mod_feedback.non_anonymous_entries' | translate : {$a: identifiableAttemptsTotal } }}</h2>
                         </ion-label>
                     </ion-item-divider>
-                    <ion-item *ngFor="let attempt of identifiableAttempts" class="ion-text-wrap" button detail="true"
+                    <ion-item *ngFor="let attempt of identifiableAttempts" class="ion-text-wrap" button [detail]="true"
                         (click)="attempts?.select(attempt)" [attr.aria-current]="attempts?.getItemAriaCurrent(attempt)">
                         <core-user-avatar [user]="attempt" [linkProfile]="false" slot="start"></core-user-avatar>
                         <ion-label>
@@ -41,7 +41,7 @@
                             <h2>{{ 'addon.mod_feedback.anonymous_entries' | translate : {$a: anonymousAttemptsTotal } }}</h2>
                         </ion-label>
                     </ion-item-divider>
-                    <ion-item *ngFor="let attempt of anonymousAttempts" class="ion-text-wrap" button detail="true"
+                    <ion-item *ngFor="let attempt of anonymousAttempts" class="ion-text-wrap" button [detail]="true"
                         (click)="attempts?.select(attempt)" [attr.aria-current]="attempts?.getItemAriaCurrent(attempt)">
                         <core-user-avatar [linkProfile]="false" slot="start"></core-user-avatar>
                         <ion-label>

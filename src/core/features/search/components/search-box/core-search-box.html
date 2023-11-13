@@ -15,7 +15,7 @@
     </ion-item>
     <ion-list class="core-search-history" [hidden]="!historyShown">
         <ion-item button class="ion-text-wrap" *ngFor="let item of history" (click)="historyClicked($event, item.searchedtext)" tabindex="0"
-            detail="true">
+            [detail]="true">
             <ion-icon name="fas-clock-rotate-left" slot="start" aria-hidden="true">
             </ion-icon>
             <ion-label>{{item.searchedtext}}</ion-label>

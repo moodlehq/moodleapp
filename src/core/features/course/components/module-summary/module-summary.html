@@ -68,7 +68,7 @@
                 <ng-container *ngFor="let grade of grades">
                     <ion-item button *ngIf="grade.gradeitem" class="ion-text-wrap divider" (click)="toggleGrade(grade)"
                         [attr.aria-label]="(grade.expanded ? 'core.collapse' : 'core.expand') | translate"
-                        [attr.aria-expanded]="grade.expanded" [attr.aria-controls]="'grade-'+grade.id" role="heading" detail="false">
+                        [attr.aria-expanded]="grade.expanded" [attr.aria-controls]="'grade-'+grade.id" role="heading" [detail]="false">
                         <ion-icon name="fas-chevron-right" flip-rtl slot="start" aria-hidden="true" class="expandable-status-icon"
                             [class.expandable-status-icon-expanded]="grade.expanded">
                         </ion-icon>

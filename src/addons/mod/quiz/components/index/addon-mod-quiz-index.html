@@ -74,7 +74,7 @@
             </ion-item>
             <div role="rowgroup">
                 <!-- List of attempts. -->
-                <ion-item button detail="true" *ngFor="let attempt of attempts" class="ion-text-wrap"
+                <ion-item button [detail]="true" *ngFor="let attempt of attempts" class="ion-text-wrap"
                     [ngClass]='{"addon-mod_quiz-highlighted": attempt.highlightGrade}' [attr.aria-label]="'core.seemoredetail' | translate"
                     (click)="viewAttempt(attempt.id)">
                     <ion-label>

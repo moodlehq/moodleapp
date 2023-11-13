@@ -92,7 +92,7 @@
         </ion-item>
         <ng-container *ngFor="let recording of recordings">
             <ion-item button class="addon-mod_bbb-recording-title" [attr.aria-expanded]="recording.expanded" (click)="toggle(recording)"
-                [attr.aria-label]="(recording.expanded ? 'core.collapse' : 'core.expand') | translate" detail="false">
+                [attr.aria-label]="(recording.expanded ? 'core.collapse' : 'core.expand') | translate" [detail]="false">
                 <ion-icon name="fas-chevron-right" flip-rtl slot="start" aria-hidden="true" class="expandable-status-icon"
                     [class.expandable-status-icon-expanded]="recording.expanded">
                 </ion-icon>
@@ -108,7 +108,7 @@
                             <p class="item-heading">{{ recording.playbackLabel }}</p>
                         </ion-label>
                     </ion-item>
-                    <ion-item *ngFor="let playback of recording.playbacks" button (click)="openPlayback($event, playback)" detail="false"
+                    <ion-item *ngFor="let playback of recording.playbacks" button (click)="openPlayback($event, playback)" [detail]="false"
                         class="ion-text-wrap addon-mod_bbb-recording-playback-item">
                         <ion-label>
                             <p>{{ playback.name }}</p>

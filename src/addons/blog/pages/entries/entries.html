@@ -65,7 +65,7 @@
                     <core-file *ngFor="let file of entry.attachmentfiles" [file]="file" [component]="this.component"
                         [componentId]="entry.id">
                     </core-file>
-                    <ion-item *ngIf="entry.uniquehash" [href]="entry.uniquehash" core-link detail="true">
+                    <ion-item *ngIf="entry.uniquehash" [href]="entry.uniquehash" core-link [detail]="true">
                         <ion-label>{{ 'addon.blog.linktooriginalentry' | translate }}</ion-label>
                     </ion-item>
                 </ion-card-content>

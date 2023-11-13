@@ -43,7 +43,7 @@
                 </ion-button>
             </ion-item>
             <ion-item *ngFor="let course of downloadedCourses" class="course" (click)="openCourse(course.id, course.title)" button
-                detail="true">
+                [detail]="true">
                 <ion-label class="ion-text-wrap">
                     <p class="item-heading">
                         <core-format-text [text]="course.title" contextLevel="course" [contextInstanceId]="course.id" [adaptImg]="false">

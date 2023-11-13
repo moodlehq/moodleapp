@@ -21,7 +21,7 @@
                     </p>
                 </ion-label>
             </ion-item-divider>
-            <ion-item class="ion-text-wrap" *ngIf="phase.switchUrl" [href]="phase.switchUrl" detail="false">
+            <ion-item class="ion-text-wrap" *ngIf="phase.switchUrl" [href]="phase.switchUrl" [detail]="false">
                 <ion-icon slot="start" name="fas-right-left" aria-hidden="true"></ion-icon>
                 <ion-label>
                     <p>{{ 'addon.mod_workshop.switchphase' + phase.code | translate }}</p>
@@ -30,7 +30,7 @@
             </ion-item>
             <ion-item class="ion-text-wrap" *ngFor="let task of phase.tasks"
                 [class.item-dimmed]="phase.code !== workshopPhase || (task.code === 'submit' && !showSubmit)" (click)="runTask(task)"
-                detail="false" button>
+                [detail]="false" button>
                 <ion-icon slot="start" name="far-circle" *ngIf="task.completed == null"
                     [attr.aria-label]="'addon.mod_workshop.tasktodo' | translate"></ion-icon>
                 <ion-icon slot="start" name="fas-circle-xmark" color="danger" *ngIf="task.completed === ''"

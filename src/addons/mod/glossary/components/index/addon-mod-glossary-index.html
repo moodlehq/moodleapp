@@ -37,7 +37,7 @@
                     <h2 class="big">{{ 'addon.mod_glossary.entriestobesynced' | translate }}</h2>
                 </ion-label>
             </ion-item-divider>
-            <ion-item *ngFor="let entry of entries.offlineEntries" (click)="entries.select(entry)" button detail="false"
+            <ion-item *ngFor="let entry of entries.offlineEntries" (click)="entries.select(entry)" button [detail]="false"
                 [attr.aria-current]="entries.getItemAriaCurrent(entry)">
                 <ion-label>
                     <div class="addon-mod-glossary-index--offline-entry">
@@ -58,7 +58,7 @@
                     </ion-label>
                 </ion-item-divider>
 
-                <ion-item button (click)="entries.select(entry)" [attr.aria-current]="entries.getItemAriaCurrent(entry)" detail="false">
+                <ion-item button (click)="entries.select(entry)" [attr.aria-current]="entries.getItemAriaCurrent(entry)" [detail]="false">
                     <ion-label>
                         <core-format-text [text]="entry.concept" contextLevel="module" [contextInstanceId]="glossary!.coursemodule"
                             [courseId]="courseId">

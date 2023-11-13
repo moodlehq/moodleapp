@@ -76,7 +76,7 @@
                 <p>{{ 'addon.mod_forum.errorloadingsortingorderdetails' | translate }}</p>
             </core-empty-box>
 
-            <ion-item *ngFor="let discussion of discussionsItems" class="addon-mod-forum-discussion" detail="true"
+            <ion-item *ngFor="let discussion of discussionsItems" class="addon-mod-forum-discussion" [detail]="true"
                 [lines]="discussion.groupname && 'none'" [attr.aria-current]="discussions?.getItemAriaCurrent(discussion)"
                 (click)="discussions?.select(discussion)" button>
                 <ion-label>

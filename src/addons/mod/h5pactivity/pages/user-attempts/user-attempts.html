@@ -19,7 +19,7 @@
     <core-loading [hideUntil]="loaded">
         <!-- User viewed. -->
         <ion-item class="ion-text-wrap" *ngIf="user && !isCurrentUser" core-user-link [userId]="user.id" [courseId]="courseId"
-            [attr.aria-label]="user.fullname" button detail="true">
+            [attr.aria-label]="user.fullname" button [detail]="true">
             <core-user-avatar [user]="user" slot="start" [courseId]="courseId" [linkProfile]="false"></core-user-avatar>
             <ion-label>
                 <h2>{{ user.fullname }}</h2>
@@ -65,7 +65,7 @@
 <!-- Template to render a list of conversations. -->
 <ng-template #attemptsTemplate let-attempts="attempts">
     <!-- "Header" of the table -->
-    <ion-item class="addon-mod_h5pactivity-table-header hide-detail" detail="true">
+    <ion-item class="addon-mod_h5pactivity-table-header hide-detail" [detail]="true">
         <ion-label>
             <ion-row class="ion-align-items-center">
                 <ion-col class="ion-text-center">#</ion-col>
@@ -80,7 +80,7 @@
     </ion-item>
 
     <!-- List of attempts. -->
-    <ion-item class="ion-text-wrap addon-mod_h5pactivity-table-row" *ngFor="let attempt of attempts" button detail="true"
+    <ion-item class="ion-text-wrap addon-mod_h5pactivity-table-row" *ngFor="let attempt of attempts" button [detail]="true"
         [attr.aria-label]="'addon.mod_h5pactivity.viewattempt' | translate:{$a: attempt.attempt}" (click)="openAttempt(attempt)">
 
         <ion-label>

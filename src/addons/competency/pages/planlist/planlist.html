@@ -19,7 +19,7 @@
             </core-empty-box>
             <ion-list *ngIf="!plans.empty" class="ion-no-margin">
                 <ion-item class="ion-text-wrap" *ngFor="let plan of plans.items" [attr.aria-label]="plan.name" (click)="plans.select(plan)"
-                    [attr.aria-current]="plans.getItemAriaCurrent(plan)" button detail="true">
+                    [attr.aria-current]="plans.getItemAriaCurrent(plan)" button [detail]="true">
                     <ion-label>
                         <p class="item-heading">
                             <core-format-text [text]="plan.name" contextLevel="user" [contextInstanceId]="plan.userid">

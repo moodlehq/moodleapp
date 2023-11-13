@@ -1,6 +1,6 @@
 <form (ngSubmit)="changeName(newFileName, $event)" #nameForm>
     <ion-card class="card-file">
-        <ion-item class="ion-text-wrap item-file" (click)="openFile($event)" button detail="false">
+        <ion-item class="ion-text-wrap item-file" (click)="openFile($event)" button [detail]="false">
             <ion-thumbnail slot="start">
                 <img [src]="fileIcon" [alt]="fileExtension" role="presentation" />
             </ion-thumbnail>

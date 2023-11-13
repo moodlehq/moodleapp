@@ -41,7 +41,7 @@ import { CoreTabsComponent } from './tabs';
  */
 @Component({
     selector: 'core-tab',
-    template: '<ng-container *ngIf="loaded" [ngTemplateOutlet]="template"></ng-container>',
+    template: '<ng-container *ngIf="loaded && template" [ngTemplateOutlet]="template"></ng-container>',
 })
 export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
 

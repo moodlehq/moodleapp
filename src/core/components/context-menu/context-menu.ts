@@ -31,7 +31,7 @@ import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 })
 export class CoreContextMenuComponent implements OnInit, OnDestroy {
 
-    @Input() icon?: string; // Icon to be shown on the navigation bar. Default: Kebab menu icon.
+    @Input() icon = 'ellipsis-vertical'; // Icon to be shown on the navigation bar. Default: Kebab menu icon.
     @Input() title?: string; // Text to be shown on the top of the popover.
     @Input('aria-label') ariaLabel?: string; // Aria label to be shown on the top of the popover.
 
@@ -68,7 +68,6 @@ export class CoreContextMenuComponent implements OnInit, OnDestroy {
      * @inheritdoc
      */
     ngOnInit(): void {
-        this.icon = this.icon || 'ellipsis-vertical';
         this.ariaLabel = this.ariaLabel || this.title || Translate.instant('core.displayoptions');
     }
 

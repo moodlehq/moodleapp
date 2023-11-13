@@ -19,7 +19,7 @@
     <core-loading [hideUntil]="loaded">
         <ion-list class="core-sitelist limited-width">
             <ion-card *ngIf="accountsList.currentSite">
-                <ion-item-divider sticky="true" class="core-sitelist-sitename">
+                <ion-item-divider [sticky]="true" class="core-sitelist-sitename">
                     <ion-label>
                         <p class="item-heading">
                             <core-format-text [text]="accountsList.currentSite.siteName" clean="true"
@@ -41,7 +41,7 @@
             </ion-card>
 
             <ion-card *ngFor="let sites of accountsList.otherSites">
-                <ion-item-divider sticky="true" *ngIf="sites[0]" class="core-sitelist-sitename">
+                <ion-item-divider [sticky]="true" *ngIf="sites[0]" class="core-sitelist-sitename">
                     <ion-label>
                         <p class="item-heading">
                             <core-format-text [text]="sites[0].siteName" clean="true" [siteId]="sites[0].id"></core-format-text>

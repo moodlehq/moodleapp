@@ -21,7 +21,7 @@
             </ion-label>
         </ion-item>
         <ion-item button *ngFor="let handler of handlers" [ngClass]="['core-moremenu-handler', handler.class || '']"
-            (click)="openHandler(handler)" [attr.aria-label]="handler.title | translate" detail="true">
+            (click)="openHandler(handler)" [attr.aria-label]="handler.title | translate" [detail]="true">
             <ion-icon [name]="handler.icon" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
                 <p class="item-heading">{{ handler.title | translate}}</p>
@@ -37,7 +37,7 @@
         </ion-item>
         <ng-container *ngFor="let item of customItems">
             <ion-item button *ngIf="item.type !== 'embedded'" [href]="item.url" [attr.aria-label]="item.label" core-link
-                [capture]="item.type === 'app'" [inApp]="item.type === 'inappbrowser'" class="core-moremenu-customitem" detail="true"
+                [capture]="item.type === 'app'" [inApp]="item.type === 'inappbrowser'" class="core-moremenu-customitem" [detail]="true"
                 [detailIcon]="item.type === 'browser' ? 'open-outline' : 'chevron-forward'">
                 <ion-icon [name]="item.icon" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
@@ -45,14 +45,14 @@
                 </ion-label>
             </ion-item>
             <ion-item button *ngIf="item.type === 'embedded'" (click)="openItem(item)" [attr.aria-label]="item.label"
-                class="core-moremenu-customitem" detail="true">
+                class="core-moremenu-customitem" [detail]="true">
                 <ion-icon [name]="item.icon" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
                     <p class="item-heading">{{item.label}}</p>
                 </ion-label>
             </ion-item>
         </ng-container>
-        <ion-item button *ngIf="showScanQR" (click)="scanQR()" detail="true">
+        <ion-item button *ngIf="showScanQR" (click)="scanQR()" [detail]="true">
             <ion-icon name="fas-qrcode" slot="start" aria-hidden="true"></ion-icon>
             <ion-label>
                 <p class="item-heading">{{ 'core.scanqr' | translate }}</p>
@@ -61,7 +61,7 @@
     </ion-list>
 </ion-content>
 <ion-footer>
-    <ion-item button (click)="openSettings()" [attr.aria-label]="'core.settings.appsettings' | translate" detail="true">
+    <ion-item button (click)="openSettings()" [attr.aria-label]="'core.settings.appsettings' | translate" [detail]="true">
         <ion-icon name="fas-gears" slot="start" aria-hidden="true"></ion-icon>
         <ion-label>
             <p class="item-heading">{{ 'core.settings.appsettings' | translate }}</p>

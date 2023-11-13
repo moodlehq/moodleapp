@@ -23,7 +23,7 @@
     <core-loading [hideUntil]="loaded">
         <ion-list class="core-sitelist">
             <ion-card *ngFor="let sites of accountsList.otherSites">
-                <ion-item-divider sticky="true" *ngIf="sites[0]" class="core-sitelist-sitename">
+                <ion-item-divider [sticky]="true" *ngIf="sites[0]" class="core-sitelist-sitename">
                     <ion-label>
                         <h2>
                             <core-format-text [text]="sites[0].siteName" clean="true" [siteId]="sites[0].id"></core-format-text>
@@ -32,7 +32,7 @@
                     </ion-label>
                 </ion-item-divider>
 
-                <ion-item button *ngFor="let site of sites" (click)="login($event, site.id)" detail="true">
+                <ion-item button *ngFor="let site of sites" (click)="login($event, site.id)" [detail]="true">
                     <core-user-avatar [user]="site" slot="start" [linkProfile]="false" [siteId]="site.id"></core-user-avatar>
 
                     <ion-label>
