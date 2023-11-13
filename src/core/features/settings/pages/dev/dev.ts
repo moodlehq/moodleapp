@@ -104,7 +104,7 @@ export class CoreSettingsDevPage implements OnInit {
 
         const disabledFeatures = (await CoreSites.getCurrentSite()?.getPublicConfig())?.tool_mobile_disabledfeatures;
 
-        this.disabledFeatures = disabledFeatures?.split(',') || [];
+        this.disabledFeatures = disabledFeatures?.split(',').filter(feature => feature.trim().length > 0) ?? [];
     }
 
     /**

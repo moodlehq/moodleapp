@@ -19,7 +19,7 @@
     <ion-list class="list-item-limited-width">
         <ion-item class="ion-text-wrap">
             <ion-label>
-                <p class="item-heading">Text direction</p>
+                <p class="item-heading">Change text direction</p>
                 <p>{{ direction }}</p>
             </ion-label>
             <ion-toggle [(ngModel)]="rtl" (ionChange)="RTLChanged()" slot="end"></ion-toggle>
@@ -58,7 +58,7 @@
                     <p class="item-heading">Reset user tours</p>
                 </ion-label>
                 <ion-button (click)="resetUserTours()" aria-label="Reset user tours" fill="clear" slot="end">
-                    <ion-icon slot="icon-only" aria-hidden="true" name="fas-broom"></ion-icon>
+                    <ion-icon slot="icon-only" aria-hidden="true" name="fas-repeat"></ion-icon>
                 </ion-button>
             </ion-item>
 
@@ -73,6 +73,9 @@
                     <h2>Disabled features</h2>
                 </ion-label>
             </ion-item-divider>
+            <ion-item *ngIf="disabledFeatures.length === 0">
+                <ion-label>There are no features disabled</ion-label>
+            </ion-item>
             <ion-item class="ion-text-wrap" *ngFor="let feature of disabledFeatures">
                 <ion-label>
                     <p class="item-heading">{{ feature }}</p>
@@ -84,6 +87,9 @@
                     <h2>Site plugins</h2>
                 </ion-label>
             </ion-item-divider>
+            <ion-item *ngIf="sitePlugins.length === 0">
+                <ion-label>There are no site plugins installed</ion-label>
+            </ion-item>
             <ion-item class="ion-text-wrap" *ngFor="let plugin of sitePlugins">
                 <ion-label>
                     <p class="item-heading">{{ plugin.addon }} ({{plugin.component}})</p>
