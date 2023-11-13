@@ -72,6 +72,18 @@ export class CoreUnauthenticatedSite {
     }
 
     /**
+     * Check if the site has info with the given key and it doesn't contain an empty value.
+     *
+     * @param key Info key.
+     * @returns Whether the key is filled within site info.
+     */
+    hasInfo(key: string): boolean {
+        const info = this.getInfo()?.[key] ?? null;
+
+        return info === false || info === 0 || !!info;
+    }
+
+    /**
      * Get site name.
      *
      * @returns Site name.
