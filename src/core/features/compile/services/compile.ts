@@ -368,7 +368,7 @@ export class CoreCompileProvider {
         instance['CoreTime'] = CoreTime;
         instance['CoreUrl'] = CoreUrl;
         instance['CoreWindow'] = CoreWindow;
-        instance['CoreCache'] = CoreCache;
+        instance['CoreCache'] = CoreCache; // @deprecated since 4.4, plugins should use plain objects instead.
         instance['CoreDelegate'] = CoreDelegate;
         instance['CorePromisedValue'] = CorePromisedValue;
         instance['CoreContentLinksHandlerBase'] = CoreContentLinksHandlerBase;
