@@ -109,7 +109,7 @@
 
     <!-- Loading. -->
     <ion-item *ngIf="module.handlerData.loading" role="status" class="ion-text-wrap core-module-loading"
-        [attr.aria-label]="module.handlerData.a11yTitle" detail="false">
+        [attr.aria-label]="module.handlerData.a11yTitle" [detail]="false">
         <ion-label>
             <ion-spinner [attr.aria-label]="'core.loading' | translate"></ion-spinner>
         </ion-label>

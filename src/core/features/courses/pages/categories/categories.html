@@ -48,7 +48,7 @@
                 </ion-item-divider>
                 <ion-card *ngFor="let category of categories">
                     <ion-item button class="ion-text-wrap" (click)="openCategory(category.id)" [attr.aria-label]="category.name"
-                        detail="true">
+                        [detail]="true">
                         <ion-icon name="fas-folder" slot="start" [attr.aria-label]="'core.category' | translate"></ion-icon>
                         <ion-label>
                             <p class="item-heading">

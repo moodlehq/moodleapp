@@ -1,4 +1,4 @@
-<ion-item-divider class="ion-text-wrap" *ngIf="title" sticky="true">
+<ion-item-divider class="ion-text-wrap" *ngIf="title" [sticky]="true">
     <ion-label>
         <h2>
             <core-format-text [text]="title | translate" contextLevel="block" [contextInstanceId]="block.instanceid" [courseId]="courseId">

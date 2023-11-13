@@ -50,7 +50,7 @@
         <ng-container *ngFor="let section of sections">
             <ion-card class="section" *ngIf="section.modules.length > 0">
                 <ion-card-header>
-                    <ion-item [lines]="section.expanded ? 'full' : 'none'" button detail="false" (click)="toggleExpand($event, section)"
+                    <ion-item [lines]="section.expanded ? 'full' : 'none'" button [detail]="false" (click)="toggleExpand($event, section)"
                         [class.core-course-storage-section-expanded]="section.expanded"
                         [attr.aria-label]="(section.expanded ? 'core.collapse' : 'core.expand') | translate"
                         [attr.aria-expanded]="section.expanded" [attr.aria-controls]="'core-course-storage-section-' + section.id">

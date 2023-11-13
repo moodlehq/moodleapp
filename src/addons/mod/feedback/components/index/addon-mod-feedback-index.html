@@ -75,7 +75,7 @@
                 </span>
             </ion-badge>
         </ion-item>
-        <ion-item class="ion-text-wrap" *ngIf="!access.isanonymous && access.canviewreports" (click)="openNonRespondents()" detail="true"
+        <ion-item class="ion-text-wrap" *ngIf="!access.isanonymous && access.canviewreports" (click)="openNonRespondents()" [detail]="true"
             button>
             <ion-label>
                 <p class="item-heading">{{ 'addon.mod_feedback.show_nonrespondents' | translate }}</p>

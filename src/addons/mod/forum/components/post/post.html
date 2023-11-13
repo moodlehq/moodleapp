@@ -123,7 +123,7 @@
             <ion-checkbox slot="end" [(ngModel)]="formData.isprivatereply" name="isprivatereply"></ion-checkbox>
         </ion-item>
         <ng-container *ngIf="forum.id && forum.maxattachments > 0">
-            <ion-item button class="divider ion-text-wrap" (click)="toggleAdvanced()" detail="false" [attr.aria-expanded]="advanced"
+            <ion-item button class="divider ion-text-wrap" (click)="toggleAdvanced()" [detail]="false" [attr.aria-expanded]="advanced"
                 [attr.aria-controls]="'addon-forum-reply-edit-form-advanced-' + uniqueId"
                 [attr.aria-label]="(advanced ? 'core.hideadvanced' : 'core.showadvanced') | translate">
                 <ion-icon *ngIf="!advanced" name="fas-chevron-right" flip-rtl slot="start" aria-hidden="true"

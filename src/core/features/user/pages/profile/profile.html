@@ -51,7 +51,7 @@
                 </div>
             </div>
             <ion-item button class="ion-text-wrap core-user-profile-handler" (click)="openUserDetails()"
-                [attr.aria-label]="'core.user.details' | translate" detail="true">
+                [attr.aria-label]="'core.user.details' | translate" [detail]="true">
                 <ion-icon name="fas-user" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
                     <p class="item-heading">{{ 'core.user.details' | translate }}</p>
@@ -64,7 +64,7 @@
             </ion-item>
             <ion-item button *ngFor="let handler of newPageHandlers" class="ion-text-wrap" (click)="handlerClicked($event, handler)"
                 [ngClass]="['core-user-profile-handler', handler.class || '']" [hidden]="handler.hidden"
-                [attr.aria-label]="handler.title | translate" detail="true">
+                [attr.aria-label]="handler.title | translate" [detail]="true">
                 <ion-icon *ngIf="handler.icon" [name]="handler.icon" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
                     <p class="item-heading">{{ handler.title | translate }}</p>

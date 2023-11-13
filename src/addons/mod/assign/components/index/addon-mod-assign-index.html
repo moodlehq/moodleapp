@@ -46,7 +46,8 @@
             </ion-item>
 
             <!-- Summary of all submissions. -->
-            <ion-item class="ion-text-wrap" *ngIf="summary && summary.participantcount" (click)="goToSubmissionList()" detail="true" button>
+            <ion-item class="ion-text-wrap" *ngIf="summary && summary.participantcount" (click)="goToSubmissionList()" [detail]="true"
+                button>
                 <ion-label>
                     <p class="item-heading" *ngIf="assign.teamsubmission">{{ 'addon.mod_assign.numberofteams' | translate }}</p>
                     <p class="item-heading" *ngIf="!assign.teamsubmission">{{ 'addon.mod_assign.numberofparticipants' | translate }}</p>

@@ -393,7 +393,7 @@
 
                     <!-- Data about the grader (teacher who graded). -->
                     <ion-item class="ion-text-wrap" *ngIf="grader" core-user-link [userId]="grader!.id" [courseId]="courseId"
-                        [attr.aria-label]="grader!.fullname" detail="true">
+                        [attr.aria-label]="grader!.fullname" [detail]="true">
                         <core-user-avatar [user]="grader" slot="start" [linkProfile]="false"></core-user-avatar>
                         <ion-label>
                             <p class="item-heading">{{ 'addon.mod_assign.gradedby' | translate }}</p>
