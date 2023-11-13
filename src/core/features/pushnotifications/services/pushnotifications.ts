@@ -842,7 +842,7 @@ export class CorePushNotificationsProvider {
                 result.siteid,
                 result.siteurl,
                 result.token,
-                CoreTextUtils.parseJSON<CoreSiteInfo | null>(result.info, null) || undefined,
+                { info: CoreTextUtils.parseJSON<CoreSiteInfo | null>(result.info, null) || undefined },
             );
 
             await this.unregisterDeviceOnMoodle(tmpSite);

@@ -77,7 +77,7 @@
                 </form>
 
                 <!-- Signup form. -->
-                <form *ngIf="!ageDigitalConsentVerification" [formGroup]="signupForm" (ngSubmit)="create($event)" #signupFormEl>
+                <form *ngIf="!ageDigitalConsentVerification && site" [formGroup]="signupForm" (ngSubmit)="create($event)" #signupFormEl>
 
                     <ion-item class="ion-text-wrap ion-text-center">
                         <ion-label>

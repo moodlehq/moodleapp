@@ -20,7 +20,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreSiteBasicInfo, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreLoginHelper } from '@features/login/services/login-helper';
+import { CoreLoginHelper, CoreLoginHelperProvider } from '@features/login/services/login-helper';
 import { CoreSite } from '@classes/sites/site';
 import { CoreEvents } from '@singletons/events';
 import { CoreError } from '@classes/errors/error';
@@ -171,7 +171,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             return;
         }
 
-        this.showForgottenPassword = !CoreLoginHelper.isForgottenPasswordDisabled(this.siteConfig);
+        this.showForgottenPassword = !this.site.isFeatureDisabled(CoreLoginHelperProvider.FORGOTTEN_PASSWORD_FEATURE_NAME);
         this.exceededAttemptsHTML = CoreLoginHelper.buildExceededAttemptsHTML(
             !!this.supportConfig?.canContactSupport(),
             this.showForgottenPassword,

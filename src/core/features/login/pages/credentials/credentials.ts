@@ -21,7 +21,7 @@ import { CoreApp } from '@services/app';
 import { CoreNetwork } from '@services/network';
 import { CoreSiteCheckResponse, CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreLoginHelper } from '@features/login/services/login-helper';
+import { CoreLoginHelper, CoreLoginHelperProvider } from '@features/login/services/login-helper';
 import { Translate } from '@singletons';
 import { CoreSitePublicConfigResponse, CoreUnauthenticatedSite } from '@classes/sites/unauthenticated-site';
 import { CoreEvents } from '@singletons/events';
@@ -86,12 +86,12 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
                 this.siteConfig = this.siteCheck.config;
             }
 
-            this.site = CoreSitesFactory.makeUnauthenticatedSite(siteUrl);
+            this.site = CoreSitesFactory.makeUnauthenticatedSite(siteUrl, this.siteConfig);
             this.logoUrl = this.site.getLogoUrl(this.siteConfig);
             this.urlToOpen = CoreNavigator.getRouteParam('urlToOpen');
-            this.supportConfig = this.siteConfig && new CoreUserGuestSupportConfig(this.siteConfig);
+            this.supportConfig = this.siteConfig && new CoreUserGuestSupportConfig(this.site, this.siteConfig);
             this.displaySiteUrl = this.site.shouldDisplayInformativeLinks();
-            this.siteName = (await this.site.getSiteName()) || CoreNavigator.getRouteParam('siteName');
+            this.siteName = await this.site.getSiteName();
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
 
@@ -158,11 +158,12 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
         try {
             if (!this.siteCheck) {
                 this.siteCheck = await CoreSites.checkSite(this.site.siteUrl, protocol);
+                this.siteCheck.config && this.site.setPublicConfig(this.siteCheck.config);
             }
 
             this.site.setURL(this.siteCheck.siteUrl);
             this.siteConfig = this.siteCheck.config;
-            this.supportConfig = this.siteConfig && new CoreUserGuestSupportConfig(this.siteConfig);
+            this.supportConfig = this.siteConfig && new CoreUserGuestSupportConfig(this.site, this.siteConfig);
 
             await this.treatSiteConfig();
 
@@ -198,10 +199,9 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             this.showScanQR = await CoreLoginHelper.displayQRInCredentialsScreen(this.siteConfig.tool_mobile_qrcodetype);
         }
 
-        const disabledFeatures = CoreLoginHelper.getDisabledFeatures(this.siteConfig);
         this.canSignup = this.siteConfig.registerauth == 'email' &&
-                    !CoreLoginHelper.isEmailSignupDisabled(this.siteConfig, disabledFeatures);
-        this.showForgottenPassword = !CoreLoginHelper.isForgottenPasswordDisabled(this.siteConfig, disabledFeatures);
+            !this.site.isFeatureDisabled(CoreLoginHelperProvider.EMAIL_SIGNUP_FEATURE_NAME);
+        this.showForgottenPassword = !this.site.isFeatureDisabled(CoreLoginHelperProvider.FORGOTTEN_PASSWORD_FEATURE_NAME);
         this.exceededAttemptsHTML = CoreLoginHelper.buildExceededAttemptsHTML(
             !!this.supportConfig?.canContactSupport(),
             this.showForgottenPassword,

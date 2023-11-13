@@ -305,7 +305,7 @@ export class CoreSitesProvider {
         // Check that the user can authenticate.
         if (!config.enablewebservices) {
             throw this.createCannotConnectLoginError(config.httpswwwroot || config.wwwroot, {
-                supportConfig: new CoreUserGuestSupportConfig(config),
+                supportConfig: new CoreUserGuestSupportConfig(temporarySite, config),
                 errorcode: 'webservicesnotenabled',
                 errorDetails: Translate.instant('core.login.webservicesnotenabled'),
                 critical: true,
@@ -314,7 +314,7 @@ export class CoreSitesProvider {
 
         if (!config.enablemobilewebservice) {
             throw this.createCannotConnectLoginError(config.httpswwwroot || config.wwwroot, {
-                supportConfig: new CoreUserGuestSupportConfig(config),
+                supportConfig: new CoreUserGuestSupportConfig(temporarySite, config),
                 errorcode: 'mobileservicesnotenabled',
                 errorDetails: Translate.instant('core.login.mobileservicesnotenabled'),
                 critical: true,
@@ -515,7 +515,7 @@ export class CoreSitesProvider {
         }
 
         // Create a "candidate" site to fetch the site info.
-        const candidateSite = CoreSitesFactory.makeCandidateSite(siteUrl, token, privateToken);
+        const candidateSite = CoreSitesFactory.makeCandidateSite(siteUrl, token, { privateToken });
         let isNewSite = true;
 
         try {
@@ -544,7 +544,7 @@ export class CoreSitesProvider {
             } else {
                 // New site, set site ID and info.
                 isNewSite = true;
-                site = CoreSitesFactory.makeSite(siteId, siteUrl, token, info, privateToken);
+                site = CoreSitesFactory.makeSite(siteId, siteUrl, token, { info, privateToken });
                 site.setOAuthId(oauthId);
 
                 // Create database tables before login and before any WS call.
@@ -1172,10 +1172,12 @@ export class CoreSitesProvider {
             entry.id,
             entry.siteUrl,
             entry.token,
-            info,
-            entry.privateToken,
-            config,
-            entry.loggedOut == 1,
+            {
+                info,
+                privateToken: entry.privateToken,
+                config,
+                loggedOut: entry.loggedOut == 1,
+            },
         );
         site.setOAuthId(entry.oauthId || undefined);
 
@@ -1246,8 +1248,10 @@ export class CoreSitesProvider {
 
         await Promise.all(sites.map(async (site) => {
             if (!ids || ids.indexOf(site.id) > -1) {
-                const siteName = await CoreSitesFactory.makeUnauthenticatedSite(site.siteUrl).getSiteName();
                 const siteInfo = site.info ? <CoreSiteInfo> CoreTextUtils.parseJSON(site.info) : undefined;
+                const siteInstance = CoreSitesFactory.makeSite(site.id, site.siteUrl, site.token, { info: siteInfo });
+
+                const siteName = await siteInstance.getSiteName();
 
                 const basicInfo: CoreSiteBasicInfo = {
                     id: site.id,

@@ -28,13 +28,19 @@ export class CoreUnauthenticatedSite {
 
     siteUrl: string;
 
+    protected publicConfig?: CoreSitePublicConfigResponse;
+
     /**
      * Create a site.
      *
      * @param siteUrl Site URL.
+     * @param publicConfig Site public config.
      */
-    constructor(siteUrl: string) {
+    constructor(siteUrl: string, publicConfig?: CoreSitePublicConfigResponse) {
         this.siteUrl = CoreUrlUtils.removeUrlParams(siteUrl); // Make sure the URL doesn't have params.
+        if (publicConfig) {
+            this.setPublicConfig(publicConfig);
+        }
     }
 
     /**
@@ -75,7 +81,7 @@ export class CoreUnauthenticatedSite {
             return CoreConstants.CONFIG.appname;
         }
 
-        const siteName = this.getInfo()?.sitename;
+        const siteName = this.getInfo()?.sitename || this.publicConfig?.sitename;
         if (siteName) {
             return siteName;
         }
@@ -108,6 +114,7 @@ export class CoreUnauthenticatedSite {
      * @returns Logo URL.
      */
     getLogoUrl(config?: CoreSitePublicConfigResponse): string | undefined {
+        config = config ?? this.publicConfig;
         if (!config || this.forcesLocalLogo()) {
             return 'assets/img/login_logo.png';
         }
@@ -151,11 +158,40 @@ export class CoreUnauthenticatedSite {
      * @returns Promise resolved with public config. Rejected with an object if error, see CoreWSProvider.callAjax.
      */
     async getPublicConfig(options: { readingStrategy?: CoreSitesReadingStrategy } = {}): Promise<CoreSitePublicConfigResponse> {
+        const ignoreCache = options.readingStrategy === CoreSitesReadingStrategy.ONLY_NETWORK ||
+            options.readingStrategy ===  CoreSitesReadingStrategy.PREFER_NETWORK;
+        if (!ignoreCache && this.publicConfig) {
+            return this.publicConfig;
+        };
+
         if (options.readingStrategy === CoreSitesReadingStrategy.ONLY_CACHE) {
             throw new CoreError('Cache not available to read public config');
         }
 
-        return this.requestPublicConfig();
+        try {
+            const config = await this.requestPublicConfig();
+
+            this.setPublicConfig(config);
+
+            return config;
+        } catch (error) {
+            if (options.readingStrategy === CoreSitesReadingStrategy.ONLY_NETWORK || !this.publicConfig) {
+                throw error;
+            }
+
+            return this.publicConfig;
+        }
+    }
+
+    /**
+     * Set public config.
+     *
+     * @param publicConfig Public config.
+     */
+    setPublicConfig(publicConfig: CoreSitePublicConfigResponse): void {
+        publicConfig.tool_mobile_disabledfeatures =
+            CoreTextUtils.treatDisabledFeatures(publicConfig.tool_mobile_disabledfeatures ?? '');
+        this.publicConfig = publicConfig;
     }
 
     /**
@@ -260,6 +296,32 @@ export class CoreUnauthenticatedSite {
      */
     shouldDisplayInformativeLinks(): boolean {
         return !CoreConstants.CONFIG.hideInformativeLinks && !this.isDemoModeSite();
+    }
+
+    /**
+     * Check if a certain feature is disabled in the site.
+     *
+     * @param name Name of the feature to check.
+     * @returns Whether it's disabled.
+     */
+    isFeatureDisabled(name: string): boolean {
+        const disabledFeatures = this.getDisabledFeatures();
+        if (!disabledFeatures) {
+            return false;
+        }
+
+        const regEx = new RegExp('(,|^)' + CoreTextUtils.escapeForRegex(name) + '(,|$)', 'g');
+
+        return !!disabledFeatures.match(regEx);
+    }
+
+    /**
+     * Get disabled features string.
+     *
+     * @returns Disabled features.
+     */
+    protected getDisabledFeatures(): string | undefined {
+        return this.publicConfig?.tool_mobile_disabledfeatures;
     }
 
 }

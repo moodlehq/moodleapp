@@ -13,10 +13,10 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreCandidateSite } from '@classes/sites/candidate-site';
+import { CoreCandidateSite, CoreCandidateSiteOptionalData } from '@classes/sites/candidate-site';
 
-import { CoreSite, CoreSiteConfig } from '@classes/sites/site';
-import { CoreUnauthenticatedSite, CoreSiteInfo } from '@classes/sites/unauthenticated-site';
+import { CoreSite, CoreSiteOptionalData } from '@classes/sites/site';
+import { CoreUnauthenticatedSite, CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-site';
 import { makeSingleton } from '@singletons';
 
 /*
@@ -31,22 +31,16 @@ export class CoreSitesFactoryService {
      * @param id Site ID.
      * @param siteUrl Site URL.
      * @param token Site's WS token.
-     * @param info Site info.
-     * @param privateToken Private token.
-     * @param config Site public config.
-     * @param loggedOut Whether user is logged out.
+     * @param otherData Other data.
      * @returns Site instance.
      */
     makeSite(
         id: string,
         siteUrl: string,
         token: string,
-        info?: CoreSiteInfo,
-        privateToken?: string,
-        config?: CoreSiteConfig,
-        loggedOut?: boolean,
+        otherData: CoreSiteOptionalData = {},
     ): CoreSite {
-        return new CoreSite(id, siteUrl, token, info, privateToken, config, loggedOut);
+        return new CoreSite(id, siteUrl, token, otherData);
     }
 
     /**
@@ -54,21 +48,22 @@ export class CoreSitesFactoryService {
      *
      * @param siteUrl Site URL.
      * @param token Site's WS token.
-     * @param privateToken Private token.
+     * @param options Other options.
      * @returns Candidate site instance.
      */
-    makeCandidateSite(siteUrl: string, token: string, privateToken?: string): CoreCandidateSite {
-        return new CoreCandidateSite(siteUrl, token, privateToken);
+    makeCandidateSite(siteUrl: string, token: string, options: CoreCandidateSiteOptionalData = {}): CoreCandidateSite {
+        return new CoreCandidateSite(siteUrl, token, options);
     }
 
     /**
      * Create an unauthenticated site instance.
      *
      * @param siteUrl Site URL.
+     * @param publicConfig Site public config.
      * @returns Unauthenticated site instance.
      */
-    makeUnauthenticatedSite(siteUrl: string): CoreUnauthenticatedSite {
-        return new CoreUnauthenticatedSite(siteUrl);
+    makeUnauthenticatedSite(siteUrl: string, publicConfig?: CoreSitePublicConfigResponse): CoreUnauthenticatedSite {
+        return new CoreUnauthenticatedSite(siteUrl, publicConfig);
     }
 
 }

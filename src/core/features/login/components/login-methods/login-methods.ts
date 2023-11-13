@@ -17,6 +17,7 @@ import { CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@classes
 import { CoreLoginHelper, CoreLoginMethod } from '@features/login/services/login-helper';
 import { CoreRedirectPayload } from '@services/navigator';
 import { CoreSites } from '@services/sites';
+import { CoreSitesFactory } from '@services/sites-factory';
 import { CoreDomUtils } from '@services/utils/dom';
 
 @Component({
@@ -53,11 +54,11 @@ export class CoreLoginMethodsComponent implements OnInit {
         if (this.siteConfig) {
             this.isBrowserSSO = CoreLoginHelper.isSSOLoginNeeded(this.siteConfig.typeoflogin);
 
+            // Identity providers won't be shown if login on browser.
             if (!this.isBrowserSSO) {
-                // Identity providers won't be shown if login on browser.
-                const disabledFeatures = CoreLoginHelper.getDisabledFeatures(this.siteConfig);
-
-                this.identityProviders = CoreLoginHelper.getValidIdentityProviders(this.siteConfig, disabledFeatures);
+                this.identityProviders = await CoreLoginHelper.getValidIdentityProvidersForSite(
+                    CoreSitesFactory.makeUnauthenticatedSite(this.siteUrl, this.siteConfig),
+                );
             }
 
             if (this.reconnect) {

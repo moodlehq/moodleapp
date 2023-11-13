@@ -45,6 +45,7 @@ import {
     CoreSiteIdentityProvider,
     CoreSitePublicConfigResponse,
     CoreSiteQRCodeType,
+    CoreUnauthenticatedSite,
     TypeOfLogin,
 } from '@classes/sites/unauthenticated-site';
 
@@ -62,6 +63,10 @@ export class CoreLoginHelperProvider {
     static readonly FAQ_QRCODE_INFO_DONE = 'qrcode_info_done';
     static readonly FAQ_URL_IMAGE_HTML = '<img src="assets/img/login/faq_url.png" role="presentation" alt="">';
     static readonly FAQ_QRCODE_IMAGE_HTML = '<img src="assets/img/login/faq_qrcode.png" role="presentation" alt="">';
+    static readonly EMAIL_SIGNUP_FEATURE_NAME = 'CoreLoginEmailSignup';
+    static readonly FORGOTTEN_PASSWORD_FEATURE_NAME = 'NoDelegate_ForgottenPassword';
+    static readonly IDENTITY_PROVIDERS_FEATURE_NAME = 'NoDelegate_IdentityProviders';
+    static readonly IDENTITY_PROVIDER_FEATURE_NAME_PREFIX = 'NoDelegate_IdentityProvider_';
 
     protected logger: CoreLogger;
     protected sessionExpiredCheckingSite: Record<string, boolean> = {};
@@ -238,6 +243,7 @@ export class CoreLoginHelperProvider {
      *
      * @param config Site public config.
      * @returns Disabled features.
+     * @deprecated since 4.4. No longer needed.
      */
     getDisabledFeatures(config?: CoreSitePublicConfigResponse): string {
         const disabledFeatures = config?.tool_mobile_disabledfeatures;
@@ -307,7 +313,7 @@ export class CoreLoginHelperProvider {
      *
      * @param config Site public config.
      * @returns Logo URL.
-     * @deprecated since 4.2. Please use getLogoUrl in a site instance.
+     * @deprecated since 4.4. Please use getLogoUrl in a site instance.
      */
     getLogoUrl(config: CoreSitePublicConfigResponse): string | undefined {
         return !CoreConstants.CONFIG.forceLoginLogo && config ? (config.logourl || config.compactlogourl) : undefined;
@@ -404,14 +410,56 @@ export class CoreLoginHelperProvider {
      * Get the valid identity providers from a site config.
      *
      * @param siteConfig Site's public config.
-     * @param disabledFeatures List of disabled features already treated. If not provided it will be calculated.
      * @returns Valid identity providers.
+     * @deprecated since 4.4. Please use getValidIdentityProvidersForSite instead.
      */
-    getValidIdentityProviders(siteConfig?: CoreSitePublicConfigResponse, disabledFeatures?: string): CoreSiteIdentityProvider[] {
+    getValidIdentityProviders(siteConfig?: CoreSitePublicConfigResponse): CoreSiteIdentityProvider[] {
         if (!siteConfig) {
             return [];
         }
-        if (this.isFeatureDisabled('NoDelegate_IdentityProviders', siteConfig, disabledFeatures)) {
+        // eslint-disable-next-line deprecation/deprecation
+        if (this.isFeatureDisabled(CoreLoginHelperProvider.IDENTITY_PROVIDERS_FEATURE_NAME, siteConfig)) {
+            // Identity providers are disabled, return an empty list.
+            return [];
+        }
+
+        const validProviders: CoreSiteIdentityProvider[] = [];
+        const httpUrl = CorePath.concatenatePaths(siteConfig.wwwroot, 'auth/oauth2/');
+        const httpsUrl = CorePath.concatenatePaths(siteConfig.httpswwwroot, 'auth/oauth2/');
+
+        if (siteConfig.identityproviders && siteConfig.identityproviders.length) {
+            siteConfig.identityproviders.forEach((provider) => {
+                const urlParams = CoreUrlUtils.extractUrlParams(provider.url);
+
+                if (
+                    provider.url &&
+                    (provider.url.indexOf(httpsUrl) != -1 || provider.url.indexOf(httpUrl) != -1) &&
+                    !this.isFeatureDisabled( // eslint-disable-line deprecation/deprecation
+                        CoreLoginHelperProvider.IDENTITY_PROVIDER_FEATURE_NAME_PREFIX + urlParams.id,
+                        siteConfig,
+                    )
+                ) {
+                    validProviders.push(provider);
+                }
+            });
+        }
+
+        return validProviders;
+    }
+
+    /**
+     * Get the valid identity providers from a site config.
+     *
+     * @param site Site instance.
+     * @returns Valid identity providers.
+     */
+    async getValidIdentityProvidersForSite(site: CoreUnauthenticatedSite): Promise<CoreSiteIdentityProvider[]> {
+        const siteConfig = await CoreUtils.ignoreErrors(site.getPublicConfig());
+        if (!siteConfig) {
+            return [];
+        }
+
+        if (site.isFeatureDisabled(CoreLoginHelperProvider.IDENTITY_PROVIDERS_FEATURE_NAME)) {
             // Identity providers are disabled, return an empty list.
             return [];
         }
@@ -425,7 +473,7 @@ export class CoreLoginHelperProvider {
                 const urlParams = CoreUrlUtils.extractUrlParams(provider.url);
 
                 if (provider.url && (provider.url.indexOf(httpsUrl) != -1 || provider.url.indexOf(httpUrl) != -1) &&
-                        !this.isFeatureDisabled('NoDelegate_IdentityProvider_' + urlParams.id, siteConfig, disabledFeatures)) {
+                        !site.isFeatureDisabled(CoreLoginHelperProvider.IDENTITY_PROVIDER_FEATURE_NAME_PREFIX + urlParams.id)) {
                     validProviders.push(provider);
                 }
             });
@@ -518,11 +566,12 @@ export class CoreLoginHelperProvider {
      * Given a site public config, check if email signup is disabled.
      *
      * @param config Site public config.
-     * @param disabledFeatures List of disabled features already treated. If not provided it will be calculated.
      * @returns Whether email signup is disabled.
+     * @deprecated since 4.4. Please use isFeatureDisabled in a site instance.
      */
-    isEmailSignupDisabled(config?: CoreSitePublicConfigResponse, disabledFeatures?: string): boolean {
-        return this.isFeatureDisabled('CoreLoginEmailSignup', config, disabledFeatures);
+    isEmailSignupDisabled(config?: CoreSitePublicConfigResponse): boolean {
+        // eslint-disable-next-line deprecation/deprecation
+        return this.isFeatureDisabled(CoreLoginHelperProvider.EMAIL_SIGNUP_FEATURE_NAME, config);
     }
 
     /**
@@ -530,17 +579,12 @@ export class CoreLoginHelperProvider {
      *
      * @param feature Feature to check.
      * @param config Site public config.
-     * @param disabledFeatures List of disabled features already treated. If not provided it will be calculated.
      * @returns Whether email signup is disabled.
+     * @deprecated since 4.4. Please use isFeatureDisabled in a site instance.
      */
-    isFeatureDisabled(feature: string, config?: CoreSitePublicConfigResponse, disabledFeatures?: string): boolean {
-        if (disabledFeatures === undefined) {
-            disabledFeatures = this.getDisabledFeatures(config);
-        }
-
-        const regEx = new RegExp('(,|^)' + feature + '(,|$)', 'g');
-
-        return !!disabledFeatures.match(regEx);
+    isFeatureDisabled(feature: string, config?: CoreSitePublicConfigResponse): boolean {
+        // eslint-disable-next-line deprecation/deprecation
+        return this.isFeatureDisabled(feature, config);
     }
 
     /**
@@ -568,11 +612,12 @@ export class CoreLoginHelperProvider {
      * Given a site public config, check if forgotten password is disabled.
      *
      * @param config Site public config.
-     * @param disabledFeatures List of disabled features already treated. If not provided it will be calculated.
      * @returns Whether it's disabled.
+     * @deprecated since 4.4. Please use isFeatureDisabled in a site instance.
      */
-    isForgottenPasswordDisabled(config?: CoreSitePublicConfigResponse, disabledFeatures?: string): boolean {
-        return this.isFeatureDisabled('NoDelegate_ForgottenPassword', config, disabledFeatures);
+    isForgottenPasswordDisabled(config?: CoreSitePublicConfigResponse): boolean {
+        // eslint-disable-next-line deprecation/deprecation
+        return this.isFeatureDisabled(CoreLoginHelperProvider.FORGOTTEN_PASSWORD_FEATURE_NAME, config);
     }
 
     /**

@@ -51,7 +51,7 @@ import { map } from 'rxjs/operators';
 import { firstValueFrom } from '../../utils/rxjs';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSiteInfo } from './unauthenticated-site';
-import { CoreCandidateSite, CoreSiteWSPreSets, WSObservable } from './candidate-site';
+import { CoreCandidateSite, CoreCandidateSiteOptionalData, CoreSiteWSPreSets, WSObservable } from './candidate-site';
 
 /**
  * Class that represents a site (combination of site + user).
@@ -78,25 +78,19 @@ export class CoreSite extends CoreCandidateSite {
      * @param id Site ID.
      * @param siteUrl Site URL.
      * @param token Site's WS token.
-     * @param infos Site info.
-     * @param privateToken Private token.
-     * @param config Site public config.
-     * @param loggedOut Whether user is logged out.
+     * @param otherData Other data.
      */
     constructor(
         id: string,
         siteUrl: string,
         token: string,
-        infos?: CoreSiteInfo,
-        privateToken?: string,
-        config?: CoreSiteConfig,
-        loggedOut?: boolean,
+        otherData: CoreSiteOptionalData = {},
     ) {
-        super(siteUrl, token, privateToken);
+        super(siteUrl, token, otherData);
 
         this.id = id;
-        this.config = config;
-        this.loggedOut = loggedOut;
+        this.config = otherData.config;
+        this.loggedOut = otherData.loggedOut;
         this.logger = CoreLogger.getInstance('CoreSite');
 
         this.cacheTable = asyncInstance(() => CoreSites.getSiteTable(WS_CACHE_TABLE, {
@@ -118,7 +112,7 @@ export class CoreSite extends CoreCandidateSite {
             config: { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
             primaryKeyColumns: ['component', 'id'],
         }));
-        this.setInfo(infos);
+        this.setInfo(otherData.info);
         this.calculateOfflineDisabled();
 
         this.db = CoreDB.getDB('Site-' + this.id);
@@ -678,20 +672,10 @@ export class CoreSite extends CoreCandidateSite {
     }
 
     /**
-     * Check if a certain feature is disabled in the site.
-     *
-     * @param name Name of the feature to check.
-     * @returns Whether it's disabled.
+     * @inheritdoc
      */
-    isFeatureDisabled(name: string): boolean {
-        const disabledFeatures = this.getStoredConfig('tool_mobile_disabledfeatures');
-        if (!disabledFeatures) {
-            return false;
-        }
-
-        const regEx = new RegExp('(,|^)' + CoreTextUtils.escapeForRegex(name) + '(,|$)', 'g');
-
-        return !!disabledFeatures.match(regEx);
+    protected getDisabledFeatures(): string | undefined {
+        return this.config ? this.getStoredConfig('tool_mobile_disabledfeatures') : super.getDisabledFeatures();
     }
 
     /**
@@ -922,6 +906,15 @@ export class CoreSite extends CoreCandidateSite {
     }
 
 }
+
+/**
+ * Optional data to create a site.
+ */
+export type CoreSiteOptionalData = CoreCandidateSiteOptionalData & {
+    info?: CoreSiteInfo;
+    config?: CoreSiteConfig;
+    loggedOut?: boolean;
+};
 
 /**
  * Result of WS tool_mobile_get_config.

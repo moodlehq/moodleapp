@@ -27,7 +27,7 @@ export class CoreSiteStub extends CoreSite {
     protected wsStubs: Record<string, unknown> = {};
 
     constructor (fixture: CoreSiteFixture) {
-        super(fixture.id, fixture.info.siteurl, '', fixture.info);
+        super(fixture.id, fixture.info.siteurl, '', { info: fixture.info });
 
         this.stubWSResponse<CoreSiteConfigResponse>('tool_mobile_get_config', {
             settings: [],

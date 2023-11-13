@@ -278,10 +278,9 @@ export class CoreLoginSitePage implements OnInit {
      *
      * @param url The URL to connect to.
      * @param e Event (if any).
-     * @param foundSite The site clicked, if any, from the found sites list.
      * @returns Promise resolved when done.
      */
-    async connect(url: string, e?: Event, foundSite?: CoreLoginSiteInfoExtended): Promise<void> {
+    async connect(url: string, e?: Event): Promise<void> {
         e?.preventDefault();
         e?.stopPropagation();
 
@@ -341,7 +340,7 @@ export class CoreLoginSitePage implements OnInit {
                 }
             }
 
-            await this.login(checkResult, foundSite);
+            await this.login(checkResult);
 
             modal.dismiss();
         }
@@ -381,23 +380,17 @@ export class CoreLoginSitePage implements OnInit {
      * Process login to a site.
      *
      * @param siteCheck Response obtained from the site check request.
-     * @param foundSite The site clicked, if any, from the found sites list.
      *
      * @returns Promise resolved after logging in.
      */
-    protected async login(siteCheck: CoreSiteCheckResponse, foundSite?: CoreLoginSiteInfoExtended): Promise<void> {
+    protected async login(siteCheck: CoreSiteCheckResponse): Promise<void> {
         try {
             await CoreSites.checkApplication(siteCheck.config);
 
             CoreForms.triggerFormSubmittedEvent(this.formElement, true);
 
-            const pageParams = { siteCheck };
-            if (foundSite && !this.fixedSites) {
-                pageParams['siteName'] = foundSite.name;
-            }
-
             CoreNavigator.navigate('/login/credentials', {
-                params: pageParams,
+                params: { siteCheck },
             });
         } catch {
             // Ignore errors.

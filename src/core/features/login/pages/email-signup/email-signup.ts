@@ -15,7 +15,6 @@
 import { Component, ViewChild, ElementRef, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 
-import { CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreTextUtils } from '@services/utils/text';
 import { CoreCountry, CoreUtils } from '@services/utils/utils';
@@ -28,6 +27,7 @@ import {
     AuthEmailSignupProfileFieldsCategory,
     AuthEmailSignupSettings,
     CoreLoginHelper,
+    CoreLoginHelperProvider,
 } from '@features/login/services/login-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreForms } from '@singletons/form';
@@ -163,7 +163,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
     protected async fetchData(): Promise<void> {
         try {
             // Get site config.
-            this.siteConfig = await CoreSites.getSitePublicConfig(this.site.getURL());
+            this.siteConfig = await this.site.getPublicConfig();
             this.signupUrl = CorePath.concatenatePaths(this.siteConfig.httpswwwroot, 'login/signup.php');
 
             const configValid = await this.treatSiteConfig();
@@ -238,7 +238,10 @@ export class CoreLoginEmailSignupPage implements OnInit {
      * @returns True if success.
      */
     protected async treatSiteConfig(): Promise<boolean> {
-        if (this.siteConfig?.registerauth == 'email' && !CoreLoginHelper.isEmailSignupDisabled(this.siteConfig)) {
+        if (
+            this.siteConfig?.registerauth == 'email' &&
+            !this.site.isFeatureDisabled(CoreLoginHelperProvider.EMAIL_SIGNUP_FEATURE_NAME)
+        ) {
             this.siteName = await this.site.getSiteName();
 
             this.authInstructions = this.siteConfig.authinstructions;
