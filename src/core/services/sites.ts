@@ -66,6 +66,7 @@ import { CoreLang, CoreLangFormat } from '@services/lang';
 import { CoreNative } from '@features/native/services/native';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreAutoLogoutType, CoreAutoLogout } from '@features/autologout/services/autologout';
+import { CoreCacheManager } from '@services/cache-manager';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 export const CORE_SITE_CURRENT_SITE_ID_CONFIG = 'current_site_id';
@@ -124,6 +125,8 @@ export class CoreSitesProvider {
 
             delete this.siteTables[siteId];
         });
+
+        CoreCacheManager.registerInvalidateListener(() => this.invalidateCaches());
     }
 
     /**
@@ -2106,6 +2109,19 @@ export class CoreSitesProvider {
             ...site,
             ...tokens,
         };
+    }
+
+    /**
+     * Invalidate all sites cache.
+     */
+    protected async invalidateCaches(): Promise<void> {
+        const sites = await this.getSites();
+
+        await Promise.all(
+            sites
+                .map(site => CoreSitesFactory.makeSite(site.id, site.siteUrl))
+                .map(site => site.invalidateCaches()),
+        );
     }
 
 }

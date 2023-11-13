@@ -61,6 +61,14 @@
                     <ion-icon slot="icon-only" aria-hidden="true" name="fas-repeat"></ion-icon>
                 </ion-button>
             </ion-item>
+            <ion-item class="ion-text-wrap">
+                <ion-label>
+                    <p class="item-heading">Invalidate caches</p>
+                </ion-label>
+                <ion-button (click)="invalidateCaches()" aria-label="Invalidate caches" fill="clear" slot="end">
+                    <ion-icon slot="icon-only" aria-hidden="true" name="fas-rotate-right"></ion-icon>
+                </ion-button>
+            </ion-item>
 
             <ion-item class="ion-text-wrap" (click)="openErrorLog()" [detail]="true" button>
                 <ion-label>

@@ -65,6 +65,7 @@ import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/suppo
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CorePath } from '@singletons/path';
 import { CoreErrorLogs } from '@singletons/error-logs';
+import { CoreFilepool } from '@services/filepool';
 
 /**
  * QR Code type enumeration.
@@ -1433,6 +1434,16 @@ export class CoreSite {
             siteUrl: this.siteUrl,
             wsToken: this.token || '',
         }, onProgress);
+    }
+
+    /**
+     * Invalidates all caches related to the site.
+     */
+    async invalidateCaches(): Promise<void> {
+        await Promise.all([
+            CoreFilepool.invalidateAllFiles(this.getId()),
+            this.invalidateWsCache(),
+        ]);
     }
 
     /**
