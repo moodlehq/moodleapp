@@ -1720,6 +1720,7 @@ ion-grid.core-no-grid > ion-row {
 
 .core-footer-shadow [collapsible-footer] {
     box-shadow: var(--drop-shadow-top, none);
+    clip-path: inset(-8px 0px 0px 0px); // Only show shadow at top.
 }
 [collapsible-footer] {
     transition: box-shadow 0.5s;
