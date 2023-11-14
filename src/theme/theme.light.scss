@@ -86,6 +86,8 @@ html {
     --drop-shadow-color: 0, 0, 0, 0.5;
     --drop-shadow-top: 0px 2px 5px rgba(var(--drop-shadow-color));
     --drop-shadow-bottom: 0px -2px 5px rgba(var(--drop-shadow-color));
+    --drop-shadow-end: -2px 0px 5px rgba(var(--drop-shadow-color));
+    --drop-shadow-start: 2px 0px 5px rgba(var(--drop-shadow-color));
 
     --ion-text-color: var(--text-color);
     --ion-text-color-rgb: #{$text-color-rgb};
