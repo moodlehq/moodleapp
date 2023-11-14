@@ -43,6 +43,7 @@ import { CoreSiteError, CoreSiteErrorOptions } from '@classes/errors/siteerror';
 import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
 import { CoreSites } from '@services/sites';
 import { CoreLang, CoreLangFormat } from './lang';
+import { CoreErrorLogs } from '@singletons/error-logs';
 
 /**
  * This service allows performing WS calls and download/upload files.
@@ -412,9 +413,25 @@ export class CoreWSProvider {
         let promise: Promise<HttpResponse<any>>;
 
         if (preSets.siteUrl === undefined) {
-            throw new CoreAjaxError(Translate.instant('core.unexpectederror'));
+            const unexpectedError = new CoreAjaxError(Translate.instant('core.unexpectederror'));
+            CoreErrorLogs.addErrorLog({
+                method,
+                type: 'CoreAjaxError',
+                message: Translate.instant('core.unexpectederror'),
+                time: new Date().getTime(),
+                data,
+            });
+            throw unexpectedError;
         } else if (!CoreNetwork.isOnline()) {
-            throw new CoreAjaxError(Translate.instant('core.networkerrormsg'));
+            const networkError = new CoreAjaxError(Translate.instant('core.networkerrormsg'));
+            CoreErrorLogs.addErrorLog({
+                method,
+                type: 'CoreAjaxError',
+                message: Translate.instant('core.networkerrormsg'),
+                time: new Date().getTime(),
+                data,
+            });
+            throw networkError;
         }
 
         if (preSets.responseExpected === undefined) {
@@ -552,6 +569,10 @@ export class CoreWSProvider {
             }
 
             throw new CoreAjaxError(options, 1, data.status);
+        }).catch(error => {
+            const type = `CoreAjaxError - ${error.errorcode}`;
+            CoreErrorLogs.addErrorLog({ method, type, message: error, time: new Date().getTime(), data });
+            throw error;
         });
     }
 
@@ -782,6 +803,15 @@ export class CoreWSProvider {
             throw new CoreError(Translate.instant('core.serverconnection', {
                 details: CoreTextUtils.getErrorMessageFromError(error) ?? 'Unknown error',
             }));
+        }).catch(err => {
+            CoreErrorLogs.addErrorLog({
+                method,
+                type: String(err),
+                message: String(err.exception),
+                time: new Date().getTime(),
+                data: ajaxData,
+            });
+            throw err;
         });
     }
 
@@ -847,71 +877,84 @@ export class CoreWSProvider {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     syncCall<T = unknown>(method: string, data: any, preSets: CoreWSPreSets): T {
-        if (!preSets) {
-            throw new CoreError(Translate.instant('core.unexpectederror'));
-        } else if (!CoreNetwork.isOnline()) {
-            throw new CoreNetworkError();
+        try {
+            if (!preSets) {
+                throw new CoreError(Translate.instant('core.unexpectederror'));
+            } else if (!CoreNetwork.isOnline()) {
+                throw new CoreNetworkError();
+            }
+
+            preSets.typeExpected = preSets.typeExpected || 'object';
+            if (preSets.responseExpected === undefined) {
+                preSets.responseExpected = true;
+            }
+
+            data = this.convertValuesToString(data || {}, preSets.cleanUnicode);
+            if (data == null) {
+                // Empty cleaned text found.
+                throw new CoreError(Translate.instant('core.unicodenotsupportedcleanerror'));
+            }
+
+            data.wsfunction = method;
+            data.wstoken = preSets.wsToken;
+            const siteUrl = preSets.siteUrl + '/webservice/rest/server.php?moodlewsrestformat=json';
+
+            // Serialize data.
+            data = CoreInterceptor.serialize(data);
+
+            // Perform sync request using XMLHttpRequest.
+            const xhr = new XMLHttpRequest();
+            xhr.open('post', siteUrl, false);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=utf-8');
+
+            xhr.send(data);
+
+            // Get response.
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            data = ('response' in xhr) ? xhr.response : (<any> xhr).responseText;
+
+            // Check status.
+            const status = Math.max(xhr.status === 1223 ? 204 : xhr.status, 0);
+            if (status < 200 || status >= 300) {
+                // Request failed.
+                throw new CoreError(data);
+            }
+
+            // Treat response.
+            data = CoreTextUtils.parseJSON(data);
+
+            // Some moodle web services return null.
+            // If the responseExpected value is set then so long as no data is returned, we create a blank object.
+            if ((!data || !data.data) && !preSets.responseExpected) {
+                data = {};
+            }
+
+            if (!data) {
+                throw new CoreError(Translate.instant('core.serverconnection', {
+                    details: Translate.instant('core.errorinvalidresponse', { method }),
+                }));
+            } else if (typeof data != preSets.typeExpected) {
+                this.logger.warn('Response of type "' + typeof data + '" received, expecting "' + preSets.typeExpected + '"');
+                throw new CoreError(Translate.instant('core.errorinvalidresponse', { method }));
+            }
+
+            if (data.exception !== undefined || data.debuginfo !== undefined) {
+                throw new CoreWSError(data);
+            }
+
+            return data;
+        } catch (err) {
+            let errorType = '';
+
+            if (err instanceof CoreError) {
+                errorType = 'CoreError';
+            } else if (err instanceof CoreWSError) {
+                errorType = 'CoreWSError';
+            }
+
+            CoreErrorLogs.addErrorLog({ method, type: errorType, message: String(err), time: new Date().getTime(), data });
+            throw err;
         }
-
-        preSets.typeExpected = preSets.typeExpected || 'object';
-        if (preSets.responseExpected === undefined) {
-            preSets.responseExpected = true;
-        }
-
-        data = this.convertValuesToString(data || {}, preSets.cleanUnicode);
-        if (data == null) {
-            // Empty cleaned text found.
-            throw new CoreError(Translate.instant('core.unicodenotsupportedcleanerror'));
-        }
-
-        data.wsfunction = method;
-        data.wstoken = preSets.wsToken;
-        const siteUrl = preSets.siteUrl + '/webservice/rest/server.php?moodlewsrestformat=json';
-
-        // Serialize data.
-        data = CoreInterceptor.serialize(data);
-
-        // Perform sync request using XMLHttpRequest.
-        const xhr = new XMLHttpRequest();
-        xhr.open('post', siteUrl, false);
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=utf-8');
-
-        xhr.send(data);
-
-        // Get response.
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        data = ('response' in xhr) ? xhr.response : (<any> xhr).responseText;
-
-        // Check status.
-        const status = Math.max(xhr.status === 1223 ? 204 : xhr.status, 0);
-        if (status < 200 || status >= 300) {
-            // Request failed.
-            throw new CoreError(data);
-        }
-
-        // Treat response.
-        data = CoreTextUtils.parseJSON(data);
-
-        // Some moodle web services return null.
-        // If the responseExpected value is set then so long as no data is returned, we create a blank object.
-        if ((!data || !data.data) && !preSets.responseExpected) {
-            data = {};
-        }
-
-        if (!data) {
-            throw new CoreError(Translate.instant('core.serverconnection', {
-                details: Translate.instant('core.errorinvalidresponse', { method }),
-            }));
-        } else if (typeof data != preSets.typeExpected) {
-            this.logger.warn('Response of type "' + typeof data + '" received, expecting "' + preSets.typeExpected + '"');
-            throw new CoreError(Translate.instant('core.errorinvalidresponse', { method }));
-        }
-
-        if (data.exception !== undefined || data.debuginfo !== undefined) {
-            throw new CoreWSError(data);
-        }
-
-        return data;
     }
 
     /*

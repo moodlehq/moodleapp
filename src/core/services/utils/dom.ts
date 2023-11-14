@@ -60,6 +60,7 @@ import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreLang } from '@services/lang';
 import { CorePasswordModalParams, CorePasswordModalResponse } from '@components/password-modal/password-modal';
 import { CoreWSError } from '@classes/errors/wserror';
+import { CoreErrorLogs } from '@singletons/error-logs';
 
 /*
  * "Utils" service with helper functions for UI, DOM elements and HTML code.
@@ -613,6 +614,7 @@ export class CoreDomUtilsProvider {
 
             // We received an object instead of a string. Search for common properties.
             errorMessage = CoreTextUtils.getErrorMessageFromError(error);
+            CoreErrorLogs.addErrorLog({ message: JSON.stringify(error), type: errorMessage || '', time: new Date().getTime() });
             if (!errorMessage) {
                 // No common properties found, just stringify it.
                 errorMessage = JSON.stringify(error);

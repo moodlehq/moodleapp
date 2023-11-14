@@ -1,0 +1,51 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate"></ion-back-button>
+        </ion-buttons>
+
+        <ion-title>
+            <h1>Error log</h1>
+        </ion-title>
+
+        <ion-buttons slot="end" *ngIf="errorLogs.length">
+            <ion-button fill="clear" (click)="copyInfo()" [attr.aria-label]="'core.settings.copyinfo' | translate">
+                <ion-icon slot="icon-only" name="fas-clipboard" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-list *ngIf="errorLogs.length; else noLogs">
+        <ion-item button lines="full" class="ion-text-wrap" *ngFor="let error of errorLogs">
+            <div class="ion-padding" [collapsible-item]="96">
+                <p class="item-heading">Trace</p>
+                <p class="ion-text-wrap">{{ error.message }}</p>
+
+                <ng-container *ngIf="error.method">
+                    <p class="item-heading">Method</p>
+                    <p class="ion-text-wrap">{{ error.method }}</p>
+                </ng-container>
+
+                <ng-container *ngIf="error.type">
+                    <p class="item-heading">Type</p>
+                    <p class="ion-text-wrap">{{ error.type }}</p>
+                </ng-container>
+
+                <ng-container *ngIf="error.data">
+                    <p class="item-heading">Data</p>
+                    <p class="ion-text-wrap">{{ error.data | json }}</p>
+                </ng-container>
+
+                <div *ngIf="error.time">
+                    <span class="ion-text-end">{{ error.time | coreFormatDate :'strftimedatetimeshort' }}</span>
+                </div>
+            </div>
+        </ion-item>
+    </ion-list>
+    <ng-template #noLogs>
+        <core-empty-box message="No logs available" icon="fas-clipboard-question">
+        </core-empty-box>
+    </ng-template>
+</ion-content>

@@ -34,8 +34,9 @@
             <ion-label>
                 <h2>Enable staging sites ({{stagingSitesCount}})</h2>
             </ion-label>
-            <ion-toggle [(ngModel)]="enableStagingSites" (ionChange)="setEnabledStagingSites($event.detail.checked)"
-                slot="end"></ion-toggle>
+            <ion-toggle [(ngModel)]="enableStagingSites" (ionChange)="setEnabledStagingSites($event.detail.checked)" slot="end">
+            </ion-toggle>
+
         </ion-item>
         <ng-container *ngIf="siteId">
             <ion-item class="ion-text-wrap">
@@ -59,6 +60,12 @@
                 <ion-button (click)="resetUserTours()" aria-label="Reset user tours" fill="clear" slot="end">
                     <ion-icon slot="icon-only" aria-hidden="true" name="fas-broom"></ion-icon>
                 </ion-button>
+            </ion-item>
+
+            <ion-item class="ion-text-wrap" (click)="openErrorLog()" [detail]="true" button>
+                <ion-label>
+                    <p class="item-heading">Error log</p>
+                </ion-label>
             </ion-item>
 
             <ion-item-divider>

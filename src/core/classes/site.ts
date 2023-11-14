@@ -64,6 +64,7 @@ import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CorePath } from '@singletons/path';
+import { CoreErrorLogs } from '@singletons/error-logs';
 
 /**
  * QR Code type enumeration.
@@ -1156,7 +1157,15 @@ export class CoreSite {
                     // Request not executed, enqueue again.
                     this.enqueueRequest(request);
                 } else if (response.error) {
-                    request.deferred.reject(CoreTextUtils.parseJSON(response.exception || ''));
+                    const rejectReason = CoreTextUtils.parseJSON(response.exception || '') as Error | undefined;
+                    request.deferred.reject(rejectReason);
+                    CoreErrorLogs.addErrorLog({
+                        method: request.method,
+                        type: 'CoreSiteError',
+                        message: response.exception ?? '',
+                        time: new Date().getTime(),
+                        data: request.data,
+                    });
                 } else {
                     let responseData = response.data ? CoreTextUtils.parseJSON(response.data) : {};
                     // Match the behaviour of CoreWSProvider.call when no response is expected.
@@ -1170,6 +1179,13 @@ export class CoreSite {
         } catch (error) {
             // Error not specific to a single request, reject all promises.
             requests.forEach((request) => {
+                CoreErrorLogs.addErrorLog({
+                    method: request.method,
+                    type: 'CoreSiteError',
+                    message: String(error) ?? '',
+                    time: new Date().getTime(),
+                    data: request.data,
+                });
                 request.deferred.reject(error);
             });
         }

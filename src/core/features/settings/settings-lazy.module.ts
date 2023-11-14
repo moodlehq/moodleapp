@@ -28,6 +28,7 @@ import { CoreSettingsAboutPage } from '@features/settings/pages/about/about';
 import { CoreSettingsLicensesPage } from '@features/settings/pages/licenses/licenses';
 import { CoreSettingsDeviceInfoPage } from '@features/settings/pages/deviceinfo/deviceinfo';
 import { CoreSettingsDevPage } from '@features/settings/pages/dev/dev';
+import { CoreSettingsErrorLogPage } from '@features/settings/pages/error-log/error-log';
 
 const sectionRoutes: Routes = [
     {
@@ -87,6 +88,10 @@ const routes: Routes = [
         component: CoreSettingsDevPage,
     },
     {
+        path: 'about/deviceinfo/dev/error-log',
+        component: CoreSettingsErrorLogPage,
+    },
+    {
         path: 'about/licenses',
         component: CoreSettingsLicensesPage,
     },
@@ -106,6 +111,7 @@ const routes: Routes = [
         CoreSettingsLicensesPage,
         CoreSettingsDeviceInfoPage,
         CoreSettingsDevPage,
+        CoreSettingsErrorLogPage,
     ],
 })
 export class CoreSettingsLazyModule {}
