@@ -189,8 +189,7 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         }
 
         // Update tags for a11y.
-        this.replaceTags('b', 'strong');
-        this.replaceTags('i', 'em');
+        this.replaceTags(['b', 'i'], ['strong', 'em']);
 
         if (this.shouldAutoSaveDrafts()) {
             this.restoreDraft();
@@ -476,8 +475,8 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         // Modify the DOM directly so the keyboard stays open.
         if (this.rteEnabled) {
             // Update tags for a11y.
-            this.replaceTags('b', 'strong');
-            this.replaceTags('i', 'em');
+            this.replaceTags(['b', 'i'], ['strong', 'em']);
+
             this.editorElement?.removeAttribute('hidden');
             const textareaInputElement = await this.textarea?.getInputElement();
             textareaInputElement?.setAttribute('hidden', '');
@@ -647,39 +646,26 @@ export class CoreEditorRichTextEditorComponent implements OnInit, AfterViewInit,
         document.execCommand(command, false);
 
         // Modern browsers are using non a11y tags, so replace them.
-        if (command == 'bold') {
-            this.replaceTags('b', 'strong');
+        if (command === 'bold') {
+            this.replaceTags(['b'], ['strong']);
         } else if (command == 'italic') {
-            this.replaceTags('i', 'em');
+            this.replaceTags(['i'], ['em']);
         }
     }
 
     /**
      * Replace tags for a11y.
      *
-     * @param originTag      Origin tag to be replaced.
-     * @param destinationTag Destination tag to replace.
+     * @param originTag      Origin tags to be replaced.
+     * @param destinationTag Destination tags to replace.
      */
-    protected replaceTags(originTag: string, destinationTag: string): void {
+    protected replaceTags(originTags: string[], destinationTags: string[]): void {
         if (!this.editorElement) {
             return;
         }
 
-        const elems = Array.from(this.editorElement.getElementsByTagName(originTag));
-
-        elems.forEach((elem) => {
-            const newElem = document.createElement(destinationTag);
-            newElem.innerHTML = elem.innerHTML;
-
-            if (elem.hasAttributes()) {
-                const attrs = Array.from(elem.attributes);
-                attrs.forEach((attr) => {
-                    newElem.setAttribute(attr.name, attr.value);
-                });
-            }
-
-            elem.parentNode?.replaceChild(newElem, elem);
-        });
+        this.editorElement =
+            CoreDom.replaceTags(this.editorElement, originTags, destinationTags);
 
         this.onChange();
     }

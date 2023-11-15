@@ -617,6 +617,54 @@ export class CoreDom {
         return value;
     }
 
+    /**
+     * Replace tags on HTMLElement.
+     *
+     * @param element HTML Element where to replace the tags.
+     * @param originTags Origin tag to be replaced.
+     * @param destinationTags Destination tag to replace.
+     * @returns Element with tags replaced.
+     */
+    static replaceTags<T extends HTMLElement = HTMLElement>(
+        element: T,
+        originTags: string | string[],
+        destinationTags: string | string[],
+    ): T {
+        if (typeof originTags === 'string') {
+            originTags = [originTags];
+        }
+
+        if (typeof destinationTags === 'string') {
+            destinationTags = [destinationTags];
+        }
+
+        if (originTags.length !== destinationTags.length) {
+            // Do nothing, incorrect input.
+            return element;
+        }
+
+        originTags.forEach((originTag, index) => {
+            const destinationTag = destinationTags[index];
+            const elems = Array.from(element.getElementsByTagName(originTag));
+
+            elems.forEach((elem) => {
+                const newElem = document.createElement(destinationTag);
+                newElem.innerHTML = elem.innerHTML;
+
+                if (elem.hasAttributes()) {
+                    const attrs = Array.from(elem.attributes);
+                    attrs.forEach((attr) => {
+                        newElem.setAttribute(attr.name, attr.value);
+                    });
+                }
+
+                elem.parentNode?.replaceChild(newElem, elem);
+            });
+        });
+
+        return element;
+    }
+
 }
 
 /**
