@@ -13,11 +13,12 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
+import { CoreAccountsList, CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSharedFilesHelper } from '@features/sharedfiles/services/sharedfiles-helper';
 import { FileEntry } from '@ionic-native/file/ngx';
 import { CoreFile } from '@services/file';
 import { CoreNavigator } from '@services/navigator';
-import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
+import { CoreSiteBasicInfo } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 
 /**
@@ -30,8 +31,12 @@ import { CoreDomUtils } from '@services/utils/dom';
 export class CoreSharedFilesChooseSitePage implements OnInit {
 
     fileName?: string;
-    sites?: CoreSiteBasicInfo[];
     loaded = false;
+    accountsList: CoreAccountsList = {
+        sameSite: [],
+        otherSites: [],
+        count: 0,
+    };
 
     protected filePath?: string;
     protected fileEntry?: FileEntry;
@@ -89,15 +94,15 @@ export class CoreSharedFilesChooseSitePage implements OnInit {
      * @returns Promise resolved when done.
      */
     protected async loadSites(): Promise<void> {
-        this.sites = await CoreSites.getSites();
+        this.accountsList = await CoreLoginHelper.getAccountsList();
     }
 
     /**
      * Store the file in a certain site.
      *
-     * @param siteId Site ID.
+     * @param site Site.
      */
-    async storeInSite(siteId: string): Promise<void> {
+    async storeInSite(site: CoreSiteBasicInfo): Promise<void> {
         if (!this.fileEntry) {
             return;
         }
@@ -105,7 +110,7 @@ export class CoreSharedFilesChooseSitePage implements OnInit {
         this.loaded = false;
 
         try {
-            await CoreSharedFilesHelper.storeSharedFileInSite(this.fileEntry, siteId, this.isInbox);
+            await CoreSharedFilesHelper.storeSharedFileInSite(this.fileEntry, site.id, this.isInbox);
 
             CoreNavigator.back();
         } finally {

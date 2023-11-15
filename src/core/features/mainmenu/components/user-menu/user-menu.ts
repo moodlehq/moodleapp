@@ -16,7 +16,7 @@ import { CoreConstants } from '@/core/constants';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CoreSite, CoreSiteInfo } from '@classes/site';
 import { CoreFilter } from '@features/filter/services/filter';
-import { CoreLoginSitesComponent } from '@features/login/components/sites/sites';
+import { CoreLoginSitesModalComponent } from '@features/login/components/sites-modal/sites-modal';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
 import { CoreUserSupport } from '@features/user/services/support';
@@ -113,7 +113,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
      * @returns Promise resolved when done.
      */
     protected async loadSiteLogo(currentSite: CoreSite): Promise<void> {
-        if (CoreConstants.CONFIG.forceLoginLogo) {
+        if (CoreConstants.CONFIG.forceLoginLogo || currentSite.isDemoModeSite()) {
             this.siteLogo = 'assets/img/login_logo.png';
             this.siteLogoLoaded = true;
 
@@ -239,7 +239,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
         event.stopPropagation();
 
         const closeAll = await CoreDomUtils.openSideModal<boolean>({
-            component: CoreLoginSitesComponent,
+            component: CoreLoginSitesModalComponent,
             cssClass: 'core-modal-lateral core-modal-lateral-sm',
         });
 

@@ -61,6 +61,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     exceededAttemptsHTML?: SafeHtml | string | null;
     siteConfig?: CoreSitePublicConfigResponse;
     siteCheckError = '';
+    isDemoModeSite = false;
 
     protected siteCheck?: CoreSiteCheckResponse;
     protected eventThrown = false;
@@ -89,8 +90,11 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
                 this.siteConfig = this.siteCheck.config;
             }
 
-            this.siteName = CoreNavigator.getRouteParam('siteName');
-            this.logoUrl = !CoreConstants.CONFIG.forceLoginLogo && CoreNavigator.getRouteParam('logoUrl') || undefined;
+            this.isDemoModeSite = CoreLoginHelper.isDemoModeSite(this.siteUrl);
+            this.siteName = this.isDemoModeSite ? CoreConstants.CONFIG.appname : CoreNavigator.getRouteParam('siteName');
+            this.logoUrl = !CoreConstants.CONFIG.forceLoginLogo && !this.isDemoModeSite ?
+                CoreNavigator.getRouteParam('logoUrl') :
+                undefined;
             this.urlToOpen = CoreNavigator.getRouteParam('urlToOpen');
             this.supportConfig = this.siteConfig && new CoreUserGuestSupportConfig(this.siteConfig);
         } catch (error) {
@@ -191,9 +195,13 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             return;
         }
 
-        this.siteName = this.siteConfig.sitename;
-        this.logoUrl = CoreLoginHelper.getLogoUrl(this.siteConfig);
-        this.showScanQR = await CoreLoginHelper.displayQRInCredentialsScreen(this.siteConfig.tool_mobile_qrcodetype);
+        if (this.isDemoModeSite) {
+            this.showScanQR = false;
+        } else {
+            this.siteName = this.siteConfig.sitename;
+            this.logoUrl = CoreLoginHelper.getLogoUrl(this.siteConfig);
+            this.showScanQR = await CoreLoginHelper.displayQRInCredentialsScreen(this.siteConfig.tool_mobile_qrcodetype);
+        }
 
         const disabledFeatures = CoreLoginHelper.getDisabledFeatures(this.siteConfig);
         this.canSignup = this.siteConfig.registerauth == 'email' &&

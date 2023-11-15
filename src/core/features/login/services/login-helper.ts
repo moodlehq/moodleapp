@@ -374,14 +374,23 @@ export class CoreLoginHelperProvider {
     }
 
     /**
-     * Get Available sites (includes staging sites if are enabled).
+     * Get Available sites (includes staging sites if are enabled). It doesn't include demo mode site.
      *
      * @returns Available sites.
      */
     async getAvailableSites(): Promise<CoreLoginSiteInfo[]> {
         const hasEnabledStagingSites = await CoreSettingsHelper.hasEnabledStagingSites();
 
-        return hasEnabledStagingSites ? CoreConstants.CONFIG.sites : CoreConstants.CONFIG.sites.filter(site => !site.staging);
+        return CoreConstants.CONFIG.sites.filter(site => (!site.staging || hasEnabledStagingSites) && !site.demoMode);
+    }
+
+    /**
+     * Get demo mode site info. This function doesn't check if demo mode is enabled.
+     *
+     * @returns Demo mode site info, undefined if no demo mode site.
+     */
+    getDemoModeSiteInfo(): CoreLoginSiteInfo | undefined {
+        return CoreConstants.CONFIG.sites.find(site => site.demoMode);
     }
 
     /**
@@ -453,6 +462,14 @@ export class CoreLoginHelperProvider {
      * @returns Path and params.
      */
     async getAddSiteRouteInfo(showKeyboard?: boolean): Promise<[string, Params]> {
+        if (CoreConstants.CONFIG.demoMode) {
+            const demoModeSite = this.getDemoModeSiteInfo();
+
+            if (demoModeSite) {
+                return ['/login/credentials', { siteUrl: demoModeSite.url }];
+            }
+        }
+
         const sites = await this.getAvailableSites();
 
         if (sites.length === 1) {
@@ -583,7 +600,10 @@ export class CoreLoginHelperProvider {
         const sites = await this.getAvailableSites();
 
         if (sites.length) {
-            return sites.some((site) => CoreUrl.sameDomainAndPath(siteUrl, site.url));
+            const demoModeSite = this.getDemoModeSiteInfo();
+
+            return sites.some((site) => CoreUrl.sameDomainAndPath(siteUrl, site.url)) ||
+                (!!demoModeSite && CoreUrl.sameDomainAndPath(siteUrl, demoModeSite.url));
         } else if (CoreConstants.CONFIG.multisitesdisplay == 'sitefinder' && CoreConstants.CONFIG.onlyallowlistedsites &&
                 checkSiteFinder) {
             // Call the sites finder to validate the site.
@@ -1281,10 +1301,9 @@ export class CoreLoginHelperProvider {
     /**
      * Get the accounts list classified per site.
      *
-     * @param currentSiteId If loggedin, current Site Id.
      * @returns Promise resolved with account list.
      */
-    async getAccountsList(currentSiteId?: string): Promise<CoreAccountsList> {
+    async getAccountsList(): Promise<CoreAccountsList> {
         const sites = await CoreUtils.ignoreErrors(CoreSites.getSortedSites(), [] as CoreSiteBasicInfo[]);
 
         const accountsList: CoreAccountsList = {
@@ -1292,14 +1311,11 @@ export class CoreLoginHelperProvider {
             otherSites: [],
             count: sites.length,
         };
-
+        const currentSiteId = CoreSites.getCurrentSiteId();
         let siteUrl = '';
 
         if (currentSiteId) {
-            const index = sites.findIndex((site) => site.id == currentSiteId);
-
-            accountsList.currentSite = sites.splice(index, 1)[0];
-            siteUrl = accountsList.currentSite.siteUrlWithoutProtocol;
+            siteUrl = sites.find((site) => site.id == currentSiteId)?.siteUrlWithoutProtocol ?? '';
         }
 
         const otherSites: Record<string, CoreSiteBasicInfo[]> = {};
@@ -1308,7 +1324,9 @@ export class CoreLoginHelperProvider {
         await Promise.all(sites.map(async (site) => {
             site.badge = await CoreUtils.ignoreErrors(CorePushNotifications.getSiteCounter(site.id)) || 0;
 
-            if (site.siteUrlWithoutProtocol == siteUrl) {
+            if (site.id === currentSiteId) {
+                accountsList.currentSite = site;
+            } else if (site.siteUrlWithoutProtocol == siteUrl) {
                 accountsList.sameSite.push(site);
             } else {
                 if (!otherSites[site.siteUrlWithoutProtocol]) {
@@ -1497,6 +1515,23 @@ export class CoreLoginHelperProvider {
         return CoreTextUtils.parseJSON<Record<string, number>>(passwordResetsJson, {});
     }
 
+    /**
+     * Check if a URL belongs to the demo mode site.
+     *
+     * @returns Whether the URL belongs to the demo mode site.
+     */
+    isDemoModeSite(url: string): boolean {
+        const demoSiteData = CoreLoginHelper.getDemoModeSiteInfo();
+        if (!demoSiteData) {
+            return false;
+        }
+
+        const demoSiteUrl = CoreTextUtils.addEndingSlash(CoreUrlUtils.removeProtocolAndWWW(demoSiteData.url));
+        url = CoreTextUtils.addEndingSlash(CoreUrlUtils.removeProtocolAndWWW(url));
+
+        return demoSiteUrl.indexOf(url) === 0;
+    }
+
 }
 
 export const CoreLoginHelper = makeSingleton(CoreLoginHelperProvider);
@@ -1504,10 +1539,10 @@ export const CoreLoginHelper = makeSingleton(CoreLoginHelperProvider);
 /**
  * Accounts list for selecting sites interfaces.
  */
-export type CoreAccountsList = {
-    currentSite?: CoreSiteBasicInfo; // If logged in, current site info.
-    sameSite: CoreSiteBasicInfo[]; // If logged in, accounts info on the same site.
-    otherSites: CoreSiteBasicInfo[][]; // Other accounts in other sites.
+export type CoreAccountsList<T extends CoreSiteBasicInfo = CoreSiteBasicInfo> = {
+    currentSite?: T; // If logged in, current site info.
+    sameSite: T[]; // If logged in, accounts info on the same site.
+    otherSites: T[][]; // Other accounts in other sites.
     count: number; // Number of sites.
 };
 

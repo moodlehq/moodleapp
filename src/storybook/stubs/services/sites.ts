@@ -12,15 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import school from '@/assets/storybook/sites/school.json';
+import { companyLisaSite } from '@/assets/storybook/sites/companylisa';
+import { schoolBarbaraSite } from '@/assets/storybook/sites/schoolbarbara';
+import { schoolJefferySite } from '@/assets/storybook/sites/schooljeffery';
 import { CoreSiteFixture, CoreSiteStub } from '@/storybook/stubs/classes/site';
-import { CoreSitesProvider } from '@services/sites';
+import { CoreError } from '@classes/errors/error';
+import { CoreSite } from '@classes/site';
+import { SiteDBEntry } from '@services/database/sites';
+import { CoreSiteBasicInfo, CoreSitesProvider } from '@services/sites';
 import { makeSingleton } from '@singletons';
 
 /**
  * Sites provider stub.
  */
 export class CoreSitesProviderStub extends CoreSitesProvider {
+
+    protected static readonly SITES_FIXTURES = [schoolBarbaraSite, schoolJefferySite, companyLisaSite];
 
     /**
      * @inheritdoc
@@ -30,9 +37,45 @@ export class CoreSitesProviderStub extends CoreSitesProvider {
     /**
      * @inheritdoc
      */
+    async getSites(ids?: string[]): Promise<CoreSiteBasicInfo[]> {
+        const sites = CoreSitesProviderStub.SITES_FIXTURES.map(site => (<SiteDBEntry> {
+            id: site.id,
+            siteUrl: site.info.siteurl,
+            info: JSON.stringify(site.info),
+            token: '',
+            privateToken: '',
+            loggedOut: 0,
+        }));
+
+        return this.siteDBRecordsToBasicInfo(sites, ids);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async getSite(siteId?: string): Promise<CoreSite> {
+        if (!siteId) {
+            if (this.currentSite) {
+                return this.currentSite;
+            }
+
+            throw new CoreError('No current site found.');
+        }
+
+        const siteFixture = CoreSitesProviderStub.SITES_FIXTURES.find(site => site.id === siteId);
+        if (!siteFixture) {
+            throw new CoreError('SiteId not found.');
+        }
+
+        return new CoreSiteStub(siteFixture);
+    }
+
+    /**
+     * @inheritdoc
+     */
     stubCurrentSite(fixture?: CoreSiteFixture): CoreSiteStub {
         if (!this.currentSite) {
-            this.currentSite = new CoreSiteStub(fixture ?? school);
+            this.currentSite = new CoreSiteStub(fixture ?? schoolBarbaraSite);
         }
 
         return this.getRequiredCurrentSite();

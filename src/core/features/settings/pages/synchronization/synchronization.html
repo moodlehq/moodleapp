@@ -17,7 +17,7 @@
 </ion-header>
 <ion-content class="limited-width">
     <core-loading [hideUntil]="sitesLoaded">
-        <ion-list class="core-sitelist limited-width">
+        <ion-list class="limited-width">
             <ion-item-divider>
                 <ion-label>
                     <h2>{{ 'core.settings.syncsettings' | translate }}</h2>
@@ -51,61 +51,25 @@
                     </ion-label>
                 </ion-item-divider>
 
-                <ion-card *ngIf="accountsList.currentSite">
-                    <ion-item-divider sticky="true" class="core-sitelist-sitename">
-                        <ion-label>
-                            <p class="item-heading">
-                                <core-format-text [text]="accountsList.currentSite.siteName" clean="true"
-                                    [siteId]="accountsList.currentSite.id"></core-format-text>
-                            </p>
-                            <p><a [href]="accountsList.currentSite.siteUrl" core-link autoLogin="yes">{{
-                                    accountsList.currentSite.siteUrlWithoutProtocol }}</a>
-                            </p>
-                        </ion-label>
-                    </ion-item-divider>
+                <core-sites-list [accountsList]="accountsList">
+                    <ng-template #siteLabel let-site="site">
+                        <p class="text-danger" *ngIf="site.loggedOut">{{ 'core.settings.logintosync' | translate }}</p>
+                    </ng-template>
 
-                    <ion-item class="item-current">
-                        <ng-container *ngTemplateOutlet="siteSync; context: {site: accountsList.currentSite}"></ng-container>
-                    </ion-item>
-
-                    <ion-item *ngFor="let site of accountsList.sameSite">
-                        <ng-container *ngTemplateOutlet="siteSync; context: {site: site}"></ng-container>
-                    </ion-item>
-                </ion-card>
-
-                <ion-card *ngFor="let sites of accountsList.otherSites">
-                    <ion-item-divider sticky="true" *ngIf="sites[0]" class="core-sitelist-sitename">
-                        <ion-label>
-                            <p class="item-heading">
-                                <core-format-text [text]="sites[0].siteName" clean="true" [siteId]="sites[0].id"></core-format-text>
-                            </p>
-                            <p><a [href]="sites[0].siteUrl" core-link autoLogin="no">{{ sites[0].siteUrlWithoutProtocol }}</a></p>
-                        </ion-label>
-                    </ion-item-divider>
-
-                    <ion-item *ngFor="let site of sites">
-                        <ng-container *ngTemplateOutlet="siteSync; context: {site: site}"></ng-container>
-                    </ion-item>
-                </ion-card>
+                    <ng-template #siteItem let-site="site">
+                        <core-button-with-spinner [loading]="isSynchronizing(site.id)" slot="end" *ngIf="!site.loggedOut">
+                            <ion-button fill="clear" (click)="synchronize(site.id)"
+                                [attr.aria-label]="'core.settings.synchronizenow' | translate">
+                                <ion-icon name="fas-rotate" slot="icon-only" aria-hidden="true"></ion-icon>
+                            </ion-button>
+                        </core-button-with-spinner>
+                        <ion-button fill="clear" (click)="login(site.id)" [attr.aria-label]="'core.login.login' | translate"
+                            *ngIf="site.loggedOut" slot="end">
+                            <ion-icon name="fas-right-to-bracket" slot="icon-only" aria-hidden="true"></ion-icon>
+                        </ion-button>
+                    </ng-template>
+                </core-sites-list>
             </ng-container>
         </ion-list>
     </core-loading>
 </ion-content>
-
-<!-- Template to render a site to sync. -->
-<ng-template #siteSync let-site="site">
-    <core-user-avatar [user]="site" slot="start" [linkProfile]="false" [siteId]="site.id"></core-user-avatar>
-
-    <ion-label>
-        <p class="item-heading">{{site.fullname}}</p>
-        <p class="text-danger" *ngIf="site.loggedOut">{{ 'core.settings.logintosync' | translate }}</p>
-    </ion-label>
-    <core-button-with-spinner [loading]="isSynchronizing(site.id)" slot="end" *ngIf="!site.loggedOut">
-        <ion-button fill="clear" (click)="synchronize(site.id)" [attr.aria-label]="'core.settings.synchronizenow' | translate">
-            <ion-icon name="fas-rotate" slot="icon-only" aria-hidden="true"></ion-icon>
-        </ion-button>
-    </core-button-with-spinner>
-    <ion-button fill="clear" (click)="login(site.id)" [attr.aria-label]="'core.login.login' | translate" *ngIf="site.loggedOut" slot="end">
-        <ion-icon name="fas-right-to-bracket" slot="icon-only" aria-hidden="true"></ion-icon>
-    </ion-button>
-</ng-template>

@@ -7,6 +7,10 @@ For more information about upgrading, read the official documentation: https://m
 - Starting with this release, this file will only document breaking changes for APIs exposed to site plugins. Internal changes will no longer be documented.
 - CoreCache has been deprecated, use plain object as in-memory stores instead.
 
+=== 4.4.0 ===
+
+ - Renamed CoreLoginSitesComponent to CoreLoginSitesModalComponent to make it clear that it's a modal and to avoid confusing it with the new CoreSitesListComponent.
+
 === 4.3.0 ===
 
  - CoreSiteBasicInfo fullName attribute has changed to fullname and avatar to userpictureurl to match user fields.

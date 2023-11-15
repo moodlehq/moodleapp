@@ -1,0 +1,48 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-button fill="clear" (click)="close($event)" [attr.aria-label]="'core.back' | translate" class="ion-back-button">
+                <ion-icon ios="chevron-back" md="arrow-back-sharp" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+
+        <ion-title>
+            <h1>{{ 'core.mainmenu.switchaccount' | translate }}</h1>
+        </ion-title>
+
+        <ion-buttons slot="end">
+            <ion-button fill="clear" *ngIf="accountsList.count > 1" (click)="toggleDelete()"
+                [attr.aria-label]="'core.login.toggleremove' | translate">
+                <ion-icon slot="icon-only" name="fas-pen" aria-hidden="true"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <core-loading [hideUntil]="loaded">
+        <core-sites-list [accountsList]="accountsList" [sitesClickable]="true" [currentSiteClickable]="false"
+            (onSiteClicked)="login($event)">
+            <ng-template #siteItem let-site="site" let-isCurrentSite="isCurrentSite">
+                <ion-icon *ngIf="isCurrentSite" color="success" name="fas-check"></ion-icon>
+
+                <ng-container *ngIf="!isCurrentSite">
+                    <ion-badge slot="end" *ngIf="!showDelete && site.badge" @coreShowHideAnimation>
+                        <span aria-hidden="true">{{site.badge}}</span>
+                        <span class="sr-only">{{ 'core.login.sitebadgedescription' | translate:{ count: site.badge }
+                            }}</span>
+                    </ion-badge>
+                    <ion-button *ngIf="showDelete" slot="end" fill="clear" color="danger" (click)="deleteSite($event, site)"
+                        [attr.aria-label]="'core.login.removeaccount' | translate" [@coreSlideInOut]="'fromRight'">
+                        <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true"></ion-icon>
+                    </ion-button>
+                </ng-container>
+            </ng-template>
+        </core-sites-list>
+    </core-loading>
+    <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end">
+        <ion-fab-button (click)="add($event)" [attr.aria-label]="'core.login.add' | translate">
+            <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>
+            <span class="sr-only">{{ 'core.login.add' | translate }}</span>
+        </ion-fab-button>
+    </ion-fab>
+</ion-content>

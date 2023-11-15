@@ -22,12 +22,11 @@ import { CoreFilter } from '@features/filter/services/filter';
 import { CoreAnimations } from '@components/animations';
 
 /**
- * Page that displays a "splash screen" while the app is being initialized.
+ * Page that displays the list of sites stored in the device.
  */
 @Component({
     selector: 'page-core-login-sites',
     templateUrl: 'sites.html',
-    styleUrls: ['../../sitelist.scss'],
     animations: [CoreAnimations.SLIDE_IN_OUT, CoreAnimations.SHOW_HIDE],
 })
 export class CoreLoginSitesPage implements OnInit {
@@ -102,18 +101,14 @@ export class CoreLoginSitesPage implements OnInit {
     /**
      * Login in a site.
      *
-     * @param event Click event.
-     * @param siteId The site ID.
+     * @param site The site.
      * @returns Promise resolved when done.
      */
-    async login(event: Event, siteId: string): Promise<void> {
-        event.preventDefault();
-        event.stopPropagation();
-
+    async login(site: CoreSiteBasicInfo): Promise<void> {
         const modal = await CoreDomUtils.showModalLoading();
 
         try {
-            const loggedIn = await CoreSites.loadSite(siteId);
+            const loggedIn = await CoreSites.loadSite(site.id);
 
             if (loggedIn) {
                 await CoreNavigator.navigateToSiteHome();

@@ -32,7 +32,6 @@ import { CoreNavigator } from '@services/navigator';
 @Component({
     selector: 'page-core-app-settings-synchronization',
     templateUrl: 'synchronization.html',
-    styleUrls: ['../../../login/sitelist.scss'],
 })
 export class CoreSettingsSynchronizationPage implements OnInit, OnDestroy {
 
@@ -105,10 +104,8 @@ export class CoreSettingsSynchronizationPage implements OnInit, OnDestroy {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        const currentSiteId = CoreSites.getCurrentSiteId();
-
         try {
-            this.accountsList = await CoreLoginHelper.getAccountsList(currentSiteId);
+            this.accountsList = await CoreLoginHelper.getAccountsList();
         } catch {
             // Ignore errors.
         }

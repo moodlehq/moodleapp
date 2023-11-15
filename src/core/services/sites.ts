@@ -1300,11 +1300,24 @@ export class CoreSitesProvider {
     async getSites(ids?: string[]): Promise<CoreSiteBasicInfo[]> {
         const sites = await this.sitesTable.getMany();
 
+        return this.siteDBRecordsToBasicInfo(sites, ids);
+    }
+
+    /**
+     * Convert sites DB records to site basic info.
+     *
+     * @param sites DB records.
+     * @param ids IDs of sites to return, undefined to return them all.
+     * @returns Sites basic info.
+     */
+    protected siteDBRecordsToBasicInfo(sites: SiteDBEntry[], ids?: string[]): CoreSiteBasicInfo[] {
         const formattedSites: CoreSiteBasicInfo[] = [];
+
         sites.forEach((site) => {
             if (!ids || ids.indexOf(site.id) > -1) {
-                // Parse info.
+                const isDemoModeSite = CoreLoginHelper.isDemoModeSite(site.siteUrl);
                 const siteInfo = site.info ? <CoreSiteInfo> CoreTextUtils.parseJSON(site.info) : undefined;
+
                 const basicInfo: CoreSiteBasicInfo = {
                     id: site.id,
                     siteUrl: site.siteUrl,
@@ -1312,10 +1325,11 @@ export class CoreSitesProvider {
                     fullname: siteInfo?.fullname,
                     firstname: siteInfo?.firstname,
                     lastname: siteInfo?.lastname,
-                    siteName: siteInfo?.sitename,
+                    siteName: isDemoModeSite ? CoreConstants.CONFIG.appname : siteInfo?.sitename,
                     userpictureurl: siteInfo?.userpictureurl,
                     siteHomeId: siteInfo?.siteid || 1,
                     loggedOut: !!site.loggedOut,
+                    isDemoModeSite,
                 };
                 formattedSites.push(basicInfo);
             }
@@ -2195,6 +2209,7 @@ export type CoreSiteBasicInfo = {
     badge?: number; // Badge to display in the site.
     siteHomeId?: number; // Site home ID.
     loggedOut: boolean; // If Site is logged out.
+    isDemoModeSite: boolean;
 };
 
 /**
@@ -2288,6 +2303,11 @@ export type CoreLoginSiteInfo = {
      * Class to apply to site item.
      */
     className?: string;
+
+    /**
+     * Whether the site is for demo mode usage.
+     */
+    demoMode?: boolean;
 };
 
 /**

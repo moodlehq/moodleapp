@@ -46,6 +46,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
 
     credForm: FormGroup;
     siteUrl!: string;
+    isDemoModeSite = false;
     logoUrl?: string;
     showForgottenPassword = true;
     showUserAvatar = false;
@@ -101,6 +102,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             }
 
             this.siteUrl = site.getURL();
+            this.isDemoModeSite = site.isDemoModeSite();
 
             this.siteInfo = {
                 id: this.siteId,
@@ -112,6 +114,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
                 siteName: await site.getSiteName(),
                 userpictureurl: site.infos.userpictureurl,
                 loggedOut: true, // Not used.
+                isDemoModeSite: this.isDemoModeSite,
             };
 
             this.username = site.infos.username;
@@ -185,7 +188,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
 
         await CoreSites.checkApplication(this.siteConfig);
 
-        this.logoUrl = CoreLoginHelper.getLogoUrl(this.siteConfig);
+        this.logoUrl = this.isDemoModeSite ? undefined : CoreLoginHelper.getLogoUrl(this.siteConfig);
     }
 
     /**
