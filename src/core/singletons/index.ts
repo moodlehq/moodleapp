@@ -16,10 +16,10 @@ import {
     AbstractType,
     ApplicationInitStatus,
     ApplicationRef,
-    ComponentFactoryResolver as ComponentFactoryResolverService,
     Injector,
     NgZone as NgZoneService,
     Type,
+    EnvironmentInjector,
 } from '@angular/core';
 import { Router as RouterService } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -206,7 +206,6 @@ export const Http = makeSingleton(HttpClient);
 export const ActionSheetController = makeSingleton(ActionSheetControllerService);
 export const AngularDelegate = makeSingleton(AngularDelegateService);
 export const AlertController = makeSingleton(AlertControllerService);
-export const ComponentFactoryResolver = makeSingleton(ComponentFactoryResolverService);
 export const LoadingController = makeSingleton(LoadingControllerService);
 export const ModalController = makeSingleton(ModalControllerService);
 export const PopoverController = makeSingleton(PopoverControllerService);
@@ -227,6 +226,7 @@ export const Translate: Omit<CoreSingletonProxy<TranslateService>, 'instant'> & 
 // Async singletons.
 export const AngularFrameworkDelegate = asyncInstance(async () => {
     const injector = await singletonsInjector;
+    const environmentInjector = await injector.get(EnvironmentInjector);
 
-    return AngularDelegate.create(ComponentFactoryResolver.instance, injector);
+    return AngularDelegate.create(environmentInjector, injector);
 });

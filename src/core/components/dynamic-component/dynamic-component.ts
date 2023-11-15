@@ -20,7 +20,6 @@ import {
     OnChanges,
     DoCheck,
     ViewContainerRef,
-    ComponentFactoryResolver,
     ComponentRef,
     KeyValueDiffers,
     SimpleChange,
@@ -85,7 +84,6 @@ export class CoreDynamicComponent<ComponentClass> implements OnChanges, DoCheck 
     protected lastComponent?: Type<unknown>;
 
     constructor(
-        protected factoryResolver: ComponentFactoryResolver,
         differs: KeyValueDiffers,
         protected cdr: ChangeDetectorRef,
         protected element: ElementRef,
@@ -172,8 +170,7 @@ export class CoreDynamicComponent<ComponentClass> implements OnChanges, DoCheck 
         } else {
             try {
                 // Create the component and add it to the container.
-                const factory = this.factoryResolver.resolveComponentFactory(this.component);
-                const componentRef = this.container.createComponent(factory);
+                const componentRef = this.container.createComponent(this.component);
 
                 this.instance = componentRef.instance;
             } catch (ex) {
