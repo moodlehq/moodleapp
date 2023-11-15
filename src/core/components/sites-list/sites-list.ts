@@ -14,7 +14,7 @@
 
 import { Component, ContentChild, Input, Output, TemplateRef, EventEmitter } from '@angular/core';
 
-import { CoreSiteBasicInfo } from '@services/sites';
+import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
 import { CoreAccountsList } from '@features/login/services/login-helper';
 
 /**
@@ -75,6 +75,16 @@ export class CoreSitesListComponent<T extends CoreSiteBasicInfo> {
         ev.stopPropagation();
 
         this.onSiteClicked.emit(site);
+    }
+
+    /**
+     * Check whether site URL should be displayed.
+     *
+     * @param site Site to check.
+     * @returns Whether to display URL.
+     */
+    displaySiteUrl(site: CoreSiteBasicInfo): boolean {
+        return CoreSites.shouldDisplayInformativeLinks(site.siteUrl);
     }
 
 }

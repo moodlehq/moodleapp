@@ -45,7 +45,7 @@
                             </ion-label>
                         </ion-chip>
                     </ion-label>
-                    <ion-button fill="clear" [href]="courseUrl" core-link [showBrowserWarning]="false"
+                    <ion-button *ngIf="displayOpenInBrowser" fill="clear" [href]="courseUrl" core-link [showBrowserWarning]="false"
                         [attr.aria-label]="'core.openinbrowser' | translate" slot="end">
                         <ion-icon name="fas-up-right-from-square" slot="icon-only" aria-hidden="true"></ion-icon>
                     </ion-button>

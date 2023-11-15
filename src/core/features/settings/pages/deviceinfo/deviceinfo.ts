@@ -76,6 +76,7 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
     currentLangName?: string;
     fsClickable = false;
     showDevOptions = false;
+    displaySiteUrl = false;
     protected devOptionsClickCounter = 0;
     protected devOptionsForced = false;
     protected devOptionsClickTimeout?: number;
@@ -201,6 +202,7 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
 
         this.deviceInfo.siteUrl = currentSite?.getURL() || firstUrl || undefined;
         this.deviceInfo.isPrefixedUrl = !!sites.length;
+        this.displaySiteUrl = !!this.deviceInfo.siteUrl && CoreSites.shouldDisplayInformativeLinks(this.deviceInfo.siteUrl);
 
         if (fileProvider.isAvailable()) {
             const basepath = await fileProvider.getBasePath();

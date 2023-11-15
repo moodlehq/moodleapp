@@ -48,6 +48,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
     siteUrl!: string;
     isDemoModeSite = false;
     logoUrl?: string;
+    displaySiteUrl = false;
     showForgottenPassword = true;
     showUserAvatar = false;
     isBrowserSSO = false;
@@ -103,6 +104,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
 
             this.siteUrl = site.getURL();
             this.isDemoModeSite = site.isDemoModeSite();
+            this.displaySiteUrl = CoreSites.shouldDisplayInformativeLinks(site);
 
             this.siteInfo = {
                 id: this.siteId,
@@ -114,7 +116,6 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
                 siteName: await site.getSiteName(),
                 userpictureurl: site.infos.userpictureurl,
                 loggedOut: true, // Not used.
-                isDemoModeSite: this.isDemoModeSite,
             };
 
             this.username = site.infos.username;

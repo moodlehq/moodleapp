@@ -15,8 +15,9 @@
 <ion-content>
     <core-loading [hideUntil]="siteLogoLoaded && handlersLoaded">
         <ion-list>
-            <ion-item button class="core-usermenu-siteinfo ion-text-wrap" *ngIf="siteInfo" lines="full" detail="false" [href]="siteUrl"
-                core-link auto-login="yes">
+            <!-- Site info with URL and clickable. -->
+            <ion-item button class="core-usermenu-siteinfo ion-text-wrap" *ngIf="siteInfo && displaySiteUrl" lines="full" detail="false"
+                [href]="siteUrl" core-link auto-login="yes">
                 <ion-label>
                     <!-- Show site logo. -->
                     <img class="core-usermenu-site-logo" *ngIf="siteLogo && siteLogoLoaded" [src]="siteLogo" role="presentation" alt=""
@@ -28,6 +29,19 @@
                     <a [href]="siteUrl" core-link auto-login="yes" class="core-usermenu-siteurl">{{ siteUrl }}</a>
                 </ion-label>
             </ion-item>
+            <!-- Site info without URL and not clickable. -->
+            <ion-item class="core-usermenu-siteinfo ion-text-wrap" *ngIf="siteInfo && !displaySiteUrl" lines="full" detail="false">
+                <ion-label>
+                    <!-- Show site logo. -->
+                    <img class="core-usermenu-site-logo" *ngIf="siteLogo && siteLogoLoaded" [src]="siteLogo" role="presentation" alt=""
+                        onError="this.class='image-not-found'">
+                    <p class="core-usermenu-sitename">
+                        <core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0" [wsNotFiltered]="true">
+                        </core-format-text>
+                    </p>
+                </ion-label>
+            </ion-item>
+
             <ion-item button class="core-usermenu-handler ion-text-wrap" *ngIf="siteInfo" lines="full" (click)="openUserProfile($event)"
                 detail="true" [attr.aria-label]="'core.user.profile' | translate">
                 <core-user-avatar [user]="siteInfo" [userId]="siteInfo.userid" [linkProfile]="false" slot="start"></core-user-avatar>

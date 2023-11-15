@@ -165,8 +165,11 @@ export class AddonModForumDiscussionPage implements OnInit, AfterViewInit, OnDes
             return;
         }
 
+        const currentSite = CoreSites.getCurrentSite();
         this.isOnline = CoreNetwork.isOnline();
-        this.externalUrl = CoreSites.getCurrentSite()?.createSiteUrl('/mod/forum/discuss.php', { d: this.discussionId.toString() });
+        this.externalUrl = currentSite && CoreSites.shouldDisplayInformativeLinks(currentSite) ?
+            currentSite.createSiteUrl('/mod/forum/discuss.php', { d: this.discussionId.toString() }) :
+            undefined;
         this.onlineObserver = CoreNetwork.onChange().subscribe(() => {
             // Execute the callback in the Angular zone, so change detection doesn't stop working.
             NgZone.run(() => {

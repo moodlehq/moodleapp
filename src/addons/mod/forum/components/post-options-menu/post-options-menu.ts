@@ -86,6 +86,10 @@ export class AddonModForumPostOptionsMenuComponent implements OnInit {
      */
     protected setOpenInBrowserUrl(): void {
         const site = CoreSites.getRequiredCurrentSite();
+        if (!CoreSites.shouldDisplayInformativeLinks(site)) {
+            return;
+        }
+
         this.url = site.createSiteUrl('/mod/forum/discuss.php', { d: this.post.discussionid.toString() }, 'p' + this.post.id);
     }
 

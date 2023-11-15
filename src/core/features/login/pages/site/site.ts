@@ -629,6 +629,20 @@ export class CoreLoginSitePage implements OnInit {
         CoreNavigator.navigate('/settings');
     }
 
+    /**
+     * Check whether site URL should be displayed.
+     *
+     * @param siteUrl Site URL.
+     * @returns Whether to display URL.
+     */
+    displaySiteUrl(siteUrl?: string): boolean {
+        if (!siteUrl) {
+            return false;
+        }
+
+        return CoreSites.shouldDisplayInformativeLinks(siteUrl);
+    }
+
 }
 
 /**

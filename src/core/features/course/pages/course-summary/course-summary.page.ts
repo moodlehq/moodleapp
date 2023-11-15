@@ -72,6 +72,7 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
     courseUrl = '';
     progress?: number;
     courseMenuHandlers: CoreCourseOptionsMenuHandlerToDisplay[] = [];
+    displayOpenInBrowser = false;
 
     protected actionSheet?: HTMLIonActionSheetElement;
     protected waitStart = 0;
@@ -137,6 +138,7 @@ export class CoreCourseSummaryPage implements OnInit, OnDestroy {
         const currentSiteUrl = CoreSites.getRequiredCurrentSite().getURL();
         this.enrolUrl = CorePath.concatenatePaths(currentSiteUrl, 'enrol/index.php?id=' + this.courseId);
         this.courseUrl = CorePath.concatenatePaths(currentSiteUrl, 'course/view.php?id=' + this.courseId);
+        this.displayOpenInBrowser = CoreSites.shouldDisplayInformativeLinks();
 
         await this.getCourse();
     }

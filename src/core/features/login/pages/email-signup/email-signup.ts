@@ -53,6 +53,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
     signupForm: FormGroup;
     siteUrl!: string;
     isDemoModeSite = false;
+    displaySiteUrl = false;
     siteConfig?: CoreSitePublicConfigResponse;
     siteName?: string;
     authInstructions = '';
@@ -130,6 +131,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
 
         this.siteUrl = siteUrl;
         this.isDemoModeSite = CoreLoginHelper.isDemoModeSite(this.siteUrl);
+        this.displaySiteUrl = CoreSites.shouldDisplayInformativeLinks(this.siteUrl);
 
         // Fetch the data.
         this.fetchData().finally(() => {

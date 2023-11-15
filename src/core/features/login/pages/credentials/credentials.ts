@@ -62,6 +62,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
     siteConfig?: CoreSitePublicConfigResponse;
     siteCheckError = '';
     isDemoModeSite = false;
+    displaySiteUrl = false;
 
     protected siteCheck?: CoreSiteCheckResponse;
     protected eventThrown = false;
@@ -97,6 +98,7 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
                 undefined;
             this.urlToOpen = CoreNavigator.getRouteParam('urlToOpen');
             this.supportConfig = this.siteConfig && new CoreUserGuestSupportConfig(this.siteConfig);
+            this.displaySiteUrl = CoreSites.shouldDisplayInformativeLinks(this.siteUrl);
         } catch (error) {
             CoreDomUtils.showErrorModal(error);
 
