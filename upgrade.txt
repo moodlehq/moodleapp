@@ -1,5 +1,11 @@
-This files describes API changes in the Moodle Mobile app,
-information provided here is intended especially for developers.
+This file describes API changes in the Moodle App that affect site plugins, information provided here is intended especially for developers.
+
+For more information about upgrading, read the official documentation: https://moodledev.io/general/app/upgrading/
+
+=== 4.4.0 ===
+
+- Starting with this release, this file will only document breaking changes for APIs exposed to site plugins. Internal changes will no longer be documented.
+- CoreCache has been deprecated, use plain object as in-memory stores instead.
 
 === 4.3.0 ===
 
@@ -7,7 +13,7 @@ information provided here is intended especially for developers.
  - Font Awesome icon library has been updated to 6.4.0. But nothing has changed, only version number.
  - The analytics system in the app has been refactored and some functions that could trigger analytics calls no longer do it, now you need to use CoreAnalytics instead. Some functions in CoreCourseLogHelper and CorePushNotificationsProvider have been deprecated.
  - Due to the analytics refactor, the parameters of most log functions have changed.
- - CoreCourseModuleHandlerData.buttons has been deprecated, now only one button in atribute button will be shown.
+ - CoreCourseModuleHandlerData.buttons has been deprecated, now only one button in attribute button will be shown.
 
 === 4.2.0 ===
 
