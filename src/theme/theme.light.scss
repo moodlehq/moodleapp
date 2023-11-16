@@ -146,7 +146,7 @@ html {
     --core-header-buttons-background: var(--core-header-toolbar-background);
     --core-header-buttons-color: var(--core-header-toolbar-color);
 
-    ion-header {
+    ion-header, ion-header.header-md {
         box-shadow: var(--core-header-shadow, none);
         transition: box-shadow 0.5s;
 

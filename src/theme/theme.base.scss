@@ -680,7 +680,7 @@ body.core-iframe-fullscreen ion-router-outlet {
 }
 
 // Modals.
-.core-modal-fullscreen .modal-wrapper {
+.core-modal-fullscreen::part(content) {
     position: absolute;
     @include position(0 !important, null, null, 0 !important);
     display: block;
@@ -690,11 +690,11 @@ body.core-iframe-fullscreen ion-router-outlet {
 
 .core-modal-transparent {
 
-    ion-backdrop {
+    &::part(backdrop) {
         backdrop-filter: blur(8px);
     }
 
-    .modal-wrapper {
+    &::part(content) {
         backdrop-filter: blur(12px);
         --background: rgba(10, 10, 10, 0.2);
 
@@ -717,7 +717,7 @@ body.core-iframe-fullscreen ion-router-outlet {
     --ion-safe-area-left: 0px;
     --ion-safe-area-right: 0px;
 
-    .modal-wrapper {
+    &::part(content) {
         @include margin-horizontal(var(--modal-lateral-margin), null);
 
         position: absolute;
@@ -729,7 +729,7 @@ body.core-iframe-fullscreen ion-router-outlet {
         box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
     }
 
-    ion-backdrop {
+    &::part(backdrop) {
         visibility: visible;
     }
 
@@ -740,10 +740,10 @@ body.core-iframe-fullscreen ion-router-outlet {
 
 .core-modal-transparent-no-filter {
     @extend .core-modal-transparent;
-    ion-backdrop {
+    &::part(backdrop) {
         backdrop-filter: none;
     }
-    .modal-wrapper {
+    &::part(content) {
         backdrop-filter: none;
     }
 }
@@ -1107,7 +1107,7 @@ ion-checkbox,
 input[type=checkbox] {
     --border-radius: 2px;
     --border-color-checked: var(--text-color);
-    --background-checked: var(--text-color);
+    --checkbox-background-checked: var(--text-color);
     --checkmark-color: var(--contrast-background);
     --border-width: 2px;
     --outer-border-width: 2px;
@@ -1318,7 +1318,7 @@ mark, .matchtext {
 }
 
 .core-scanning-qr {
-    .ion-page, .modal-wrapper {
+    .ion-page, ion-modal::part(content) {
         background-color: transparent !important;
         --background: transparent;
     }
@@ -1887,14 +1887,14 @@ ion-modal {
         --box-shadow: none !important;
         pointer-events: none;
 
-        ion-backdrop {
+        &::part(backdrop) {
             display: none;
         }
     }
 }
 
 ion-popover {
-    .popover-wrapper .popover-content {
+    &::part(content) {
         border-radius: var(--modal-radius);
     }
     &.md {
@@ -1903,7 +1903,7 @@ ion-popover {
 
         // Never show backdrop on popovers on Android
         // @todo Apply box shadow on ios and make it transparent too. The main problem is the box arrow.
-        ion-backdrop {
+        &::part(backdrop) {
             background: transparent;
         }
     }
