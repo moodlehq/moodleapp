@@ -40,7 +40,7 @@
                     <p *ngIf="siteInfo?.siteName" class="ion-no-margin ion-no-padding core-sitename">
                         <core-format-text [text]="siteInfo?.siteName" [filter]="false"></core-format-text>
                     </p>
-                    <p class="core-siteurl" *ngIf="!isDemoModeSite">{{siteUrl}}</p>
+                    <p class="core-siteurl" *ngIf="displaySiteUrl">{{siteUrl}}</p>
                 </div>
 
                 <div class="core-login-user">

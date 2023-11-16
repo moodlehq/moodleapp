@@ -1329,7 +1329,6 @@ export class CoreSitesProvider {
                     userpictureurl: siteInfo?.userpictureurl,
                     siteHomeId: siteInfo?.siteid || 1,
                     loggedOut: !!site.loggedOut,
-                    isDemoModeSite,
                 };
                 formattedSites.push(basicInfo);
             }
@@ -2138,6 +2137,30 @@ export class CoreSitesProvider {
         );
     }
 
+    /**
+     * Check whether informative links should be displayed for a certain site, or current site.
+     *
+     * @param siteOrUrl Site instance or site URL. If not defined, current site.
+     * @returns Whether informative links should be displayed.
+     */
+    shouldDisplayInformativeLinks(siteOrUrl?: CoreSite | string): boolean {
+        if (CoreConstants.CONFIG.hideInformativeLinks) {
+            return false;
+        }
+
+        // Don't display informative links for demo sites either.
+        siteOrUrl = siteOrUrl ?? this.getCurrentSite();
+        if (!siteOrUrl) {
+            return true;
+        }
+
+        if (typeof siteOrUrl === 'string') {
+            return !CoreLoginHelper.isDemoModeSite(siteOrUrl);
+        } else {
+            return !siteOrUrl.isDemoModeSite();
+        }
+    }
+
 }
 
 export const CoreSites = makeSingleton(CoreSitesProvider);
@@ -2209,7 +2232,6 @@ export type CoreSiteBasicInfo = {
     badge?: number; // Badge to display in the site.
     siteHomeId?: number; // Site home ID.
     loggedOut: boolean; // If Site is logged out.
-    isDemoModeSite: boolean;
 };
 
 /**

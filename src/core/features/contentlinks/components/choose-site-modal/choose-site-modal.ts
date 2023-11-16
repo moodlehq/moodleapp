@@ -34,6 +34,7 @@ export class CoreContentLinksChooseSiteModalComponent implements OnInit {
 
     sites: CoreSiteBasicInfo[] = [];
     loaded = false;
+    displaySiteUrl = false;
     protected action?: CoreContentLinksAction;
     protected isRootURL = false;
 
@@ -70,6 +71,9 @@ export class CoreContentLinksChooseSiteModalComponent implements OnInit {
 
             // Get the sites that can perform the action.
             this.sites = await CoreSites.getSites(siteIds);
+
+            // All sites have the same URL, use the first one.
+            this.displaySiteUrl = CoreSites.shouldDisplayInformativeLinks(this.sites[0].siteUrl);
         } catch (error) {
             CoreDomUtils.showErrorModalDefault(error, 'core.contentlinks.errornosites', true);
             this.closeModal();

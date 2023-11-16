@@ -82,12 +82,12 @@
                     <ion-item class="ion-text-wrap ion-text-center">
                         <ion-label>
                             <!-- If no sitename show big siteurl. -->
-                            <p *ngIf="!siteName && !isDemoModeSite" class="ion-padding item-heading">{{siteUrl}}</p>
+                            <p *ngIf="!siteName && displaySiteUrl" class="ion-padding item-heading">{{siteUrl}}</p>
                             <!-- If sitename, show big sitename and small siteurl. -->
                             <p *ngIf="siteName" class="ion-padding item-heading">
                                 <core-format-text [text]="siteName" [filter]="false"></core-format-text>
                             </p>
-                            <p *ngIf="siteName">{{siteUrl}}</p>
+                            <p *ngIf="siteName && displaySiteUrl">{{siteUrl}}</p>
                         </ion-label>
                     </ion-item>
 
