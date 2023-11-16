@@ -79,6 +79,16 @@
             </ion-label>
         </ion-item>
 
+        <ion-item class="ion-text-wrap">
+            <ion-label>
+                <p class="item-heading">Clean file storage</p>
+                <p>Clear deleted sites from file storage and temp folder</p>
+            </ion-label>
+            <ion-button (click)="clearFileStorage()" aria-label="Clear File Storage" fill="clear" slot="end">
+                <ion-icon slot="icon-only" aria-hidden="true" name="fas-broom"></ion-icon>
+            </ion-button>
+        </ion-item>
+
         <ng-container *ngIf="siteId">
             <ion-item-divider>
                 <ion-label>
