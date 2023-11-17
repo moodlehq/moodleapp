@@ -268,7 +268,7 @@ export class AddonModWorkshopAssessmentPage implements OnInit, OnDestroy, CanLea
                 this.evaluateByProfile = await CoreUser.getProfile(this.assessment.gradinggradeoverby, this.courseId, true);
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'mm.course.errorgetmodule', true);
+            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
         } finally {
             this.loaded = true;
         }
