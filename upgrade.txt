@@ -4,12 +4,10 @@ For more information about upgrading, read the official documentation: https://m
 
 === 4.4.0 ===
 
-- Starting with this release, this file will only document breaking changes for APIs exposed to site plugins. Internal changes will no longer be documented.
-- CoreCache has been deprecated, use plain object as in-memory stores instead.
-
-=== 4.4.0 ===
-
+ - Starting with this release, this file will only document breaking changes for APIs exposed to site plugins. Internal changes will no longer be documented.
+ - CoreCache has been deprecated, use plain object as in-memory stores instead.
  - Renamed CoreLoginSitesComponent to CoreLoginSitesModalComponent to make it clear that it's a modal and to avoid confusing it with the new CoreSitesListComponent.
+ - Removed CoreToLocaleStringPipe deprecated since 3.6.0
 
 === 4.3.0 ===
 
