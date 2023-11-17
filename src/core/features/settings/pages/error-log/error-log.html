@@ -9,7 +9,7 @@
         </ion-title>
 
         <ion-buttons slot="end" *ngIf="errorLogs.length">
-            <ion-button fill="clear" (click)="copyInfo()" [attr.aria-label]="'core.settings.copyinfo' | translate">
+            <ion-button fill="clear" (click)="copyError()" [attr.aria-label]="'core.settings.copyinfo' | translate">
                 <ion-icon slot="icon-only" name="fas-clipboard" aria-hidden="true"></ion-icon>
             </ion-button>
         </ion-buttons>
@@ -18,8 +18,8 @@
 
 <ion-content>
     <ion-list *ngIf="errorLogs.length; else noLogs">
-        <ion-item button lines="full" class="ion-text-wrap" *ngFor="let error of errorLogs">
-            <div class="ion-padding" [collapsible-item]="96">
+        <ion-item button lines="full" class="ion-text-wrap" *ngFor="let error of errorLogs" (click)="copyError(error)">
+            <ion-label class="ion-padding" [collapsible-item]="96">
                 <p class="item-heading">Trace</p>
                 <p class="ion-text-wrap">{{ error.message }}</p>
 
@@ -38,10 +38,10 @@
                     <p class="ion-text-wrap">{{ error.data | json }}</p>
                 </ng-container>
 
-                <div *ngIf="error.time">
-                    <span class="ion-text-end">{{ error.time | coreFormatDate :'strftimedatetimeshort' }}</span>
-                </div>
-            </div>
+                <p *ngIf="error.time" class="ion-text-end">
+                    {{ error.time | coreFormatDate :'strftimedatetimeshort' }}
+                </p>
+            </ion-label>
         </ion-item>
     </ion-list>
     <ng-template #noLogs>

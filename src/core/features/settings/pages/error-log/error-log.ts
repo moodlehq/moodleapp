@@ -22,18 +22,27 @@ import { CoreErrorLogs, CoreSettingsErrorLog } from '@singletons/error-logs';
 @Component({
     selector: 'page-core-app-settings-error-log',
     templateUrl: 'error-log.html',
-    styleUrls: ['./error-log.scss'],
 })
 export class CoreSettingsErrorLogPage implements OnInit {
 
     errorLogs: CoreSettingsErrorLog[] = [];
 
+    /**
+     * @inheritdoc
+     */
     ngOnInit(): void {
         this.errorLogs = CoreErrorLogs.getErrorLogs();
     }
 
-    copyInfo(): void {
-        CoreUtils.copyToClipboard(JSON.stringify({ errors: this.errorLogs }));
+    /**
+     * Copy Info of all the errors.
+     */
+    async copyError(error?: CoreSettingsErrorLog): Promise<void> {
+        if (error) {
+            await CoreUtils.copyToClipboard(JSON.stringify(error));
+        } else {
+            await CoreUtils.copyToClipboard(JSON.stringify({ errors: this.errorLogs }));
+        }
     }
 
 }
