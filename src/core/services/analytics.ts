@@ -63,7 +63,7 @@ export class CoreAnalyticsService extends CoreDelegate<CoreAnalyticsHandler> {
      * @returns True if available, false otherwise.
      */
     async isAnalyticsAvailable(): Promise<boolean> {
-        if (Object.keys(this.enabledHandlers).length > 0) {
+        if (Object.keys(this.enabledHandlers).length > 0 && !CoreSites.getCurrentSite()?.isDemoModeSite()) {
             // There is an enabled handler, analytics is available.
             return true;
         }
@@ -87,7 +87,7 @@ export class CoreAnalyticsService extends CoreDelegate<CoreAnalyticsHandler> {
      */
     async logEvent(event: CoreAnalyticsAnyEvent): Promise<void> {
         const site = CoreSites.getCurrentSite();
-        if (!site) {
+        if (!site || site.isDemoModeSite()) {
             return;
         }
 
