@@ -247,7 +247,7 @@ html {
     --core-tab-font-weight-active: normal;
     --core-tabs-height: 48px;
     core-tabs, core-tabs-outlet {
-        ion-slide {
+        swiper-slide {
             --background: var(--core-tab-background);
             --color: var(--core-tab-color);
             --border-color: var(--core-tab-border-color);

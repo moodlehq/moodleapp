@@ -29,7 +29,7 @@ import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesProvider } from '@services/sites';
 import { CoreNavigator, CoreNavigatorService } from '@services/navigator';
 import { CoreSwipeNavigationDirective } from '@directives/swipe-navigation';
-import { IonSlides } from '@ionic/angular';
+import { Swiper } from 'swiper';
 
 /**
  * Behat runtime servive with public API.
@@ -631,8 +631,8 @@ export class TestingBehatRuntimeService {
         this.log('Action - Swipe', { direction, locator });
 
         if (locator) {
-            // Locator specified, try to find ion-slides first.
-            const instance = this.getAngularInstance<IonSlides>('ion-slides', 'IonSlides', locator);
+            // Locator specified, try to find swiper-container first.
+            const instance = this.getAngularInstance<Swiper>('swiper-container', 'Swiper', locator);
             if (instance) {
                 direction === 'left' ? instance.slideNext() : instance.slidePrev();
 
@@ -640,7 +640,7 @@ export class TestingBehatRuntimeService {
             }
         }
 
-        // No locator specified or ion-slides not found, search swipe navigation now.
+        // No locator specified or swiper-container not found, search swipe navigation now.
         const instance = this.getAngularInstance<CoreSwipeNavigationDirective>(
             'ion-content',
             'CoreSwipeNavigationDirective',

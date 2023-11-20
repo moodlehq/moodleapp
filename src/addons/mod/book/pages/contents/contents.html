@@ -30,7 +30,7 @@
                 </ion-item>
             </ion-card>
 
-            <core-swipe-slides [manager]="manager" [options]="slidesOpts">
+            <core-swipe-slides [manager]="manager" [options]="swiperOpts">
                 <ng-template let-chapter="item" let-active="active">
                     <div class="ion-padding">
                         <core-format-text [component]="component" [componentId]="cmId" [text]="chapter.content" contextLevel="module"

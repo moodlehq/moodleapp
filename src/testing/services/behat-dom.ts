@@ -48,7 +48,7 @@ export class TestingBehatDomUtilsService {
             return false;
         }
 
-        if (element.tagName === 'ION-SLIDE') {
+        if (element.tagName === 'SWIPER-SLIDE') {
             // Check if the slide is visible (in the viewport).
             const bounding = element.getBoundingClientRect();
             if (bounding.right <= 0 || bounding.left >= window.innerWidth) {

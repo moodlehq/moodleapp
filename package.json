@@ -129,6 +129,7 @@
     "nl.kingsquare.cordova.background-audio": "^1.0.1",
     "ogv": "^1.8.9",
     "rxjs": "~7.8.0",
+    "swiper": "^11.0.3",
     "ts-md5": "^1.2.7",
     "tslib": "^2.3.0",
     "video.js": "^7.21.1",

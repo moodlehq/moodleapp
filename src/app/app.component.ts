@@ -35,10 +35,13 @@ import { CorePlatform } from '@services/platform';
 import { CoreUrl } from '@singletons/url';
 import { CoreLogger } from '@singletons/logger';
 import { CorePromisedValue } from '@classes/promised-value';
+import { register } from 'swiper/element/bundle';
 
 const MOODLE_SITE_URL_PREFIX = 'url-';
 const MOODLE_VERSION_PREFIX = 'version-';
 const MOODLEAPP_VERSION_PREFIX = 'moodleapp-';
+
+register();
 
 @Component({
     selector: 'app-root',

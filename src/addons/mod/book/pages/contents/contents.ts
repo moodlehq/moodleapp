@@ -41,6 +41,7 @@ import {
 } from '../../services/book';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreUrlUtils } from '@services/utils/url';
+import { IonicSlides } from '@ionic/angular';
 
 /**
  * Page that displays a book contents.
@@ -52,7 +53,7 @@ import { CoreUrlUtils } from '@services/utils/url';
 })
 export class AddonModBookContentsPage implements OnInit, OnDestroy {
 
-    @ViewChild(CoreSwipeSlidesComponent) slides?: CoreSwipeSlidesComponent;
+    @ViewChild(CoreSwipeSlidesComponent) swipeSlidesComponent?: CoreSwipeSlidesComponent;
 
     title = '';
     cmId!: number;
@@ -63,7 +64,8 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
     warning = '';
     displayNavBar = true;
     navigationItems: CoreNavigationBarItem<AddonModBookTocChapter>[] = [];
-    slidesOpts: CoreSwipeSlidesOptions = {
+    swiperOpts: CoreSwipeSlidesOptions = {
+        modules: [IonicSlides],
         autoHeight: true,
         observer: true,
         observeParents: true,
@@ -222,7 +224,7 @@ export class AddonModBookContentsPage implements OnInit, OnDestroy {
             return;
         }
 
-        this.slides?.slideToItem({ id: chapterId });
+        this.swipeSlidesComponent?.slideToItem({ id: chapterId });
     }
 
     /**
