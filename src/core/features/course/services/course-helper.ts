@@ -42,7 +42,6 @@ import {
     CoreEnrolledCourseData,
 } from '@features/courses/services/courses';
 import { CoreArray } from '@singletons/array';
-import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreCourseOffline } from './course-offline';
 import {
     CoreCourseOptionsDelegate,
@@ -259,22 +258,6 @@ export class CoreCourseHelperProvider {
     }
 
     /**
-     * Calculate completion data of a module.
-     *
-     * @param module Module.
-     * @deprecated since 4.0.
-     */
-    calculateModuleCompletionData(module: CoreCourseModuleData): void {
-        if (!module.completiondata || !module.completion) {
-            return;
-        }
-
-        module.completiondata.courseId = module.course;
-        module.completiondata.tracking = module.completion;
-        module.completiondata.cmid = module.id;
-    }
-
-    /**
      * Calculate the status of a section.
      *
      * @param section Section to calculate its status. It can't be "All sections".
@@ -312,8 +295,6 @@ export class CoreCourseHelperProvider {
         }
 
         sectionWithStatus.downloadStatus = result.status;
-        // eslint-disable-next-line deprecation/deprecation
-        sectionWithStatus.canCheckUpdates = true;
 
         // Set this section data.
         if (result.status !== CoreConstants.DOWNLOADING) {
@@ -375,8 +356,6 @@ export class CoreCourseHelperProvider {
             if (allSectionsSection) {
                 // Set "All sections" data.
                 allSectionsSection.downloadStatus = allSectionsStatus;
-                // eslint-disable-next-line deprecation/deprecation
-                allSectionsSection.canCheckUpdates = true;
                 allSectionsSection.isDownloading = allSectionsStatus === CoreConstants.DOWNLOADING;
             }
 
@@ -512,32 +491,6 @@ export class CoreCourseHelperProvider {
         }
 
         return CoreUtils.allPromises(promises);
-    }
-
-    /**
-     * Show confirmation dialog and then remove a module files.
-     *
-     * @param module Module to remove the files.
-     * @param courseId Course ID the module belongs to.
-     * @returns Promise resolved when done.
-     * @deprecated since 4.0.
-     */
-    async confirmAndRemoveFiles(module: CoreCourseModuleData, courseId: number): Promise<void> {
-        let modal: CoreIonLoadingElement | undefined;
-
-        try {
-            await CoreDomUtils.showDeleteConfirm('addon.storagemanager.confirmdeletedatafrom', { name: module.name });
-
-            modal = await CoreDomUtils.showModalLoading();
-
-            await this.removeModuleStoredData(module, courseId);
-        } catch (error) {
-            if (error) {
-                CoreDomUtils.showErrorModal(error);
-            }
-        } finally {
-            modal?.dismiss();
-        }
     }
 
     /**
@@ -1359,31 +1312,6 @@ export class CoreCourseHelperProvider {
     }
 
     /**
-     * Get the course ID from a module instance ID, showing an error message if it can't be retrieved.
-     *
-     * @param instanceId Instance ID.
-     * @param moduleName Name of the module. E.g. 'glossary'.
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved with the module's course ID.
-     * @deprecated since 4.0.
-     */
-    async getModuleCourseIdByInstance(instanceId: number, moduleName: string, siteId?: string): Promise<number> {
-        try {
-            const cm = await CoreCourse.getModuleBasicInfoByInstance(
-                instanceId,
-                moduleName,
-                { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
-            );
-
-            return cm.course;
-        } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
-
-            throw error;
-        }
-    }
-
-    /**
      * Get prefetch info for a module.
      *
      * @param module Module to get the info from.
@@ -1805,8 +1733,6 @@ export class CoreCourseHelperProvider {
 
             // Set "All sections" data.
             section.downloadStatus = allSectionsStatus;
-            // eslint-disable-next-line deprecation/deprecation
-            section.canCheckUpdates = true;
             section.isDownloading = allSectionsStatus === CoreConstants.DOWNLOADING;
         } finally {
             section.isDownloading = false;
@@ -2120,10 +2046,6 @@ export type CoreCourseSection = CoreCourseWSSection & {
  */
 export type CoreCourseSectionWithStatus = CoreCourseSection & {
     downloadStatus?: string; // Section status.
-    /**
-     * @deprecated since 4.0.
-     */
-    canCheckUpdates?: boolean; // Whether can check updates.
     isDownloading?: boolean; // Whether section is being downloaded.
     total?: number; // Total of modules being downloaded.
     count?: number; // Number of downloaded modules.
@@ -2140,13 +2062,6 @@ export type CoreCourseModuleData = Omit<CoreCourseGetContentsWSModule, 'completi
     completiondata?: CoreCourseModuleCompletionData;
     section: number;
 };
-
-/**
- * Module with calculated data.
- *
- * @deprecated since 4.0. Use CoreCourseModuleData instead.
- */
-export type CoreCourseModule = CoreCourseModuleData;
 
 /**
  * Module completion with calculated data.

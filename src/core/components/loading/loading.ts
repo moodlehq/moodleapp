@@ -14,7 +14,6 @@
 
 import { Component, Input, OnInit, OnChanges, SimpleChange, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 
-import { CoreEventLoadingChangedData, CoreEvents } from '@singletons/events';
 import { CoreUtils } from '@services/utils/utils';
 import { CoreAnimations } from '@components/animations';
 import { Translate } from '@singletons';
@@ -153,13 +152,6 @@ export class CoreLoadingComponent implements OnInit, OnChanges, AfterViewInit, A
             this.lastScrollPosition = this.getScrollPosition();
             this.mutationObserver.disconnect();
         }
-
-        // Event has been deprecated since app 4.0.
-        // eslint-disable-next-line deprecation/deprecation
-        CoreEvents.trigger(CoreEvents.CORE_LOADING_CHANGED, <CoreEventLoadingChangedData> {
-            loaded,
-            uniqueId: this.uniqueId,
-        });
     }
 
     /**

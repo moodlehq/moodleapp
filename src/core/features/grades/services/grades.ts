@@ -343,16 +343,6 @@ export class CoreGradesProvider {
     }
 
     /**
-     * Returns whether or not WS Grade Items is available.
-     *
-     * @returns True if ws is available, false otherwise.
-     * @deprecated since 4.0.
-     */
-    async isGradeItemsAvailable(): Promise<boolean> {
-        return true;
-    }
-
-    /**
      * Log Course grades view in Moodle.
      *
      * @param courseId Course ID.

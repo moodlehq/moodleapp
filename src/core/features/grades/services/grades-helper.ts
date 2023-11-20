@@ -61,49 +61,6 @@ export class CoreGradesHelperProvider {
     }
 
     /**
-     * Formats a row from the grades table te be rendered in a page.
-     *
-     * @param tableRow JSON object representing row of grades table data.
-     * @returns Formatted row object.
-     * @deprecated since 4.0.
-     */
-    protected async formatGradeRow(tableRow: CoreGradesTableRow): Promise<CoreGradesFormattedRow> {
-        const row: CoreGradesFormattedRow = {
-            rowclass: '',
-        };
-        for (const name in tableRow) {
-            const column: CoreGradesTableColumn = tableRow[name];
-
-            if (column.content === undefined || column.content === null) {
-                continue;
-            }
-
-            let content = String(column.content);
-
-            if (name == 'itemname') {
-                await this.setRowIconAndType(row, content);
-
-                row.link = this.getModuleLink(content);
-                row.rowclass += column.class.indexOf('hidden') >= 0 ? ' hidden' : '';
-                row.rowclass += column.class.indexOf('dimmed_text') >= 0 ? ' dimmed_text' : '';
-
-                content = content.replace(/<\/span>/gi, '\n');
-                content = CoreTextUtils.cleanTags(content);
-            } else {
-                content = CoreTextUtils.replaceNewLines(content, '<br>');
-            }
-
-            if (content == '&nbsp;') {
-                content = '';
-            }
-
-            row[name] = content.trim();
-        }
-
-        return row;
-    }
-
-    /**
      * Formats a row from the grades table to be rendered in one table.
      *
      * @param tableRow JSON object representing row of grades table data.
@@ -354,34 +311,6 @@ export class CoreGradesHelperProvider {
     }
 
     /**
-     * Get an specific grade item.
-     *
-     * @param courseId ID of the course to get the grades from.
-     * @param gradeId Grade ID.
-     * @param userId ID of the user to get the grades from. If not defined use site's current user.
-     * @param siteId Site ID. If not defined, current site.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @returns Promise to be resolved when the grades are retrieved.
-     * @deprecated since 4.0.
-     */
-    async getGradeItem(
-        courseId: number,
-        gradeId: number,
-        userId?: number,
-        siteId?: string,
-        ignoreCache: boolean = false,
-    ): Promise<CoreGradesFormattedRow | null> {
-        const grades = await CoreGrades.getCourseGradesTable(courseId, userId, siteId, ignoreCache);
-
-        if (!grades) {
-            throw new CoreError('Couldn\'t get grade item');
-        }
-
-        // eslint-disable-next-line deprecation/deprecation
-        return this.getGradesTableRow(grades, gradeId);
-    }
-
-    /**
      * Returns the label of the selected grade.
      *
      * @param grades Array with objects with value and label.
@@ -458,65 +387,6 @@ export class CoreGradesHelperProvider {
         }
 
         return link;
-    }
-
-    /**
-     * Get a row from the grades table.
-     *
-     * @param table JSON object representing a table with data.
-     * @param gradeId Grade Object identifier.
-     * @returns Formatted HTML table.
-     * @deprecated since 4.0.
-     */
-    async getGradesTableRow(table: CoreGradesTable, gradeId: number): Promise<CoreGradesFormattedRow | null> {
-        if (table.tabledata) {
-            const selectedRow = table.tabledata.find(
-                (row) =>
-                    row.itemname &&
-                    row.itemname.id &&
-                    row.itemname.id.substring(0, 3) == 'row' &&
-                    parseInt(row.itemname.id.split('_')[1], 10) == gradeId,
-            );
-
-            if (selectedRow) {
-                // eslint-disable-next-line deprecation/deprecation
-                return await this.formatGradeRow(selectedRow);
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Get the rows related to a module from the grades table.
-     *
-     * @param table JSON object representing a table with data.
-     * @param moduleId Grade Object identifier.
-     * @returns Formatted HTML table.
-     * @deprecated since 4.0.
-     */
-    async getModuleGradesTableRows(table: CoreGradesTable, moduleId: number): Promise<CoreGradesFormattedRow[]> {
-        if (!table.tabledata) {
-            return [];
-        }
-
-        // Find href containing "/mod/xxx/xxx.php".
-        const regex = /href="([^"]*\/mod\/[^"|^/]*\/[^"|^.]*\.php[^"]*)/;
-
-        return Promise.all(table.tabledata.filter((row) => {
-            if (row.itemname && row.itemname.content) {
-                const matches = row.itemname.content.match(regex);
-
-                if (matches && matches.length) {
-                    const hrefParams = CoreUrlUtils.extractUrlParams(matches[1]);
-
-                    return hrefParams && parseInt(hrefParams.id) === moduleId;
-                }
-            }
-
-            return false;
-        // eslint-disable-next-line deprecation/deprecation
-        }).map((row) => this.formatGradeRow(row)));
     }
 
     /**

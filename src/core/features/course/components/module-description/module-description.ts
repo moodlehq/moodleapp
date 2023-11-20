@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input } from '@angular/core';
+import { Component, HostBinding, Input } from '@angular/core';
 
 /**
  * Component to display the description of a module.
@@ -46,5 +46,9 @@ export class CoreCourseModuleDescriptionComponent {
     @Input() contextLevel?: string; // The context level.
     @Input() contextInstanceId?: number; // The instance ID related to the context.
     @Input() courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
+
+    @HostBinding('class.deprecated') get isDeprecated(): boolean {
+        return true;
+    };
 
 }

@@ -412,63 +412,6 @@ export class CoreSitesProvider {
     }
 
     /**
-     * Check if a site exists.
-     *
-     * @param siteUrl URL of the site to check.
-     * @returns A promise to be resolved if the site exists.
-     * @deprecated since 4.0. Now the app calls uses tool_mobile_get_public_config to check if site exists.
-     */
-    async siteExists(siteUrl: string): Promise<void> {
-        let data: CoreSitesLoginTokenResponse;
-
-        // Use a valid path first.
-        siteUrl = CoreUrlUtils.removeUrlParams(siteUrl);
-
-        try {
-            const lang = await CoreLang.getCurrentLanguage(CoreLangFormat.LMS);
-
-            data = await Http.post(`${siteUrl}/login/token.php?lang=${lang}`, { appsitecheck: 1 })
-                .pipe(timeout(CoreWS.getRequestTimeout()))
-                .toPromise();
-        } catch (error) {
-            throw this.createCannotConnectLoginError(null, {
-                supportConfig: await CoreUserGuestSupportConfig.forSite(siteUrl),
-                errorcode: 'sitecheckfailed',
-                errorDetails: CoreDomUtils.getErrorMessage(error) ?? undefined,
-            });
-        }
-
-        if (data === null) {
-            // Cannot connect.
-            throw this.createCannotConnectLoginError(null, {
-                supportConfig: await CoreUserGuestSupportConfig.forSite(siteUrl),
-                errorcode: 'appsitecheckfailed',
-                errorDetails: 'A request to /login/token.php with appsitecheck=1 returned an empty response',
-            });
-        }
-
-        if (data.errorcode && (data.errorcode == 'enablewsdescription' || data.errorcode == 'requirecorrectaccess')) {
-            throw this.createCannotConnectLoginError(siteUrl, {
-                supportConfig: await CoreUserGuestSupportConfig.forSite(siteUrl),
-                critical: data.errorcode == 'enablewsdescription',
-                errorcode: data.errorcode,
-                errorDetails: data.error,
-            });
-        }
-
-        if (data.error && data.error == 'Web services must be enabled in Advanced features.') {
-            throw this.createCannotConnectLoginError(siteUrl, {
-                supportConfig: await CoreUserGuestSupportConfig.forSite(siteUrl),
-                critical: true,
-                errorcode: 'enablewsdescription',
-                errorDetails: data.error,
-            });
-        }
-
-        // Other errors are not being checked because invalid login will be always raised and we cannot differ them.
-    }
-
-    /**
      * Gets a user token from the server.
      *
      * @param siteUrl The site url.
@@ -700,16 +643,6 @@ export class CoreSitesProvider {
      */
     createSiteID(siteUrl: string, username: string): string {
         return <string> Md5.hashAsciiStr(siteUrl + username);
-    }
-
-    /**
-     * Function for determine which service we should use (default or extended plugin).
-     *
-     * @returns The service shortname.
-     * @deprecated since 4.0.
-     */
-    determineService(): string {
-        return CoreConstants.CONFIG.wsservice;
     }
 
     /**
@@ -2183,13 +2116,6 @@ export type CoreSiteCheckResponse = {
      * Service used.
      */
     service: string;
-
-    /**
-     * Code of the warning message to show to the user.
-     *
-     * @deprecated since 4.0.
-     */
-    warning?: string;
 
     /**
      * Site public config (if available).

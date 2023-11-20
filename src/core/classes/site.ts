@@ -1635,38 +1635,6 @@ export class CoreSite {
     }
 
     /**
-     * Check if the local_mobile plugin is installed in the Moodle site.
-     *
-     * @returns Promise resolved when the check is done.
-     * @deprecated since 4.0.
-     */
-    // eslint-disable-next-line deprecation/deprecation
-    async checkLocalMobilePlugin(): Promise<LocalMobileResponse> {
-        // Not used anymore.
-        return { code: 0, coreSupported: true };
-    }
-
-    /**
-     * Check if local_mobile has been installed in Moodle.
-     *
-     * @returns Whether the App is able to use local_mobile plugin for this site.
-     * @deprecated since 4.0.
-     */
-    checkIfAppUsesLocalMobile(): boolean {
-        return false;
-    }
-
-    /**
-     * Check if local_mobile has been installed in Moodle but the app is not using it.
-     *
-     * @returns Promise resolved it local_mobile was added, rejected otherwise.
-     * @deprecated since 4.0.
-     */
-    async checkIfLocalMobileInstalledAndNotUsed(): Promise<void> {
-        throw new CoreError('Deprecated.');
-    }
-
-    /**
      * Check if a URL belongs to this site.
      *
      * @param url URL to check.
@@ -2664,33 +2632,6 @@ export type CoreSiteWSPreSets = {
      * Only enabled if CoreConstants.CONFIG.disableCallWSInBackground isn't true.
      */
     updateInBackground?: boolean;
-};
-
-/**
- * Response of checking local_mobile status.
- *
- * @deprecated since 4.0.
- */
-export type LocalMobileResponse = {
-    /**
-     * Code to identify the authentication method to use.
-     */
-    code: number;
-
-    /**
-     * Name of the service to use.
-     */
-    service?: string;
-
-    /**
-     * Code of the warning message.
-     */
-    warning?: string;
-
-    /**
-     * Whether core SSO is supported.
-     */
-    coreSupported?: boolean;
 };
 
 /**

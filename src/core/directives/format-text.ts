@@ -90,21 +90,6 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
     @Input() hideIfEmpty = false; // If true, the tag will contain nothing if text is empty.
     @Input() disabled?: boolean; // If disabled, autoplay elements will be disabled.
 
-    /**
-     * @deprecated since 4.0. Not used anymore.
-     */
-    @Input() fullOnClick?: boolean | string;
-    /**
-     * @deprecated since 4.0. Not used anymore.
-     */
-    @Input() fullTitle?: string;
-    /**
-     * Max height in pixels to render the content box. It should be 50 at least to make sense.
-     *
-     * @deprecated since 4.0 Use collapsible-item directive instead.
-     */
-    @Input() maxHeight?: number;
-
     @Output() afterRender: EventEmitter<void>; // Called when the data is rendered.
     @Output() onClick: EventEmitter<void> = new EventEmitter(); // Called when clicked.
 
@@ -379,15 +364,6 @@ export class CoreFormatTextDirective implements OnChanges, OnDestroy, AsyncDirec
         this.elementControllers = result.elementControllers;
 
         await CoreUtils.nextTick();
-
-        // Use collapsible-item directive instead.
-        // eslint-disable-next-line deprecation/deprecation
-        if (this.maxHeight && !this.collapsible) {
-            this.collapsible = new CoreCollapsibleItemDirective(new ElementRef(this.element));
-            // eslint-disable-next-line deprecation/deprecation
-            this.collapsible.height = this.maxHeight;
-            this.collapsible.ngOnInit();
-        }
 
         // Add magnifying glasses to images.
         this.addMagnifyingGlasses();

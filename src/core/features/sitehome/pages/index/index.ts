@@ -14,7 +14,7 @@
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 import { CoreSite, CoreSiteConfig } from '@classes/site';
 import { CoreCourse, CoreCourseWSSection } from '@features/course/services/course';
@@ -89,14 +89,7 @@ export class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
         const module = CoreNavigator.getRouteParam<CoreCourseModuleData>('module');
         if (module) {
-            let modNavOptions = CoreNavigator.getRouteParam<CoreNavigationOptions>('modNavOptions');
-            if (!modNavOptions) {
-                // Fallback to old way of passing params. @deprecated since 4.0.
-                const modParams = CoreNavigator.getRouteParam<Params>('modParams');
-                if (modParams) {
-                    modNavOptions = { params: modParams };
-                }
-            }
+            const modNavOptions = CoreNavigator.getRouteParam<CoreNavigationOptions>('modNavOptions');
             CoreCourseHelper.openModule(module, this.siteHomeId, { modNavOptions });
         }
 

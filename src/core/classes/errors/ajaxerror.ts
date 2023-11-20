@@ -19,10 +19,6 @@ import { CoreSiteError, CoreSiteErrorOptions } from '@classes/errors/siteerror';
  */
 export class CoreAjaxError extends CoreSiteError {
 
-    /**
-     * @deprecated since 4.0. AJAX endpoint should always be available in supported Moodle versions.
-     */
-    available = 1;
     status?: number;
 
     constructor(messageOrOptions: string | CoreSiteErrorOptions, available?: number, status?: number) {

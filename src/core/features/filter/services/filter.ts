@@ -61,26 +61,6 @@ export class CoreFilterProvider {
     }
 
     /**
-     * Returns whether or not WS get available in context is available.
-     *
-     * @returns Promise resolved with true if ws is available, false otherwise.
-     * @deprecated since 4.0.
-     */
-    async canGetAvailableInContext(): Promise<boolean> {
-        return true;
-    }
-
-    /**
-     * Returns whether or not WS get available in context is available in a certain site.
-     *
-     * @returns Promise resolved with true if ws is available, false otherwise.
-     * @deprecated since 4.0.
-     */
-    canGetAvailableInContextInSite(): boolean {
-        return true;
-    }
-
-    /**
      * Returns whether or not we can get the available filters: the WS is available and the feature isn't disabled.
      *
      * @param siteId Site ID. If not defined, current site.

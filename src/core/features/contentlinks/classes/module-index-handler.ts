@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { CoreContentLinksHandlerBase } from './base-handler';
-import { Params } from '@angular/router';
 import { CoreContentLinksAction } from '../services/contentlinks-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreNavigationOptions } from '@services/navigator';
@@ -53,20 +52,6 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
     }
 
     /**
-     * Get the mod params necessary to open an activity.
-     *
-     * @param url The URL to treat.
-     * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
-     * @param courseId Course ID related to the URL. Optional but recommended.
-     * @returns List of params to pass to navigateToModule / navigateToModuleByInstance.
-     * @deprecated since 4.0. Not used anymore.
-     */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    getPageParams(url: string, params: Record<string, string>, courseId?: number): Params {
-        return {};
-    }
-
-    /**
      * Get the navigation options to open the module.
      *
      * @param url The URL to treat.
@@ -97,19 +82,6 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
 
         courseId = Number(courseId || params.courseid || params.cid);
-        const getModNavOptions = (siteId: string): CoreNavigationOptions => {
-            let modNavOptions = this.getModNavOptions(url, params, siteId, courseId);
-            if (!modNavOptions) {
-                // Use the old function, currently deprecated.
-                // eslint-disable-next-line deprecation/deprecation
-                const pageParams = this.getPageParams(url, params, courseId);
-                if (pageParams && Object.keys(pageParams).length > 0) {
-                    modNavOptions = { params: pageParams };
-                }
-            }
-
-            return modNavOptions;
-        };
 
         if (this.instanceIdParam && params[this.instanceIdParam] !== undefined) {
             const instanceId = parseInt(params[this.instanceIdParam], 10);
@@ -122,7 +94,7 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
                         {
                             courseId,
                             useModNameToGetModule: this.useModNameToGetModule,
-                            modNavOptions: getModNavOptions(siteId),
+                            modNavOptions: this.getModNavOptions(url, params, siteId, courseId),
                             siteId,
                         },
                     );
@@ -137,7 +109,7 @@ export class CoreContentLinksModuleIndexHandler extends CoreContentLinksHandlerB
                     {
                         courseId,
                         modName: this.useModNameToGetModule ? this.modName : undefined,
-                        modNavOptions: getModNavOptions(siteId),
+                        modNavOptions: this.getModNavOptions(url, params, siteId, courseId),
                         siteId,
                     },
                 );

@@ -71,16 +71,6 @@ export class CoreCoursesProvider {
     protected downloadOptionsEnabled = false;
 
     /**
-     * Whether current site supports getting course options.
-     *
-     * @returns Whether current site supports getting course options.
-     * @deprecated since 4.0.
-     */
-    canGetAdminAndNavOptions(): boolean {
-        return true;
-    }
-
-    /**
      * Get categories. They can be filtered by id.
      *
      * @param categoryId Category ID to get.
@@ -600,26 +590,6 @@ export class CoreCoursesProvider {
                 preSets,
             ).pipe(map(response => response.courses));
         });
-    }
-
-    /**
-     * Check if get courses by field WS is available in a certain site.
-     *
-     * @returns Whether get courses by field is available.
-     * @deprecated since 4.0.
-     */
-    isGetCoursesByFieldAvailable(): boolean {
-        return true;
-    }
-
-    /**
-     * Check if get courses by field WS is available in a certain site, by site ID.
-     *
-     * @returns Promise resolved with boolean: whether get courses by field is available.
-     * @deprecated since 4.0.
-     */
-    async isGetCoursesByFieldAvailableInSite(): Promise<boolean> {
-        return true;
     }
 
     /**
@@ -1462,7 +1432,7 @@ export type CoreCourseGetCoursesData = CoreEnrolledCourseBasicData & {
     /**
      * Number of weeks/topics.
      *
-     * @deprecated use courseformatoptions. This attribute is deprecated in moodle since 2.4 but still present.
+     * @deprecatedonmoodle since 2.4. Use courseformatoptions. This attribute is deprecated in moodle since 2.4 but still present.
      */
     numsections?: number;
     maxbytes?: number; // Largest size of file that can be uploaded into the course.
@@ -1470,7 +1440,7 @@ export type CoreCourseGetCoursesData = CoreEnrolledCourseBasicData & {
     /**
      * How the hidden sections in the course are displayed to students.
      *
-     * @deprecated use courseformatoptions. This attribute is deprecated in moodle since 2.4 but still present.
+     * @deprecatedonmoodle since 2.4. Use courseformatoptions. This attribute is deprecated in moodle since 2.4 but still present.
      */
     hiddensections?: number;
     groupmode?: number; // No group, separate, visible.

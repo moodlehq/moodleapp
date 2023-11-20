@@ -49,8 +49,6 @@ import { CoreSites } from '@services/sites';
 import { NavigationStart } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
-import { CoreDirectivesRegistry } from '@singletons/directives-registry';
-import { CoreDom } from '@singletons/dom';
 import { CoreNetwork } from '@services/network';
 import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreUserSupport } from '@features/user/services/support';
@@ -97,20 +95,6 @@ export class CoreDomUtilsProvider {
         const debugDisplay = await CoreConfig.get<number>(CoreConstants.SETTINGS_DEBUG_DISPLAY, 0);
 
         this.debugDisplay = debugDisplay != 0;
-    }
-
-    /**
-     * Equivalent to element.closest(). If the browser doesn't support element.closest, it will
-     * traverse the parents to achieve the same functionality.
-     * Returns the closest ancestor of the current element (or the current element itself) which matches the selector.
-     *
-     * @param element DOM Element.
-     * @param selector Selector to search.
-     * @returns Closest ancestor.
-     * @deprecated since 4.0. Not needed anymore since it's supported on both Android and iOS. Use closest instead.
-     */
-    closest(element: Element | undefined | null, selector: string): Element | null {
-        return element?.closest(selector) ?? null;
     }
 
     /**
@@ -397,91 +381,6 @@ export class CoreDomUtilsProvider {
     }
 
     /**
-     * Returns height of an element.
-     *
-     * @param element DOM element to measure.
-     * @param usePadding Whether to use padding to calculate the measure.
-     * @param useMargin Whether to use margin to calculate the measure.
-     * @param useBorder Whether to use borders to calculate the measure.
-     * @param innerMeasure If inner measure is needed: padding, margin or borders will be substracted.
-     * @returns Height in pixels.
-     * @deprecated since 4.0 Use getBoundingClientRect.height instead.
-     */
-    getElementHeight(
-        element: HTMLElement,
-        usePadding?: boolean,
-        useMargin?: boolean,
-        useBorder?: boolean,
-        innerMeasure?: boolean,
-    ): number {
-        // eslint-disable-next-line deprecation/deprecation
-        return this.getElementMeasure(element, false, usePadding, useMargin, useBorder, innerMeasure);
-    }
-
-    /**
-     * Returns height or width of an element.
-     *
-     * @param element DOM element to measure.
-     * @param getWidth Whether to get width or height.
-     * @param usePadding Whether to use padding to calculate the measure.
-     * @param useMargin Whether to use margin to calculate the measure.
-     * @param useBorder Whether to use borders to calculate the measure.
-     * @param innerMeasure If inner measure is needed: padding, margin or borders will be substracted.
-     * @returns Measure in pixels.
-     * @deprecated since 4.0. Use getBoundingClientRect.height or width instead.
-     */
-    getElementMeasure(
-        element: HTMLElement,
-        getWidth?: boolean,
-        usePadding?: boolean,
-        useMargin?: boolean,
-        useBorder?: boolean,
-        innerMeasure?: boolean,
-    ): number {
-        const offsetMeasure = getWidth ? 'offsetWidth' : 'offsetHeight';
-        const measureName = getWidth ? 'width' : 'height';
-        const clientMeasure = getWidth ? 'clientWidth' : 'clientHeight';
-        const priorSide = getWidth ? 'Left' : 'Top';
-        const afterSide = getWidth ? 'Right' : 'Bottom';
-        let measure = element[offsetMeasure] || element[measureName] || element[clientMeasure] || 0;
-
-        // Measure not correctly taken.
-        if (measure <= 0) {
-            const style = getComputedStyle(element);
-            if (style?.display == '') {
-                element.style.display = 'inline-block';
-                measure = element[offsetMeasure] || element[measureName] || element[clientMeasure] || 0;
-                element.style.display = '';
-            }
-        }
-
-        if (usePadding || useMargin || useBorder) {
-            const computedStyle = getComputedStyle(element);
-            let surround = 0;
-
-            if (usePadding) {
-                surround += this.getComputedStyleMeasure(computedStyle, 'padding' + priorSide) +
-                    this.getComputedStyleMeasure(computedStyle, 'padding' + afterSide);
-            }
-            if (useMargin) {
-                surround += this.getComputedStyleMeasure(computedStyle, 'margin' + priorSide) +
-                    this.getComputedStyleMeasure(computedStyle, 'margin' + afterSide);
-            }
-            if (useBorder) {
-                surround += this.getComputedStyleMeasure(computedStyle, 'border' + priorSide + 'Width') +
-                    this.getComputedStyleMeasure(computedStyle, 'border' + afterSide + 'Width');
-            }
-            if (innerMeasure) {
-                measure = measure > surround ? measure - surround : 0;
-            } else {
-                measure += surround;
-            }
-        }
-
-        return measure;
-    }
-
-    /**
      * Returns the computed style measure or 0 if not found or NaN.
      *
      * @param style Style from getComputedStyle.
@@ -490,62 +389,6 @@ export class CoreDomUtilsProvider {
      */
     getComputedStyleMeasure(style: CSSStyleDeclaration, measure: string): number {
         return parseInt(style[measure], 10) || 0;
-    }
-
-    /**
-     * Returns width of an element.
-     *
-     * @param element DOM element to measure.
-     * @param usePadding Whether to use padding to calculate the measure.
-     * @param useMargin Whether to use margin to calculate the measure.
-     * @param useBorder Whether to use borders to calculate the measure.
-     * @param innerMeasure If inner measure is needed: padding, margin or borders will be substracted.
-     * @returns Width in pixels.
-     * @deprecated since 4.0. Use getBoundingClientRect.width instead.
-     */
-    getElementWidth(
-        element: HTMLElement,
-        usePadding?: boolean,
-        useMargin?: boolean,
-        useBorder?: boolean,
-        innerMeasure?: boolean,
-    ): number {
-        // eslint-disable-next-line deprecation/deprecation
-        return this.getElementMeasure(element, true, usePadding, useMargin, useBorder, innerMeasure);
-    }
-
-    /**
-     * Retrieve the position of a element relative to another element.
-     *
-     * @param element Element to search in.
-     * @param selector Selector to find the element to gets the position.
-     * @param positionParentClass Parent Class where to stop calculating the position. Default inner-scroll.
-     * @returns positionLeft, positionTop of the element relative to.
-     * @deprecated since 4.0. Use CoreDom.getRelativeElementPosition instead.
-     */
-    getElementXY(element: HTMLElement, selector?: string, positionParentClass = 'inner-scroll'): [number, number] | null {
-        if (selector) {
-            const foundElement = element.querySelector<HTMLElement>(selector);
-            if (!foundElement) {
-                // Element not found.
-                return null;
-            }
-
-            element = foundElement;
-        }
-
-        const parent = element.closest<HTMLElement>(`.${positionParentClass}`);
-        if (!parent) {
-            return null;
-        }
-
-        const position = CoreDom.getRelativeElementPosition(element, parent);
-
-        // Calculate the top and left positions.
-        return [
-            Math.ceil(position.x),
-            Math.ceil(position.y),
-        ];
     }
 
     /**
@@ -640,19 +483,6 @@ export class CoreDomUtilsProvider {
     }
 
     /**
-     * Retrieve component/directive instance.
-     * Please use this function only if you cannot retrieve the instance using parent/child methods: ViewChild (or similar)
-     * or Angular's injection.
-     *
-     * @param element The root element of the component/directive.
-     * @returns The instance, undefined if not found.
-     * @deprecated since 4.0. Use CoreDirectivesRegistry instead.
-     */
-    getInstanceByElement<T = unknown>(element: Element): T | undefined {
-        return CoreDirectivesRegistry.resolve<T>(element) ?? undefined;
-    }
-
-    /**
      * Check whether an error is an error caused because the user canceled a showConfirm.
      *
      * @param error Error to check.
@@ -670,36 +500,6 @@ export class CoreDomUtilsProvider {
      */
     isSilentError(error: CoreAnyError): boolean {
         return error instanceof CoreSilentError;
-    }
-
-    /**
-     * Wait an element to exists using the findFunction.
-     *
-     * @param findFunction The function used to find the element.
-     * @param retries Number of retries before giving up.
-     * @param retryAfter Milliseconds to wait before retrying if the element wasn't found.
-     * @returns Resolved if found, rejected if too many tries.
-     * @deprecated since 4.0. Use CoreDom.waitToBeInsideElement instead.
-     */
-    async waitElementToExist(
-        findFunction: () => HTMLElement | null,
-        retries: number = 100,
-        retryAfter: number = 100,
-    ): Promise<HTMLElement> {
-        const element = findFunction();
-
-        if (!element && retries === 0) {
-            throw Error('Element not found');
-        }
-
-        if (!element) {
-            await CoreUtils.wait(retryAfter);
-
-            // eslint-disable-next-line deprecation/deprecation
-            return this.waitElementToExist(findFunction, retries - 1);
-        }
-
-        return element;
     }
 
     /**
@@ -854,28 +654,6 @@ export class CoreDomUtilsProvider {
     }
 
     /**
-     * Remove a component/directive instance using the DOM Element.
-     *
-     * @param element The root element of the component/directive.
-     * @deprecated since 4.0. It's no longer necessary to remove instances.
-     */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    removeInstanceByElement(element: Element): void {
-        //
-    }
-
-    /**
-     * Remove a component/directive instance using the ID.
-     *
-     * @param id The ID to remove.
-     * @deprecated since 4.0. It's no longer necessary to remove instances.
-     */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    removeInstanceById(id: string): void {
-        //
-    }
-
-    /**
      * Search for certain classes in an element contents and replace them with the specified new values.
      *
      * @param element DOM element.
@@ -996,67 +774,6 @@ export class CoreDomUtilsProvider {
         } catch {
             return 0;
         }
-    }
-
-    /**
-     * Scroll to a certain element.
-     *
-     * @param content Not used anymore.
-     * @param element The element to scroll to.
-     * @param scrollParentClass Not used anymore.
-     * @param duration Duration of the scroll animation in milliseconds.
-     * @returns True if the element is found, false otherwise.
-     * @deprecated since 4.0. Use CoreDom.scrollToElement instead.
-     */
-    scrollToElement(content: IonContent, element: HTMLElement, scrollParentClass?: string, duration?: number): boolean {
-        CoreDom.scrollToElement(element, undefined, { duration });
-
-        return true;
-    }
-
-    /**
-     * Scroll to a certain element using a selector to find it.
-     *
-     * @param container The element that contains the element that must be scrolled.
-     * @param content Not used anymore.
-     * @param selector Selector to find the element to scroll to.
-     * @param scrollParentClass Not used anymore.
-     * @param duration Duration of the scroll animation in milliseconds.
-     * @returns True if the element is found, false otherwise.
-     * @deprecated since 4.0. Use CoreDom.scrollToElement instead.
-     */
-    scrollToElementBySelector(
-        container: HTMLElement | null,
-        content: unknown | null,
-        selector: string,
-        scrollParentClass?: string,
-        duration?: number,
-    ): boolean {
-        if (!container || !content) {
-            return false;
-        }
-
-        CoreDom.scrollToElement(container, selector, { duration });
-
-        return true;
-
-    }
-
-    /**
-     * Search for an input with error (core-input-error directive) and scrolls to it if found.
-     *
-     * @param container The element that contains the element that must be scrolled.
-     * @returns True if the element is found, false otherwise.
-     * @deprecated since 4.0. Use CoreDom.scrollToInputError instead.
-     */
-    scrollToInputError(container: HTMLElement | null): boolean {
-        if (!container) {
-            return false;
-        }
-
-        CoreDom.scrollToInputError(container);
-
-        return true;
     }
 
     /**
@@ -1667,17 +1384,6 @@ export class CoreDomUtilsProvider {
         await loader.present();
 
         return loader;
-    }
-
-    /**
-     * Stores a component/directive instance.
-     *
-     * @param element The root element of the component/directive.
-     * @param instance The instance to store.
-     * @deprecated since 4.0. Use CoreDirectivesRegistry instead.
-     */
-    storeInstanceByElement(element: Element, instance: unknown): void {
-        CoreDirectivesRegistry.register(element, instance);
     }
 
     /**
