@@ -92,7 +92,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     }
 
     /**
-     * Detect and act upon changes that Angular can’t or won’t detect on its own (objects and arrays).
+     * @inheritdoc
      */
     ngDoCheck(): void {
         if (!this.componentInstance || this.creatingComponent) {
@@ -111,7 +111,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     }
 
     /**
-     * Detect changes on input properties.
+     * @inheritdoc
      */
     async ngOnChanges(changes: Record<string, SimpleChange>): Promise<void> {
         // Only compile if text/javascript has changed or the forceCompile flag has been set to true.
@@ -148,7 +148,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     }
 
     /**
-     * Component destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.componentRef?.destroy();

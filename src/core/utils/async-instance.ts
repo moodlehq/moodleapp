@@ -117,7 +117,6 @@ export interface AsyncInstanceWrapper<
     resetInstance(): void;
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 export type AsyncObject = object;
 
 /**
