@@ -19,7 +19,6 @@ import { CoreComments } from '@features/comments/services/comments';
 import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
 import { CoreTag } from '@features/tag/services/tag';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
-import { IonRefresher } from '@ionic/angular';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
@@ -272,7 +271,7 @@ export class AddonBlogEntriesPage implements OnInit {
      *
      * @param refresher Refresher instance.
      */
-    refresh(refresher?: IonRefresher): void {
+    refresh(refresher?: HTMLIonRefresherElement): void {
         const promises = this.entries.map((entry) =>
             CoreComments.invalidateCommentsData('user', entry.userid, this.component, entry.id, 'format_blog'));
 

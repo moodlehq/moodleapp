@@ -16,7 +16,6 @@ import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { IonRefresher } from '@ionic/angular';
 import { CoreGroupInfo } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -143,7 +142,7 @@ export class AddonModChatSessionsPage implements OnInit, AfterViewInit, OnDestro
      *
      * @param refresher Refresher.
      */
-    async refreshSessions(refresher: IonRefresher): Promise<void> {
+    async refreshSessions(refresher: HTMLIonRefresherElement): Promise<void> {
         try {
             this.sessions.getSource().setDirty(true);
 

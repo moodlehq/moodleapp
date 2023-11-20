@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { IonRefresher } from '@ionic/angular';
 
 import { CoreDomUtils } from '@services/utils/dom';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
@@ -123,7 +122,7 @@ export class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestr
      *
      * @param refresher Refresher.
      */
-    async refreshDevices(refresher: IonRefresher): Promise<void> {
+    async refreshDevices(refresher: HTMLIonRefresherElement): Promise<void> {
         try {
             await CoreUtils.ignoreErrors(AddonMessageOutputAirnotifier.invalidateUserDevices());
 

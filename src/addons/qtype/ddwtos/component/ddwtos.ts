@@ -25,7 +25,7 @@ import { AddonQtypeDdwtosQuestion } from '../classes/ddwtos';
 @Component({
     selector: 'addon-qtype-ddwtos',
     templateUrl: 'addon-qtype-ddwtos.html',
-    styleUrls: ['ddwtos.scss'],
+    styleUrls: ['../../../../core/features/question/question.scss', 'ddwtos.scss'],
 })
 export class AddonQtypeDdwtosComponent extends CoreQuestionBaseComponent<AddonModQuizDdwtosQuestionData> implements OnDestroy {
 

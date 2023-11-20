@@ -34,7 +34,6 @@ import { CoreSync } from '@services/sync';
 import { AddonModForumDiscussionOptions, AddonModForumOffline } from '@addons/mod/forum/services/forum-offline';
 import { CoreUtils } from '@services/utils/utils';
 import { AddonModForumHelper } from '@addons/mod/forum/services/forum-helper';
-import { IonRefresher } from '@ionic/angular';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreTextUtils } from '@services/utils/text';
 import { CanLeave } from '@guards/can-leave';
@@ -266,7 +265,6 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
                         CoreSync.blockOperation(AddonModForumProvider.COMPONENT, this.syncId);
                     }
 
-                    // eslint-disable-next-line promise/no-nesting
                     return AddonModForumOffline.instance
                         .getNewDiscussion(this.forumId, this.timeCreated)
                         .then(async (discussion) => {
@@ -454,7 +452,7 @@ export class AddonModForumNewDiscussionPage implements OnInit, OnDestroy, CanLea
      *
      * @param refresher Refresher.
      */
-    refreshGroups(refresher?: IonRefresher): void {
+    refreshGroups(refresher?: HTMLIonRefresherElement): void {
         const promises = [
             CoreGroups.invalidateActivityGroupMode(this.cmId),
             CoreGroups.invalidateActivityAllowedGroups(this.cmId),

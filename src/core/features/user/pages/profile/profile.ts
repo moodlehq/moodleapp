@@ -14,7 +14,6 @@
 
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { IonRefresher } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
 import { CoreSite } from '@classes/site';
@@ -188,7 +187,7 @@ export class CoreUserProfilePage implements OnInit, OnDestroy {
      * @param event Event.
      * @returns Promise resolved when done.
      */
-    async refreshUser(event?: IonRefresher): Promise<void> {
+    async refreshUser(event?: HTMLIonRefresherElement): Promise<void> {
         await CoreUtils.ignoreErrors(Promise.all([
             CoreUser.invalidateUserCache(this.userId),
             CoreCourses.invalidateUserNavigationOptions(),

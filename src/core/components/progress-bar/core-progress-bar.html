@@ -1,6 +1,6 @@
-<ng-container *ngIf="progress >= 0">
-    <progress max="100" [value]="progress" role="progressbar" [attr.aria-valuenow]="progress" [attr.aria-valuetext]="progressBarValueText"
-        [attr.aria-describedby]="ariaDescribedBy">
+<ng-container *ngIf="progressNumber >= 0">
+    <progress max="100" [value]="progressNumber" role="progressbar" [attr.aria-valuenow]="progressNumber"
+        [attr.aria-valuetext]="progressBarValueText" [attr.aria-describedby]="ariaDescribedBy">
     </progress>
     <div class="core-progress-text">
         <span class="sr-only" *ngIf="a11yText">{{ a11yText | translate }}</span>
@@ -8,4 +8,4 @@
     </div>
 </ng-container>
 
-<ion-progress-bar *ngIf="progress < 0" [color]="color" type="indeterminate"></ion-progress-bar>
+<ion-progress-bar *ngIf="progressNumber < 0" [color]="color" type="indeterminate"></ion-progress-bar>

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { IonRefresher } from '@ionic/angular';
 
 import { CoreError } from '@classes/errors/error';
 import { CoreUser } from '@features/user/services/user';
@@ -114,7 +113,7 @@ export class AddonModLessonUserRetakePage implements OnInit {
      *
      * @param refresher Refresher.
      */
-    doRefresh(refresher: IonRefresher): void {
+    doRefresh(refresher: HTMLIonRefresherElement): void {
         this.refreshData().finally(() => {
             refresher?.complete();
         });

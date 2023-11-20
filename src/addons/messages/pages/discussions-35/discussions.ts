@@ -29,7 +29,6 @@ import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifi
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { Subscription } from 'rxjs';
 import { Translate } from '@singletons';
-import { IonRefresher } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
@@ -166,7 +165,7 @@ export class AddonMessagesDiscussions35Page implements OnInit, OnDestroy {
      * @param refreshUnreadCounts Whteher to refresh unread counts.
      * @returns Promise resolved when done.
      */
-    async refreshData(refresher?: IonRefresher, refreshUnreadCounts: boolean = true): Promise<void> {
+    async refreshData(refresher?: HTMLIonRefresherElement, refreshUnreadCounts: boolean = true): Promise<void> {
         const promises: Promise<void>[] = [];
         promises.push(AddonMessages.invalidateDiscussionsCache(this.siteId));
 

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
-import { IonRefresher } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
 import { CoreDomUtils } from '@services/utils/dom';
@@ -205,7 +204,7 @@ export class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
      *
      * @param refresher Refresher.
      */
-    async refreshNotifications(refresher?: IonRefresher): Promise<void> {
+    async refreshNotifications(refresher?: HTMLIonRefresherElement): Promise<void> {
         await CoreUtils.ignoreErrors(AddonNotifications.invalidateNotificationsList());
         await CoreUtils.ignoreErrors(this.fetchNotifications(true));
 

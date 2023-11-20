@@ -65,7 +65,7 @@
         <div *ngIf="competencies.loaded">
             <ion-card *ngFor="let competency of competencies.items">
                 <ion-item class="ion-text-wrap" (click)="competencies.select(competency)"
-                    [attr.aria-label]="competency.competency.shortname" detail="true" button>
+                    [attr.aria-label]="competency.competency.shortname" [detail]="true" button>
                     <ion-label>
                         <p class="item-heading">
                             <core-format-text [text]="competency.competency.shortname" contextLevel="course" [contextInstanceId]="courseId">

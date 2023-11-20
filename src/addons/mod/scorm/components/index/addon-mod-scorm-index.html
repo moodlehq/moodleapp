@@ -45,7 +45,7 @@
                         <p slot="end">{{ numAttempts }}</p>
                     </ion-item>
                     <ion-item *ngIf="onlineAttempts.length > 0" button class="divider ion-text-wrap" (click)="toggleGrades()"
-                        [attr.aria-label]="(gradesExpanded ? 'core.collapse' : 'core.expand') | translate" detail="false">
+                        [attr.aria-label]="(gradesExpanded ? 'core.collapse' : 'core.expand') | translate" [detail]="false">
                         <ion-icon name="fas-chevron-right" flip-rtl slot="start" aria-hidden="true" class="expandable-status-icon"
                             [class.expandable-status-icon-expanded]="gradesExpanded">
                         </ion-icon>

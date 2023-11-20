@@ -166,7 +166,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
 
         // Get intro and activity files from the submission status if it's a student.
         // It's ok if they were already obtained from the assignment instance, they won't be downloaded twice.
-        const files = canViewAllSubmissions ?
+        const files: CoreWSFile[] = canViewAllSubmissions ?
             [] :
             (submissionStatus.assignmentdata?.attachments?.intro || [])
                 .concat(submissionStatus.assignmentdata?.attachments?.activity || []);

@@ -37,7 +37,8 @@
         <!-- List of files. -->
         <ion-list *ngIf="files && files.length > 0">
             <ng-container *ngFor="let file of files">
-                <ion-item button *ngIf="file.isdir" class="ion-text-wrap item-file item-directory" (click)="openFolder(file)" detail="true">
+                <ion-item button *ngIf="file.isdir" class="ion-text-wrap item-file item-directory" (click)="openFolder(file)"
+                    [detail]="true">
                     <ion-icon name="fas-folder" slot="start" [attr.aria-label]="'core.folder' | translate"></ion-icon>
                     <ion-label>{{file.filename}}</ion-label>
                 </ion-item>
@@ -51,7 +52,7 @@
     </core-loading>
 
     <!-- Upload a private file. -->
-    <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="showUpload && root != 'site' && !path">
+    <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="showUpload && root !== 'site' && !path">
         <ion-fab-button (click)="uploadFile()" [attr.aria-label]="'core.fileuploader.uploadafile' | translate">
             <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>
             <span class="sr-only">{{ 'core.fileuploader.uploadafile' | translate }}</span>

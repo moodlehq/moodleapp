@@ -15,7 +15,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CoreQuestionQuestionParsed } from '@features/question/services/question';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
-import { IonContent, IonRefresher } from '@ionic/angular';
+import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
@@ -222,7 +222,7 @@ export class AddonModQuizReviewPage implements OnInit {
      *
      * @param refresher Refresher
      */
-    async refreshData(refresher: IonRefresher): Promise<void> {
+    async refreshData(refresher: HTMLIonRefresherElement): Promise<void> {
         const promises: Promise<void>[] = [];
 
         promises.push(AddonModQuiz.invalidateQuizData(this.courseId));

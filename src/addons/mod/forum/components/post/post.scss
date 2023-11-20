@@ -1,4 +1,4 @@
-@import "~theme/globals";
+@use "theme/globals" as *;
 
 :host .addon-mod_forum-post {
     background-color: var(--ion-item-background);

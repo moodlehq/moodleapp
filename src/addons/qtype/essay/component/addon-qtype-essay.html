@@ -67,7 +67,7 @@
     <!-- Reviewing the question. -->
     <ng-container *ngIf="review">
         <!-- Answer to the question and attachments (reviewing). -->
-        <ion-item class="ion-text-wrap" *ngIf="question.answer || question.answer == ''">
+        <ion-item class="ion-text-wrap" *ngIf="question.answer || question.answer === ''">
             <ion-label>
                 <core-format-text [ngClass]='{"core-monospaced": question.isMonospaced}' [component]="component" [componentId]="componentId"
                     [text]="question.answer" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId">

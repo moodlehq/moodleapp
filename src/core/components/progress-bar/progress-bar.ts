@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnChanges, SimpleChange, ChangeDetectionStrategy, ElementRef, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChange, ChangeDetectionStrategy, ElementRef } from '@angular/core';
 import { SafeStyle } from '@angular/platform-browser';
 import { DomSanitizer, Translate } from '@singletons';
 
@@ -28,7 +28,7 @@ import { DomSanitizer, Translate } from '@singletons';
     styleUrls: ['progress-bar.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CoreProgressBarComponent implements OnInit, OnChanges {
+export class CoreProgressBarComponent implements OnChanges {
 
     @Input() progress!: number | string; // Percentage from 0 to 100. Negative number will show an indeterminate progress bar.
     @Input() text?: string; // Percentage in text to be shown at the right. If not defined, progress will be used.
@@ -38,6 +38,7 @@ export class CoreProgressBarComponent implements OnInit, OnChanges {
 
     width?: SafeStyle;
     progressBarValueText?: string;
+    progressNumber = 0;
 
     protected textSupplied = false;
     protected element: HTMLElement;
@@ -49,18 +50,11 @@ export class CoreProgressBarComponent implements OnInit, OnChanges {
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
-        if (this.color) {
-            this.element.classList.add('ion-color', 'ion-color-' + this.color);
-        }
-    }
-
-    /**
-     * @inheritdoc
-     */
     ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         if (changes.color) {
-            this.element.classList.remove('ion-color', 'ion-color-' + changes.color.previousValue);
+            if (changes.color.previousValue) {
+                this.element.classList.remove('ion-color', 'ion-color-' + changes.color.previousValue);
+            }
             if (changes.color.currentValue) {
                 this.element.classList.add('ion-color', 'ion-color-' + changes.color.currentValue);
             }
@@ -73,29 +67,35 @@ export class CoreProgressBarComponent implements OnInit, OnChanges {
 
         if (changes.progress) {
             // Progress has changed.
-            if (typeof this.progress == 'string') {
-                this.progress = parseInt(this.progress, 10);
-            }
-
-            if (this.progress < 0 || isNaN(this.progress)) {
-                this.progress = -1;
-            }
-
-            if (this.progress != -1) {
-                // Remove decimals.
-                this.progress = Math.floor(this.progress);
-
-                if (!this.textSupplied) {
-                    this.text = Translate.instant('core.percentagenumber', { $a: this.progress });
-                }
-
-                this.width = DomSanitizer.bypassSecurityTrustStyle(this.progress + '%');
-            }
+            this.updateProgress();
         }
 
         if (changes.text || changes.progress || changes.a11yText) {
             this.progressBarValueText = (this.a11yText ? Translate.instant(this.a11yText) + ' ' : '') + this.text;
         }
+    }
+
+    /**
+     * Update progress because it has changed.
+     */
+    protected updateProgress(): void {
+        // Progress has changed.
+        this.progressNumber = Number(this.progress);
+
+        if (this.progressNumber < 0 || isNaN(this.progressNumber)) {
+            this.progressNumber = -1;
+
+            return;
+        }
+
+        // Remove decimals.
+        this.progressNumber = Math.floor(this.progressNumber);
+
+        if (!this.textSupplied) {
+            this.text = Translate.instant('core.percentagenumber', { $a: this.progressNumber });
+        }
+
+        this.width = DomSanitizer.bypassSecurityTrustStyle(this.progressNumber + '%');
     }
 
 }

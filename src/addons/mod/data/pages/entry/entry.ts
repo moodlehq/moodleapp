@@ -17,7 +17,7 @@ import { CoreCommentsCommentsComponent } from '@features/comments/components/com
 import { CoreComments } from '@features/comments/services/comments';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreRatingInfo } from '@features/rating/services/rating';
-import { IonContent, IonRefresher } from '@ionic/angular';
+import { IonContent } from '@ionic/angular';
 import { CoreGroups, CoreGroupInfo } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
@@ -286,7 +286,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
      *
      * @param refresher Refresher.
      */
-    refreshDatabase(refresher?: IonRefresher): void {
+    refreshDatabase(refresher?: HTMLIonRefresherElement): void {
         if (!this.entryLoaded) {
             return;
         }

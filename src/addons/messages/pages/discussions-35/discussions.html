@@ -28,7 +28,7 @@
             <ion-list class="ion-no-margin">
 
                 <ion-item class="ion-text-wrap addon-message-discussion" (click)="gotoContacts()"
-                    [attr.aria-label]="'addon.messages.contacts' | translate" detail="true" button>
+                    [attr.aria-label]="'addon.messages.contacts' | translate" [detail]="true" button>
                     <ion-icon name="fas-address-book" slot="start" aria-hidden="true"></ion-icon>
                     <ion-label>
                         <p class="item-heading">{{ 'addon.messages.contacts' | translate }}</p>
@@ -46,7 +46,7 @@
                     </ion-item-divider>
                     <ion-item class="ion-text-wrap addon-message-discussion" *ngFor="let result of search.results" button
                         [attr.aria-label]="result.fullname" (click)="gotoDiscussion(result.userid, result.messageid)"
-                        [attr.aria-current]="result.userid == discussionUserId ? 'page' : 'false'" detail="false">
+                        [attr.aria-current]="result.userid == discussionUserId ? 'page' : 'false'" [detail]="false">
                         <core-user-avatar [user]="result" slot="start" [checkOnline]="result.showonlinestatus"></core-user-avatar>
                         <ion-label>
                             <p class="item-heading">{{ result.fullname }}</p>
@@ -60,7 +60,7 @@
                 <ng-container *ngIf="!search.showResults">
                     <ion-item class="ion-text-wrap addon-message-discussion" *ngFor="let discussion of discussions" button
                         [attr.aria-label]="discussion.fullname" (click)="gotoDiscussion(discussion.message!.user)"
-                        [attr.aria-current]="discussion.message!.user == discussionUserId ? 'page' : 'false'" detail="false">
+                        [attr.aria-current]="discussion.message!.user == discussionUserId ? 'page' : 'false'" [detail]="false">
                         <core-user-avatar [user]="discussion" slot="start" checkOnline="false"></core-user-avatar>
                         <ion-label>
                             <div class="flex-row ion-justify-content-between">

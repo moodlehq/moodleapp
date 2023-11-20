@@ -20,6 +20,7 @@ import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CoreUserTours } from '@features/usertours/services/user-tours';
 import { CoreCacheManager } from '@services/cache-manager';
 import { CoreConfig } from '@services/config';
+import { CoreFile } from '@services/file';
 import { CoreNavigator } from '@services/navigator';
 import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
@@ -194,6 +195,17 @@ export class CoreSettingsDevPage implements OnInit {
         }
 
         await CoreDomUtils.showToast('Caches invalidated', true, ToastDuration.LONG);
+    }
+
+    /**
+     * Delete all data from the app.
+     */
+    async clearFileStorage(): Promise<void> {
+        const sites = await CoreSites.getSitesIds();
+        await CoreFile.clearDeletedSitesFolder(sites);
+        await CoreFile.clearTmpFolder();
+
+        CoreDomUtils.showToast('File storage cleared');
     }
 
     async setEnabledStagingSites(enabled: boolean): Promise<void> {

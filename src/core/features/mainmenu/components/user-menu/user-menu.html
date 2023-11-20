@@ -16,7 +16,7 @@
     <core-loading [hideUntil]="siteLogoLoaded && handlersLoaded">
         <ion-list>
             <!-- Site info with URL and clickable. -->
-            <ion-item button class="core-usermenu-siteinfo ion-text-wrap" *ngIf="siteInfo && displaySiteUrl" lines="full" detail="false"
+            <ion-item button class="core-usermenu-siteinfo ion-text-wrap" *ngIf="siteInfo && displaySiteUrl" lines="full" [detail]="false"
                 [href]="siteUrl" core-link auto-login="yes">
                 <ion-label>
                     <!-- Show site logo. -->
@@ -43,8 +43,8 @@
             </ion-item>
 
             <ion-item button class="core-usermenu-handler ion-text-wrap" *ngIf="siteInfo" lines="full" (click)="openUserProfile($event)"
-                detail="true" [attr.aria-label]="'core.user.profile' | translate">
-                <core-user-avatar [user]="siteInfo" [userId]="siteInfo.userid" [linkProfile]="false" slot="start"></core-user-avatar>
+                [detail]="true" [attr.aria-label]="'core.user.profile' | translate">
+                <core-user-avatar [site]="siteInfo" [userId]="siteInfo.userid" [linkProfile]="false" slot="start"></core-user-avatar>
                 <ion-label>
                     <p class="item-heading">{{ siteInfo.fullname }}</p>
                 </ion-label>
@@ -58,7 +58,7 @@
 
             <ion-item button *ngFor="let handler of handlers" class="ion-text-wrap" (click)="handlerClicked($event, handler)"
                 [ngClass]="['core-user-menu-handler', handler.class || '']" [hidden]="handler.hidden"
-                [attr.aria-label]="handler.title | translate" detail="true">
+                [attr.aria-label]="handler.title | translate" [detail]="true">
                 <ion-icon *ngIf="handler.icon" [name]="handler.icon" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
                     <p class="item-heading">{{ handler.title | translate }}</p>
@@ -73,7 +73,7 @@
                 </ion-spinner>
             </ion-item>
 
-            <ion-item button (click)="openPreferences($event)" [attr.aria-label]="'core.settings.preferences' | translate" detail="true"
+            <ion-item button (click)="openPreferences($event)" [attr.aria-label]="'core.settings.preferences' | translate" [detail]="true"
                 class="core-user-menu-preferences">
                 <ion-icon name="fas-wrench" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
@@ -82,7 +82,8 @@
             </ion-item>
 
             <ion-item *ngIf="displayContactSupport" button (click)="contactSupport($event)"
-                [attr.aria-label]="'core.user.support' | translate" detail="true" detailIcon="open-outline" class="core-user-menu-support">
+                [attr.aria-label]="'core.user.support' | translate" [detail]="true" detailIcon="open-outline"
+                class="core-user-menu-support">
                 <ion-icon name="fas-envelope" slot="start" aria-hidden="true"></ion-icon>
                 <ion-label>
                     <p class="item-heading">{{ 'core.user.support' | translate }}</p>
@@ -92,7 +93,7 @@
     </core-loading>
 </ion-content>
 <ion-footer>
-    <ion-item *ngIf="displaySwitchAccount" button lines="full" (click)="switchAccounts($event)" detail="true" class="ion-text-wrap">
+    <ion-item *ngIf="displaySwitchAccount" button lines="full" (click)="switchAccounts($event)" [detail]="true" class="ion-text-wrap">
         <ion-icon name="fas-right-left" slot="start" aria-hidden="true"></ion-icon>
         <ion-label>
             <p class="item-heading">{{ 'core.mainmenu.switchaccount' | translate }}</p>

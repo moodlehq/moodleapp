@@ -1,4 +1,4 @@
-@import "~theme/globals";
+@use "theme/globals" as *;
 
 @mixin inline() {
     &:not(.core-loading-loaded) {

@@ -24,15 +24,15 @@
         </ion-item>
     </ion-card>
 
-    <ng-container *ngIf="mode == 'iframe'">
+    <ng-container *ngIf="mode === 'iframe'">
         <core-iframe [src]="src"></core-iframe>
     </ng-container>
 
-    <div *ngIf="mode == 'embedded'" class="ion-padding">
+    <div *ngIf="mode === 'embedded'" class="ion-padding">
         <core-format-text [text]="contentText" [filter]="false"></core-format-text>
     </div>
 
-    <ng-container *ngIf="mode == 'external'">
+    <ng-container *ngIf="mode === 'external'">
         <ion-list>
             <ion-item class="ion-text-wrap" *ngIf="type">
                 <ion-label>
@@ -84,7 +84,7 @@
     </ng-container>
 
     <div collapsible-footer appearOnBottom *ngIf="!showLoading" slot="fixed">
-        <div class="list-item-limited-width" *ngIf="mode == 'external'">
+        <div class="list-item-limited-width" *ngIf="mode === 'external'">
             <ion-button *ngIf="isIOS && (!shouldOpenInBrowser || !isOnline)" expand="block" fill="outline"
                 (click)="open(openFileAction.OPEN_WITH)" class="ion-margin ion-text-wrap">
                 <ion-icon name="far-share-from-square" slot="start" aria-hidden="true"></ion-icon>

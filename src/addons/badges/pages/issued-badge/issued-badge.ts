@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { IonRefresher } from '@ionic/angular';
 import { CoreTimeUtils } from '@services/utils/time';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSites } from '@services/sites';
@@ -130,7 +129,7 @@ export class AddonBadgesIssuedBadgePage implements OnInit, OnDestroy {
      *
      * @param refresher Refresher.
      */
-    async refreshBadges(refresher?: IonRefresher): Promise<void> {
+    async refreshBadges(refresher?: HTMLIonRefresherElement): Promise<void> {
         await CoreUtils.ignoreErrors(Promise.all([
             AddonBadges.invalidateUserBadges(this.courseId, this.userId),
         ]));

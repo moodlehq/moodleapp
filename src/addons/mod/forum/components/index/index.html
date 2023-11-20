@@ -18,7 +18,7 @@
 
     <core-loading [hideUntil]="!showLoading && discussions && discussions.loaded">
         <!-- Activity info. -->
-        <core-course-module-info [module]="module" [description]="forum && forum.type != 'single' && description" [component]="component"
+        <core-course-module-info [module]="module" [description]="forum && forum.type !== 'single' && description" [component]="component"
             [componentId]="componentId" [courseId]="courseId" [hasDataToSync]="hasOffline || hasOfflineRatings"
             (completionChanged)="onCompletionChange()">
             <ion-item class="ion-text-wrap">
@@ -76,7 +76,7 @@
                 <p>{{ 'addon.mod_forum.errorloadingsortingorderdetails' | translate }}</p>
             </core-empty-box>
 
-            <ion-item *ngFor="let discussion of discussionsItems" class="addon-mod-forum-discussion" detail="true"
+            <ion-item *ngFor="let discussion of discussionsItems" class="addon-mod-forum-discussion" [detail]="true"
                 [lines]="discussion.groupname && 'none'" [attr.aria-current]="discussions?.getItemAriaCurrent(discussion)"
                 (click)="discussions?.select(discussion)" button>
                 <ion-label>

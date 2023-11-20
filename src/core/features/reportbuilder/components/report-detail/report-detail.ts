@@ -20,7 +20,6 @@ import {
     CoreReportBuilderRetrieveReportMapped,
     REPORT_ROWS_LIMIT,
 } from '@features/reportbuilder/services/reportbuilder';
-import { IonRefresher } from '@ionic/angular';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
@@ -51,15 +50,16 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
         return this.layout === 'card' || (CoreScreen.isMobile && this.layout === 'adaptative');
     }
 
-    state$: Readonly<BehaviorSubject<CoreReportBuilderReportDetailState>> = new BehaviorSubject({
-        report: null,
-        loaded: false,
-        canLoadMoreRows: true,
-        errorLoadingRows: false,
-        cardviewShowFirstTitle: false,
-        cardVisibleColumns: 1,
-        page: 0,
-    });
+    state$: Readonly<BehaviorSubject<CoreReportBuilderReportDetailState>> =
+        new BehaviorSubject<CoreReportBuilderReportDetailState>({
+            report: null,
+            loaded: false,
+            canLoadMoreRows: true,
+            errorLoadingRows: false,
+            cardviewShowFirstTitle: false,
+            cardVisibleColumns: 1,
+            page: 0,
+        });
 
     source$: Observable<string>;
 
@@ -169,7 +169,7 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
      *
      * @param ionRefresher ionic refresher.
      */
-    async refreshReport(ionRefresher?: IonRefresher): Promise<void> {
+    async refreshReport(ionRefresher?: HTMLIonRefresherElement): Promise<void> {
         await CoreUtils.ignoreErrors(CoreReportBuilder.invalidateReport());
         this.updateState({ page: 0, canLoadMoreRows: false });
         await CoreUtils.ignoreErrors(this.getReport());

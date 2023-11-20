@@ -15,7 +15,7 @@
         <ion-list>
             <ion-item button class="ion-text-wrap {{question.stateClass}}" *ngFor="let question of navigation"
                 [attr.aria-current]="!summaryShown && currentPage == question.page ? 'page' : 'false'"
-                (click)="loadPage(question.page, question.slot)" detail="false">
+                (click)="loadPage(question.page, question.slot)" [detail]="false">
 
                 <ion-label class="ion-text-wrap">
                     <span *ngIf="question.type !== 'description' && question.questionnumber">
@@ -28,17 +28,17 @@
 
                 <ion-icon *ngIf="question.type === 'description' || !question.questionnumber" name="fas-circle-info" slot="end"
                     aria-hidden="true"></ion-icon>
-                <ion-icon *ngIf="question.stateClass == 'core-question-requiresgrading'" name="fas-circle-question"
+                <ion-icon *ngIf="question.stateClass === 'core-question-requiresgrading'" name="fas-circle-question"
                     [attr.aria-label]="question.status" slot="end">
                 </ion-icon>
-                <ion-icon *ngIf="question.stateClass == 'core-question-correct'" name="fas-check" color="success"
+                <ion-icon *ngIf="question.stateClass === 'core-question-correct'" name="fas-check" color="success"
                     [attr.aria-label]="question.status" slot="end">
                 </ion-icon>
-                <ion-icon *ngIf="question.stateClass == 'core-question-partiallycorrect'" name="fas-square-check" color="warning"
+                <ion-icon *ngIf="question.stateClass === 'core-question-partiallycorrect'" name="fas-square-check" color="warning"
                     [attr.aria-label]="question.status" slot="end">
                 </ion-icon>
-                <ion-icon *ngIf="question.stateClass == 'core-question-incorrect' ||
-                    question.stateClass == 'core-question-notanswered'" name="fas-xmark" color="danger" [attr.aria-label]="question.status"
+                <ion-icon *ngIf="question.stateClass === 'core-question-incorrect' ||
+                    question.stateClass === 'core-question-notanswered'" name="fas-xmark" color="danger" [attr.aria-label]="question.status"
                     slot="end">
                 </ion-icon>
             </ion-item>

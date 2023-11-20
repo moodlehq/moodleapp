@@ -1,12 +1,10 @@
-@import "~theme/globals";
+@use "theme/globals" as *;
 
 :host {
     --menu-min-width: 270px;
     --menu-max-width: 28%;
-    --menu-box-shadow: var(--core-menu-box-shadow-end);
+    --menu-box-shadow: var(--drop-shadow-end);
     --menu-z: 2;
-    --menu-border-width: 1px;
-    --menu-border-color: var(--stroke);
     --menu-display: flex;
     --content-display: block;
     --content-outlet-display: none;
@@ -35,16 +33,17 @@
     }
 
     .menu {
-        box-shadow: var(--menu-box-shadow);
         z-index: var(--menu-z);
         display: var(--menu-display);
         flex-shrink: 0;
         order: -1;
         width: 100%;
-        @include border-start(0);
-        @include border-end(var(--menu-border-width), solid, var(--menu-border-color));
         min-width: var(--menu-min-width);
         max-width: var(--menu-max-width);
+
+        &::part(scroll) {
+            box-shadow: var(--menu-box-shadow);
+        }
     }
 
     .content-outlet {
@@ -71,7 +70,6 @@
     --menu-max-width: 100%;
     --content-display: none;
     --content-placeholder-display: none;
-    --menu-border-width: 0px;
     --menu-box-shadow: none;
     --menu-z: 0px;
     --selected-item-border-width: 0px;
@@ -80,7 +78,6 @@
 
 :host(.content-only) {
     --menu-display: none;
-    --menu-border-width: 0px;
 }
 
 :host(.outlet-activated) {

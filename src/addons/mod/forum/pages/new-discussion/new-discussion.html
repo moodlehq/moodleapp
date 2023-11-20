@@ -31,7 +31,7 @@
                     (contentChanged)="onMessageChange($event)">
                 </core-rich-text-editor>
             </ion-item>
-            <ion-item button class="divider ion-text-wrap" (click)="toggleAdvanced()" detail="false" [attr.aria-expanded]="advanced"
+            <ion-item button class="divider ion-text-wrap" (click)="toggleAdvanced()" [detail]="false" [attr.aria-expanded]="advanced"
                 [attr.aria-label]="(advanced ? 'core.hideadvanced' : 'core.showadvanced') | translate" role="heading"
                 aria-controls="addon-mod-forum-new-discussion-advanced">
                 <ion-icon name="fas-chevron-right" flip-rtl slot="start" aria-hidden="true" class="expandable-status-icon"
@@ -84,7 +84,7 @@
                             <ion-button expand="block" fill="outline" (click)="discard()">{{ 'core.discard' | translate }}</ion-button>
                         </ion-col>
                         <ion-col>
-                            <ion-button expand="block" [disabled]="newDiscussion.subject == '' || newDiscussion.message == null"
+                            <ion-button expand="block" [disabled]="newDiscussion.subject === '' || newDiscussion.message === null"
                                 (click)="add()">
                                 {{ 'addon.mod_forum.posttoforum' | translate }}
                             </ion-button>

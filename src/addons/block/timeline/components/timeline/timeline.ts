@@ -56,7 +56,7 @@ export class AddonBlockTimelineComponent implements OnInit, ICoreBlockComponent 
 
     constructor() {
         this.logger = CoreLogger.getInstance('AddonBlockTimelineComponent');
-        this.search$ = new BehaviorSubject(null);
+        this.search$ = new BehaviorSubject<string | null>(null);
         this.initializeSort();
         this.initializeFilter();
         this.initializeSections();

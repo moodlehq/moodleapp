@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { IonRefresher } from '@ionic/angular';
 
 import { CoreApp } from '@services/app';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -136,7 +135,7 @@ export class CoreUserParticipantsPage implements OnInit, AfterViewInit, OnDestro
      *
      * @param refresher Refresher.
      */
-    async refreshParticipants(refresher: IonRefresher): Promise<void> {
+    async refreshParticipants(refresher: HTMLIonRefresherElement): Promise<void> {
         await CoreUtils.ignoreErrors(CoreUser.invalidateParticipantsList(this.courseId));
         await CoreUtils.ignoreErrors(this.fetchParticipants(true));
 

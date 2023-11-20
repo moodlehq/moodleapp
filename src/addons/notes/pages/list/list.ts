@@ -20,7 +20,7 @@ import { AddonNotesSync, AddonNotesSyncProvider } from '@addons/notes/services/n
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CoreAnimations } from '@components/animations';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
-import { IonContent, IonRefresher } from '@ionic/angular';
+import { IonContent } from '@ionic/angular';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
@@ -42,7 +42,7 @@ import { CoreTime } from '@singletons/time';
 })
 export class AddonNotesListPage implements OnInit, OnDestroy {
 
-     @ViewChild(IonContent) content?: IonContent;
+    @ViewChild(IonContent) content?: IonContent;
 
     courseId!: number;
     userId?: number;
@@ -156,7 +156,7 @@ export class AddonNotesListPage implements OnInit, OnDestroy {
      * @param showSyncErrors Whether to display sync errors or not.
      * @param refresher Refresher instance.
      */
-    refreshNotes(showSyncErrors: boolean, refresher?: IonRefresher): void {
+    refreshNotes(showSyncErrors: boolean, refresher?: HTMLIonRefresherElement): void {
         this.refreshIcon = CoreConstants.ICON_LOADING;
         this.syncIcon = CoreConstants.ICON_LOADING;
 

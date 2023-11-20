@@ -68,7 +68,7 @@
                 <ng-container *ngFor="let grade of grades">
                     <ion-item button *ngIf="grade.gradeitem" class="ion-text-wrap divider" (click)="toggleGrade(grade)"
                         [attr.aria-label]="(grade.expanded ? 'core.collapse' : 'core.expand') | translate"
-                        [attr.aria-expanded]="grade.expanded" [attr.aria-controls]="'grade-'+grade.id" role="heading" detail="false">
+                        [attr.aria-expanded]="grade.expanded" [attr.aria-controls]="'grade-'+grade.id" role="heading" [detail]="false">
                         <ion-icon name="fas-chevron-right" flip-rtl slot="start" aria-hidden="true" class="expandable-status-icon"
                             [class.expandable-status-icon-expanded]="grade.expanded">
                         </ion-icon>
@@ -80,8 +80,8 @@
                             <p class="item-heading" *ngIf="grade.itemmodule">
                                 {{ 'core.grades.grade' | translate }}
                             </p>
-                            <p *ngIf="grade.grade && grade.grade != '-'" [innerHTML]="grade.grade"></p>
-                            <ion-badge *ngIf="!grade.grade || grade.grade == '-'" color="light">
+                            <p *ngIf="grade.grade && grade.grade !== '-'" [innerHTML]="grade.grade"></p>
+                            <ion-badge *ngIf="!grade.grade || grade.grade === '-'" color="light">
                                 {{ 'core.grades.notgraded' | translate }}
                             </ion-badge>
                         </ion-label>
@@ -92,48 +92,48 @@
                         </ion-icon>
                     </ion-item>
                     <div *ngIf="grade.expanded" [id]="'grade-'+grade.id">
-                        <ion-item class="ion-text-wrap" *ngIf="grade.weight?.length > 0 && grade.weight != '-'">
+                        <ion-item class="ion-text-wrap" *ngIf="grade.weight?.length > 0 && grade.weight !== '-'">
                             <ion-label>
                                 <p class="item-heading">{{ 'core.grades.weight' | translate}}</p>
                                 <p [innerHTML]="grade.weight"></p>
                             </ion-label>
                         </ion-item>
-                        <ion-item class="ion-text-wrap" *ngIf="grade.range?.length > 0 && grade.range != '-'">
+                        <ion-item class="ion-text-wrap" *ngIf="grade.range?.length > 0 && grade.range !== '-'">
                             <ion-label>
                                 <p class="item-heading">{{ 'core.grades.range' | translate}}</p>
                                 <p [innerHTML]="grade.range"></p>
                             </ion-label>
                         </ion-item>
 
-                        <ion-item class="ion-text-wrap" *ngIf="grade.percentage?.length > 0 && grade.percentage != '-'">
+                        <ion-item class="ion-text-wrap" *ngIf="grade.percentage?.length > 0 && grade.percentage !== '-'">
                             <ion-label>
                                 <p class="item-heading">{{ 'core.grades.percentage' | translate}}</p>
                                 <p [innerHTML]="grade.percentage"></p>
                             </ion-label>
                         </ion-item>
 
-                        <ion-item class="ion-text-wrap" *ngIf="grade.lettergrade?.length > 0 && grade.lettergrade != '-'">
+                        <ion-item class="ion-text-wrap" *ngIf="grade.lettergrade?.length > 0 && grade.lettergrade !== '-'">
                             <ion-label>
                                 <p class="item-heading">{{ 'core.grades.lettergrade' | translate}}</p>
                                 <p [innerHTML]="grade.lettergrade"></p>
                             </ion-label>
                         </ion-item>
 
-                        <ion-item class="ion-text-wrap" *ngIf="grade.rank?.length > 0 && grade.rank != '-'">
+                        <ion-item class="ion-text-wrap" *ngIf="grade.rank?.length > 0 && grade.rank !== '-'">
                             <ion-label>
                                 <p class="item-heading">{{ 'core.grades.rank' | translate}}</p>
                                 <p [innerHTML]="grade.rank"></p>
                             </ion-label>
                         </ion-item>
 
-                        <ion-item class="ion-text-wrap" *ngIf="grade.average?.length > 0 && grade.average != '-'">
+                        <ion-item class="ion-text-wrap" *ngIf="grade.average?.length > 0 && grade.average !== '-'">
                             <ion-label>
                                 <p class="item-heading">{{ 'core.grades.average' | translate}}</p>
                                 <p [innerHTML]="grade.average"></p>
                             </ion-label>
                         </ion-item>
 
-                        <ion-item class="ion-text-wrap" *ngIf="grade.feedback?.length > 0 && grade.feedback != '-'">
+                        <ion-item class="ion-text-wrap" *ngIf="grade.feedback?.length > 0 && grade.feedback !== '-'">
                             <ion-label>
                                 <p class="item-heading">{{ 'core.grades.feedback' | translate}}</p>
                                 <p>
@@ -145,7 +145,7 @@
                         </ion-item>
 
                         <ion-item class="ion-text-wrap"
-                            *ngIf="grade.contributiontocoursetotal?.length > 0 && grade.contributiontocoursetotal != '-'">
+                            *ngIf="grade.contributiontocoursetotal?.length > 0 && grade.contributiontocoursetotal !== '-'">
                             <ion-label>
                                 <p class="item-heading">{{ 'core.grades.contributiontocoursetotal' | translate}}</p>
                                 <p [innerHTML]="grade.contributiontocoursetotal"></p>

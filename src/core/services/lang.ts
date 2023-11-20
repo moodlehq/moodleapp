@@ -349,12 +349,15 @@ export class CoreLangProvider {
     getTranslationTable(lang: string): Promise<Record<string, unknown>> {
         // Create a promise to convert the observable into a promise.
         return new Promise((resolve, reject): void => {
-            const observer = Translate.getTranslation(lang).subscribe((table) => {
-                resolve(table);
-                observer.unsubscribe();
-            }, (err) => {
-                reject(err);
-                observer.unsubscribe();
+            const observer = Translate.getTranslation(lang).subscribe({
+                next: (table) => {
+                    resolve(table);
+                    observer.unsubscribe();
+                },
+                error: (err) => {
+                    reject(err);
+                    observer.unsubscribe();
+                },
             });
         });
     }
@@ -378,7 +381,7 @@ export class CoreLangProvider {
      * @param strings Custom strings to load (tool_mobile_customlangstrings).
      */
     loadCustomStrings(strings: string): void {
-        if (strings == this.customStringsRaw) {
+        if (strings === this.customStringsRaw) {
             // Strings haven't changed, stop.
             return;
         }
@@ -401,9 +404,9 @@ export class CoreLangProvider {
                 return;
             }
 
-            const lang = values[2].replace(/_/g, '-'); // Use the app format instead of Moodle format.
+            const lang = this.formatLanguage(values[2], CoreLangFormat.App); // Use the app format instead of Moodle format.
 
-            if (lang == this.currentLanguage) {
+            if (lang === this.currentLanguage) {
                 currentLangChanged = true;
             }
 
@@ -411,12 +414,7 @@ export class CoreLangProvider {
                 this.customStrings[lang] = {};
             }
 
-            // Convert old keys format to new one.
-            const key = values[0].replace(/^mm\.core/, 'core').replace(/^mm\./, 'core.').replace(/^mma\./, 'addon.')
-                .replace(/^core\.sidemenu/, 'core.mainmenu').replace(/^addon\.grades/, 'core.grades')
-                .replace(/^addon\.participants/, 'core.user');
-
-            this.loadString(this.customStrings, lang, key, values[1]);
+            this.loadString(this.customStrings, lang, values[0], values[1]);
         });
 
         this.customStringsRaw = strings;

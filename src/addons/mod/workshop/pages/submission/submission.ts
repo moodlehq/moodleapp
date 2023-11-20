@@ -20,7 +20,7 @@ import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreGradesHelper, CoreGradesMenuItem } from '@features/grades/services/grades-helper';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CanLeave } from '@guards/can-leave';
-import { IonContent, IonRefresher } from '@ionic/angular';
+import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
@@ -460,7 +460,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
      *
      * @param refresher Refresher.
      */
-    refreshSubmission(refresher: IonRefresher): void {
+    refreshSubmission(refresher: HTMLIonRefresherElement): void {
         if (this.loaded) {
             this.refreshAllData().finally(() => {
                 refresher?.complete();
@@ -513,7 +513,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
             published: boolean;
         } = this.feedbackForm.value;
 
-        inputData.grade = inputData.grade >= 0 ? inputData.grade : '';
+        inputData.grade = Number(inputData.grade) >= 0 ? inputData.grade : '';
         // Add some HTML to the message if needed.
         inputData.text = CoreTextUtils.formatHtmlLines(inputData.text);
 

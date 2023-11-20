@@ -15,7 +15,7 @@
             [placeholder]="'core.filter' | translate" class="ion-margin-top">
         </ion-searchbar>
         <ion-list>
-            <ion-item button *ngIf="error" class="ion-text-wrap" [href]="licensesUrl" core-link auto-login="no" detail="false">
+            <ion-item button *ngIf="error" class="ion-text-wrap" [href]="licensesUrl" core-link auto-login="no" [detail]="false">
                 <ion-label>
                     {{ 'core.settings.opensourcelicenses' | translate }}
                 </ion-label>

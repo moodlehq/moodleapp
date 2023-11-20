@@ -6,32 +6,70 @@
 .tmp
 *.tmp
 *.tmp.*
-*.sublime-project
-*.sublime-workspace
-.DS_Store
-Thumbs.db
 UserInterfaceState.xcuserstate
 $RECYCLE.BIN/
 
 *.log
 log.txt
-npm-debug.log*
 
-/.idea
-/.ionic
-/.sass-cache
 /.sourcemaps
 /.versions
 /coverage
-/dist
-/node_modules
+
+# Ionic
+/.ionic
+/www
 /platforms
 /plugins
-/www
+
+# Compiled output
+/dist
+/tmp
+/out-tsc
+/bazel-out
+
+# Node
+/node_modules
+npm-debug.log
+yarn-error.log
+
+# IDEs and editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+
+
+# Miscellaneous
+/.angular
+/.angular/cache
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Moodle App
 /src/assets/lib
+/src/assets/lang/*
+/src/assets/env.json
 
 /moodle.config.*.json
 !/moodle.config.example.json
-
-/src/assets/lang/*
-/src/assets/env.json

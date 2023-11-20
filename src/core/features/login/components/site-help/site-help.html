@@ -13,8 +13,8 @@
 <ion-content>
     <ion-list>
         <ng-container *ngFor="let question of questions">
-            <ion-item button class="ion-text-wrap divider" (click)="toggle(question)" sticky="true" [attr.aria-expanded]="isOpen(question)"
-                [attr.aria-controls]="'question-' + question.id + '-answer'" role="heading" detail="false">
+            <ion-item button class="ion-text-wrap divider" (click)="toggle(question)" [attr.aria-expanded]="isOpen(question)"
+                [attr.aria-controls]="'question-' + question.id + '-answer'" role="heading" [detail]="false">
                 <ion-icon name="fas-chevron-right" flip-rtl slot="start" aria-hidden="true" class="expandable-status-icon"
                     [class.expandable-status-icon-expanded]="isOpen(question)">
                 </ion-icon>

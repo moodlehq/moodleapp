@@ -1,4 +1,4 @@
-@import '~theme/globals.scss';
+@use "theme/globals" as *;
 
 :host {
     .core-format-progress-list {

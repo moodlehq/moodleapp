@@ -1,5 +1,4 @@
-@import "~theme/components/discussion.scss";
-@import "~theme/globals.scss";
+@use "theme/globals" as *;
 
 :host {
 

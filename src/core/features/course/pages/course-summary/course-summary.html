@@ -69,7 +69,7 @@
                     </ion-label>
                 </ion-item>
 
-                <ion-item class="ion-text-wrap" *ngIf="course.summary" detail="false">
+                <ion-item class="ion-text-wrap" *ngIf="course.summary" [detail]="false">
                     <ion-label>
                         <h2 class="item-heading">
                             {{'core.course.coursesummary' | translate}}
@@ -81,7 +81,7 @@
 
                 <ion-list *ngIf="course.contacts && course.contacts.length">
                     <ion-item [button]="course.contacts.length >= 5" class="ion-text-wrap" (click)="toggleContacts()"
-                        [attr.aria-label]="(contactsExpanded ? 'core.collapse' : 'core.expand') | translate" detail="false">
+                        [attr.aria-label]="(contactsExpanded ? 'core.collapse' : 'core.expand') | translate" [detail]="false">
                         <ion-icon *ngIf="course.contacts.length >= 5" name="fas-chevron-right" flip-rtl slot="start" aria-hidden="true"
                             class="expandable-status-icon" [class.expandable-status-icon-expanded]="contactsExpanded">
                         </ion-icon>
@@ -93,7 +93,7 @@
                     </ion-item>
                     <ng-container *ngIf="contactsExpanded || course.contacts.length < 5">
                         <ion-item button class="ion-text-wrap" *ngFor="let contact of course.contacts" core-user-link [userId]="contact.id"
-                            [courseId]="isEnrolled ? course.id : null" [attr.aria-label]="'core.viewprofile' | translate" detail="true">
+                            [courseId]="isEnrolled ? course.id : null" [attr.aria-label]="'core.viewprofile' | translate" [detail]="true">
                             <core-user-avatar [user]="contact" slot="start" [userId]="contact.id" [courseId]="isEnrolled ? course.id : null"
                                 [linkProfile]="false">
                             </core-user-avatar>
@@ -116,7 +116,7 @@
                                     <span class="core-customfieldseparator">: </span>
                                 </span>
                                 <span class="core-customfieldvalue">
-                                    <core-format-text [text]="field.value" [collapsible-item]="field.type == 'textarea'  ? '' : null"
+                                    <core-format-text [text]="field.value" [collapsible-item]="field.type === 'textarea'  ? '' : null"
                                         contextLevel="course" [contextInstanceId]="course.id">
                                     </core-format-text>
                                 </span>

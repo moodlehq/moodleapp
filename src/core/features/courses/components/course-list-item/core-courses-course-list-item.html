@@ -1,14 +1,14 @@
-<ion-card [class.core-course-list-item]="layout == 'list' || layout == 'listwithenrol'"
-    [class.core-course-list-card]="layout == 'card' || layout == 'summarycard'" [class.item-dimmed]="course.hidden" (click)="openCourse()"
+<ion-card [class.core-course-list-item]="layout === 'list' || layout === 'listwithenrol'"
+    [class.core-course-list-card]="layout === 'card' || layout === 'summarycard'" [class.item-dimmed]="course.hidden" (click)="openCourse()"
     button [attr.aria-label]="course.displayname || course.fullname">
 
-    <div *ngIf="layout == 'card' || layout == 'summarycard'" class="core-course-thumb" [class.core-course-color-img]="course.courseimage">
+    <div *ngIf="layout === 'card' || layout === 'summarycard'" class="core-course-thumb" [class.core-course-color-img]="course.courseimage">
         <img *ngIf="course.courseimage" [src]="course.courseimage" core-external-content alt="" (error)="loadFallbackCourseIcon()" />
         <ion-icon *ngIf="!course.courseimage" name="fas-graduation-cap" class="course-icon" aria-hidden="true">
         </ion-icon>
     </div>
 
-    <ng-container *ngIf="isEnrolled && layout != 'summarycard'">
+    <ng-container *ngIf="isEnrolled && layout !== 'summarycard'">
         <div class="core-button-spinner" *ngIf="!courseOptionMenuEnabled && showDownload">
             <core-download-refresh [status]="prefetchCourseData.status" [enabled]="showDownload"
                 [statusTranslatable]="prefetchCourseData.statusTranslatable" [canTrustDownload]="false"
@@ -29,7 +29,7 @@
 
     <ion-item class="ion-text-wrap">
 
-        <ng-container *ngIf="layout == 'list' || layout == 'listwithenrol'">
+        <ng-container *ngIf="layout === 'list' || layout === 'listwithenrol'">
             <ion-icon *ngIf="!course.courseimage" name="fas-graduation-cap" slot="start" class="course-icon core-course-thumb"
                 aria-hidden="true">
             </ion-icon>
@@ -55,7 +55,7 @@
                     <core-format-text [text]="course.fullname" contextLevel="course" [contextInstanceId]="course.id">
                     </core-format-text>
 
-                    <span *ngIf="(layout == 'list' || layout == 'listwithenrol') && !isEnrolled" class="core-course-enrol-icons">
+                    <span *ngIf="(layout === 'list' || layout === 'listwithenrol') && !isEnrolled" class="core-course-enrol-icons">
                         <ion-icon *ngFor="let icon of enrolmentIcons" color="medium" [name]="icon.icon" [title]="icon.label | translate"
                             [attr.aria-label]="icon.label | translate" [ngClass]="[icon.className]">
                         </ion-icon>
@@ -82,7 +82,7 @@
                 </ion-chip>
             </div>
 
-            <div *ngIf="layout != 'summarycard' && isEnrolled && progress >= 0 && completionUserTracked !== false"
+            <div *ngIf="layout !== 'summarycard' && isEnrolled && progress >= 0 && completionUserTracked !== false"
                 class="core-course-progress">
                 <core-progress-bar [progress]="progress" a11yText="core.courses.aria:courseprogress"></core-progress-bar>
             </div>

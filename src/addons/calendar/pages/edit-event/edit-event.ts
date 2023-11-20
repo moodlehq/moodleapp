@@ -14,7 +14,6 @@
 
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { IonRefresher } from '@ionic/angular';
 import { CoreEvents } from '@singletons/events';
 import { CoreGroup, CoreGroups } from '@services/groups';
 import { CoreSites } from '@services/sites';
@@ -383,7 +382,7 @@ export class AddonCalendarEditEventPage implements OnInit, OnDestroy, CanLeave {
      *
      * @param refresher Refresher.
      */
-    refreshData(refresher?: IonRefresher): void {
+    refreshData(refresher?: HTMLIonRefresherElement): void {
         const promises = [
             AddonCalendar.invalidateAccessInformation(this.courseId),
             AddonCalendar.invalidateAllowedEventTypes(this.courseId),

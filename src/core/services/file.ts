@@ -1135,6 +1135,38 @@ export class CoreFileProvider {
     }
 
     /**
+     * Remove deleted sites folders.
+     *
+     * @returns Promise resolved when done.
+     */
+    async clearDeletedSitesFolder(existingSiteNames: string[]): Promise<void> {
+        // Ignore errors because the folder might not exist.
+        const dirPath = CoreFileProvider.SITESFOLDER;
+
+        // Get the directory contents.
+        try {
+            const contents = await this.getDirectoryContents(dirPath);
+
+            if (!contents.length) {
+                return;
+            }
+
+            const promises: Promise<void>[] = contents.map(async (file) => {
+                if (file.isDirectory) {
+                    if (!existingSiteNames.includes(file.name)) {
+                        // Site does not exist... delete it.
+                        await CoreUtils.ignoreErrors(this.removeDir(this.getSiteFolder(file.name)));
+                    }
+                }
+            });
+
+            await Promise.all(promises);
+        } catch {
+            // Ignore errors, maybe it doesn't exist.
+        }
+    }
+
+    /**
      * Given a folder path and a list of used files, remove all the files of the folder that aren't on the list of used files.
      *
      * @param dirPath Folder path.

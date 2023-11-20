@@ -63,14 +63,14 @@
 
     <!-- Reset search. -->
     <ng-container *ngIf="search.searching && !isEmpty">
-        <ion-item (click)="searchReset($event)" button detail="false" *ngIf="!foundRecordsTranslationData">
+        <ion-item (click)="searchReset($event)" button [detail]="false" *ngIf="!foundRecordsTranslationData">
             <ion-label color="info">
                 {{ 'addon.mod_data.resetsettings' | translate}}
             </ion-label>
         </ion-item>
 
         <ion-card class="core-success-card" *ngIf="foundRecordsTranslationData">
-            <ion-item (click)="searchReset($event)" button detail="false">
+            <ion-item (click)="searchReset($event)" button [detail]="false">
                 <ion-label>
                     <p [innerHTML]="'addon.mod_data.foundrecords' | translate:{$a: foundRecordsTranslationData}"></p>
                 </ion-label>

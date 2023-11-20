@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { IonRefresher } from '@ionic/angular';
 
 import { CoreApp } from '@services/app';
 import { CoreDomUtils } from '@services/utils/dom';
@@ -130,7 +129,7 @@ export class CoreTagSearchPage implements OnInit {
      *
      * @param refresher Refresher event.
      */
-    refreshData(refresher?: IonRefresher): void {
+    refreshData(refresher?: HTMLIonRefresherElement): void {
         CoreUtils.allPromises([
             CoreTag.invalidateTagCollections(),
             CoreTag.invalidateTagCloud(this.collectionId, undefined, undefined, this.query),

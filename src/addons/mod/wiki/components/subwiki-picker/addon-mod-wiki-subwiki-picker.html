@@ -9,7 +9,7 @@
                 </ion-label>
             </ion-item-divider>
             <ion-item class="ion-text-wrap" *ngFor="let subwiki of group.subwikis" (click)="openSubwiki(subwiki)" button
-                [attr.aria-current]="isSubwikiSelected(subwiki) ? 'page' : 'false'" detail="false">
+                [attr.aria-current]="isSubwikiSelected(subwiki) ? 'page' : 'false'" [detail]="false">
                 <ion-label>
                     <core-format-text [text]="subwiki.name" contextLevel="course" [contextInstanceId]="courseId" [wsNotFiltered]="true">
                     </core-format-text>
