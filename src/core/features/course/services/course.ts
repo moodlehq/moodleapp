@@ -110,36 +110,6 @@ export class CoreCourseProvider {
     static readonly ACCESS_DEFAULT = 'courses_access_default';
     static readonly ALL_COURSES_CLEARED = -1;
 
-    /**
-     * @deprecated since 4.0, use CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_NONE instead.
-     */
-    static readonly COMPLETION_TRACKING_NONE = 0;
-    /**
-     * @deprecated since 4.0, use CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_MANUAL instead.
-     */
-    static readonly COMPLETION_TRACKING_MANUAL = 1;
-    /**
-     * @deprecated since 4.0, use CoreCourseModuleCompletionTracking.COMPLETION_TRACKING_AUTOMATIC instead.
-     */
-    static readonly COMPLETION_TRACKING_AUTOMATIC = 2;
-
-    /**
-     * @deprecated since 4.0, use CoreCourseModuleCompletionStatus.COMPLETION_INCOMPLETE instead.
-     */
-    static readonly COMPLETION_INCOMPLETE = 0;
-    /**
-     * @deprecated since 4.0, use CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE instead.
-     */
-    static readonly COMPLETION_COMPLETE = 1;
-    /**
-     * @deprecated since 4.0, use CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE_PASS instead.
-     */
-    static readonly COMPLETION_COMPLETE_PASS = 2;
-    /**
-     * @deprecated since 4.0, use CoreCourseModuleCompletionStatus.COMPLETION_COMPLETE_FAIL instead.
-     */
-    static readonly COMPLETION_COMPLETE_FAIL = 3;
-
     static readonly COMPONENT = 'CoreCourse';
 
     readonly CORE_MODULES = [
@@ -861,24 +831,6 @@ export class CoreCourseProvider {
 
         // Use default icon on core modules.
         return path + moduleName + '.svg';
-    }
-
-    /**
-     * Get the section ID a module belongs to.
-     *
-     * @param moduleId The module ID.
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved with the section ID.
-     * @deprecated since 4.0.
-     */
-    async getModuleSectionId(moduleId: number, siteId?: string): Promise<number> {
-        // Try to get the section using getModuleBasicInfo.
-        const module = await CoreCourse.getModuleBasicInfo(
-            moduleId,
-            { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
-        );
-
-        return module.section;
     }
 
     /**
@@ -1827,15 +1779,6 @@ type CoreCourseGetCourseModuleByInstanceWSParams = {
 type CoreCourseGetCourseModuleWSResponse = {
     cm: CoreCourseModuleBasicInfo;
     warnings?: CoreWSExternalWarning[];
-};
-
-/**
- * Course module data returned by the WS with course added.
- *
- * @deprecated since 4.0. Use CoreCourseModuleData instead.
- */
-export type CoreCourseWSModule = CoreCourseGetContentsWSModule & {
-    course: number; // The course id.
 };
 
 /**

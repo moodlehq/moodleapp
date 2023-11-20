@@ -35,11 +35,6 @@ export class CoreEmptyBoxComponent {
     @Input() image?: string; // Image source. If an icon is provided, image won't be used.
     @Input() flipIconRtl = false; // Whether to flip the icon in RTL. Defaults to false.
 
-    /**
-     * @deprecated since 4.0. Not used anymore.
-     */
-    @Input() inline = false;
-
     @HostBinding('class.dimmed')
     get isDimmed(): boolean {
         return this.dimmed;

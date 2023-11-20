@@ -299,18 +299,6 @@ export class CoreTextUtilsProvider {
     }
 
     /**
-     * Concatenate two paths, adding a slash between them if needed.
-     *
-     * @param leftPath Left path.
-     * @param rightPath Right path.
-     * @returns Concatenated path.
-     * @deprecated since 4.0. Use CorePath instead.
-     */
-    concatenatePaths(leftPath: string, rightPath: string): string {
-        return CorePath.concatenatePaths(leftPath, rightPath);
-    }
-
-    /**
      * Convert some HTML as text into an HTMLElement. This HTML is put inside a div or a body.
      * This function is the same as in DomUtils, but we cannot use that one because of circular dependencies.
      *

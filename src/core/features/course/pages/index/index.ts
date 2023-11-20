@@ -148,14 +148,6 @@ export class CoreCourseIndexPage implements OnInit, OnDestroy {
 
         this.modNavOptions = CoreNavigator.getRouteParam<CoreNavigationOptions>('modNavOptions');
         this.openModule = CoreNavigator.getRouteBooleanParam('openModule') ?? true; // If false, just scroll to module.
-        if (!this.modNavOptions) {
-            // Fallback to old way of passing params. @deprecated since 4.0.
-            const modParams = CoreNavigator.getRouteParam<Params>('modParams');
-            if (modParams) {
-                this.modNavOptions = { params: modParams };
-            }
-        }
-
         this.currentPagePath = CoreNavigator.getCurrentPath();
         this.contentsTab.page = CorePath.concatenatePaths(this.currentPagePath, this.contentsTab.page);
         this.contentsTab.pageParams = {

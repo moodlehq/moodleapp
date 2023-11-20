@@ -110,26 +110,6 @@ export class CoreUserProvider {
     }
 
     /**
-     * Check if WS to update profile picture is available in site.
-     *
-     * @returns Promise resolved with boolean: whether it's available.
-     * @deprecated since 4.0.
-     */
-    async canUpdatePicture(): Promise<boolean> {
-        return true;
-    }
-
-    /**
-     * Check if WS to search participants is available in site.
-     *
-     * @returns Whether it's available.
-     * @deprecated since 4.0.
-     */
-    canUpdatePictureInSite(): boolean {
-        return true;
-    }
-
-    /**
      * Change the given user profile picture.
      *
      * @param draftItemId New picture draft item id.

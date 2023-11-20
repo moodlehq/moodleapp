@@ -45,16 +45,6 @@ export class CoreRatingProvider {
     static readonly RATING_SAVED_EVENT = 'core_rating_rating_saved';
 
     /**
-     * Returns whether the web serivce to add ratings is available.
-     *
-     * @returns If WS is available.
-     * @deprecated since 4.0.
-     */
-    isAddRatingWSAvailable(): boolean {
-        return true;
-    }
-
-    /**
      * Add a rating to an item.
      *
      * @param component Component. Example: "mod_forum".

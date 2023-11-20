@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnChanges, Input, ViewChild, Output, EventEmitter, HostBinding } from '@angular/core';
+import { Component, OnChanges, Input, ViewChild, HostBinding } from '@angular/core';
 import { IonRefresher } from '@ionic/angular';
 
 import { CoreCourseFormatComponent } from '@features/course/components/course-format/course-format';
-import { CoreCourseModuleCompletionData, CoreCourseSection } from '@features/course/services/course-helper';
+import { CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreSitePlugins, CoreSitePluginsContent } from '@features/siteplugins/services/siteplugins';
@@ -37,12 +37,6 @@ export class CoreSitePluginsCourseFormatComponent implements OnChanges {
     @Input() initialSectionId?: number; // The section to load first (by ID).
     @Input() initialSectionNumber?: number; // The section to load first (by number).
     @Input() moduleId?: number; // The module ID to scroll to. Must be inside the initial selected section.
-    /**
-     * Notify when any module completion changes.
-     *
-     * @deprecated since 4.0. Use CoreEvents instead.
-     */
-    @Output() completionChanged = new EventEmitter<CoreCourseModuleCompletionData>();
 
     // Special input, allows access to the parent instance properties and methods.
     // Please notice that all the other inputs/outputs are also accessible through this instance, so they could be removed.
@@ -87,8 +81,6 @@ export class CoreSitePluginsCourseFormatComponent implements OnChanges {
             initialSectionId: this.initialSectionId,
             initialSectionNumber: this.initialSectionNumber,
             moduleId: this.moduleId,
-            // eslint-disable-next-line deprecation/deprecation
-            completionChanged: this.completionChanged,
             coreCourseFormatComponent: this.coreCourseFormatComponent,
         };
     }

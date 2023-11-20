@@ -392,16 +392,6 @@ export class CoreSitePluginsProvider {
     }
 
     /**
-     * Check if the get content WS is available.
-     *
-     * @returns If get content WS is available.
-     * @deprecated since 4.0
-     */
-    isGetContentAvailable(): boolean {
-        return true;
-    }
-
-    /**
      * Check if a handler is enabled for a certain course.
      *
      * @param courseId Course ID to check.
@@ -904,10 +894,6 @@ export type CoreSitePluginsCourseModuleHandlerData = CoreSitePluginsHandlerCommo
 export type CoreSitePluginsCourseFormatHandlerData = CoreSitePluginsHandlerCommonData & {
     canviewallsections?: boolean;
     displayenabledownload?: boolean;
-    /**
-     * @deprecated since 4.0. Use displaycourseindex instead.
-     */
-    displaysectionselector?: boolean;
     displaycourseindex?: boolean;
 };
 

@@ -78,16 +78,6 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
     }
 
     /**
-     * Check if current site can check updates using core_course_check_updates.
-     *
-     * @returns True if can check updates, false otherwise.
-     * @deprecated since 4.0.
-     */
-    canCheckUpdates(): boolean {
-        return true;
-    }
-
-    /**
      * Check if a certain module can use core_course_check_updates.
      *
      * @param module Module.
@@ -705,8 +695,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
         await Promise.all(modules.map(async (module) => {
             const handler = this.getPrefetchHandlerFor(module.modname);
 
-            // eslint-disable-next-line deprecation/deprecation
-            if (!handler || (onlyToDisplay && handler.skipListStatus)) {
+            if (!handler) {
                 return;
             }
 
@@ -1363,14 +1352,6 @@ export interface CoreCourseModulePrefetchHandler extends CoreDelegateHandler {
      * as outdated. This RegExp is ignored if hasUpdates function is defined.
      */
     updatesNames?: RegExp;
-
-    /**
-     * If true, this module will be treated as not downloadable when determining the status of a list of modules. The module will
-     * still be downloaded when downloading the section/course, it only affects whether the button should be displayed.
-     *
-     * @deprecated since 4.0.
-     */
-    skipListStatus?: boolean;
 
     /**
      * Get the download size of a module.

@@ -35,10 +35,6 @@ export class CoreDownloadRefreshComponent {
     @Input() statusTranslatable?: string; // Download status translatable string.
     @Input() enabled = false; // Whether the download is enabled.
     @Input() loading = true; // Force loading status when is not downloading.
-    /**
-     * @deprecated since 4.0. Not used anymore.
-     */
-    @Input() size = ''; // Size of the buttons.
     @Input() canTrustDownload = false; // If false, refresh will be shown if downloaded.
     @Output() action: EventEmitter<boolean>; // Will emit an event when the item clicked.
 
