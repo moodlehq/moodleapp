@@ -1585,37 +1585,6 @@ ion-item.item-input.item-multiple-inputs {
     }
 }
 
-// Focus highlight for accessibility.
-.ion-focused:not(.item-multiple-inputs):not(:focus),
-ion-input.has-focus,
-ion-card:focus {
-    @include core-focus();
-}
-.ion-focused.item-multiple-inputs,
-.ion-focused.ion-activatable {
-    ion-toggle:focus-within,
-    ion-select:focus-within,
-    ion-checkbox:focus-within,
-    ion-radio:focus-within {
-        @include core-focus();
-    }
-}
-
-// Treat cases where there's a focusable element inside an item, like a button.
-ion-item.item-input:not(.item-multiple-inputs):not(:focus),
-ion-item.item-has-focus:not(.item-multiple-inputs):not(:focus),
-ion-item.item-input ion-input.has-focus {
-    position: relative;
-    &::after {
-        box-shadow: revert;
-        opacity: revert;
-        z-index: revert;
-    }
-    .item-highlight, .item-inner-highlight {
-        position: unset;
-    }
-}
-
 ion-item-divider.item,
 ion-item.item.divider {
     min-height: var(--min-height);
@@ -1653,15 +1622,47 @@ ion-item.item {
     outline: none;
 }
 
+// Focus highlight for accessibility.
+.ion-focused:not(.item-multiple-inputs):not(:focus),
+ion-input.has-focus,
+ion-card:focus {
+    @include core-focus();
+
+    :focus-visible,
+    .clickable:focus {
+        box-shadow: none;
+    }
+}
+
+.ion-focused.item-multiple-inputs {
+    ion-toggle:focus-within,
+    ion-select:focus-within,
+    ion-checkbox:focus-within,
+    ion-radio:focus-within {
+        @include core-focus();
+    }
+}
+
+// Treat cases where there's a focusable element inside an item, like a button.
+ion-item.item-input:not(.item-multiple-inputs):not(:focus),
+ion-item.item-has-focus:not(.item-multiple-inputs):not(:focus),
+ion-item.item-input ion-input.has-focus {
+    position: relative;
+    &::after {
+        box-shadow: revert;
+        opacity: revert;
+        z-index: revert;
+    }
+    .item-highlight, .item-inner-highlight {
+        position: unset;
+    }
+}
+
 textarea, button, select, input, a, .clickable {
     &:focus {
         @include core-focus-style();
         outline: none;
     }
-}
-
-.ion-focused:not(.item-multiple-inputs):not(:focus) .clickable:focus {
-    box-shadow: none;
 }
 
 ion-loading:focus-visible,
@@ -1672,16 +1673,16 @@ ion-modal:focus-visible {
     border-radius: 0;
 }
 
-input {
-    --placeholder-color: var(--ion-placeholder-color);
-    --placeholder-opacity: .85;
-}
-
 ion-input .native-input {
     &:focus, &:focus-visible {
         box-shadow: none;
         outline: none;
     }
+}
+
+input {
+    --placeholder-color: var(--ion-placeholder-color);
+    --placeholder-opacity: .85;
 }
 
 // Disable scroll on parent ion contents to enabled PTR on the ones inside the splitview. See split-view component for more info.
