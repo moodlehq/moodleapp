@@ -20,7 +20,7 @@ import { CoreFileUploaderStoreFilesResult } from '@features/fileuploader/service
 import { CoreFileSession } from '@services/file-session';
 import { CoreUtils } from '@services/utils/utils';
 import { AddonModAssignSubmissionFileHandlerService } from '../services/handler';
-import { FileEntry } from '@ionic-native/file/ngx';
+import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { AddonModAssignSubmissionPluginBaseComponent } from '@addons/mod/assign/classes/base-submission-plugin-component';
 import { CoreFileEntry } from '@services/file-helper';
 

@@ -30,7 +30,7 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModAssignSubmissionFileComponent } from '../component/file';
-import { FileEntry } from '@ionic-native/file/ngx';
+import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import type { AddonModAssignSubmissionPluginBaseComponent } from '@addons/mod/assign/classes/base-submission-plugin-component';
 
 /**

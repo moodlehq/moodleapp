@@ -14,29 +14,29 @@
 
 import { NgModule } from '@angular/core';
 
-import { Badge } from '@ionic-native/badge/ngx';
-import { Camera } from '@ionic-native/camera/ngx';
-import { Chooser } from '@ionic-native/chooser/ngx';
-import { Clipboard } from '@ionic-native/clipboard/ngx';
-import { Device } from '@ionic-native/device/ngx';
-import { Diagnostic } from '@ionic-native/diagnostic/ngx';
-import { File } from '@ionic-native/file/ngx';
-import { FileOpener } from '@ionic-native/file-opener/ngx';
-import { FileTransfer } from '@ionic-native/file-transfer/ngx';
-import { Geolocation } from '@ionic-native/geolocation/ngx';
-import { HTTP } from '@ionic-native/http/ngx';
-import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
-import { WebView } from '@ionic-native/ionic-webview/ngx';
-import { Keyboard } from '@ionic-native/keyboard/ngx';
-import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
-import { MediaCapture } from '@ionic-native/media-capture/ngx';
+import { Badge } from '@awesome-cordova-plugins/badge/ngx';
+import { Camera } from '@awesome-cordova-plugins/camera/ngx';
+import { Chooser } from '@awesome-cordova-plugins/chooser/ngx';
+import { Clipboard } from '@awesome-cordova-plugins/clipboard/ngx';
+import { Device } from '@awesome-cordova-plugins/device/ngx';
+import { Diagnostic } from '@awesome-cordova-plugins/diagnostic/ngx';
+import { File } from '@awesome-cordova-plugins/file/ngx';
+import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
+import { FileTransfer } from '@awesome-cordova-plugins/file-transfer/ngx';
+import { Geolocation } from '@awesome-cordova-plugins/geolocation/ngx';
+import { HTTP } from '@awesome-cordova-plugins/http/ngx';
+import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
+import { WebView } from '@awesome-cordova-plugins/ionic-webview/ngx';
+import { Keyboard } from '@awesome-cordova-plugins/keyboard/ngx';
+import { LocalNotifications } from '@awesome-cordova-plugins/local-notifications/ngx';
+import { MediaCapture } from '@awesome-cordova-plugins/media-capture/ngx';
 import { Push } from '@moodlehq/ionic-native-push/ngx';
 import { QRScanner } from '@ionic-native/qr-scanner/ngx';
-import { SplashScreen } from '@ionic-native/splash-screen/ngx';
-import { SQLite } from '@ionic-native/sqlite/ngx';
-import { StatusBar } from '@ionic-native/status-bar/ngx';
-import { WebIntent } from '@ionic-native/web-intent/ngx';
-import { Zip } from '@ionic-native/zip/ngx';
+import { SplashScreen } from '@awesome-cordova-plugins/splash-screen/ngx';
+import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
+import { StatusBar } from '@awesome-cordova-plugins/status-bar/ngx';
+import { WebIntent } from '@awesome-cordova-plugins/web-intent/ngx';
+import { Zip } from '@awesome-cordova-plugins/zip/ngx';
 
 export const CORE_NATIVE_SERVICES = [
     Badge,

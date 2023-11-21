@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Clipboard } from '@ionic-native/clipboard/ngx';
+import { Clipboard } from '@awesome-cordova-plugins/clipboard/ngx';
 
 /**
  * Emulates the Cordova Clipboard plugin in browser.

@@ -22,7 +22,7 @@ import { AddonModDataEntryField,
     AddonModDataSubfieldData,
 } from './data';
 import { CoreFormFields } from '@singletons/form';
-import { FileEntry } from '@ionic-native/file/ngx';
+import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreFileEntry } from '@services/file-helper';
 import type { AddonModDataFieldPluginBaseComponent } from '@addons/mod/data/classes/base-field-plugin-component';
 

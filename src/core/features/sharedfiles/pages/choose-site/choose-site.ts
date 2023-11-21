@@ -15,7 +15,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CoreAccountsList, CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSharedFilesHelper } from '@features/sharedfiles/services/sharedfiles-helper';
-import { FileEntry } from '@ionic-native/file/ngx';
+import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreFile } from '@services/file';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSiteBasicInfo } from '@services/sites';

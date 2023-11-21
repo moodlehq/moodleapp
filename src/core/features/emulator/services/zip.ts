@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Zip } from '@ionic-native/zip/ngx';
+import { Zip } from '@awesome-cordova-plugins/zip/ngx';
 import * as JSZip from 'jszip';
 import { CorePath } from '@singletons/path';
 import { File } from '@singletons';

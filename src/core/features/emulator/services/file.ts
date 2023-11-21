@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { File, Entry, DirectoryEntry, FileEntry, IWriteOptions, RemoveResult } from '@ionic-native/file/ngx';
+import { File, Entry, DirectoryEntry, FileEntry, IWriteOptions, RemoveResult } from '@awesome-cordova-plugins/file/ngx';
 import { CorePath } from '@singletons/path';
 
 /**

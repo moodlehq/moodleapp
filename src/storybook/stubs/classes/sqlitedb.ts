@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { SQLiteDB } from '@classes/sqlitedb';
-import { SQLiteObject } from '@ionic-native/sqlite/ngx';
+import { SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
 
 /**
  * SQlite database stub.

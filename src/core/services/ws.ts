@@ -15,8 +15,8 @@
 import { Injectable } from '@angular/core';
 import { HttpResponse, HttpParams, HttpErrorResponse } from '@angular/common/http';
 
-import { FileEntry } from '@ionic-native/file/ngx';
-import { FileUploadOptions, FileUploadResult } from '@ionic-native/file-transfer/ngx';
+import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
+import { FileUploadOptions, FileUploadResult } from '@awesome-cordova-plugins/file-transfer/ngx';
 import { Md5 } from 'ts-md5/dist/md5';
 import { Observable, firstValueFrom } from 'rxjs';
 import { timeout } from 'rxjs/operators';

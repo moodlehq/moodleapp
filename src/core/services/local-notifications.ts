@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
-import { ILocalNotification } from '@ionic-native/local-notifications';
+import { ILocalNotification } from '@awesome-cordova-plugins/local-notifications';
 
 import { CoreApp } from '@services/app';
 import { CoreConfig } from '@services/config';

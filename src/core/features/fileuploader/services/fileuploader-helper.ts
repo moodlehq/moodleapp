@@ -14,10 +14,10 @@
 
 import { Injectable } from '@angular/core';
 import { ActionSheetButton } from '@ionic/core';
-import { CameraOptions } from '@ionic-native/camera/ngx';
-import { ChooserResult } from '@ionic-native/chooser/ngx';
-import { FileEntry, IFile } from '@ionic-native/file/ngx';
-import { MediaFile } from '@ionic-native/media-capture/ngx';
+import { CameraOptions } from '@awesome-cordova-plugins/camera/ngx';
+import { ChooserResult } from '@awesome-cordova-plugins/chooser/ngx';
+import { FileEntry, IFile } from '@awesome-cordova-plugins/file/ngx';
+import { MediaFile } from '@awesome-cordova-plugins/media-capture/ngx';
 
 import { CoreNetwork } from '@services/network';
 import { CoreFile, CoreFileProvider, CoreFileProgressEvent } from '@services/file';

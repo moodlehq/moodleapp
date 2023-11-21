@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { FileOpener } from '@ionic-native/file-opener/ngx';
+import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
 
 import { CoreFile } from '@services/file';
 

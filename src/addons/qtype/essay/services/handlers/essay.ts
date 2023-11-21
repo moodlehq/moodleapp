@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable, Type } from '@angular/core';
-import { FileEntry } from '@ionic-native/file/ngx';
+import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { AddonModQuizEssayQuestion } from '@features/question/classes/base-question-component';

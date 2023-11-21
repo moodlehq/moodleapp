@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { SQLiteObject } from '@ionic-native/sqlite/ngx';
+import { SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
 
 import { SQLite } from '@singletons';
 import { CoreError } from '@classes/errors/error';

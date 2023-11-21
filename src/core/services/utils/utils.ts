@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { InAppBrowserObject, InAppBrowserOptions } from '@ionic-native/in-app-browser';
-import { FileEntry } from '@ionic-native/file/ngx';
+import { InAppBrowserObject, InAppBrowserOptions } from '@awesome-cordova-plugins/in-app-browser';
+import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { Subscription } from 'rxjs';
 
 import { CoreEvents } from '@singletons/events';

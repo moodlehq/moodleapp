@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CameraOptions } from '@ionic-native/camera/ngx';
-import { FileEntry } from '@ionic-native/file/ngx';
-import { MediaFile, CaptureError, CaptureVideoOptions } from '@ionic-native/media-capture/ngx';
+import { CameraOptions } from '@awesome-cordova-plugins/camera/ngx';
+import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
+import { MediaFile, CaptureError, CaptureVideoOptions } from '@awesome-cordova-plugins/media-capture/ngx';
 import { Subject } from 'rxjs';
 
 import { CoreFile, CoreFileProvider } from '@services/file';
