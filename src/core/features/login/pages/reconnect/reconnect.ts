@@ -20,7 +20,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreSiteBasicInfo, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUtils } from '@services/utils/utils';
-import { CoreLoginHelper, CoreLoginHelperProvider } from '@features/login/services/login-helper';
+import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSite } from '@classes/sites/site';
 import { CoreEvents } from '@singletons/events';
 import { CoreError } from '@classes/errors/error';
@@ -32,6 +32,7 @@ import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/suppo
 import { Translate } from '@singletons';
 import { SafeHtml } from '@angular/platform-browser';
 import { CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-site';
+import { FORGOTTEN_PASSWORD_FEATURE_NAME } from '@features/login/constants';
 
 /**
  * Page to enter the user password to reconnect to a site.
@@ -171,7 +172,7 @@ export class CoreLoginReconnectPage implements OnInit, OnDestroy {
             return;
         }
 
-        this.showForgottenPassword = !this.site.isFeatureDisabled(CoreLoginHelperProvider.FORGOTTEN_PASSWORD_FEATURE_NAME);
+        this.showForgottenPassword = !this.site.isFeatureDisabled(FORGOTTEN_PASSWORD_FEATURE_NAME);
         this.exceededAttemptsHTML = CoreLoginHelper.buildExceededAttemptsHTML(
             !!this.supportConfig?.canContactSupport(),
             this.showForgottenPassword,

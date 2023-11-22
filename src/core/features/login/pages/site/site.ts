@@ -23,7 +23,6 @@ import { CoreUtils } from '@services/utils/utils';
 import { CoreDomUtils } from '@services/utils/dom';
 import {
     CoreLoginHelper,
-    CoreLoginHelperProvider,
     CoreLoginSiteFinderSettings,
     CoreLoginSiteSelectorListMethod,
 } from '@features/login/services/login-helper';
@@ -48,6 +47,7 @@ import { CoreLoginError } from '@classes/errors/loginerror';
 import { CorePlatform } from '@services/platform';
 import { CoreReferrer } from '@services/referrer';
 import { CoreSitesFactory } from '@services/sites-factory';
+import { ONBOARDING_DONE } from '@features/login/constants';
 
 /**
  * Site (url) chooser when adding a new site.
@@ -110,7 +110,7 @@ export class CoreLoginSitePage implements OnInit {
 
                 if (showOnboarding) {
                     // Don't display onboarding in this case, and don't display it again later.
-                    CoreConfig.set(CoreLoginHelperProvider.ONBOARDING_DONE, 1);
+                    CoreConfig.set(ONBOARDING_DONE, 1);
                 }
             } else if (showOnboarding) {
                 this.initOnboarding();
@@ -191,7 +191,7 @@ export class CoreLoginSitePage implements OnInit {
      * @returns Promise resolved when done.
      */
     protected async initOnboarding(): Promise<void> {
-        const onboardingDone = await CoreConfig.get(CoreLoginHelperProvider.ONBOARDING_DONE, false);
+        const onboardingDone = await CoreConfig.get(ONBOARDING_DONE, false);
 
         if (!onboardingDone) {
             // Check onboarding.

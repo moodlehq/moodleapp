@@ -27,7 +27,6 @@ import {
     AuthEmailSignupProfileFieldsCategory,
     AuthEmailSignupSettings,
     CoreLoginHelper,
-    CoreLoginHelperProvider,
 } from '@features/login/services/login-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreForms } from '@singletons/form';
@@ -35,6 +34,7 @@ import { CoreRecaptchaComponent } from '@components/recaptcha/recaptcha';
 import { CorePath } from '@singletons/path';
 import { CoreDom } from '@singletons/dom';
 import { CoreSitesFactory } from '@services/sites-factory';
+import { EMAIL_SIGNUP_FEATURE_NAME } from '@features/login/constants';
 
 /**
  * Page to signup using email.
@@ -238,10 +238,7 @@ export class CoreLoginEmailSignupPage implements OnInit {
      * @returns True if success.
      */
     protected async treatSiteConfig(): Promise<boolean> {
-        if (
-            this.siteConfig?.registerauth == 'email' &&
-            !this.site.isFeatureDisabled(CoreLoginHelperProvider.EMAIL_SIGNUP_FEATURE_NAME)
-        ) {
+        if (this.siteConfig?.registerauth == 'email' && !this.site.isFeatureDisabled(EMAIL_SIGNUP_FEATURE_NAME)) {
             this.siteName = await this.site.getSiteName();
 
             this.authInstructions = this.siteConfig.authinstructions;

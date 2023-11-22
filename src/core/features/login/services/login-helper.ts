@@ -48,10 +48,14 @@ import {
     CoreUnauthenticatedSite,
     TypeOfLogin,
 } from '@classes/sites/unauthenticated-site';
-
-const PASSWORD_RESETS_CONFIG_KEY = 'password-resets';
-
-export const GET_STARTED_URL = 'https://moodle.com';
+import {
+    EMAIL_SIGNUP_FEATURE_NAME,
+    FAQ_QRCODE_IMAGE_HTML,
+    FAQ_QRCODE_INFO_DONE,
+    FORGOTTEN_PASSWORD_FEATURE_NAME,
+    IDENTITY_PROVIDERS_FEATURE_NAME,
+    IDENTITY_PROVIDER_FEATURE_NAME_PREFIX,
+} from '../constants';
 
 /**
  * Helper provider that provides some common features regarding authentication.
@@ -59,14 +63,7 @@ export const GET_STARTED_URL = 'https://moodle.com';
 @Injectable({ providedIn: 'root' })
 export class CoreLoginHelperProvider {
 
-    static readonly ONBOARDING_DONE = 'onboarding_done';
-    static readonly FAQ_QRCODE_INFO_DONE = 'qrcode_info_done';
-    static readonly FAQ_URL_IMAGE_HTML = '<img src="assets/img/login/faq_url.png" role="presentation" alt="">';
-    static readonly FAQ_QRCODE_IMAGE_HTML = '<img src="assets/img/login/faq_qrcode.png" role="presentation" alt="">';
-    static readonly EMAIL_SIGNUP_FEATURE_NAME = 'CoreLoginEmailSignup';
-    static readonly FORGOTTEN_PASSWORD_FEATURE_NAME = 'NoDelegate_ForgottenPassword';
-    static readonly IDENTITY_PROVIDERS_FEATURE_NAME = 'NoDelegate_IdentityProviders';
-    static readonly IDENTITY_PROVIDER_FEATURE_NAME_PREFIX = 'NoDelegate_IdentityProvider_';
+    protected static readonly PASSWORD_RESETS_CONFIG_KEY = 'password-resets';
 
     protected logger: CoreLogger;
     protected sessionExpiredCheckingSite: Record<string, boolean> = {};
@@ -418,7 +415,7 @@ export class CoreLoginHelperProvider {
             return [];
         }
         // eslint-disable-next-line deprecation/deprecation
-        if (this.isFeatureDisabled(CoreLoginHelperProvider.IDENTITY_PROVIDERS_FEATURE_NAME, siteConfig)) {
+        if (this.isFeatureDisabled(IDENTITY_PROVIDERS_FEATURE_NAME, siteConfig)) {
             // Identity providers are disabled, return an empty list.
             return [];
         }
@@ -435,7 +432,7 @@ export class CoreLoginHelperProvider {
                     provider.url &&
                     (provider.url.indexOf(httpsUrl) != -1 || provider.url.indexOf(httpUrl) != -1) &&
                     !this.isFeatureDisabled( // eslint-disable-line deprecation/deprecation
-                        CoreLoginHelperProvider.IDENTITY_PROVIDER_FEATURE_NAME_PREFIX + urlParams.id,
+                        IDENTITY_PROVIDER_FEATURE_NAME_PREFIX + urlParams.id,
                         siteConfig,
                     )
                 ) {
@@ -459,7 +456,7 @@ export class CoreLoginHelperProvider {
             return [];
         }
 
-        if (site.isFeatureDisabled(CoreLoginHelperProvider.IDENTITY_PROVIDERS_FEATURE_NAME)) {
+        if (site.isFeatureDisabled(IDENTITY_PROVIDERS_FEATURE_NAME)) {
             // Identity providers are disabled, return an empty list.
             return [];
         }
@@ -473,7 +470,7 @@ export class CoreLoginHelperProvider {
                 const urlParams = CoreUrlUtils.extractUrlParams(provider.url);
 
                 if (provider.url && (provider.url.indexOf(httpsUrl) != -1 || provider.url.indexOf(httpUrl) != -1) &&
-                        !site.isFeatureDisabled(CoreLoginHelperProvider.IDENTITY_PROVIDER_FEATURE_NAME_PREFIX + urlParams.id)) {
+                        !site.isFeatureDisabled(IDENTITY_PROVIDER_FEATURE_NAME_PREFIX + urlParams.id)) {
                     validProviders.push(provider);
                 }
             });
@@ -571,7 +568,7 @@ export class CoreLoginHelperProvider {
      */
     isEmailSignupDisabled(config?: CoreSitePublicConfigResponse): boolean {
         // eslint-disable-next-line deprecation/deprecation
-        return this.isFeatureDisabled(CoreLoginHelperProvider.EMAIL_SIGNUP_FEATURE_NAME, config);
+        return this.isFeatureDisabled(EMAIL_SIGNUP_FEATURE_NAME, config);
     }
 
     /**
@@ -617,7 +614,7 @@ export class CoreLoginHelperProvider {
      */
     isForgottenPasswordDisabled(config?: CoreSitePublicConfigResponse): boolean {
         // eslint-disable-next-line deprecation/deprecation
-        return this.isFeatureDisabled(CoreLoginHelperProvider.FORGOTTEN_PASSWORD_FEATURE_NAME, config);
+        return this.isFeatureDisabled(FORGOTTEN_PASSWORD_FEATURE_NAME, config);
     }
 
     /**
@@ -1294,14 +1291,14 @@ export class CoreLoginHelperProvider {
      * @returns Promise resolved if the user accepts to scan QR.
      */
     async showScanQRInstructions(): Promise<void> {
-        const dontShowWarning = await CoreConfig.get(CoreLoginHelperProvider.FAQ_QRCODE_INFO_DONE, 0);
+        const dontShowWarning = await CoreConfig.get(FAQ_QRCODE_INFO_DONE, 0);
         if (dontShowWarning) {
             return;
         }
 
         const message = Translate.instant(
             'core.login.faqwhereisqrcodeanswer',
-            { $image: '<div class="text-center">'+ CoreLoginHelperProvider.FAQ_QRCODE_IMAGE_HTML + '</div>' },
+            { $image: '<div class="text-center">'+ FAQ_QRCODE_IMAGE_HTML + '</div>' },
         );
         const header = Translate.instant('core.login.faqwhereisqrcode');
 
@@ -1315,7 +1312,7 @@ export class CoreLoginHelperProvider {
             );
 
             if (dontShowAgain) {
-                CoreConfig.set(CoreLoginHelperProvider.FAQ_QRCODE_INFO_DONE, 1);
+                CoreConfig.set(FAQ_QRCODE_INFO_DONE, 1);
             }
         } catch {
             // User canceled.
@@ -1484,7 +1481,7 @@ export class CoreLoginHelperProvider {
 
         passwordResets[siteUrl] = Date.now();
 
-        await CoreConfig.set(PASSWORD_RESETS_CONFIG_KEY, JSON.stringify(passwordResets));
+        await CoreConfig.set(CoreLoginHelperProvider.PASSWORD_RESETS_CONFIG_KEY, JSON.stringify(passwordResets));
     }
 
     /**
@@ -1516,9 +1513,9 @@ export class CoreLoginHelperProvider {
         }
 
         if (Object.values(passwordResets).length === 0) {
-            await CoreConfig.delete(PASSWORD_RESETS_CONFIG_KEY);
+            await CoreConfig.delete(CoreLoginHelperProvider.PASSWORD_RESETS_CONFIG_KEY);
         } else {
-            await CoreConfig.set(PASSWORD_RESETS_CONFIG_KEY, JSON.stringify(passwordResets));
+            await CoreConfig.set(CoreLoginHelperProvider.PASSWORD_RESETS_CONFIG_KEY, JSON.stringify(passwordResets));
         }
     }
 
@@ -1562,7 +1559,7 @@ export class CoreLoginHelperProvider {
      * @returns Password resets.
      */
     protected async getPasswordResets(): Promise<Record<string, number>> {
-        const passwordResetsJson = await CoreConfig.get(PASSWORD_RESETS_CONFIG_KEY, '{}');
+        const passwordResetsJson = await CoreConfig.get(CoreLoginHelperProvider.PASSWORD_RESETS_CONFIG_KEY, '{}');
 
         return CoreTextUtils.parseJSON<Record<string, number>>(passwordResetsJson, {});
     }

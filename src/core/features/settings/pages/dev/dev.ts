@@ -14,7 +14,7 @@
 
 import { CoreConstants } from '@/core/constants';
 import { Component, OnInit } from '@angular/core';
-import { CoreLoginHelperProvider } from '@features/login/services/login-helper';
+import { FAQ_QRCODE_INFO_DONE, ONBOARDING_DONE } from '@features/login/constants';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CoreUserTours } from '@features/usertours/services/user-tours';
@@ -174,8 +174,8 @@ export class CoreSettingsDevPage implements OnInit {
     async resetUserTours(): Promise<void> {
         await CoreUserTours.resetTours();
 
-        await CoreConfig.delete(CoreLoginHelperProvider.ONBOARDING_DONE);
-        await CoreConfig.delete(CoreLoginHelperProvider.FAQ_QRCODE_INFO_DONE);
+        await CoreConfig.delete(ONBOARDING_DONE);
+        await CoreConfig.delete(FAQ_QRCODE_INFO_DONE);
 
         CoreDomUtils.showToast('User tours have been reseted');
     }

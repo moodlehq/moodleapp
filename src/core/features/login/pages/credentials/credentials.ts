@@ -21,7 +21,7 @@ import { CoreApp } from '@services/app';
 import { CoreNetwork } from '@services/network';
 import { CoreSiteCheckResponse, CoreSites } from '@services/sites';
 import { CoreDomUtils } from '@services/utils/dom';
-import { CoreLoginHelper, CoreLoginHelperProvider } from '@features/login/services/login-helper';
+import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { Translate } from '@singletons';
 import { CoreSitePublicConfigResponse, CoreUnauthenticatedSite } from '@classes/sites/unauthenticated-site';
 import { CoreEvents } from '@singletons/events';
@@ -33,6 +33,7 @@ import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest
 import { SafeHtml } from '@angular/platform-browser';
 import { CorePlatform } from '@services/platform';
 import { CoreSitesFactory } from '@services/sites-factory';
+import { EMAIL_SIGNUP_FEATURE_NAME, FORGOTTEN_PASSWORD_FEATURE_NAME } from '@features/login/constants';
 
 /**
  * Page to enter the user credentials.
@@ -199,9 +200,8 @@ export class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             this.showScanQR = await CoreLoginHelper.displayQRInCredentialsScreen(this.siteConfig.tool_mobile_qrcodetype);
         }
 
-        this.canSignup = this.siteConfig.registerauth == 'email' &&
-            !this.site.isFeatureDisabled(CoreLoginHelperProvider.EMAIL_SIGNUP_FEATURE_NAME);
-        this.showForgottenPassword = !this.site.isFeatureDisabled(CoreLoginHelperProvider.FORGOTTEN_PASSWORD_FEATURE_NAME);
+        this.canSignup = this.siteConfig.registerauth == 'email' && !this.site.isFeatureDisabled(EMAIL_SIGNUP_FEATURE_NAME);
+        this.showForgottenPassword = !this.site.isFeatureDisabled(FORGOTTEN_PASSWORD_FEATURE_NAME);
         this.exceededAttemptsHTML = CoreLoginHelper.buildExceededAttemptsHTML(
             !!this.supportConfig?.canContactSupport(),
             this.showForgottenPassword,
