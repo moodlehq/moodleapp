@@ -16,7 +16,7 @@ import { InAppBrowserObject, InAppBrowserOptions } from '@ionic-native/in-app-br
 
 import { CoreNetwork } from '@services/network';
 import { CoreDB } from '@services/db';
-import { CoreEvents } from '@singletons/events';
+import { CoreEventData, CoreEvents } from '@singletons/events';
 import { CoreFile } from '@services/file';
 import {
     CoreWS,
@@ -676,6 +676,16 @@ export class CoreSite extends CoreCandidateSite {
      */
     protected getDisabledFeatures(): string | undefined {
         return this.config ? this.getStoredConfig('tool_mobile_disabledfeatures') : super.getDisabledFeatures();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected triggerSiteEvent<Fallback = unknown, Event extends string = string>(
+        eventName: Event,
+        data?: CoreEventData<Event, Fallback>,
+    ): void {
+        CoreEvents.trigger(eventName, data, this.id);
     }
 
     /**

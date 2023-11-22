@@ -14,7 +14,7 @@
 
 import { CoreApp } from '@services/app';
 import { CoreNetwork } from '@services/network';
-import { CoreEvents } from '@singletons/events';
+import { CoreEventData, CoreEvents } from '@singletons/events';
 import {
     CoreWS,
     CoreWSPreSets,
@@ -88,7 +88,6 @@ export class CoreCandidateSite extends CoreUnauthenticatedSite {
         'core_user_remove_user_device',
     ];
 
-    id?: string | undefined; // For candidate sites it will always be undefined.
     token: string;
     privateToken?: string;
     infos?: CoreSiteInfo;
@@ -390,7 +389,7 @@ export class CoreCandidateSite extends CoreUnauthenticatedSite {
     requestObservable<T = unknown>(method: string, data: any, preSets: CoreSiteWSPreSets): WSObservable<T> {
         if (this.isLoggedOut() && !CoreCandidateSite.ALLOWED_LOGGEDOUT_WS.includes(method)) {
             // Site is logged out, it cannot call WebServices.
-            CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, {}, this.id);
+            this.triggerSiteEvent(CoreEvents.SESSION_EXPIRED, {});
 
             // Use a silent error, the SESSION_EXPIRED event will display a message if needed.
             throw new CoreSilentError(Translate.instant('core.lostconnection'));
@@ -635,41 +634,41 @@ export class CoreCandidateSite extends CoreUnauthenticatedSite {
 
             if (CoreUtils.isExpiredTokenError(error)) {
                 // Session expired, trigger event.
-                CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, {}, this.id);
+                this.triggerSiteEvent(CoreEvents.SESSION_EXPIRED, {});
                 // Change error message. Try to get data from cache, the event will handle the error.
                 error.message = Translate.instant('core.lostconnection');
                 useSilentError = true; // Use a silent error, the SESSION_EXPIRED event will display a message if needed.
             } else if (error.errorcode === 'userdeleted' || error.errorcode === 'wsaccessuserdeleted') {
                 // User deleted, trigger event.
-                CoreEvents.trigger(CoreEvents.USER_DELETED, { params: data }, this.id);
+                this.triggerSiteEvent(CoreEvents.USER_DELETED, { params: data });
                 error.message = Translate.instant('core.userdeleted');
 
                 throw new CoreWSError(error);
             } else if (error.errorcode === 'wsaccessusersuspended') {
                 // User suspended, trigger event.
-                CoreEvents.trigger(CoreEvents.USER_SUSPENDED, { params: data }, this.id);
+                this.triggerSiteEvent(CoreEvents.USER_SUSPENDED, { params: data });
                 error.message = Translate.instant('core.usersuspended');
 
                 throw new CoreWSError(error);
             } else if (error.errorcode === 'wsaccessusernologin') {
                 // User suspended, trigger event.
-                CoreEvents.trigger(CoreEvents.USER_NO_LOGIN, { params: data }, this.id);
+                this.triggerSiteEvent(CoreEvents.USER_NO_LOGIN, { params: data });
                 error.message = Translate.instant('core.usernologin');
 
                 throw new CoreWSError(error);
             } else if (error.errorcode === 'forcepasswordchangenotice') {
                 // Password Change Forced, trigger event. Try to get data from cache, the event will handle the error.
-                CoreEvents.trigger(CoreEvents.PASSWORD_CHANGE_FORCED, {}, this.id);
+                this.triggerSiteEvent(CoreEvents.PASSWORD_CHANGE_FORCED, {});
                 error.message = Translate.instant('core.forcepasswordchangenotice');
                 useSilentError = true; // Use a silent error, the change password page already displays the appropiate info.
             } else if (error.errorcode === 'usernotfullysetup') {
                 // User not fully setup, trigger event. Try to get data from cache, the event will handle the error.
-                CoreEvents.trigger(CoreEvents.USER_NOT_FULLY_SETUP, {}, this.id);
+                this.triggerSiteEvent(CoreEvents.USER_NOT_FULLY_SETUP, {});
                 error.message = Translate.instant('core.usernotfullysetup');
                 useSilentError = true; // Use a silent error, the complete profile page already displays the appropiate info.
             } else if (error.errorcode === 'sitepolicynotagreed') {
                 // Site policy not agreed, trigger event.
-                CoreEvents.trigger(CoreEvents.SITE_POLICY_NOT_AGREED, {}, this.id);
+                this.triggerSiteEvent(CoreEvents.SITE_POLICY_NOT_AGREED, {});
                 error.message = Translate.instant('core.login.sitepolicynotagreederror');
 
                 throw new CoreWSError(error);
@@ -1206,7 +1205,7 @@ export class CoreCandidateSite extends CoreUnauthenticatedSite {
                 this.memoryCache[id].expirationTime = 0;
             }
         } finally {
-            CoreEvents.trigger(CoreEvents.WS_CACHE_INVALIDATED, {}, this.id);
+            this.triggerSiteEvent(CoreEvents.WS_CACHE_INVALIDATED, {});
         }
     }
 
@@ -1528,6 +1527,19 @@ export class CoreCandidateSite extends CoreUnauthenticatedSite {
         }
 
         return expirationDelay;
+    }
+
+    /**
+     * Trigger an event.
+     *
+     * @param eventName Event name.
+     * @param data Event data.
+     */
+    protected triggerSiteEvent<Fallback = unknown, Event extends string = string>(
+        eventName: Event,
+        data?: CoreEventData<Event, Fallback>,
+    ): void {
+        CoreEvents.trigger(eventName, data);
     }
 
 }
